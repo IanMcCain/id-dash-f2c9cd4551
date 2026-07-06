@@ -17,7 +17,7 @@
  PRIVACY, IMPORTANT
   - This build contains real client names and sale prices in the Real Estate pipeline. Ian gave
     explicit consent to deploy it to the obscure public GitHub Pages URL so his pipeline shows
-    automatically with no import step. Storage key bumped to v2 so devices reseed the real data.
+    automatically. Storage key v2 plus a seed-version migration keep devices on the latest pipeline.
   - The public GitHub Pages build is id-dash-v20-public.html, which carries all v20 design
     changes with a generic sample pipeline and no real client names or prices.
   - The same pipeline is also saved as real_estate_pipeline.json in this folder. A clean public
@@ -577,7 +577,7 @@ header{ background:rgba(0,0,0,.82); border-bottom:1px solid rgba(255,255,255,.07
 .ch-dot{ width:11px; height:11px; border-radius:50%; flex:0 0 auto; }
 .ch-dot.c-red{background:var(--red)} .ch-dot.c-orange{background:var(--orange)} .ch-dot.c-green{background:var(--green)}
 .ch-dot.c-blue{background:var(--blue)} .ch-dot.c-purple{background:var(--purple)} .ch-dot.c-cyan{background:var(--cyan)}
-.ch-dot.c-pink{background:var(--pink)} .ch-dot.c-teal{background:var(--teal)}
+.ch-dot.c-pink{background:var(--pink)} .ch-dot.c-teal{background:var(--teal)} .ch-dot.c-violet{background:var(--violet)}
 .ch-title{ font-size:16px; font-weight:800; letter-spacing:-.01em; color:var(--white); }
 .ch-sub{ font-size:12.5px; font-weight:600; color:var(--gray2); margin-top:2px; }
 .ch-chev{ flex:0 0 auto; width:28px; height:28px; border-radius:50%; background:var(--card2); color:var(--gray); display:grid; place-items:center; font-size:17px; font-weight:700; line-height:1; transition:transform .22s cubic-bezier(.2,.7,.2,1); }
@@ -594,7 +594,7 @@ header{ background:rgba(0,0,0,.82); border-bottom:1px solid rgba(255,255,255,.07
 .stpill{ font-size:10px; font-weight:800; letter-spacing:.03em; text-transform:uppercase; padding:3px 8px; border-radius:7px; white-space:nowrap; background:var(--card2); }
 .stpill.c-red{color:var(--red)} .stpill.c-orange{color:var(--orange)} .stpill.c-green{color:var(--green)}
 .stpill.c-blue{color:var(--blue)} .stpill.c-purple{color:var(--purple)} .stpill.c-cyan{color:var(--cyan)}
-.stpill.c-pink{color:var(--pink)} .stpill.c-teal{color:var(--teal)}
+.stpill.c-pink{color:var(--pink)} .stpill.c-teal{color:var(--teal)} .stpill.c-violet{color:var(--violet)}
 .deal-detail{ padding:2px 5px 15px; border-top:1px solid rgba(255,255,255,.05); animation:slidein .2s ease; }
 .deal-detail .in{ margin-top:9px; }
 </style>
@@ -723,6 +723,7 @@ const sess=(function(){ let ok=false,mem={}; try{ const t="__s__"; window.sessio
   return { get(k){ try{ return ok?window.sessionStorage.getItem(k):(mem[k]||null);}catch(e){return mem[k]||null;} }, set(k,v){ try{ if(ok)window.sessionStorage.setItem(k,v); else mem[k]=v;}catch(e){mem[k]=v;} }, remove(k){ try{ if(ok)window.sessionStorage.removeItem(k);}catch(e){} delete mem[k]; } };
 })();
 const KEYS={ ian:"ianDashboard.v2", chris:"chrisDashboard.v2" };
+const SEED_VERSION=2;
 const uid=()=>Math.random().toString(36).slice(2,9);
 function todayKey(d){ d=d||new Date(); const p=n=>String(n).padStart(2,"0"); return d.getFullYear()+"-"+p(d.getMonth()+1)+"-"+p(d.getDate()); }
 const NOW=new Date(), TODAY=todayKey(NOW), DOW=NOW.getDay();
@@ -786,19 +787,21 @@ function reSeed(who){
       {id:"re-matt-brandt",title:"Matt Brandt",stage:"Closed",price:"$453,900",close:"June 2026",note:""},
       {id:"re-crystal-johnson",title:"Crystal Johnson",stage:"Under Contract",price:"$577,861",close:"August 14, 2026",note:""},
       {id:"re-allison-spicer-buy",title:"Allison Spicer, buying",stage:"Under Contract",price:"$894,446",close:"Likely late September 2026",note:"The home they are buying. Likely the same clients as the Spicer sale below."},
-      {id:"re-spicer-sell",title:"Chris and Allison Spicer, selling current home",stage:"Under Contract",price:"$474,900",close:"August 2026, exact date TBD",note:"Their current home, sold. Likely the same clients buying the $894,446 above. Confirm the exact close date."},
+      {id:"re-spicer-sell",title:"Chris and Allison Spicer, selling current home",stage:"Under Contract",price:"$474,900",close:"August 3, 2026",note:"Their current home, sold. Same clients buying the $894,446 above. Close confirmed August 3."},
       {id:"re-bonks-sell",title:"Bonks, selling",stage:"Under Contract",price:"$625,000",close:"August 19, 2026",note:"Same clients as the Bonks purchase below, a buy and sell."},
       {id:"re-bonks-buy",title:"Bonks, buying",stage:"Under Contract",price:"$420,000",close:"August 20, 2026",note:"Same clients, buy and sell."},
       {id:"re-rose-creek",title:"Rose Creek 2 story",stage:"Active",price:"$685,000",close:"Can sell anytime",note:"Active listing."},
       {id:"re-michelle-miller",title:"Michelle Miller",stage:"Coming Soon",price:"$274,900",close:"Lists Wednesday",note:"Comps need a rerun to verify the list price."},
       {id:"re-chad-troester",title:"Chad Troester",stage:"Coming Soon",price:"$435,000",close:"Lists Thursday",note:"Comps need a rerun for an accurate list price. They closed on a home they bought July 1 for $520,000."},
-      {id:"re-barkers",title:"Barkers",stage:"Prospecting",price:"About $270,000",close:"Maybe fall",note:"Want to list."},
+      {id:"re-barkers",title:"Barkers",stage:"Coming Soon",price:"$270,000 to $280,000",close:"Going live, date TBD",note:"Going live, date TBD."},
       {id:"re-tysdal",title:"Tysdal",stage:"Prospecting",price:"$299,900",close:"Timing unknown, maybe fall",note:"Want to list."},
-      {id:"re-teskes",title:"Teskes",stage:"Prospecting",price:"New construction",close:"Likely done January",note:"New construction listing."},
-      {id:"re-cynthia-willis",title:"Cynthia Willis, 10218 Spyglass Dr",stage:"Coming Soon",price:"$624,900",close:"Listing presentation Wednesday",note:"New client. Motivated seller, moving to Arizona and writing an offer on an AZ home. Prior listing with another agent last year failed. Wants to list with The Scenic Group. CMA being run now, list price to follow."}
+      {id:"re-teskes",title:"Teskes",stage:"Building",price:"$820,000",close:"Building, not done anytime soon",note:"Building, not done anytime soon."},
+      {id:"re-cynthia-willis",title:"Cynthia Willis, 10218 Spyglass Dr",stage:"Coming Soon",price:"$624,900",close:"Listing presentation Wednesday",note:"New client. Motivated seller, moving to Arizona and writing an offer on an AZ home. Prior listing with another agent last year failed. Wants to list with The Scenic Group. CMA being run now, list price to follow."},
+      {id:"re-evan",title:"Evan (buyer)",stage:"Buyer",price:"$250,000 to $300,000",close:"End of 2026",note:"Friend, buyer."},
+      {id:"re-rosecreek-couple",title:"Rose Creek 2-story walk-through couple",stage:"Prospecting",price:"",close:"",note:"Potential new build with Ryan (Rose Creek Homes). Toured the Rose Creek 2-story listing."}
     ],
     leads:[{id:uid(),name:"Zillow inquiry, 132nd St ranch",source:"Zillow",status:"New",note:"Wants a 3 bed under 400k in Millard."},{id:uid(),name:"Open house sign in, the Trails",source:"Open house",status:"Warm",note:"Following up Saturday."}],
-    todos:[{id:"ret-comps-miller",text:"Rerun comps for Michelle Miller ($274,900, lists Wednesday)",done:false,due:""},{id:"ret-comps-troester",text:"Rerun comps for Chad Troester (about $445,000 to $449,900, lists Thursday)",done:false,due:""},{id:"ret-spicer-date",text:"Confirm Chris and Allison Spicer close date (August)",done:false,due:""},{id:"ret-cynthia-presentation",text:"Listing presentation for Cynthia Willis (10218 Spyglass) Wednesday.",done:false,due:""},{id:uid(),text:"Sugar Creek neighbor letters, verify door count (60 to 100)",done:false,due:addDays(3)},{id:uid(),text:"Cinnamon Creek prospecting mailer plan",done:false,due:addDays(5)},{id:uid(),text:"Follow up recent Sugar Creek buyers and leads",done:false,due:""}],
+    todos:[{id:"ret-comps-miller",text:"Rerun comps for Michelle Miller ($274,900, lists Wednesday)",done:false,due:""},{id:"ret-comps-troester",text:"Rerun comps for Chad Troester (about $445,000 to $449,900, lists Thursday)",done:false,due:""},{id:"ret-spicer-date",text:"Confirm Chris and Allison Spicer close date (confirmed August 3)",done:true,due:""},{id:"ret-cynthia-presentation",text:"Listing presentation for Cynthia Willis (10218 Spyglass) Wednesday.",done:false,due:""},{id:"ret-rosecreek-couple",text:"Reach out to the Rose Creek couple tomorrow with plat map of potential build sites, goal: get them to sit down with Ryan (Rose Creek Homes).",done:false,due:""},{id:uid(),text:"Sugar Creek neighbor letters, verify door count (60 to 100)",done:false,due:addDays(3)},{id:uid(),text:"Cinnamon Creek prospecting mailer plan",done:false,due:addDays(5)},{id:uid(),text:"Follow up recent Sugar Creek buyers and leads",done:false,due:""}],
     contacts:[{id:uid(),name:"Chris McCain",role:"Partner, The Scenic Group",detail:"50/50 partner. 10+ yrs experience."},{id:uid(),name:"NP Dodge",role:"Brokerage",detail:"402-659-4432. ian.mccain@npdodge.com"},{id:uid(),name:"Rose Creek Homes",role:"Builder partner",detail:"Mention only when content is about them."}],
     neighborhoods:[{id:uid(),name:"Sugar Creek Addition",note:"68136, Sarpy, Millard schools. Active farm."},{id:uid(),name:"Cinnamon Creek",note:"Prospecting target."},{id:uid(),name:"Papillion / Elkhorn / Millard",note:"Core corridor."},{id:uid(),name:"Bellevue / Gretna / Bennington",note:"Surrounding metro."}],
     marketNotes:"The Scenic Group. Ian & Chris McCain, NP Dodge, GPRMLS, Omaha metro.\n\nSource every stat. Do not blend Redfin, Zillow, Realtor.com. Verify comps in GPRMLS.",
@@ -844,7 +847,9 @@ function deepMergeDefaults(t,d){
 }
 let profile="ian", state;
 function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]); raw=s?JSON.parse(s):null; }catch(e){ raw=null; }
+  const storedSeedVer=(raw&&raw.meta&&raw.meta.seedVersion)||0;
   try{ state=raw?deepMergeDefaults(raw,seedFor(p)):seedFor(p); if(state.meta) state.meta.version=15; }catch(e){ state=seedFor(p); }
+  try{ if(!state.meta) state.meta={}; if(raw && storedSeedVer<SEED_VERSION){ const fresh=seedFor(p); if(fresh&&fresh.realEstate){ if(!state.realEstate) state.realEstate={}; state.realEstate.deals=fresh.realEstate.deals; state.realEstate.todos=fresh.realEstate.todos; } } state.meta.seedVersion=SEED_VERSION; }catch(e){}
   focusObj.running=false; try{clearInterval(focusObj.timerId);}catch(e){} focusObj.remaining=null;
   applyAccent(); dailyReset(); save(true);
 }
@@ -933,7 +938,7 @@ function focusComplete(){ focusObj.running=false; clearInterval(focusObj.timerId
 function focusTimerCard(parent){ if(focusObj.remaining==null) focusObj.remaining=focusDur(); const fc=card("a-blue"); const fb=fc._body; const tim=el("div","timer"); const tt=el("div","tt"); tt.id="focusTime"; tt.textContent=fmtTime(focusObj.remaining); tim.appendChild(tt); const cnt=((state.realEstate.focus&&state.realEstate.focus.count&&state.realEstate.focus.count[TODAY])||0); tim.appendChild(el("div","tsub","Sessions today: "+cnt+"  ·  "+((state.realEstate.focus.minutes)||25)+" min blocks")); const trow=el("div","trow"); const startBtn=el("button","btn",focusObj.running?"Pause":"Start"); startBtn.onclick=()=> focusObj.running?focusPause():focusStart(); const resetBtn=el("button","btn ghost","Reset"); resetBtn.onclick=focusReset; trow.appendChild(startBtn); trow.appendChild(resetBtn); tim.appendChild(trow); const durc=el("div"); durc.style.marginTop="14px"; durc.appendChild(chipRow(["15","25","45"],String((state.realEstate.focus.minutes)||25),m=>{ state.realEstate.focus.minutes=parseInt(m,10); if(!focusObj.running)focusObj.remaining=focusDur(); save(); render(); })); tim.appendChild(durc); fb.appendChild(tim); parent.appendChild(fc); }
 
 /* ===== real estate modules (shared by Ian and Chris) ===== */
-const RESTAGES=["Prospecting","Coming Soon","Active","Under Contract","Just Sold","Closed","Follow up"];
+const RESTAGES=["Prospecting","Buyer","Coming Soon","Active","Building","Under Contract","Just Sold","Closed","Follow up"];
 function metricsModule(parent){ const m=state.realEstate.metrics; if(!m.log)m.log={}; if(!m.log[TODAY])m.log[TODAY]={calls:0,appointments:0,listings:0,doors:0}; const day=m.log[TODAY]; const tg=m.targets||{calls:10,appointments:2,doors:20}; const c=card(); const b=c._body; const rows=[["calls","Calls",tg.calls],["appointments","Appointments",tg.appointments],["doors","Doors knocked",tg.doors],["listings","Listings taken",null]]; rows.forEach(([key,label,target])=>{ const r=el("div","mrow"); const l=el("div","ml"); l.appendChild(document.createTextNode(label)); if(target!=null){ l.appendChild(el("small",null,"target "+target)); } r.appendChild(l); r.appendChild(stepper(()=>day[key]||0,(nv)=>{ day[key]=nv; })); b.appendChild(r); }); parent.appendChild(c); }
 function objectiveCard(parent,hub,acc){ const c=card(acc); const b=c._body; b.appendChild(el("div","small muted","Today's objective")); const oa=el("div"); oa.style.fontSize="17px"; oa.style.fontWeight="800"; oa.style.margin="7px 0 0"; oa.textContent=autoObjective(hub); b.appendChild(oa); const ta=el("textarea","in"); ta.style.minHeight="50px"; ta.style.marginTop="11px"; ta.placeholder="Add your own focus for today..."; ta.value=(state.objectives&&state.objectives[hub])||""; ta.oninput=()=>{ if(!state.objectives)state.objectives={}; state.objectives[hub]=ta.value; save(); }; b.appendChild(ta); parent.appendChild(c); }
 /* ===== v19 grouped pipeline (stage groups, close date field, volume subheaders) ===== */
@@ -950,9 +955,9 @@ function reNeigh(parent){ const c=card(); const b=c._body; state.realEstate.neig
 function scriptsModule(parent){ (state.realEstate.scripts||[]).forEach(s=>{ const c=card(); const b=c._body; const head=el("div","between"); head.appendChild(el("h3",null,s.title)); const del=el("button","del","×"); del.onclick=()=>{ state.realEstate.scripts=state.realEstate.scripts.filter(x=>x.id!==s.id); save(); render(); }; head.appendChild(del); b.appendChild(head); const ta=el("textarea","in"); ta.style.minHeight="90px"; ta.style.marginTop="9px"; ta.value=s.body||""; ta.oninput=()=>{ s.body=ta.value; save(); }; b.appendChild(ta); parent.appendChild(c); }); const add=card(); add._body.appendChild(adder("New script title...",t=>{ state.realEstate.scripts.push({id:uid(),title:t,body:"Write your script here."}); save(); render(); })); parent.appendChild(add); }
 
 /* ===== v20 real estate: collapsible stages, simplified deals, grouped secondary tools ===== */
-const STAGE_COL={ "Closed":"green","Under Contract":"blue","Active":"orange","Coming Soon":"purple","Prospecting":"pink","Just Sold":"teal","Follow up":"cyan" };
+const STAGE_COL={ "Closed":"green","Under Contract":"blue","Active":"orange","Coming Soon":"purple","Prospecting":"pink","Building":"violet","Buyer":"cyan","Just Sold":"teal","Follow up":"cyan" };
 const RE_GROUPS=[["Under Contract","Under contract / pending"],["Coming Soon","Coming soon"],["Active","Active listings"],["Closed","Closed"],["Prospecting","Prospects"],["Just Sold","Just sold"],["Follow up","Follow up"]];
-let reStageOpen={ "Under Contract":true,"Coming Soon":true,"Active":true,"Closed":false,"Prospecting":false,"Just Sold":false,"Follow up":false,"Other":false };
+let reStageOpen={ "Under Contract":true,"Coming Soon":true,"Active":true,"Building":true,"Closed":false,"Prospecting":false,"Just Sold":false,"Follow up":false,"Other":false };
 let reDealOpen={};
 let reToolOpen={};
 let reView="landing";
@@ -1016,7 +1021,9 @@ function buildIanHome(v){ const workout=daySplit(DOW); const reTop=firstUndone(s
 }
 function buildBrief(v){ sect(v,"Quick win","resets daily"); quickWinCard(v); const _clsec=sect(v,"Today from Claude","sync brief"); _clsec.insertBefore(claudeAvatar("av-md chip"), _clsec.firstChild); { const sc=card(); const sbt=el("button","btn ghost block","Load today\u2019s brief"); sbt.style.marginTop="0"; sbt.onclick=()=>{ const bf=document.getElementById("briefFile"); if(bf)bf.click(); }; const hint=el("div","small dim"); hint.style.marginTop="9px"; hint.textContent="Pick daily_brief.json to merge today\u2019s items. Your other data stays."; sc._body.appendChild(sbt); sc._body.appendChild(hint); v.appendChild(sc); } const items=briefItems(); if(!items.length){ const c=card(); c._body.appendChild(el("div","empty","No briefing yet for today. Your daily agent will add items here.")); v.appendChild(c); } else { items.forEach(it=>v.appendChild(briefCard(it))); v.appendChild(el("div","notice","Example items. Your daily agent will replace these each morning.")); } sect(v,"Upcoming"); safe(v,()=>eventsModule(v),"Events"); }
 /* ===== v21 real estate: calm landing of section cards, each opens its own view ===== */
-const RE_PIPE_GROUPS=[["Under Contract","Under contract / pending"],["Coming Soon","Coming soon"],["Active","Active listings"],["Closed","Closed"],["Just Sold","Just sold"],["Follow up","Follow up"]];
+const RE_PIPE_GROUPS=[["Under Contract","Under contract / pending"],["Coming Soon","Coming soon"],["Active","Active listings"],["Building","Building / New Construction"],["Closed","Closed"],["Just Sold","Just sold"],["Follow up","Follow up"]];
+const RE_PROSPECT_STAGES=["Prospecting","Buyer"];
+function reIsProspect(d){ return RE_PROSPECT_STAGES.indexOf(d.stage)>-1; }
 function reNavCard(parent,icon,title,summary,view){
   const c=el("div","card tap renav"); const b=el("div","cbody"); c.appendChild(b);
   const row=el("div","launch");
@@ -1031,13 +1038,14 @@ function reBack(parent,label){
 }
 function pipelineSummaryPipe(parent){
   const deals=state.realEstate.deals||[]; const by=st=>deals.filter(d=>d.stage===st); const vol=arr=>arr.reduce((a,d)=>a+priceNum(d.price),0);
-  const closed=by("Closed"), uc=by("Under Contract"), act=by("Active"), cs=by("Coming Soon");
+  const closed=by("Closed"), uc=by("Under Contract"), act=by("Active"), cs=by("Coming Soon"), bld=by("Building");
   sect(parent,"Overview","counts and volume");
   summaryGrid(parent,[
     statTile({label:"Closed",color:"green",value:closed.length,unit:closed.length===1?"deal":"deals",sub:fmtMoney(vol(closed))+" volume"}),
     statTile({label:"Under contract",color:"blue",value:uc.length,unit:"pending",sub:fmtMoney(vol(uc))+" pending"}),
     statTile({label:"Active",color:"orange",value:act.length,unit:act.length===1?"listing":"listings",sub:fmtMoney(vol(act))}),
-    statTile({label:"Coming soon",color:"purple",value:cs.length,unit:"this week",sub:"Listing soon"})
+    statTile({label:"Coming soon",color:"purple",value:cs.length,unit:"this week",sub:"Listing soon"}),
+    statTile({label:"Building",color:"violet",value:bld.length,unit:bld.length===1?"build":"builds",sub:fmtMoney(vol(bld))})
   ]);
 }
 function rePipelineGroupedPipe(parent){
@@ -1046,7 +1054,7 @@ function rePipelineGroupedPipe(parent){
   const add=card(); add._body.appendChild(adder("New deal...",t=>{ state.realEstate.deals.push({id:uid(),title:t,stage:"Coming Soon",price:"",close:"",note:""}); reStageOpen["Coming Soon"]=true; save(); render(); })); parent.appendChild(add);
 }
 function reProspectsList(parent){
-  const prospects=(state.realEstate.deals||[]).filter(d=>d.stage==="Prospecting");
+  const prospects=(state.realEstate.deals||[]).filter(reIsProspect);
   if(!prospects.length){ const c=card(); c._body.appendChild(el("div","empty","No prospects yet.")); parent.appendChild(c); }
   else { const c=card(); c._body.style.padding="0"; const body=el("div","collapse-body"); prospects.forEach(d=>dealRow(body,d)); c._body.appendChild(body); parent.appendChild(c); }
   const add=card(); add._body.appendChild(adder("New prospect...",t=>{ state.realEstate.deals.push({id:uid(),title:t,stage:"Prospecting",price:"",close:"",note:""}); save(); render(); })); parent.appendChild(add);
@@ -1061,8 +1069,8 @@ function buildIanRe(v){
 function reViewLanding(v){
   objectiveCard(v,"re","a-blue");
   const deals=state.realEstate.deals||[];
-  const pipe=deals.filter(d=>d.stage!=="Prospecting");
-  const prospects=deals.filter(d=>d.stage==="Prospecting");
+  const pipe=deals.filter(d=>!reIsProspect(d));
+  const prospects=deals.filter(reIsProspect);
   const vol=pipe.reduce((a,d)=>a+priceNum(d.price),0);
   const openTodos=(state.realEstate.todos||[]).filter(t=>!t.done).length;
   sect(v,"Real Estate","tap a section");
