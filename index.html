@@ -814,7 +814,8 @@ function reSeed(who){
     metrics:{ targets:{calls:10,appointments:2,doors:20}, log:{} }, focus:{ minutes:25, count:{} },
     scripts:[{id:uid(),title:"Just Sold neighbor call",body:"Hi [name], Ian with The Scenic Group. We just sold a home over on Olive in Sugar Creek and homes in your area are moving. If you have ever wondered what yours is worth, I can send a quick honest read, no pressure."},{id:uid(),title:"Cinnamon Creek prospecting",body:"Hi [name], Ian McCain here. We are focusing on Cinnamon Creek right now and have buyers looking. If you have thought about selling, I would love to give you a straight read on your value. No pressure, straight answers."}],
     goals:[{id:uid(),text:"10 prospecting calls a day",done:false},{id:uid(),text:"Two new listings this month",done:false},{id:uid(),text:"Build Cinnamon Creek into a reliable farm",done:false}],
-    goals2026:{production:10000000,deals:20}
+    goals2026:{production:10000000,deals:20},
+    sphere:[]
   };
   // chris starter, real estate forward, mostly blank for him to fill
   return {
@@ -1022,6 +1023,7 @@ function buildIanHome(v){ const workout=daySplit(DOW); const reTop=firstUndone(s
   v.appendChild(hero);
   const _clsec=sect(v,"Today from Claude","new to check out"); _clsec.insertBefore(claudeAvatar("av-md chip"), _clsec.firstChild); { const sc=card(); const sbt=el("button","btn ghost block","Load today\u2019s brief"); sbt.style.marginTop="0"; sbt.onclick=()=>{ const bf=document.getElementById("briefFile"); if(bf)bf.click(); }; const hint=el("div","small dim"); hint.style.marginTop="9px"; hint.textContent="Pick daily_brief.json to merge today\u2019s items. Your other data stays."; sc._body.appendChild(sbt); sc._body.appendChild(hint); v.appendChild(sc); } { const items=briefItems(); if(!items.length){ const c=card(); c._body.appendChild(el("div","empty","No briefing yet for today. Your daily agent will add items here.")); v.appendChild(c); } else { items.forEach(it=>v.appendChild(briefCard(it))); v.appendChild(el("div","notice","Example items. Your daily agent will replace these each morning.")); } }
   sect(v,"Quick win","your easy win today"); quickWinCard(v);
+  sect(v,"Stay in touch","your sphere"); safe(v,()=>homeSphereNudge(v),"Sphere nudge");
   sect(v,"Progress and upcoming","where you stand"); safe(v,()=>reGoalsCard(v),"RE goals"); safe(v,()=>homeUpcomingCard(v),"Upcoming RE");
   safe(v,()=>{ const gday=daySplit(DOW); const glog=(state.gym.logs&&state.gym.logs[TODAY])||{done:{}}; const gT=gday.exercises.length||0, gD=gday.exercises.filter(e=>glog.done&&glog.done[e.id]).length; const hs=(state.routine&&state.routine.habits)||[]; const hD=hs.filter(h=>h.log&&h.log[TODAY]).length; const water=(state.nutrition&&state.nutrition.water&&state.nutrition.water[TODAY])||0; const m=(state.realEstate.metrics&&state.realEstate.metrics.log&&state.realEstate.metrics.log[TODAY])||{}; const cg=(state.realEstate.metrics&&state.realEstate.metrics.targets&&state.realEstate.metrics.targets.calls)||10; sect(v,"Today","fitness and calls"); summaryGrid(v,[ fracTile({label:"Workout",color:"orange",done:gD,goal:gT||1,unit:"sets",tab:"gym"}), fracTile({label:"Habits",color:"green",done:hD,goal:hs.length||7,unit:"done",tab:"gym"}), fracTile({label:"Water",color:"cyan",done:water,goal:12,unit:"cups",tab:"gym"}), fracTile({label:"RE calls",color:"blue",done:m.calls||0,goal:cg,unit:"today",tab:"re"}) ]); },"Summary");
   sect(v,"Calendar"); safe(v,()=>eventsModule(v),"Events");
@@ -1071,6 +1073,7 @@ function buildIanRe(v){
   if(reView==="prospects") return reViewProspects(v);
   if(reView==="todo") return reViewTodo(v);
   if(reView==="tools") return reViewTools(v);
+  if(reView==="sphere") return reViewSphere(v);
   return reViewLanding(v);
 }
 function fmtMoneyShort(n){ n=n||0; if(n>=1e6){ var m=n/1e6; return "$"+(m>=10?String(Math.round(m)):m.toFixed(1))+"M"; } if(n>=1e3) return "$"+Math.round(n/1e3)+"K"; return "$"+Math.round(n); }
@@ -1098,6 +1101,81 @@ function homeUpcomingCard(parent){
   if(!up.length && !todos.length){ b.appendChild(el("div","empty","Nothing scheduled.")); }
   parent.appendChild(c);
 }
+/* ===== v21 Sphere / CRM ===== */
+const SPHERE_TYPES=["Past client","Referral source","Friend/Family","Sphere"];
+let sphereOpen={};
+function sphereList(){ if(!state.realEstate) state.realEstate={}; if(!Array.isArray(state.realEstate.sphere)) state.realEstate.sphere=[]; return state.realEstate.sphere; }
+function daysSinceDate(s){ if(!s) return null; try{ const a=String(s).split("-"); const d=new Date(+a[0],(+a[1])-1,+a[2]); const p=TODAY.split("-"); const n=new Date(+p[0],(+p[1])-1,+p[2]); return Math.round((n-d)/86400000); }catch(e){ return null; } }
+function contactOverdue(k){ const cad=(k&&k.cadence)||90; const ds=daysSinceDate(k&&k.lastContacted); if(ds==null) return true; return ds>=cad; }
+function sphereOverdue(){ return sphereList().filter(contactOverdue); }
+function markContacted(k){ k.lastContacted=TODAY; save(); render(); }
+function contactEditors(parent,k){
+  const mc=el("button","btn sm block","Mark contacted today"); mc.style.marginTop="0"; mc.onclick=()=>markContacted(k); parent.appendChild(mc);
+  const nm=el("input","in"); nm.placeholder="Name"; nm.value=k.name||""; nm.style.marginTop="10px"; nm.oninput=()=>{ k.name=nm.value; save(); }; parent.appendChild(nm);
+  parent.appendChild(chipRow(SPHERE_TYPES,k.type,s=>{ k.type=s; save(); render(); }));
+  const ph=el("input","in"); ph.type="tel"; ph.placeholder="Phone (optional)"; ph.value=k.phone||""; ph.oninput=()=>{ k.phone=ph.value; save(); }; parent.appendChild(ph);
+  const lcl=el("div","small muted"); lcl.textContent="Last contacted"; lcl.style.margin="10px 0 4px"; parent.appendChild(lcl);
+  const lc=el("input","in"); lc.type="date"; lc.value=k.lastContacted||""; lc.oninput=()=>{ k.lastContacted=lc.value; save(); }; parent.appendChild(lc);
+  const cdl=el("div","small muted"); cdl.textContent="Reach out every (days)"; cdl.style.margin="10px 0 4px"; parent.appendChild(cdl);
+  const cd=el("input","in"); cd.type="number"; cd.min="1"; cd.placeholder="90"; cd.value=k.cadence||90; cd.oninput=()=>{ k.cadence=parseInt(cd.value,10)||90; save(); }; parent.appendChild(cd);
+  const ta=el("textarea","in"); ta.style.minHeight="52px"; ta.style.marginTop="10px"; ta.placeholder="Notes, how you know them, family, referrals given..."; ta.value=k.note||""; ta.oninput=()=>{ k.note=ta.value; save(); }; parent.appendChild(ta);
+  const del=el("button","del","Remove contact"); del.style.fontSize="13px"; del.style.marginTop="10px"; del.onclick=()=>{ if(confirm("Remove this contact?")){ state.realEstate.sphere=sphereList().filter(x=>x.id!==k.id); delete sphereOpen[k.id]; save(); render(); } }; parent.appendChild(del);
+}
+function contactRow(parent,k){
+  const wrap=el("div","dealwrap"); const row=el("button","deal-row");
+  const left=el("div","dl"); left.appendChild(el("div","dn",k.name||"(no name)"));
+  const ds=daysSinceDate(k.lastContacted); const sub=el("div","dsub");
+  sub.textContent=(k.type||"Sphere")+"  ·  "+(k.lastContacted?("last "+ds+"d ago"):"no contact logged");
+  left.appendChild(sub); row.appendChild(left);
+  const right=el("div","dr"); if(contactOverdue(k)) right.appendChild(el("span","stpill c-pink","reach out")); row.appendChild(right);
+  row.onclick=()=>{ sphereOpen[k.id]=!sphereOpen[k.id]; render(); }; wrap.appendChild(row);
+  if(sphereOpen[k.id]){ const det=el("div","deal-detail"); contactEditors(det,k); wrap.appendChild(det); }
+  parent.appendChild(wrap);
+}
+function reachOutRow(parent,k){
+  const c=card("a-teal"); const b=c._body; const top=el("div","between");
+  const l=el("div"); const nm=el("div"); nm.style.fontWeight="800"; nm.style.fontSize="16px"; nm.textContent=k.name||"(no name)"; l.appendChild(nm);
+  const ds=daysSinceDate(k.lastContacted); const meta=el("div","small dim"); meta.style.marginTop="3px"; meta.textContent=(k.lastContacted?("Last contacted "+ds+" days ago"):"No contact logged yet")+(k.phone?("  ·  "+k.phone):""); l.appendChild(meta);
+  top.appendChild(l);
+  const mc=el("button","btn sm","Mark contacted"); mc.onclick=()=>markContacted(k); top.appendChild(mc);
+  b.appendChild(top); parent.appendChild(c);
+}
+function sphereAdder(parent){ const c=card(); c._body.appendChild(adder("Add a name to your sphere...",n=>{ sphereList().push({id:uid(),name:n,type:"Sphere",phone:"",lastContacted:"",cadence:90,note:""}); save(); render(); })); parent.appendChild(c); }
+function reViewSphere(v){
+  reBack(v,"Real Estate");
+  const sphere=sphereList();
+  if(!sphere.length){
+    const c=card("a-teal"); const b=c._body;
+    b.appendChild(el("h3",null,"Build your sphere"));
+    const p=el("div","small muted"); p.style.marginTop="6px"; p.textContent="Your referral business runs on staying in touch. Add the 30 to 40 people you and Chris nurture, past clients, referral sources, friends and family. The app flags who to reach out to and lets you log each touch."; b.appendChild(p);
+    v.appendChild(c); sphereAdder(v); return;
+  }
+  const overdue=sphereOverdue();
+  sect(v,"Reach out",overdue.length?(overdue.length+(overdue.length===1?" person":" people")):"all caught up");
+  if(!overdue.length){ const c=card(); c._body.appendChild(el("div","empty","Nobody is overdue. You are caught up with your sphere.")); v.appendChild(c); }
+  else overdue.forEach(k=>reachOutRow(v,k));
+  sect(v,"Your sphere",sphere.length+(sphere.length===1?" person":" people"));
+  const listc=card(); listc._body.style.padding="0"; const body=el("div","collapse-body"); sphere.forEach(k=>contactRow(body,k)); listc._body.appendChild(body); v.appendChild(listc);
+  sphereAdder(v);
+}
+function homeSphereNudge(parent){
+  const sphere=sphereList(); const c=card("a-teal"); const b=c._body;
+  if(!sphere.length){
+    b.appendChild(el("div","feedtitle","Add your sphere"));
+    b.appendChild(el("div","feednote","Your referral business runs on staying in touch. Add the people you and Chris nurture and each morning the app will tell you who to reach out to."));
+    const go=el("button","feedlink","Open sphere ›"); go.style.marginTop="11px"; go.onclick=()=>{ reView="sphere"; selectTab("re"); render(); }; b.appendChild(go);
+    parent.appendChild(c); return;
+  }
+  const overdue=sphereOverdue();
+  if(!overdue.length){ b.appendChild(el("div","feedtitle","You are caught up")); b.appendChild(el("div","feednote","Nobody in your sphere is overdue right now. Nice work staying in touch.")); parent.appendChild(c); return; }
+  const k=overdue[0]; const ds=daysSinceDate(k.lastContacted);
+  b.appendChild(el("span","pill g","Stay in touch"));
+  const tt=el("div","feedtitle"); tt.style.marginTop="7px"; tt.textContent="Reach out to "+(k.name||"someone")+" today"; b.appendChild(tt);
+  b.appendChild(el("div","feednote",(k.lastContacted?("It has been "+ds+" days since you connected."):"You have not logged a touch with them yet.")+(k.phone?("  "+k.phone):"")+(overdue.length>1?("  "+(overdue.length-1)+" more are also due."):"")));
+  const mc=el("button","btn sm block","Mark contacted today"); mc.style.marginTop="12px"; mc.onclick=()=>markContacted(k); b.appendChild(mc);
+  const go=el("button","feedlink","See all in Sphere ›"); go.style.marginTop="10px"; go.onclick=()=>{ reView="sphere"; selectTab("re"); render(); }; b.appendChild(go);
+  parent.appendChild(c);
+}
 function reViewLanding(v){
   safe(v,()=>reGoalsCard(v),"RE goals");
   objectiveCard(v,"re","a-blue");
@@ -1110,6 +1188,7 @@ function reViewLanding(v){
   reNavCard(v,"\ud83d\udcca","Pipeline",pipe.length+(pipe.length===1?" deal":" deals")+"  \u00b7  "+fmtMoney(vol)+" volume","pipeline");
   reNavCard(v,"\ud83c\udf31","Prospects",prospects.length+(prospects.length===1?" future listing":" future listings"),"prospects");
   reNavCard(v,"\u2705","Things I need to do",openTodos+(openTodos===1?" open task":" open tasks"),"todo");
+  { const _sp=sphereList(); const _ov=sphereOverdue().length; reNavCard(v,"\ud83e\udd1d","Sphere",_sp.length?(_sp.length+(_sp.length===1?" person":" people")+(_ov?"  \u00b7  "+_ov+" to reach out":"")):"add your sphere","sphere"); }
   reNavCard(v,"\ud83e\uddf0","Tools","Focus timer, activity, contacts, scripts, notes","tools");
   sect(v,"Your pipeline data","import");
   { const ic=card(); const ib=el("button","btn ghost block","Import my pipeline"); ib.style.marginTop="0"; ib.onclick=()=>{ const pf=document.getElementById("pipelineFile"); if(pf)pf.click(); }; const ih=el("div","small dim"); ih.style.marginTop="9px"; ih.textContent="Load real_estate_pipeline.json to replace your pipeline with your deals and follow ups. Your other data stays."; ic._body.appendChild(ib); ic._body.appendChild(ih); v.appendChild(ic); }
