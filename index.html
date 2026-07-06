@@ -728,7 +728,7 @@ const sess=(function(){ let ok=false,mem={}; try{ const t="__s__"; window.sessio
   return { get(k){ try{ return ok?window.sessionStorage.getItem(k):(mem[k]||null);}catch(e){return mem[k]||null;} }, set(k,v){ try{ if(ok)window.sessionStorage.setItem(k,v); else mem[k]=v;}catch(e){mem[k]=v;} }, remove(k){ try{ if(ok)window.sessionStorage.removeItem(k);}catch(e){} delete mem[k]; } };
 })();
 const KEYS={ ian:"ianDashboard.v2", chris:"chrisDashboard.v2" };
-const SEED_VERSION=3;
+const SEED_VERSION=4;
 const uid=()=>Math.random().toString(36).slice(2,9);
 function todayKey(d){ d=d||new Date(); const p=n=>String(n).padStart(2,"0"); return d.getFullYear()+"-"+p(d.getMonth()+1)+"-"+p(d.getDate()); }
 const NOW=new Date(), TODAY=todayKey(NOW), DOW=NOW.getDay();
@@ -752,7 +752,7 @@ function seedIan(){
       goals:[{id:uid(),text:"Lean out about 4 to 4.5 lb before the trip",done:false},{id:uid(),text:"Progressive overload, add a rep or a little weight when a lift feels easy",done:false},{id:uid(),text:"Protect the joints pickleball stresses, knees, ankles, Achilles, shoulders",done:false}],
       split:[
         {day:"Sun",focus:"Stretch / Relax",play:"Off or light",note:"Mobility and stretch, or just rest.",exercises:[ex("Easy walk","20 to 40 min"),ex("Full body stretch and mobility","10 to 15 min")]},
-        {day:"Mon",focus:"Push (chest, shoulders, tris)",play:"League",note:"Lift before league. Legs stay fresh.",exercises:[ex("DB or machine chest press","4×10/8/8/6"),ex("Incline DB press","3×12/10/8"),ex("DB or Smith OHP","3×10/8/8"),ex("Lateral raise","3×15/12/12"),ex("Cable pushdown","3×15/12/10"),ex("Overhead DB extension","3×15/12/10")]},
+        {day:"Mon",focus:"Push (chest, shoulders, tris)",play:"League",note:"Lift before league. Legs stay fresh.",exercises:[ex("DB or machine chest press","4×10/8/8/6"),ex("Incline DB press","3×12/10/8"),ex("DB or Smith OHP","3×10/8/8"),ex("Lateral raise","3×15/12/12"),ex("Cable pushdown","3×15/12/10")]},
         {day:"Tue",focus:"Pull (back, biceps, rear delts)",play:"Play",note:"Lift first if same day.",exercises:[ex("Lat pulldown","4×12/10/8/8"),ex("Seated cable row","3×10/8/8"),ex("Chest supported machine row","3×12/10/10"),ex("Face pull or reverse pec deck","3×20/15/15"),ex("DB or cable curl","3×12/10/10"),ex("Incline or hammer curl","3×12/10/10")]},
         {day:"Wed",focus:"Legs",play:"Light or off",note:"Court light. Four days to recover before Monday.",exercises:[ex("Leg press","3×8 heavy"),ex("Seated leg curl","4×10/8/8/8"),ex("Leg extension","3×10/8/8"),ex("Hip abductor machine","3×15/12/12"),ex("Calf raise","3×10")]},
         {day:"Thu",focus:"Abs + easy cardio (light)",play:"Play",note:"Lighter mid week day.",exercises:[ex("Seated ab crunch machine, full crunch","3×15/12/12"),ex("Seated oblique / rotary twist","3×15/12/12 per side"),ex("In air leg raise","3×15/12/10"),ex("Second crunch station","3×15/12/12"),ex("Kneeling knee raise on angled pad","3×15/12/10"),ex("Plank","3×30 to 45s"),ex("Cable rotation or Pallof press","3×12/10/10 per side"),ex("Easy cardio","20 to 30 min")]},
@@ -861,6 +861,11 @@ function mergeKeepLogs(existing, fresh){
   existing.forEach(function(x){ if(x&&x.name!=null&&!freshNames[x.name]) out.push(x); });
   return out;
 }
+function mergeGymSplit(existing, fresh){
+  existing=Array.isArray(existing)?existing:[]; fresh=Array.isArray(fresh)?fresh:[];
+  var byDay={}; existing.forEach(function(d){ if(d&&d.day) byDay[d.day]=d; });
+  return fresh.map(function(fd){ var ed=byDay[fd.day]; var out=Object.assign({},fd); if(ed&&Array.isArray(ed.exercises)&&Array.isArray(fd.exercises)){ var byName={}; ed.exercises.forEach(function(x){ if(x&&x.name) byName[x.name]=x; }); out.exercises=fd.exercises.map(function(fx){ var ex=byName[fx.name]; return ex?Object.assign({},fx,{id:ex.id}):fx; }); } return out; });
+}
 function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]); raw=s?JSON.parse(s):null; }catch(e){ raw=null; }
   const storedSeedVer=(raw&&raw.meta&&raw.meta.seedVersion)||0;
   try{ state=raw?deepMergeDefaults(raw,seedFor(p)):seedFor(p); if(state.meta) state.meta.version=15; }catch(e){ state=seedFor(p); }
@@ -877,6 +882,7 @@ function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]
       if(fresh&&fresh.nutrition&&Array.isArray(fresh.nutrition.supplements)){ if(!state.nutrition) state.nutrition={}; state.nutrition.supplements=mergeKeepLogs(state.nutrition.supplements,fresh.nutrition.supplements); }
       if(fresh&&fresh.routine&&Array.isArray(fresh.routine.habits)){ if(!state.routine) state.routine={}; state.routine.habits=mergeKeepLogs(state.routine.habits,fresh.routine.habits); }
       if(fresh&&Array.isArray(fresh.events)){ if(!Array.isArray(state.events)) state.events=[]; const _ev=state.events.map(function(e){return e&&e.title;}); fresh.events.forEach(function(ev){ if(ev&&_ev.indexOf(ev.title)<0) state.events.push(ev); }); }
+      if(fresh&&fresh.gym&&Array.isArray(fresh.gym.split)){ if(!state.gym) state.gym={}; state.gym.split=mergeGymSplit(state.gym.split,fresh.gym.split); }
     }
     state.meta.seedVersion=SEED_VERSION;
   }catch(e){}
