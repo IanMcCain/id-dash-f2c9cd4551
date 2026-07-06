@@ -11,8 +11,36 @@
 <title>Ian Dashboard</title>
 <!--
 ==================================================================================
- IAN DASHBOARD  v18  (Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
+ IAN DASHBOARD  v20  (PUBLIC / generic build; sample pipeline, no client data; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
  Single self contained file. No build step, no imports, no fetch, no CDN. Off disk.
+
+ PRIVACY, IMPORTANT
+  - This is the PUBLIC build served on GitHub Pages. It carries all v20 design changes with a
+    GENERIC SAMPLE pipeline only. There are NO real client names, prices, notes, or farm details.
+  - Ian's real pipeline lives only in his browser localStorage on his own device, and can be
+    imported privately from real_estate_pipeline.json (Load today's brief). It is never in this file.
+  - The private working copy with real data is Ian Dashboard v20.html, kept off any public host.
+
+ NEW IN v20
+  - Premium lock screen. Dark blue gradient with a soft radial glow behind a glossy app icon,
+    round iOS style glass keypad buttons with a press animation, smooth animated dot fill, and a
+    subtle shake on a wrong code. Same function: 4 digit passcode 2007, JS off fallthrough.
+  - Contact number added to the Settings profile: 402-591-1133.
+  - Real Estate reorganized. Pipeline leads as the focus, grouped into collapsible stage headers
+    that show a count and dollar volume (active stages open by default, Closed and Prospects
+    collapsed). Each deal is a simple row (name, price, close date, stage) that expands on tap for
+    full editing. A compact Today strip (focus timer, activity counter, follow ups) sits up top,
+    and secondary tools (leads, contacts, neighborhoods, scripts, market notes) tuck into
+    collapsible sections lower down. Apple Health card styling and the pipeline stat tiles are kept.
+
+ NEW IN v19 (real estate pipeline)
+  - Pipeline populated with Ian's real deals, grouped by stage (Closed, Under contract / pending,
+    Active listings, Coming soon, Prospects), each with name, price, stage, close date, and notes.
+  - Stage subheaders show a count and total volume. A Pipeline summary of Apple style stat tiles
+    shows counts and dollar volume by stage.
+  - Follow up tasks in this public build are generic samples.
+  - The merge import (Load today's brief) now also accepts a realEstate block, so the pipeline
+    JSON merges into an existing device without wiping other data. Everything else is unchanged.
 
  NEW IN v18 (Apple Health / Fitness restyle, look only)
   - Near black page with cards a clear shade lighter (#1c1c1e) and soft rounded corners, so the
@@ -108,22 +136,45 @@ input,textarea,select{font-family:inherit;font-size:16px}
 a{color:var(--accent2);text-decoration:none}
 .tabctl{position:absolute;width:0;height:0;opacity:0;pointer-events:none}
 
-/* ===== lock screen ===== */
-.lockscreen{display:none;position:fixed;inset:0;z-index:200;background:radial-gradient(120% 80% at 50% 0%,#0b1226 0%,var(--bg) 60%);
-  padding:calc(var(--sat) + 24px) 24px calc(var(--sab) + 24px);overflow:auto}
+/* ===== lock screen (v20 premium redesign) ===== */
+.lockscreen{display:none;position:fixed;inset:0;z-index:200;
+  background:
+    radial-gradient(88% 52% at 50% 19%, rgba(37,110,255,.30) 0%, rgba(12,20,40,0) 60%),
+    radial-gradient(120% 90% at 50% 118%, rgba(10,132,255,.14) 0%, rgba(0,0,0,0) 55%),
+    linear-gradient(180deg,#080d1a 0%,#05070f 55%,#020306 100%);
+  padding:calc(var(--sat) + 26px) 24px calc(var(--sab) + 26px);overflow:auto}
 .lockinner{max-width:360px;margin:0 auto;min-height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
-.locklogo{width:64px;height:64px;border-radius:18px;background:linear-gradient(140deg,var(--accent),var(--accent2));display:grid;place-items:center;font-weight:900;color:#04122e;font-size:26px;letter-spacing:-.04em;margin-bottom:18px}
-.lockbrand{font-size:26px;font-weight:800;letter-spacing:-.02em}
-.locksub{color:var(--gray2);font-size:14px;margin-top:8px;font-weight:600;min-height:20px}
-.dots{display:flex;gap:16px;margin:26px 0 28px}
-.dot{width:15px;height:15px;border-radius:50%;border:2px solid var(--line2);transition:.15s}
-.dot.on{background:var(--accent);border-color:var(--accent)}
-.keypad{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;width:100%;max-width:280px}
-.key{height:72px;border-radius:50%;background:var(--card);border:1px solid var(--line);color:var(--white);font-size:26px;font-weight:700;display:grid;place-items:center}
-.key:active{background:var(--card2);transform:scale(.94)}
-.key.fn{background:transparent;border:none;font-size:15px;font-weight:700;color:var(--gray2)}
-.shake{animation:shake .34s}
-@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-9px)}40%{transform:translateX(9px)}60%{transform:translateX(-6px)}80%{transform:translateX(6px)}}
+.locklogo{position:relative;width:80px;height:80px;border-radius:22px;
+  background:linear-gradient(150deg,#4aa3ff 0%,#0a84ff 46%,#0052d6 100%);
+  display:grid;place-items:center;font-weight:900;color:#eef5ff;font-size:31px;letter-spacing:-.05em;margin-bottom:22px;
+  box-shadow:0 14px 38px rgba(12,110,255,.5),0 2px 6px rgba(0,0,0,.55),inset 0 1px 0 rgba(255,255,255,.4)}
+.locklogo::before{content:"";position:absolute;inset:-52px;z-index:-1;border-radius:50%;
+  background:radial-gradient(circle,rgba(40,125,255,.55) 0%,rgba(40,125,255,0) 70%);filter:blur(8px)}
+.locklogo::after{content:"";position:absolute;left:0;right:0;top:0;height:52%;border-radius:22px 22px 40% 40%;
+  background:linear-gradient(180deg,rgba(255,255,255,.42),rgba(255,255,255,0));opacity:.65;pointer-events:none}
+.lockbrand{font-size:27px;font-weight:800;letter-spacing:-.03em;color:#f5f8ff}
+.locksub{color:#9fb2d4;font-size:13.5px;margin-top:9px;font-weight:600;min-height:20px;letter-spacing:.01em;transition:color .2s}
+.locksub.err{color:#ff6b6b}
+.dots{display:flex;gap:18px;margin:30px 0 34px}
+.dot{width:14px;height:14px;border-radius:50%;background:rgba(255,255,255,.08);border:1.5px solid rgba(150,180,230,.45);
+  transition:transform .2s cubic-bezier(.2,.85,.25,1.4),background .2s,box-shadow .2s,border-color .2s}
+.dot.on{background:linear-gradient(150deg,#67b4ff,#0a84ff);border-color:#4aa8ff;transform:scale(1.2);
+  box-shadow:0 0 13px rgba(24,124,255,.8)}
+.keypad{display:grid;grid-template-columns:repeat(3,1fr);gap:20px 26px;width:100%;max-width:290px}
+.key{aspect-ratio:1;width:100%;max-width:80px;justify-self:center;border-radius:50%;
+  background:linear-gradient(160deg,rgba(255,255,255,.13),rgba(255,255,255,.03));
+  -webkit-backdrop-filter:blur(16px) saturate(1.4);backdrop-filter:blur(16px) saturate(1.4);
+  border:1px solid rgba(255,255,255,.15);color:#f2f6ff;font-size:29px;font-weight:500;letter-spacing:-.01em;
+  display:grid;place-items:center;
+  box-shadow:0 6px 18px rgba(0,0,0,.36),inset 0 1px 0 rgba(255,255,255,.2);
+  transition:transform .1s ease,background .1s,box-shadow .1s}
+.key:active{transform:scale(.9);
+  background:linear-gradient(160deg,rgba(120,175,255,.42),rgba(58,120,220,.24));
+  box-shadow:0 2px 10px rgba(20,90,200,.5),inset 0 1px 0 rgba(255,255,255,.28)}
+.key.fn{background:none;border:none;box-shadow:none;-webkit-backdrop-filter:none;backdrop-filter:none;font-size:22px;font-weight:500;color:#9fb2d4}
+.key.fn:active{transform:scale(.9);background:none;box-shadow:none;color:#dbe6fb}
+.shake{animation:shake .42s cubic-bezier(.36,.07,.19,.97)}
+@keyframes shake{0%,100%{transform:translateX(0)}15%{transform:translateX(-11px)}30%{transform:translateX(11px)}45%{transform:translateX(-8px)}60%{transform:translateX(8px)}75%{transform:translateX(-4px)}90%{transform:translateX(4px)}}
 .chooser{width:100%;display:flex;flex-direction:column;gap:14px;margin-top:6px}
 .profcard{display:flex;align-items:center;gap:15px;width:100%;text-align:left;border:1px solid var(--line2);border-radius:18px;padding:20px 18px;color:var(--white);background:linear-gradient(120deg,#0b1a2b,var(--card) 66%)}
 .profcard:active{transform:scale(.985)}
@@ -502,6 +553,34 @@ input.in,textarea.in,select.in{ background:var(--card2); border-color:rgba(255,2
 /* bottom tab bar, Apple dark */
 .tabbar{ background:rgba(10,10,12,.86); backdrop-filter:saturate(1.4) blur(18px); border-top:1px solid rgba(255,255,255,.08); }
 header{ background:rgba(0,0,0,.82); border-bottom:1px solid rgba(255,255,255,.07); }
+
+/* ================= v20 real estate: collapsible stages + simplified deal rows ================= */
+.collapse-head{ width:100%; display:flex; align-items:center; gap:13px; background:none; border:none; padding:16px 17px; text-align:left; color:var(--white); }
+.collapse-head:active{ background:rgba(255,255,255,.03); }
+.ch-left{ display:flex; align-items:center; gap:12px; min-width:0; flex:1; }
+.ch-dot{ width:11px; height:11px; border-radius:50%; flex:0 0 auto; }
+.ch-dot.c-red{background:var(--red)} .ch-dot.c-orange{background:var(--orange)} .ch-dot.c-green{background:var(--green)}
+.ch-dot.c-blue{background:var(--blue)} .ch-dot.c-purple{background:var(--purple)} .ch-dot.c-cyan{background:var(--cyan)}
+.ch-dot.c-pink{background:var(--pink)} .ch-dot.c-teal{background:var(--teal)}
+.ch-title{ font-size:16px; font-weight:800; letter-spacing:-.01em; color:var(--white); }
+.ch-sub{ font-size:12.5px; font-weight:600; color:var(--gray2); margin-top:2px; }
+.ch-chev{ flex:0 0 auto; width:28px; height:28px; border-radius:50%; background:var(--card2); color:var(--gray); display:grid; place-items:center; font-size:17px; font-weight:700; line-height:1; transition:transform .22s cubic-bezier(.2,.7,.2,1); }
+.ch-chev.open{ transform:rotate(90deg); }
+.collapse-body{ padding:0 12px 10px; }
+.dealwrap{ border-top:1px solid rgba(255,255,255,.06); }
+.deal-row{ width:100%; display:flex; align-items:center; gap:12px; background:none; border:none; padding:13px 5px; text-align:left; color:var(--white); }
+.deal-row:active{ opacity:.6; }
+.dl{ min-width:0; flex:1; }
+.dn{ font-size:15px; font-weight:700; letter-spacing:-.01em; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.dsub{ font-size:12px; color:var(--gray2); font-weight:600; margin-top:2px; }
+.dr{ display:flex; flex-direction:column; align-items:flex-end; gap:5px; flex:0 0 auto; }
+.dp{ font-size:14.5px; font-weight:800; color:var(--white); font-variant-numeric:tabular-nums; }
+.stpill{ font-size:10px; font-weight:800; letter-spacing:.03em; text-transform:uppercase; padding:3px 8px; border-radius:7px; white-space:nowrap; background:var(--card2); }
+.stpill.c-red{color:var(--red)} .stpill.c-orange{color:var(--orange)} .stpill.c-green{color:var(--green)}
+.stpill.c-blue{color:var(--blue)} .stpill.c-purple{color:var(--purple)} .stpill.c-cyan{color:var(--cyan)}
+.stpill.c-pink{color:var(--pink)} .stpill.c-teal{color:var(--teal)}
+.deal-detail{ padding:2px 5px 15px; border-top:1px solid rgba(255,255,255,.05); animation:slidein .2s ease; }
+.deal-detail .in{ margin-top:9px; }
 </style>
 </head>
 <body>
@@ -538,7 +617,7 @@ header{ background:rgba(0,0,0,.82); border-bottom:1px solid rgba(255,255,255,.07
 
 <main>
   <section class="tabpage" id="p-home"><div class="banner"><div>For full interactivity and saving, open this file in Safari.</div></div>
-    <div class="card"><div class="accent a-blue"></div><div class="cbody hero"><div class="hi">Welcome back, <span class="name">Ian</span></div><div class="date">Your daily brief</div><div class="focus">Today's workout, warm up then log your sets. Real estate, Sugar Creek neighbor letters.</div></div></div>
+    <div class="card"><div class="accent a-blue"></div><div class="cbody hero"><div class="hi">Welcome back, <span class="name">Ian</span></div><div class="date">Your daily brief</div><div class="focus">Today's workout, warm up then log your sets. Real estate, your follow ups for today.</div></div></div>
     <div class="sectlabel">Summary <span class="sub">today</span></div>
     <div class="grid2">
       <div class="card"><div class="cbody"><div class="between"><div class="st-label"><span class="st-ico c-orange"></span>Workout</div><div class="chev">›</div></div><div class="st-num c-orange"><span class="n">3/6</span> <span class="u">sets</span></div><div class="pbar"><i style="width:50%;background:var(--orange)"></i></div></div></div>
@@ -564,7 +643,7 @@ header{ background:rgba(0,0,0,.82); border-bottom:1px solid rgba(255,255,255,.07
     <div class="sectlabel">Focus timer</div>
     <div class="card"><div class="accent a-blue"></div><div class="cbody"><div class="timer"><div class="tt" id="focusTime">25:00</div><div class="tsub">Sessions today: 0</div><div class="trow"><button class="btn">Start</button><button class="btn ghost">Reset</button></div><div class="small dim" style="margin-top:12px">The timer needs JavaScript. Open this file in Safari to run it.</div></div></div></div>
     <div class="sectlabel">Pipeline</div>
-    <div class="card"><div class="accent a-blue"></div><div class="cbody"><div class="between"><h3>18734 Olive St, Sugar Creek</h3><span class="pill b">Just Sold</span></div><div class="small" style="color:var(--accent2);font-weight:700;margin-top:4px">$474,900</div></div></div>
+    <div class="card"><div class="cbody"><span class="pill b">Private</span><div class="small muted" style="margin-top:8px">Open this file in Safari to see the full pipeline, grouped by stage (Closed, Under contract, Active, Coming soon, Prospects) with prices, close dates, and notes. Client details load with JavaScript on and stay on this device.</div></div></div>
   </section>
   <section class="tabpage" id="p-gym">
     <div class="sectlabel">Warm up first</div>
@@ -596,7 +675,7 @@ header{ background:rgba(0,0,0,.82); border-bottom:1px solid rgba(255,255,255,.07
   <section class="tabpage" id="p-settings">
     <div class="backrow"><label class="btn ghost sm" for="t-home" style="display:inline-block">‹ Done</label></div>
     <div class="sectlabel">Profile</div>
-    <div class="card"><div class="cbody"><div class="small muted" style="margin-bottom:6px">Display name</div><input class="in" value="Ian"></div></div>
+    <div class="card"><div class="cbody"><div class="small muted" style="margin-bottom:6px">Display name</div><input class="in" value="Ian"><div class="small muted" style="margin:13px 0 6px">Contact number</div><input class="in" type="tel" value="402-591-1133"><div class="small dim" style="margin-top:12px">Signed in as Ian McCain  ·  402-591-1133</div></div></div>
     <div class="sectlabel">Data</div>
     <div class="card"><div class="cbody"><button class="btn ghost block" style="margin-top:0">Export backup</button></div></div>
   </section>
@@ -640,7 +719,7 @@ function seedIan(){
   const ex=(name,scheme)=>({id:uid(),name,scheme});
   return {
     meta:{app:"Ian Dashboard",version:15,lastSaved:null},
-    settings:{ name:"Ian", accent:"#2f6bff", accent2:"#6fa8ff", hidden:{} },
+    settings:{ name:"Ian", phone:"402-591-1133", accent:"#2f6bff", accent2:"#6fa8ff", hidden:{} },
     objectives:{re:"",gym:"",other:""},
     quickWin:{ items:["One prospecting call to a past client or lead","Log today's workout, every set","10 minutes of mobility or stretching","Third shot drop drill for 10 minutes","Post or prep one piece of content","Hit your first liter of water before noon","Send one check in text to a past client"], done:{} },
     gym:{
@@ -658,7 +737,7 @@ function seedIan(){
       ],
       logs:{}
     },
-    nutrition:{ profile:{height:"6'0\"",weight:"163.2 lb",phase:"Phase 1. Cut, about 20 days"}, targets:[{label:"Calories",value:"2,200 to 2,400"},{label:"Protein",value:"170 to 180 g"},{label:"Carbs",value:"220 to 270 g"},{label:"Fat floor",value:"60 to 70 g"},{label:"Rate",value:"about 1.6 lb / wk"}], water:{},
+    nutrition:{ profile:{height:"6'0\"",weight:"Log your weight",phase:"Phase 1. Cut, about 20 days"}, targets:[{label:"Calories",value:"2,200 to 2,400"},{label:"Protein",value:"170 to 180 g"},{label:"Carbs",value:"220 to 270 g"},{label:"Fat floor",value:"60 to 70 g"},{label:"Rate",value:"about 1.6 lb / wk"}], water:{},
       supplements:[{id:uid(),name:"Creatine monohydrate",dose:"3 to 5 g, any time",log:{}},{id:uid(),name:"Caffeine / pre workout",dose:"30 to 60 min pre, last dose 8 to 10 h before bed",log:{}},{id:uid(),name:"Whey protein",dose:"to hit daily protein",log:{}},{id:uid(),name:"Omega 3 fish oil",dose:"about 2 g EPA+DHA, with first meal",log:{}},{id:uid(),name:"Magnesium",dose:"nightly at bedtime",log:{}},{id:uid(),name:"Multivitamin",dose:"daily",log:{}},{id:uid(),name:"Vitamin D",dose:"1,000 to 2,000 IU",log:{}}] },
     realEstate:reSeed("ian"),
     routine:{ habits:[{id:uid(),name:"Creatine 3 to 5 g",log:{}},{id:uid(),name:"Weigh in, AM after restroom",log:{}},{id:uid(),name:"Hit protein target",log:{}},{id:uid(),name:"Water about 3 L",log:{}},{id:uid(),name:"Sleep 7 to 9 h",log:{}},{id:uid(),name:"10 min mobility / stretch",log:{}},{id:uid(),name:"Steps up, stay active",log:{}}],
@@ -667,40 +746,48 @@ function seedIan(){
       goals:[{id:uid(),text:"Sharpen for tournament play",done:false},{id:uid(),text:"Win the Monday night league",done:false},{id:uid(),text:"Tighten the third shot drop",done:false}],
       drills:[{id:uid(),text:"Third shot drop, 10 minutes"},{id:uid(),text:"Dinking cross court, control not power"},{id:uid(),text:"Reset from mid court under pressure"}],
       sessions:[{id:uid(),date:TODAY,kind:"Open play",note:"Plays 4 to 5x per week."}] },
-    goals:[{id:uid(),text:"Lean out about 4 to 4.5 lb before the Tennessee and Lake of the Ozarks trip",horizon:"Now",done:false},{id:uid(),text:"Build the Cinnamon Creek pipeline",horizon:"Now",done:false},{id:uid(),text:"Keep the plan sustainable and actually enjoy it",horizon:"Standing",done:false}],
+    goals:[{id:uid(),text:"Lean out about 4 to 4.5 lb before the an upcoming trip",horizon:"Now",done:false},{id:uid(),text:"Build a reliable pipeline",horizon:"Now",done:false},{id:uid(),text:"Keep the plan sustainable and actually enjoy it",horizon:"Standing",done:false}],
     todos:[{id:uid(),text:"Add to Home Screen on your iPhone for fullscreen",done:false},{id:uid(),text:"Add anything missing, then export a backup",done:false}],
     notes:"Scratchpad. Anything goes here.", ideas:[{id:uid(),text:"Daily agent reads this JSON, drops fresh ideas here",source:"ian",done:false}],
     context:{ forClaude:"", dailyLog:{} },
-    events:[{id:uid(),title:"Monday night pickleball league",date:nextDow(1),kind:"League"},{id:uid(),title:"Sugar Creek neighbor letters out",date:addDays(3),kind:"Real estate"},{id:uid(),title:"Tennessee and Lake of the Ozarks trip",date:addDays(18),kind:"Personal"}],
+    events:[{id:uid(),title:"Monday night pickleball league",date:nextDow(1),kind:"League"},{id:uid(),title:"Neighbor letters out",date:addDays(3),kind:"Real estate"},{id:uid(),title:"an upcoming trip",date:addDays(18),kind:"Personal"}],
     briefing:{ forIan:{ [TODAY]:[
       {id:uid(),type:"Pickleball",title:"Third shot drop drill",note:"Monday league is close. Ten minutes on your drop tightens the soft game.",url:"https://www.youtube.com/results?search_query=pickleball+third+shot+drop+drill",done:false},
       {id:uid(),type:"Supplement",title:"Creatine, timing barely matters",note:"Latest reviews say daily consistency beats timing. Keep the 3 to 5 g habit going.",url:"https://examine.com/supplements/creatine/",done:false},
-      {id:uid(),type:"Real estate",title:"Neighborhood farming with short reels",note:"Agents are winning listings with 20 second market updates for one subdivision. Try it on Sugar Creek.",url:"https://www.youtube.com/results?search_query=real+estate+neighborhood+farming+short+video",done:false},
+      {id:uid(),type:"Real estate",title:"Neighborhood farming with short reels",note:"Agents are winning listings with 20 second market updates for one subdivision. Try it on one subdivision.",url:"https://www.youtube.com/results?search_query=real+estate+neighborhood+farming+short+video",done:false},
       {id:uid(),type:"Recovery",title:"Protect your sleep before league",note:"One rough night can cut muscle protein synthesis about 18 percent. Aim 7 to 9 h.",url:"",done:false}
     ]}}
   };
 }
 function reSeed(who){
   if(who==="ian") return {
-    deals:[{id:uid(),title:"18734 Olive St, Sugar Creek",stage:"Just Sold",price:"$474,900",note:"Chris Spicer listing. 4 bed, 4 bath, about 3,090 finished sqft."},{id:uid(),title:"Cinnamon Creek prospecting",stage:"Prospecting",price:"",note:"Build the farm, mailers and door knock plan."}],
-    leads:[{id:uid(),name:"Zillow inquiry, 132nd St ranch",source:"Zillow",status:"New",note:"Wants a 3 bed under 400k in Millard."},{id:uid(),name:"Open house sign in, the Trails",source:"Open house",status:"Warm",note:"Following up Saturday."}],
-    todos:[{id:uid(),text:"Sugar Creek neighbor letters, verify door count (60 to 100)",done:false,due:addDays(3)},{id:uid(),text:"Cinnamon Creek prospecting mailer plan",done:false,due:addDays(5)},{id:uid(),text:"Follow up recent Sugar Creek buyers and leads",done:false,due:""}],
-    contacts:[{id:uid(),name:"Chris McCain",role:"Partner, The Scenic Group",detail:"50/50 partner. 10+ yrs experience."},{id:uid(),name:"NP Dodge",role:"Brokerage",detail:"402-659-4432. ian.mccain@npdodge.com"},{id:uid(),name:"Rose Creek Homes",role:"Builder partner",detail:"Mention only when content is about them."}],
-    neighborhoods:[{id:uid(),name:"Sugar Creek Addition",note:"68136, Sarpy, Millard schools. Active farm."},{id:uid(),name:"Cinnamon Creek",note:"Prospecting target."},{id:uid(),name:"Papillion / Elkhorn / Millard",note:"Core corridor."},{id:uid(),name:"Bellevue / Gretna / Bennington",note:"Surrounding metro."}],
-    marketNotes:"The Scenic Group. Ian & Chris McCain, NP Dodge, GPRMLS, Omaha metro.\n\nSource every stat. Do not blend Redfin, Zillow, Realtor.com. Verify comps in GPRMLS.",
-    routineTasks:[{id:uid(),text:"Check new GPRMLS listings and status changes"},{id:uid(),text:"Post or prep one piece of content"},{id:uid(),text:"Follow up one lead or past client"},{id:uid(),text:"Update the pipeline and next steps"}],
+    // PUBLIC BUILD. Generic sample pipeline only. No real client names, prices, or notes.
+    deals:[
+      {id:uid(),title:"123 Maple Street",stage:"Closed",price:"$425,000",close:"Last month",note:""},
+      {id:uid(),title:"456 Oak Avenue",stage:"Closed",price:"$310,000",close:"Last month",note:""},
+      {id:uid(),title:"789 Birch Lane",stage:"Under Contract",price:"$395,000",close:"Next month",note:""},
+      {id:uid(),title:"Sample active listing",stage:"Active",price:"$499,000",close:"On market now",note:""},
+      {id:uid(),title:"Sample coming soon",stage:"Coming Soon",price:"$350,000",close:"Lists soon",note:""},
+      {id:uid(),title:"New prospect",stage:"Prospecting",price:"",close:"",note:"Tap to edit. Your pipeline lives on your device."}
+    ],
+    leads:[{id:uid(),name:"Sample website inquiry",source:"Website",status:"New",note:"Add your real leads here."}],
+    todos:[{id:uid(),text:"Follow up with a new lead",done:false,due:""},{id:uid(),text:"Prep this week's listing",done:false,due:""},{id:uid(),text:"Update the pipeline and next steps",done:false,due:""}],
+    contacts:[{id:uid(),name:"Add your key contacts here",role:"",detail:""}],
+    neighborhoods:[{id:uid(),name:"Add a target neighborhood",note:""}],
+    marketNotes:"Your weekly numbers, comps, and notes go here.",
+    routineTasks:[{id:uid(),text:"Check new listings and status changes"},{id:uid(),text:"Post or prep one piece of content"},{id:uid(),text:"Follow up one lead or past client"},{id:uid(),text:"Update the pipeline and next steps"}],
     metrics:{ targets:{calls:10,appointments:2,doors:20}, log:{} }, focus:{ minutes:25, count:{} },
-    scripts:[{id:uid(),title:"Just Sold neighbor call",body:"Hi [name], Ian with The Scenic Group. We just sold a home over on Olive in Sugar Creek and homes in your area are moving. If you have ever wondered what yours is worth, I can send a quick honest read, no pressure."},{id:uid(),title:"Cinnamon Creek prospecting",body:"Hi [name], Ian McCain here. We are focusing on Cinnamon Creek right now and have buyers looking. If you have thought about selling, I would love to give you a straight read on your value. No pressure, straight answers."}],
-    goals:[{id:uid(),text:"10 prospecting calls a day",done:false},{id:uid(),text:"Two new listings this month",done:false},{id:uid(),text:"Build Cinnamon Creek into a reliable farm",done:false}]
+    scripts:[{id:uid(),title:"Just listed / just sold call",body:"Hi [name], this is [your name]. We just [listed / sold] a home in your area and homes nearby are moving. If you have ever wondered what yours is worth, I can send a quick honest read, no pressure."},{id:uid(),title:"Prospecting intro",body:"Hi [name], [your name] here. We have buyers looking in your neighborhood right now. If you have thought about selling, I would love to give you a straight read on your value. No pressure, straight answers."}],
+    goals:[{id:uid(),text:"10 prospecting calls a day",done:false},{id:uid(),text:"Two new listings this month",done:false},{id:uid(),text:"Build a reliable farm area",done:false}]
   };
   // chris starter, real estate forward, mostly blank for him to fill
   return {
     deals:[{id:uid(),title:"Add your first deal",stage:"Prospecting",price:"",note:"Tap to edit. Your pipeline lives here."}],
     leads:[],
     todos:[{id:uid(),text:"Set up my pipeline and leads",done:false,due:""},{id:uid(),text:"Call three past clients",done:false,due:""}],
-    contacts:[{id:uid(),name:"Ian McCain",role:"Partner, The Scenic Group",detail:"Son and 50/50 partner. Social, content, photo and video."},{id:uid(),name:"NP Dodge",role:"Brokerage",detail:"402-659-4432."}],
-    neighborhoods:[{id:uid(),name:"Sugar Creek Addition",note:"Shared farm with Ian."},{id:uid(),name:"Cinnamon Creek",note:"Prospecting target."}],
-    marketNotes:"Chris McCain workspace. The Scenic Group, NP Dodge, GPRMLS, Omaha metro. Drop your notes and numbers here.",
+    contacts:[{id:uid(),name:"Add your key contacts here",role:"",detail:""}],
+    neighborhoods:[{id:uid(),name:"Add a target neighborhood",note:""}],
+    marketNotes:"Your workspace. Drop your notes and numbers here.",
     routineTasks:[{id:uid(),text:"Check new listings and status changes"},{id:uid(),text:"Follow up one lead or past client"},{id:uid(),text:"Update the pipeline"}],
     metrics:{ targets:{calls:10,appointments:2,doors:15}, log:{} }, focus:{ minutes:25, count:{} },
     scripts:[{id:uid(),title:"Past client check in",body:"Hi [name], Chris McCain with The Scenic Group. Just checking in. If you or anyone you know is thinking about a move, I would love to help. No pressure, straight answers."}],
@@ -819,15 +906,74 @@ function focusComplete(){ focusObj.running=false; clearInterval(focusObj.timerId
 function focusTimerCard(parent){ if(focusObj.remaining==null) focusObj.remaining=focusDur(); const fc=card("a-blue"); const fb=fc._body; const tim=el("div","timer"); const tt=el("div","tt"); tt.id="focusTime"; tt.textContent=fmtTime(focusObj.remaining); tim.appendChild(tt); const cnt=((state.realEstate.focus&&state.realEstate.focus.count&&state.realEstate.focus.count[TODAY])||0); tim.appendChild(el("div","tsub","Sessions today: "+cnt+"  ·  "+((state.realEstate.focus.minutes)||25)+" min blocks")); const trow=el("div","trow"); const startBtn=el("button","btn",focusObj.running?"Pause":"Start"); startBtn.onclick=()=> focusObj.running?focusPause():focusStart(); const resetBtn=el("button","btn ghost","Reset"); resetBtn.onclick=focusReset; trow.appendChild(startBtn); trow.appendChild(resetBtn); tim.appendChild(trow); const durc=el("div"); durc.style.marginTop="14px"; durc.appendChild(chipRow(["15","25","45"],String((state.realEstate.focus.minutes)||25),m=>{ state.realEstate.focus.minutes=parseInt(m,10); if(!focusObj.running)focusObj.remaining=focusDur(); save(); render(); })); tim.appendChild(durc); fb.appendChild(tim); parent.appendChild(fc); }
 
 /* ===== real estate modules (shared by Ian and Chris) ===== */
-const RESTAGES=["Prospecting","Active","Under Contract","Just Sold","Closed","Follow up"];
+const RESTAGES=["Prospecting","Coming Soon","Active","Under Contract","Just Sold","Closed","Follow up"];
 function metricsModule(parent){ const m=state.realEstate.metrics; if(!m.log)m.log={}; if(!m.log[TODAY])m.log[TODAY]={calls:0,appointments:0,listings:0,doors:0}; const day=m.log[TODAY]; const tg=m.targets||{calls:10,appointments:2,doors:20}; const c=card(); const b=c._body; const rows=[["calls","Calls",tg.calls],["appointments","Appointments",tg.appointments],["doors","Doors knocked",tg.doors],["listings","Listings taken",null]]; rows.forEach(([key,label,target])=>{ const r=el("div","mrow"); const l=el("div","ml"); l.appendChild(document.createTextNode(label)); if(target!=null){ l.appendChild(el("small",null,"target "+target)); } r.appendChild(l); r.appendChild(stepper(()=>day[key]||0,(nv)=>{ day[key]=nv; })); b.appendChild(r); }); parent.appendChild(c); }
 function objectiveCard(parent,hub,acc){ const c=card(acc); const b=c._body; b.appendChild(el("div","small muted","Today's objective")); const oa=el("div"); oa.style.fontSize="17px"; oa.style.fontWeight="800"; oa.style.margin="7px 0 0"; oa.textContent=autoObjective(hub); b.appendChild(oa); const ta=el("textarea","in"); ta.style.minHeight="50px"; ta.style.marginTop="11px"; ta.placeholder="Add your own focus for today..."; ta.value=(state.objectives&&state.objectives[hub])||""; ta.oninput=()=>{ if(!state.objectives)state.objectives={}; state.objectives[hub]=ta.value; save(); }; b.appendChild(ta); parent.appendChild(c); }
+/* ===== v19 grouped pipeline (stage groups, close date field, volume subheaders) ===== */
+function priceNum(s){ const m=String(s||"").replace(/,/g,"").match(/\d+(\.\d+)?/); return m?parseFloat(m[0]):0; }
+function fmtMoney(n){ try{ return "$"+Math.round(n).toLocaleString("en-US"); }catch(e){ return "$"+Math.round(n); } }
+function dealCard(parent,d){ const c=card(); const b=c._body; const head=el("div"); head.appendChild(el("h3",null,d.title)); if(d.price){ const p=el("div"); p.style.color="var(--sec2,var(--accent2))"; p.style.fontWeight="800"; p.style.marginTop="4px"; p.style.fontSize="16px"; p.textContent=d.price; head.appendChild(p);} if(d.close){ const cd=el("div","small dim"); cd.style.marginTop="3px"; cd.textContent="Close: "+d.close; head.appendChild(cd);} b.appendChild(head); const cs=el("div"); cs.style.marginTop="11px"; cs.appendChild(chipRow(RESTAGES,d.stage,s=>{d.stage=s;save();render();})); b.appendChild(cs); const pr=el("input","in"); pr.placeholder="Price"; pr.value=d.price||""; pr.style.marginTop="10px"; pr.oninput=()=>{d.price=pr.value;save();}; b.appendChild(pr); const cl=el("input","in"); cl.placeholder="Close date"; cl.value=d.close||""; cl.style.marginTop="9px"; cl.oninput=()=>{ d.close=cl.value; save(); }; b.appendChild(cl); const ta=el("textarea","in"); ta.style.minHeight="52px"; ta.style.marginTop="9px"; ta.value=d.note||""; ta.placeholder="Notes, next step..."; ta.oninput=()=>{d.note=ta.value;save();}; b.appendChild(ta); const del=el("button","del","Remove"); del.style.fontSize="13px"; del.style.marginTop="8px"; del.onclick=()=>{ if(confirm("Remove this deal?")){ state.realEstate.deals=state.realEstate.deals.filter(x=>x.id!==d.id); save(); render(); } }; b.appendChild(del); parent.appendChild(c); }
+function pipelineSummary(parent){ const deals=state.realEstate.deals||[]; const by=st=>deals.filter(d=>d.stage===st); const vol=arr=>arr.reduce((a,d)=>a+priceNum(d.price),0); const closed=by("Closed"), uc=by("Under Contract"), act=by("Active"), cs=by("Coming Soon"), pr=by("Prospecting"); sect(parent,"Pipeline","counts and volume"); summaryGrid(parent,[ statTile({label:"Closed",color:"green",value:closed.length,unit:closed.length===1?"deal":"deals",sub:fmtMoney(vol(closed))+" volume"}), statTile({label:"Under contract",color:"blue",value:uc.length,unit:"pending",sub:fmtMoney(vol(uc))+" pending"}), statTile({label:"Active",color:"orange",value:act.length,unit:act.length===1?"listing":"listings",sub:fmtMoney(vol(act))}), statTile({label:"Coming soon",color:"purple",value:cs.length,unit:"this week",sub:"Listing soon"}), statTile({label:"Prospects",color:"pink",value:pr.length,unit:"leads",sub:"Future listings"}) ]); }
+function reGroupedPipeline(parent){ const deals=state.realEstate.deals||[]; const GROUPS=[["Closed","Closed"],["Under Contract","Under contract / pending"],["Active","Active listings"],["Coming Soon","Coming soon"],["Prospecting","Prospects"],["Just Sold","Just sold"],["Follow up","Follow up"]]; const seen={}; GROUPS.forEach(function(g){ const stage=g[0],label=g[1]; const gd=deals.filter(d=>d.stage===stage); if(!gd.length) return; gd.forEach(d=>seen[d.id]=1); const vol=gd.reduce((a,d)=>a+priceNum(d.price),0); sect(parent,label,gd.length+(vol?"  ·  "+fmtMoney(vol):"")); gd.forEach(d=>dealCard(parent,d)); }); const rest=deals.filter(d=>!seen[d.id]); if(rest.length){ sect(parent,"Other",String(rest.length)); rest.forEach(d=>dealCard(parent,d)); } const add=card(); add._body.appendChild(adder("New deal or prospect...",t=>{state.realEstate.deals.push({id:uid(),title:t,stage:"Prospecting",price:"",close:"",note:""});save();render();})); parent.appendChild(add); }
 function rePipeline(parent){ state.realEstate.deals.forEach(d=>{ const c=card(d.stage==="Just Sold"?"a-blue":"a-gold"); const b=c._body; const head=el("div"); head.appendChild(el("h3",null,d.title)); if(d.price){ const p=el("div","small"); p.style.color="var(--accent2)"; p.style.fontWeight="700"; p.textContent=d.price; head.appendChild(p);} b.appendChild(head); const cs=el("div"); cs.style.marginTop="10px"; cs.appendChild(chipRow(RESTAGES,d.stage,s=>{d.stage=s;save();render();})); b.appendChild(cs); const pr=el("input","in"); pr.placeholder="Price (optional)"; pr.value=d.price||""; pr.style.marginTop="10px"; pr.oninput=()=>{d.price=pr.value;save();}; b.appendChild(pr); const ta=el("textarea","in"); ta.style.minHeight="52px"; ta.style.marginTop="10px"; ta.value=d.note||""; ta.placeholder="Notes, next step..."; ta.oninput=()=>{d.note=ta.value;save();}; b.appendChild(ta); const del=el("button","del","Remove"); del.style.fontSize="13px"; del.style.marginTop="8px"; del.onclick=()=>{ if(confirm("Remove this deal?")){ state.realEstate.deals=state.realEstate.deals.filter(x=>x.id!==d.id); save(); render(); } }; b.appendChild(del); parent.appendChild(c); }); const add=card(); add._body.appendChild(adder("New deal or prospect...",t=>{state.realEstate.deals.push({id:uid(),title:t,stage:"Prospecting",price:"",note:""});save();render();})); parent.appendChild(add); }
 function leadsModule(parent){ const c=card(); const b=c._body; const ls=state.realEstate.leads||(state.realEstate.leads=[]); if(!ls.length)b.appendChild(el("div","empty","No leads yet.")); ls.forEach(l=>{ const row=el("div","chk"); const t=el("div","ctext"); t.textContent=l.name; const m=el("span","meta"); m.textContent=(l.source?l.source+" · ":"")+(l.status||"New")+(l.note?" · "+l.note:""); t.appendChild(m); row.appendChild(t); const d=el("button","del","×"); d.onclick=()=>{ state.realEstate.leads=ls.filter(x=>x.id!==l.id); save(); render(); }; row.appendChild(d); b.appendChild(row); }); b.appendChild(adder("Add a lead...",n=>{ ls.push({id:uid(),name:n,source:"",status:"New",note:""}); save(); render(); })); parent.appendChild(c); }
 function reTodos(parent){ const c=card(); const b=c._body; const rt=state.realEstate.todos; if(!rt.length)b.appendChild(el("div","empty","Nothing yet.")); rt.forEach(t=>{ b.appendChild(checkItem(t.done,t.text,t.due?dueLabel(t.due):null,()=>{t.done=!t.done;save();render();},()=>{state.realEstate.todos=rt.filter(x=>x.id!==t.id);save();render();})); }); const inp=el("input","in"); inp.placeholder="Add a follow up..."; inp.setAttribute("data-add","Add a follow up..."); const dt=el("input","in"); dt.type="date"; dt.style.marginTop="9px"; const btn=el("button","btn block","Add task"); btn.onclick=()=>{ const v=inp.value.trim(); if(!v)return; pendingFocus="Add a follow up..."; rt.push({id:uid(),text:v,done:false,due:dt.value||""}); save(); render(); }; const wrap=el("div"); wrap.style.marginTop="12px"; wrap.appendChild(inp); wrap.appendChild(dt); wrap.appendChild(btn); b.appendChild(wrap); parent.appendChild(c); }
 function reContacts(parent){ const c=card(); const b=c._body; state.realEstate.contacts.forEach(k=>{ const row=el("div","chk"); const t=el("div","ctext"); t.textContent=k.name; const m=el("span","meta"); m.textContent=(k.role?k.role+". ":"")+(k.detail||""); t.appendChild(m); row.appendChild(t); const d=el("button","del","×"); d.onclick=()=>{state.realEstate.contacts=state.realEstate.contacts.filter(x=>x.id!==k.id);save();render();}; row.appendChild(d); b.appendChild(row); }); b.appendChild(adder("Add a contact...",n=>{state.realEstate.contacts.push({id:uid(),name:n,role:"",detail:""});save();render();})); parent.appendChild(c); }
 function reNeigh(parent){ const c=card(); const b=c._body; state.realEstate.neighborhoods.forEach(n=>{ const row=el("div","chk"); const t=el("div","ctext"); t.textContent=n.name; const m=el("span","meta"); m.textContent=n.note||""; t.appendChild(m); row.appendChild(t); const d=el("button","del","×"); d.onclick=()=>{state.realEstate.neighborhoods=state.realEstate.neighborhoods.filter(x=>x.id!==n.id);save();render();}; row.appendChild(d); b.appendChild(row); }); b.appendChild(adder("Add a neighborhood...",n=>{state.realEstate.neighborhoods.push({id:uid(),name:n,note:""});save();render();})); parent.appendChild(c); }
 function scriptsModule(parent){ (state.realEstate.scripts||[]).forEach(s=>{ const c=card(); const b=c._body; const head=el("div","between"); head.appendChild(el("h3",null,s.title)); const del=el("button","del","×"); del.onclick=()=>{ state.realEstate.scripts=state.realEstate.scripts.filter(x=>x.id!==s.id); save(); render(); }; head.appendChild(del); b.appendChild(head); const ta=el("textarea","in"); ta.style.minHeight="90px"; ta.style.marginTop="9px"; ta.value=s.body||""; ta.oninput=()=>{ s.body=ta.value; save(); }; b.appendChild(ta); parent.appendChild(c); }); const add=card(); add._body.appendChild(adder("New script title...",t=>{ state.realEstate.scripts.push({id:uid(),title:t,body:"Write your script here."}); save(); render(); })); parent.appendChild(add); }
+
+/* ===== v20 real estate: collapsible stages, simplified deals, grouped secondary tools ===== */
+const STAGE_COL={ "Closed":"green","Under Contract":"blue","Active":"orange","Coming Soon":"purple","Prospecting":"pink","Just Sold":"teal","Follow up":"cyan" };
+const RE_GROUPS=[["Under Contract","Under contract / pending"],["Coming Soon","Coming soon"],["Active","Active listings"],["Closed","Closed"],["Prospecting","Prospects"],["Just Sold","Just sold"],["Follow up","Follow up"]];
+let reStageOpen={ "Under Contract":true,"Coming Soon":true,"Active":true,"Closed":false,"Prospecting":false,"Just Sold":false,"Follow up":false,"Other":false };
+let reDealOpen={};
+let reToolOpen={};
+function stagePill(stage){ return el("span","stpill c-"+(STAGE_COL[stage]||"blue"),stage); }
+function dealEditors(parent,d){
+  parent.appendChild(chipRow(RESTAGES,d.stage,s=>{ d.stage=s; save(); render(); }));
+  const pr=el("input","in"); pr.placeholder="Price"; pr.value=d.price||""; pr.oninput=()=>{ d.price=pr.value; save(); }; parent.appendChild(pr);
+  const cl=el("input","in"); cl.placeholder="Close date"; cl.value=d.close||""; cl.oninput=()=>{ d.close=cl.value; save(); }; parent.appendChild(cl);
+  const ta=el("textarea","in"); ta.style.minHeight="52px"; ta.value=d.note||""; ta.placeholder="Notes, next step..."; ta.oninput=()=>{ d.note=ta.value; save(); }; parent.appendChild(ta);
+  const del=el("button","del","Remove deal"); del.style.fontSize="13px"; del.style.marginTop="10px"; del.onclick=()=>{ if(confirm("Remove this deal?")){ state.realEstate.deals=state.realEstate.deals.filter(x=>x.id!==d.id); delete reDealOpen[d.id]; save(); render(); } }; parent.appendChild(del);
+}
+function dealRow(parent,d){
+  const wrap=el("div","dealwrap");
+  const row=el("button","deal-row");
+  const left=el("div","dl"); left.appendChild(el("div","dn",d.title)); if(d.close)left.appendChild(el("div","dsub",d.close)); row.appendChild(left);
+  const right=el("div","dr"); if(d.price)right.appendChild(el("div","dp",d.price)); right.appendChild(stagePill(d.stage)); row.appendChild(right);
+  row.onclick=()=>{ reDealOpen[d.id]=!reDealOpen[d.id]; render(); };
+  wrap.appendChild(row);
+  if(reDealOpen[d.id]){ const det=el("div","deal-detail"); dealEditors(det,d); wrap.appendChild(det); }
+  parent.appendChild(wrap);
+}
+function collapseGroup(parent,stage,label,gd,vol){
+  const open=!!reStageOpen[stage];
+  const c=card(); c._body.style.padding="0";
+  const head=el("button","collapse-head");
+  const lft=el("div","ch-left"); lft.appendChild(el("span","ch-dot c-"+(STAGE_COL[stage]||"blue")));
+  const tt=el("div"); tt.appendChild(el("div","ch-title",label)); tt.appendChild(el("div","ch-sub",gd.length+(gd.length===1?" deal":" deals")+(vol?"  ·  "+fmtMoney(vol):""))); lft.appendChild(tt);
+  head.appendChild(lft); head.appendChild(el("span","ch-chev"+(open?" open":""),"›"));
+  head.onclick=()=>{ reStageOpen[stage]=!open; render(); };
+  c._body.appendChild(head);
+  if(open){ const body=el("div","collapse-body"); gd.forEach(d=>dealRow(body,d)); c._body.appendChild(body); }
+  parent.appendChild(c);
+}
+function rePipelineGrouped(parent){
+  const deals=state.realEstate.deals||[]; const seen={};
+  RE_GROUPS.forEach(function(g){ const stage=g[0],label=g[1]; const gd=deals.filter(d=>d.stage===stage); if(!gd.length)return; gd.forEach(d=>seen[d.id]=1); const vol=gd.reduce((a,d)=>a+priceNum(d.price),0); collapseGroup(parent,stage,label,gd,vol); });
+  const rest=deals.filter(d=>!seen[d.id]); if(rest.length){ collapseGroup(parent,"Other","Other",rest,rest.reduce((a,d)=>a+priceNum(d.price),0)); }
+  const add=card(); add._body.appendChild(adder("New deal or prospect...",t=>{ state.realEstate.deals.push({id:uid(),title:t,stage:"Prospecting",price:"",close:"",note:""}); reStageOpen["Prospecting"]=true; save(); render(); })); parent.appendChild(add);
+}
+function collapseTool(parent,title,sub,buildFn){
+  const open=!!reToolOpen[title];
+  const c=card(); c._body.style.padding="0";
+  const head=el("button","collapse-head");
+  const lft=el("div","ch-left"); const tt=el("div"); tt.appendChild(el("div","ch-title",title)); if(sub)tt.appendChild(el("div","ch-sub",sub)); lft.appendChild(tt);
+  head.appendChild(lft); head.appendChild(el("span","ch-chev"+(open?" open":""),"›"));
+  head.onclick=()=>{ reToolOpen[title]=!open; render(); };
+  c._body.appendChild(head); parent.appendChild(c);
+  if(open){ safe(parent,buildFn,title); }
+}
 
 /* ===== IAN pages ===== */
 function buildIanHome(v){ const workout=daySplit(DOW); const reTop=firstUndone(state.realEstate.todos); const nm=(state.settings&&state.settings.name)||"Ian";
@@ -841,7 +987,29 @@ function buildIanHome(v){ const workout=daySplit(DOW); const reTop=firstUndone(s
   sect(v,"Upcoming"); safe(v,()=>eventsModule(v),"Events");
 }
 function buildBrief(v){ sect(v,"Quick win","resets daily"); quickWinCard(v); const _clsec=sect(v,"Today from Claude","sync brief"); _clsec.insertBefore(claudeAvatar("av-md chip"), _clsec.firstChild); { const sc=card(); const sbt=el("button","btn ghost block","Load today\u2019s brief"); sbt.style.marginTop="0"; sbt.onclick=()=>{ const bf=document.getElementById("briefFile"); if(bf)bf.click(); }; const hint=el("div","small dim"); hint.style.marginTop="9px"; hint.textContent="Pick daily_brief.json to merge today\u2019s items. Your other data stays."; sc._body.appendChild(sbt); sc._body.appendChild(hint); v.appendChild(sc); } const items=briefItems(); if(!items.length){ const c=card(); c._body.appendChild(el("div","empty","No briefing yet for today. Your daily agent will add items here.")); v.appendChild(c); } else { items.forEach(it=>v.appendChild(briefCard(it))); v.appendChild(el("div","notice","Example items. Your daily agent will replace these each morning.")); } sect(v,"Upcoming"); safe(v,()=>eventsModule(v),"Events"); }
-function buildIanRe(v){ objectiveCard(v,"re","a-blue"); safe(v,()=>{ const m=(state.realEstate.metrics&&state.realEstate.metrics.log&&state.realEstate.metrics.log[TODAY])||{}; const tg=(state.realEstate.metrics&&state.realEstate.metrics.targets)||{calls:10,appointments:2,doors:20}; const fc=((state.realEstate.focus&&state.realEstate.focus.count&&state.realEstate.focus.count[TODAY])||0); sect(v,"Summary","today"); summaryGrid(v,[ fracTile({label:"Calls",color:"green",done:m.calls||0,goal:tg.calls||10}), fracTile({label:"Appointments",color:"blue",done:m.appointments||0,goal:tg.appointments||2}), fracTile({label:"Doors",color:"orange",done:m.doors||0,goal:tg.doors||20}), fracTile({label:"Focus",color:"purple",done:fc,goal:4,unit:"blocks"}) ]); },"RE summary"); sect(v,"Focus timer"); safe(v,()=>focusTimerCard(v),"Timer"); sect(v,"Today's activity"); safe(v,()=>metricsModule(v),"Metrics"); sect(v,"Goals"); safe(v,()=>goalsList(v,state.realEstate.goals||(state.realEstate.goals=[])),"RE goals"); sect(v,"Pipeline and deals"); safe(v,()=>rePipeline(v),"Pipeline"); sect(v,"Leads"); safe(v,()=>leadsModule(v),"Leads"); sect(v,"Follow ups and tasks"); safe(v,()=>reTodos(v),"Follow ups"); sect(v,"Key contacts"); safe(v,()=>reContacts(v),"Contacts"); if(!hidden("neighborhoods")){ sect(v,"Neighborhoods and farm"); safe(v,()=>reNeigh(v),"Neighborhoods"); } if(!hidden("scripts")){ sect(v,"Quick scripts"); safe(v,()=>scriptsModule(v),"Scripts"); } sect(v,"Market notes"); safe(v,()=>textNotes(v,()=>state.realEstate.marketNotes,x=>state.realEstate.marketNotes=x,"Weekly numbers, comps, notes...",130),"RE notes"); }
+function buildIanRe(v){
+  objectiveCard(v,"re","a-blue");
+  /* Pipeline is the clear focus: Apple stat tiles, then collapsible stages */
+  safe(v,()=>pipelineSummary(v),"Pipeline stats");
+  sect(v,"Pipeline by stage","tap a stage to expand");
+  safe(v,()=>rePipelineGrouped(v),"Pipeline");
+  /* Compact today strip: focus timer, activity counter, follow ups */
+  sect(v,"Today","focus, activity, follow ups");
+  safe(v,()=>focusTimerCard(v),"Timer");
+  safe(v,()=>metricsModule(v),"Metrics");
+  safe(v,()=>reTodos(v),"Follow ups");
+  /* Goals */
+  sect(v,"Goals");
+  safe(v,()=>goalsList(v,state.realEstate.goals||(state.realEstate.goals=[])),"RE goals");
+  /* Secondary tools tucked into collapsible sections */
+  sect(v,"More tools","leads, contacts, farm, scripts, notes");
+  const leads=(state.realEstate.leads||[]);
+  collapseTool(v,"Leads",leads.length?(leads.length+(leads.length===1?" lead":" leads")):"none yet",()=>leadsModule(v));
+  collapseTool(v,"Key contacts","",()=>reContacts(v));
+  if(!hidden("neighborhoods")) collapseTool(v,"Neighborhoods & farm","",()=>reNeigh(v));
+  if(!hidden("scripts")) collapseTool(v,"Quick scripts","",()=>scriptsModule(v));
+  collapseTool(v,"Market notes","",()=>textNotes(v,()=>state.realEstate.marketNotes,x=>state.realEstate.marketNotes=x,"Weekly numbers, comps, notes...",130));
+}
 let gymDayIdx=DOW;
 let gymShowWeek=false;
 function gymWeek(v){ (state.gym.split||[]).forEach(function(d,i){ const c=card(i===DOW?"a-blue":null); const b=c._body; const top=el("div","between"); top.appendChild(el("h3",null,d.day+", "+cleanFocus(d.focus))); top.appendChild(el("span","pill b",d.play)); b.appendChild(top); if(d.note){ const n=el("div","small muted"); n.style.margin="5px 0 4px"; n.textContent=d.note; b.appendChild(n); } (d.exercises||[]).forEach(function(e){ const row=el("div","ex"); row.appendChild(el("span","exname",e.name)); row.appendChild(el("span","scheme",e.scheme)); b.appendChild(row); }); v.appendChild(c); }); }
@@ -905,7 +1073,8 @@ function applyAccent(){ try{ const a=(state.settings&&state.settings.accent)||"#
 function buildSettings(v){
   const backc=el("div","backrow"); const back=el("label","btn ghost sm"); back.setAttribute("for","t-home"); back.style.display="inline-block"; back.textContent="‹ Done"; backc.appendChild(back); v.appendChild(backc);
   sect(v,"Profile"); const pc=card(); pc._body.appendChild(el("div","small muted","Display name")); pc._body.firstChild.style.marginBottom="6px"; const nin=el("input","in"); nin.value=(state.settings&&state.settings.name)||""; nin.placeholder="Your name"; nin.oninput=()=>{ state.settings.name=nin.value; save(); }; pc._body.appendChild(nin);
-  const who=el("div","small dim"); who.style.marginTop="10px"; who.textContent="Signed in as "+(profile==="chris"?"Chris McCain":"Ian McCain"); pc._body.appendChild(who); v.appendChild(pc);
+  const phl=el("div","small muted","Contact number"); phl.style.margin="13px 0 6px"; pc._body.appendChild(phl); const phin=el("input","in"); phin.type="tel"; phin.placeholder="Your phone"; phin.value=(state.settings&&state.settings.phone)||(profile==="chris"?"":"402-591-1133"); if(state.settings&&!state.settings.phone&&profile!=="chris"){ state.settings.phone="402-591-1133"; } phin.oninput=()=>{ state.settings.phone=phin.value; save(); }; pc._body.appendChild(phin);
+  const who=el("div","small dim"); who.style.marginTop="12px"; who.textContent="Signed in as "+(profile==="chris"?"Chris McCain":"Ian McCain")+(state.settings&&state.settings.phone?"  ·  "+state.settings.phone:""); pc._body.appendChild(who); v.appendChild(pc);
   sect(v,"Accent color"); const ac=card(); ac._body.appendChild(el("div","small muted","Defaults to blue.")); ac._body.firstChild.style.marginBottom="8px"; const sw=el("div","swatches"); ACCENTS.forEach(pair=>{ const s=el("div","sw"+(state.settings.accent===pair[0]?" on":"")); s.style.background=pair[0]; s.onclick=()=>{ state.settings.accent=pair[0]; state.settings.accent2=pair[1]; applyAccent(); save(); render(); }; sw.appendChild(s); }); ac._body.appendChild(sw); v.appendChild(ac);
   sect(v,"Show or hide"); const hc=card(); const hb=hc._body; const toggles=[["neighborhoods","Neighborhoods"],["scripts","Quick scripts"],["ideas","Ideas and notes"]]; toggles.forEach(([key,label])=>{ const r=el("div","mrow"); r.appendChild(el("div","ml",label)); const tg=el("div","toggle"+(!hidden(key)?" on":"")); tg.onclick=()=>{ if(!state.settings.hidden)state.settings.hidden={}; if(hidden(key))delete state.settings.hidden[key]; else state.settings.hidden[key]=true; save(); render(); }; r.appendChild(tg); hb.appendChild(r); }); v.appendChild(hc);
   sect(v,"Account"); const acc=card(); const ab=acc._body; const lk=el("button","btn ghost block","Lock now"); lk.style.marginTop="0"; lk.onclick=()=>{ lockNow(); }; ab.appendChild(lk); v.appendChild(acc);
@@ -932,10 +1101,10 @@ let entered="";
 function buildKeypad(){ const kp=document.getElementById("keypad"); if(!kp||kp._built)return; kp._built=true; const keys=["1","2","3","4","5","6","7","8","9","","0","del"];
   keys.forEach(k=>{ if(k===""){ kp.appendChild(el("div")); return; } const b=el("button","key"+(k==="del"?" fn":"")); b.textContent=k==="del"?"⌫":k; b.onclick=()=> k==="del"?padDel():padPress(k); kp.appendChild(b); }); }
 function updateDots(){ const dots=document.querySelectorAll("#lockDots .dot"); dots.forEach((d,i)=>d.classList.toggle("on",i<entered.length)); }
-function padPress(d){ if(entered.length>=4)return; entered+=d; updateDots(); if(entered.length===4) setTimeout(checkCode,140); }
+function padPress(d){ if(entered.length>=4)return; const sub=document.getElementById("lockSub"); if(sub){ sub.classList.remove("err"); if(sub.textContent!=="Enter passcode")sub.textContent="Enter passcode"; } entered+=d; updateDots(); if(entered.length===4) setTimeout(checkCode,150); }
 function padDel(){ entered=entered.slice(0,-1); updateDots(); }
-function checkCode(){ if(entered===PASSCODE){ unlockApp(); } else { const inner=document.querySelector(".lockinner"); if(inner){ inner.classList.add("shake"); setTimeout(()=>inner.classList.remove("shake"),360);} document.getElementById("lockSub").textContent="Wrong passcode, try again"; entered=""; updateDots(); } }
-function showKeypad(){ const pad=document.getElementById("lockPad"); if(pad)pad.style.display="block"; entered=""; updateDots(); const sub=document.getElementById("lockSub"); if(sub)sub.textContent="Enter passcode"; }
+function checkCode(){ if(entered===PASSCODE){ unlockApp(); } else { const inner=document.querySelector(".lockinner"); if(inner){ inner.classList.remove("shake"); void inner.offsetWidth; inner.classList.add("shake"); setTimeout(()=>inner.classList.remove("shake"),440);} const sub=document.getElementById("lockSub"); if(sub){ sub.textContent="Wrong passcode, try again"; sub.classList.add("err"); } entered=""; updateDots(); } }
+function showKeypad(){ const pad=document.getElementById("lockPad"); if(pad)pad.style.display="block"; entered=""; updateDots(); const sub=document.getElementById("lockSub"); if(sub){ sub.textContent="Enter passcode"; sub.classList.remove("err"); } }
 function unlockApp(){ try{ sess.set("ianDash.session",JSON.stringify({unlocked:1})); }catch(e){} const l=document.getElementById("lock"); if(l)l.style.display="none"; selectTab("home"); render(); }
 function lockNow(){ try{ sess.remove("ianDash.session"); }catch(e){} const l=document.getElementById("lock"); if(l)l.style.display="flex"; showKeypad(); }
 
@@ -946,14 +1115,16 @@ function mergeBrief(data){ try{
   if(!data || typeof data!=="object") throw 0;
   const hasBrief=data.briefing && data.briefing.forIan && typeof data.briefing.forIan==="object";
   const hasEvents=Array.isArray(data.events);
-  if(!hasBrief && !hasEvents) throw 0;
+  const hasRE=data.realEstate && typeof data.realEstate==="object" && (Array.isArray(data.realEstate.deals)||Array.isArray(data.realEstate.todos));
+  if(!hasBrief && !hasEvents && !hasRE) throw 0;
   let added=0;
   if(hasBrief){ if(!state.briefing) state.briefing={forIan:{}}; if(!state.briefing.forIan) state.briefing.forIan={};
     const src=data.briefing.forIan;
     Object.keys(src).forEach(function(dk){ const arr=Array.isArray(src[dk])?src[dk]:[]; if(!Array.isArray(state.briefing.forIan[dk])) state.briefing.forIan[dk]=[]; const ids={}; state.briefing.forIan[dk].forEach(function(x){ if(x&&x.id)ids[x.id]=1; }); arr.forEach(function(it){ if(!it||typeof it!=="object")return; if(!it.id) it.id=uid(); if(ids[it.id])return; state.briefing.forIan[dk].push({id:it.id,type:String(it.type||"Info"),title:String(it.title||""),note:String(it.note||""),url:String(it.url||""),done:!!it.done}); ids[it.id]=1; added++; }); }); }
   if(hasEvents){ if(!Array.isArray(state.events)) state.events=[]; const byId={}; state.events.forEach(function(e){ if(e&&e.id)byId[e.id]=e; });
     data.events.forEach(function(ev){ if(!ev||typeof ev!=="object")return; if(!ev.id) ev.id=uid(); if(byId[ev.id]){ if(ev.title)byId[ev.id].title=String(ev.title); if(ev.date)byId[ev.id].date=String(ev.date); if(ev.kind)byId[ev.id].kind=String(ev.kind); } else { const nv={id:ev.id,title:String(ev.title||""),date:String(ev.date||""),kind:String(ev.kind||"Personal")}; state.events.push(nv); byId[ev.id]=nv; added++; } }); }
-  save(true); render(); toast(added? ("Brief updated, "+added+" new") : "Brief up to date"); return true;
+  if(hasRE){ if(!state.realEstate) state.realEstate={}; ["deals","todos"].forEach(function(key){ const src=Array.isArray(data.realEstate[key])?data.realEstate[key]:null; if(!src) return; if(!Array.isArray(state.realEstate[key])) state.realEstate[key]=[]; const byId={}; state.realEstate[key].forEach(function(x){ if(x&&x.id) byId[x.id]=x; }); src.forEach(function(it){ if(!it||typeof it!=="object") return; if(!it.id) it.id=uid(); if(byId[it.id]){ const cur=byId[it.id]; Object.keys(it).forEach(function(k){ if(it[k]!=null) cur[k]=it[k]; }); } else { state.realEstate[key].push(it); byId[it.id]=it; added++; } }); }); }
+  save(true); render(); toast(added? ("Imported, "+added+" new") : "Already up to date"); return true;
 }catch(e){ toast("Not a valid brief file"); return false; } }
 function readBrief(file){ const r=new FileReader(); r.onload=function(){ let data; try{ data=JSON.parse(r.result); }catch(e){ toast("Not a valid brief file"); return; } mergeBrief(data); }; r.onerror=function(){ toast("Could not read file"); }; r.readAsText(file); }
 function roundRect(x,ax,ay,w,h,r){ x.beginPath(); x.moveTo(ax+r,ay); x.arcTo(ax+w,ay,ax+w,ay+h,r); x.arcTo(ax+w,ay+h,ax,ay+h,r); x.arcTo(ax,ay+h,ax,ay,r); x.arcTo(ax,ay,ax+w,ay,r); x.closePath(); }
