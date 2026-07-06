@@ -1059,6 +1059,8 @@ function reViewLanding(v){
   reNavCard(v,"\ud83c\udf31","Prospects",prospects.length+(prospects.length===1?" future listing":" future listings"),"prospects");
   reNavCard(v,"\u2705","Things I need to do",openTodos+(openTodos===1?" open task":" open tasks"),"todo");
   reNavCard(v,"\ud83e\uddf0","Tools","Focus timer, activity, contacts, scripts, notes","tools");
+  sect(v,"Your pipeline data","import");
+  { const ic=card(); const ib=el("button","btn ghost block","Import my pipeline"); ib.style.marginTop="0"; ib.onclick=()=>{ const bf=document.getElementById("briefFile"); if(bf)bf.click(); }; const ih=el("div","small dim"); ih.style.marginTop="9px"; ih.textContent="Load real_estate_pipeline.json to add your deals and follow ups. Your other data stays."; ic._body.appendChild(ib); ic._body.appendChild(ih); v.appendChild(ic); }
 }
 function reViewPipeline(v){
   reBack(v,"Real Estate");
