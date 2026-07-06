@@ -1060,7 +1060,7 @@ function reViewLanding(v){
   reNavCard(v,"\u2705","Things I need to do",openTodos+(openTodos===1?" open task":" open tasks"),"todo");
   reNavCard(v,"\ud83e\uddf0","Tools","Focus timer, activity, contacts, scripts, notes","tools");
   sect(v,"Your pipeline data","import");
-  { const ic=card(); const ib=el("button","btn ghost block","Import my pipeline"); ib.style.marginTop="0"; ib.onclick=()=>{ const bf=document.getElementById("briefFile"); if(bf)bf.click(); }; const ih=el("div","small dim"); ih.style.marginTop="9px"; ih.textContent="Load real_estate_pipeline.json to add your deals and follow ups. Your other data stays."; ic._body.appendChild(ib); ic._body.appendChild(ih); v.appendChild(ic); }
+  { const ic=card(); const ib=el("button","btn ghost block","Import my pipeline"); ib.style.marginTop="0"; ib.onclick=()=>{ const pf=document.getElementById("pipelineFile"); if(pf)pf.click(); }; const ih=el("div","small dim"); ih.style.marginTop="9px"; ih.textContent="Load real_estate_pipeline.json to replace your pipeline with your deals and follow ups. Your other data stays."; ic._body.appendChild(ib); ic._body.appendChild(ih); v.appendChild(ic); }
 }
 function reViewPipeline(v){
   reBack(v,"Real Estate");
@@ -1209,6 +1209,14 @@ function mergeBrief(data){ try{
   if(hasRE){ if(!state.realEstate) state.realEstate={}; ["deals","todos"].forEach(function(key){ const src=Array.isArray(data.realEstate[key])?data.realEstate[key]:null; if(!src) return; if(!Array.isArray(state.realEstate[key])) state.realEstate[key]=[]; const byId={}; state.realEstate[key].forEach(function(x){ if(x&&x.id) byId[x.id]=x; }); src.forEach(function(it){ if(!it||typeof it!=="object") return; if(!it.id) it.id=uid(); if(byId[it.id]){ const cur=byId[it.id]; Object.keys(it).forEach(function(k){ if(it[k]!=null) cur[k]=it[k]; }); } else { state.realEstate[key].push(it); byId[it.id]=it; added++; } }); }); }
   save(true); render(); toast(added? ("Imported, "+added+" new") : "Already up to date"); return true;
 }catch(e){ toast("Not a valid brief file"); return false; } }
+function replacePipeline(data){ try{
+  if(!data||typeof data!=="object"||!data.realEstate||typeof data.realEstate!=="object"){ toast("Not a pipeline file"); return false; }
+  const re=data.realEstate; if(!state.realEstate) state.realEstate={}; let n=0;
+  if(Array.isArray(re.deals)){ state.realEstate.deals=re.deals.map(function(d){ d=d||{}; return {id:d.id||uid(),title:String(d.title||""),stage:String(d.stage||"Prospecting"),price:String(d.price||""),close:String(d.close||""),note:String(d.note||"")}; }); n=state.realEstate.deals.length; }
+  if(Array.isArray(re.todos)){ state.realEstate.todos=re.todos.map(function(t){ t=t||{}; return {id:t.id||uid(),text:String(t.text||""),done:!!t.done,due:String(t.due||"")}; }); }
+  save(true); render(); toast(n?("Loaded "+n+" deals"):"Pipeline cleared"); return true;
+}catch(e){ toast("Import failed, bad file"); return false; } }
+function readPipeline(file){ const r=new FileReader(); r.onload=function(){ let data; try{ data=JSON.parse(r.result); }catch(e){ toast("Not a valid pipeline file"); return; } replacePipeline(data); }; r.onerror=function(){ toast("Could not read file"); }; r.readAsText(file); }
 function readBrief(file){ const r=new FileReader(); r.onload=function(){ let data; try{ data=JSON.parse(r.result); }catch(e){ toast("Not a valid brief file"); return; } mergeBrief(data); }; r.onerror=function(){ toast("Could not read file"); }; r.readAsText(file); }
 function roundRect(x,ax,ay,w,h,r){ x.beginPath(); x.moveTo(ax+r,ay); x.arcTo(ax+w,ay,ax+w,ay+h,r); x.arcTo(ax+w,ay+h,ax,ay+h,r); x.arcTo(ax,ay+h,ax,ay,r); x.arcTo(ax,ay,ax+w,ay,r); x.closePath(); }
 function makeIcon(size){ const c=document.createElement("canvas"); c.width=c.height=size; const x=c.getContext("2d"); x.fillStyle="#050506"; x.fillRect(0,0,size,size); const pad=size*0.13,w=size-pad*2,r=size*0.22; const g=x.createLinearGradient(pad,pad,size-pad,size-pad); g.addColorStop(0,"#2f6bff"); g.addColorStop(1,"#6fa8ff"); x.fillStyle=g; roundRect(x,pad,pad,w,w,r); x.fill(); x.fillStyle="#04122e"; x.font="900 "+(size*0.34)+"px Helvetica, Arial, sans-serif"; x.textAlign="center"; x.textBaseline="middle"; x.fillText("IM",size/2,size/2+size*0.02); return c.toDataURL("image/png"); }
@@ -1226,6 +1234,7 @@ function boot(){
   // gear + import wiring
   try{ let f=document.getElementById("importFile"); if(!f){ f=document.createElement("input"); f.type="file"; f.id="importFile"; f.accept="application/json"; f.style.display="none"; document.body.appendChild(f); } f.onchange=e=>{ if(e.target.files[0])doImport(e.target.files[0]); e.target.value=""; }; }catch(e){}
   try{ let bf=document.getElementById("briefFile"); if(!bf){ bf=document.createElement("input"); bf.type="file"; bf.id="briefFile"; bf.accept="application/json,.json"; bf.style.display="none"; document.body.appendChild(bf); } bf.onchange=e=>{ if(e.target.files[0])readBrief(e.target.files[0]); e.target.value=""; }; }catch(e){}
+  try{ let pf=document.getElementById("pipelineFile"); if(!pf){ pf=document.createElement("input"); pf.type="file"; pf.id="pipelineFile"; pf.accept="application/json,.json"; pf.style.display="none"; document.body.appendChild(pf); } pf.onchange=e=>{ if(e.target.files[0])readPipeline(e.target.files[0]); e.target.value=""; }; }catch(e){}
   try{ document.querySelectorAll('input[name="tab"]').forEach(r=>r.addEventListener("change",()=>{ try{window.scrollTo(0,0);}catch(e){} animateVisible(); })); }catch(e){}
   try{ const reRadio=document.getElementById("t-re"); if(reRadio) reRadio.addEventListener("change",()=>{ if(reRadio.checked){ reView="landing"; try{render();}catch(e){} } }); }catch(e){}
   // show lock unless session says unlocked
