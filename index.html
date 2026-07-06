@@ -17,7 +17,7 @@
  PRIVACY, IMPORTANT
   - This build contains real client names and sale prices in the Real Estate pipeline. Ian gave
     explicit consent to deploy it to the obscure public GitHub Pages URL so his pipeline shows
-    automatically. Storage key v2 plus a seed-version migration keep devices on the latest data.
+    automatically. Migrations are non-destructive and never wipe the day's in-progress entries.
   - The public GitHub Pages build is id-dash-v20-public.html, which carries all v20 design
     changes with a generic sample pipeline and no real client names or prices.
   - The same pipeline is also saved as real_estate_pipeline.json in this folder. A clean public
@@ -853,10 +853,33 @@ function deepMergeDefaults(t,d){
   return t===undefined?d:t;
 }
 let profile="ian", state;
+function mergeKeepLogs(existing, fresh){
+  existing=Array.isArray(existing)?existing:[]; fresh=Array.isArray(fresh)?fresh:[];
+  var byName={}; existing.forEach(function(x){ if(x&&x.name!=null) byName[x.name]=x; });
+  var freshNames={}; fresh.forEach(function(f){ if(f&&f.name!=null) freshNames[f.name]=1; });
+  var out=fresh.map(function(f){ var cur=byName[f.name]; if(cur){ var m=Object.assign({},f); m.id=cur.id||m.id; m.log=(cur.log&&typeof cur.log==="object")?cur.log:(f.log||{}); return m; } return f; });
+  existing.forEach(function(x){ if(x&&x.name!=null&&!freshNames[x.name]) out.push(x); });
+  return out;
+}
 function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]); raw=s?JSON.parse(s):null; }catch(e){ raw=null; }
   const storedSeedVer=(raw&&raw.meta&&raw.meta.seedVersion)||0;
   try{ state=raw?deepMergeDefaults(raw,seedFor(p)):seedFor(p); if(state.meta) state.meta.version=15; }catch(e){ state=seedFor(p); }
-  try{ if(!state.meta) state.meta={}; if(raw && storedSeedVer<SEED_VERSION){ const fresh=seedFor(p); if(fresh&&fresh.realEstate){ if(!state.realEstate) state.realEstate={}; state.realEstate.deals=fresh.realEstate.deals; state.realEstate.todos=fresh.realEstate.todos; } if(fresh&&fresh.nutrition&&Array.isArray(fresh.nutrition.supplements)){ if(!state.nutrition) state.nutrition={}; state.nutrition.supplements=fresh.nutrition.supplements; } if(fresh&&fresh.routine&&Array.isArray(fresh.routine.habits)){ if(!state.routine) state.routine={}; state.routine.habits=fresh.routine.habits; } if(Array.isArray(state.events)){ state.events=state.events.filter(function(e){ return !(e&&/Lake of the Ozarks/.test(e.title||"")); }); var _et=state.events.map(function(e){return e.title;}); [{title:"Tennessee Trip (Jul 17 to 20)",date:"2026-07-17",kind:"Personal"},{title:"Mixed Doubles Pickleball Tournament, 9 AM",date:"2026-07-25",kind:"Tournament"}].forEach(function(ev){ if(_et.indexOf(ev.title)<0) state.events.push({id:uid(),title:ev.title,date:ev.date,kind:ev.kind}); }); } } state.meta.seedVersion=SEED_VERSION; }catch(e){}
+  /* v21 fix: version-bump migration is NON-DESTRUCTIVE. It only updates structural/default data and
+     MERGES lists so today's ephemeral entries (habit and supplement check-offs, water, quick win,
+     workout sets, notes, activity counts, contacted marks) are NEVER wiped by a redeploy. */
+  try{ if(!state.meta) state.meta={};
+    if(raw && storedSeedVer<SEED_VERSION){
+      const fresh=seedFor(p);
+      if(fresh&&fresh.realEstate){ if(!state.realEstate) state.realEstate={};
+        if(Array.isArray(fresh.realEstate.deals)) state.realEstate.deals=fresh.realEstate.deals;
+        if(Array.isArray(fresh.realEstate.todos)){ const _cur=Array.isArray(state.realEstate.todos)?state.realEstate.todos:[]; state.realEstate.todos=fresh.realEstate.todos.map(function(td){ const ex=_cur.filter(function(x){return x&&x.id===td.id;})[0]; return ex?Object.assign({},td,{done:!!ex.done}):td; }); }
+      }
+      if(fresh&&fresh.nutrition&&Array.isArray(fresh.nutrition.supplements)){ if(!state.nutrition) state.nutrition={}; state.nutrition.supplements=mergeKeepLogs(state.nutrition.supplements,fresh.nutrition.supplements); }
+      if(fresh&&fresh.routine&&Array.isArray(fresh.routine.habits)){ if(!state.routine) state.routine={}; state.routine.habits=mergeKeepLogs(state.routine.habits,fresh.routine.habits); }
+      if(fresh&&Array.isArray(fresh.events)){ if(!Array.isArray(state.events)) state.events=[]; const _ev=state.events.map(function(e){return e&&e.title;}); fresh.events.forEach(function(ev){ if(ev&&_ev.indexOf(ev.title)<0) state.events.push(ev); }); }
+    }
+    state.meta.seedVersion=SEED_VERSION;
+  }catch(e){}
   focusObj.running=false; try{clearInterval(focusObj.timerId);}catch(e){} focusObj.remaining=null;
   applyAccent(); dailyReset(); save(true);
 }
