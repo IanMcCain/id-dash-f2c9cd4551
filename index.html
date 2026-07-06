@@ -1073,7 +1073,7 @@ function buildIanRe(v){
   if(reView==="tools") return reViewTools(v);
   return reViewLanding(v);
 }
-function fmtMoneyShort(n){ n=n||0; if(n>=1e6) return "$"+(n/1e6).toFixed(n>=1e7?0:2).replace(/0$/,"")+"M"; if(n>=1e3) return "$"+Math.round(n/1e3)+"K"; return "$"+Math.round(n); }
+function fmtMoneyShort(n){ n=n||0; if(n>=1e6){ var m=n/1e6; return "$"+(m>=10?String(Math.round(m)):m.toFixed(1))+"M"; } if(n>=1e3) return "$"+Math.round(n/1e3)+"K"; return "$"+Math.round(n); }
 function reGoalsCard(parent){
   const deals=state.realEstate.deals||[]; const vol=arr=>arr.reduce((a,d)=>a+priceNum(d.price),0);
   const closed=deals.filter(d=>d.stage==="Closed"); const uc=deals.filter(d=>d.stage==="Under Contract");
