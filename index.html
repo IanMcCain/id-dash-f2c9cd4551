@@ -222,6 +222,11 @@ main{position:relative;padding:calc(var(--hh) + var(--sat) + 10px) 14px calc(var
 .a-blue{background:linear-gradient(90deg,var(--accent),var(--accent2))}
 .a-green{background:linear-gradient(90deg,var(--green),#7ff0b8)}
 .a-gold{background:linear-gradient(90deg,var(--accent2),#a9ccff)}
+.a-teal{background:linear-gradient(90deg,var(--teal),var(--teal2))}
+.goalrow{margin-top:14px}
+.goal-lab{font-size:14px;font-weight:800;color:var(--white)}
+.goal-val b{font-size:19px;font-weight:800}
+.goal-val span{font-size:13px;color:var(--gray2);font-weight:700;margin-left:2px}
 .cbody{padding:16px}
 .card h3{font-size:16px;margin-bottom:4px}
 .sectlabel{position:sticky;top:calc(var(--hh) + var(--sat));z-index:20;display:flex;align-items:center;gap:10px;margin:22px 3px 11px;padding:9px 4px 8px;font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--white);font-weight:800;background:linear-gradient(180deg,var(--bg) 72%,rgba(5,5,6,0))}
@@ -808,7 +813,8 @@ function reSeed(who){
     routineTasks:[{id:uid(),text:"Check new GPRMLS listings and status changes"},{id:uid(),text:"Post or prep one piece of content"},{id:uid(),text:"Follow up one lead or past client"},{id:uid(),text:"Update the pipeline and next steps"}],
     metrics:{ targets:{calls:10,appointments:2,doors:20}, log:{} }, focus:{ minutes:25, count:{} },
     scripts:[{id:uid(),title:"Just Sold neighbor call",body:"Hi [name], Ian with The Scenic Group. We just sold a home over on Olive in Sugar Creek and homes in your area are moving. If you have ever wondered what yours is worth, I can send a quick honest read, no pressure."},{id:uid(),title:"Cinnamon Creek prospecting",body:"Hi [name], Ian McCain here. We are focusing on Cinnamon Creek right now and have buyers looking. If you have thought about selling, I would love to give you a straight read on your value. No pressure, straight answers."}],
-    goals:[{id:uid(),text:"10 prospecting calls a day",done:false},{id:uid(),text:"Two new listings this month",done:false},{id:uid(),text:"Build Cinnamon Creek into a reliable farm",done:false}]
+    goals:[{id:uid(),text:"10 prospecting calls a day",done:false},{id:uid(),text:"Two new listings this month",done:false},{id:uid(),text:"Build Cinnamon Creek into a reliable farm",done:false}],
+    goals2026:{production:10000000,deals:20}
   };
   // chris starter, real estate forward, mostly blank for him to fill
   return {
@@ -1014,10 +1020,11 @@ function buildIanHome(v){ const workout=daySplit(DOW); const reTop=firstUndone(s
   const hero=card("a-blue"); const b=hero._body; b.classList.add("hero"); const hi=el("div","hi"); hi.innerHTML=GREET+', <span class="name">'+nm.replace(/</g,"")+'</span>'; b.appendChild(hi); b.appendChild(el("div","date",LONGDATE+"  ·  your daily brief")); b.appendChild(el("div","focus","Today, "+cleanFocus(workout.focus)+". "+(reTop?"Real estate, "+reTop.text+".":"Pipeline follow ups are clear.")));
   if(state.meta&&state.meta.lastReset===TODAY){ const rn=el("div","small"); rn.style.color="var(--sec2,var(--accent2))"; rn.style.fontWeight="700"; rn.style.marginTop="9px"; rn.textContent="New day. Yesterday's log was archived and daily items reset."; b.appendChild(rn); }
   v.appendChild(hero);
-  safe(v,()=>{ const gday=daySplit(DOW); const glog=(state.gym.logs&&state.gym.logs[TODAY])||{done:{}}; const gT=gday.exercises.length||0, gD=gday.exercises.filter(e=>glog.done&&glog.done[e.id]).length; const hs=(state.routine&&state.routine.habits)||[]; const hD=hs.filter(h=>h.log&&h.log[TODAY]).length; const water=(state.nutrition&&state.nutrition.water&&state.nutrition.water[TODAY])||0; const m=(state.realEstate.metrics&&state.realEstate.metrics.log&&state.realEstate.metrics.log[TODAY])||{}; const cg=(state.realEstate.metrics&&state.realEstate.metrics.targets&&state.realEstate.metrics.targets.calls)||10; sect(v,"Summary","today"); summaryGrid(v,[ fracTile({label:"Workout",color:"orange",done:gD,goal:gT||1,unit:"sets",tab:"gym"}), fracTile({label:"Habits",color:"green",done:hD,goal:hs.length||7,unit:"done",tab:"gym"}), fracTile({label:"Water",color:"cyan",done:water,goal:12,unit:"cups",tab:"gym"}), fracTile({label:"RE calls",color:"blue",done:m.calls||0,goal:cg,unit:"today",tab:"re"}) ]); },"Summary");
-  sect(v,"Quick win","resets daily"); quickWinCard(v);
-  const _clsec=sect(v,"Today from Claude","sync brief"); _clsec.insertBefore(claudeAvatar("av-md chip"), _clsec.firstChild); { const sc=card(); const sbt=el("button","btn ghost block","Load today\u2019s brief"); sbt.style.marginTop="0"; sbt.onclick=()=>{ const bf=document.getElementById("briefFile"); if(bf)bf.click(); }; const hint=el("div","small dim"); hint.style.marginTop="9px"; hint.textContent="Pick daily_brief.json to merge today\u2019s items. Your other data stays."; sc._body.appendChild(sbt); sc._body.appendChild(hint); v.appendChild(sc); } const items=briefItems(); if(!items.length){ const c=card(); c._body.appendChild(el("div","empty","No briefing yet for today. Your daily agent will add items here.")); v.appendChild(c); } else { items.forEach(it=>v.appendChild(briefCard(it))); v.appendChild(el("div","notice","Example items. Your daily agent will replace these each morning.")); }
-  sect(v,"Upcoming"); safe(v,()=>eventsModule(v),"Events");
+  const _clsec=sect(v,"Today from Claude","new to check out"); _clsec.insertBefore(claudeAvatar("av-md chip"), _clsec.firstChild); { const sc=card(); const sbt=el("button","btn ghost block","Load today\u2019s brief"); sbt.style.marginTop="0"; sbt.onclick=()=>{ const bf=document.getElementById("briefFile"); if(bf)bf.click(); }; const hint=el("div","small dim"); hint.style.marginTop="9px"; hint.textContent="Pick daily_brief.json to merge today\u2019s items. Your other data stays."; sc._body.appendChild(sbt); sc._body.appendChild(hint); v.appendChild(sc); } { const items=briefItems(); if(!items.length){ const c=card(); c._body.appendChild(el("div","empty","No briefing yet for today. Your daily agent will add items here.")); v.appendChild(c); } else { items.forEach(it=>v.appendChild(briefCard(it))); v.appendChild(el("div","notice","Example items. Your daily agent will replace these each morning.")); } }
+  sect(v,"Quick win","your easy win today"); quickWinCard(v);
+  sect(v,"Progress and upcoming","where you stand"); safe(v,()=>reGoalsCard(v),"RE goals"); safe(v,()=>homeUpcomingCard(v),"Upcoming RE");
+  safe(v,()=>{ const gday=daySplit(DOW); const glog=(state.gym.logs&&state.gym.logs[TODAY])||{done:{}}; const gT=gday.exercises.length||0, gD=gday.exercises.filter(e=>glog.done&&glog.done[e.id]).length; const hs=(state.routine&&state.routine.habits)||[]; const hD=hs.filter(h=>h.log&&h.log[TODAY]).length; const water=(state.nutrition&&state.nutrition.water&&state.nutrition.water[TODAY])||0; const m=(state.realEstate.metrics&&state.realEstate.metrics.log&&state.realEstate.metrics.log[TODAY])||{}; const cg=(state.realEstate.metrics&&state.realEstate.metrics.targets&&state.realEstate.metrics.targets.calls)||10; sect(v,"Today","fitness and calls"); summaryGrid(v,[ fracTile({label:"Workout",color:"orange",done:gD,goal:gT||1,unit:"sets",tab:"gym"}), fracTile({label:"Habits",color:"green",done:hD,goal:hs.length||7,unit:"done",tab:"gym"}), fracTile({label:"Water",color:"cyan",done:water,goal:12,unit:"cups",tab:"gym"}), fracTile({label:"RE calls",color:"blue",done:m.calls||0,goal:cg,unit:"today",tab:"re"}) ]); },"Summary");
+  sect(v,"Calendar"); safe(v,()=>eventsModule(v),"Events");
 }
 function buildBrief(v){ sect(v,"Quick win","resets daily"); quickWinCard(v); const _clsec=sect(v,"Today from Claude","sync brief"); _clsec.insertBefore(claudeAvatar("av-md chip"), _clsec.firstChild); { const sc=card(); const sbt=el("button","btn ghost block","Load today\u2019s brief"); sbt.style.marginTop="0"; sbt.onclick=()=>{ const bf=document.getElementById("briefFile"); if(bf)bf.click(); }; const hint=el("div","small dim"); hint.style.marginTop="9px"; hint.textContent="Pick daily_brief.json to merge today\u2019s items. Your other data stays."; sc._body.appendChild(sbt); sc._body.appendChild(hint); v.appendChild(sc); } const items=briefItems(); if(!items.length){ const c=card(); c._body.appendChild(el("div","empty","No briefing yet for today. Your daily agent will add items here.")); v.appendChild(c); } else { items.forEach(it=>v.appendChild(briefCard(it))); v.appendChild(el("div","notice","Example items. Your daily agent will replace these each morning.")); } sect(v,"Upcoming"); safe(v,()=>eventsModule(v),"Events"); }
 /* ===== v21 real estate: calm landing of section cards, each opens its own view ===== */
@@ -1066,7 +1073,33 @@ function buildIanRe(v){
   if(reView==="tools") return reViewTools(v);
   return reViewLanding(v);
 }
+function fmtMoneyShort(n){ n=n||0; if(n>=1e6) return "$"+(n/1e6).toFixed(n>=1e7?0:2).replace(/0$/,"")+"M"; if(n>=1e3) return "$"+Math.round(n/1e3)+"K"; return "$"+Math.round(n); }
+function reGoalsCard(parent){
+  const deals=state.realEstate.deals||[]; const vol=arr=>arr.reduce((a,d)=>a+priceNum(d.price),0);
+  const closed=deals.filter(d=>d.stage==="Closed"); const uc=deals.filter(d=>d.stage==="Under Contract");
+  const production=vol(closed)+vol(uc); const dealsDone=closed.length+uc.length;
+  const g=(state.realEstate&&state.realEstate.goals2026)||{}; const PROD_GOAL=g.production||10000000; const DEALS_GOAL=g.deals||20;
+  const c=card("a-teal"); const b=c._body;
+  b.appendChild(el("div","small muted","2026 production goals"));
+  const mk=(label,valHtml,frac,col)=>{ const wrap=el("div","goalrow"); const top=el("div","between"); top.appendChild(el("div","goal-lab",label)); const vv=el("div","goal-val"); vv.innerHTML=valHtml; top.appendChild(vv); wrap.appendChild(top); const bar=el("div","pbar"); const i=el("i"); bar.appendChild(i); wrap.appendChild(bar); setTimeout(()=>{ try{ i.style.width=Math.min(100,frac*100)+"%"; i.style.background="var(--"+col+")"; }catch(e){} },40); return wrap; };
+  b.appendChild(mk("Production",'<b>'+fmtMoneyShort(production)+'</b> <span>of '+fmtMoneyShort(PROD_GOAL)+'</span>',PROD_GOAL?production/PROD_GOAL:0,"teal"));
+  b.appendChild(mk("Deals",'<b>'+dealsDone+'</b> <span>of '+DEALS_GOAL+'</span>',DEALS_GOAL?dealsDone/DEALS_GOAL:0,"teal2"));
+  const foot=el("div","small dim"); foot.style.marginTop="12px"; foot.textContent="Closed and under contract count toward your goal."; b.appendChild(foot);
+  parent.appendChild(c);
+}
+function homeUpcomingCard(parent){
+  const deals=state.realEstate.deals||[];
+  const up=deals.filter(d=>d.close && (d.stage==="Under Contract"||d.stage==="Coming Soon")).slice(0,3);
+  const todos=(state.realEstate.todos||[]).filter(t=>!t.done).slice(0,3);
+  const c=card(); const b=c._body;
+  b.appendChild(el("div","small muted","Coming up"));
+  if(up.length){ up.forEach(d=>{ const r=el("div","mrow"); const l=el("div","ml"); l.appendChild(document.createTextNode(d.title)); l.appendChild(el("small",null,d.stage)); r.appendChild(l); const dd=el("div","small dim"); dd.textContent=d.close; r.appendChild(dd); b.appendChild(r); }); }
+  if(todos.length){ const h=el("div","small muted"); h.style.marginTop="13px"; h.textContent="Follow ups"; b.appendChild(h); todos.forEach(t=>{ const r=el("div","mrow"); r.appendChild(el("div","ml",t.text)); b.appendChild(r); }); }
+  if(!up.length && !todos.length){ b.appendChild(el("div","empty","Nothing scheduled.")); }
+  parent.appendChild(c);
+}
 function reViewLanding(v){
+  safe(v,()=>reGoalsCard(v),"RE goals");
   objectiveCard(v,"re","a-blue");
   const deals=state.realEstate.deals||[];
   const pipe=deals.filter(d=>!reIsProspect(d));
