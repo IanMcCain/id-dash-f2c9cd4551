@@ -11,7 +11,7 @@
 <title>Ian Dashboard</title>
 <!--
 ==================================================================================
- IAN DASHBOARD  v20  (PUBLIC / generic build; sample pipeline, no client data; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
+ IAN DASHBOARD  v21  (PUBLIC / generic build; sample pipeline, no client data; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
  Single self contained file. No build step, no imports, no fetch, no CDN. Off disk.
 
  PRIVACY, IMPORTANT
@@ -20,6 +20,14 @@
   - Ian's real pipeline lives only in his browser localStorage on his own device, and can be
     imported privately from real_estate_pipeline.json (Load today's brief). It is never in this file.
   - The private working copy with real data is Ian Dashboard v20.html, kept off any public host.
+
+ NEW IN v21
+  - Real Estate reorganized into a calm landing. The Real Estate tab now opens to a short menu of
+    big tappable cards: Pipeline, Prospects, Things I need to do, and Tools. Each card shows a quick
+    count and summary and opens its own focused screen with a back control. Pipeline keeps the
+    collapsible stage grouping (Under contract, Coming soon, Active, Closed). Prospects holds the
+    future listing clients. Things I need to do holds the follow ups. Tools holds the focus timer,
+    activity counter, goals, leads, contacts, farm, scripts, and market notes. No data removed.
 
  NEW IN v20
   - Premium lock screen. Dark blue gradient with a soft radial glow behind a glossy app icon,
@@ -541,6 +549,12 @@ html,body{ background:var(--bg); }
 .launch .larrow{ width:26px; height:26px; border-radius:50%; background:var(--card2); color:var(--gray2); display:grid; place-items:center; font-size:16px; }
 .card.tap{ cursor:pointer; }
 .card.tap:active{ transform:scale(.99); }
+.renav .cbody{ padding:17px 16px; }
+.renav .li{ width:50px; height:50px; border-radius:14px; font-size:23px; background:rgba(18,181,160,.13); border:1px solid rgba(18,181,160,.32); color:var(--teal2); }
+.renav .lt b{ font-size:18px; font-weight:800; letter-spacing:-.01em; }
+.renav .lt small{ font-size:12.5px; margin-top:3px; color:var(--gray); }
+.renav .larrow{ width:30px; height:30px; font-size:18px; color:var(--teal2); }
+.re-back{ display:inline-flex; align-items:center; gap:4px; }
 
 /* pills a bit softer */
 .pill{ border-radius:8px; }
@@ -640,10 +654,12 @@ header{ background:rgba(0,0,0,.82); border-bottom:1px solid rgba(255,255,255,.07
     <div class="card"><div class="accent a-green"></div><div class="cbody"><div class="bars"><div class="bar"><div class="fill g" style="height:4%"></div><div class="lbl">6d</div></div><div class="bar"><div class="fill g" style="height:4%"></div><div class="lbl">5d</div></div><div class="bar"><div class="fill g" style="height:4%"></div><div class="lbl">4d</div></div><div class="bar"><div class="fill g" style="height:4%"></div><div class="lbl">3d</div></div><div class="bar"><div class="fill g" style="height:4%"></div><div class="lbl">2d</div></div><div class="bar"><div class="fill g" style="height:4%"></div><div class="lbl">1d</div></div><div class="bar"><div class="fill g" style="height:4%"></div><div class="lbl">Hoy</div></div></div></div></div>
   </section>
   <section class="tabpage" id="p-re">
-    <div class="sectlabel">Focus timer</div>
-    <div class="card"><div class="accent a-blue"></div><div class="cbody"><div class="timer"><div class="tt" id="focusTime">25:00</div><div class="tsub">Sessions today: 0</div><div class="trow"><button class="btn">Start</button><button class="btn ghost">Reset</button></div><div class="small dim" style="margin-top:12px">The timer needs JavaScript. Open this file in Safari to run it.</div></div></div></div>
-    <div class="sectlabel">Pipeline</div>
-    <div class="card"><div class="cbody"><span class="pill b">Private</span><div class="small muted" style="margin-top:8px">Open this file in Safari to see the full pipeline, grouped by stage (Closed, Under contract, Active, Coming soon, Prospects) with prices, close dates, and notes. Client details load with JavaScript on and stay on this device.</div></div></div>
+    <div class="sectlabel">Real Estate <span class="sub">choose a section</span></div>
+    <div class="card tap renav"><div class="cbody"><div class="launch"><div class="li">📊</div><div class="lt"><b>Pipeline</b><small>Active, under contract, coming soon, closed</small></div><div class="larrow">›</div></div></div></div>
+    <div class="card tap renav"><div class="cbody"><div class="launch"><div class="li">🌱</div><div class="lt"><b>Prospects</b><small>Future listings and leads</small></div><div class="larrow">›</div></div></div></div>
+    <div class="card tap renav"><div class="cbody"><div class="launch"><div class="li">✅</div><div class="lt"><b>Things I need to do</b><small>Follow ups, comps to rerun, appointments</small></div><div class="larrow">›</div></div></div></div>
+    <div class="card tap renav"><div class="cbody"><div class="launch"><div class="li">🧰</div><div class="lt"><b>Tools</b><small>Focus timer, activity, contacts, scripts, notes</small></div><div class="larrow">›</div></div></div></div>
+    <div class="card"><div class="cbody"><div class="small muted">Open this file in Safari to open each section. Your data loads with JavaScript on and stays on this device.</div></div></div>
   </section>
   <section class="tabpage" id="p-gym">
     <div class="sectlabel">Warm up first</div>
@@ -928,6 +944,7 @@ const RE_GROUPS=[["Under Contract","Under contract / pending"],["Coming Soon","C
 let reStageOpen={ "Under Contract":true,"Coming Soon":true,"Active":true,"Closed":false,"Prospecting":false,"Just Sold":false,"Follow up":false,"Other":false };
 let reDealOpen={};
 let reToolOpen={};
+let reView="landing";
 function stagePill(stage){ return el("span","stpill c-"+(STAGE_COL[stage]||"blue"),stage); }
 function dealEditors(parent,d){
   parent.appendChild(chipRow(RESTAGES,d.stage,s=>{ d.stage=s; save(); render(); }));
@@ -987,21 +1004,85 @@ function buildIanHome(v){ const workout=daySplit(DOW); const reTop=firstUndone(s
   sect(v,"Upcoming"); safe(v,()=>eventsModule(v),"Events");
 }
 function buildBrief(v){ sect(v,"Quick win","resets daily"); quickWinCard(v); const _clsec=sect(v,"Today from Claude","sync brief"); _clsec.insertBefore(claudeAvatar("av-md chip"), _clsec.firstChild); { const sc=card(); const sbt=el("button","btn ghost block","Load today\u2019s brief"); sbt.style.marginTop="0"; sbt.onclick=()=>{ const bf=document.getElementById("briefFile"); if(bf)bf.click(); }; const hint=el("div","small dim"); hint.style.marginTop="9px"; hint.textContent="Pick daily_brief.json to merge today\u2019s items. Your other data stays."; sc._body.appendChild(sbt); sc._body.appendChild(hint); v.appendChild(sc); } const items=briefItems(); if(!items.length){ const c=card(); c._body.appendChild(el("div","empty","No briefing yet for today. Your daily agent will add items here.")); v.appendChild(c); } else { items.forEach(it=>v.appendChild(briefCard(it))); v.appendChild(el("div","notice","Example items. Your daily agent will replace these each morning.")); } sect(v,"Upcoming"); safe(v,()=>eventsModule(v),"Events"); }
+/* ===== v21 real estate: calm landing of section cards, each opens its own view ===== */
+const RE_PIPE_GROUPS=[["Under Contract","Under contract / pending"],["Coming Soon","Coming soon"],["Active","Active listings"],["Closed","Closed"],["Just Sold","Just sold"],["Follow up","Follow up"]];
+function reNavCard(parent,icon,title,summary,view){
+  const c=el("div","card tap renav"); const b=el("div","cbody"); c.appendChild(b);
+  const row=el("div","launch");
+  row.innerHTML='<div class="li">'+icon+'</div><div class="lt"><b>'+title+'</b><small>'+summary+'</small></div><div class="larrow">\u203a</div>';
+  b.appendChild(row);
+  c.onclick=()=>{ reView=view; try{window.scrollTo(0,0);}catch(e){} render(); };
+  parent.appendChild(c);
+}
+function reBack(parent,label){
+  const w=el("div","backrow"); const btn=el("button","btn ghost sm re-back"); btn.textContent="\u2039 "+(label||"Real Estate");
+  btn.onclick=()=>{ reView="landing"; try{window.scrollTo(0,0);}catch(e){} render(); }; w.appendChild(btn); parent.appendChild(w);
+}
+function pipelineSummaryPipe(parent){
+  const deals=state.realEstate.deals||[]; const by=st=>deals.filter(d=>d.stage===st); const vol=arr=>arr.reduce((a,d)=>a+priceNum(d.price),0);
+  const closed=by("Closed"), uc=by("Under Contract"), act=by("Active"), cs=by("Coming Soon");
+  sect(parent,"Overview","counts and volume");
+  summaryGrid(parent,[
+    statTile({label:"Closed",color:"green",value:closed.length,unit:closed.length===1?"deal":"deals",sub:fmtMoney(vol(closed))+" volume"}),
+    statTile({label:"Under contract",color:"blue",value:uc.length,unit:"pending",sub:fmtMoney(vol(uc))+" pending"}),
+    statTile({label:"Active",color:"orange",value:act.length,unit:act.length===1?"listing":"listings",sub:fmtMoney(vol(act))}),
+    statTile({label:"Coming soon",color:"purple",value:cs.length,unit:"this week",sub:"Listing soon"})
+  ]);
+}
+function rePipelineGroupedPipe(parent){
+  const deals=state.realEstate.deals||[]; const seen={};
+  RE_PIPE_GROUPS.forEach(function(g){ const stage=g[0],label=g[1]; const gd=deals.filter(d=>d.stage===stage); if(!gd.length)return; gd.forEach(d=>seen[d.id]=1); const vol=gd.reduce((a,d)=>a+priceNum(d.price),0); collapseGroup(parent,stage,label,gd,vol); });
+  const add=card(); add._body.appendChild(adder("New deal...",t=>{ state.realEstate.deals.push({id:uid(),title:t,stage:"Coming Soon",price:"",close:"",note:""}); reStageOpen["Coming Soon"]=true; save(); render(); })); parent.appendChild(add);
+}
+function reProspectsList(parent){
+  const prospects=(state.realEstate.deals||[]).filter(d=>d.stage==="Prospecting");
+  if(!prospects.length){ const c=card(); c._body.appendChild(el("div","empty","No prospects yet.")); parent.appendChild(c); }
+  else { const c=card(); c._body.style.padding="0"; const body=el("div","collapse-body"); prospects.forEach(d=>dealRow(body,d)); c._body.appendChild(body); parent.appendChild(c); }
+  const add=card(); add._body.appendChild(adder("New prospect...",t=>{ state.realEstate.deals.push({id:uid(),title:t,stage:"Prospecting",price:"",close:"",note:""}); save(); render(); })); parent.appendChild(add);
+}
 function buildIanRe(v){
+  if(reView==="pipeline") return reViewPipeline(v);
+  if(reView==="prospects") return reViewProspects(v);
+  if(reView==="todo") return reViewTodo(v);
+  if(reView==="tools") return reViewTools(v);
+  return reViewLanding(v);
+}
+function reViewLanding(v){
   objectiveCard(v,"re","a-blue");
-  /* Pipeline is the clear focus: Apple stat tiles, then collapsible stages */
-  safe(v,()=>pipelineSummary(v),"Pipeline stats");
-  sect(v,"Pipeline by stage","tap a stage to expand");
-  safe(v,()=>rePipelineGrouped(v),"Pipeline");
-  /* Compact today strip: focus timer, activity counter, follow ups */
-  sect(v,"Today","focus, activity, follow ups");
+  const deals=state.realEstate.deals||[];
+  const pipe=deals.filter(d=>d.stage!=="Prospecting");
+  const prospects=deals.filter(d=>d.stage==="Prospecting");
+  const vol=pipe.reduce((a,d)=>a+priceNum(d.price),0);
+  const openTodos=(state.realEstate.todos||[]).filter(t=>!t.done).length;
+  sect(v,"Real Estate","tap a section");
+  reNavCard(v,"\ud83d\udcca","Pipeline",pipe.length+(pipe.length===1?" deal":" deals")+"  \u00b7  "+fmtMoney(vol)+" volume","pipeline");
+  reNavCard(v,"\ud83c\udf31","Prospects",prospects.length+(prospects.length===1?" future listing":" future listings"),"prospects");
+  reNavCard(v,"\u2705","Things I need to do",openTodos+(openTodos===1?" open task":" open tasks"),"todo");
+  reNavCard(v,"\ud83e\uddf0","Tools","Focus timer, activity, contacts, scripts, notes","tools");
+}
+function reViewPipeline(v){
+  reBack(v,"Real Estate");
+  safe(v,()=>pipelineSummaryPipe(v),"Pipeline stats");
+  sect(v,"By stage","tap a stage to expand");
+  safe(v,()=>rePipelineGroupedPipe(v),"Pipeline");
+}
+function reViewProspects(v){
+  reBack(v,"Real Estate");
+  sect(v,"Prospects","future listings and leads");
+  safe(v,()=>reProspectsList(v),"Prospects");
+}
+function reViewTodo(v){
+  reBack(v,"Real Estate");
+  sect(v,"Things I need to do","follow ups, comps, appointments");
+  safe(v,()=>reTodos(v),"Follow ups");
+}
+function reViewTools(v){
+  reBack(v,"Real Estate");
+  sect(v,"Focus and activity","timer and daily counts");
   safe(v,()=>focusTimerCard(v),"Timer");
   safe(v,()=>metricsModule(v),"Metrics");
-  safe(v,()=>reTodos(v),"Follow ups");
-  /* Goals */
   sect(v,"Goals");
   safe(v,()=>goalsList(v,state.realEstate.goals||(state.realEstate.goals=[])),"RE goals");
-  /* Secondary tools tucked into collapsible sections */
   sect(v,"More tools","leads, contacts, farm, scripts, notes");
   const leads=(state.realEstate.leads||[]);
   collapseTool(v,"Leads",leads.length?(leads.length+(leads.length===1?" lead":" leads")):"none yet",()=>leadsModule(v));
@@ -1144,6 +1225,7 @@ function boot(){
   try{ let f=document.getElementById("importFile"); if(!f){ f=document.createElement("input"); f.type="file"; f.id="importFile"; f.accept="application/json"; f.style.display="none"; document.body.appendChild(f); } f.onchange=e=>{ if(e.target.files[0])doImport(e.target.files[0]); e.target.value=""; }; }catch(e){}
   try{ let bf=document.getElementById("briefFile"); if(!bf){ bf=document.createElement("input"); bf.type="file"; bf.id="briefFile"; bf.accept="application/json,.json"; bf.style.display="none"; document.body.appendChild(bf); } bf.onchange=e=>{ if(e.target.files[0])readBrief(e.target.files[0]); e.target.value=""; }; }catch(e){}
   try{ document.querySelectorAll('input[name="tab"]').forEach(r=>r.addEventListener("change",()=>{ try{window.scrollTo(0,0);}catch(e){} animateVisible(); })); }catch(e){}
+  try{ const reRadio=document.getElementById("t-re"); if(reRadio) reRadio.addEventListener("change",()=>{ if(reRadio.checked){ reView="landing"; try{render();}catch(e){} } }); }catch(e){}
   // show lock unless session says unlocked
   if(sessionData&&sessionData.unlocked){ const l=document.getElementById("lock"); if(l)l.style.display="none"; }
   else { const l=document.getElementById("lock"); if(l)l.style.display="flex"; showKeypad(); }
