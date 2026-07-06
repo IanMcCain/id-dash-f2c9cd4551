@@ -11,15 +11,17 @@
 <title>Ian Dashboard</title>
 <!--
 ==================================================================================
- IAN DASHBOARD  v21  (PUBLIC / generic build; sample pipeline, no client data; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
+ IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
  Single self contained file. No build step, no imports, no fetch, no CDN. Off disk.
 
  PRIVACY, IMPORTANT
-  - This is the PUBLIC build served on GitHub Pages. It carries all v20 design changes with a
-    GENERIC SAMPLE pipeline only. There are NO real client names, prices, notes, or farm details.
-  - Ian's real pipeline lives only in his browser localStorage on his own device, and can be
-    imported privately from real_estate_pipeline.json (Load today's brief). It is never in this file.
-  - The private working copy with real data is Ian Dashboard v20.html, kept off any public host.
+  - This build contains real client names and sale prices in the Real Estate pipeline. Ian gave
+    explicit consent to deploy it to the obscure public GitHub Pages URL so his pipeline shows
+    automatically with no import step. Storage key bumped to v2 so devices reseed the real data.
+  - The public GitHub Pages build is id-dash-v20-public.html, which carries all v20 design
+    changes with a generic sample pipeline and no real client names or prices.
+  - The same pipeline is also saved as real_estate_pipeline.json in this folder. A clean public
+    build can stay empty and import that file privately on device (Load today's brief).
 
  NEW IN v21
   - Real Estate reorganized into a calm landing. The Real Estate tab now opens to a short menu of
@@ -46,7 +48,7 @@
     Active listings, Coming soon, Prospects), each with name, price, stage, close date, and notes.
   - Stage subheaders show a count and total volume. A Pipeline summary of Apple style stat tiles
     shows counts and dollar volume by stage.
-  - Follow up tasks in this public build are generic samples.
+  - Two comps reruns and the Spicer close date confirmation were added as follow up tasks.
   - The merge import (Load today's brief) now also accepts a realEstate block, so the pipeline
     JSON merges into an existing device without wiping other data. Everything else is unchanged.
 
@@ -631,7 +633,7 @@ header{ background:rgba(0,0,0,.82); border-bottom:1px solid rgba(255,255,255,.07
 
 <main>
   <section class="tabpage" id="p-home"><div class="banner"><div>For full interactivity and saving, open this file in Safari.</div></div>
-    <div class="card"><div class="accent a-blue"></div><div class="cbody hero"><div class="hi">Welcome back, <span class="name">Ian</span></div><div class="date">Your daily brief</div><div class="focus">Today's workout, warm up then log your sets. Real estate, your follow ups for today.</div></div></div>
+    <div class="card"><div class="accent a-blue"></div><div class="cbody hero"><div class="hi">Welcome back, <span class="name">Ian</span></div><div class="date">Your daily brief</div><div class="focus">Today's workout, warm up then log your sets. Real estate, Sugar Creek neighbor letters.</div></div></div>
     <div class="sectlabel">Summary <span class="sub">today</span></div>
     <div class="grid2">
       <div class="card"><div class="cbody"><div class="between"><div class="st-label"><span class="st-ico c-orange"></span>Workout</div><div class="chev">›</div></div><div class="st-num c-orange"><span class="n">3/6</span> <span class="u">sets</span></div><div class="pbar"><i style="width:50%;background:var(--orange)"></i></div></div></div>
@@ -720,7 +722,7 @@ const store=safeStore();
 const sess=(function(){ let ok=false,mem={}; try{ const t="__s__"; window.sessionStorage.setItem(t,"1"); window.sessionStorage.removeItem(t); ok=true; }catch(e){ ok=false; }
   return { get(k){ try{ return ok?window.sessionStorage.getItem(k):(mem[k]||null);}catch(e){return mem[k]||null;} }, set(k,v){ try{ if(ok)window.sessionStorage.setItem(k,v); else mem[k]=v;}catch(e){mem[k]=v;} }, remove(k){ try{ if(ok)window.sessionStorage.removeItem(k);}catch(e){} delete mem[k]; } };
 })();
-const KEYS={ ian:"ianDashboard.v1", chris:"chrisDashboard.v1" };
+const KEYS={ ian:"ianDashboard.v2", chris:"chrisDashboard.v2" };
 const uid=()=>Math.random().toString(36).slice(2,9);
 function todayKey(d){ d=d||new Date(); const p=n=>String(n).padStart(2,"0"); return d.getFullYear()+"-"+p(d.getMonth()+1)+"-"+p(d.getDate()); }
 const NOW=new Date(), TODAY=todayKey(NOW), DOW=NOW.getDay();
@@ -753,7 +755,7 @@ function seedIan(){
       ],
       logs:{}
     },
-    nutrition:{ profile:{height:"6'0\"",weight:"Log your weight",phase:"Phase 1. Cut, about 20 days"}, targets:[{label:"Calories",value:"2,200 to 2,400"},{label:"Protein",value:"170 to 180 g"},{label:"Carbs",value:"220 to 270 g"},{label:"Fat floor",value:"60 to 70 g"},{label:"Rate",value:"about 1.6 lb / wk"}], water:{},
+    nutrition:{ profile:{height:"6'0\"",weight:"163.2 lb",phase:"Phase 1. Cut, about 20 days"}, targets:[{label:"Calories",value:"2,200 to 2,400"},{label:"Protein",value:"170 to 180 g"},{label:"Carbs",value:"220 to 270 g"},{label:"Fat floor",value:"60 to 70 g"},{label:"Rate",value:"about 1.6 lb / wk"}], water:{},
       supplements:[{id:uid(),name:"Creatine monohydrate",dose:"3 to 5 g, any time",log:{}},{id:uid(),name:"Caffeine / pre workout",dose:"30 to 60 min pre, last dose 8 to 10 h before bed",log:{}},{id:uid(),name:"Whey protein",dose:"to hit daily protein",log:{}},{id:uid(),name:"Omega 3 fish oil",dose:"about 2 g EPA+DHA, with first meal",log:{}},{id:uid(),name:"Magnesium",dose:"nightly at bedtime",log:{}},{id:uid(),name:"Multivitamin",dose:"daily",log:{}},{id:uid(),name:"Vitamin D",dose:"1,000 to 2,000 IU",log:{}}] },
     realEstate:reSeed("ian"),
     routine:{ habits:[{id:uid(),name:"Creatine 3 to 5 g",log:{}},{id:uid(),name:"Weigh in, AM after restroom",log:{}},{id:uid(),name:"Hit protein target",log:{}},{id:uid(),name:"Water about 3 L",log:{}},{id:uid(),name:"Sleep 7 to 9 h",log:{}},{id:uid(),name:"10 min mobility / stretch",log:{}},{id:uid(),name:"Steps up, stay active",log:{}}],
@@ -762,48 +764,57 @@ function seedIan(){
       goals:[{id:uid(),text:"Sharpen for tournament play",done:false},{id:uid(),text:"Win the Monday night league",done:false},{id:uid(),text:"Tighten the third shot drop",done:false}],
       drills:[{id:uid(),text:"Third shot drop, 10 minutes"},{id:uid(),text:"Dinking cross court, control not power"},{id:uid(),text:"Reset from mid court under pressure"}],
       sessions:[{id:uid(),date:TODAY,kind:"Open play",note:"Plays 4 to 5x per week."}] },
-    goals:[{id:uid(),text:"Lean out about 4 to 4.5 lb before the an upcoming trip",horizon:"Now",done:false},{id:uid(),text:"Build a reliable pipeline",horizon:"Now",done:false},{id:uid(),text:"Keep the plan sustainable and actually enjoy it",horizon:"Standing",done:false}],
+    goals:[{id:uid(),text:"Lean out about 4 to 4.5 lb before the Tennessee and Lake of the Ozarks trip",horizon:"Now",done:false},{id:uid(),text:"Build the Cinnamon Creek pipeline",horizon:"Now",done:false},{id:uid(),text:"Keep the plan sustainable and actually enjoy it",horizon:"Standing",done:false}],
     todos:[{id:uid(),text:"Add to Home Screen on your iPhone for fullscreen",done:false},{id:uid(),text:"Add anything missing, then export a backup",done:false}],
     notes:"Scratchpad. Anything goes here.", ideas:[{id:uid(),text:"Daily agent reads this JSON, drops fresh ideas here",source:"ian",done:false}],
     context:{ forClaude:"", dailyLog:{} },
-    events:[{id:uid(),title:"Monday night pickleball league",date:nextDow(1),kind:"League"},{id:uid(),title:"Neighbor letters out",date:addDays(3),kind:"Real estate"},{id:uid(),title:"an upcoming trip",date:addDays(18),kind:"Personal"}],
+    events:[{id:uid(),title:"Monday night pickleball league",date:nextDow(1),kind:"League"},{id:uid(),title:"Sugar Creek neighbor letters out",date:addDays(3),kind:"Real estate"},{id:uid(),title:"Tennessee and Lake of the Ozarks trip",date:addDays(18),kind:"Personal"}],
     briefing:{ forIan:{ [TODAY]:[
       {id:uid(),type:"Pickleball",title:"Third shot drop drill",note:"Monday league is close. Ten minutes on your drop tightens the soft game.",url:"https://www.youtube.com/results?search_query=pickleball+third+shot+drop+drill",done:false},
       {id:uid(),type:"Supplement",title:"Creatine, timing barely matters",note:"Latest reviews say daily consistency beats timing. Keep the 3 to 5 g habit going.",url:"https://examine.com/supplements/creatine/",done:false},
-      {id:uid(),type:"Real estate",title:"Neighborhood farming with short reels",note:"Agents are winning listings with 20 second market updates for one subdivision. Try it on one subdivision.",url:"https://www.youtube.com/results?search_query=real+estate+neighborhood+farming+short+video",done:false},
+      {id:uid(),type:"Real estate",title:"Neighborhood farming with short reels",note:"Agents are winning listings with 20 second market updates for one subdivision. Try it on Sugar Creek.",url:"https://www.youtube.com/results?search_query=real+estate+neighborhood+farming+short+video",done:false},
       {id:uid(),type:"Recovery",title:"Protect your sleep before league",note:"One rough night can cut muscle protein synthesis about 18 percent. Aim 7 to 9 h.",url:"",done:false}
     ]}}
   };
 }
 function reSeed(who){
   if(who==="ian") return {
-    // PUBLIC BUILD. Generic sample pipeline only. No real client names, prices, or notes.
     deals:[
-      {id:uid(),title:"123 Maple Street",stage:"Closed",price:"$425,000",close:"Last month",note:""},
-      {id:uid(),title:"456 Oak Avenue",stage:"Closed",price:"$310,000",close:"Last month",note:""},
-      {id:uid(),title:"789 Birch Lane",stage:"Under Contract",price:"$395,000",close:"Next month",note:""},
-      {id:uid(),title:"Sample active listing",stage:"Active",price:"$499,000",close:"On market now",note:""},
-      {id:uid(),title:"Sample coming soon",stage:"Coming Soon",price:"$350,000",close:"Lists soon",note:""},
-      {id:uid(),title:"New prospect",stage:"Prospecting",price:"",close:"",note:"Tap to edit. Your pipeline lives on your device."}
+      {id:"re-matt-snyder",title:"Matt Snyder",stage:"Closed",price:"$797,850",close:"Early May 2026",note:""},
+      {id:"re-lynn-parsons",title:"Lynn Parsons",stage:"Closed",price:"$388,500",close:"Late May 2026",note:""},
+      {id:"re-ashley-gilliam",title:"Ashley Gilliam",stage:"Closed",price:"$378,000",close:"Early June 2026",note:""},
+      {id:"re-matt-brandt",title:"Matt Brandt",stage:"Closed",price:"$453,900",close:"June 2026",note:""},
+      {id:"re-crystal-johnson",title:"Crystal Johnson",stage:"Under Contract",price:"$577,861",close:"August 14, 2026",note:""},
+      {id:"re-allison-spicer-buy",title:"Allison Spicer, buying",stage:"Under Contract",price:"$894,446",close:"Likely late September 2026",note:"The home they are buying. Likely the same clients as the Spicer sale below."},
+      {id:"re-spicer-sell",title:"Chris and Allison Spicer, selling current home",stage:"Under Contract",price:"$474,900",close:"August 2026, exact date TBD",note:"Their current home, sold. Likely the same clients buying the $894,446 above. Confirm the exact close date."},
+      {id:"re-bonks-sell",title:"Bonks, selling",stage:"Under Contract",price:"$625,000",close:"August 19, 2026",note:"Same clients as the Bonks purchase below, a buy and sell."},
+      {id:"re-bonks-buy",title:"Bonks, buying",stage:"Under Contract",price:"$420,000",close:"August 20, 2026",note:"Same clients, buy and sell."},
+      {id:"re-rose-creek",title:"Rose Creek 2 story",stage:"Active",price:"$685,000",close:"Can sell anytime",note:"Active listing."},
+      {id:"re-michelle-miller",title:"Michelle Miller",stage:"Coming Soon",price:"$274,900",close:"Lists Wednesday",note:"Comps need a rerun to verify the list price."},
+      {id:"re-chad-troester",title:"Chad Troester",stage:"Coming Soon",price:"$435,000",close:"Lists Thursday",note:"Comps need a rerun for an accurate list price. They closed on a home they bought July 1 for $520,000."},
+      {id:"re-barkers",title:"Barkers",stage:"Prospecting",price:"About $270,000",close:"Maybe fall",note:"Want to list."},
+      {id:"re-tysdal",title:"Tysdal",stage:"Prospecting",price:"$299,900",close:"Timing unknown, maybe fall",note:"Want to list."},
+      {id:"re-teskes",title:"Teskes",stage:"Prospecting",price:"New construction",close:"Likely done January",note:"New construction listing."},
+      {id:"re-cynthia-willis",title:"Cynthia Willis, 10218 Spyglass Dr",stage:"Coming Soon",price:"$624,900",close:"Listing presentation Wednesday",note:"New client. Motivated seller, moving to Arizona and writing an offer on an AZ home. Prior listing with another agent last year failed. Wants to list with The Scenic Group. CMA being run now, list price to follow."}
     ],
-    leads:[{id:uid(),name:"Sample website inquiry",source:"Website",status:"New",note:"Add your real leads here."}],
-    todos:[{id:uid(),text:"Follow up with a new lead",done:false,due:""},{id:uid(),text:"Prep this week's listing",done:false,due:""},{id:uid(),text:"Update the pipeline and next steps",done:false,due:""}],
-    contacts:[{id:uid(),name:"Add your key contacts here",role:"",detail:""}],
-    neighborhoods:[{id:uid(),name:"Add a target neighborhood",note:""}],
-    marketNotes:"Your weekly numbers, comps, and notes go here.",
-    routineTasks:[{id:uid(),text:"Check new listings and status changes"},{id:uid(),text:"Post or prep one piece of content"},{id:uid(),text:"Follow up one lead or past client"},{id:uid(),text:"Update the pipeline and next steps"}],
+    leads:[{id:uid(),name:"Zillow inquiry, 132nd St ranch",source:"Zillow",status:"New",note:"Wants a 3 bed under 400k in Millard."},{id:uid(),name:"Open house sign in, the Trails",source:"Open house",status:"Warm",note:"Following up Saturday."}],
+    todos:[{id:"ret-comps-miller",text:"Rerun comps for Michelle Miller ($274,900, lists Wednesday)",done:false,due:""},{id:"ret-comps-troester",text:"Rerun comps for Chad Troester (about $445,000 to $449,900, lists Thursday)",done:false,due:""},{id:"ret-spicer-date",text:"Confirm Chris and Allison Spicer close date (August)",done:false,due:""},{id:"ret-cynthia-presentation",text:"Listing presentation for Cynthia Willis (10218 Spyglass) Wednesday.",done:false,due:""},{id:uid(),text:"Sugar Creek neighbor letters, verify door count (60 to 100)",done:false,due:addDays(3)},{id:uid(),text:"Cinnamon Creek prospecting mailer plan",done:false,due:addDays(5)},{id:uid(),text:"Follow up recent Sugar Creek buyers and leads",done:false,due:""}],
+    contacts:[{id:uid(),name:"Chris McCain",role:"Partner, The Scenic Group",detail:"50/50 partner. 10+ yrs experience."},{id:uid(),name:"NP Dodge",role:"Brokerage",detail:"402-659-4432. ian.mccain@npdodge.com"},{id:uid(),name:"Rose Creek Homes",role:"Builder partner",detail:"Mention only when content is about them."}],
+    neighborhoods:[{id:uid(),name:"Sugar Creek Addition",note:"68136, Sarpy, Millard schools. Active farm."},{id:uid(),name:"Cinnamon Creek",note:"Prospecting target."},{id:uid(),name:"Papillion / Elkhorn / Millard",note:"Core corridor."},{id:uid(),name:"Bellevue / Gretna / Bennington",note:"Surrounding metro."}],
+    marketNotes:"The Scenic Group. Ian & Chris McCain, NP Dodge, GPRMLS, Omaha metro.\n\nSource every stat. Do not blend Redfin, Zillow, Realtor.com. Verify comps in GPRMLS.",
+    routineTasks:[{id:uid(),text:"Check new GPRMLS listings and status changes"},{id:uid(),text:"Post or prep one piece of content"},{id:uid(),text:"Follow up one lead or past client"},{id:uid(),text:"Update the pipeline and next steps"}],
     metrics:{ targets:{calls:10,appointments:2,doors:20}, log:{} }, focus:{ minutes:25, count:{} },
-    scripts:[{id:uid(),title:"Just listed / just sold call",body:"Hi [name], this is [your name]. We just [listed / sold] a home in your area and homes nearby are moving. If you have ever wondered what yours is worth, I can send a quick honest read, no pressure."},{id:uid(),title:"Prospecting intro",body:"Hi [name], [your name] here. We have buyers looking in your neighborhood right now. If you have thought about selling, I would love to give you a straight read on your value. No pressure, straight answers."}],
-    goals:[{id:uid(),text:"10 prospecting calls a day",done:false},{id:uid(),text:"Two new listings this month",done:false},{id:uid(),text:"Build a reliable farm area",done:false}]
+    scripts:[{id:uid(),title:"Just Sold neighbor call",body:"Hi [name], Ian with The Scenic Group. We just sold a home over on Olive in Sugar Creek and homes in your area are moving. If you have ever wondered what yours is worth, I can send a quick honest read, no pressure."},{id:uid(),title:"Cinnamon Creek prospecting",body:"Hi [name], Ian McCain here. We are focusing on Cinnamon Creek right now and have buyers looking. If you have thought about selling, I would love to give you a straight read on your value. No pressure, straight answers."}],
+    goals:[{id:uid(),text:"10 prospecting calls a day",done:false},{id:uid(),text:"Two new listings this month",done:false},{id:uid(),text:"Build Cinnamon Creek into a reliable farm",done:false}]
   };
   // chris starter, real estate forward, mostly blank for him to fill
   return {
     deals:[{id:uid(),title:"Add your first deal",stage:"Prospecting",price:"",note:"Tap to edit. Your pipeline lives here."}],
     leads:[],
     todos:[{id:uid(),text:"Set up my pipeline and leads",done:false,due:""},{id:uid(),text:"Call three past clients",done:false,due:""}],
-    contacts:[{id:uid(),name:"Add your key contacts here",role:"",detail:""}],
-    neighborhoods:[{id:uid(),name:"Add a target neighborhood",note:""}],
-    marketNotes:"Your workspace. Drop your notes and numbers here.",
+    contacts:[{id:uid(),name:"Ian McCain",role:"Partner, The Scenic Group",detail:"Son and 50/50 partner. Social, content, photo and video."},{id:uid(),name:"NP Dodge",role:"Brokerage",detail:"402-659-4432."}],
+    neighborhoods:[{id:uid(),name:"Sugar Creek Addition",note:"Shared farm with Ian."},{id:uid(),name:"Cinnamon Creek",note:"Prospecting target."}],
+    marketNotes:"Chris McCain workspace. The Scenic Group, NP Dodge, GPRMLS, Omaha metro. Drop your notes and numbers here.",
     routineTasks:[{id:uid(),text:"Check new listings and status changes"},{id:uid(),text:"Follow up one lead or past client"},{id:uid(),text:"Update the pipeline"}],
     metrics:{ targets:{calls:10,appointments:2,doors:15}, log:{} }, focus:{ minutes:25, count:{} },
     scripts:[{id:uid(),title:"Past client check in",body:"Hi [name], Chris McCain with The Scenic Group. Just checking in. If you or anyone you know is thinking about a move, I would love to help. No pressure, straight answers."}],
