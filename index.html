@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Ian">
 <title>Ian Dashboard</title>
-<meta name="build" content="v21 build 24 (2026-07-07)">
+<meta name="build" content="v21 build 25 (2026-07-07)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -731,8 +731,8 @@ const sess=(function(){ let ok=false,mem={}; try{ const t="__s__"; window.sessio
   return { get(k){ try{ return ok?window.sessionStorage.getItem(k):(mem[k]||null);}catch(e){return mem[k]||null;} }, set(k,v){ try{ if(ok)window.sessionStorage.setItem(k,v); else mem[k]=v;}catch(e){mem[k]=v;} }, remove(k){ try{ if(ok)window.sessionStorage.removeItem(k);}catch(e){} delete mem[k]; } };
 })();
 const KEYS={ ian:"ianDashboard.v2", chris:"chrisDashboard.v2" };
-const SEED_VERSION=11;
-const APP_BUILD="v21 build 24 (2026-07-07)";
+const SEED_VERSION=12;
+const APP_BUILD="v21 build 25 (2026-07-07)";
 const uid=()=>Math.random().toString(36).slice(2,9);
 function todayKey(d){ d=d||new Date(); const p=n=>String(n).padStart(2,"0"); return d.getFullYear()+"-"+p(d.getMonth()+1)+"-"+p(d.getDate()); }
 const NOW=new Date(), TODAY=todayKey(NOW), DOW=NOW.getDay();
@@ -848,6 +848,7 @@ function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]
       if(fresh&&fresh.gym&&Array.isArray(fresh.gym.split)){ if(!state.gym) state.gym={}; state.gym.split=mergeGymSplit(state.gym.split,fresh.gym.split); }
       try{ if(state.pickleball&&Array.isArray(state.pickleball.sessions)){ var _ps=state.pickleball.sessions.map(function(x){return x&&x.id;}); if(_ps.indexOf("pk-20260706-league")<0){ state.pickleball.sessions.push({id:"pk-20260706-league",date:"2026-07-06",kind:"League",duration:"2h 44m 35s",calories:1897,activeCalories:1636,avgHr:139,maxHr:181,minHr:84,note:"League night, Omaha, 6:29 to 9:13 PM. HR zones Z1 1:14:42, Z2 29:41, Z3 37:08, Z4 22:06, Z5 0:50. Recovery 136 to 129 (1 min) to 119 (2 min)."}); } } }catch(e){}
       try{ if(state.context){ if(!state.context.dailyLog) state.context.dailyLog={}; var _D="2026-07-06"; if(!state.context.dailyLog[_D]) state.context.dailyLog[_D]={note:"",summary:""}; var _n=state.context.dailyLog[_D].note||""; if(_n.indexOf("Pickleball league")<0){ state.context.dailyLog[_D].note=(_n?_n+" ":"")+"Pickleball league (Omaha) 6:29 to 9:13 PM: 2h 44m 35s, 1,897 cal (1,636 active), avg HR 139, max 181, min 84."; } } }catch(e){}
+      try{ var _clrFC="Check if any workout days need lightened, do a little more workout research to see if there’s somewhere to improve, specefic to me of course"; if(state.context && typeof state.context.forClaude==="string" && state.context.forClaude.trim()===_clrFC.trim()){ state.context.forClaude=""; if(!state.context.dailyLog) state.context.dailyLog={}; if(!state.context.dailyLog["2026-07-07"]) state.context.dailyLog["2026-07-07"]={note:"",summary:""}; if(!state.context.dailyLog["2026-07-07"].forClaudeArchive){ state.context.dailyLog["2026-07-07"].forClaudeArchive=_clrFC; state.context.dailyLog["2026-07-07"].claudeAction="Archived and cleared on the 07.07.2026 deploy."; } } }catch(e){}
     }
     state.meta.seedVersion=SEED_VERSION;
   }catch(e){}
