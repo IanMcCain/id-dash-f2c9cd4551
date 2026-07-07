@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Ian">
 <title>Ian Dashboard</title>
-<meta name="build" content="v21 build 27 (2026-07-07)">
+<meta name="build" content="v21 build 28 (2026-07-07)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -732,7 +732,7 @@ const sess=(function(){ let ok=false,mem={}; try{ const t="__s__"; window.sessio
 })();
 const KEYS={ ian:"ianDashboard.v2", chris:"chrisDashboard.v2" };
 const SEED_VERSION=12;
-const APP_BUILD="v21 build 27 (2026-07-07)";
+const APP_BUILD="v21 build 28 (2026-07-07)";
 const uid=()=>Math.random().toString(36).slice(2,9);
 function todayKey(d){ d=d||new Date(); const p=n=>String(n).padStart(2,"0"); return d.getFullYear()+"-"+p(d.getMonth()+1)+"-"+p(d.getDate()); }
 const NOW=new Date(), TODAY=todayKey(NOW), DOW=NOW.getDay();
@@ -871,6 +871,20 @@ function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]
       state.meta.lastNoteDay=TODAY;
     }
   }catch(e){}
+  /* v21 build 28: Real Estate today's objective clears on a true new-day rollover, same robust pattern
+     as the daily note. Archives objectives.re into the day log first, then clears only that field.
+     Non-destructive, no SEED_VERSION bump. */
+  try{ if(!state.meta) state.meta={}; if(!state.objectives) state.objectives={};
+    if(state.meta.lastObjDay!==TODAY){
+      var _reObj=(typeof state.objectives.re==="string")?state.objectives.re:"";
+      if(_reObj.trim()){ if(!state.context) state.context={forClaude:"",dailyLog:{}}; if(!state.context.dailyLog) state.context.dailyLog={}; var _oK=state.meta.lastObjDay||TODAY; if(!state.context.dailyLog[_oK]) state.context.dailyLog[_oK]={note:"",summary:""}; var _oEx=state.context.dailyLog[_oK].reObjectiveArchive; if(!_oEx){ state.context.dailyLog[_oK].reObjectiveArchive=_reObj; } else if(_oEx.indexOf(_reObj)<0){ state.context.dailyLog[_oK].reObjectiveArchive=_oEx+"\n\n"+_reObj; } }
+      state.objectives.re="";
+      state.meta.lastObjDay=TODAY;
+    }
+  }catch(e){}
+  /* v21 build 28: seed example Future ideas for 2026-07-07 so the section shows content until the
+     daily agent writes fresh ones. Idempotent and add only. The agent replaces this each morning. */
+  try{ if(profile==="ian"){ if(!state.futureIdeas||typeof state.futureIdeas!=="object") state.futureIdeas={}; if(!state.futureIdeas["2026-07-07"]) state.futureIdeas["2026-07-07"]=[ {id:"fi-20260707-1",text:"Film a 30 second Sugar Creek market update and post it as a Coming Soon teaser.",url:""}, {id:"fi-20260707-2",text:"Repost two customer car photos this week and tag them with your Solara handle.",url:""}, {id:"fi-20260707-3",text:"Add a 10 minute third shot drop block before league to sharpen for the July 25 tournament.",url:""} ]; } }catch(e){}
   focusObj.running=false; try{clearInterval(focusObj.timerId);}catch(e){} focusObj.remaining=null;
   applyAccent(); dailyReset(); save(true);
 }
@@ -980,7 +994,7 @@ const STAGE_COL={ "Closed":"green","Under Contract":"blue","Active":"orange","Co
 const RE_GROUPS=[["Under Contract","Under contract / pending"],["Coming Soon","Coming soon"],["Active","Active listings"],["Closed","Closed"],["Prospecting","Prospects"],["Just Sold","Just sold"],["Follow up","Follow up"]];
 let reStageOpen={ "Under Contract":true,"Coming Soon":true,"Active":true,"Building":true,"Closed":false,"Prospecting":false,"Just Sold":false,"Follow up":false,"Other":false };
 let reDealOpen={};
-let reToolOpen={};
+let reToolOpen={"Workout routine":true};
 let reView="landing";
 function stagePill(stage){ return el("span","stpill c-"+(STAGE_COL[stage]||"blue"),stage); }
 function dealEditors(parent,d){
@@ -1106,16 +1120,21 @@ function reGoalsCard(parent){
   parent.appendChild(c);
 }
 function homeUpcomingCard(parent){
+  const c=card(); const b=c._body;
+  b.appendChild(el("div","small muted","Coming up")); b.lastChild.style.marginBottom="2px";
+  b.appendChild(el("div","small dim","Your next moves, not the full calendar.")); b.lastChild.style.marginBottom="4px";
+  let any=false;
+  try{ let over=(typeof sphereOverdue==="function")?sphereOverdue():[]; over=over.slice(0,3); if(over.length){ any=true; const h=el("div","small muted"); h.style.marginTop="11px"; h.textContent="Reach out next"; b.appendChild(h); over.forEach(function(k){ const r=el("div","mrow"); r.appendChild(el("div","ml",k.name||"(no name)")); const ds=(typeof daysSinceDate==="function")?daysSinceDate(k.lastContacted):null; const dd=el("div","small dim"); dd.textContent=(k.lastContacted&&ds!=null)?("last "+ds+"d ago"):"no contact logged"; r.appendChild(dd); b.appendChild(r); }); } }catch(e){}
   const deals=state.realEstate.deals||[];
   const up=deals.filter(d=>d.close && (d.stage==="Under Contract"||d.stage==="Coming Soon")).slice(0,3);
-  const todos=(state.realEstate.todos||[]).filter(t=>!t.done).slice(0,3);
-  const c=card(); const b=c._body;
-  b.appendChild(el("div","small muted","Coming up"));
-  if(up.length){ up.forEach(d=>{ const r=el("div","mrow"); const l=el("div","ml"); l.appendChild(document.createTextNode(d.title)); l.appendChild(el("small",null,d.stage)); r.appendChild(l); const dd=el("div","small dim"); dd.textContent=d.close; r.appendChild(dd); b.appendChild(r); }); }
-  const evs=(state.events||[]).slice().filter(e=>daysUntil(e.date)>=0).sort((a,b)=>String(a.date).localeCompare(String(b.date))).slice(0,3);
-  if(evs.length){ const h=el("div","small muted"); h.style.marginTop="13px"; h.textContent="On the calendar"; b.appendChild(h); evs.forEach(ev=>{ const du=daysUntil(ev.date); const r=el("div","mrow"); r.appendChild(el("div","ml",ev.title)); const dd=el("div","small dim"); dd.textContent=(du===0?"today":du===1?"tomorrow":"in "+du+" days"); r.appendChild(dd); b.appendChild(r); }); }
-  if(todos.length){ const h=el("div","small muted"); h.style.marginTop="13px"; h.textContent="Follow ups"; b.appendChild(h); todos.forEach(t=>{ const r=el("div","mrow"); r.appendChild(el("div","ml",t.text)); b.appendChild(r); }); }
-  if(!up.length && !todos.length && !evs.length){ b.appendChild(el("div","empty","Nothing scheduled.")); }
+  const dueTodos=(state.realEstate.todos||[]).filter(t=>!t.done && t.due).sort((a,b)=>String(a.due).localeCompare(String(b.due))).slice(0,3);
+  if(up.length||dueTodos.length){ any=true; const h=el("div","small muted"); h.style.marginTop="13px"; h.textContent="Deadlines and next steps"; b.appendChild(h);
+    up.forEach(d=>{ const r=el("div","mrow"); const l=el("div","ml"); l.appendChild(document.createTextNode(d.title)); l.appendChild(el("small",null,d.stage)); r.appendChild(l); const dd=el("div","small dim"); dd.textContent=d.close; r.appendChild(dd); b.appendChild(r); });
+    dueTodos.forEach(t=>{ const r=el("div","mrow"); r.appendChild(el("div","ml",t.text)); const dd=el("div","small dim"); dd.textContent=(typeof dueLabel==="function")?dueLabel(t.due):t.due; r.appendChild(dd); b.appendChild(r); });
+  }
+  const openTodos=(state.realEstate.todos||[]).filter(t=>!t.done && !t.due).slice(0,2);
+  if(openTodos.length){ any=true; const h=el("div","small muted"); h.style.marginTop="13px"; h.textContent="Keep moving"; b.appendChild(h); openTodos.forEach(t=>{ const r=el("div","mrow"); r.appendChild(el("div","ml",t.text)); b.appendChild(r); }); }
+  if(!any){ b.appendChild(el("div","empty","You are clear. Add a follow up or a reach out.")); }
   parent.appendChild(c);
 }
 /* ===== v21 Sphere / CRM ===== */
@@ -1244,7 +1263,10 @@ function reViewTools(v){
 let gymDayIdx=DOW;
 let gymShowWeek=false;
 function gymWeek(v){ (state.gym.split||[]).forEach(function(d,i){ const c=card(i===DOW?"a-blue":null); const b=c._body; const top=el("div","between"); top.appendChild(el("h3",null,d.day+", "+cleanFocus(d.focus))); top.appendChild(el("span","pill b",d.play)); b.appendChild(top); if(d.note){ const n=el("div","small muted"); n.style.margin="5px 0 4px"; n.textContent=d.note; b.appendChild(n); } (d.exercises||[]).forEach(function(e){ const row=el("div","ex"); row.appendChild(el("span","exname",e.name)); row.appendChild(el("span","scheme",e.scheme)); b.appendChild(row); }); v.appendChild(c); }); }
-function buildGym(v){ objectiveCard(v,"gym","a-blue"); sect(v,cleanFocus(daySplit(DOW).focus),daySplit(DOW).day+", today"); safe(v,()=>gymToday(v),"Workout"); sect(v,"Water (cups)","log every cup, aim 12"); safe(v,()=>waterCard(v),"Water"); sect(v,"Fitness goals"); safe(v,()=>goalsList(v,state.gym.goals||(state.gym.goals=[])),"Gym goals"); sect(v,"Nutrition and supplements"); safe(v,()=>nutritionModule(v),"Nutrition"); sect(v,"Daily habits"); safe(v,()=>habitsModule(v),"Habits"); sect(v,"Notes"); safe(v,()=>textNotes(v,()=>state.gym.notes,x=>state.gym.notes=x,"Training notes, PRs...",120),"Gym notes"); }
+function buildGym(v){ objectiveCard(v,"gym","a-blue");
+  collapseTool(v,"Workout routine","today's session and full week",()=>{ sect(v,cleanFocus(daySplit(DOW).focus),daySplit(DOW).day+", today"); gymToday(v); });
+  collapseTool(v,"Nutrition, water and supplements","targets, water, supplements and vitamins",()=>{ sect(v,"Water (cups)","log every cup, aim 12"); waterCard(v); nutritionModule(v); });
+  sect(v,"Fitness goals"); safe(v,()=>goalsList(v,state.gym.goals||(state.gym.goals=[])),"Gym goals"); sect(v,"Daily habits"); safe(v,()=>habitsModule(v),"Habits"); sect(v,"Notes"); safe(v,()=>textNotes(v,()=>state.gym.notes,x=>state.gym.notes=x,"Training notes, PRs...",120),"Gym notes"); }
 function gymToday(parent){ const day=daySplit(DOW); const log=state.gym.logs[TODAY]||(state.gym.logs[TODAY]={done:{},note:""}); const total=day.exercises.length, dc=day.exercises.filter(e=>log.done[e.id]).length;
   summaryGrid(parent,[ fracTile({label:"Today's session",color:"orange",done:dc,goal:total||1,unit:"sets"}), statTile({label:"This week",color:"orange",value:workoutsThisWeek(),unit:"days",sub:"Workouts logged",spark:weekWorkoutSpark(),sparkH:46}) ]);
   const wc=card("a-blue"); const wb=wc._body; wb.appendChild(el("span","pill b","Warm up first")); const wn=el("div","small muted"); wn.style.marginTop="8px"; wn.textContent=(state.gym&&state.gym.warmup)||"Warm up before you lift."; wb.appendChild(wn); parent.appendChild(wc);
@@ -1288,12 +1310,17 @@ function buildMore(v){ sect(v,"Explore"); launchCard(v,"🎾","Pickleball","Goal
   const _dcx=sect(v,"Daily context, for Claude"); _dcx.insertBefore(claudeAvatar("av-md chip"), _dcx.firstChild); safe(v,()=>contextModule(v),"Context");
   sect(v,"Goals"); safe(v,()=>goalsListH(v,state.goals),"Goals");
   sect(v,"To do list"); safe(v,()=>todosModule(v),"To do");
-  if(!hidden("ideas")){ sect(v,"Ideas / Future"); safe(v,()=>ideasModule(v),"Ideas"); sect(v,"Notes"); safe(v,()=>textNotes(v,()=>state.notes,x=>state.notes=x,"Type anything...",150),"Notes"); }
+  if(!hidden("ideas")){ sect(v,"Future ideas","fresh from Claude daily"); safe(v,()=>ideasModule(v),"Ideas"); }
 }
-function goalsListH(parent,arr){ const c=card(); const b=c._body; if(!arr.length)b.appendChild(el("div","empty","No goals yet.")); arr.forEach(g=>{ b.appendChild(checkItem(g.done,g.text,g.horizon||null,()=>{g.done=!g.done;save();render();},()=>{ const i=arr.indexOf(g); if(i>-1)arr.splice(i,1); save(); render(); })); }); let hz="Now"; const hc=el("div"); hc.style.marginTop="12px"; const setc=()=>{ [...hc.querySelectorAll(".chip")].forEach(ch=>ch.classList.toggle("on",ch.textContent===hz)); }; hc.appendChild(chipRow(["Now","Phase 2","Standing"],hz,h=>{hz=h;setc();})); b.appendChild(hc); const wrap=el("div","addrow"); const inp=el("input","in"); inp.placeholder="New goal..."; const bb=el("button","btn sm","Add"); const fire=()=>{ const val=inp.value.trim(); if(!val)return; arr.push({id:uid(),text:val,horizon:hz,done:false}); inp.value=""; save(); render(); }; bb.onclick=fire; inp.onkeydown=e=>{if(e.key==="Enter")fire();}; wrap.appendChild(inp); wrap.appendChild(bb); b.appendChild(wrap); parent.appendChild(c); }
+function goalsListH(parent,arr){ const c=card(); const b=c._body; if(!arr.length)b.appendChild(el("div","empty","No goals yet.")); arr.forEach(g=>{ b.appendChild(checkItem(g.done,g.text,null,()=>{g.done=!g.done;save();render();},()=>{ const i=arr.indexOf(g); if(i>-1)arr.splice(i,1); save(); render(); })); }); const wrap=el("div","addrow"); const inp=el("input","in"); inp.placeholder="New goal..."; const bb=el("button","btn sm","Add"); const fire=()=>{ const val=inp.value.trim(); if(!val)return; arr.push({id:uid(),text:val,done:false}); inp.value=""; save(); render(); }; bb.onclick=fire; inp.onkeydown=e=>{if(e.key==="Enter")fire();}; wrap.appendChild(inp); wrap.appendChild(bb); b.appendChild(wrap); parent.appendChild(c); }
 function contextModule(parent){ updateDailySummary(); const c=card("a-blue"); const b=c._body; b.appendChild(el("div","small muted","A clean daily rollup the agent reads. Auto fills as you use the app.")); b.firstChild.style.marginBottom="8px"; const box=el("div","stat"); box.appendChild(el("div","k",fmtShort(TODAY)+" summary")); const val=el("div","v"); val.style.fontSize="13.5px"; val.style.fontWeight="600"; val.style.lineHeight="1.45"; val.textContent=state.context.dailyLog[TODAY].summary||todaySummary(); box.appendChild(val); b.appendChild(box); b.appendChild(el("div","small muted","Your note for today")); b.lastChild.style.margin="11px 0 6px"; const ta=el("textarea","in"); ta.style.minHeight="76px"; ta.placeholder="What happened today, how you felt..."; ta.value=state.context.dailyLog[TODAY].note||""; ta.oninput=()=>{ state.context.dailyLog[TODAY].note=ta.value; save(); }; b.appendChild(ta); parent.appendChild(c); const c2=card(); c2._body.appendChild(el("div","small muted","Notes and instructions for Claude")); c2._body.firstChild.style.marginBottom="6px"; const ta2=el("textarea","in"); ta2.style.minHeight="86px"; ta2.placeholder="Standing context for the daily agent..."; ta2.value=state.context.forClaude||""; ta2.oninput=()=>{ state.context.forClaude=ta2.value; save(); }; c2._body.appendChild(ta2); parent.appendChild(c2); }
 function todosModule(parent){ const c=card(); const b=c._body; if(!state.todos.length)b.appendChild(el("div","empty","All clear.")); state.todos.forEach(t=>{ b.appendChild(checkItem(t.done,t.text,null,()=>{t.done=!t.done;save();render();},()=>{state.todos=state.todos.filter(x=>x.id!==t.id);save();render();})); }); b.appendChild(adder("Add a task...",x=>{state.todos.push({id:uid(),text:x,done:false});save();render();})); parent.appendChild(c); }
-function ideasModule(parent){ const c=card(); const b=c._body; const ix=state.ideas; if(!ix.length)b.appendChild(el("div","empty","No ideas yet.")); ix.forEach(i=>{ b.appendChild(checkItem(i.done,i.text,i.source==="agent"?"from agent":null,()=>{i.done=!i.done;save();render();},()=>{state.ideas=ix.filter(x=>x.id!==i.id);save();render();})); }); b.appendChild(adder("Add an idea...",x=>{ix.push({id:uid(),text:x,source:"ian",done:false});save();render();})); parent.appendChild(c); }
+function ideasModule(parent){ if(!state.futureIdeas||typeof state.futureIdeas!=="object") state.futureIdeas={}; const today=state.futureIdeas[TODAY]||[];
+  const fc=card("a-blue"); const fb=fc._body; fb.appendChild(el("div","small muted","Fresh ideas from Claude, today")); fb.firstChild.style.marginBottom="8px";
+  if(!today.length){ fb.appendChild(el("div","empty","Your daily agent drops fresh ideas here each morning.")); }
+  else { today.forEach(function(it){ const row=el("div","mrow"); const l=el("div","ml"); l.appendChild(document.createTextNode(it.text)); if(it.url){ const a=el("a",null,"open"); a.href=it.url; a.target="_blank"; a.rel="noopener"; a.style.cssText="margin-left:8px;color:var(--accent2);font-weight:700;font-size:12px"; l.appendChild(a); } row.appendChild(l); fb.appendChild(row); }); }
+  parent.appendChild(fc);
+  const c=card(); const b=c._body; b.appendChild(el("div","small muted","Your saved ideas")); b.firstChild.style.marginBottom="8px"; const ix=state.ideas; if(!ix.length)b.appendChild(el("div","empty","No saved ideas yet.")); ix.forEach(i=>{ b.appendChild(checkItem(i.done,i.text,i.source==="agent"?"from agent":null,()=>{i.done=!i.done;save();render();},()=>{state.ideas=ix.filter(x=>x.id!==i.id);save();render();})); }); b.appendChild(adder("Add an idea...",x=>{ix.push({id:uid(),text:x,source:"ian",done:false});save();render();})); parent.appendChild(c); }
 function checklistModule(parent){ const blocks=[["morning","Morning"],["day","Day"],["evening","Evening"]]; const clog=state.routine.checklistLog[TODAY]||(state.routine.checklistLog[TODAY]={}); blocks.forEach(function(bk){ const key=bk[0],label=bk[1]; const lbl=el("div","small muted"); lbl.style.margin="4px 2px 8px"; lbl.style.fontWeight="800"; lbl.textContent=label; parent.appendChild(lbl); const items=state.routine.checklist[key]; const c=card(); const b=c._body; if(!items.length)b.appendChild(el("div","empty","Nothing here yet.")); items.forEach(it=>{ b.appendChild(checkItem(!!clog[it.id],it.text,null,()=>{ if(clog[it.id])delete clog[it.id]; else clog[it.id]=true; save(); render(); },()=>{state.routine.checklist[key]=items.filter(x=>x.id!==it.id);save();render();})); }); b.appendChild(adder("Add to "+label.toLowerCase()+"...",t=>{items.push({id:uid(),text:t});save();render();})); parent.appendChild(c); }); }
 
 /* ===== CHRIS pages ===== */
