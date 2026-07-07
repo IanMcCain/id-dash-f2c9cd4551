@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Ian">
 <title>Ian Dashboard</title>
-<meta name="build" content="v21 build 28 (2026-07-07)">
+<meta name="build" content="v21 build 29 (2026-07-07)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -732,7 +732,7 @@ const sess=(function(){ let ok=false,mem={}; try{ const t="__s__"; window.sessio
 })();
 const KEYS={ ian:"ianDashboard.v2", chris:"chrisDashboard.v2" };
 const SEED_VERSION=12;
-const APP_BUILD="v21 build 28 (2026-07-07)";
+const APP_BUILD="v21 build 29 (2026-07-07)";
 const uid=()=>Math.random().toString(36).slice(2,9);
 function todayKey(d){ d=d||new Date(); const p=n=>String(n).padStart(2,"0"); return d.getFullYear()+"-"+p(d.getMonth()+1)+"-"+p(d.getDate()); }
 const NOW=new Date(), TODAY=todayKey(NOW), DOW=NOW.getDay();
@@ -1122,18 +1122,26 @@ function reGoalsCard(parent){
 function homeUpcomingCard(parent){
   const c=card(); const b=c._body;
   b.appendChild(el("div","small muted","Coming up")); b.lastChild.style.marginBottom="2px";
-  b.appendChild(el("div","small dim","Your next moves, not the full calendar.")); b.lastChild.style.marginBottom="4px";
+  b.appendChild(el("div","small dim","Things to do, not your calendar.")); b.lastChild.style.marginBottom="4px";
   let any=false;
-  try{ let over=(typeof sphereOverdue==="function")?sphereOverdue():[]; over=over.slice(0,3); if(over.length){ any=true; const h=el("div","small muted"); h.style.marginTop="11px"; h.textContent="Reach out next"; b.appendChild(h); over.forEach(function(k){ const r=el("div","mrow"); r.appendChild(el("div","ml",k.name||"(no name)")); const ds=(typeof daysSinceDate==="function")?daysSinceDate(k.lastContacted):null; const dd=el("div","small dim"); dd.textContent=(k.lastContacted&&ds!=null)?("last "+ds+"d ago"):"no contact logged"; r.appendChild(dd); b.appendChild(r); }); } }catch(e){}
+  try{
+    const sph=(typeof sphereList==="function")?sphereList():[];
+    let over=(typeof sphereOverdue==="function")?sphereOverdue():[];
+    over=over.slice().sort(function(a,bb){ var da=(typeof daysSinceDate==="function")?daysSinceDate(a.lastContacted):null; var db=(typeof daysSinceDate==="function")?daysSinceDate(bb.lastContacted):null; return (db==null?1e9:db)-(da==null?1e9:da); }).slice(0,3);
+    if(over.length){ any=true; const h=el("div","small muted"); h.style.marginTop="11px"; h.textContent="Reach out now"; b.appendChild(h); over.forEach(function(k){ const r=el("div","mrow"); r.appendChild(el("div","ml",k.name||"(no name)")); const ds=(typeof daysSinceDate==="function")?daysSinceDate(k.lastContacted):null; const dd=el("div","small dim"); dd.textContent=(k.lastContacted&&ds!=null)?("overdue, last "+ds+"d ago"):"overdue, no contact logged"; r.appendChild(dd); b.appendChild(r); }); }
+    let upNext=null,upDays=null;
+    sph.forEach(function(k){ if(typeof contactOverdue==="function" && contactOverdue(k)) return; var ds=(typeof daysSinceDate==="function")?daysSinceDate(k.lastContacted):null; if(ds==null) return; var cad=(k.cadence)||90; var left=cad-ds; if(left>=0 && (upDays==null||left<upDays)){ upDays=left; upNext=k; } });
+    if(upNext){ any=true; const h=el("div","small muted"); h.style.marginTop="11px"; h.textContent="Next reach out"; b.appendChild(h); const r=el("div","mrow"); r.appendChild(el("div","ml",upNext.name||"(no name)")); const dd=el("div","small dim"); dd.textContent=(upDays===0?"today":upDays===1?"in 1 day":"in "+upDays+" days"); r.appendChild(dd); b.appendChild(r); }
+  }catch(e){}
   const deals=state.realEstate.deals||[];
   const up=deals.filter(d=>d.close && (d.stage==="Under Contract"||d.stage==="Coming Soon")).slice(0,3);
-  const dueTodos=(state.realEstate.todos||[]).filter(t=>!t.done && t.due).sort((a,b)=>String(a.due).localeCompare(String(b.due))).slice(0,3);
+  const dueTodos=(state.realEstate.todos||[]).filter(t=>!t.done && t.due).sort((a,bb)=>String(a.due).localeCompare(String(bb.due))).slice(0,3);
   if(up.length||dueTodos.length){ any=true; const h=el("div","small muted"); h.style.marginTop="13px"; h.textContent="Deadlines and next steps"; b.appendChild(h);
     up.forEach(d=>{ const r=el("div","mrow"); const l=el("div","ml"); l.appendChild(document.createTextNode(d.title)); l.appendChild(el("small",null,d.stage)); r.appendChild(l); const dd=el("div","small dim"); dd.textContent=d.close; r.appendChild(dd); b.appendChild(r); });
     dueTodos.forEach(t=>{ const r=el("div","mrow"); r.appendChild(el("div","ml",t.text)); const dd=el("div","small dim"); dd.textContent=(typeof dueLabel==="function")?dueLabel(t.due):t.due; r.appendChild(dd); b.appendChild(r); });
   }
   const openTodos=(state.realEstate.todos||[]).filter(t=>!t.done && !t.due).slice(0,2);
-  if(openTodos.length){ any=true; const h=el("div","small muted"); h.style.marginTop="13px"; h.textContent="Keep moving"; b.appendChild(h); openTodos.forEach(t=>{ const r=el("div","mrow"); r.appendChild(el("div","ml",t.text)); b.appendChild(r); }); }
+  if(openTodos.length){ any=true; const h=el("div","small muted"); h.style.marginTop="13px"; h.textContent="Open next steps"; b.appendChild(h); openTodos.forEach(t=>{ const r=el("div","mrow"); r.appendChild(el("div","ml",t.text)); b.appendChild(r); }); }
   if(!any){ b.appendChild(el("div","empty","You are clear. Add a follow up or a reach out.")); }
   parent.appendChild(c);
 }
@@ -1303,8 +1311,32 @@ function buildPickle(v){ const pb=state.pickleball;
 }
 function buildStats(v){ safe(v,()=>{ const wk=workoutsThisWeek(); const hs=(state.routine&&state.routine.habits)||[]; const hD=hs.filter(h=>h.log&&h.log[TODAY]).length; const water=(state.nutrition&&state.nutrition.water&&state.nutrition.water[TODAY])||0; const m=(state.realEstate.metrics&&state.realEstate.metrics.log&&state.realEstate.metrics.log[TODAY])||{}; const cg=(state.realEstate.metrics&&state.realEstate.metrics.targets&&state.realEstate.metrics.targets.calls)||10; const sp=weekWorkoutSpark(); sect(v,"Summary","this week and today"); summaryGrid(v,[ fracTile({label:"Workouts",color:"orange",done:wk,goal:5,unit:"days",tab:"gym"}), fracTile({label:"Habits",color:"green",done:hD,goal:hs.length||7,unit:"today",tab:"gym"}), fracTile({label:"Water",color:"cyan",done:water,goal:12,unit:"cups",tab:"gym"}), fracTile({label:"RE calls",color:"blue",done:m.calls||0,goal:cg,unit:"today",tab:"re"}) ]); v.appendChild(statTile({label:"Workout completion",color:"orange",value:(sp.slice(-1)[0]||0)+"%",unit:"today",sub:"Last 7 days",spark:sp,sparkH:64})); },"Stats summary"); sect(v,"This week's workouts"); const c1=card("a-blue"); c1._body.appendChild(el("div","small muted","Percent of each day's session logged")); c1._body.lastChild.style.marginBottom="6px"; const wItems=[]; for(let i=6;i>=0;i--){ const d=new Date(); d.setDate(d.getDate()-i); const k=todayKey(d); const dow=d.getDay(); const day=daySplit(dow); const log=state.gym.logs[k]||{done:{}}; const tot=day.exercises.length||1; const done=day.exercises.filter(e=>log.done[e.id]).length; wItems.push({label:["Su","Mo","Tu","We","Th","Fr","Sa"][dow],pct:Math.round(done/tot*100)}); } c1._body.appendChild(barChart(wItems,"",132)); v.appendChild(c1);
   sectG(v,"Habit consistency"); const c2=card("a-green"); const hItems=[]; const hsn=state.routine.habits.length||1; for(let i=6;i>=0;i--){ const d=new Date(); d.setDate(d.getDate()-i); const k=todayKey(d); const done=state.routine.habits.filter(h=>h.log[k]).length; hItems.push({label:["Su","Mo","Tu","We","Th","Fr","Sa"][d.getDay()],pct:Math.round(done/hsn*100)}); } c2._body.appendChild(barChart(hItems,"g",132)); const sl=el("div","small dim"); sl.style.marginTop="8px"; sl.innerHTML='Current streak: <span class="countup" data-n="'+habitStreak()+'">'+habitStreak()+'</span> days'; c2._body.appendChild(sl); v.appendChild(c2);
-  sect(v,"Real estate pipeline"); const c3=card("a-gold"); const counts={}; RESTAGES.forEach(x=>counts[x]=0); state.realEstate.deals.forEach(d=>{ counts[d.stage]=(counts[d.stage]||0)+1; }); const maxc=Math.max(1,...Object.values(counts)); const abbr={"Prospecting":"Prosp","Active":"Active","Under Contract":"UC","Just Sold":"Sold","Closed":"Closed","Follow up":"F.up"}; const pItems=["Just Sold","Prospecting","Active","Under Contract"].map(x=>({label:abbr[x],pct:Math.round((counts[x]||0)/maxc*100),cap:counts[x]||0})); c3._body.appendChild(barChart(pItems,"",104)); const reOpen=state.realEstate.todos.filter(t=>!t.done).length; const rl=el("div","small dim"); rl.style.marginTop="8px"; rl.textContent=state.realEstate.deals.length+" in pipeline, "+reOpen+" follow ups open"; c3._body.appendChild(rl); v.appendChild(c3);
-  sect(v,"To do"); const tDone=state.todos.filter(t=>t.done).length; const gDone=state.goals.filter(g=>g.done).length,gTot=state.goals.length; v.appendChild(ringCard(tDone,state.todos.length,"To do list",gDone+" of "+gTot+" goals done. Manage in More.",true,null));
+  sect(v,"Real estate pipeline","active stages and closed");
+  const _deals=state.realEstate.deals||[];
+  const _counts={}; RESTAGES.forEach(x=>_counts[x]=0); _deals.forEach(d=>{ _counts[d.stage]=(_counts[d.stage]||0)+1; });
+  const ACTIVE_STAGES=[["Prospecting","Prosp"],["Buyer","Buyer"],["Coming Soon","Soon"],["Active","Active"],["Building","Build"],["Under Contract","UC"],["Just Sold","J.Sold"],["Follow up","F.up"]];
+  const _activeItems=ACTIVE_STAGES.filter(g=>_counts[g[0]]>0).map(g=>({stage:g[0],label:g[1],cap:_counts[g[0]]}));
+  const _maxA=Math.max(1,..._activeItems.map(i=>i.cap));
+  _activeItems.forEach(i=>{ i.pct=Math.round(i.cap/_maxA*100); });
+  const _activeTot=_activeItems.reduce((a,i)=>a+i.cap,0);
+  const _closedN=_counts["Closed"]||0; const _closedVol=_deals.filter(d=>d.stage==="Closed").reduce((a,d)=>a+priceNum(d.price),0);
+  const c3=card("a-gold"); const b3=c3._body;
+  b3.appendChild(el("div","small muted","Active pipeline by stage")); b3.firstChild.style.marginBottom="6px";
+  if(_activeItems.length) b3.appendChild(barChart(_activeItems,"",112)); else b3.appendChild(el("div","empty","No active pipeline right now."));
+  const _rl=el("div","small dim"); _rl.style.marginTop="8px"; _rl.textContent=_activeTot+" in active pipeline, "+_closedN+" closed, "+_deals.length+" total"; b3.appendChild(_rl);
+  v.appendChild(c3);
+  const cc=card("a-green"); const cb=cc._body; cb.appendChild(el("div","small muted","Closed, done business")); cb.firstChild.style.marginBottom="6px"; const _cg=el("div","between"); const _cL=el("div"); _cL.style.cssText="font-weight:800;font-size:21px"; _cL.textContent=_closedN+(_closedN===1?" deal":" deals"); _cg.appendChild(_cL); const _cR=el("div","small dim"); _cR.style.cssText="font-weight:700;font-size:15px"; _cR.textContent=fmtMoney(_closedVol)+" volume"; _cg.appendChild(_cR); cb.appendChild(_cg); v.appendChild(cc);
+  sect(v,"Next actions","what needs doing");
+  const _over=(typeof sphereOverdue==="function")?sphereOverdue().length:0;
+  const _dueSoon=(state.realEstate.todos||[]).filter(t=>!t.done && t.due && daysUntil(t.due)<=7).length;
+  const _openFollow=(state.realEstate.todos||[]).filter(t=>!t.done).length;
+  const nc=card("a-blue"); const nb=nc._body;
+  const _actRow=function(label,val,hint){ const r=el("div","mrow"); const l=el("div","ml"); l.appendChild(document.createTextNode(label)); if(hint){ l.appendChild(el("small",null,hint)); } r.appendChild(l); const vv=el("div"); vv.style.cssText="font-weight:800;font-size:18px;font-variant-numeric:tabular-nums"; vv.textContent=String(val); r.appendChild(vv); nb.appendChild(r); };
+  _actRow("Sphere reach outs due",_over,"overdue contacts");
+  _actRow("Follow ups due soon",_dueSoon,"next 7 days");
+  _actRow("Open follow ups",_openFollow,"real estate to dos");
+  const _goRe=el("button","btn ghost sm block","Open Real Estate"); _goRe.style.marginTop="12px"; _goRe.onclick=()=>selectTab("re"); nb.appendChild(_goRe);
+  v.appendChild(nc);
 }
 function buildMore(v){ sect(v,"Explore"); launchCard(v,"🎾","Pickleball","Goals, sessions, drills, stats","pickle");
   const _dcx=sect(v,"Daily context, for Claude"); _dcx.insertBefore(claudeAvatar("av-md chip"), _dcx.firstChild); safe(v,()=>contextModule(v),"Context");
