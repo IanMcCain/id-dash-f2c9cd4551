@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Ian">
 <title>Ian Dashboard</title>
-<meta name="build" content="v21 build 26 (2026-07-07)">
+<meta name="build" content="v21 build 27 (2026-07-07)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -732,7 +732,7 @@ const sess=(function(){ let ok=false,mem={}; try{ const t="__s__"; window.sessio
 })();
 const KEYS={ ian:"ianDashboard.v2", chris:"chrisDashboard.v2" };
 const SEED_VERSION=12;
-const APP_BUILD="v21 build 26 (2026-07-07)";
+const APP_BUILD="v21 build 27 (2026-07-07)";
 const uid=()=>Math.random().toString(36).slice(2,9);
 function todayKey(d){ d=d||new Date(); const p=n=>String(n).padStart(2,"0"); return d.getFullYear()+"-"+p(d.getMonth()+1)+"-"+p(d.getDate()); }
 const NOW=new Date(), TODAY=todayKey(NOW), DOW=NOW.getDay();
@@ -857,6 +857,20 @@ function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]
      touched. Matches the Sugar Creek "neighbor letters out" item. Date mirrors Sugar Creek's
      cadence and can be changed in the Events list. */
   try{ if(profile==="ian"){ if(!Array.isArray(state.events)) state.events=[]; if(!state.events.some(function(e){return e&&e.id==="ev-20260711-cinnamon-flyers";})){ state.events.push({id:"ev-20260711-cinnamon-flyers",title:"Cinnamon Creek flyers out",date:"2026-07-11",kind:"Real estate"}); save(true); } } }catch(e){}
+  /* v21 build 27: non-destructive daily note clear on a true new-day rollover. Tracks meta.lastNoteDay.
+     When the calendar day changes (and once on this build's first load, since lastNoteDay starts unset),
+     it archives the current note into the daily log, then clears ONLY context.forClaude so Ian opens each
+     new day to a blank note box. Nothing else is touched. No SEED_VERSION bump, no deals or data reset,
+     and the note text is always archived first so an unprocessed note is never lost. This replaces the old
+     one-time exact-string clear, which only fired on a version bump and broke on any text mismatch. */
+  try{ if(!state.meta) state.meta={}; if(!state.context) state.context={forClaude:"",dailyLog:{}};
+    if(state.meta.lastNoteDay!==TODAY){
+      var _fcClr=(typeof state.context.forClaude==="string")?state.context.forClaude:"";
+      if(_fcClr.trim()){ if(!state.context.dailyLog) state.context.dailyLog={}; var _adK=state.meta.lastNoteDay||TODAY; if(!state.context.dailyLog[_adK]) state.context.dailyLog[_adK]={note:"",summary:""}; var _ex=state.context.dailyLog[_adK].forClaudeArchive; if(!_ex){ state.context.dailyLog[_adK].forClaudeArchive=_fcClr; } else if(_ex.indexOf(_fcClr)<0){ state.context.dailyLog[_adK].forClaudeArchive=_ex+"\n\n"+_fcClr; } if(!state.context.dailyLog[_adK].claudeAction){ state.context.dailyLog[_adK].claudeAction="Auto archived on new day rollover ("+TODAY+"), note field cleared."; } }
+      state.context.forClaude="";
+      state.meta.lastNoteDay=TODAY;
+    }
+  }catch(e){}
   focusObj.running=false; try{clearInterval(focusObj.timerId);}catch(e){} focusObj.remaining=null;
   applyAccent(); dailyReset(); save(true);
 }
