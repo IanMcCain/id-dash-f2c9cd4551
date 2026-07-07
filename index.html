@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Ian">
 <title>Ian Dashboard</title>
-<meta name="build" content="v21 build 30 (2026-07-07)">
+<meta name="build" content="v21 build 31 (2026-07-07)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -154,7 +154,8 @@ a{color:var(--accent2);text-decoration:none}
     radial-gradient(120% 90% at 50% 118%, rgba(10,132,255,.14) 0%, rgba(0,0,0,0) 55%),
     linear-gradient(180deg,#080d1a 0%,#05070f 55%,#020306 100%);
   padding:calc(var(--sat) + 26px) 24px calc(var(--sab) + 26px);overflow:auto}
-.lockinner{max-width:360px;margin:0 auto;min-height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+.lockinner{max-width:360px;margin:0 auto;min-height:100%;display:flex;flex-direction:column;align-items:center;justify-content:space-between;text-align:center;padding:clamp(48px,13vh,150px) 0 clamp(8px,3vh,34px)}
+.lockhead{display:flex;flex-direction:column;align-items:center}
 .locklogo{position:relative;width:80px;height:80px;border-radius:22px;
   background:linear-gradient(150deg,#4aa3ff 0%,#0a84ff 46%,#0052d6 100%);
   display:grid;place-items:center;font-weight:900;color:#eef5ff;font-size:31px;letter-spacing:-.05em;margin-bottom:22px;
@@ -612,9 +613,11 @@ header{ background:rgba(0,0,0,.82); border-bottom:1px solid rgba(255,255,255,.07
 <!-- Lock screen. Hidden by default so JS off falls through to the app. Shown by JS. -->
 <div class="lockscreen" id="lock">
   <div class="lockinner">
-    <div class="locklogo">IM</div>
-    <div class="lockbrand">Ian McCain</div>
-    <div class="locksub" id="lockSub">Enter passcode</div>
+    <div class="lockhead">
+      <div class="locklogo">IM</div>
+      <div class="lockbrand">Ian McCain</div>
+      <div class="locksub" id="lockSub">Enter passcode</div>
+    </div>
     <div id="lockPad">
       <div class="dots" id="lockDots"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
       <div class="keypad" id="keypad"></div>
@@ -732,7 +735,7 @@ const sess=(function(){ let ok=false,mem={}; try{ const t="__s__"; window.sessio
 })();
 const KEYS={ ian:"ianDashboard.v2", chris:"chrisDashboard.v2" };
 const SEED_VERSION=12;
-const APP_BUILD="v21 build 30 (2026-07-07)";
+const APP_BUILD="v21 build 31 (2026-07-07)";
 const uid=()=>Math.random().toString(36).slice(2,9);
 function todayKey(d){ d=d||new Date(); const p=n=>String(n).padStart(2,"0"); return d.getFullYear()+"-"+p(d.getMonth()+1)+"-"+p(d.getDate()); }
 const NOW=new Date(), TODAY=todayKey(NOW), DOW=NOW.getDay();
@@ -1171,14 +1174,19 @@ function contactEditors(parent,k){
   const del=el("button","del","Remove contact"); del.style.fontSize="13px"; del.style.marginTop="10px"; del.onclick=()=>{ if(confirm("Remove this contact?")){ state.realEstate.sphere=sphereList().filter(x=>x.id!==k.id); delete sphereOpen[k.id]; save(); render(); } }; parent.appendChild(del);
 }
 function contactRow(parent,k){
+  const open=!!sphereOpen[k.id];
   const wrap=el("div","dealwrap"); const row=el("button","deal-row");
-  const left=el("div","dl"); left.appendChild(el("div","dn",k.name||"(no name)"));
+  const left=el("div","dl");
+  const q=(k.quality==="Good")?"Good":"Iffy";
+  const nmrow=el("div"); nmrow.style.cssText="display:flex;align-items:center;gap:8px";
+  const dot=el("span"); dot.style.cssText="width:9px;height:9px;border-radius:50%;flex:none;background:"+((q==="Good")?"#2fd27a":"#8a94a6"); nmrow.appendChild(dot);
+  nmrow.appendChild(el("div","dn",k.name||"(no name)")); left.appendChild(nmrow);
   const ds=daysSinceDate(k.lastContacted); const sub=el("div","dsub");
-  sub.textContent=(k.type||"Sphere")+"  ·  "+(k.lastContacted?("last "+ds+"d ago"):"no contact logged");
+  sub.textContent=q+"  ·  "+(k.type||"Sphere")+"  ·  "+(k.lastContacted?("last "+ds+"d ago"):"no contact logged");
   left.appendChild(sub); row.appendChild(left);
-  const right=el("div","dr"); if(contactOverdue(k)) right.appendChild(el("span","stpill c-pink","reach out")); row.appendChild(right);
-  row.onclick=()=>{ sphereOpen[k.id]=!sphereOpen[k.id]; render(); }; wrap.appendChild(row);
-  if(sphereOpen[k.id]){ const det=el("div","deal-detail"); contactEditors(det,k); wrap.appendChild(det); }
+  const right=el("div","dr"); if(contactOverdue(k)) right.appendChild(el("span","stpill c-pink","reach out")); right.appendChild(el("span","ch-chev"+(open?" open":""),"›")); row.appendChild(right);
+  row.onclick=()=>{ const willOpen=!sphereOpen[k.id]; sphereOpen={}; if(willOpen) sphereOpen[k.id]=true; render(); }; wrap.appendChild(row);
+  if(open){ const det=el("div","deal-detail"); contactEditors(det,k); wrap.appendChild(det); }
   parent.appendChild(wrap);
 }
 function reachOutRow(parent,k){
