@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Ian">
 <title>Ian Dashboard</title>
-<meta name="build" content="v21 build 34 (2026-07-07)">
+<meta name="build" content="v21 build 35 (2026-07-07)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -735,7 +735,7 @@ const sess=(function(){ let ok=false,mem={}; try{ const t="__s__"; window.sessio
 })();
 const KEYS={ ian:"ianDashboard.v2", chris:"chrisDashboard.v2" };
 const SEED_VERSION=12;
-const APP_BUILD="v21 build 34 (2026-07-07)";
+const APP_BUILD="v21 build 35 (2026-07-07)";
 const uid=()=>Math.random().toString(36).slice(2,9);
 function todayKey(d){ d=d||new Date(); const p=n=>String(n).padStart(2,"0"); return d.getFullYear()+"-"+p(d.getMonth()+1)+"-"+p(d.getDate()); }
 const NOW=new Date(), TODAY=todayKey(NOW), DOW=NOW.getDay();
@@ -904,6 +904,19 @@ function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]
       state.meta.lastGymNoteDay=TODAY;
     }
   }catch(e){}
+  /* v21 build 35: idempotent curl rename inside existing saved gym.split. The seed was renamed on
+     build 34 (DB or cable curl to Machine curl, hammer curl to Cable curl) but installed profiles keep
+     the old names, because the split renders from persisted state.gym.split and the seed rename only
+     reaches users through mergeGymSplit inside the SEED_VERSION gate, which is intentionally not bumped.
+     This runs on EVERY load, renames the two curls in place on both pull days, and keeps each exercise
+     id unchanged so the workout done logs, which key off the id, stay intact. It only acts when an old
+     name is present, so it is a no-op once renamed. Non-destructive, no SEED_VERSION bump. */
+  try{ if(state.gym && Array.isArray(state.gym.split)){
+    var _curlMap={"DB or cable curl":"Machine curl","Incline or hammer curl":"Cable curl","Hammer curl":"Cable curl"};
+    var _curlChanged=false;
+    state.gym.split.forEach(function(d){ if(d&&Array.isArray(d.exercises)){ d.exercises.forEach(function(x){ if(x&&typeof x.name==="string"&&Object.prototype.hasOwnProperty.call(_curlMap,x.name)){ x.name=_curlMap[x.name]; _curlChanged=true; } }); } });
+    if(_curlChanged) save(true);
+  } }catch(e){}
   /* v21 build 28: seed example Future ideas for 2026-07-07 so the section shows content until the
      daily agent writes fresh ones. Idempotent and add only. The agent replaces this each morning. */
   try{ if(profile==="ian"){ if(!state.futureIdeas||typeof state.futureIdeas!=="object") state.futureIdeas={}; if(!state.futureIdeas["2026-07-07"]) state.futureIdeas["2026-07-07"]=[ {id:"fi-20260707-1",text:"Film a 30 second Sugar Creek market update and post it as a Coming Soon teaser.",url:""}, {id:"fi-20260707-2",text:"Repost two customer car photos this week and tag them with your Solara handle.",url:""}, {id:"fi-20260707-3",text:"Add a 10 minute third shot drop block before league to sharpen for the July 25 tournament.",url:""} ]; } }catch(e){}
