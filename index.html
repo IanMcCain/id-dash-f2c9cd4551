@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Ian">
 <title>Ian Dashboard</title>
-<meta name="build" content="v21 build 32 (2026-07-07)">
+<meta name="build" content="v21 build 33 (2026-07-07)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -167,7 +167,7 @@ a{color:var(--accent2);text-decoration:none}
 .lockbrand{font-size:27px;font-weight:800;letter-spacing:-.03em;color:#f5f8ff}
 .locksub{color:#9fb2d4;font-size:13.5px;margin-top:9px;font-weight:600;min-height:20px;letter-spacing:.01em;transition:color .2s}
 .locksub.err{color:#ff6b6b}
-.dots{display:flex;gap:18px;margin:30px 0 34px}
+.dots{display:flex;justify-content:center;gap:18px;margin:30px auto 34px;width:100%}
 .dot{width:14px;height:14px;border-radius:50%;background:rgba(255,255,255,.08);border:1.5px solid rgba(150,180,230,.45);
   transition:transform .2s cubic-bezier(.2,.85,.25,1.4),background .2s,box-shadow .2s,border-color .2s}
 .dot.on{background:linear-gradient(150deg,#67b4ff,#0a84ff);border-color:#4aa8ff;transform:scale(1.2);
@@ -735,7 +735,7 @@ const sess=(function(){ let ok=false,mem={}; try{ const t="__s__"; window.sessio
 })();
 const KEYS={ ian:"ianDashboard.v2", chris:"chrisDashboard.v2" };
 const SEED_VERSION=12;
-const APP_BUILD="v21 build 32 (2026-07-07)";
+const APP_BUILD="v21 build 33 (2026-07-07)";
 const uid=()=>Math.random().toString(36).slice(2,9);
 function todayKey(d){ d=d||new Date(); const p=n=>String(n).padStart(2,"0"); return d.getFullYear()+"-"+p(d.getMonth()+1)+"-"+p(d.getDate()); }
 const NOW=new Date(), TODAY=todayKey(NOW), DOW=NOW.getDay();
