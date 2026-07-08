@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Ian">
 <title>Ian Dashboard</title>
-<meta name="build" content="v21 build 40 (2026-07-08)">
+<meta name="build" content="v21 build 41 (2026-07-08)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -736,7 +736,7 @@ const sess=(function(){ let ok=false,mem={}; try{ const t="__s__"; window.sessio
 })();
 const KEYS={ ian:"ianDashboard.v2", chris:"chrisDashboard.v2" };
 const SEED_VERSION=13;
-const APP_BUILD="v21 build 40 (2026-07-08)";
+const APP_BUILD="v21 build 41 (2026-07-08)";
 const uid=()=>Math.random().toString(36).slice(2,9);
 function todayKey(d){ d=d||new Date(); const p=n=>String(n).padStart(2,"0"); return d.getFullYear()+"-"+p(d.getMonth()+1)+"-"+p(d.getDate()); }
 const NOW=new Date(), TODAY=todayKey(NOW), DOW=NOW.getDay();
@@ -795,7 +795,11 @@ function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]
     if(raw && storedSeedVer<SEED_VERSION){
       const fresh=seedFor(p);
       if(fresh&&fresh.realEstate){ if(!state.realEstate) state.realEstate={};
-        if(Array.isArray(fresh.realEstate.deals)) state.realEstate.deals=fresh.realEstate.deals;
+        /* v21 build 41: MERGE deals by id instead of hard-replacing from the seed. The daily agent bumps
+           SEED_VERSION every run, and a hard replace would silently overwrite the per-deal edits Ian just
+           made (source, side, stage, price). Keep every saved deal exactly as it is (his edits win) and only
+           ADD genuinely new seed deals whose id is not already present. Never clobber an existing deal. */
+        if(Array.isArray(fresh.realEstate.deals)){ var _savedDeals=Array.isArray(state.realEstate.deals)?state.realEstate.deals:[]; var _haveDeal={}; _savedDeals.forEach(function(d){ if(d&&d.id) _haveDeal[d.id]=true; }); var _mergedDeals=_savedDeals.slice(); fresh.realEstate.deals.forEach(function(fd){ if(fd&&fd.id&&!_haveDeal[fd.id]) _mergedDeals.push(fd); }); state.realEstate.deals=_mergedDeals; }
         if(Array.isArray(fresh.realEstate.todos)){ const _cur=Array.isArray(state.realEstate.todos)?state.realEstate.todos:[]; state.realEstate.todos=fresh.realEstate.todos.map(function(td){ const ex=_cur.filter(function(x){return x&&x.id===td.id;})[0]; return ex?Object.assign({},td,{done:!!ex.done}):td; }); }
       }
       if(fresh&&fresh.nutrition&&Array.isArray(fresh.nutrition.supplements)){ if(!state.nutrition) state.nutrition={}; state.nutrition.supplements=mergeKeepLogs(state.nutrition.supplements,fresh.nutrition.supplements); }
@@ -892,7 +896,7 @@ function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]
     var _tagChanged=false;
     state.realEstate.deals.forEach(function(d){ if(!d||typeof d!=="object") return;
       if(d.source===undefined){ d.source=(/matt snyder/i.test(String(d.title||"")))?"Dual agency":"Ian's own"; _tagChanged=true; }
-      if(d.side===undefined){ var _t=String(d.title||"")+" "+String(d.note||""); d.side=/buy|buyer|buying/i.test(_t)?"Buyer":"Seller"; _tagChanged=true; }
+      if(d.side===undefined){ var _t=String(d.title||""); d.side=/buy|buyer|buying/i.test(_t)?"Buyer":"Seller"; _tagChanged=true; }
     });
     if(_tagChanged) save(true);
   } }catch(e){}
@@ -994,6 +998,21 @@ function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]
       if(_sa) save(true);
     }
   }catch(e){}
+  /* v21 build 41: correct two seller-side deals that got stored as Buyer side because the old inference
+     read the deal note, which mentions the clients buying another home. The Spicer selling and Bonks
+     selling deals are Seller side (3.75%). Sets them to Seller if currently Buyer. Guarded one-time so it
+     never fights a later manual change. Non-destructive. No SEED_VERSION bump. */
+  try{ if(!state.meta) state.meta={};
+    if(!state.meta.mig41_side_fix && state.realEstate && Array.isArray(state.realEstate.deals)){
+      var _sf=false;
+      state.realEstate.deals.forEach(function(d){ if(!d) return; var t=String(d.title||"");
+        var isSellingFix=(d.id==="re-spicer-sell"||d.id==="re-bonks-sell"||/spicer.*sell/i.test(t)||/bonks.*sell/i.test(t));
+        if(isSellingFix && d.side==="Buyer"){ d.side="Seller"; _sf=true; }
+      });
+      state.meta.mig41_side_fix=true;
+      if(_sf) save(true);
+    }
+  }catch(e){}
   /* v21 build 28: seed example Future ideas for 2026-07-07 so the section shows content until the
      daily agent writes fresh ones. Idempotent and add only. The agent replaces this each morning. */
   try{ if(profile==="ian"){ if(!state.futureIdeas||typeof state.futureIdeas!=="object") state.futureIdeas={}; if(!state.futureIdeas["2026-07-07"]) state.futureIdeas["2026-07-07"]=[ {id:"fi-20260707-1",text:"Film a 30 second Sugar Creek market update and post it as a Coming Soon teaser.",url:""}, {id:"fi-20260707-2",text:"Repost two customer car photos this week and tag them with your Solara handle.",url:""}, {id:"fi-20260707-3",text:"Add a 10 minute third shot drop block before league to sharpen for the July 25 tournament.",url:""} ]; } }catch(e){}
@@ -1050,7 +1069,7 @@ function barChart(items,cls,h){ const c=el("div","bars"); if(h) c.style.height=h
 function animate(root){ if(!root) return;
   try{ root.querySelectorAll(".fill[data-h]").forEach(f=>{ const h=f.getAttribute("data-h"); f.style.height="0%"; void f.offsetWidth; requestAnimationFrame(()=>{ f.style.height=h+"%"; }); }); }catch(e){}
   try{ root.querySelectorAll(".ring .prog[data-off]").forEach(p=>{ const off=p.getAttribute("data-off"); const c=p.getAttribute("stroke-dasharray"); p.style.strokeDashoffset=c; void p.getBoundingClientRect(); requestAnimationFrame(()=>{ p.style.strokeDashoffset=off; }); }); }catch(e){}
-  try{ root.querySelectorAll(".countup[data-n]").forEach(n=>{ const target=parseFloat(n.getAttribute("data-n"))||0; let s=null; const dur=850; function step(ts){ if(s===null)s=ts; const p=Math.min(1,(ts-s)/dur); n.textContent=Math.round(target*p); if(p<1)requestAnimationFrame(step); } n.textContent="0"; requestAnimationFrame(step); }); }catch(e){}
+  try{ root.querySelectorAll(".countup[data-n]").forEach(n=>{ const target=parseFloat(n.getAttribute("data-n"))||0; const finalText=String(Math.round(target)); /* v21 build 41: guarantee the final value even if the tab was backgrounded and requestAnimationFrame was throttled (the streak used to freeze at a low number). If hidden, show the value immediately; otherwise animate but always snap to the true value, with a timeout fallback. */ if(document.hidden){ n.textContent=finalText; return; } let s=null; const dur=850; function step(ts){ if(s===null)s=ts; const p=Math.min(1,(ts-s)/dur); n.textContent=String(Math.round(target*p)); if(p<1)requestAnimationFrame(step); else n.textContent=finalText; } n.textContent="0"; requestAnimationFrame(step); setTimeout(function(){ n.textContent=finalText; }, dur+300); }); }catch(e){}
 }
 function currentPageId(){ try{ const r=document.querySelector('input[name="tab"]:checked'); return r?"p-"+r.id.slice(2):"p-home"; }catch(e){ return "p-home"; } }
 function animateVisible(){ try{ requestAnimationFrame(()=>animate(document.getElementById(currentPageId()))); }catch(e){} }
@@ -1104,7 +1123,7 @@ function fmtMoney(n){ try{ return "$"+Math.round(n).toLocaleString("en-US"); }ca
    Dual agency 50/50. Ian take home per deal = side% x price x 0.85 x source share.
    PRODUCTION stays sales volume (sum of prices), it is not income. These add an income estimate. */
 function dealSource(d){ var s=(d&&d.source)||""; return (s==="Chris's client"||s==="Dual agency")?s:"Ian's own"; }
-function dealSide(d){ var s=(d&&d.side)||""; if(s==="Buyer"||s==="Seller"||s==="Both") return s; var t=String((d&&d.title)||"")+" "+String((d&&d.note)||""); return /buy|buyer|buying/i.test(t)?"Buyer":"Seller"; }
+function dealSide(d){ var s=(d&&d.side)||""; if(s==="Buyer"||s==="Seller"||s==="Both") return s; /* v21 build 41: infer from the TITLE only, not the note, since notes often mention the clients buying elsewhere (Spicer and Bonks selling deals were wrongly read as Buyer). */ var t=String((d&&d.title)||""); return /buy|buyer|buying/i.test(t)?"Buyer":"Seller"; }
 function sideRate(side){ return side==="Buyer"?0.024 : side==="Both"?0.0615 : 0.0375; }
 function sourceShare(source){ return source==="Chris's client"?0.20 : source==="Dual agency"?0.50 : 0.90; }
 function dealGrossCommission(d){ return priceNum(d&&d.price) * sideRate(dealSide(d)); }
@@ -1218,16 +1237,26 @@ function reBack(parent,label){
   btn.onclick=()=>{ reView="landing"; try{window.scrollTo(0,0);}catch(e){} render(); }; w.appendChild(btn); parent.appendChild(w);
 }
 function pipelineSummaryPipe(parent){
+  /* v21 build 41: the Overview tiles now cover EVERY stage so the tile counts reconcile with the full deal
+     list. Closed, Under contract, Active, Coming soon, and Building each count their stage; Prospects counts
+     the prospect stages (Prospecting and Buyer); Other catches anything left (Just sold, Follow up). The sum
+     of the tiles equals the total deal count, shown in the section subtitle. */
   const deals=state.realEstate.deals||[]; const by=st=>deals.filter(d=>d.stage===st); const vol=arr=>arr.reduce((a,d)=>a+priceNum(d.price),0);
   const closed=by("Closed"), uc=by("Under Contract"), act=by("Active"), cs=by("Coming Soon"), bld=by("Building");
-  sect(parent,"Overview","counts and volume");
-  summaryGrid(parent,[
+  const prospects=deals.filter(reIsProspect);
+  const _counted={}; [].concat(closed,uc,act,cs,bld,prospects).forEach(function(d){ if(d&&d.id) _counted[d.id]=1; });
+  const other=deals.filter(function(d){ return d&&!_counted[d.id]; });
+  sect(parent,"Overview",deals.length+" deals total, counts and volume");
+  const tiles=[
     statTile({label:"Closed",color:"green",value:closed.length,unit:closed.length===1?"deal":"deals",sub:fmtMoney(vol(closed))+" volume"}),
     statTile({label:"Under contract",color:"blue",value:uc.length,unit:"pending",sub:fmtMoney(vol(uc))+" pending"}),
     statTile({label:"Active",color:"orange",value:act.length,unit:act.length===1?"listing":"listings",sub:fmtMoney(vol(act))}),
     statTile({label:"Coming soon",color:"purple",value:cs.length,unit:"this week",sub:"Listing soon"}),
-    statTile({label:"Building",color:"violet",value:bld.length,unit:bld.length===1?"build":"builds",sub:fmtMoney(vol(bld))})
-  ]);
+    statTile({label:"Building",color:"violet",value:bld.length,unit:bld.length===1?"build":"builds",sub:fmtMoney(vol(bld))}),
+    statTile({label:"Prospects",color:"pink",value:prospects.length,unit:prospects.length===1?"lead":"leads",sub:"Prospecting and buyers"})
+  ];
+  if(other.length) tiles.push(statTile({label:"Other",color:"cyan",value:other.length,unit:other.length===1?"deal":"deals",sub:"Just sold, follow up"}));
+  summaryGrid(parent,tiles);
 }
 function rePipelineGroupedPipe(parent){
   const deals=state.realEstate.deals||[]; const seen={};
@@ -1470,7 +1499,7 @@ function buildPickle(v){ const pb=state.pickleball;
   sect(v,"Log a session","quick entry"); { const fc=card(); const fb=fc._body; const dl=el("div","small muted","Date"); dl.style.marginBottom="4px"; fb.appendChild(dl); const din=el("input","in"); din.type="date"; din.value=TODAY; fb.appendChild(din); let kind="League"; const kc=el("div"); kc.style.marginTop="11px"; const setc=function(){ Array.prototype.slice.call(kc.querySelectorAll(".chip")).forEach(function(ch){ ch.classList.toggle("on",ch.textContent===kind); }); }; kc.appendChild(chipRow(["League","Open play","Drills","Tournament"],kind,function(k){kind=k;setc();})); fb.appendChild(kc); const g=el("div","grid2"); g.style.marginTop="11px"; const durIn=el("input","in"); durIn.placeholder="Duration, e.g. 2h 44m"; g.appendChild(durIn); const calIn=el("input","in"); calIn.type="number"; calIn.placeholder="Calories"; g.appendChild(calIn); const hrIn=el("input","in"); hrIn.type="number"; hrIn.placeholder="Avg HR"; g.appendChild(hrIn); const maxIn=el("input","in"); maxIn.type="number"; maxIn.placeholder="Max HR"; g.appendChild(maxIn); fb.appendChild(g); const noteIn=el("textarea","in"); noteIn.style.minHeight="54px"; noteIn.style.marginTop="11px"; noteIn.placeholder="Notes, HR zones, recovery, how it felt..."; fb.appendChild(noteIn); const btn=el("button","btn block","Log session"); btn.style.marginTop="12px"; btn.onclick=function(){ pb.sessions.push({id:uid(),date:din.value||TODAY,kind:kind,duration:durIn.value.trim(),calories:calIn.value?parseInt(calIn.value,10):0,avgHr:hrIn.value?parseInt(hrIn.value,10):0,maxHr:maxIn.value?parseInt(maxIn.value,10):0,note:noteIn.value.trim()}); save(); render(); }; fb.appendChild(btn); v.appendChild(fc); }
 }
 function buildStats(v){ safe(v,()=>{ const wk=workoutsThisWeek(); const hs=(state.routine&&state.routine.habits)||[]; const hD=hs.filter(h=>h.log&&h.log[TODAY]).length; const water=(state.nutrition&&state.nutrition.water&&state.nutrition.water[TODAY])||0; const m=(state.realEstate.metrics&&state.realEstate.metrics.log&&state.realEstate.metrics.log[TODAY])||{}; const cg=(state.realEstate.metrics&&state.realEstate.metrics.targets&&state.realEstate.metrics.targets.calls)||10; const sp=weekWorkoutSpark(); sect(v,"Summary","this week and today"); summaryGrid(v,[ fracTile({label:"Workouts",color:"orange",done:wk,goal:5,unit:"days",tab:"gym"}), fracTile({label:"Habits",color:"green",done:hD,goal:hs.length||7,unit:"today",tab:"gym"}), fracTile({label:"Water",color:"cyan",done:water,goal:12,unit:"cups",tab:"gym"}), fracTile({label:"RE calls",color:"blue",done:m.calls||0,goal:cg,unit:"today",tab:"re"}) ]); v.appendChild(statTile({label:"Workout completion",color:"orange",value:(sp.slice(-1)[0]||0)+"%",unit:"today",sub:"Last 7 days",spark:sp,sparkH:64})); },"Stats summary"); sect(v,"This week's workouts"); const c1=card("a-blue"); c1._body.appendChild(el("div","small muted","Percent of each day's session logged")); c1._body.lastChild.style.marginBottom="6px"; const wItems=[]; for(let i=6;i>=0;i--){ const d=new Date(); d.setDate(d.getDate()-i); const k=todayKey(d); const dow=d.getDay(); const day=daySplit(dow); const log=state.gym.logs[k]||{done:{}}; const tot=day.exercises.length||1; const done=day.exercises.filter(e=>log.done[e.id]).length; wItems.push({label:["Su","Mo","Tu","We","Th","Fr","Sa"][dow],pct:Math.round(done/tot*100)}); } c1._body.appendChild(barChart(wItems,"",132)); v.appendChild(c1);
-  sectG(v,"Habit consistency"); const c2=card("a-green"); const hItems=[]; const hsn=state.routine.habits.length||1; for(let i=6;i>=0;i--){ const d=new Date(); d.setDate(d.getDate()-i); const k=todayKey(d); const done=state.routine.habits.filter(h=>h.log[k]).length; hItems.push({label:["Su","Mo","Tu","We","Th","Fr","Sa"][d.getDay()],pct:Math.round(done/hsn*100)}); } c2._body.appendChild(barChart(hItems,"g",132)); const sl=el("div","small dim"); sl.style.marginTop="8px"; sl.innerHTML='Current streak: <span class="countup" data-n="'+habitStreak()+'">'+habitStreak()+'</span> days'; c2._body.appendChild(sl); v.appendChild(c2);
+  sectG(v,"Habit consistency"); const c2=card("a-green"); const hItems=[]; const hsn=state.routine.habits.length||1; for(let i=6;i>=0;i--){ const d=new Date(); d.setDate(d.getDate()-i); const k=todayKey(d); const done=state.routine.habits.filter(h=>h.log[k]).length; hItems.push({label:["Su","Mo","Tu","We","Th","Fr","Sa"][d.getDay()],pct:Math.round(done/hsn*100)}); } c2._body.appendChild(barChart(hItems,"g",132)); const _hstreak=habitStreak(); const sl=el("div","small dim"); sl.style.marginTop="8px"; sl.innerHTML='Current streak: <span class="countup" data-n="'+_hstreak+'">'+_hstreak+'</span> '+(_hstreak===1?"day":"days"); c2._body.appendChild(sl); v.appendChild(c2);
   sect(v,"Real estate pipeline","active stages and closed");
   const _deals=state.realEstate.deals||[];
   const _counts={}; RESTAGES.forEach(x=>_counts[x]=0); _deals.forEach(d=>{ _counts[d.stage]=(_counts[d.stage]||0)+1; });
