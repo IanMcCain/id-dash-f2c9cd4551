@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Ian">
 <title>Ian Dashboard</title>
-<meta name="build" content="v21 build 39 (2026-07-08)">
+<meta name="build" content="v21 build 40 (2026-07-08)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -736,7 +736,7 @@ const sess=(function(){ let ok=false,mem={}; try{ const t="__s__"; window.sessio
 })();
 const KEYS={ ian:"ianDashboard.v2", chris:"chrisDashboard.v2" };
 const SEED_VERSION=13;
-const APP_BUILD="v21 build 39 (2026-07-08)";
+const APP_BUILD="v21 build 40 (2026-07-08)";
 const uid=()=>Math.random().toString(36).slice(2,9);
 function todayKey(d){ d=d||new Date(); const p=n=>String(n).padStart(2,"0"); return d.getFullYear()+"-"+p(d.getMonth()+1)+"-"+p(d.getDate()); }
 const NOW=new Date(), TODAY=todayKey(NOW), DOW=NOW.getDay();
@@ -950,6 +950,50 @@ function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]
       if(_mm2) save(true);
     }
   }catch(e){}
+  /* v21 build 40: repair deal stages that got wrongly flipped to a prospect stage while Ian was editing
+     the commission tags (root cause fixed in the editor this build). Restores each deal to its correct
+     stage from the last good baseline (the 07.08.2026 export), keeping the build 39 overrides (Cynthia
+     Coming Soon, Michelle Active). Forces the three Ian named (Ashley Gilliam and Matt Brandt to Closed,
+     Teskes to Building), and also corrects ANY other non-prospect deal currently sitting at a prospect
+     stage. Leaves the genuine prospects (Tysdal, Evan, Rose Creek couple) alone. Guarded one-time so it
+     never fights a later intentional stage move. Non-destructive, keeps every deal and its other fields.
+     No SEED_VERSION bump. */
+  try{ if(!state.meta) state.meta={};
+    if(!state.meta.mig40_stage_restore && state.realEstate && Array.isArray(state.realEstate.deals)){
+      var _sr=false;
+      var _BASE={ "re-matt-snyder":"Closed","re-matt-snyder-2":"Closed","re-lynn-parsons":"Closed","re-ashley-gilliam":"Closed","re-matt-brandt":"Closed","re-crystal-johnson":"Under Contract","re-allison-spicer-buy":"Under Contract","re-spicer-sell":"Under Contract","re-bonks-sell":"Under Contract","re-bonks-buy":"Under Contract","re-rose-creek":"Active","re-michelle-miller":"Active","re-chad-troester":"Coming Soon","re-barkers":"Coming Soon","re-cynthia-willis":"Coming Soon","re-teskes":"Building" };
+      state.realEstate.deals.forEach(function(d){ if(!d) return;
+        var t=String(d.title||"");
+        // force the three Ian named, by title, regardless of current stage
+        if(/ashley\s*gilliam/i.test(t)){ if(d.stage!=="Closed"){ d.stage="Closed"; _sr=true; } return; }
+        if(/matt\s*brandt/i.test(t)){ if(d.stage!=="Closed"){ d.stage="Closed"; _sr=true; } return; }
+        if(/teske/i.test(t)){ if(d.stage!=="Building"){ d.stage="Building"; _sr=true; } return; }
+        // scan: any other non-prospect deal currently sitting at a prospect stage gets restored
+        var base=_BASE[d.id];
+        if(base && (d.stage==="Prospecting"||d.stage==="Buyer") && base!=="Prospecting" && base!=="Buyer"){ d.stage=base; _sr=true; }
+      });
+      state.meta.mig40_stage_restore=true;
+      if(_sr) save(true);
+    }
+  }catch(e){}
+  /* v21 build 40: lock in Ian's final commission source assignment across the whole pipeline. Ashley
+     Gilliam is Ian's own (90%), Matt Snyder's two closed sides stay Dual agency (50/50, Ian confirmed),
+     every other deal is Chris's client (Ian gets 20%). Guarded one-time so it applies once and then never
+     fights a later manual source change Ian makes in the editor. Keeps each deal's side and all other
+     data. Non-destructive. No SEED_VERSION bump. */
+  try{ if(!state.meta) state.meta={};
+    if(!state.meta.mig40_source_assign && state.realEstate && Array.isArray(state.realEstate.deals)){
+      var _sa=false;
+      state.realEstate.deals.forEach(function(d){ if(!d) return; var t=String(d.title||""); var want;
+        if(/matt\s*snyder/i.test(t)) want="Dual agency";
+        else if(/ashley\s*gilliam/i.test(t)) want="Ian's own";
+        else want="Chris's client";
+        if(d.source!==want){ d.source=want; _sa=true; }
+      });
+      state.meta.mig40_source_assign=true;
+      if(_sa) save(true);
+    }
+  }catch(e){}
   /* v21 build 28: seed example Future ideas for 2026-07-07 so the section shows content until the
      daily agent writes fresh ones. Idempotent and add only. The agent replaces this each morning. */
   try{ if(profile==="ian"){ if(!state.futureIdeas||typeof state.futureIdeas!=="object") state.futureIdeas={}; if(!state.futureIdeas["2026-07-07"]) state.futureIdeas["2026-07-07"]=[ {id:"fi-20260707-1",text:"Film a 30 second Sugar Creek market update and post it as a Coming Soon teaser.",url:""}, {id:"fi-20260707-2",text:"Repost two customer car photos this week and tag them with your Solara handle.",url:""}, {id:"fi-20260707-3",text:"Add a 10 minute third shot drop block before league to sharpen for the July 25 tournament.",url:""} ]; } }catch(e){}
@@ -984,6 +1028,10 @@ let pendingFocus=null;
 function checkItem(done,label,meta,onToggle,onDelete){ const row=el("div","chk"); const lab=el("label","cbwrap"); const inp=el("input","cbx"); inp.type="checkbox"; inp.checked=!!done; const box=el("span","box"); box.innerHTML=CHECK; const t=el("span","ctext"); t.textContent=label; if(meta){ const m=el("span","meta"); m.textContent=meta; t.appendChild(m); } lab.appendChild(inp); lab.appendChild(box); lab.appendChild(t); if(onToggle) inp.addEventListener("change",onToggle); row.appendChild(lab); if(onDelete){ const d=el("button","del","×"); d.onclick=onDelete; row.appendChild(d); } return row; }
 function adder(ph,onAdd){ const wrap=el("div","addrow"); const inp=el("input","in"); inp.placeholder=ph; inp.setAttribute("data-add",ph); const b=el("button","btn sm","Add"); const fire=()=>{ const v=inp.value.trim(); if(!v)return; pendingFocus=ph; onAdd(v); }; b.onclick=fire; inp.onkeydown=e=>{ if(e.key==="Enter")fire(); }; wrap.appendChild(inp); wrap.appendChild(b); return wrap; }
 function chipRow(opts,cur,onPick){ const r=el("div","chips"); opts.forEach(o=>{ const c=el("div","chip"+(o===cur?" on":""),o); c.onclick=()=>onPick(o); r.appendChild(c); }); return r; }
+/* v21 build 40: chip row with separate display label and stored value, so a chip can read
+   differently from what it stores (used to relabel the Side chips as "Seller side" etc. so they no
+   longer collide with the stage "Buyer" chip). */
+function chipRowKV(pairs,cur,onPick){ const r=el("div","chips"); pairs.forEach(function(p){ var label=p[0],val=p[1]; const c=el("div","chip"+(val===cur?" on":""),label); c.onclick=function(){ onPick(val); }; r.appendChild(c); }); return r; }
 function sect(parent,text,sub,onTap){ const s=el("div","sectlabel"); s.appendChild(document.createTextNode(text)); if(sub){ const a=el("span","sub",sub); if(onTap){a.onclick=onTap;a.style.cursor="pointer";} s.appendChild(a);} parent.appendChild(s); return s; }
 function sectG(parent,text,sub){ const s=sect(parent,text,sub); s.classList.add("g"); return s; }
 function safe(parent,fn,label){ try{ fn(); }catch(e){ try{console.error("[dash]",label,e);}catch(_){} const c=card(); c._body.appendChild(el("div","small dim",(label||"section")+" could not load.")); if(parent)parent.appendChild(c); } }
@@ -1081,14 +1129,21 @@ let reToolOpen={"Workout routine":true};
 let reView="landing";
 function stagePill(stage){ return el("span","stpill c-"+(STAGE_COL[stage]||"blue"),stage); }
 function dealEditors(parent,d){
+  /* v21 build 40: the Stage selector is clearly labeled and separated from the commission tag
+     selectors below, and the Side chips read "Seller side / Buyer side / Both sides" so they no
+     longer collide with the stage "Buyer" chip. Editing the commission tags only writes source or
+     side, it never touches the stage. */
+  const stLab=el("div","small muted","Stage"); parent.appendChild(stLab);
   parent.appendChild(chipRow(RESTAGES,d.stage,s=>{ d.stage=s; save(); render(); }));
-  const pr=el("input","in"); pr.placeholder="Price"; pr.value=d.price||""; pr.oninput=()=>{ d.price=pr.value; save(); }; parent.appendChild(pr);
+  const pr=el("input","in"); pr.placeholder="Price"; pr.value=d.price||""; pr.style.marginTop="10px"; pr.oninput=()=>{ d.price=pr.value; save(); }; parent.appendChild(pr);
   const cl=el("input","in"); cl.placeholder="Close date"; cl.value=d.close||""; cl.oninput=()=>{ d.close=cl.value; save(); }; parent.appendChild(cl);
   const ta=el("textarea","in"); ta.style.minHeight="52px"; ta.value=d.note||""; ta.placeholder="Notes, next step..."; ta.oninput=()=>{ d.note=ta.value; save(); }; parent.appendChild(ta);
-  const srcLab=el("div","small muted","Commission source, whose client"); srcLab.style.marginTop="12px"; parent.appendChild(srcLab);
+  const divr=el("div"); divr.style.cssText="border-top:1px solid var(--line,#1e2a3a);margin:15px 0 0"; parent.appendChild(divr);
+  const commHead=el("div","small muted","Commission tags, these do not change the stage above"); commHead.style.marginTop="11px"; commHead.style.fontWeight="700"; parent.appendChild(commHead);
+  const srcLab=el("div","small muted","Whose client"); srcLab.style.marginTop="9px"; parent.appendChild(srcLab);
   parent.appendChild(chipRow(["Ian's own","Chris's client","Dual agency"], dealSource(d), v=>{ d.source=v; save(); render(); }));
-  const sideLab=el("div","small muted","Side represented"); sideLab.style.marginTop="10px"; parent.appendChild(sideLab);
-  parent.appendChild(chipRow(["Seller","Buyer","Both"], dealSide(d), v=>{ d.side=v; save(); render(); }));
+  const sideLab=el("div","small muted","Side Ian represents"); sideLab.style.marginTop="10px"; parent.appendChild(sideLab);
+  parent.appendChild(chipRowKV([["Seller side","Seller"],["Buyer side","Buyer"],["Both sides","Both"]], dealSide(d), v=>{ d.side=v; save(); render(); }));
   const inc=el("div","small dim"); inc.style.marginTop="9px"; inc.style.lineHeight="1.55"; inc.innerHTML="Est. your take home <b>"+fmtMoney(dealIanNet(d))+"</b>. Gross commission this side "+fmtMoney(dealGrossCommission(d))+", after the 15% broker cut and your "+Math.round(sourceShare(dealSource(d))*100)+"% split."; parent.appendChild(inc);
   const del=el("button","del","Remove deal"); del.style.fontSize="13px"; del.style.marginTop="12px"; del.onclick=()=>{ if(confirm("Remove this deal?")){ state.realEstate.deals=state.realEstate.deals.filter(x=>x.id!==d.id); delete reDealOpen[d.id]; save(); render(); } }; parent.appendChild(del);
 }
