@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Ian">
 <title>Ian Dashboard</title>
-<meta name="build" content="v21 build 48 (2026-07-08)">
+<meta name="build" content="v21 build 49 (2026-07-08)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -759,7 +759,7 @@ const sess=(function(){ let ok=false,mem={}; try{ const t="__s__"; window.sessio
 })();
 const KEYS={ ian:"ianDashboard.v2", chris:"chrisDashboard.v2" };
 const SEED_VERSION=13;
-const APP_BUILD="v21 build 48 (2026-07-08)";
+const APP_BUILD="v21 build 49 (2026-07-08)";
 const uid=()=>Math.random().toString(36).slice(2,9);
 function todayKey(d){ d=d||new Date(); const p=n=>String(n).padStart(2,"0"); return d.getFullYear()+"-"+p(d.getMonth()+1)+"-"+p(d.getDate()); }
 const NOW=new Date(), TODAY=todayKey(NOW), DOW=NOW.getDay();
@@ -1400,7 +1400,9 @@ function reProspectsList(parent){
 }
 function buildIanRe(v){
   if(reView==="pipeline") return reViewPipeline(v);
-  if(reView==="prospects") return reViewProspects(v);
+  /* v21 build 49: the standalone Prospects view was removed (redundant with the Sphere Orbit, which now
+     shows prospects on its inner ring). Any stale reView==="prospects" falls through to the landing. The
+     prospect DATA (deals in the Prospecting/Buyer stages) is untouched and still renders in the orbit. */
   if(reView==="todo") return reViewTodo(v);
   if(reView==="tools") return reViewTools(v);
   if(reView==="sphere") return reViewSphere(v);
@@ -1592,6 +1594,10 @@ function reViewSphere(v){
   reBack(v,"Real Estate");
   safe(v,()=>sphereOrbit(v),"Sphere orbit");
   safe(v,()=>sphereOrbitDetail(v),"Sphere orbit detail");
+  /* v21 build 49: the standalone Prospects list was removed (redundant with the orbit above). Keep an
+     add-prospect path here so prospects stay addable. Tapping a prospect node in the orbit opens its full
+     editor (stage, price, notes, remove), so edit stays reachable too. New prospects appear in the orbit. */
+  safe(v,function(){ var _pac=card(); _pac._body.appendChild(el("div","small muted","Add a prospect")); _pac._body.lastChild.style.marginBottom="7px"; _pac._body.appendChild(adder("New prospect...",function(t){ if(!state.realEstate.deals) state.realEstate.deals=[]; state.realEstate.deals.push({id:uid(),title:t,stage:"Prospecting",price:"",close:"",note:"",source:"Chris's client",side:"Seller"}); orbitSel=null; save(); render(); })); v.appendChild(_pac); },"Add prospect");
   const sphere=sphereList();
   if(!sphere.length){
     const c=card("a-teal"); const b=c._body;
@@ -1635,9 +1641,10 @@ function reViewLanding(v){
   const openTodos=(state.realEstate.todos||[]).filter(t=>!t.done).length;
   sect(v,"Real Estate","tap a section");
   reNavCard(v,"\ud83d\udcca","Pipeline",pipe.length+(pipe.length===1?" deal":" deals")+"  \u00b7  "+fmtMoney(vol)+" volume","pipeline");
-  reNavCard(v,"\ud83c\udf31","Prospects",prospects.length+(prospects.length===1?" future listing":" future listings"),"prospects");
   reNavCard(v,"\u2705","Things I need to do",openTodos+(openTodos===1?" open task":" open tasks"),"todo");
-  { const _sp=sphereList(); const _ov=sphereOverdue().length; reNavCard(v,"\ud83e\udd1d","Sphere",_sp.length?(_sp.length+(_sp.length===1?" person":" people")+(_ov?"  \u00b7  "+_ov+" to reach out":"")):"add your sphere","sphere"); }
+  /* v21 build 49: standalone Prospects card removed. Prospects now live inside the Sphere Orbit (inner ring),
+     so this card carries the prospect count too and opens the orbit. */
+  { const _sp=sphereList(); const _ov=sphereOverdue().length; var _pn=prospects.length; var _sub=(_pn?(_pn+(_pn===1?" prospect":" prospects")):"")+((_pn&&_sp.length)?"  \u00b7  ":"")+(_sp.length?(_sp.length+" in sphere"):"")+(_ov?"  \u00b7  "+_ov+" to reach out":""); if(!_pn&&!_sp.length) _sub="add your sphere"; reNavCard(v,"\ud83e\udd1d","Sphere & prospects",_sub,"sphere"); }
   reNavCard(v,"\ud83e\uddf0","Tools","Focus timer, activity, contacts, scripts, notes","tools");
   sect(v,"Your pipeline data","import");
   { const ic=card(); const ib=el("button","btn ghost block","Import my pipeline"); ib.style.marginTop="0"; ib.onclick=()=>{ const pf=document.getElementById("pipelineFile"); if(pf)pf.click(); }; const ih=el("div","small dim"); ih.style.marginTop="9px"; ih.textContent="Load real_estate_pipeline.json to replace your pipeline with your deals and follow ups. Your other data stays."; ic._body.appendChild(ib); ic._body.appendChild(ih); v.appendChild(ic); }
