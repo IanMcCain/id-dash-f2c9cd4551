@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Ian">
 <title>Ian Dashboard</title>
-<meta name="build" content="v21 build 47 (2026-07-08)">
+<meta name="build" content="v21 build 48 (2026-07-08)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -150,11 +150,18 @@ a{color:var(--accent2);text-decoration:none}
 /* ===== lock screen (v20 premium redesign) ===== */
 .lockscreen{display:none;position:fixed;inset:0;z-index:200;
   background:
-    radial-gradient(88% 52% at 50% 19%, rgba(37,110,255,.30) 0%, rgba(12,20,40,0) 60%),
-    radial-gradient(120% 90% at 50% 118%, rgba(10,132,255,.14) 0%, rgba(0,0,0,0) 55%),
-    linear-gradient(180deg,#080d1a 0%,#05070f 55%,#020306 100%);
+    radial-gradient(62% 48% at 20% 16%, rgba(84,150,255,.46) 0%, rgba(24,52,110,0) 60%),
+    radial-gradient(70% 55% at 90% 94%, rgba(120,180,255,.22) 0%, rgba(0,0,0,0) 55%),
+    radial-gradient(120% 80% at 62% 112%, rgba(28,86,196,.20) 0%, rgba(0,0,0,0) 55%),
+    linear-gradient(155deg,#0a1a38 0%,#0b1e42 28%,#08142c 60%,#050c1e 100%);
   padding:calc(var(--sat) + 26px) 24px calc(var(--sab) + 26px);overflow:auto}
-.lockinner{max-width:360px;margin:0 auto;min-height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:clamp(20px,5vh,70px) 0 clamp(64px,18vh,220px)}
+.lockscreen::before{content:"";position:absolute;inset:0;z-index:0;pointer-events:none;
+  background:
+    linear-gradient(122deg, transparent 52%, rgba(150,195,255,.11) 63%, transparent 70%),
+    linear-gradient(122deg, transparent 68%, rgba(120,175,255,.09) 79%, transparent 86%),
+    linear-gradient(122deg, transparent 82%, rgba(150,200,255,.06) 90%, transparent 96%);
+  mix-blend-mode:screen}
+.lockinner{position:relative;z-index:1;max-width:360px;margin:0 auto;min-height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:clamp(20px,5vh,70px) 0 clamp(64px,18vh,220px)}
 .lockhead{display:flex;flex-direction:column;align-items:center}
 .locklogo{position:relative;width:80px;height:80px;border-radius:22px;
   background:linear-gradient(150deg,#4aa3ff 0%,#0a84ff 46%,#0052d6 100%);
@@ -172,19 +179,34 @@ a{color:var(--accent2);text-decoration:none}
   transition:transform .2s cubic-bezier(.2,.85,.25,1.4),background .2s,box-shadow .2s,border-color .2s}
 .dot.on{background:linear-gradient(150deg,#67b4ff,#0a84ff);border-color:#4aa8ff;transform:scale(1.2);
   box-shadow:0 0 13px rgba(24,124,255,.8)}
-.keypad{display:grid;grid-template-columns:repeat(3,1fr);gap:20px 26px;width:100%;max-width:290px}
-.key{aspect-ratio:1;width:100%;max-width:80px;justify-self:center;border-radius:50%;
-  background:linear-gradient(160deg,rgba(255,255,255,.13),rgba(255,255,255,.03));
-  -webkit-backdrop-filter:blur(16px) saturate(1.4);backdrop-filter:blur(16px) saturate(1.4);
-  border:1px solid rgba(255,255,255,.15);color:#f2f6ff;font-size:29px;font-weight:500;letter-spacing:-.01em;
+.keypad{display:grid;grid-template-columns:repeat(3,1fr);gap:22px 30px;width:100%;max-width:302px}
+.key{aspect-ratio:1;width:100%;max-width:88px;justify-self:center;border-radius:50%;
+  background:linear-gradient(160deg,rgba(255,255,255,.17),rgba(255,255,255,.045));
+  -webkit-backdrop-filter:blur(22px) saturate(1.5);backdrop-filter:blur(22px) saturate(1.5);
+  border:1.5px solid rgba(255,255,255,.30);color:#ffffff;font-size:33px;font-weight:400;letter-spacing:-.01em;
   display:grid;place-items:center;
-  box-shadow:0 6px 18px rgba(0,0,0,.36),inset 0 1px 0 rgba(255,255,255,.2);
+  box-shadow:0 8px 22px rgba(0,10,40,.42),inset 0 1px 0 rgba(255,255,255,.26);
   transition:transform .1s ease,background .1s,box-shadow .1s}
 .key:active{transform:scale(.9);
   background:linear-gradient(160deg,rgba(120,175,255,.42),rgba(58,120,220,.24));
   box-shadow:0 2px 10px rgba(20,90,200,.5),inset 0 1px 0 rgba(255,255,255,.28)}
 .key.fn{background:none;border:none;box-shadow:none;-webkit-backdrop-filter:none;backdrop-filter:none;font-size:22px;font-weight:500;color:#9fb2d4}
 .key.fn:active{transform:scale(.9);background:none;box-shadow:none;color:#dbe6fb}
+/* v21 build 48: lock-screen water quick-log control (frosted glass, below the keypad) */
+.lockwater{position:relative;z-index:1;width:100%;max-width:302px;margin:32px auto 0;padding:14px 16px 15px;border-radius:20px;
+  background:linear-gradient(160deg,rgba(255,255,255,.12),rgba(255,255,255,.035));
+  -webkit-backdrop-filter:blur(20px) saturate(1.4);backdrop-filter:blur(20px) saturate(1.4);
+  border:1px solid rgba(255,255,255,.18);box-shadow:0 10px 26px rgba(0,10,40,.4),inset 0 1px 0 rgba(255,255,255,.18)}
+.lockwater .lw-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:9px}
+.lockwater .lw-lab{font-size:13.5px;font-weight:700;color:#e6f0ff;letter-spacing:.01em}
+.lockwater .lw-amt{font-size:12.5px;font-weight:700;color:#9fc4ff}
+.lockwater .lw-bar{height:9px;border-radius:999px;background:rgba(255,255,255,.13);overflow:hidden}
+.lockwater .lw-bar > i{display:block;height:100%;width:0;border-radius:999px;background:linear-gradient(90deg,#38bdf8,#0a84ff);transition:width .3s}
+.lockwater .lw-row{display:flex;gap:12px;margin-top:12px}
+.lockwater .lw-btn{flex:1;padding:11px 0;border-radius:14px;border:1.5px solid rgba(255,255,255,.28);
+  background:linear-gradient(160deg,rgba(255,255,255,.15),rgba(255,255,255,.05));color:#fff;font-size:21px;font-weight:600;line-height:1;
+  -webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);transition:transform .1s}
+.lockwater .lw-btn:active{transform:scale(.94)}
 .shake{animation:shake .42s cubic-bezier(.36,.07,.19,.97)}
 @keyframes shake{0%,100%{transform:translateX(0)}15%{transform:translateX(-11px)}30%{transform:translateX(11px)}45%{transform:translateX(-8px)}60%{transform:translateX(8px)}75%{transform:translateX(-4px)}90%{transform:translateX(4px)}}
 .chooser{width:100%;display:flex;flex-direction:column;gap:14px;margin-top:6px}
@@ -623,6 +645,7 @@ header{ background:rgba(0,0,0,.82); border-bottom:1px solid rgba(255,255,255,.07
       <div class="dots" id="lockDots"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
       <div class="keypad" id="keypad"></div>
     </div>
+    <div class="lockwater" id="lockWater"></div>
   </div>
 </div>
 
@@ -736,7 +759,7 @@ const sess=(function(){ let ok=false,mem={}; try{ const t="__s__"; window.sessio
 })();
 const KEYS={ ian:"ianDashboard.v2", chris:"chrisDashboard.v2" };
 const SEED_VERSION=13;
-const APP_BUILD="v21 build 47 (2026-07-08)";
+const APP_BUILD="v21 build 48 (2026-07-08)";
 const uid=()=>Math.random().toString(36).slice(2,9);
 function todayKey(d){ d=d||new Date(); const p=n=>String(n).padStart(2,"0"); return d.getFullYear()+"-"+p(d.getMonth()+1)+"-"+p(d.getDate()); }
 const NOW=new Date(), TODAY=todayKey(NOW), DOW=NOW.getDay();
@@ -1499,6 +1522,10 @@ function sphereOrbit(parent){
   var W=340,H=340,cx=170,cy=170,Ri=84,Ro=134;
   var svg=svgEl("svg",{viewBox:"0 0 "+W+" "+H,width:"100%",role:"img","aria-label":"Sphere orbit graph"});
   svg.style.cssText="display:block;max-width:360px;margin:12px auto 4px;touch-action:manipulation";
+  /* v21 build 48: full-size transparent background. Tapping empty orbit area (off any node) closes an open detail. */
+  var bg=svgEl("rect",{x:0,y:0,width:W,height:H,fill:"transparent"}); bg.style.cursor="default";
+  bg.addEventListener("click",function(){ if(orbitSel){ orbitSel=null; render(); } });
+  svg.appendChild(bg);
   /* faint dashed orbit rings with labels */
   [[Ri,"PROSPECTS"],[Ro,"SPHERE CRM"]].forEach(function(rg){
     svg.appendChild(svgEl("circle",{cx:cx,cy:cy,r:rg[0],fill:"none",stroke:"#33415a","stroke-width":1,"stroke-dasharray":"3 5",opacity:0.55}));
@@ -1506,11 +1533,11 @@ function sphereOrbit(parent){
   });
   function placeRing(list,R,isPro){
     var n=list.length||1;
-    var prices=list.map(function(x){ return isPro?priceNum(x.price):0; }); var maxP=Math.max.apply(null,[1].concat(prices));
+    /* v21 build 48: uniform node size, no price scaling. */
     list.forEach(function(item,i){
       var ang=(-90 + i*(360/n))*Math.PI/180; var x=cx+R*Math.cos(ang), y=cy+R*Math.sin(ang);
       svg.appendChild(svgEl("line",{x1:cx,y1:cy,x2:x,y2:y,stroke:"#2b3a52","stroke-width":1,opacity:0.5}));
-      var rr=isPro?12:11; if(isPro){ rr=12+Math.max(0,Math.min(6,(priceNum(item.price)/maxP)*6)); }
+      var rr=13; /* every node (prospects and sphere) is the same uniform size */
       var fill,stroke;
       if(isPro){ fill="#f59e0b"; stroke="#7a4d06"; }
       else { var good=(item.quality==="Good"); fill=good?"#2fd27a":"#8a94a6"; stroke=good?"#12633a":"#3f4a5c"; }
@@ -1531,7 +1558,7 @@ function sphereOrbit(parent){
   var center=svgEl("g",{});
   center.appendChild(svgEl("circle",{cx:cx,cy:cy,r:32,fill:"#0e2033",stroke:"#20c5a8","stroke-width":2}));
   var t1=svgEl("text",{x:cx,y:cy-2,"text-anchor":"middle",fill:"#eaf1ff","font-size":15,"font-weight":800}); t1.textContent="IAN"; center.appendChild(t1);
-  var t2=svgEl("text",{x:cx,y:cy+12,"text-anchor":"middle",fill:"#8aa0bd","font-size":8}); t2.textContent=prospects.length+"p · "+sphere.length+" sph"; center.appendChild(t2);
+  var t2=svgEl("text",{x:cx,y:cy+13,"text-anchor":"middle",fill:"#9fc4ff","font-size":9,"font-weight":700}); t2.textContent=prospects.length+" P   "+sphere.length+" C"; center.appendChild(t2);
   svg.appendChild(center);
   b.appendChild(svg);
   /* caption + legend */
@@ -1793,9 +1820,16 @@ function updateDots(){ const dots=document.querySelectorAll("#lockDots .dot"); d
 function padPress(d){ if(entered.length>=4)return; const sub=document.getElementById("lockSub"); if(sub){ sub.classList.remove("err"); if(sub.textContent!=="Enter passcode")sub.textContent="Enter passcode"; } entered+=d; updateDots(); if(entered.length===4) setTimeout(checkCode,150); }
 function padDel(){ entered=entered.slice(0,-1); updateDots(); }
 function checkCode(){ if(entered===PASSCODE){ unlockApp(); } else { const inner=document.querySelector(".lockinner"); if(inner){ inner.classList.remove("shake"); void inner.offsetWidth; inner.classList.add("shake"); setTimeout(()=>inner.classList.remove("shake"),440);} const sub=document.getElementById("lockSub"); if(sub){ sub.textContent="Wrong passcode, try again"; sub.classList.add("err"); } entered=""; updateDots(); } }
-function showKeypad(){ const pad=document.getElementById("lockPad"); if(pad)pad.style.display="block"; entered=""; updateDots(); const sub=document.getElementById("lockSub"); if(sub){ sub.textContent="Enter passcode"; sub.classList.remove("err"); } }
+function showKeypad(){ const pad=document.getElementById("lockPad"); if(pad)pad.style.display="block"; entered=""; updateDots(); const sub=document.getElementById("lockSub"); if(sub){ sub.textContent="Enter passcode"; sub.classList.remove("err"); } try{ renderLockWater(); }catch(e){} }
 function unlockApp(){ try{ sess.set("ianDash.session",JSON.stringify({unlocked:1})); }catch(e){} const l=document.getElementById("lock"); if(l)l.style.display="none"; selectTab("home"); render(); }
 function lockNow(){ try{ sess.remove("ianDash.session"); }catch(e){} const l=document.getElementById("lock"); if(l)l.style.display="flex"; showKeypad(); }
+/* v21 build 48: lock-screen water quick-log. Reads and WRITES the SAME state.nutrition.water[TODAY] the
+   in-app water tracker uses, so it stays in sync both ways. Persists immediately (save(true)). No unlock
+   needed. Floor at 0. Lock->app sync: unlockApp calls render() which rebuilds from state. App->lock sync:
+   showKeypad calls renderLockWater() whenever the lock is shown. */
+const LOCK_WATER_GOAL=12;
+function lockWaterAdjust(n){ try{ if(!state) return; if(!state.nutrition) state.nutrition={}; if(!state.nutrition.water) state.nutrition.water={}; var cur=state.nutrition.water[TODAY]||0; state.nutrition.water[TODAY]=Math.max(0,cur+n); save(true); renderLockWater(); }catch(e){} }
+function renderLockWater(){ try{ var host=document.getElementById("lockWater"); if(!host) return; var goal=LOCK_WATER_GOAL; var cur=0; try{ cur=(state&&state.nutrition&&state.nutrition.water&&state.nutrition.water[TODAY])||0; }catch(e){ cur=0; } var pct=Math.max(0,Math.min(100,goal?(cur/goal*100):0)); host.innerHTML='<div class="lw-top"><div class="lw-lab">Water</div><div class="lw-amt">'+cur+' / '+goal+' cups</div></div><div class="lw-bar"><i style="width:'+pct+'%"></i></div><div class="lw-row"><button class="lw-btn" id="lwMinus" aria-label="Remove a cup of water">−</button><button class="lw-btn" id="lwPlus" aria-label="Add a cup of water">+</button></div>'; var mi=document.getElementById("lwMinus"), pl=document.getElementById("lwPlus"); if(mi) mi.onclick=function(){ lockWaterAdjust(-1); }; if(pl) pl.onclick=function(){ lockWaterAdjust(1); }; }catch(e){} }
 
 /* ===== export / import / pwa ===== */
 function doExport(){ try{ state.meta.lastSaved=new Date().toISOString(); updateDailySummary(); const blob=new Blob([JSON.stringify(state,null,2)],{type:"application/json"}); const url=URL.createObjectURL(blob); const a=document.createElement("a"); a.href=url; a.download=(profile==="chris"?"chris":"ian")+"-dashboard-"+TODAY+".json"; a.click(); setTimeout(()=>{try{URL.revokeObjectURL(url);}catch(e){}},500); toast("Backup downloaded"); }catch(e){ toast("Export failed"); } }
