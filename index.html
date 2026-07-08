@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Ian">
 <title>Ian Dashboard</title>
-<meta name="build" content="v21 build 42 (2026-07-08)">
+<meta name="build" content="v21 build 43 (2026-07-08)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -736,7 +736,7 @@ const sess=(function(){ let ok=false,mem={}; try{ const t="__s__"; window.sessio
 })();
 const KEYS={ ian:"ianDashboard.v2", chris:"chrisDashboard.v2" };
 const SEED_VERSION=13;
-const APP_BUILD="v21 build 42 (2026-07-08)";
+const APP_BUILD="v21 build 43 (2026-07-08)";
 const uid=()=>Math.random().toString(36).slice(2,9);
 function todayKey(d){ d=d||new Date(); const p=n=>String(n).padStart(2,"0"); return d.getFullYear()+"-"+p(d.getMonth()+1)+"-"+p(d.getDate()); }
 const NOW=new Date(), TODAY=todayKey(NOW), DOW=NOW.getDay();
@@ -799,7 +799,7 @@ function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]
            SEED_VERSION every run, and a hard replace would silently overwrite the per-deal edits Ian just
            made (source, side, stage, price). Keep every saved deal exactly as it is (his edits win) and only
            ADD genuinely new seed deals whose id is not already present. Never clobber an existing deal. */
-        if(Array.isArray(fresh.realEstate.deals)){ var _savedDeals=Array.isArray(state.realEstate.deals)?state.realEstate.deals:[]; var _haveDeal={}; _savedDeals.forEach(function(d){ if(d&&d.id) _haveDeal[d.id]=true; }); var _mergedDeals=_savedDeals.slice(); fresh.realEstate.deals.forEach(function(fd){ if(fd&&fd.id&&!_haveDeal[fd.id]) _mergedDeals.push(fd); }); state.realEstate.deals=_mergedDeals; }
+        if(Array.isArray(fresh.realEstate.deals)){ var _savedDeals=Array.isArray(state.realEstate.deals)?state.realEstate.deals:[]; var _haveDeal={}; _savedDeals.forEach(function(d){ if(d&&d.id) _haveDeal[d.id]=true; }); var _removedIds={}; ((state.meta&&state.meta.removedDealIds)||[]).forEach(function(id){ _removedIds[id]=true; }); var _mergedDeals=_savedDeals.slice(); fresh.realEstate.deals.forEach(function(fd){ if(fd&&fd.id&&!_haveDeal[fd.id]&&!_removedIds[fd.id]) _mergedDeals.push(fd); }); state.realEstate.deals=_mergedDeals; }
         if(Array.isArray(fresh.realEstate.todos)){ const _cur=Array.isArray(state.realEstate.todos)?state.realEstate.todos:[]; state.realEstate.todos=fresh.realEstate.todos.map(function(td){ const ex=_cur.filter(function(x){return x&&x.id===td.id;})[0]; return ex?Object.assign({},td,{done:!!ex.done}):td; }); }
       }
       if(fresh&&fresh.nutrition&&Array.isArray(fresh.nutrition.supplements)){ if(!state.nutrition) state.nutrition={}; state.nutrition.supplements=mergeKeepLogs(state.nutrition.supplements,fresh.nutrition.supplements); }
@@ -1013,6 +1013,29 @@ function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]
       if(_sf) save(true);
     }
   }catch(e){}
+  /* v21 build 43: consolidate the two Matt Snyder side-entries (buyer side + seller side on one property)
+     into ONE dual agency deal shown a single time. Keeps the buyer-side entry as the surviving deal, sets
+     it to side Both, source Dual agency, stage Closed, price 797,850, and a clean dual title; removes the
+     second entry and records its id in meta.removedDealIds so the version-bump merge never re-adds it.
+     The 4.5%-once take-home, double volume, and double deal count come from the calc functions, so this
+     one entry still counts twice for volume and the deal goal. Guarded one-time, non-destructive to other
+     deals. No SEED_VERSION bump. */
+  try{ if(!state.meta) state.meta={};
+    if(!state.meta.mig43_dual_consolidate && state.realEstate && Array.isArray(state.realEstate.deals)){
+      var _keep=null, _dropId=null;
+      state.realEstate.deals.forEach(function(d){ if(d && /matt\s*snyder/i.test(String(d.title||""))){ if(d.id==="re-matt-snyder"||(!_keep && !/seller/i.test(String(d.title||"")))) _keep=d; } });
+      // fall back: if we did not identify a keep, take the first Snyder entry
+      if(!_keep){ _keep=state.realEstate.deals.filter(function(d){return d&&/matt\s*snyder/i.test(String(d.title||""));})[0]||null; }
+      if(_keep){
+        // find the other Snyder entry (not the one we keep) to drop
+        var _others=state.realEstate.deals.filter(function(d){ return d&&/matt\s*snyder/i.test(String(d.title||""))&&d!==_keep; });
+        _keep.title="Matt Snyder (dual agency, both sides)"; _keep.source="Dual agency"; _keep.side="Both"; _keep.stage="Closed"; if(!_keep.price) _keep.price="$797,850";
+        if(_others.length){ _dropId=_others.map(function(d){return d.id;}); state.realEstate.deals=state.realEstate.deals.filter(function(d){ return _others.indexOf(d)<0; }); if(!Array.isArray(state.meta.removedDealIds)) state.meta.removedDealIds=[]; _others.forEach(function(d){ if(d.id && state.meta.removedDealIds.indexOf(d.id)<0) state.meta.removedDealIds.push(d.id); }); }
+        state.meta.mig43_dual_consolidate=true;
+        save(true);
+      }
+    }
+  }catch(e){}
   /* v21 build 28: seed example Future ideas for 2026-07-07 so the section shows content until the
      daily agent writes fresh ones. Idempotent and add only. The agent replaces this each morning. */
   try{ if(profile==="ian"){ if(!state.futureIdeas||typeof state.futureIdeas!=="object") state.futureIdeas={}; if(!state.futureIdeas["2026-07-07"]) state.futureIdeas["2026-07-07"]=[ {id:"fi-20260707-1",text:"Film a 30 second Sugar Creek market update and post it as a Coming Soon teaser.",url:""}, {id:"fi-20260707-2",text:"Repost two customer car photos this week and tag them with your Solara handle.",url:""}, {id:"fi-20260707-3",text:"Add a 10 minute third shot drop block before league to sharpen for the July 25 tournament.",url:""} ]; } }catch(e){}
@@ -1131,12 +1154,19 @@ function sourceShare(source){ return source==="Chris's client"?0.20 : source==="
    volume and deal count, so each side-entry contributes HALF of the property's 5% gross, so the pair
    sums to one 5% charge (not double). A single-entry dual deal uses side "Both" and takes the full 5%.
    Volume and deal count still count both entries, only the take-home money is 5% once. */
-function dealGrossCommission(d){ if(dealSource(d)==="Dual agency"){ var _full=priceNum(d&&d.price)*0.05; return (dealSide(d)==="Both")?_full:_full/2; } return priceNum(d&&d.price) * sideRate(dealSide(d)); }
+/* v21 build 43: dual agency pays 4.5% of the sale price ONCE for the property (corrected down from 5%),
+   then broker 15% and the Ian/Chris 50/50 split. A dual deal is now a single "Both" entry, so it takes the
+   full 4.5%; the /2 branch is a safety net for any legacy single-side dual entry. */
+function dealGrossCommission(d){ if(dealSource(d)==="Dual agency"){ var _full=priceNum(d&&d.price)*0.045; return (dealSide(d)==="Both")?_full:_full/2; } return priceNum(d&&d.price) * sideRate(dealSide(d)); }
 function dealIanNet(d){ return dealGrossCommission(d) * 0.85 * sourceShare(dealSource(d)); }
 function sumIanNet(arr){ return (arr||[]).reduce(function(a,d){ return a+dealIanNet(d); },0); }
+/* v21 build 43: a dual agency deal counts DOUBLE for production volume and for the deal count (both sides
+   on one property), even though it shows as one entry. Non-dual deals count once. */
+function dealVolume(d){ return priceNum(d&&d.price) * (dealSource(d)==="Dual agency"?2:1); }
+function dealCountWeight(d){ return dealSource(d)==="Dual agency"?2:1; }
 function dealCard(parent,d){ const c=card(); const b=c._body; const head=el("div"); head.appendChild(el("h3",null,d.title)); if(d.price){ const p=el("div"); p.style.color="var(--sec2,var(--accent2))"; p.style.fontWeight="800"; p.style.marginTop="4px"; p.style.fontSize="16px"; p.textContent=d.price; head.appendChild(p);} if(d.close){ const cd=el("div","small dim"); cd.style.marginTop="3px"; cd.textContent="Close: "+d.close; head.appendChild(cd);} b.appendChild(head); const cs=el("div"); cs.style.marginTop="11px"; cs.appendChild(chipRow(RESTAGES,d.stage,s=>{d.stage=s;save();render();})); b.appendChild(cs); const pr=el("input","in"); pr.placeholder="Price"; pr.value=d.price||""; pr.style.marginTop="10px"; pr.oninput=()=>{d.price=pr.value;save();}; b.appendChild(pr); const cl=el("input","in"); cl.placeholder="Close date"; cl.value=d.close||""; cl.style.marginTop="9px"; cl.oninput=()=>{ d.close=cl.value; save(); }; b.appendChild(cl); const ta=el("textarea","in"); ta.style.minHeight="52px"; ta.style.marginTop="9px"; ta.value=d.note||""; ta.placeholder="Notes, next step..."; ta.oninput=()=>{d.note=ta.value;save();}; b.appendChild(ta); const del=el("button","del","Remove"); del.style.fontSize="13px"; del.style.marginTop="8px"; del.onclick=()=>{ if(confirm("Remove this deal?")){ state.realEstate.deals=state.realEstate.deals.filter(x=>x.id!==d.id); save(); render(); } }; b.appendChild(del); parent.appendChild(c); }
-function pipelineSummary(parent){ const deals=state.realEstate.deals||[]; const by=st=>deals.filter(d=>d.stage===st); const vol=arr=>arr.reduce((a,d)=>a+priceNum(d.price),0); const closed=by("Closed"), uc=by("Under Contract"), act=by("Active"), cs=by("Coming Soon"), pr=by("Prospecting"); sect(parent,"Pipeline","counts and volume"); summaryGrid(parent,[ statTile({label:"Closed",color:"green",value:closed.length,unit:closed.length===1?"deal":"deals",sub:fmtMoney(vol(closed))+" volume"}), statTile({label:"Under contract",color:"blue",value:uc.length,unit:"pending",sub:fmtMoney(vol(uc))+" pending"}), statTile({label:"Active",color:"orange",value:act.length,unit:act.length===1?"listing":"listings",sub:fmtMoney(vol(act))}), statTile({label:"Coming soon",color:"purple",value:cs.length,unit:"this week",sub:"Listing soon"}), statTile({label:"Prospects",color:"pink",value:pr.length,unit:"leads",sub:"Future listings"}) ]); }
-function reGroupedPipeline(parent){ const deals=state.realEstate.deals||[]; const GROUPS=[["Closed","Closed"],["Under Contract","Under contract / pending"],["Active","Active listings"],["Coming Soon","Coming soon"],["Prospecting","Prospects"],["Just Sold","Just sold"],["Follow up","Follow up"]]; const seen={}; GROUPS.forEach(function(g){ const stage=g[0],label=g[1]; const gd=deals.filter(d=>d.stage===stage); if(!gd.length) return; gd.forEach(d=>seen[d.id]=1); const vol=gd.reduce((a,d)=>a+priceNum(d.price),0); sect(parent,label,gd.length+(vol?"  ·  "+fmtMoney(vol):"")); gd.forEach(d=>dealCard(parent,d)); }); const rest=deals.filter(d=>!seen[d.id]); if(rest.length){ sect(parent,"Other",String(rest.length)); rest.forEach(d=>dealCard(parent,d)); } const add=card(); add._body.appendChild(adder("New deal or prospect...",t=>{state.realEstate.deals.push({id:uid(),title:t,stage:"Prospecting",price:"",close:"",note:""});save();render();})); parent.appendChild(add); }
+function pipelineSummary(parent){ const deals=state.realEstate.deals||[]; const by=st=>deals.filter(d=>d.stage===st); const vol=arr=>arr.reduce((a,d)=>a+dealVolume(d),0); const closed=by("Closed"), uc=by("Under Contract"), act=by("Active"), cs=by("Coming Soon"), pr=by("Prospecting"); sect(parent,"Pipeline","counts and volume"); summaryGrid(parent,[ statTile({label:"Closed",color:"green",value:closed.length,unit:closed.length===1?"deal":"deals",sub:fmtMoney(vol(closed))+" volume"}), statTile({label:"Under contract",color:"blue",value:uc.length,unit:"pending",sub:fmtMoney(vol(uc))+" pending"}), statTile({label:"Active",color:"orange",value:act.length,unit:act.length===1?"listing":"listings",sub:fmtMoney(vol(act))}), statTile({label:"Coming soon",color:"purple",value:cs.length,unit:"this week",sub:"Listing soon"}), statTile({label:"Prospects",color:"pink",value:pr.length,unit:"leads",sub:"Future listings"}) ]); }
+function reGroupedPipeline(parent){ const deals=state.realEstate.deals||[]; const GROUPS=[["Closed","Closed"],["Under Contract","Under contract / pending"],["Active","Active listings"],["Coming Soon","Coming soon"],["Prospecting","Prospects"],["Just Sold","Just sold"],["Follow up","Follow up"]]; const seen={}; GROUPS.forEach(function(g){ const stage=g[0],label=g[1]; const gd=deals.filter(d=>d.stage===stage); if(!gd.length) return; gd.forEach(d=>seen[d.id]=1); const vol=gd.reduce((a,d)=>a+dealVolume(d),0); sect(parent,label,gd.length+(vol?"  ·  "+fmtMoney(vol):"")); gd.forEach(d=>dealCard(parent,d)); }); const rest=deals.filter(d=>!seen[d.id]); if(rest.length){ sect(parent,"Other",String(rest.length)); rest.forEach(d=>dealCard(parent,d)); } const add=card(); add._body.appendChild(adder("New deal or prospect...",t=>{state.realEstate.deals.push({id:uid(),title:t,stage:"Prospecting",price:"",close:"",note:""});save();render();})); parent.appendChild(add); }
 function rePipeline(parent){ state.realEstate.deals.forEach(d=>{ const c=card(d.stage==="Just Sold"?"a-blue":"a-gold"); const b=c._body; const head=el("div"); head.appendChild(el("h3",null,d.title)); if(d.price){ const p=el("div","small"); p.style.color="var(--accent2)"; p.style.fontWeight="700"; p.textContent=d.price; head.appendChild(p);} b.appendChild(head); const cs=el("div"); cs.style.marginTop="10px"; cs.appendChild(chipRow(RESTAGES,d.stage,s=>{d.stage=s;save();render();})); b.appendChild(cs); const pr=el("input","in"); pr.placeholder="Price (optional)"; pr.value=d.price||""; pr.style.marginTop="10px"; pr.oninput=()=>{d.price=pr.value;save();}; b.appendChild(pr); const ta=el("textarea","in"); ta.style.minHeight="52px"; ta.style.marginTop="10px"; ta.value=d.note||""; ta.placeholder="Notes, next step..."; ta.oninput=()=>{d.note=ta.value;save();}; b.appendChild(ta); const del=el("button","del","Remove"); del.style.fontSize="13px"; del.style.marginTop="8px"; del.onclick=()=>{ if(confirm("Remove this deal?")){ state.realEstate.deals=state.realEstate.deals.filter(x=>x.id!==d.id); save(); render(); } }; b.appendChild(del); parent.appendChild(c); }); const add=card(); add._body.appendChild(adder("New deal or prospect...",t=>{state.realEstate.deals.push({id:uid(),title:t,stage:"Prospecting",price:"",note:""});save();render();})); parent.appendChild(add); }
 function leadsModule(parent){ const c=card(); const b=c._body; const ls=state.realEstate.leads||(state.realEstate.leads=[]); if(!ls.length)b.appendChild(el("div","empty","No leads yet.")); ls.forEach(l=>{ const row=el("div","chk"); const t=el("div","ctext"); t.textContent=l.name; const m=el("span","meta"); m.textContent=(l.source?l.source+" · ":"")+(l.status||"New")+(l.note?" · "+l.note:""); t.appendChild(m); row.appendChild(t); const d=el("button","del","×"); d.onclick=()=>{ state.realEstate.leads=ls.filter(x=>x.id!==l.id); save(); render(); }; row.appendChild(d); b.appendChild(row); }); b.appendChild(adder("Add a lead...",n=>{ ls.push({id:uid(),name:n,source:"",status:"New",note:""}); save(); render(); })); parent.appendChild(c); }
 function reTodos(parent){ const c=card(); const b=c._body; const rt=state.realEstate.todos; if(!rt.length)b.appendChild(el("div","empty","Nothing yet.")); rt.forEach(t=>{ b.appendChild(checkItem(t.done,t.text,t.due?dueLabel(t.due):null,()=>{t.done=!t.done;save();render();},()=>{state.realEstate.todos=rt.filter(x=>x.id!==t.id);save();render();})); }); const inp=el("input","in"); inp.placeholder="Add a follow up..."; inp.setAttribute("data-add","Add a follow up..."); const dt=el("input","in"); dt.type="date"; dt.style.marginTop="9px"; const btn=el("button","btn block","Add task"); btn.onclick=()=>{ const v=inp.value.trim(); if(!v)return; pendingFocus="Add a follow up..."; rt.push({id:uid(),text:v,done:false,due:dt.value||""}); save(); render(); }; const wrap=el("div"); wrap.style.marginTop="12px"; wrap.appendChild(inp); wrap.appendChild(dt); wrap.appendChild(btn); b.appendChild(wrap); parent.appendChild(c); }
@@ -1168,7 +1198,7 @@ function dealEditors(parent,d){
   parent.appendChild(chipRow(["Ian's own","Chris's client","Dual agency"], dealSource(d), v=>{ d.source=v; save(); render(); }));
   const sideLab=el("div","small muted","Side Ian represents"); sideLab.style.marginTop="10px"; parent.appendChild(sideLab);
   parent.appendChild(chipRowKV([["Seller side","Seller"],["Buyer side","Buyer"],["Both sides","Both"]], dealSide(d), v=>{ d.side=v; save(); render(); }));
-  const inc=el("div","small dim"); inc.style.marginTop="9px"; inc.style.lineHeight="1.55"; if(dealSource(d)==="Dual agency"){ inc.innerHTML="Est. your take home <b>"+fmtMoney(dealIanNet(d))+"</b>. Dual agency, 5% total on the property charged once, split across both sides, after the 15% broker cut and your 50% split."; } else { inc.innerHTML="Est. your take home <b>"+fmtMoney(dealIanNet(d))+"</b>. Gross commission this side "+fmtMoney(dealGrossCommission(d))+", after the 15% broker cut and your "+Math.round(sourceShare(dealSource(d))*100)+"% split."; } parent.appendChild(inc);
+  const inc=el("div","small dim"); inc.style.marginTop="9px"; inc.style.lineHeight="1.55"; if(dealSource(d)==="Dual agency"){ inc.innerHTML="Est. your take home <b>"+fmtMoney(dealIanNet(d))+"</b>. Dual agency, 4.5% total on the property charged once, after the 15% broker cut and your 50% split. Counts twice for volume and deal count."; } else { inc.innerHTML="Est. your take home <b>"+fmtMoney(dealIanNet(d))+"</b>. Gross commission this side "+fmtMoney(dealGrossCommission(d))+", after the 15% broker cut and your "+Math.round(sourceShare(dealSource(d))*100)+"% split."; } parent.appendChild(inc);
   const del=el("button","del","Remove deal"); del.style.fontSize="13px"; del.style.marginTop="12px"; del.onclick=()=>{ if(confirm("Remove this deal?")){ state.realEstate.deals=state.realEstate.deals.filter(x=>x.id!==d.id); delete reDealOpen[d.id]; save(); render(); } }; parent.appendChild(del);
 }
 function dealRow(parent,d){
@@ -1195,8 +1225,8 @@ function collapseGroup(parent,stage,label,gd,vol){
 }
 function rePipelineGrouped(parent){
   const deals=state.realEstate.deals||[]; const seen={};
-  RE_GROUPS.forEach(function(g){ const stage=g[0],label=g[1]; const gd=deals.filter(d=>d.stage===stage); if(!gd.length)return; gd.forEach(d=>seen[d.id]=1); const vol=gd.reduce((a,d)=>a+priceNum(d.price),0); collapseGroup(parent,stage,label,gd,vol); });
-  const rest=deals.filter(d=>!seen[d.id]); if(rest.length){ collapseGroup(parent,"Other","Other",rest,rest.reduce((a,d)=>a+priceNum(d.price),0)); }
+  RE_GROUPS.forEach(function(g){ const stage=g[0],label=g[1]; const gd=deals.filter(d=>d.stage===stage); if(!gd.length)return; gd.forEach(d=>seen[d.id]=1); const vol=gd.reduce((a,d)=>a+dealVolume(d),0); collapseGroup(parent,stage,label,gd,vol); });
+  const rest=deals.filter(d=>!seen[d.id]); if(rest.length){ collapseGroup(parent,"Other","Other",rest,rest.reduce((a,d)=>a+dealVolume(d),0)); }
   const add=card(); add._body.appendChild(adder("New deal or prospect...",t=>{ state.realEstate.deals.push({id:uid(),title:t,stage:"Prospecting",price:"",close:"",note:""}); reStageOpen["Prospecting"]=true; save(); render(); })); parent.appendChild(add);
 }
 function collapseTool(parent,title,sub,buildFn){
@@ -1246,7 +1276,7 @@ function pipelineSummaryPipe(parent){
      list. Closed, Under contract, Active, Coming soon, and Building each count their stage; Prospects counts
      the prospect stages (Prospecting and Buyer); Other catches anything left (Just sold, Follow up). The sum
      of the tiles equals the total deal count, shown in the section subtitle. */
-  const deals=state.realEstate.deals||[]; const by=st=>deals.filter(d=>d.stage===st); const vol=arr=>arr.reduce((a,d)=>a+priceNum(d.price),0);
+  const deals=state.realEstate.deals||[]; const by=st=>deals.filter(d=>d.stage===st); const vol=arr=>arr.reduce((a,d)=>a+dealVolume(d),0);
   const closed=by("Closed"), uc=by("Under Contract"), act=by("Active"), cs=by("Coming Soon"), bld=by("Building");
   const prospects=deals.filter(reIsProspect);
   const _counted={}; [].concat(closed,uc,act,cs,bld,prospects).forEach(function(d){ if(d&&d.id) _counted[d.id]=1; });
@@ -1265,7 +1295,7 @@ function pipelineSummaryPipe(parent){
 }
 function rePipelineGroupedPipe(parent){
   const deals=state.realEstate.deals||[]; const seen={};
-  RE_PIPE_GROUPS.forEach(function(g){ const stage=g[0],label=g[1]; const gd=deals.filter(d=>d.stage===stage); if(!gd.length)return; gd.forEach(d=>seen[d.id]=1); const vol=gd.reduce((a,d)=>a+priceNum(d.price),0); collapseGroup(parent,stage,label,gd,vol); });
+  RE_PIPE_GROUPS.forEach(function(g){ const stage=g[0],label=g[1]; const gd=deals.filter(d=>d.stage===stage); if(!gd.length)return; gd.forEach(d=>seen[d.id]=1); const vol=gd.reduce((a,d)=>a+dealVolume(d),0); collapseGroup(parent,stage,label,gd,vol); });
   const add=card(); add._body.appendChild(adder("New deal...",t=>{ state.realEstate.deals.push({id:uid(),title:t,stage:"Coming Soon",price:"",close:"",note:""}); reStageOpen["Coming Soon"]=true; save(); render(); })); parent.appendChild(add);
 }
 function reProspectsList(parent){
@@ -1284,9 +1314,9 @@ function buildIanRe(v){
 }
 function fmtMoneyShort(n){ n=n||0; if(n>=1e6){ var m=n/1e6; return "$"+(m>=10?String(Math.round(m)):m.toFixed(1))+"M"; } if(n>=1e3) return "$"+Math.round(n/1e3)+"K"; return "$"+Math.round(n); }
 function reGoalsCard(parent){
-  const deals=state.realEstate.deals||[]; const vol=arr=>arr.reduce((a,d)=>a+priceNum(d.price),0);
+  const deals=state.realEstate.deals||[]; const vol=arr=>arr.reduce((a,d)=>a+dealVolume(d),0);
   const closed=deals.filter(d=>d.stage==="Closed"); const uc=deals.filter(d=>d.stage==="Under Contract");
-  const production=vol(closed)+vol(uc); const dealsDone=closed.length+uc.length;
+  const production=vol(closed)+vol(uc); const dealsDone=closed.concat(uc).reduce(function(a,d){ return a+dealCountWeight(d); },0);
   const g=(state.realEstate&&state.realEstate.goals2026)||{}; const PROD_GOAL=g.production||10000000; const DEALS_GOAL=g.deals||20;
   const c=card("a-teal"); const b=c._body;
   b.appendChild(el("div","small muted","2026 production goals"));
@@ -1414,7 +1444,7 @@ function reViewLanding(v){
   const deals=state.realEstate.deals||[];
   const pipe=deals.filter(d=>!reIsProspect(d));
   const prospects=deals.filter(reIsProspect);
-  const vol=pipe.reduce((a,d)=>a+priceNum(d.price),0);
+  const vol=pipe.reduce((a,d)=>a+dealVolume(d),0);
   const openTodos=(state.realEstate.todos||[]).filter(t=>!t.done).length;
   sect(v,"Real Estate","tap a section");
   reNavCard(v,"\ud83d\udcca","Pipeline",pipe.length+(pipe.length===1?" deal":" deals")+"  \u00b7  "+fmtMoney(vol)+" volume","pipeline");
@@ -1513,7 +1543,7 @@ function buildStats(v){ safe(v,()=>{ const wk=workoutsThisWeek(); const hs=(stat
   const _maxA=Math.max(1,..._activeItems.map(i=>i.cap));
   _activeItems.forEach(i=>{ i.pct=Math.round(i.cap/_maxA*100); });
   const _activeTot=_activeItems.reduce((a,i)=>a+i.cap,0);
-  const _closedN=_counts["Closed"]||0; const _closedVol=_deals.filter(d=>d.stage==="Closed").reduce((a,d)=>a+priceNum(d.price),0);
+  const _closedN=_counts["Closed"]||0; const _closedVol=_deals.filter(d=>d.stage==="Closed").reduce((a,d)=>a+dealVolume(d),0);
   const c3=card("a-gold"); const b3=c3._body;
   b3.appendChild(el("div","small muted","Active pipeline by stage")); b3.firstChild.style.marginBottom="6px";
   if(_activeItems.length) b3.appendChild(barChart(_activeItems,"",112)); else b3.appendChild(el("div","empty","No active pipeline right now."));
