@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Ian">
 <title>Ian Dashboard</title>
-<meta name="build" content="v21 build 43 (2026-07-08)">
+<meta name="build" content="v21 build 44 (2026-07-08)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -736,7 +736,7 @@ const sess=(function(){ let ok=false,mem={}; try{ const t="__s__"; window.sessio
 })();
 const KEYS={ ian:"ianDashboard.v2", chris:"chrisDashboard.v2" };
 const SEED_VERSION=13;
-const APP_BUILD="v21 build 43 (2026-07-08)";
+const APP_BUILD="v21 build 44 (2026-07-08)";
 const uid=()=>Math.random().toString(36).slice(2,9);
 function todayKey(d){ d=d||new Date(); const p=n=>String(n).padStart(2,"0"); return d.getFullYear()+"-"+p(d.getMonth()+1)+"-"+p(d.getDate()); }
 const NOW=new Date(), TODAY=todayKey(NOW), DOW=NOW.getDay();
@@ -1036,6 +1036,33 @@ function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]
       }
     }
   }catch(e){}
+  /* v21 build 44: lock Matt Snyder's dual rate at 4.5% (a one-time exception, not the default). Only sets
+     it if he has no rate yet, so a later manual change to 5% or 6% sticks. New dual deals default to 6%
+     via dualRate(). Idempotent, non-destructive. No SEED_VERSION bump. */
+  try{ if(state.realEstate && Array.isArray(state.realEstate.deals)){ var _rr=false;
+    state.realEstate.deals.forEach(function(d){ if(d && /matt\s*snyder/i.test(String(d.title||"")) && dealSource(d)==="Dual agency" && typeof d.dualRate!=="number"){ d.dualRate=0.045; _rr=true; } });
+    if(_rr) save(true);
+  } }catch(e){}
+  /* v21 build 44: add the Brandon Winchester build. Guaranteed new construction underway, price and finish
+     are estimates only. Building stage, about $1.3M, estimated finish spring 2027. Source defaults to
+     Chris's client (confirm), side set to Seller/listing (confirm). Added once by id, idempotent, and its
+     id is remembered so a version-bump merge treats it as a real saved deal. Non-destructive. No bump. */
+  try{ if(state.realEstate){ if(!Array.isArray(state.realEstate.deals)) state.realEstate.deals=[];
+      if(!state.realEstate.deals.some(function(d){ return d&&d.id==="re-brandon-winchester"; })){
+        state.realEstate.deals.push({id:"re-brandon-winchester",title:"Brandon Winchester",stage:"Building",price:"$1,300,000 (est)",close:"Est. finish March to May 2027",note:"Guaranteed new construction, underway. Price and finish are estimates, not locked yet. Source defaulted to Chris's client, confirm. Side set to Seller/listing for a build, confirm.",source:"Chris's client",side:"Seller"});
+        save(true);
+      }
+  } }catch(e){}
+  /* v21 build 44: push Teske's estimated finish to early January 2027. One-time guard so a later manual
+     edit is not overwritten. Keeps everything else on the deal. Non-destructive. No SEED_VERSION bump. */
+  try{ if(!state.meta) state.meta={};
+    if(!state.meta.mig44_teske_finish && state.realEstate && Array.isArray(state.realEstate.deals)){
+      var _tk=false;
+      state.realEstate.deals.forEach(function(d){ if(d && /teske/i.test(String(d.title||""))){ d.close="Est. finish early January 2027"; _tk=true; } });
+      state.meta.mig44_teske_finish=true;
+      if(_tk) save(true);
+    }
+  }catch(e){}
   /* v21 build 28: seed example Future ideas for 2026-07-07 so the section shows content until the
      daily agent writes fresh ones. Idempotent and add only. The agent replaces this each morning. */
   try{ if(profile==="ian"){ if(!state.futureIdeas||typeof state.futureIdeas!=="object") state.futureIdeas={}; if(!state.futureIdeas["2026-07-07"]) state.futureIdeas["2026-07-07"]=[ {id:"fi-20260707-1",text:"Film a 30 second Sugar Creek market update and post it as a Coming Soon teaser.",url:""}, {id:"fi-20260707-2",text:"Repost two customer car photos this week and tag them with your Solara handle.",url:""}, {id:"fi-20260707-3",text:"Add a 10 minute third shot drop block before league to sharpen for the July 25 tournament.",url:""} ]; } }catch(e){}
@@ -1157,8 +1184,16 @@ function sourceShare(source){ return source==="Chris's client"?0.20 : source==="
 /* v21 build 43: dual agency pays 4.5% of the sale price ONCE for the property (corrected down from 5%),
    then broker 15% and the Ian/Chris 50/50 split. A dual deal is now a single "Both" entry, so it takes the
    full 4.5%; the /2 branch is a safety net for any legacy single-side dual entry. */
-function dealGrossCommission(d){ if(dealSource(d)==="Dual agency"){ var _full=priceNum(d&&d.price)*0.045; return (dealSide(d)==="Both")?_full:_full/2; } return priceNum(d&&d.price) * sideRate(dealSide(d)); }
-function dealIanNet(d){ return dealGrossCommission(d) * 0.85 * sourceShare(dealSource(d)); }
+/* v21 build 44: dual agency commission RATE is per deal. They aim for 6% and will go as low as 5% to make
+   a deal work, so new dual deals default to 6% (editable down to 5%). Matt Snyder is a one-time 4.5%
+   exception, stored on his deal. CRITICAL brokerage rule for dual: no matter the charged rate, the broker
+   takes 15% of a fixed 6% basis (0.15 x 0.06 x price = 0.009 x price), NOT 15% of the charged rate. Ian's
+   dual take-home = (chargedRate x price - 0.009 x price) x 0.50. Single-side deals are unchanged: 3.75%
+   seller or 2.4% buyer, broker 15% of that side commission, then the 90% own / 20% Chris split. */
+function dualRate(d){ return (d&&typeof d.dualRate==="number")?d.dualRate:0.06; }
+function dealGrossCommission(d){ if(dealSource(d)==="Dual agency"){ var _full=priceNum(d&&d.price)*dualRate(d); return (dealSide(d)==="Both")?_full:_full/2; } return priceNum(d&&d.price) * sideRate(dealSide(d)); }
+function dealBrokerage(d){ if(dealSource(d)==="Dual agency"){ var _fee=priceNum(d&&d.price)*0.15*0.06; return (dealSide(d)==="Both")?_fee:_fee/2; } return dealGrossCommission(d)*0.15; }
+function dealIanNet(d){ return (dealGrossCommission(d)-dealBrokerage(d)) * sourceShare(dealSource(d)); }
 function sumIanNet(arr){ return (arr||[]).reduce(function(a,d){ return a+dealIanNet(d); },0); }
 /* v21 build 43: a dual agency deal counts DOUBLE for production volume and for the deal count (both sides
    on one property), even though it shows as one entry. Non-dual deals count once. */
@@ -1198,7 +1233,8 @@ function dealEditors(parent,d){
   parent.appendChild(chipRow(["Ian's own","Chris's client","Dual agency"], dealSource(d), v=>{ d.source=v; save(); render(); }));
   const sideLab=el("div","small muted","Side Ian represents"); sideLab.style.marginTop="10px"; parent.appendChild(sideLab);
   parent.appendChild(chipRowKV([["Seller side","Seller"],["Buyer side","Buyer"],["Both sides","Both"]], dealSide(d), v=>{ d.side=v; save(); render(); }));
-  const inc=el("div","small dim"); inc.style.marginTop="9px"; inc.style.lineHeight="1.55"; if(dealSource(d)==="Dual agency"){ inc.innerHTML="Est. your take home <b>"+fmtMoney(dealIanNet(d))+"</b>. Dual agency, 4.5% total on the property charged once, after the 15% broker cut and your 50% split. Counts twice for volume and deal count."; } else { inc.innerHTML="Est. your take home <b>"+fmtMoney(dealIanNet(d))+"</b>. Gross commission this side "+fmtMoney(dealGrossCommission(d))+", after the 15% broker cut and your "+Math.round(sourceShare(dealSource(d))*100)+"% split."; } parent.appendChild(inc);
+  if(dealSource(d)==="Dual agency"){ const rLab=el("div","small muted","Dual commission rate, aim 6%, as low as 5% to make a deal"); rLab.style.marginTop="10px"; parent.appendChild(rLab); parent.appendChild(chipRowKV([["5%",0.05],["6%",0.06]], dualRate(d), function(v){ d.dualRate=v; save(); render(); })); const rNote=el("div","small dim"); rNote.style.marginTop="4px"; rNote.textContent="Current rate "+(+(dualRate(d)*100).toFixed(2))+"%"+(dualRate(d)<0.05?" (locked one-time exception)":""); parent.appendChild(rNote); }
+  const inc=el("div","small dim"); inc.style.marginTop="9px"; inc.style.lineHeight="1.55"; if(dealSource(d)==="Dual agency"){ inc.innerHTML="Est. your take home <b>"+fmtMoney(dealIanNet(d))+"</b>. Dual agency at "+(+(dualRate(d)*100).toFixed(2))+"% on the property, charged once. Broker takes 15% of a 6% basis, then your 50/50 with Chris. Counts twice for volume and deal count."; } else { inc.innerHTML="Est. your take home <b>"+fmtMoney(dealIanNet(d))+"</b>. Gross commission this side "+fmtMoney(dealGrossCommission(d))+", after the 15% broker cut and your "+Math.round(sourceShare(dealSource(d))*100)+"% split."; } parent.appendChild(inc);
   const del=el("button","del","Remove deal"); del.style.fontSize="13px"; del.style.marginTop="12px"; del.onclick=()=>{ if(confirm("Remove this deal?")){ state.realEstate.deals=state.realEstate.deals.filter(x=>x.id!==d.id); delete reDealOpen[d.id]; save(); render(); } }; parent.appendChild(del);
 }
 function dealRow(parent,d){
