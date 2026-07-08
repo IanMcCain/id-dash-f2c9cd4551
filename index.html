@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Ian">
 <title>Ian Dashboard</title>
-<meta name="build" content="v21 build 46 (2026-07-08)">
+<meta name="build" content="v21 build 47 (2026-07-08)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -736,7 +736,7 @@ const sess=(function(){ let ok=false,mem={}; try{ const t="__s__"; window.sessio
 })();
 const KEYS={ ian:"ianDashboard.v2", chris:"chrisDashboard.v2" };
 const SEED_VERSION=13;
-const APP_BUILD="v21 build 46 (2026-07-08)";
+const APP_BUILD="v21 build 47 (2026-07-08)";
 const uid=()=>Math.random().toString(36).slice(2,9);
 function todayKey(d){ d=d||new Date(); const p=n=>String(n).padStart(2,"0"); return d.getFullYear()+"-"+p(d.getMonth()+1)+"-"+p(d.getDate()); }
 const NOW=new Date(), TODAY=todayKey(NOW), DOW=NOW.getDay();
@@ -913,21 +913,28 @@ function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]
       if(_cyn) save(true);
     }
   }catch(e){}
-  /* v21 build 38: remove the Michelle Miller comp rerun clutter. She is live, no comps needed. Deletes any
-     rerun-comps to-do for her and clears the stale Real Estate objective archive tied to the $274,900 comp
-     rerun so it stops resurfacing on future agent runs. Leaves her listing deal and any non-comp to-dos
-     (like the Coming Soon teaser) intact. Idempotent, non-destructive. No SEED_VERSION bump. */
-  try{ var _mc=false;
-    if(state.realEstate && Array.isArray(state.realEstate.todos)){
-      var _tb=state.realEstate.todos.length;
-      state.realEstate.todos=state.realEstate.todos.filter(function(t){ if(!t) return false; var x=String(t.text||""); var isMichelleComp=/michelle/i.test(x) && /comp/i.test(x); return !isMichelleComp; });
-      if(state.realEstate.todos.length!==_tb) _mc=true;
+  /* v21 build 38, GUARDED in build 47: remove the Michelle Miller comp rerun clutter. She is live, no comps
+     needed. Deletes any rerun-comps to-do for her and clears the stale Real Estate objective archive tied to
+     the $274,900 comp rerun. Leaves her listing deal and any non-comp to-dos intact.
+     build 47 fix: wrapped in a one-time meta.mig38_michelle_cleanup guard. Previously this block ran on EVERY
+     load with no flag, and because deepMergeDefaults re-injects the seed's reObjectiveArchive each load, it
+     kept deleting that key and appending ~95 bytes to context.dailyLog[...].claudeAction every single load
+     (unbounded storage growth). Now it runs once per device, sets the flag, and never fires again. */
+  try{ if(!state.meta) state.meta={};
+    if(!state.meta.mig38_michelle_cleanup){
+      var _mc=false;
+      if(state.realEstate && Array.isArray(state.realEstate.todos)){
+        var _tb=state.realEstate.todos.length;
+        state.realEstate.todos=state.realEstate.todos.filter(function(t){ if(!t) return false; var x=String(t.text||""); var isMichelleComp=/michelle/i.test(x) && /comp/i.test(x); return !isMichelleComp; });
+        if(state.realEstate.todos.length!==_tb) _mc=true;
+      }
+      if(state.context && state.context.dailyLog && typeof state.context.dailyLog==="object"){
+        Object.keys(state.context.dailyLog).forEach(function(k){ var e=state.context.dailyLog[k]; if(e && typeof e.reObjectiveArchive==="string" && /274,?900/.test(e.reObjectiveArchive)){ delete e.reObjectiveArchive; e.reObjectiveAgentActed=TODAY; e.claudeAction=(e.claudeAction?e.claudeAction+" ":"")+"Michelle Miller comp rerun objective removed on build 38, she is live and no comps are needed."; _mc=true; } });
+      }
+      if(state.objectives && typeof state.objectives.re==="string" && /274,?900/.test(state.objectives.re)){ state.objectives.re=""; _mc=true; }
+      state.meta.mig38_michelle_cleanup=true;
+      save(true); /* persist the guard flag even when nothing matched, so this never re-fires */
     }
-    if(state.context && state.context.dailyLog && typeof state.context.dailyLog==="object"){
-      Object.keys(state.context.dailyLog).forEach(function(k){ var e=state.context.dailyLog[k]; if(e && typeof e.reObjectiveArchive==="string" && /274,?900/.test(e.reObjectiveArchive)){ delete e.reObjectiveArchive; e.reObjectiveAgentActed=TODAY; e.claudeAction=(e.claudeAction?e.claudeAction+" ":"")+"Michelle Miller comp rerun objective removed on build 38, she is live and no comps are needed."; _mc=true; } });
-    }
-    if(state.objectives && typeof state.objectives.re==="string" && /274,?900/.test(state.objectives.re)){ state.objectives.re=""; _mc=true; }
-    if(_mc) save(true);
   }catch(e){}
   /* v21 build 39: stage correction (07.08.2026). Cynthia Willis is a signed seller listing but NOT live
      yet, she is Coming Soon, so move her back from Active to Coming Soon while keeping all her commission
@@ -1467,8 +1474,97 @@ function reachOutRow(parent,k){
   b.appendChild(top); parent.appendChild(c);
 }
 function sphereAdder(parent){ const c=card(); c._body.appendChild(adder("Add a name to your sphere...",n=>{ sphereList().push({id:uid(),name:n,type:"Sphere",phone:"",lastContacted:"",quality:"Iffy",cadence:90,note:""}); save(); render(); })); parent.appendChild(c); }
+/* ===== v21 build 47: Sphere Orbit visual (people side only, pipeline untouched) =====
+   A radial orbit graph for the CRM. Center node = Ian. INNER orbit = prospects (Prospecting/Buyer deals),
+   orange. OUTER orbit = sphere contacts, colored by reach-out cadence (green Good ~monthly, grey Iffy
+   ~quarterly) with a red ring when a reach-out is DUE (reuses contactOverdue). Node size scales subtly with
+   price. Tapping a node opens that person's EXISTING editor inline (dealEditors for a prospect,
+   contactEditors for a sphere contact), so every current action stays wired (mark contacted, quality
+   Good/Iffy, phone, last contacted, notes, remove, plus stage/price for prospects). Purely additive visual
+   front-end. It does NOT touch the pipeline, the deal editor, or the pipeline graph. */
+const SVGNS="http://www.w3.org/2000/svg";
+let orbitSel=null; /* {kind:"prospect"|"sphere", id} */
+function svgEl(tag,attrs){ var e=document.createElementNS(SVGNS,tag); if(attrs){ for(var k in attrs) e.setAttribute(k,attrs[k]); } return e; }
+function firstName(s){ s=String(s||"").trim(); if(!s) return "?"; s=s.replace(/\(.*$/,"").trim(); var t=s.split(/[\s,]+/)[0]||s; return t.length>10?(t.slice(0,9)+"…"):t; }
+function orbitProspects(){ var d=(state.realEstate&&Array.isArray(state.realEstate.deals))?state.realEstate.deals:[]; return d.filter(reIsProspect); }
+function sphereOrbit(parent){
+  var prospects=orbitProspects(); var sphere=sphereList();
+  var c=card("a-teal"); var b=c._body;
+  var head=el("div","small muted","Sphere Orbit"); head.style.fontWeight="700"; b.appendChild(head);
+  b.appendChild(el("div","small dim","Ian at the center. Inner ring is your prospects, outer ring is your sphere. Tap anyone to open them."));
+  if(!prospects.length && !sphere.length){
+    var em=el("div","empty"); em.style.marginTop="12px"; em.textContent="No prospects or sphere yet. Add your first sphere contact below and it will appear in the orbit."; b.appendChild(em);
+    parent.appendChild(c); return;
+  }
+  var W=340,H=340,cx=170,cy=170,Ri=84,Ro=134;
+  var svg=svgEl("svg",{viewBox:"0 0 "+W+" "+H,width:"100%",role:"img","aria-label":"Sphere orbit graph"});
+  svg.style.cssText="display:block;max-width:360px;margin:12px auto 4px;touch-action:manipulation";
+  /* faint dashed orbit rings with labels */
+  [[Ri,"PROSPECTS"],[Ro,"SPHERE CRM"]].forEach(function(rg){
+    svg.appendChild(svgEl("circle",{cx:cx,cy:cy,r:rg[0],fill:"none",stroke:"#33415a","stroke-width":1,"stroke-dasharray":"3 5",opacity:0.55}));
+    var lab=svgEl("text",{x:cx,y:cy-rg[0]-6,"text-anchor":"middle",fill:"#5b6b86","font-size":8,"letter-spacing":1.4,"font-weight":700}); lab.textContent=rg[1]; svg.appendChild(lab);
+  });
+  function placeRing(list,R,isPro){
+    var n=list.length||1;
+    var prices=list.map(function(x){ return isPro?priceNum(x.price):0; }); var maxP=Math.max.apply(null,[1].concat(prices));
+    list.forEach(function(item,i){
+      var ang=(-90 + i*(360/n))*Math.PI/180; var x=cx+R*Math.cos(ang), y=cy+R*Math.sin(ang);
+      svg.appendChild(svgEl("line",{x1:cx,y1:cy,x2:x,y2:y,stroke:"#2b3a52","stroke-width":1,opacity:0.5}));
+      var rr=isPro?12:11; if(isPro){ rr=12+Math.max(0,Math.min(6,(priceNum(item.price)/maxP)*6)); }
+      var fill,stroke;
+      if(isPro){ fill="#f59e0b"; stroke="#7a4d06"; }
+      else { var good=(item.quality==="Good"); fill=good?"#2fd27a":"#8a94a6"; stroke=good?"#12633a":"#3f4a5c"; }
+      var g=svgEl("g",{}); g.style.cursor="pointer"; g.setAttribute("role","button");
+      var sel=orbitSel && ((isPro&&orbitSel.kind==="prospect")||(!isPro&&orbitSel.kind==="sphere")) && orbitSel.id===item.id;
+      if(!isPro && contactOverdue(item)){ g.appendChild(svgEl("circle",{cx:x,cy:y,r:rr+4,fill:"none",stroke:"#ef4444","stroke-width":2})); }
+      if(sel){ g.appendChild(svgEl("circle",{cx:x,cy:y,r:rr+6,fill:"none",stroke:"#eaf1ff","stroke-width":1.5,opacity:0.9})); }
+      g.appendChild(svgEl("circle",{cx:x,cy:y,r:rr,fill:fill,stroke:stroke,"stroke-width":1.5}));
+      g.appendChild(svgEl("circle",{cx:x,cy:y,r:rr+11,fill:"transparent",stroke:"none"})); /* larger tap target */
+      var nm=svgEl("text",{x:x,y:y+rr+11,"text-anchor":"middle",fill:"#c8d3e6","font-size":9,"font-weight":600}); nm.textContent=firstName(isPro?item.title:item.name); g.appendChild(nm);
+      g.addEventListener("click",function(){ orbitSel={kind:isPro?"prospect":"sphere",id:item.id}; render(); });
+      svg.appendChild(g);
+    });
+  }
+  placeRing(sphere,Ro,false);
+  placeRing(prospects,Ri,true);
+  /* center node = Ian, drawn last so it sits on top */
+  var center=svgEl("g",{});
+  center.appendChild(svgEl("circle",{cx:cx,cy:cy,r:32,fill:"#0e2033",stroke:"#20c5a8","stroke-width":2}));
+  var t1=svgEl("text",{x:cx,y:cy-2,"text-anchor":"middle",fill:"#eaf1ff","font-size":15,"font-weight":800}); t1.textContent="IAN"; center.appendChild(t1);
+  var t2=svgEl("text",{x:cx,y:cy+12,"text-anchor":"middle",fill:"#8aa0bd","font-size":8}); t2.textContent=prospects.length+"p · "+sphere.length+" sph"; center.appendChild(t2);
+  svg.appendChild(center);
+  b.appendChild(svg);
+  /* caption + legend */
+  var cap=el("div","small dim"); cap.style.textAlign="center"; cap.textContent=prospects.length+" prospect"+(prospects.length===1?"":"s")+" · "+sphere.length+" in sphere"; b.appendChild(cap);
+  var leg=el("div","small dim"); leg.style.cssText="margin-top:8px;display:flex;flex-wrap:wrap;gap:10px;justify-content:center;line-height:1.4";
+  function chip(color,label,ring){ var s=el("span"); s.style.cssText="display:inline-flex;align-items:center;gap:5px"; var d=el("span"); d.style.cssText="width:10px;height:10px;border-radius:50%;background:"+color+";"+(ring?"box-shadow:0 0 0 2px #ef4444;":""); s.appendChild(d); s.appendChild(document.createTextNode(label)); return s; }
+  leg.appendChild(chip("#f59e0b","Prospects"));
+  leg.appendChild(chip("#2fd27a","Good, monthly"));
+  leg.appendChild(chip("#8a94a6","Iffy, quarterly"));
+  leg.appendChild(chip("#12324a","Due to reach out",true));
+  b.appendChild(leg);
+  parent.appendChild(c);
+}
+function sphereOrbitDetail(parent){
+  if(!orbitSel) return;
+  var person=null;
+  if(orbitSel.kind==="prospect"){ person=(state.realEstate.deals||[]).filter(function(d){ return d&&d.id===orbitSel.id; })[0]; }
+  else { person=sphereList().filter(function(k){ return k&&k.id===orbitSel.id; })[0]; }
+  if(!person){ orbitSel=null; return; }
+  var c=card(orbitSel.kind==="prospect"?"a-gold":"a-teal"); var b=c._body;
+  var top=el("div","between");
+  var ttl=el("div"); ttl.style.cssText="font-weight:800;font-size:17px"; ttl.textContent=(orbitSel.kind==="prospect"?person.title:(person.name||"(no name)")); top.appendChild(ttl);
+  var cl=el("button","btn ghost sm","Close"); cl.onclick=function(){ orbitSel=null; render(); }; top.appendChild(cl);
+  b.appendChild(top);
+  var sub=el("div","small dim"); sub.style.marginTop="2px"; sub.textContent=(orbitSel.kind==="prospect"?"Prospect":"Sphere contact"); b.appendChild(sub);
+  var det=el("div"); det.style.marginTop="10px";
+  if(orbitSel.kind==="prospect") dealEditors(det,person); else contactEditors(det,person);
+  b.appendChild(det); parent.appendChild(c);
+}
 function reViewSphere(v){
   reBack(v,"Real Estate");
+  safe(v,()=>sphereOrbit(v),"Sphere orbit");
+  safe(v,()=>sphereOrbitDetail(v),"Sphere orbit detail");
   const sphere=sphereList();
   if(!sphere.length){
     const c=card("a-teal"); const b=c._body;
