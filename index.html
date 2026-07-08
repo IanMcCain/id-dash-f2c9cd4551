@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Ian">
 <title>Ian Dashboard</title>
-<meta name="build" content="v21 build 38 (2026-07-08)">
+<meta name="build" content="v21 build 39 (2026-07-08)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -736,7 +736,7 @@ const sess=(function(){ let ok=false,mem={}; try{ const t="__s__"; window.sessio
 })();
 const KEYS={ ian:"ianDashboard.v2", chris:"chrisDashboard.v2" };
 const SEED_VERSION=13;
-const APP_BUILD="v21 build 38 (2026-07-08)";
+const APP_BUILD="v21 build 39 (2026-07-08)";
 const uid=()=>Math.random().toString(36).slice(2,9);
 function todayKey(d){ d=d||new Date(); const p=n=>String(n).padStart(2,"0"); return d.getFullYear()+"-"+p(d.getMonth()+1)+"-"+p(d.getDate()); }
 const NOW=new Date(), TODAY=todayKey(NOW), DOW=NOW.getDay();
@@ -924,6 +924,31 @@ function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]
     }
     if(state.objectives && typeof state.objectives.re==="string" && /274,?900/.test(state.objectives.re)){ state.objectives.re=""; _mc=true; }
     if(_mc) save(true);
+  }catch(e){}
+  /* v21 build 39: stage correction (07.08.2026). Cynthia Willis is a signed seller listing but NOT live
+     yet, she is Coming Soon, so move her back from Active to Coming Soon while keeping all her commission
+     and take-home data (price, source Ian's own, side Seller). Runs after the build 38 Cynthia block so it
+     wins. Guarded one-time flag so it never fights a later manual move (for example when she goes live).
+     Non-destructive, keeps her deal. No SEED_VERSION bump. */
+  try{ if(!state.meta) state.meta={};
+    if(!state.meta.mig39_cynthia_comingsoon && state.realEstate && Array.isArray(state.realEstate.deals)){
+      var _cy2=false;
+      state.realEstate.deals.forEach(function(d){ if(d && /cynthia/i.test(String(d.title||""))){ if(d.stage==="Active"||d.stage==="Prospecting"||d.stage==="Buyer") d.stage="Coming Soon"; if(d.source===undefined) d.source="Ian's own"; if(d.side===undefined) d.side="Seller"; _cy2=true; } });
+      state.meta.mig39_cynthia_comingsoon=true;
+      if(_cy2) save(true);
+    }
+  }catch(e){}
+  /* v21 build 39: Michelle Miller listed today (Wednesday 2026-07-08), so she is live. Move her listing
+     from Coming Soon to Active once, keeping her deal data. Guarded one-time flag so it never fights a
+     later manual move (for example when she goes under contract). Matches her listing deal, not any comp
+     item. Non-destructive. No SEED_VERSION bump. */
+  try{ if(!state.meta) state.meta={};
+    if(!state.meta.mig39_michelle_active && state.realEstate && Array.isArray(state.realEstate.deals)){
+      var _mm2=false;
+      state.realEstate.deals.forEach(function(d){ if(d && /michelle miller/i.test(String(d.title||"")) && !/comp/i.test(String(d.title||""))){ if(d.stage==="Coming Soon"||d.stage==="Prospecting"||d.stage==="Buyer") d.stage="Active"; _mm2=true; } });
+      state.meta.mig39_michelle_active=true;
+      if(_mm2) save(true);
+    }
   }catch(e){}
   /* v21 build 28: seed example Future ideas for 2026-07-07 so the section shows content until the
      daily agent writes fresh ones. Idempotent and add only. The agent replaces this each morning. */
