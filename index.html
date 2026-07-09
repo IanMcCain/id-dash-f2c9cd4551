@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Ian">
 <title>Ian Dashboard</title>
-<meta name="build" content="v21 build 52 (2026-07-09)">
+<meta name="build" content="v21 build 53 (2026-07-09)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -774,7 +774,7 @@ const sess=(function(){ let ok=false,mem={}; try{ const t="__s__"; window.sessio
 })();
 const KEYS={ ian:"ianDashboard.v2", chris:"chrisDashboard.v2" };
 const SEED_VERSION=13;
-const APP_BUILD="v21 build 52 (2026-07-09)";
+const APP_BUILD="v21 build 53 (2026-07-09)";
 const uid=()=>Math.random().toString(36).slice(2,9);
 function todayKey(d){ d=d||new Date(); const p=n=>String(n).padStart(2,"0"); return d.getFullYear()+"-"+p(d.getMonth()+1)+"-"+p(d.getDate()); }
 const NOW=new Date(), TODAY=todayKey(NOW), DOW=NOW.getDay();
@@ -1131,6 +1131,22 @@ function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]
       state.realEstate.deals.forEach(function(d){ if(d && /teske/i.test(String(d.title||""))){ d.close="Est. finish early January 2027"; _tk=true; } });
       state.meta.mig44_teske_finish=true;
       if(_tk) save(true);
+    }
+  }catch(e){}
+  /* v21 build 53: force Chad Troester's saved stage to Active. He lists 07-09 and is Active in the seed, but
+     deals MERGE BY ID (build 41), so the seed change does NOT override a saved "Coming Soon" on an already
+     installed profile. The agent's build-51 mig46_chad_active never reached saved profiles because its guard
+     flag got baked into the SEED meta, so deepMergeDefaults pre-set state.meta.mig46_chad_active=true before
+     the migration ran, skipping it (root cause). This mig53 flag is intentionally NOT in the seed meta, so on
+     an existing profile the flag is absent and this runs once: sets Chad's saved stage to Active, then sets
+     the flag. Matches by deal id re-chad-troester (or "Chad Troester" title, excluding any comp to-do).
+     Guarded so it never fights a later manual stage move. Non-destructive, keeps his other fields. No SEED_VERSION bump. */
+  try{ if(!state.meta) state.meta={};
+    if(!state.meta.mig53_chad_active && state.realEstate && Array.isArray(state.realEstate.deals)){
+      var _cta=false;
+      state.realEstate.deals.forEach(function(d){ if(d && (d.id==="re-chad-troester" || (/chad\s*troester/i.test(String(d.title||"")) && !/comp/i.test(String(d.title||""))))){ if(d.stage!=="Active"){ d.stage="Active"; _cta=true; } } });
+      state.meta.mig53_chad_active=true;
+      save(true);
     }
   }catch(e){}
   /* v21 build 28: seed example Future ideas for 2026-07-07 so the section shows content until the
