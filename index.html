@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Ian">
 <title>Ian Dashboard</title>
-<meta name="build" content="v21 build 51 (2026-07-09)">
+<meta name="build" content="v21 build 52 (2026-07-09)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -161,36 +161,38 @@ a{color:var(--accent2);text-decoration:none}
     linear-gradient(122deg, transparent 68%, rgba(120,175,255,.09) 79%, transparent 86%),
     linear-gradient(122deg, transparent 82%, rgba(150,200,255,.06) 90%, transparent 96%);
   mix-blend-mode:screen}
-.lockinner{position:relative;z-index:1;max-width:360px;margin:0 auto;min-height:100%;display:flex;flex-direction:column;align-items:center;text-align:center;padding:calc(var(--sat) + 14px) 0 calc(var(--sab) + 14px)}
-/* v21 build 50: keypad vertically centered. locktop (header + dots) and lockbot (water) are equal flex
-   regions above and below, so the keypad in the middle sits with its center at the screen's vertical center. */
-.locktop{flex:1 1 0;width:100%;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding-bottom:16px}
-.lockbot{flex:1 1 0;width:100%;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding-top:20px}
-#lockPad{flex:0 0 auto}
+.lockinner{position:relative;z-index:1;max-width:360px;margin:0 auto;min-height:100%;display:grid;grid-template-rows:minmax(0,1fr) auto minmax(0,1fr);justify-items:center;text-align:center;padding:calc(var(--sat) + 12px) 0 calc(var(--sab) + 12px)}
+/* v21 build 50/52: keypad vertically centered. The grid rows minmax(0,1fr) auto minmax(0,1fr) force the top
+   (header + dots) and bottom (water) regions to be exactly EQUAL, so the keypad in the middle auto row sits
+   with its center at the screen's vertical center on any phone height. build 52 also trims the header and key
+   sizes a touch so the header always fits in the top region and the keypad centers without clipping. */
+.locktop{align-self:end;width:100%;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding-bottom:14px}
+.lockbot{align-self:start;width:100%;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding-top:16px}
+#lockPad{align-self:center}
 .lockhead{display:flex;flex-direction:column;align-items:center}
-.locklogo{position:relative;width:80px;height:80px;border-radius:22px;
+.locklogo{position:relative;width:60px;height:60px;border-radius:18px;
   background:linear-gradient(150deg,#4aa3ff 0%,#0a84ff 46%,#0052d6 100%);
-  display:grid;place-items:center;font-weight:900;color:#eef5ff;font-size:31px;letter-spacing:-.05em;margin-bottom:22px;
+  display:grid;place-items:center;font-weight:900;color:#eef5ff;font-size:24px;letter-spacing:-.05em;margin-bottom:13px;
   box-shadow:0 14px 38px rgba(12,110,255,.5),0 2px 6px rgba(0,0,0,.55),inset 0 1px 0 rgba(255,255,255,.4)}
 .locklogo::before{content:"";position:absolute;inset:-52px;z-index:-1;border-radius:50%;
   background:radial-gradient(circle,rgba(40,125,255,.55) 0%,rgba(40,125,255,0) 70%);filter:blur(8px)}
 .locklogo::after{content:"";position:absolute;left:0;right:0;top:0;height:52%;border-radius:22px 22px 40% 40%;
   background:linear-gradient(180deg,rgba(255,255,255,.42),rgba(255,255,255,0));opacity:.65;pointer-events:none}
-.lockbrand{font-size:27px;font-weight:800;letter-spacing:-.03em;color:#f5f8ff}
+.lockbrand{font-size:24px;font-weight:800;letter-spacing:-.03em;color:#f5f8ff}
 .locksub{color:#9fb2d4;font-size:13.5px;margin-top:9px;font-weight:600;min-height:20px;letter-spacing:.01em;transition:color .2s}
 .locksub.err{color:#ff6b6b}
-.dots{display:flex;justify-content:center;gap:18px;margin:26px auto 0;width:100%}
+.dots{display:flex;justify-content:center;gap:18px;margin:15px auto 0;width:100%}
 .dot{width:14px;height:14px;border-radius:50%;background:rgba(255,255,255,.08);border:1.5px solid rgba(150,180,230,.45);
   transition:transform .2s cubic-bezier(.2,.85,.25,1.4),background .2s,box-shadow .2s,border-color .2s}
 .dot.on{background:linear-gradient(150deg,#67b4ff,#0a84ff);border-color:#4aa8ff;transform:scale(1.2);
   box-shadow:0 0 13px rgba(24,124,255,.8)}
 /* v21 build 50: fixed equal width and height so the keys are perfect CIRCLES (the old aspect-ratio + 1fr
    grid stretched them into ovals). Fixed 74px tracks, centered. */
-.keypad{display:grid;grid-template-columns:repeat(3,74px);grid-auto-rows:74px;justify-content:center;gap:24px 30px;width:auto;max-width:none}
-.key{width:74px;height:74px;border-radius:50%;
+.keypad{display:grid;grid-template-columns:repeat(3,70px);grid-auto-rows:70px;justify-content:center;gap:19px 28px;width:auto;max-width:none}
+.key{width:70px;height:70px;border-radius:50%;
   background:linear-gradient(160deg,rgba(255,255,255,.17),rgba(255,255,255,.045));
   -webkit-backdrop-filter:blur(22px) saturate(1.5);backdrop-filter:blur(22px) saturate(1.5);
-  border:1.5px solid rgba(255,255,255,.30);color:#ffffff;font-size:31px;font-weight:400;letter-spacing:-.01em;
+  border:1.5px solid rgba(255,255,255,.30);color:#ffffff;font-size:29px;font-weight:400;letter-spacing:-.01em;
   display:grid;place-items:center;
   box-shadow:0 8px 22px rgba(0,10,40,.42),inset 0 1px 0 rgba(255,255,255,.26);
   transition:transform .1s ease,background .1s,box-shadow .1s}
@@ -772,7 +774,7 @@ const sess=(function(){ let ok=false,mem={}; try{ const t="__s__"; window.sessio
 })();
 const KEYS={ ian:"ianDashboard.v2", chris:"chrisDashboard.v2" };
 const SEED_VERSION=13;
-const APP_BUILD="v21 build 51 (2026-07-09)";
+const APP_BUILD="v21 build 52 (2026-07-09)";
 const uid=()=>Math.random().toString(36).slice(2,9);
 function todayKey(d){ d=d||new Date(); const p=n=>String(n).padStart(2,"0"); return d.getFullYear()+"-"+p(d.getMonth()+1)+"-"+p(d.getDate()); }
 const NOW=new Date(), TODAY=todayKey(NOW), DOW=NOW.getDay();
