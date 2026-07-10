@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Ian">
 <title>Ian Dashboard</title>
-<meta name="build" content="v21 build 54 (2026-07-09)">
+<meta name="build" content="v21 build 55 (2026-07-09)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -774,7 +774,7 @@ const sess=(function(){ let ok=false,mem={}; try{ const t="__s__"; window.sessio
 })();
 const KEYS={ ian:"ianDashboard.v2", chris:"chrisDashboard.v2" };
 const SEED_VERSION=13;
-const APP_BUILD="v21 build 54 (2026-07-09)";
+const APP_BUILD="v21 build 55 (2026-07-09)";
 const uid=()=>Math.random().toString(36).slice(2,9);
 function todayKey(d){ d=d||new Date(); const p=n=>String(n).padStart(2,"0"); return d.getFullYear()+"-"+p(d.getMonth()+1)+"-"+p(d.getDate()); }
 const NOW=new Date(), TODAY=todayKey(NOW), DOW=NOW.getDay();
@@ -845,16 +845,6 @@ function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]
       if(fresh&&Array.isArray(fresh.events)){ if(!Array.isArray(state.events)) state.events=[]; const _ev=state.events.map(function(e){return e&&e.title;}); fresh.events.forEach(function(ev){ if(ev&&_ev.indexOf(ev.title)<0) state.events.push(ev); }); }
       if(fresh&&fresh.gym&&Array.isArray(fresh.gym.split)){ if(!state.gym) state.gym={}; state.gym.split=mergeGymSplit(state.gym.split,fresh.gym.split); }
       try{ if(state.pickleball&&Array.isArray(state.pickleball.sessions)){ var _ps=state.pickleball.sessions.map(function(x){return x&&x.id;}); if(_ps.indexOf("pk-20260706-league")<0){ state.pickleball.sessions.push({id:"pk-20260706-league",date:"2026-07-06",kind:"League",duration:"2h 44m 35s",calories:1897,activeCalories:1636,avgHr:139,maxHr:181,minHr:84,note:"League night, Omaha, 6:29 to 9:13 PM. HR zones Z1 1:14:42, Z2 29:41, Z3 37:08, Z4 22:06, Z5 0:50. Recovery 136 to 129 (1 min) to 119 (2 min)."}); } } }catch(e){}
-      /* v21 build 54: add Ian's July 9 pickleball session from his Apple Watch (Apple Fitness screenshot).
-         Idempotent every-load add, mirrors the pk-20260706-league block. Only adds if NO session dated
-         2026-07-09 already exists, so it never duplicates a placeholder the 6am agent might add. No meta guard
-         flag (keys on saved-state presence, not a seed-bakeable flag). Non-destructive, no SEED_VERSION bump.
-         The schema has no dedicated effort/score/win-loss field, so effort 7 of 10 and the time/location live in
-         the note. kind is "Drills" (Ian confirmed 07.09.2026 it was a drill session, not open play; no win-loss). */
-      try{ if(state.pickleball && Array.isArray(state.pickleball.sessions)){
-        var _has0709=state.pickleball.sessions.some(function(x){ return x && x.date==="2026-07-09"; });
-        if(!_has0709){ state.pickleball.sessions.push({id:"pk-20260709-drills",date:"2026-07-09",kind:"Drills",duration:"1h 4m 4s",calories:585,activeCalories:483,avgHr:116,maxHr:166,note:"Drills, Omaha, 6:20 to 7:24 PM. Drilled serves 15-20 min, then drives and dinks the rest. Effort 7 of 10, Hard. From Apple Watch."}); save(true); }
-      } }catch(e){}
       try{ if(state.context){ if(!state.context.dailyLog) state.context.dailyLog={}; var _D="2026-07-06"; if(!state.context.dailyLog[_D]) state.context.dailyLog[_D]={note:"",summary:""}; var _n=state.context.dailyLog[_D].note||""; if(_n.indexOf("Pickleball league")<0){ state.context.dailyLog[_D].note=(_n?_n+" ":"")+"Pickleball league (Omaha) 6:29 to 9:13 PM: 2h 44m 35s, 1,897 cal (1,636 active), avg HR 139, max 181, min 84."; } } }catch(e){}
       try{ var _clrFC="Check if any workout days need lightened, do a little more workout research to see if there’s somewhere to improve, specefic to me of course"; if(state.context && typeof state.context.forClaude==="string" && state.context.forClaude.trim()===_clrFC.trim()){ state.context.forClaude=""; if(!state.context.dailyLog) state.context.dailyLog={}; if(!state.context.dailyLog["2026-07-07"]) state.context.dailyLog["2026-07-07"]={note:"",summary:""}; if(!state.context.dailyLog["2026-07-07"].forClaudeArchive){ state.context.dailyLog["2026-07-07"].forClaudeArchive=_clrFC; state.context.dailyLog["2026-07-07"].claudeAction="Archived and cleared on the 07.07.2026 deploy."; } } }catch(e){}
     }
@@ -865,6 +855,13 @@ function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]
      touched. Matches the Sugar Creek "neighbor letters out" item. Date mirrors Sugar Creek's
      cadence and can be changed in the Events list. */
   try{ if(profile==="ian"){ if(!Array.isArray(state.events)) state.events=[]; if(!state.events.some(function(e){return e&&e.id==="ev-20260711-cinnamon-flyers";})){ state.events.push({id:"ev-20260711-cinnamon-flyers",title:"Cinnamon Creek flyers out",date:"2026-07-11",kind:"Real estate"}); save(true); } } }catch(e){}
+  /* v21 build 55: add Ian's July 9 pickleball session from his Apple Watch (Apple Fitness screenshot), as an
+     every-load idempotent add OUTSIDE the SEED_VERSION gate (build 54 mistakenly placed it inside the gate, so
+     it never ran at seedVersion 13). Only adds if NO session dated 2026-07-09 already exists, so it never
+     duplicates a placeholder the 6am agent might add. No meta guard flag (keys on saved-state presence).
+     Non-destructive, no SEED_VERSION bump. The schema has no effort/score/win-loss field, so effort 7 of 10 and
+     the time/location live in the note. kind "Drills" (Ian confirmed 07.09.2026, drill session, no win-loss). */
+  try{ if(profile==="ian" && state.pickleball && Array.isArray(state.pickleball.sessions)){ if(!state.pickleball.sessions.some(function(x){return x&&x.date==="2026-07-09";})){ state.pickleball.sessions.push({id:"pk-20260709-drills",date:"2026-07-09",kind:"Drills",duration:"1h 4m 4s",calories:585,activeCalories:483,avgHr:116,maxHr:166,note:"Drills, Omaha, 6:20 to 7:24 PM. Drilled serves 15-20 min, then drives and dinks the rest. Effort 7 of 10, Hard. From Apple Watch."}); save(true); } } }catch(e){}
   /* v21 build 27: non-destructive daily note clear on a true new-day rollover. Tracks meta.lastNoteDay.
      When the calendar day changes (and once on this build's first load, since lastNoteDay starts unset),
      it archives the current note into the daily log, then clears ONLY context.forClaude so Ian opens each
