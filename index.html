@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Ian">
 <title>Ian Dashboard</title>
-<meta name="build" content="v21 build 56 (2026-07-09)">
+<meta name="build" content="v21 build 57 (2026-07-09)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -774,7 +774,7 @@ const sess=(function(){ let ok=false,mem={}; try{ const t="__s__"; window.sessio
 })();
 const KEYS={ ian:"ianDashboard.v2", chris:"chrisDashboard.v2" };
 const SEED_VERSION=13;
-const APP_BUILD="v21 build 56 (2026-07-09)";
+const APP_BUILD="v21 build 57 (2026-07-09)";
 const uid=()=>Math.random().toString(36).slice(2,9);
 function todayKey(d){ d=d||new Date(); const p=n=>String(n).padStart(2,"0"); return d.getFullYear()+"-"+p(d.getMonth()+1)+"-"+p(d.getDate()); }
 const NOW=new Date(), TODAY=todayKey(NOW), DOW=NOW.getDay();
@@ -1161,6 +1161,24 @@ function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]
       save(true);
     }
   }catch(e){}
+  /* v21 build 57: remove the stale "Rerun comps for Michelle Miller" to-do from installed profiles.
+     Michelle is live (Active), so a comp rerun is obsolete. Build 38 intended to delete it
+     (mig38_michelle_cleanup), but that guard flag was BAKED INTO THE SEED meta, so deepMergeDefaults
+     pre-set state.meta.mig38_michelle_cleanup=true before migrations run, making the cleanup self-skip on
+     every installed profile (the same seed-baked-flag self-skip that hit Chad). This mig57 flag is
+     intentionally NOT in the seed meta, so on an existing profile it is absent and this runs once: it
+     removes only a comp-rerun to-do for Michelle (text contains "michelle" AND "comp"), leaving her
+     listing deal and the legit "Post Coming Soon teasers" multi-listing to-do untouched. Idempotent,
+     non-destructive, no SEED_VERSION bump. */
+  try{ if(!state.meta) state.meta={};
+    if(!state.meta.mig57_michelle_comp_todo && state.realEstate && Array.isArray(state.realEstate.todos)){
+      var _mct=false; var _tb2=state.realEstate.todos.length;
+      state.realEstate.todos=state.realEstate.todos.filter(function(t){ if(!t) return false; var x=String(t.text||""); return !(/michelle/i.test(x) && /comp/i.test(x)); });
+      if(state.realEstate.todos.length!==_tb2) _mct=true;
+      state.meta.mig57_michelle_comp_todo=true;
+      save(true); /* persist the flag even when nothing matched, so this never re-fires */
+    }
+  }catch(e){}
   /* v21 build 28: seed example Future ideas for 2026-07-07 so the section shows content until the
      daily agent writes fresh ones. Idempotent and add only. The agent replaces this each morning. */
   try{ if(profile==="ian"){ if(!state.futureIdeas||typeof state.futureIdeas!=="object") state.futureIdeas={}; if(!state.futureIdeas["2026-07-07"]) state.futureIdeas["2026-07-07"]=[ {id:"fi-20260707-1",text:"Film a 30 second Sugar Creek market update and post it as a Coming Soon teaser.",url:""}, {id:"fi-20260707-2",text:"Repost two customer car photos this week and tag them with your Solara handle.",url:""}, {id:"fi-20260707-3",text:"Add a 10 minute third shot drop block before league to sharpen for the July 25 tournament.",url:""} ]; } }catch(e){}
@@ -1250,7 +1268,7 @@ function animate(root){ if(!root) return;
 function currentPageId(){ try{ const r=document.querySelector('input[name="tab"]:checked'); return r?"p-"+r.id.slice(2):"p-home"; }catch(e){ return "p-home"; } }
 function animateVisible(){ try{ requestAnimationFrame(()=>animate(document.getElementById(currentPageId()))); }catch(e){} }
 function updateDailySummary(){ try{ if(!state.context) state.context={forClaude:"",dailyLog:{}}; if(!state.context.dailyLog[TODAY]) state.context.dailyLog[TODAY]={note:"",summary:""}; state.context.dailyLog[TODAY].summary=todaySummary(); }catch(e){} }
-function summaryForDate(dt){ try{ const a=String(dt).split("-"); const dow=new Date(a[0],a[1]-1,a[2]).getDay(); const day=daySplit(dow); const log=(state.gym&&state.gym.logs&&state.gym.logs[dt])||{done:{}}; const wD=day.exercises.filter(e=>log.done[e.id]).length, wT=day.exercises.length; const hs=habitsActiveOn(dt); const hD=hs.filter(h=>h.log&&h.log[dt]).length; const water=(state.nutrition&&state.nutrition.water&&state.nutrition.water[dt])||0; const m=(state.realEstate&&state.realEstate.metrics&&state.realEstate.metrics.log&&state.realEstate.metrics.log[dt])||{}; const qw=(state.quickWin&&state.quickWin.done&&state.quickWin.done[dt])?"done":"not done"; return "Workout: "+cleanFocus(day.focus)+", "+wD+"/"+wT+" logged. Habits: "+hD+"/"+hs.length+". Water: "+water+" glasses. Quick win: "+qw+". Real estate: "+(m.calls||0)+" calls, "+(m.appointments||0)+" appts, "+(m.doors||0)+" doors."; }catch(e){ return "No activity logged."; } }
+function summaryForDate(dt){ try{ const a=String(dt).split("-"); const dow=new Date(a[0],a[1]-1,a[2]).getDay(); const day=daySplit(dow); const log=(state.gym&&state.gym.logs&&state.gym.logs[dt])||{done:{}}; const wD=day.exercises.filter(e=>log.done[e.id]).length, wT=day.exercises.length; const hs=habitsActiveOn(dt); const hD=hs.filter(h=>h.log&&h.log[dt]).length; const water=(state.nutrition&&state.nutrition.water&&state.nutrition.water[dt])||0; const m=(state.realEstate&&state.realEstate.metrics&&state.realEstate.metrics.log&&state.realEstate.metrics.log[dt])||{}; const qw=(state.quickWin&&state.quickWin.done&&state.quickWin.done[dt])?"done":"not done"; return "Workout: "+cleanFocus(day.focus)+", "+wD+"/"+wT+" logged. Habits: "+hD+"/"+hs.length+". Water: "+water+(water===1?" glass":" glasses")+". Quick win: "+qw+". Real estate: "+(m.calls||0)+" calls, "+(m.appointments||0)+" appts, "+(m.doors||0)+" doors."; }catch(e){ return "No activity logged."; } }
 function dailyReset(){ try{ if(!state.meta) state.meta={}; if(!state.context) state.context={forClaude:"",dailyLog:{}}; const last=state.meta.lastDay;
   if(last && last!==TODAY){ if(!state.context.dailyLog[last]) state.context.dailyLog[last]={note:"",summary:""}; const cur=state.context.dailyLog[last].summary; if(!cur || cur==="No activity logged yet.") state.context.dailyLog[last].summary=summaryForDate(last); state.meta.lastReset=TODAY; state.meta.archivedDay=last; }
   state.meta.lastDay=TODAY;
@@ -1258,7 +1276,7 @@ function dailyReset(){ try{ if(!state.meta) state.meta={}; if(!state.context) st
 function todaySummary(){ try{
   if(profile==="chris"){ const m=(state.realEstate.metrics&&state.realEstate.metrics.log[TODAY])||{}; const td=state.todos.filter(t=>t.done).length; return "Real estate: "+(m.calls||0)+" calls, "+(m.appointments||0)+" appts, "+(m.doors||0)+" doors. Tasks done: "+td+". Quick win: "+((state.quickWin.done[TODAY])?"done":"not yet")+"."; }
   const day=daySplit(DOW); const log=state.gym.logs[TODAY]||{done:{}}; const wD=day.exercises.filter(e=>log.done[e.id]).length, wT=day.exercises.length; const hs=habitsActiveOn(TODAY); const hD=hs.filter(h=>h.log[TODAY]); const water=state.nutrition.water[TODAY]||0; const m=(state.realEstate.metrics&&state.realEstate.metrics.log[TODAY])||{}; const qw=(state.quickWin&&state.quickWin.done[TODAY])?"done":"not yet";
-  return "Workout: "+cleanFocus(day.focus)+", "+wD+"/"+wT+" logged. Habits: "+hD.length+"/"+hs.length+". Water: "+water+" glasses. Quick win: "+qw+". Real estate: "+(m.calls||0)+" calls, "+(m.appointments||0)+" appts, "+(m.doors||0)+" doors.";
+  return "Workout: "+cleanFocus(day.focus)+", "+wD+"/"+wT+" logged. Habits: "+hD.length+"/"+hs.length+". Water: "+water+(water===1?" glass":" glasses")+". Quick win: "+qw+". Real estate: "+(m.calls||0)+" calls, "+(m.appointments||0)+" appts, "+(m.doors||0)+" doors.";
 }catch(e){ return "No activity logged yet."; } }
 
 /* ===== shared modules ===== */
@@ -1306,7 +1324,13 @@ function fmtMoney(n){ try{ return "$"+Math.round(n).toLocaleString("en-US"); }ca
    PRODUCTION stays sales volume (sum of prices), it is not income. These add an income estimate. */
 function dealSource(d){ var s=(d&&d.source)||""; return (s==="Chris's client"||s==="Dual agency")?s:"Ian's own"; }
 function dealSide(d){ var s=(d&&d.side)||""; if(s==="Buyer"||s==="Seller"||s==="Both") return s; /* v21 build 41: infer from the TITLE only, not the note, since notes often mention the clients buying elsewhere (Spicer and Bonks selling deals were wrongly read as Buyer). */ var t=String((d&&d.title)||""); return /buy|buyer|buying/i.test(t)?"Buyer":"Seller"; }
-function sideRate(side){ return side==="Buyer"?0.024 : side==="Both"?0.0615 : 0.0375; }
+/* v21 build 57: a "Both" side is dual agency by definition and its commission is computed via dualRate in
+   dealGrossCommission, so sideRate is only reached for SINGLE-side (non-dual) deals. The old "Both" branch
+   here returned the retired additive 6.15% (3.75 + 2.4), which is wrong and was reachable if a deal was
+   mis-tagged side "Both" without source "Dual agency" (the editor offers "Both sides" for any source).
+   Fall back to the seller single-side rate so a mis-tag never applies the retired additive rate. No current
+   deal hits this branch (Snyder and Brandon are Dual agency and use dualRate), so no displayed value changes. */
+function sideRate(side){ return side==="Buyer"?0.024 : 0.0375; }
 function sourceShare(source){ return source==="Chris's client"?0.20 : source==="Dual agency"?0.50 : 0.90; }
 /* v21 build 42: dual agency commission is 5% TOTAL on the sale price, charged ONCE for the property,
    NOT seller 3.75% plus buyer 2.4%. Matt Snyder is entered as two side-entries (buyer and seller) for
