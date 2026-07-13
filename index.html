@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Ian">
 <title>Ian Dashboard</title>
-<meta name="build" content="v21 build 75 (2026-07-12)">
+<meta name="build" content="v21 build 76 (2026-07-13)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -775,7 +775,7 @@ const sess=(function(){ let ok=false,mem={}; try{ const t="__s__"; window.sessio
 })();
 const KEYS={ ian:"ianDashboard.v2", chris:"chrisDashboard.v2" };
 const SEED_VERSION=13;
-const APP_BUILD="v21 build 75 (2026-07-12)";
+const APP_BUILD="v21 build 76 (2026-07-13)";
 const WATER_GOAL=10; /* v21 build 59: daily water goal 12 -> 10 cups (about 2 liters per day). Render-time constant used by the water card, lock-screen widget, and stat tiles; logged water history (state.nutrition.water) is date-keyed and untouched, so no migration is needed and the new goal reaches the device on refresh. */
 const uid=()=>Math.random().toString(36).slice(2,9);
 function todayKey(d){ d=d||new Date(); const p=n=>String(n).padStart(2,"0"); return d.getFullYear()+"-"+p(d.getMonth()+1)+"-"+p(d.getDate()); }
@@ -878,18 +878,21 @@ function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]
       state.meta.mig72_mason_sphere=true; save(true);
     }
   }catch(e){}
-  /* v21 build 75: Mason Langfelt is a sphere/CRM contact ONLY, never a deal. Ian mis-entered him as a deal (it
-     surfaced as "Under Contract"); mig72 relocated only a Prospecting/Buyer-stage Mason, so a non-prospect Mason
-     deal was left counting toward deal count and production. This flag-less, presence-checked, every-load migration
-     removes EVERY Mason/Langfelt deal at ANY stage and keeps him as a single sphere contact (quality Iffy, quarterly
-     cadence 90, fixed note). Naturally idempotent: once the deal is gone and the sphere entry is normalized, reloads
-     are no-ops (saves only on a real change). Non-destructive, no SEED_VERSION bump. Deal count and production derive
-     from state.realEstate.deals so they recompute automatically. */
+  /* v21 build 76: robust Mason fix. Mason Langfelt is a sphere/CRM contact ONLY, never a deal. The build-75
+     matcher required BOTH "mason" AND "langfelt" in the title, but Ian's real deal is titled "Mason Langdfelt"
+     (a typo, an extra d, so /langfelt/ never matched). That is why his Under Contract Mason deal survived build 75
+     and no sphere contact was ever created. This match now keys on "mason" alone (case-insensitive), which safely
+     covers "Mason Langdfelt", "Mason Langfelt", or any Mason deal, and matches no other deal or contact in his data
+     (checked: Monarrez, McCain, Snyder, etc. do not contain "mason"). Flag-less, presence-checked, every-load,
+     idempotent: removes EVERY deal whose title/name contains "mason" at ANY stage, then guarantees exactly one
+     Mason Langfelt sphere contact (quality Iffy, quarterly cadence 90, fixed note), normalizing spelling. Reloads
+     are no-ops once clean (saves only on a real change). Non-destructive, no SEED_VERSION bump. Deal count and
+     production derive from state.realEstate.deals so they recompute automatically. */
   try{ if(!state.meta) state.meta={};
     if(state.realEstate){
       if(!Array.isArray(state.realEstate.deals)) state.realEstate.deals=[];
       if(!Array.isArray(state.realEstate.sphere)) state.realEstate.sphere=[];
-      var _isMason=function(t){ return /mason/i.test(String(t))&&/langfelt/i.test(String(t)); };
+      var _isMason=function(t){ return /mason/i.test(String(t==null?"":t)); };
       var _pkChg=false;
       var _mDeals=state.realEstate.deals.filter(function(d){ return d&&_isMason(d.title||d.name); });
       if(_mDeals.length){ _pkChg=true;
@@ -900,11 +903,9 @@ function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]
       var _mSph=state.realEstate.sphere.filter(function(x){ return x&&_isMason(x.name); });
       if(_mSph.length>1){ _pkChg=true; var _keep=_mSph[0]; state.realEstate.sphere=state.realEstate.sphere.filter(function(x){ return !(x&&_isMason(x.name))||x===_keep; }); _mSph=[_keep]; }
       var _MNOTE="Long-term, not buying until next year";
-      if(_mDeals.length||_mSph.length){
-        var _me=_mSph[0];
-        if(!_me){ state.realEstate.sphere.push({ id:uid(), name:"Mason Langfelt", type:"Sphere", phone:"", lastContacted:"", quality:"Iffy", cadence:90, note:_MNOTE }); _pkChg=true; }
-        else if(_me.type!=="Sphere"||_me.quality!=="Iffy"||_me.cadence!==90||_me.note!==_MNOTE){ _me.type="Sphere"; _me.quality="Iffy"; _me.cadence=90; _me.note=_MNOTE; if(!_me.name) _me.name="Mason Langfelt"; _pkChg=true; }
-      }
+      var _me=_mSph[0];
+      if(!_me){ state.realEstate.sphere.push({ id:uid(), name:"Mason Langfelt", type:"Sphere", phone:"", lastContacted:"", quality:"Iffy", cadence:90, note:_MNOTE }); _pkChg=true; }
+      else if(_me.name!=="Mason Langfelt"||_me.type!=="Sphere"||_me.quality!=="Iffy"||_me.cadence!==90||_me.note!==_MNOTE){ _me.name="Mason Langfelt"; _me.type="Sphere"; _me.quality="Iffy"; _me.cadence=90; _me.note=_MNOTE; _pkChg=true; }
       if(_pkChg) save(true);
     }
   }catch(e){}
