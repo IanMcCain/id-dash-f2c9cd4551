@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Ian">
 <title>Ian Dashboard</title>
-<meta name="build" content="v21 build 80 (2026-07-14)">
+<meta name="build" content="v21 build 81 (2026-07-14)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -775,7 +775,7 @@ const sess=(function(){ let ok=false,mem={}; try{ const t="__s__"; window.sessio
 })();
 const KEYS={ ian:"ianDashboard.v2", chris:"chrisDashboard.v2" };
 const SEED_VERSION=13;
-const APP_BUILD="v21 build 80 (2026-07-14)";
+const APP_BUILD="v21 build 81 (2026-07-14)";
 const WATER_GOAL=10; /* v21 build 59: daily water goal 12 -> 10 cups (about 2 liters per day). Render-time constant used by the water card, lock-screen widget, and stat tiles; logged water history (state.nutrition.water) is date-keyed and untouched, so no migration is needed and the new goal reaches the device on refresh. */
 const uid=()=>Math.random().toString(36).slice(2,9);
 function todayKey(d){ d=d||new Date(); const p=n=>String(n).padStart(2,"0"); return d.getFullYear()+"-"+p(d.getMonth()+1)+"-"+p(d.getDate()); }
@@ -919,8 +919,13 @@ function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]
       if(typeof state.pickleball.dayNote!=="string") state.pickleball.dayNote="";
       if(!state.pickleball.videoRec||typeof state.pickleball.videoRec!=="object") state.pickleball.videoRec={};
       if(!state.pickleball.research||typeof state.pickleball.research!=="object") state.pickleball.research={};
-      /* v21 build 80: game plan slot (the slower-changing coach read, set by the ian-pickleball-coach-research task). Seed a default only when empty, so the daily agent's later writes are never overwritten. Non-destructive, no SEED_VERSION bump. */
-      if(!state.pickleball.gamePlan||typeof state.pickleball.gamePlan!=="object"||!state.pickleball.gamePlan.title){ state.pickleball.gamePlan={title:"Stop drifting, start choosing",text:"Choose drive vs drop by where the other team stands and how high the ball is, then hold your ground until you have earned the step in. Drive only when they are back or the ball is high, drop when they are up or the ball is low, and move in only on a genuinely good ball. Read their paddle before advancing. In the first set, dink and drop and let the point come to you.",date:"2026-07-14"}; }
+      /* v21 build 80/81: game plan slot (the slower-changing coach read, set by the ian-pickleball-coach-research task). Seed a default when empty, and (build 81) force-replace the old build-80 default with the reweighted drops-first plan on already-installed profiles. Never overwrite a plan the daily agent wrote (different title). Non-destructive, no SEED_VERSION bump. */
+      var _newGP={title:"Drops first, drive to refine",text:"Your top priority is the third shot drop and the soft game around it, resets and cross court dinks, drilled until they hold under pressure. Your drive is already close, so refine it, do not rebuild it. The one drive fix that matters is the drift: after you drive, read their paddle, and if it is up at their shoulder, split step and hold instead of drifting into a low mishit. Choose drop vs drive by where they stand and how high the ball is, and in the first set drop and dink and let the point come to you.",date:"2026-07-14"};
+      if(!state.pickleball.gamePlan||typeof state.pickleball.gamePlan!=="object"||!state.pickleball.gamePlan.title){ state.pickleball.gamePlan=_newGP; }
+      else if(state.pickleball.gamePlan.title==="Stop drifting, start choosing"){ state.pickleball.gamePlan=_newGP; }
+      /* v21 build 81: add Ian's priority pickleball goals (drops #1, drive refinement), idempotent add-only by stable id, only if not already present. Never removes his own goals. */
+      if(!Array.isArray(state.pickleball.goals)) state.pickleball.goals=[];
+      (function(){ var _pg=[{id:"pk-goal-drops",text:"Top priority: third shot drops and soft game. Drill drops, resets, and cross court dinks every session until they hold under pressure.",done:false},{id:"pk-goal-drive",text:"Refine the drive (polish, not rebuild). Stop drifting forward: read their paddle, split step and hold on a good ball.",done:false},{id:"pk-goal-tourney",text:"07.25 tournament: win with clean thirds and patience, add offense only once the drops are landing.",done:false}]; _pg.forEach(function(g){ if(!state.pickleball.goals.some(function(x){return x&&x.id===g.id;})){ state.pickleball.goals.push(g); } }); })();
       if(!state.context) state.context={forClaude:"",dailyLog:{}};
       var _pnDay=state.meta&&state.meta.lastPickleNoteDay;
       if(_pnDay && _pnDay!==TODAY){
