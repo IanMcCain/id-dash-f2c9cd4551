@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Ian">
 <title>Ian Dashboard</title>
-<meta name="build" content="v21 build 90 (2026-07-15)">
+<meta name="build" content="v21 build 91 (2026-07-15)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -775,7 +775,7 @@ const sess=(function(){ let ok=false,mem={}; try{ const t="__s__"; window.sessio
 })();
 const KEYS={ ian:"ianDashboard.v2", chris:"chrisDashboard.v2" };
 const SEED_VERSION=13;
-const APP_BUILD="v21 build 90 (2026-07-15)";
+const APP_BUILD="v21 build 91 (2026-07-15)";
 const WATER_GOAL=10; /* v21 build 59: daily water goal 12 -> 10 cups (about 2 liters per day). Render-time constant used by the water card, lock-screen widget, and stat tiles; logged water history (state.nutrition.water) is date-keyed and untouched, so no migration is needed and the new goal reaches the device on refresh. */
 const uid=()=>Math.random().toString(36).slice(2,9);
 function todayKey(d){ d=d||new Date(); const p=n=>String(n).padStart(2,"0"); return d.getFullYear()+"-"+p(d.getMonth()+1)+"-"+p(d.getDate()); }
@@ -1752,54 +1752,6 @@ function buildIanHome(v){ const workout=daySplit(DOW); const reTop=firstUndone(s
   const hero=card("a-blue"); const b=hero._body; b.classList.add("hero"); const hi=el("div","hi"); hi.innerHTML=GREET+', <span class="name">'+nm.replace(/</g,"")+'</span>'; b.appendChild(hi); b.appendChild(el("div","date",LONGDATE+"  ·  your daily brief")); b.appendChild(el("div","focus","Today, "+cleanFocus(workout.focus)+". "+(reTop?"Real estate, "+reTop.text+".":"Pipeline follow ups are clear.")));
   if(state.meta&&state.meta.lastReset===TODAY){ const rn=el("div","small"); rn.style.color="var(--sec2,var(--accent2))"; rn.style.fontWeight="700"; rn.style.marginTop="9px"; rn.textContent="New day. Yesterday's log was archived and daily items reset."; b.appendChild(rn); }
   v.appendChild(hero);
-  /* TRAVEL-BOX-START: Tennessee trip Travel page (added build 89). NON-DESTRUCTIVE UI only, no saved data touched except the additive state.travel checkmarks. The ian-daily-brief agent DELETES this whole block (from this TRAVEL-BOX-START marker through the TRAVEL-BOX-END marker) on the date TRAVEL_BOX_DELETE_ON in its SKILL, then redeploys, so it does not linger after the trip. */
-  (function(){ if(typeof pkCollapse!=="function") return; if(!state.travel||typeof state.travel!=="object") state.travel={}; if(!state.travel.done||typeof state.travel.done!=="object") state.travel.done={}; var tv=state.travel;
-    pkCollapse(v,"travel","Travel page","Tennessee trip, tap to open",false,function(c){
-      var intro=card(); var iv=el("div","small"); iv.style.cssText="line-height:1.5;color:var(--gray)"; iv.textContent="Tennessee trip. Lake, hiking, dinners out, shopping, and photos. Everything for the trip in one place."; intro._body.appendChild(iv); c.appendChild(intro);
-      sect(c,"Flight watchlist","open YouTube, then Library, Downloads");
-      var yc=card(); var yb=el("a","btn block","Open the YouTube app"); yb.href="youtube://"; yb.setAttribute("rel","noopener"); yc._body.appendChild(yb); var yh=el("div","small dim"); yh.style.marginTop="8px"; yh.textContent="Your downloaded flight watchlist is under Library, then Downloads."; yc._body.appendChild(yh); c.appendChild(yc);
-      function tGroup(title,sub,items){ sect(c,title,sub); var gc=card(); items.forEach(function(it){ var row=checkItem(!!tv.done[it.id], it.x, null, function(ev){ tv.done[it.id]=!!(ev&&ev.target&&ev.target.checked); save(); }); gc._body.appendChild(row); }); c.appendChild(gc); }
-      tGroup("Clothes","Ian's list, tap to check off",[
-        {id:"cl-outfits",x:"4 to 5 full outfits"},
-        {id:"cl-boxers",x:"4 pairs of boxers"},
-        {id:"cl-shorts",x:"3 pairs of regular shorts"},
-        {id:"cl-trunks",x:"3 pairs of swim trunks"},
-        {id:"cl-shirts",x:"4 to 5 shirts"},
-        {id:"cl-niceshirts",x:"1 to 2 nice shirts"},
-        {id:"cl-nicepants",x:"1 to 2 nice pants"},
-        {id:"cl-shoes",x:"2 pairs of shoes, one to wear and one to pack"},
-        {id:"pk-hat",x:"A hat"},
-        {id:"pk-sunglasses",x:"Sunglasses"},
-        {id:"cl-travelday",x:"Travel day clothes, the outfit you wear traveling"}
-      ]);
-      tGroup("Hygiene and essentials","tap to check off",[
-        {id:"pk-toiletries",x:"Hygiene stuff, toiletries, toothbrush, deodorant"},
-        {id:"pk-sunscreen",x:"Sunscreen"},
-        {id:"pk-bugspray",x:"Bug spray"},
-        {id:"pk-meds",x:"Medications"},
-        {id:"pk-phonecharger",x:"Phone charger"},
-        {id:"pk-battery",x:"Battery pack"},
-        {id:"pk-watchcharger",x:"Apple Watch charger"},
-        {id:"pk-earbuds",x:"Earbuds"},
-        {id:"pk-wallet",x:"Wallet and ID, cards, some cash"},
-        {id:"pk-waterbottle",x:"Water bottle"},
-        {id:"pk-camera",x:"Camera or phone with free storage for photos"},
-        {id:"pk-drybag",x:"Dry bag or ziplocs for wet or lake items"},
-        {id:"pk-shopbag",x:"A reusable bag for shopping"}
-      ]);
-      sect(c,"Trip plan"); var pc=card(); var pv=el("div","small"); pv.style.cssText="line-height:1.55;color:var(--gray)"; pv.textContent="Lake time, a hike, dinners out, some shopping, and plenty of photos. Pack for warm days and cooler evenings."; pc._body.appendChild(pv); c.appendChild(pc);
-      sect(c,"Before you go"); var rc=card(); var rl=[["Check the forecast for the trip","Pack for the real weather, a rain layer if needed"],["Sunscreen and bug spray","Reapply sunscreen at the lake and on hikes"],["Hydrate","Fill the water bottle, drink through travel and hot days"],["Chargers","Phone charger, battery pack, and the watch charger"]]; rl.forEach(function(r,i){ var row=el("div"); if(i>0) row.style.marginTop="8px"; var tt=el("div","small"); tt.style.cssText="font-weight:700;color:var(--gray)"; tt.textContent=r[0]; row.appendChild(tt); var ss=el("div","small dim"); ss.style.marginTop="2px"; ss.textContent=r[1]; row.appendChild(ss); rc._body.appendChild(row); }); c.appendChild(rc);
-      tGroup("Photos to get","a few to grab",[
-        {id:"ph-lake",x:"Lake shots, a wide one and a close one"},
-        {id:"ph-hike",x:"A view from the top of the hike"},
-        {id:"ph-dinner",x:"A group photo at dinner"},
-        {id:"ph-candids",x:"Candids of everyone"},
-        {id:"ph-sunset",x:"A sunset or golden hour shot"}
-      ]);
-      var rrc=card(); var rrow=el("div","between"); var dn=Object.keys(tv.done).filter(function(k){return tv.done[k];}).length; var lbl=el("div","small dim"); lbl.textContent=dn+" checked"; rrow.appendChild(lbl); var rb=el("button","btn sm","Reset checks"); rb.onclick=function(){ tv.done={}; save(); render(); }; rrow.appendChild(rb); rrc._body.appendChild(rrow); c.appendChild(rrc);
-    });
-  })();
-  /* TRAVEL-BOX-END */
   const _clsec=sect(v,"Today from Claude","new to check out"); _clsec.insertBefore(claudeAvatar("av-md chip"), _clsec.firstChild); { const sc=card(); const sbt=el("button","btn ghost block","Load today\u2019s brief"); sbt.style.marginTop="0"; sbt.onclick=()=>{ const bf=document.getElementById("briefFile"); if(bf)bf.click(); }; const hint=el("div","small dim"); hint.style.marginTop="9px"; hint.textContent="Pick daily_brief.json to merge today\u2019s items. Your other data stays."; sc._body.appendChild(sbt); sc._body.appendChild(hint); v.appendChild(sc); } { const items=briefItems(); if(!items.length){ const c=card(); c._body.appendChild(el("div","empty","No briefing yet for today. Your daily agent will add items here.")); v.appendChild(c); } else { items.forEach(it=>v.appendChild(briefCard(it))); v.appendChild(el("div","notice","Example items. Your daily agent will replace these each morning.")); } }
   sect(v,"Easy wins","two small wins today"); quickWinCard(v);
   sect(v,"Water (cups)","tap to log, aim 10"); safe(v,()=>waterCard(v),"Water home");
