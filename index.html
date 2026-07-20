@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Ian">
 <title>Ian Dashboard</title>
-<meta name="build" content="v21 build 109 (2026-07-20)">
+<meta name="build" content="v21 build 110 (2026-07-20)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -775,7 +775,7 @@ const sess=(function(){ let ok=false,mem={}; try{ const t="__s__"; window.sessio
 })();
 const KEYS={ ian:"ianDashboard.v2", chris:"chrisDashboard.v2" };
 const SEED_VERSION=13;
-const APP_BUILD="v21 build 109 (2026-07-20)";
+const APP_BUILD="v21 build 110 (2026-07-20)";
 const WATER_GOAL=10; /* v21 build 59: daily water goal 12 -> 10 cups (about 2 liters per day). Render-time constant used by the water card, lock-screen widget, and stat tiles; logged water history (state.nutrition.water) is date-keyed and untouched, so no migration is needed and the new goal reaches the device on refresh. */
 const uid=()=>Math.random().toString(36).slice(2,9);
 function todayKey(d){ d=d||new Date(); const p=n=>String(n).padStart(2,"0"); return d.getFullYear()+"-"+p(d.getMonth()+1)+"-"+p(d.getDate()); }
@@ -1060,6 +1060,9 @@ function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]
       {id:"pk-goal-league-info",text:"LATER STEP, no action needed now. When you decide to reach out, closer to spring 2027 or whenever you want, the confirmed route is an Instagram DM to @nebraskaproleague. The two things still unpublished are whether there is a DUPR or skill minimum for tryouts, and what it costs to play. Everything else is already confirmed: tryouts then a live draft, home venue Midwest Pickleball Club, 2026 ran tryouts in April, draft May 15, season started early June.",done:false},
       {id:"pk-goal-dupr",text:"DUPR ladder, keyed to APRIL 2027 tryouts not June: establish it Aug 23, about 4.0 by Nov 2026, 4.25 to 4.5 by Feb 2027, peak 4.5 plus by APRIL 2027 when tryouts happen. Watch the slope more than the number. You are 20, so time is genuinely on your side.",done:false}
     ]; var _gc2=false; _ng.forEach(function(g){ if(!state.pickleball.goals.some(function(x){return x&&x.id===g.id;})){ state.pickleball.goals.push(g); _gc2=true; } }); if(_gc2) save(true); } }catch(e){}
+  /* v21 build 110: venue strategy. Ace stays his main club, but Midwest Pickleball Club is the Nebraska Pro League home,
+     so build a regular presence there ahead of April 2027 tryouts. Add only, idempotent. */
+  try{ if(state.pickleball){ if(!Array.isArray(state.pickleball.goals)) state.pickleball.goals=[]; if(!state.pickleball.goals.some(function(g){return g&&g.id==="pk-goal-midwest";})){ state.pickleball.goals.push({id:"pk-goal-midwest",text:"Build a regular presence at Midwest Pickleball Club, the NPL home club. Keep Ace as your main spot, but add about 1 session a week at Midwest now, moving to 2 a week from roughly Jan 2027 as April tryouts get closer. The point is to be a known face, to measure yourself against the actual tryout player pool, and to see their open play and events from the inside. Log venue on each session so this is measured, not assumed.",done:false}); save(true); } } }catch(e){}
   /* v21 build 109: Nebraska Pro League confirmed from the league Instagram @nebraskaproleague (viewed 07.20.2026).
      Real deadline is APRIL 2027 tryouts, not early summer. Calendar anchors added, clearly labeled expected.
      Also records Ian age, 20, birthday Jan 18. Add only, idempotent. */
@@ -2460,11 +2463,12 @@ function buildPickle(v){ var pb=state.pickleball||(state.pickleball={});
   pkCollapse(v,"pk_sessions","Sessions","this week, plus a history dropdown",false,function(c){
     pkCollapse(c,"pk_logform","Log a session","match details optional",false,function(f){
       var fc=card(); var fb=fc._body; var dl=el("div","small muted","Date"); dl.style.marginBottom="4px"; fb.appendChild(dl); var din=el("input","in"); din.type="date"; din.value=TODAY; fb.appendChild(din); var kind="League"; var kc=el("div"); kc.style.marginTop="11px"; var setc=function(){ Array.prototype.slice.call(kc.querySelectorAll(".chip")).forEach(function(ch){ ch.classList.toggle("on",ch.textContent===kind); }); }; kc.appendChild(chipRow(["League","Open play","Drills","Tournament"],kind,function(k){kind=k;setc();})); fb.appendChild(kc);
+      var vl=el("div","small muted","Venue"); vl.style.margin="13px 0 5px"; fb.appendChild(vl); var venue="Ace"; var vc=el("div"); var setv=function(){ Array.prototype.slice.call(vc.querySelectorAll(".chip")).forEach(function(ch){ ch.classList.toggle("on",ch.textContent===venue); }); }; vc.appendChild(chipRow(["Ace","Midwest","Prairie Lane","Other"],venue,function(k){venue=k;setv();})); fb.appendChild(vc);
       var g=el("div","grid2"); g.style.marginTop="11px"; var durIn=el("input","in"); durIn.placeholder="Duration, e.g. 1h 20m"; g.appendChild(durIn); var calIn=el("input","in"); calIn.type="number"; calIn.placeholder="Calories"; g.appendChild(calIn); var hrIn=el("input","in"); hrIn.type="number"; hrIn.placeholder="Avg HR"; g.appendChild(hrIn); var maxIn=el("input","in"); maxIn.type="number"; maxIn.placeholder="Max HR"; g.appendChild(maxIn); var effIn=el("input","in"); effIn.type="number"; effIn.min="1"; effIn.max="10"; effIn.placeholder="Effort 1-10"; g.appendChild(effIn); fb.appendChild(g);
       var ml=el("div","small muted","Match result, optional"); ml.style.margin="13px 0 5px"; fb.appendChild(ml); var result=""; var rc=el("div"); var setr=function(){ Array.prototype.slice.call(rc.querySelectorAll(".chip")).forEach(function(ch){ ch.classList.toggle("on", (ch.textContent==="Win"&&result==="Win")||(ch.textContent==="Loss"&&result==="Loss")||(ch.textContent==="—"&&result==="")); }); }; rc.appendChild(chipRow(["Win","Loss","—"],"—",function(k){ result=(k==="—")?"":k; setr(); })); fb.appendChild(rc);
       var g2=el("div","grid2"); g2.style.marginTop="11px"; var scoreIn=el("input","in"); scoreIn.placeholder="Score, e.g. 11-7, 11-9"; g2.appendChild(scoreIn); var oppIn=el("input","in"); oppIn.placeholder="Partner / opponent"; g2.appendChild(oppIn); fb.appendChild(g2);
       var noteIn=el("textarea","in"); noteIn.style.minHeight="54px"; noteIn.style.marginTop="11px"; noteIn.placeholder="Match note, what you worked on, how it felt..."; fb.appendChild(noteIn);
-      var btn=el("button","btn block","Log session"); btn.style.marginTop="12px"; btn.onclick=function(){ var e=parseInt(effIn.value,10); pb.sessions.push({id:uid(),date:din.value||TODAY,kind:kind,duration:durIn.value.trim(),calories:calIn.value?parseInt(calIn.value,10):0,avgHr:hrIn.value?parseInt(hrIn.value,10):0,maxHr:maxIn.value?parseInt(maxIn.value,10):0,effort:(!isNaN(e)?e:null),result:result,score:scoreIn.value.trim(),opponent:oppIn.value.trim(),note:noteIn.value.trim()}); save(); render(); }; fb.appendChild(btn); f.appendChild(fc);
+      var btn=el("button","btn block","Log session"); btn.style.marginTop="12px"; btn.onclick=function(){ var e=parseInt(effIn.value,10); pb.sessions.push({id:uid(),date:din.value||TODAY,kind:kind,venue:venue,duration:durIn.value.trim(),calories:calIn.value?parseInt(calIn.value,10):0,avgHr:hrIn.value?parseInt(hrIn.value,10):0,maxHr:maxIn.value?parseInt(maxIn.value,10):0,effort:(!isNaN(e)?e:null),result:result,score:scoreIn.value.trim(),opponent:oppIn.value.trim(),note:noteIn.value.trim()}); save(); render(); }; fb.appendChild(btn); f.appendChild(fc);
     });
     (function(){ var all=pkSorted().slice().reverse(); if(!all.length){ var ec=card(); ec._body.appendChild(el("div","empty","No sessions logged yet.")); c.appendChild(ec); return; }
       var week=all.filter(function(s){ var du=daysUntil(s.date); return du>=-6 && du<=0; });
