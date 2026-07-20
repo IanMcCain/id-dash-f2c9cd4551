@@ -13,7 +13,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Ian">
 <title>Ian Dashboard</title>
-<meta name="build" content="v21 build 118 (2026-07-20)">
+<meta name="build" content="v21 build 119 (2026-07-20)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -771,7 +771,7 @@ const sess=(function(){ let ok=false,mem={}; try{ const t="__s__"; window.sessio
 })();
 const KEYS={ ian:"ianDashboard.v2", chris:"chrisDashboard.v2" };
 const SEED_VERSION=13;
-const APP_BUILD="v21 build 118 (2026-07-20)";
+const APP_BUILD="v21 build 119 (2026-07-20)";
 const WATER_GOAL=10; /* v21 build 59: daily water goal 12 -> 10 cups (about 2 liters per day). Render-time constant used by the water card, lock-screen widget, and stat tiles; logged water history (state.nutrition.water) is date-keyed and untouched, so no migration is needed and the new goal reaches the device on refresh. */
 const uid=()=>Math.random().toString(36).slice(2,9);
 function todayKey(d){ d=d||new Date(); const p=n=>String(n).padStart(2,"0"); return d.getFullYear()+"-"+p(d.getMonth()+1)+"-"+p(d.getDate()); }
@@ -1132,6 +1132,24 @@ function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]
       keepE.sort(function(a,b){ return a.date<b.date?-1:(a.date>b.date?1:0); });
       if(oldE.length){ state.archive.events=(state.archive.events||[]).concat(oldE); }
       state.events=keepE; state.meta.mig_cal115=true; save(true);
+  } }catch(e){}
+  /* v21 build 119: Ian's self assessed skill estimate, 07.20.2026. These are ESTIMATES, not ratings.
+     They get replaced by real data the moment he is rated at the Aug 23 tournament. Idempotent, add only. */
+  try{ if(state.pickleball && !state.meta.mig_skill119){
+      state.pickleball.skillEstimate={source:"Ian self assessed",date:"2026-07-20",doubles:{lo:3.2,hi:3.4},
+        goalAug23:{lo:3.7,hi:3.9},rated:false,
+        note:"Self assessed only. Ian is UNRATED. His DUPR gets ESTABLISHED at the Aug 23 APC tournament from how he plays there, so the 3.7 to 3.9 figure is a LEVEL TO PLAY AT, not a number to raise. Replace all of this with real data once he is rated."};
+      state.pickleball.partner={name:"Dylan",relative:"+0.1 to 0.2 above Ian",estimate:"about 3.4 to 3.5 if Ian is 3.3",
+        source:"Ian self assessed 07.20.2026",
+        note:"Dylan is slightly stronger than Ian right now. Close enough that neither is carrying the other, so play them as an even team rather than building patterns around a stronger partner."};
+      state.meta.mig_skill119=true; save(true);
+  } }catch(e){}
+  /* v21 build 119: recalibrate the DUPR ladder goal off the 3.3 estimate and correct the framing. */
+  try{ if(state.pickleball&&Array.isArray(state.pickleball.goals)&&!state.meta.mig_goaldupr119){
+      state.pickleball.goals.forEach(function(g){ if(g&&g.id==="pk-goal-dupr"){
+        g.text="DUPR ladder, recalibrated 07.20.2026 off your own estimate. You are UNRATED, self assessed 3.2 to 3.4 in doubles today. Aug 23 is not about raising a number, it is where your rating gets ESTABLISHED, so the job is to be PLAYING at 3.7 to 3.9 that day and let the assigned rating reflect it. From there the goal curve is about 4.15 by Nov 2026, 4.4 by Feb 2027, and 4.6 by the APRIL 2027 tryouts. Honest pace from a 3.3 start is more like 3.5 in August and 4.2 to 4.3 by April, so the goal curve needs consistent tournament play and real drilling, not just open play volume. Watch the slope more than the number, and replace every estimate here with real data the day you are rated.";
+      } });
+      state.meta.mig_goaldupr119=true; save(true);
   } }catch(e){}
   /* v21 build 111: (a) Cynthia Willis goes LIVE July 30 2026, verified as 10218 Spyglass Dr against the 07.05.2026 CMA on
      file. Note appended and a calendar item added. (b) Venue economics recorded so the agents stop treating venue as free. */
@@ -2616,14 +2634,39 @@ function buildPickle(v){ var pb=state.pickleball||(state.pickleball={});
     safe(c,function(){
       sect(c,"DUPR trajectory","target vs actual, to April 2027");
       var cardEl=card(); var b=cardEl._body;
-      var TGT=[{d:"2026-08-23",r:3.5},{d:"2026-11-30",r:4.0},{d:"2027-02-28",r:4.35},{d:"2027-04-01",r:4.6}];
+      /* v21 build 119: recalibrated off Ian's self assessed level, 3.2 to 3.4 doubles as of 07.20.2026.
+         EST is his own estimate, NOT a rating. He is unrated, so nothing on this chart is a real DUPR yet.
+         GOAL is the level he wants to be PLAYING at on Aug 23 so the rating he gets ASSIGNED reflects it.
+         PACE is the honest projection from a 3.3 start at his current training volume. */
+      var EST={lo:3.2,hi:3.4,d:"2026-07-20"};
+      var GOAL={lo:3.7,hi:3.9,d:"2026-08-23"};
+      var TGT=[{d:"2026-08-23",r:3.8},{d:"2026-11-30",r:4.15},{d:"2027-02-28",r:4.4},{d:"2027-04-01",r:4.6}];
+      var PACE=[{d:"2026-08-23",r:3.5},{d:"2026-11-30",r:3.85},{d:"2027-02-28",r:4.1},{d:"2027-04-01",r:4.25}];
       var act=(pb.dupr||[]).slice().filter(function(x){return x&&x.date&&isFinite(x.rating);}).sort(function(a,z){return a.date<z.date?-1:1;});
-      var X0=new Date("2026-08-01T00:00:00").getTime(), X1=new Date("2027-04-15T00:00:00").getTime();
-      var Y0=3.2, Y1=4.9, W=320, H=150, PADL=26, PADB=20, PADT=8, PADR=8;
+      var X0=new Date("2026-07-14T00:00:00").getTime(), X1=new Date("2027-04-15T00:00:00").getTime();
+      var Y0=3.0, Y1=4.9, W=320, H=150, PADL=26, PADB=20, PADT=8, PADR=8;
       function px(d){ var v=(new Date(d+"T00:00:00").getTime()-X0)/(X1-X0); return PADL+v*(W-PADL-PADR); }
       function py(r){ var v=(r-Y0)/(Y1-Y0); return (H-PADB)-v*(H-PADB-PADT); }
       var s='<svg viewBox="0 0 '+W+' '+H+'" style="width:100%;height:auto;display:block" xmlns="http://www.w3.org/2000/svg">';
       [3.5,4.0,4.5].forEach(function(r){ var y=py(r); s+='<line x1="'+PADL+'" y1="'+y+'" x2="'+(W-PADR)+'" y2="'+y+'" stroke="#2a2a33" stroke-width="1"/>'; s+='<text x="2" y="'+(y+3)+'" fill="#8b8d94" font-size="8" font-weight="700">'+r.toFixed(1)+'</text>'; });
+      /* self assessed estimate band, amber and hatched so it never reads as a real rating */
+      (function(){ var ex=px(EST.d), yTop=py(EST.hi), yBot=py(EST.lo);
+        s+='<rect x="'+(ex-9)+'" y="'+yTop+'" width="18" height="'+Math.max(3,(yBot-yTop))+'" fill="#ff8a34" opacity="0.28"/>';
+        s+='<line x1="'+(ex-9)+'" y1="'+yTop+'" x2="'+(ex+9)+'" y2="'+yTop+'" stroke="#ff8a34" stroke-width="1.4"/>';
+        s+='<line x1="'+(ex-9)+'" y1="'+yBot+'" x2="'+(ex+9)+'" y2="'+yBot+'" stroke="#ff8a34" stroke-width="1.4"/>';
+        s+='<text x="'+(ex+12)+'" y="'+(yTop-3)+'" fill="#ff8a34" font-size="8" font-weight="800">est 3.2-3.4</text>';
+      })();
+      /* Aug 23 goal band, the level he wants to be PLAYING at when the rating gets set */
+      (function(){ var gx=px(GOAL.d), yTop=py(GOAL.hi), yBot=py(GOAL.lo);
+        s+='<rect x="'+(gx-9)+'" y="'+yTop+'" width="18" height="'+Math.max(3,(yBot-yTop))+'" fill="#2ee66f" opacity="0.22"/>';
+        s+='<line x1="'+(gx-9)+'" y1="'+yTop+'" x2="'+(gx+9)+'" y2="'+yTop+'" stroke="#2ee66f" stroke-width="1.4"/>';
+        s+='<line x1="'+(gx-9)+'" y1="'+yBot+'" x2="'+(gx+9)+'" y2="'+yBot+'" stroke="#2ee66f" stroke-width="1.4"/>';
+        s+='<text x="'+(gx+12)+'" y="'+(yBot+9)+'" fill="#2ee66f" font-size="8" font-weight="800">goal 3.7-3.9</text>';
+      })();
+      /* honest pace line, what a 3.3 start actually projects to at his volume */
+      var pp=PACE.map(function(o){ return px(o.d)+','+py(o.r); }).join(' ');
+      s+='<polyline points="'+pp+'" fill="none" stroke="#8b8d94" stroke-width="1.6" stroke-dasharray="2 3" opacity="0.8"/>';
+      s+='<text x="'+(px("2027-02-28")-6)+'" y="'+(py(4.1)+12)+'" fill="#8b8d94" font-size="7.5" font-weight="700">honest pace</text>';
       var tp=TGT.map(function(o){ return px(o.d)+','+py(o.r); }).join(' ');
       s+='<polyline points="'+tp+'" fill="none" stroke="#8af2ac" stroke-width="2" stroke-dasharray="4 3" opacity="0.75"/>';
       TGT.forEach(function(o){ s+='<circle cx="'+px(o.d)+'" cy="'+py(o.r)+'" r="2.4" fill="#8af2ac" opacity="0.85"/>'; });
@@ -2632,9 +2675,7 @@ function buildPickle(v){ var pb=state.pickleball||(state.pickleball={});
         if(act.length>1) s+='<polyline points="'+ap+'" fill="none" stroke="#2ee66f" stroke-width="2.5"/>';
         act.forEach(function(o){ s+='<circle cx="'+px(o.date)+'" cy="'+py(o.rating)+'" r="3.6" fill="#2ee66f"/>'; });
       } else {
-        var mx=px("2026-08-23"), my=py(3.5);
-        s+='<circle cx="'+mx+'" cy="'+my+'" r="4" fill="none" stroke="#2ee66f" stroke-width="1.6" stroke-dasharray="3 2"/>';
-        s+='<text x="'+(mx+7)+'" y="'+(my-5)+'" fill="#2ee66f" font-size="8.5" font-weight="800">baseline Aug 23</text>';
+        /* build 119: the old single 3.5 baseline dot is replaced by the estimate and goal bands above. */
       }
       /* build 117: EVENT MARKERS. DUPR only moves at tournaments and events, so mark where they fall. */
       var evList=((state&&state.events)||[]).filter(function(e){ return e&&e.date&&/tournament|league|event/i.test(String(e.kind||"")+" "+String(e.title||"")); });
@@ -2646,19 +2687,26 @@ function buildPickle(v){ var pb=state.pickleball||(state.pickleball={});
         s+='<line x1="'+ex+'" y1="'+PADT+'" x2="'+ex+'" y2="'+(H-PADB)+'" stroke="#ffd60a" stroke-width="1" stroke-dasharray="2 3" opacity="0.55"/>';
         s+='<circle cx="'+ex+'" cy="'+(H-PADB)+'" r="2.6" fill="#ffd60a"/>';
       });
-      s+='<text x="'+PADL+'" y="'+(H-6)+'" fill="#8b8d94" font-size="8" font-weight="700">Aug 26</text>';
+      s+='<text x="'+PADL+'" y="'+(H-6)+'" fill="#8b8d94" font-size="8" font-weight="700">Jul 26</text>';
       s+='<text x="'+(W-PADR-30)+'" y="'+(H-6)+'" fill="#8b8d94" font-size="8" font-weight="700">Apr 27</text>';
       s+='</svg>';
       var w=el("div"); w.innerHTML=s; b.appendChild(w);
       var note=el("div","small"); note.style.cssText="margin-top:9px;line-height:1.5;color:var(--gray)";
-      if(!act.length){ note.textContent="You are UNRATED. Gold markers are tournaments and events, which is the only thing that moves a DUPR, so your rating steps at those dates rather than drifting between them. The dashed green line is the roadmap target, 3.5 at your Aug 23 baseline climbing to about 4.6 by April tryouts."; }
+      if(!act.length){ note.innerHTML="<b>You do not have a DUPR yet.</b> Nothing on this chart is a real rating. The amber band is your own estimate of where you are right now, 3.2 to 3.4 in doubles, self assessed. The green band at Aug 23 is the level you want to be PLAYING at, 3.7 to 3.9, because your rating gets ESTABLISHED that day from how you actually perform. You are not raising a number, you are earning the first one. Gold markers are the events where a rating can move. Green dashed is the goal curve to 4.6 by April tryouts, grey dashed is the honest pace from a 3.3 start. All of this gets replaced by real data on Aug 23."; }
       else { var last=act[act.length-1]; var tgtNow=4.6; for(var i=0;i<TGT.length;i++){ if(TGT[i].d>=last.date){ tgtNow=TGT[i].r; break; } } var diff=(last.rating-tgtNow); note.textContent="Latest "+last.rating.toFixed(2)+" on "+fmtShort(last.date)+". "+(diff>=-0.05?"On or ahead of pace.":"About "+Math.abs(diff).toFixed(2)+" under the target curve, which is information, not a verdict."); }
       b.appendChild(note);
+      var lg=el("div","hmkey"); lg.style.marginTop="10px";
+      lg.innerHTML='<span><i style="background:#ff8a34"></i>Your estimate</span>'+
+        '<span><i style="background:#2ee66f"></i>Aug 23 goal level</span>'+
+        '<span><i style="background:#8af2ac"></i>Goal curve</span>'+
+        '<span><i style="background:#8b8d94"></i>Honest pace</span>'+
+        '<span><i style="background:#ffd60a"></i>Rating events</span>';
+      b.appendChild(lg);
       var row=el("div","grid2"); row.style.marginTop="11px";
       var din=el("input","in"); din.type="date"; din.value=TODAY; row.appendChild(din);
       var rin=el("input","in"); rin.type="number"; rin.step="0.01"; rin.placeholder="DUPR e.g. 3.75"; row.appendChild(rin);
       b.appendChild(row);
-      var add=el("button","btn block","Log DUPR"); add.style.marginTop="9px";
+      var add=el("button","btn block","Log your first real DUPR"); add.style.marginTop="9px";
       add.onclick=function(){ var r=parseFloat(rin.value); if(!isFinite(r)) return; pb.dupr=pb.dupr||[]; pb.dupr.push({date:din.value||TODAY,rating:r}); save(); render(); };
       b.appendChild(add);
       c.appendChild(cardEl);
