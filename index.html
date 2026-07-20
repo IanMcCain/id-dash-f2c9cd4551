@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Ian">
 <title>Ian Dashboard</title>
-<meta name="build" content="v21 build 111 (2026-07-20)">
+<meta name="build" content="v21 build 112 (2026-07-20)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -268,7 +268,7 @@ main{position:relative;padding:calc(var(--hh) + var(--sat) + 10px) 14px calc(var
 .card h3{font-size:16px;margin-bottom:4px}
 .sectlabel{position:sticky;top:calc(var(--hh) + var(--sat));z-index:20;display:flex;align-items:center;gap:10px;margin:22px 3px 11px;padding:9px 4px 8px;font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--white);font-weight:800;background:linear-gradient(180deg,var(--bg) 72%,rgba(5,5,6,0))}
 .sectlabel:first-child{margin-top:2px}
-.sectlabel::before{content:"";width:5px;height:17px;border-radius:3px;background:linear-gradient(180deg,var(--accent),var(--accent2));flex:0 0 auto}
+.sectlabel::before{content:"";width:5px;height:17px;border-radius:3px;background:linear-gradient(180deg,var(--sec,var(--accent)),var(--sec2,var(--accent2)));flex:0 0 auto}
 .sectlabel .sub{margin-left:auto;color:var(--gray2);font-size:11px;font-weight:700;text-transform:none;letter-spacing:.02em}
 .sectlabel.g::before{background:linear-gradient(180deg,var(--green),#7ff0b8)}
 .muted{color:var(--gray2)} .dim{color:var(--dim)} .small{font-size:13px}
@@ -775,7 +775,7 @@ const sess=(function(){ let ok=false,mem={}; try{ const t="__s__"; window.sessio
 })();
 const KEYS={ ian:"ianDashboard.v2", chris:"chrisDashboard.v2" };
 const SEED_VERSION=13;
-const APP_BUILD="v21 build 111 (2026-07-20)";
+const APP_BUILD="v21 build 112 (2026-07-20)";
 const WATER_GOAL=10; /* v21 build 59: daily water goal 12 -> 10 cups (about 2 liters per day). Render-time constant used by the water card, lock-screen widget, and stat tiles; logged water history (state.nutrition.water) is date-keyed and untouched, so no migration is needed and the new goal reaches the device on refresh. */
 const uid=()=>Math.random().toString(36).slice(2,9);
 function todayKey(d){ d=d||new Date(); const p=n=>String(n).padStart(2,"0"); return d.getFullYear()+"-"+p(d.getMonth()+1)+"-"+p(d.getDate()); }
@@ -1060,6 +1060,9 @@ function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]
       {id:"pk-goal-league-info",text:"LATER STEP, no action needed now. When you decide to reach out, closer to spring 2027 or whenever you want, the confirmed route is an Instagram DM to @nebraskaproleague. The two things still unpublished are whether there is a DUPR or skill minimum for tryouts, and what it costs to play. Everything else is already confirmed: tryouts then a live draft, home venue Midwest Pickleball Club, 2026 ran tryouts in April, draft May 15, season started early June.",done:false},
       {id:"pk-goal-dupr",text:"DUPR ladder, keyed to APRIL 2027 tryouts not June: establish it Aug 23, about 4.0 by Nov 2026, 4.25 to 4.5 by Feb 2027, peak 4.5 plus by APRIL 2027 when tryouts happen. Watch the slope more than the number. You are 20, so time is genuinely on your side.",done:false}
     ]; var _gc2=false; _ng.forEach(function(g){ if(!state.pickleball.goals.some(function(x){return x&&x.id===g.id;})){ state.pickleball.goals.push(g); _gc2=true; } }); if(_gc2) save(true); } }catch(e){}
+  /* v21 build 112: containers for the new charts. dupr is his rating history, videoStats is the SMALL structured
+     summary from each video coach session (never the full report). Seeded empty, idempotent. */
+  try{ if(state.pickleball){ var _vc=false; if(!Array.isArray(state.pickleball.dupr)){ state.pickleball.dupr=[]; _vc=true; } if(!Array.isArray(state.pickleball.videoStats)){ state.pickleball.videoStats=[]; _vc=true; } if(_vc) save(true); } }catch(e){}
   /* v21 build 111: (a) Cynthia Willis goes LIVE July 30 2026, verified as 10218 Spyglass Dr against the 07.05.2026 CMA on
      file. Note appended and a calendar item added. (b) Venue economics recorded so the agents stop treating venue as free. */
   try{ if(state.realEstate&&Array.isArray(state.realEstate.deals)){ var _wc=false; state.realEstate.deals.forEach(function(d){ if(d&&d.id==="re-cynthia-willis"&&typeof d.note==="string"&&d.note.indexOf("GOES LIVE")<0){ d.note=d.note+" GOES LIVE (active) on JULY 30, 2026, confirmed by Ian 07.20.2026. Verified as 10218 Spyglass Dr against the 07.05.2026 CMA on file (CMA Willis Spyglass Dr plus Troester re run). Prep the listing go live: photos, copy, syndication check, and a just listed push."; _wc=true; } }); if(_wc) save(true); } }catch(e){}
@@ -2455,6 +2458,26 @@ function buildPickle(v){ var pb=state.pickleball||(state.pickleball={});
   sect(v,"Upcoming","league and tournaments");
   (function(){ var evs=((state&&state.events)||[]).filter(function(e){ return e&&e.date&&daysUntil(e.date)>=0 && (/league|tournament|pickle/i.test(String(e.kind||"")+" "+String(e.title||""))); }).sort(function(a,b){return daysUntil(a.date)-daysUntil(b.date);}); if(!evs.length){ var ec=card(); ec._body.appendChild(el("div","empty","No pickleball events coming up.")); v.appendChild(ec); return; } var c=card(); var b=c._body; var MON=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]; evs.forEach(function(e){ var row=el("div","evrow"); var dt=el("div","evdate"); var mp=String(e.date).split("-"); dt.appendChild(el("div","d",String(parseInt(mp[2],10)||""))); dt.appendChild(el("div","m",MON[(parseInt(mp[1],10)||1)-1]||"")); row.appendChild(dt); var et=el("div","evt"); et.appendChild(el("div","en",e.title||"Event")); var du=daysUntil(e.date); et.appendChild(el("div","ec",(e.kind||"Pickleball")+"  ·  "+(du===0?"today":du===1?"tomorrow":"in "+du+" days"))); row.appendChild(et); b.appendChild(row); }); v.appendChild(c); })();
 
+  /* v21 build 112: COUNTDOWN CARDS, mobile first, visual not a line of text */
+  safe(v,function(){
+    sect(v,"Countdown","the two dates that matter");
+    var cc=card(); var g=el("div","cdgrid");
+    function cd(lab,dateStr,startStr,sub){
+      var du=daysUntil(dateStr); var box=el("div","cdcard");
+      var l=el("div","lab"); l.textContent=lab; box.appendChild(l);
+      var b=el("div","big"); b.textContent=(du<0?"done":String(du)); box.appendChild(b);
+      var s=el("div","sub"); s.textContent=(du<0?"passed":(du===0?"today":(du===1?"day to go":"days to go")))+(sub?" \u00b7 "+sub:""); box.appendChild(s);
+      var st=new Date(startStr+"T00:00:00"), en=new Date(dateStr+"T00:00:00"), no=new Date();
+      var tot=Math.max(1,(en-st)), el2=Math.min(Math.max(0,(no-st)),tot); var pct=Math.round(el2/tot*100);
+      var bar=el("div","cdbar"); var f=el("i"); f.style.width=pct+"%"; bar.appendChild(f); box.appendChild(bar);
+      var pl=el("div","sub"); pl.style.marginTop="6px"; pl.textContent=pct+"% of the way there"; box.appendChild(pl);
+      return box;
+    }
+    g.appendChild(cd("First tournament","2026-08-23","2026-07-15","Aug 23"));
+    g.appendChild(cd("NPL tryouts","2027-04-01","2026-07-20","Apr 2027, expected"));
+    cc._body.appendChild(g); v.appendChild(cc);
+  },"Pickle countdowns");
+
   /* 2. STATS, always open (build 92) */
   sect(v,"Stats","your play at a glance");
   safe(v,function(){ var st=pkStats(); var ss=st.ss;
@@ -2464,6 +2487,128 @@ function buildPickle(v){ var pb=state.pickleball||(state.pickleball={});
     var dc=card(); dc._body.appendChild(el("div","small muted","Session types")); dc._body.lastChild.style.marginBottom="10px"; var dw=el("div"); dw.innerHTML=pkDonut(ddata,156,24); dc._body.appendChild(dw); var lg=el("div"); lg.style.cssText="display:flex;flex-wrap:wrap;gap:9px 16px;justify-content:center;margin-top:12px"; ddata.forEach(function(d){ var it=el("div"); it.style.cssText="display:flex;align-items:center;gap:7px;font-size:12.5px;font-weight:700;color:var(--gray)"; var dot=el("span"); dot.style.cssText="width:11px;height:11px;border-radius:3px;background:"+d.color; it.appendChild(dot); it.appendChild(document.createTextNode(d.label+"  "+d.value)); lg.appendChild(it); }); dc._body.appendChild(lg); v.appendChild(dc);
     var items=[]; var WD=["Su","Mo","Tu","We","Th","Fr","Sa"]; for(var i=6;i>=0;i--){ var d=new Date(); d.setDate(d.getDate()-i); var k=todayKey(d); var mins=ss.filter(function(s){return s.date===k;}).reduce(function(a,s){return a+pkParseMin(s.duration);},0); items.push({label:WD[d.getDay()],min:mins}); } var mx=Math.max.apply(null,items.map(function(x){return x.min;}).concat([1])); items.forEach(function(x){ x.pct=Math.round(x.min/mx*100); }); var bc=card(); bc._body.appendChild(el("div","small muted","Minutes on court, last 7 days")); bc._body.lastChild.style.marginBottom="6px"; bc._body.appendChild(barChart(items,"",140)); v.appendChild(bc);
   },"Pickle graphs");
+
+
+  /* v21 build 112: PROGRESS, three mobile first charts. DUPR trajectory, training heatmap, shot accuracy. */
+  pkCollapse(v,"pk_progress","Progress","DUPR pace, training, and shot accuracy",false,function(pc){
+
+    /* ---- DUPR trajectory vs the roadmap target ---- */
+    safe(pc,function(){
+      sect(pc,"DUPR trajectory","target vs actual, to April 2027");
+      var c=card(); var b=c._body;
+      var TGT=[{d:"2026-08-23",r:3.5},{d:"2026-11-30",r:4.0},{d:"2027-02-28",r:4.35},{d:"2027-04-01",r:4.6}];
+      var act=(pb.dupr||[]).slice().filter(function(x){return x&&x.date&&isFinite(x.rating);}).sort(function(a,z){return a.date<z.date?-1:1;});
+      var X0=new Date("2026-08-01T00:00:00").getTime(), X1=new Date("2027-04-15T00:00:00").getTime();
+      var Y0=3.2, Y1=4.9, W=320, H=150, PADL=26, PADB=20, PADT=8, PADR=8;
+      function px(d){ var v=(new Date(d+"T00:00:00").getTime()-X0)/(X1-X0); return PADL+v*(W-PADL-PADR); }
+      function py(r){ var v=(r-Y0)/(Y1-Y0); return (H-PADB)-v*(H-PADB-PADT); }
+      var s='<svg viewBox="0 0 '+W+' '+H+'" style="width:100%;height:auto;display:block" xmlns="http://www.w3.org/2000/svg">';
+      [3.5,4.0,4.5].forEach(function(r){ var y=py(r); s+='<line x1="'+PADL+'" y1="'+y+'" x2="'+(W-PADR)+'" y2="'+y+'" stroke="#2a2a33" stroke-width="1"/>'; s+='<text x="2" y="'+(y+3)+'" fill="#8b8d94" font-size="8" font-weight="700">'+r.toFixed(1)+'</text>'; });
+      var tp=TGT.map(function(o){ return px(o.d)+','+py(o.r); }).join(' ');
+      s+='<polyline points="'+tp+'" fill="none" stroke="#8af2ac" stroke-width="2" stroke-dasharray="4 3" opacity="0.75"/>';
+      TGT.forEach(function(o){ s+='<circle cx="'+px(o.d)+'" cy="'+py(o.r)+'" r="2.4" fill="#8af2ac" opacity="0.85"/>'; });
+      if(act.length){
+        var ap=act.map(function(o){ return px(o.date)+','+py(o.rating); }).join(' ');
+        if(act.length>1) s+='<polyline points="'+ap+'" fill="none" stroke="#2ee66f" stroke-width="2.5"/>';
+        act.forEach(function(o){ s+='<circle cx="'+px(o.date)+'" cy="'+py(o.rating)+'" r="3.6" fill="#2ee66f"/>'; });
+      } else {
+        var mx=px("2026-08-23"), my=py(3.5);
+        s+='<circle cx="'+mx+'" cy="'+my+'" r="4" fill="none" stroke="#2ee66f" stroke-width="1.6" stroke-dasharray="3 2"/>';
+        s+='<text x="'+(mx+7)+'" y="'+(my-5)+'" fill="#2ee66f" font-size="8.5" font-weight="800">baseline Aug 23</text>';
+      }
+      s+='<text x="'+PADL+'" y="'+(H-6)+'" fill="#8b8d94" font-size="8" font-weight="700">Aug 26</text>';
+      s+='<text x="'+(W-PADR-30)+'" y="'+(H-6)+'" fill="#8b8d94" font-size="8" font-weight="700">Apr 27</text>';
+      s+='</svg>';
+      var w=el("div"); w.innerHTML=s; b.appendChild(w);
+      var note=el("div","small"); note.style.cssText="margin-top:9px;line-height:1.5;color:var(--gray)";
+      if(!act.length){ note.textContent="You are UNRATED. The dashed line is the roadmap target, 3.5 at your Aug 23 baseline climbing to about 4.6 by April tryouts. Your real line starts once you get a rating on Aug 23."; }
+      else { var last=act[act.length-1]; var tgtNow=4.6; for(var i=0;i<TGT.length;i++){ if(TGT[i].d>=last.date){ tgtNow=TGT[i].r; break; } } var diff=(last.rating-tgtNow); note.textContent="Latest "+last.rating.toFixed(2)+" on "+fmtShort(last.date)+". "+(diff>=-0.05?"On or ahead of pace.":"About "+Math.abs(diff).toFixed(2)+" under the target curve, which is information, not a verdict."); }
+      b.appendChild(note);
+      var row=el("div","grid2"); row.style.marginTop="11px";
+      var din=el("input","in"); din.type="date"; din.value=TODAY; row.appendChild(din);
+      var rin=el("input","in"); rin.type="number"; rin.step="0.01"; rin.placeholder="DUPR e.g. 3.75"; row.appendChild(rin);
+      b.appendChild(row);
+      var add=el("button","btn block","Log DUPR"); add.style.marginTop="9px";
+      add.onclick=function(){ var r=parseFloat(rin.value); if(!isFinite(r)) return; pb.dupr=pb.dupr||[]; pb.dupr.push({date:din.value||TODAY,rating:r}); save(); render(); };
+      b.appendChild(add);
+      pc.appendChild(c);
+    },"DUPR chart");
+
+    /* ---- Training heatmap, pickleball vs gym ---- */
+    safe(pc,function(){
+      sect(pc,"Training","last 10 weeks, target 5 to 6 a week");
+      var c=card(); var b=c._body;
+      var pkDays={}; (pb.sessions||[]).forEach(function(s){ if(s&&s.date) pkDays[s.date]=true; });
+      var gyDays={}; var gl=(state.gym&&state.gym.logs)||{};
+      Object.keys(gl).forEach(function(k){ var d=gl[k]&&gl[k].done; if(d&&Object.keys(d).some(function(id){return d[id];})) gyDays[k]=true; });
+      var today=new Date(); var dow=today.getDay(); var mondayOffset=(dow===0?6:dow-1);
+      var curMon=new Date(today); curMon.setDate(curMon.getDate()-mondayOffset);
+      for(var w=9; w>=0; w--){
+        var ws=new Date(curMon); ws.setDate(ws.getDate()-w*7);
+        var row=el("div","hmrow");
+        var lab=el("div","hmwk"); lab.textContent=(ws.getMonth()+1)+"/"+ws.getDate(); row.appendChild(lab);
+        var cells=el("div","hmcells"); var n=0;
+        for(var i=0;i<7;i++){
+          var dd=new Date(ws); dd.setDate(dd.getDate()+i); var k=todayKey(dd);
+          var hasPk=!!pkDays[k], hasGy=!!gyDays[k];
+          var cell=el("div","hmc"+(hasPk&&hasGy?" both":(hasPk?" pk":(hasGy?" gy":""))));
+          cell.title=k+(hasPk?" pickleball":"")+(hasGy?" gym":"");
+          if(dd>today) cell.style.opacity="0.25";
+          if(hasPk) n++;
+          cells.appendChild(cell);
+        }
+        row.appendChild(cells);
+        var cnt=el("div","hmn"+(n>=5?" hit":"")); cnt.textContent=n+"/6"; row.appendChild(cnt);
+        b.appendChild(row);
+      }
+      var key=el("div","hmkey");
+      key.innerHTML='<span><i style="background:var(--pk1)"></i>Pickleball</span><span><i style="background:var(--gy1)"></i>Gym</span><span><i style="background:linear-gradient(135deg,var(--pk1) 0 50%,var(--gy1) 50% 100%)"></i>Both</span>';
+      b.appendChild(key);
+      var hint=el("div","small dim"); hint.style.cssText="margin-top:8px;line-height:1.45"; hint.textContent="The number on the right is pickleball sessions that week against your 5 to 6 target, and it turns green when you hit it.";
+      b.appendChild(hint);
+      pc.appendChild(c);
+    },"Training heatmap");
+
+    /* ---- Shot accuracy trend, fed by video coach takeaways ---- */
+    safe(pc,function(){
+      sect(pc,"Shot accuracy","from your video sessions");
+      var c=card(); var b=c._body;
+      var vs=(pb.videoStats||[]).slice().filter(function(x){return x&&x.date&&isFinite(x.overall);}).sort(function(a,z){return a.date<z.date?-1:1;});
+      if(!vs.length){
+        b.appendChild(el("span","pill s","Waiting on data"));
+        var e=el("div","small"); e.style.cssText="margin-top:9px;line-height:1.55;color:var(--gray)";
+        e.textContent="No video sessions analysed yet. Once your video coach reviews footage, the accuracy numbers land here automatically and this becomes a trend line. The full report stays as a file, only the stats come into the app.";
+        b.appendChild(e);
+      } else {
+        var W=320,H=140,PADL=24,PADB=18,PADT=8,PADR=8;
+        function px2(i){ return PADL + (vs.length===1?0.5:(i/(vs.length-1)))*(W-PADL-PADR); }
+        function py2(v){ return (H-PADB)-(Math.max(0,Math.min(100,v))/100)*(H-PADB-PADT); }
+        var s='<svg viewBox="0 0 '+W+' '+H+'" style="width:100%;height:auto;display:block" xmlns="http://www.w3.org/2000/svg">';
+        [25,50,75,100].forEach(function(g){ var y=py2(g); s+='<line x1="'+PADL+'" y1="'+y+'" x2="'+(W-PADR)+'" y2="'+y+'" stroke="#2a2a33" stroke-width="1"/><text x="2" y="'+(y+3)+'" fill="#8b8d94" font-size="8" font-weight="700">'+g+'</text>'; });
+        var pts=vs.map(function(o,i){ return px2(i)+','+py2(o.overall); }).join(' ');
+        if(vs.length>1) s+='<polyline points="'+pts+'" fill="none" stroke="#2ee66f" stroke-width="2.5"/>';
+        vs.forEach(function(o,i){ s+='<circle cx="'+px2(i)+'" cy="'+py2(o.overall)+'" r="3.6" fill="#2ee66f"/>'; });
+        s+='</svg>';
+        var w=el("div"); w.innerHTML=s; b.appendChild(w);
+        var last=vs[vs.length-1];
+        var kp=el("div","kpi"); kp.style.marginTop="10px";
+        var nn=el("div","n"); nn.textContent=Math.round(last.overall)+"%"; kp.appendChild(nn);
+        var uu=el("div","u"); uu.textContent="overall, "+fmtShort(last.date); kp.appendChild(uu);
+        b.appendChild(kp);
+        if(last.byShot&&typeof last.byShot==="object"){
+          var bs=el("div","small"); bs.style.cssText="margin-top:8px;line-height:1.6;color:var(--gray)";
+          bs.textContent=Object.keys(last.byShot).map(function(k){ return k+" "+Math.round(last.byShot[k])+"%"; }).join("  \u00b7  ");
+          b.appendChild(bs);
+        }
+        if(Array.isArray(last.flaws)&&last.flaws.length){
+          var fl=el("div","small"); fl.style.cssText="margin-top:8px;line-height:1.5;color:var(--gray)";
+          fl.textContent="Work on: "+last.flaws.slice(0,3).join(", ");
+          b.appendChild(fl);
+        }
+      }
+      pc.appendChild(c);
+    },"Shot accuracy");
+  });
 
   /* 3. SESSIONS, this week by default plus a History dropdown (build 92) */
   pkCollapse(v,"pk_sessions","Sessions","this week, plus a history dropdown",false,function(c){
@@ -2840,6 +2985,31 @@ try{ if(document.readyState==="loading") document.addEventListener("DOMContentLo
 #t-re:checked~.tabbar label[for=t-re]::before{background:linear-gradient(90deg,var(--re1),var(--re2))}
 #t-gym:checked~.tabbar label[for=t-gym]::before{background:linear-gradient(90deg,var(--gy1),var(--gy2))}
 #t-pickle:checked~.tabbar label[for=t-pickle]::before{background:linear-gradient(90deg,var(--pk1),var(--pk2))}
+
+/* ===== v21 build 112: section accent polish + mobile first charts ===== */
+.pill.s{color:var(--sec2,var(--accent2));border-color:color-mix(in srgb,var(--sec,var(--accent)) 45%, transparent);background:color-mix(in srgb,var(--sec,var(--accent)) 14%, transparent)}
+.kpi{display:flex;align-items:baseline;gap:8px}
+.kpi .n{font-size:30px;font-weight:850;letter-spacing:-.03em;color:var(--sec,var(--accent))}
+.kpi .u{font-size:12.5px;font-weight:700;color:var(--gray2)}
+.cdgrid{display:grid;grid-template-columns:1fr 1fr;gap:11px}
+@media(max-width:360px){.cdgrid{grid-template-columns:1fr}}
+.cdcard{background:var(--card2,#1c1c22);border:1px solid var(--line,#26262e);border-radius:16px;padding:13px 12px}
+.cdcard .lab{font-size:10.5px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--gray2)}
+.cdcard .big{font-size:34px;font-weight:850;letter-spacing:-.035em;line-height:1.05;margin-top:5px;color:var(--sec,var(--accent))}
+.cdcard .sub{font-size:11.5px;color:var(--gray);margin-top:3px;line-height:1.35}
+.cdbar{height:5px;border-radius:999px;background:#2a2a33;margin-top:10px;overflow:hidden}
+.cdbar i{display:block;height:100%;border-radius:999px;background:linear-gradient(90deg,var(--sec,var(--accent)),var(--sec2,var(--accent2)))}
+.hmrow{display:flex;align-items:center;gap:6px;margin-bottom:5px}
+.hmwk{width:38px;flex:0 0 auto;font-size:10px;font-weight:700;color:var(--gray2)}
+.hmcells{display:flex;gap:4px;flex:1 1 auto}
+.hmc{flex:1 1 0;aspect-ratio:1/1;border-radius:5px;background:#20202a;position:relative;overflow:hidden;min-width:0}
+.hmc.pk{background:var(--pk1)}
+.hmc.gy{background:var(--gy1)}
+.hmc.both{background:linear-gradient(135deg,var(--pk1) 0 50%,var(--gy1) 50% 100%)}
+.hmn{width:34px;flex:0 0 auto;text-align:right;font-size:10.5px;font-weight:800;color:var(--gray2)}
+.hmn.hit{color:var(--pk1)}
+.hmkey{display:flex;gap:12px;flex-wrap:wrap;margin-top:9px;font-size:10.5px;font-weight:700;color:var(--gray2)}
+.hmkey i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px}
 </style>
 <script id="sc-b74-js">
 (function(){
