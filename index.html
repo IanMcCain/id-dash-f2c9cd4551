@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Ian">
 <title>Ian Dashboard</title>
-<meta name="build" content="v21 build 105 (2026-07-20)">
+<meta name="build" content="v21 build 106 (2026-07-20)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -775,7 +775,7 @@ const sess=(function(){ let ok=false,mem={}; try{ const t="__s__"; window.sessio
 })();
 const KEYS={ ian:"ianDashboard.v2", chris:"chrisDashboard.v2" };
 const SEED_VERSION=13;
-const APP_BUILD="v21 build 105 (2026-07-20)";
+const APP_BUILD="v21 build 106 (2026-07-20)";
 const WATER_GOAL=10; /* v21 build 59: daily water goal 12 -> 10 cups (about 2 liters per day). Render-time constant used by the water card, lock-screen widget, and stat tiles; logged water history (state.nutrition.water) is date-keyed and untouched, so no migration is needed and the new goal reaches the device on refresh. */
 const uid=()=>Math.random().toString(36).slice(2,9);
 function todayKey(d){ d=d||new Date(); const p=n=>String(n).padStart(2,"0"); return d.getFullYear()+"-"+p(d.getMonth()+1)+"-"+p(d.getDate()); }
@@ -1033,6 +1033,9 @@ function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]
     }); if(_fx) save(true); } }catch(e){}
   /* (e) calendar item for the flyer walk the week he is back. Add only, keyed on a stable id. */
   try{ if(profile==="ian"){ if(!Array.isArray(state.events)) state.events=[]; if(!state.events.some(function(e){return e&&e.id==="ev-20260722-flyer-walk";})){ state.events.push({id:"ev-20260722-flyer-walk",title:"Just sold flyers, Sugar Creek and Walnut Creek Hills",date:"2026-07-22",kind:"Real estate"}); save(true); } } }catch(e){}
+  /* v21 build 106: Ian answers round 3 (07.20.2026). Gym equipment reality (PLANET FITNESS) plus the result of the full
+     split audit, appended to gym notes once. Idempotent, presence checked, never overwrites his own note text. */
+  try{ if(state.gym&&typeof state.gym.notes==="string"&&state.gym.notes.indexOf("PLANET FITNESS")<0){ state.gym.notes=state.gym.notes+" Equipment. He lifts at PLANET FITNESS, so there are no barbells, no squat or power rack and no barbell bench, dumbbells are capped (roughly 60 to 75 lb), and the floor is machines, a Smith machine, dumbbells and cables. The full week was audited on 07.20.2026 against that and every exercise is already doable there, nothing needs replacing. Two things to watch as he progresses: the dumbbell ceiling on chest and incline press (move to the machine or Smith, or add pauses and tempo, once he caps out), and whether his location has a cable station for the pushdowns, cable curls, face pulls and Pallof work (reverse pec deck, machine curl and machine tricep extension are the subs if not). Optional gain for pickleball: there is no single leg or lateral work in the split, and DB split squats, step ups or lateral lunges would carry over well."; save(true); } }catch(e){}
   /* new drill: speed up block and reset, add-only, keyed on stable id */
   try{ if(state.pickleball){ if(!Array.isArray(state.pickleball.drills)) state.pickleball.drills=[]; if(!state.pickleball.drills.some(function(d){return d&&d.id==="pbk-speedup-0716";})){ state.pickleball.drills.push({id:"pbk-speedup-0716",text:"Speed up defense, dink dink bang: partner speeds up after two dinks, block soft into the kitchen and reset, 15 to 20 reps per side"}); save(true); } } }catch(e){}
   /* new drill: shadow drop reps for travel, add-only, keyed on stable id */
@@ -2481,9 +2484,9 @@ function buildPickle(v){ var pb=state.pickleball||(state.pickleball={});
         {id:"pbk-m5",x:"Hands battle to a body, fire only at the hip of the player in front, first ball down at the feet wins"},
         {id:"pbk-m6",x:"Triangle ready, in a firefight bias the paddle to the backhand, rotate to the one forehand ball, contact out front"},
         {id:"pbk-m7",x:"Reach map, from your set kitchen spot mark how far you cover with no step, then only step for balls outside the arc"},
-        {id:"pbk-bm1",x:"Ball machine drops, 50 to 100 third shot drops from inside the baseline into a kitchen target, both wings, solo"},
-        {id:"pbk-bm2",x:"Ball machine reset ladder, feed hard at your feet in the transition zone, meet and guide soft with no swing, solo"},
-        {id:"pbk-bm3",x:"Ball machine dink to speed up, alternate soft dinks and one fired ball, block it low and reset, solo"}
+        {id:"pbk-bm1",x:"Club ball machine (at Ace) drops, 50 to 100 third shot drops from inside the baseline into a kitchen target, both wings, solo"},
+        {id:"pbk-bm2",x:"Club ball machine reset ladder, feed hard at your feet in the transition zone, meet and guide soft with no swing, solo"},
+        {id:"pbk-bm3",x:"Club ball machine dink to speed up, alternate soft dinks and one fired ball, block it low and reset, solo"}
       ];
       var gc=card(); DR.forEach(function(it){ var row=checkItem(!!pb.playbook.done[it.id], it.x, null, function(ev){ pb.playbook.done[it.id]=!!(ev&&ev.target&&ev.target.checked); save(); }); gc._body.appendChild(row); });
       (pb.drills||(pb.drills=[])).forEach(function(d){ var row=el("div","chk"); var t=el("div","ctext"); t.textContent=d.text; row.appendChild(t); var del=el("button","del","×"); del.onclick=function(){ pb.drills=pb.drills.filter(function(x){return x.id!==d.id;}); save(); render(); }; row.appendChild(del); gc._body.appendChild(row); });
