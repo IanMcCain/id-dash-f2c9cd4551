@@ -4,12 +4,16 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
 <meta name="theme-color" content="#050506">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" sizes="180x180" href="icon-180.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Ian">
 <title>Ian Dashboard</title>
-<meta name="build" content="v21 build 113 (2026-07-20)">
+<meta name="build" content="v21 build 114 (2026-07-20)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -775,7 +779,7 @@ const sess=(function(){ let ok=false,mem={}; try{ const t="__s__"; window.sessio
 })();
 const KEYS={ ian:"ianDashboard.v2", chris:"chrisDashboard.v2" };
 const SEED_VERSION=13;
-const APP_BUILD="v21 build 113 (2026-07-20)";
+const APP_BUILD="v21 build 114 (2026-07-20)";
 const WATER_GOAL=10; /* v21 build 59: daily water goal 12 -> 10 cups (about 2 liters per day). Render-time constant used by the water card, lock-screen widget, and stat tiles; logged water history (state.nutrition.water) is date-keyed and untouched, so no migration is needed and the new goal reaches the device on refresh. */
 const uid=()=>Math.random().toString(36).slice(2,9);
 function todayKey(d){ d=d||new Date(); const p=n=>String(n).padStart(2,"0"); return d.getFullYear()+"-"+p(d.getMonth()+1)+"-"+p(d.getDate()); }
@@ -1086,6 +1090,32 @@ function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]
         var _pull=function(arr,kind){ (arr||[]).forEach(function(o){ if(!o||!o.name) return; var k=String(o.name).toLowerCase(); if(_seen[k]) return; _seen[k]=true; state.realEstate.people.push({id:(o.id||uid()),name:o.name,phone:(o.phone||""),note:(o.note||o.detail||o.role||""),last:(o.lastContacted||""),kind:kind}); }); };
         _pull(state.realEstate.sphere,"Sphere"); _pull(state.realEstate.contacts,"Contact"); _pull(state.realEstate.leads,"Lead");
         state.meta.mig_people1=true; save(true); }
+  } }catch(e){}
+  /* v21 build 114: pruning pass. Everything removed is ARCHIVED into state.archive first, never dropped. */
+  try{ if(!state.archive||typeof state.archive!=="object") state.archive={};
+      if(!state.meta) state.meta={};
+      if(!state.meta.mig_prune114){
+        var A=state.archive;
+        /* objectives, now redundant with the consolidated daily entry */
+        if(state.objectives){ A.objectives={re:state.objectives.re||"",gym:state.objectives.gym||"",at:TODAY}; state.objectives.re=""; state.objectives.gym=""; }
+        /* playbook checkbox state, superseded by drills and the Deep Dive */
+        if(state.pickleball&&state.pickleball.playbook){ A.playbook=JSON.parse(JSON.stringify(state.pickleball.playbook)); }
+        /* sphere, contacts and leads, superseded by the people list */
+        if(state.realEstate){ A.reLegacy={sphere:(state.realEstate.sphere||[]),contacts:(state.realEstate.contacts||[]),leads:(state.realEstate.leads||[]),at:TODAY}; }
+        /* old dated agent flags and one off notes */
+        var stale=["gymNoteArchive","agentNote0708","reObjectiveAgentActed","gymObjectiveAgentActed","gymObjectiveArchive"];
+        A.staleFlags=A.staleFlags||{};
+        stale.forEach(function(k){ if(k in state){ A.staleFlags[k]=state[k]; delete state[k]; } });
+        state.meta.mig_prune114=true; save(true);
+      }
+  }catch(e){}
+  /* v21 build 114: pickleball goals trimmed to the 5 that matter. Removed ones are archived, never deleted. */
+  try{ if(state.pickleball&&Array.isArray(state.pickleball.goals)&&!state.meta.mig_goals114){
+      var KEEP={"pk-goal-pro":1,"pk-goal-dupr":1,"pk-goal-volume":1,"pk-goal-stack":1,"pk-goal-drops":1};
+      var keep=[],drop=[];
+      state.pickleball.goals.forEach(function(g){ if(g&&(KEEP[g.id]||keep.length<5&&!g.id)) keep.push(g); else drop.push(g); });
+      if(drop.length){ if(!state.archive) state.archive={}; state.archive.pickleGoals=(state.archive.pickleGoals||[]).concat(drop); state.pickleball.goals=keep; }
+      state.meta.mig_goals114=true; save(true);
   } }catch(e){}
   /* v21 build 111: (a) Cynthia Willis goes LIVE July 30 2026, verified as 10218 Spyglass Dr against the 07.05.2026 CMA on
      file. Note appended and a calendar item added. (b) Venue economics recorded so the agents stop treating venue as free. */
@@ -2512,15 +2542,6 @@ function buildPickle(v){ var pb=state.pickleball||(state.pickleball={});
   var PAL={"League":"#2ee66f","Open play":"#30c8e0","Drills":"#8af2ac","Tournament":"#ffd60a","Play":"#8e8e93"};
   function pkParas(host,x){ var arr=Array.isArray(x)?x:String(x||"").split(/\n+/); arr.forEach(function(pp,i){ pp=String(pp||"").trim(); if(!pp) return; var d=el("div","small"); d.style.cssText="line-height:1.62;color:var(--gray)"+(i>0?";margin-top:11px":""); d.textContent=pp; host.appendChild(d); }); }
 
-  /* v21 build 88: travel study day card, shown only on Jul 17 to 20. */
-  (function(){ if(typeof PK_STUDY==="undefined") return; var sd=PK_STUDY[TODAY]; if(!sd) return; pb.playbook=(pb.playbook&&typeof pb.playbook==="object")?pb.playbook:{}; if(!pb.playbook.done||typeof pb.playbook.done!=="object") pb.playbook.done={};
-    sect(v,"Travel study day","off court, film study for Aug 23");
-    var hc=card(); var hb=hc._body; hb.appendChild(el("span","pill g","Study"));
-    var t=el("div"); t.style.cssText="font-weight:800;font-size:16px;margin-top:8px;letter-spacing:-.01em"; t.textContent=sd.title; hb.appendChild(t);
-    if(sd.note){ var n=el("div","small"); n.style.cssText="margin-top:6px;line-height:1.55;color:var(--gray)"; n.textContent=sd.note; hb.appendChild(n); }
-    v.appendChild(hc);
-    (sd.items||[]).forEach(function(it){ var cc=card(); var b=cc._body; var row=checkItem(!!pb.playbook.done[it.id], it.label, null, function(ev){ pb.playbook.done[it.id]=!!(ev&&ev.target&&ev.target.checked); save(); }); b.appendChild(row); if(it.look){ var lk=el("div","small dim"); lk.style.cssText="margin-top:2px;line-height:1.5"; lk.textContent="Look for: "+it.look; b.appendChild(lk); } if(it.url){ var a=el("a","feedlink"); a.href=it.url; a.target="_blank"; a.rel="noopener"; a.textContent=(it.kind==="Read"?"Read ›":"Watch ›"); a.style.marginTop="10px"; a.style.display="inline-block"; b.appendChild(a); } v.appendChild(cc); });
-  })();
 
   /* 1. UPCOMING / EVENTS */
   sect(v,"Upcoming","league and tournaments");
@@ -2558,11 +2579,29 @@ function buildPickle(v){ var pb=state.pickleball||(state.pickleball={});
 
 
   /* v21 build 112: PROGRESS, three mobile first charts. DUPR trajectory, training heatmap, shot accuracy. */
-  pkCollapse(v,"pk_progress","Progress","DUPR pace, training, and shot accuracy",false,function(pc){
+
+  /* 3. SESSIONS, this week by default plus a History dropdown (build 92) */
+  pkCollapse(v,"pk_sessions","Sessions and progress","this week, charts, and history",false,function(c){
+    pkCollapse(c,"pk_logform","Log a session","match details optional",false,function(f){
+      var fc=card(); var fb=fc._body; var dl=el("div","small muted","Date"); dl.style.marginBottom="4px"; fb.appendChild(dl); var din=el("input","in"); din.type="date"; din.value=TODAY; fb.appendChild(din); var kind="League"; var kc=el("div"); kc.style.marginTop="11px"; var setc=function(){ Array.prototype.slice.call(kc.querySelectorAll(".chip")).forEach(function(ch){ ch.classList.toggle("on",ch.textContent===kind); }); }; kc.appendChild(chipRow(["League","Open play","Drills","Tournament"],kind,function(k){kind=k;setc();})); fb.appendChild(kc);
+      var vl=el("div","small muted","Venue"); vl.style.margin="13px 0 5px"; fb.appendChild(vl); var venue="Ace"; var vc=el("div"); var setv=function(){ Array.prototype.slice.call(vc.querySelectorAll(".chip")).forEach(function(ch){ ch.classList.toggle("on",ch.textContent===venue); }); }; vc.appendChild(chipRow(["Ace","Midwest","Prairie Lane","Other"],venue,function(k){venue=k;setv();})); fb.appendChild(vc);
+      var g=el("div","grid2"); g.style.marginTop="11px"; var durIn=el("input","in"); durIn.placeholder="Duration, e.g. 1h 20m"; g.appendChild(durIn); var calIn=el("input","in"); calIn.type="number"; calIn.placeholder="Calories"; g.appendChild(calIn); var hrIn=el("input","in"); hrIn.type="number"; hrIn.placeholder="Avg HR"; g.appendChild(hrIn); var maxIn=el("input","in"); maxIn.type="number"; maxIn.placeholder="Max HR"; g.appendChild(maxIn); var effIn=el("input","in"); effIn.type="number"; effIn.min="1"; effIn.max="10"; effIn.placeholder="Effort 1-10"; g.appendChild(effIn); fb.appendChild(g);
+      var ml=el("div","small muted","Match result, optional"); ml.style.margin="13px 0 5px"; fb.appendChild(ml); var result=""; var rc=el("div"); var setr=function(){ Array.prototype.slice.call(rc.querySelectorAll(".chip")).forEach(function(ch){ ch.classList.toggle("on", (ch.textContent==="Win"&&result==="Win")||(ch.textContent==="Loss"&&result==="Loss")||(ch.textContent==="—"&&result==="")); }); }; rc.appendChild(chipRow(["Win","Loss","—"],"—",function(k){ result=(k==="—")?"":k; setr(); })); fb.appendChild(rc);
+      var g2=el("div","grid2"); g2.style.marginTop="11px"; var scoreIn=el("input","in"); scoreIn.placeholder="Score, e.g. 11-7, 11-9"; g2.appendChild(scoreIn); var oppIn=el("input","in"); oppIn.placeholder="Partner / opponent"; g2.appendChild(oppIn); fb.appendChild(g2);
+      var noteIn=el("textarea","in"); noteIn.style.minHeight="54px"; noteIn.style.marginTop="11px"; noteIn.placeholder="Match note, what you worked on, how it felt..."; fb.appendChild(noteIn);
+      var btn=el("button","btn block","Log session"); btn.style.marginTop="12px"; btn.onclick=function(){ var e=parseInt(effIn.value,10); pb.sessions.push({id:uid(),date:din.value||TODAY,kind:kind,venue:venue,duration:durIn.value.trim(),calories:calIn.value?parseInt(calIn.value,10):0,avgHr:hrIn.value?parseInt(hrIn.value,10):0,maxHr:maxIn.value?parseInt(maxIn.value,10):0,effort:(!isNaN(e)?e:null),result:result,score:scoreIn.value.trim(),opponent:oppIn.value.trim(),note:noteIn.value.trim()}); save(); render(); }; fb.appendChild(btn); f.appendChild(fc);
+    });
+    (function(){ var all=pkSorted().slice().reverse(); if(!all.length){ var ec=card(); ec._body.appendChild(el("div","empty","No sessions logged yet.")); c.appendChild(ec); return; }
+      var week=all.filter(function(s){ var du=daysUntil(s.date); return du>=-6 && du<=0; });
+      var older=all.filter(function(s){ return daysUntil(s.date) < -6; });
+      var lbl=el("div","small dim"); lbl.style.cssText="margin:14px 2px 4px"; lbl.textContent=week.length?("This week, "+week.length+" session"+(week.length===1?"":"s")+", tap one to expand"):"No sessions this week"; c.appendChild(lbl);
+      week.forEach(function(s){ pkSessionItem(c,s); });
+      if(older.length){ pkCollapse(c,"pk_history","History","all older sessions ("+older.length+")",false,function(h){ older.forEach(function(s){ pkSessionItem(h,s); }); }); }
+    })();
 
     /* ---- DUPR trajectory vs the roadmap target ---- */
-    safe(pc,function(){
-      sect(pc,"DUPR trajectory","target vs actual, to April 2027");
+    safe(c,function(){
+      sect(c,"DUPR trajectory","target vs actual, to April 2027");
       var c=card(); var b=c._body;
       var TGT=[{d:"2026-08-23",r:3.5},{d:"2026-11-30",r:4.0},{d:"2027-02-28",r:4.35},{d:"2027-04-01",r:4.6}];
       var act=(pb.dupr||[]).slice().filter(function(x){return x&&x.date&&isFinite(x.rating);}).sort(function(a,z){return a.date<z.date?-1:1;});
@@ -2599,12 +2638,12 @@ function buildPickle(v){ var pb=state.pickleball||(state.pickleball={});
       var add=el("button","btn block","Log DUPR"); add.style.marginTop="9px";
       add.onclick=function(){ var r=parseFloat(rin.value); if(!isFinite(r)) return; pb.dupr=pb.dupr||[]; pb.dupr.push({date:din.value||TODAY,rating:r}); save(); render(); };
       b.appendChild(add);
-      pc.appendChild(c);
+      c.appendChild(c);
     },"DUPR chart");
 
     /* ---- Training heatmap, pickleball vs gym ---- */
-    safe(pc,function(){
-      sect(pc,"Training","last 10 weeks, target 5 to 6 a week");
+    safe(c,function(){
+      sect(c,"Training","last 10 weeks, target 5 to 6 a week");
       var c=card(); var b=c._body;
       var pkDays={}; (pb.sessions||[]).forEach(function(s){ if(s&&s.date) pkDays[s.date]=true; });
       var gyDays={}; var gl=(state.gym&&state.gym.logs)||{};
@@ -2632,14 +2671,12 @@ function buildPickle(v){ var pb=state.pickleball||(state.pickleball={});
       var key=el("div","hmkey");
       key.innerHTML='<span><i style="background:var(--pk1)"></i>Pickleball</span><span><i style="background:var(--gy1)"></i>Gym</span><span><i style="background:linear-gradient(135deg,var(--pk1) 0 50%,var(--gy1) 50% 100%)"></i>Both</span>';
       b.appendChild(key);
-      var hint=el("div","small dim"); hint.style.cssText="margin-top:8px;line-height:1.45"; hint.textContent="The number on the right is pickleball sessions that week against your 5 to 6 target, and it turns green when you hit it.";
-      b.appendChild(hint);
-      pc.appendChild(c);
+            c.appendChild(c);
     },"Training heatmap");
 
     /* ---- Shot accuracy trend, fed by video coach takeaways ---- */
-    safe(pc,function(){
-      sect(pc,"Shot accuracy","from your video sessions");
+    safe(c,function(){
+      sect(c,"Shot accuracy","from your video sessions");
       var c=card(); var b=c._body;
       var vs=(pb.videoStats||[]).slice().filter(function(x){return x&&x.date&&isFinite(x.overall);}).sort(function(a,z){return a.date<z.date?-1:1;});
       if(!vs.length){
@@ -2674,28 +2711,8 @@ function buildPickle(v){ var pb=state.pickleball||(state.pickleball={});
           b.appendChild(fl);
         }
       }
-      pc.appendChild(c);
+      c.appendChild(c);
     },"Shot accuracy");
-  });
-
-  /* 3. SESSIONS, this week by default plus a History dropdown (build 92) */
-  pkCollapse(v,"pk_sessions","Sessions","this week, plus a history dropdown",false,function(c){
-    pkCollapse(c,"pk_logform","Log a session","match details optional",false,function(f){
-      var fc=card(); var fb=fc._body; var dl=el("div","small muted","Date"); dl.style.marginBottom="4px"; fb.appendChild(dl); var din=el("input","in"); din.type="date"; din.value=TODAY; fb.appendChild(din); var kind="League"; var kc=el("div"); kc.style.marginTop="11px"; var setc=function(){ Array.prototype.slice.call(kc.querySelectorAll(".chip")).forEach(function(ch){ ch.classList.toggle("on",ch.textContent===kind); }); }; kc.appendChild(chipRow(["League","Open play","Drills","Tournament"],kind,function(k){kind=k;setc();})); fb.appendChild(kc);
-      var vl=el("div","small muted","Venue"); vl.style.margin="13px 0 5px"; fb.appendChild(vl); var venue="Ace"; var vc=el("div"); var setv=function(){ Array.prototype.slice.call(vc.querySelectorAll(".chip")).forEach(function(ch){ ch.classList.toggle("on",ch.textContent===venue); }); }; vc.appendChild(chipRow(["Ace","Midwest","Prairie Lane","Other"],venue,function(k){venue=k;setv();})); fb.appendChild(vc);
-      var g=el("div","grid2"); g.style.marginTop="11px"; var durIn=el("input","in"); durIn.placeholder="Duration, e.g. 1h 20m"; g.appendChild(durIn); var calIn=el("input","in"); calIn.type="number"; calIn.placeholder="Calories"; g.appendChild(calIn); var hrIn=el("input","in"); hrIn.type="number"; hrIn.placeholder="Avg HR"; g.appendChild(hrIn); var maxIn=el("input","in"); maxIn.type="number"; maxIn.placeholder="Max HR"; g.appendChild(maxIn); var effIn=el("input","in"); effIn.type="number"; effIn.min="1"; effIn.max="10"; effIn.placeholder="Effort 1-10"; g.appendChild(effIn); fb.appendChild(g);
-      var ml=el("div","small muted","Match result, optional"); ml.style.margin="13px 0 5px"; fb.appendChild(ml); var result=""; var rc=el("div"); var setr=function(){ Array.prototype.slice.call(rc.querySelectorAll(".chip")).forEach(function(ch){ ch.classList.toggle("on", (ch.textContent==="Win"&&result==="Win")||(ch.textContent==="Loss"&&result==="Loss")||(ch.textContent==="—"&&result==="")); }); }; rc.appendChild(chipRow(["Win","Loss","—"],"—",function(k){ result=(k==="—")?"":k; setr(); })); fb.appendChild(rc);
-      var g2=el("div","grid2"); g2.style.marginTop="11px"; var scoreIn=el("input","in"); scoreIn.placeholder="Score, e.g. 11-7, 11-9"; g2.appendChild(scoreIn); var oppIn=el("input","in"); oppIn.placeholder="Partner / opponent"; g2.appendChild(oppIn); fb.appendChild(g2);
-      var noteIn=el("textarea","in"); noteIn.style.minHeight="54px"; noteIn.style.marginTop="11px"; noteIn.placeholder="Match note, what you worked on, how it felt..."; fb.appendChild(noteIn);
-      var btn=el("button","btn block","Log session"); btn.style.marginTop="12px"; btn.onclick=function(){ var e=parseInt(effIn.value,10); pb.sessions.push({id:uid(),date:din.value||TODAY,kind:kind,venue:venue,duration:durIn.value.trim(),calories:calIn.value?parseInt(calIn.value,10):0,avgHr:hrIn.value?parseInt(hrIn.value,10):0,maxHr:maxIn.value?parseInt(maxIn.value,10):0,effort:(!isNaN(e)?e:null),result:result,score:scoreIn.value.trim(),opponent:oppIn.value.trim(),note:noteIn.value.trim()}); save(); render(); }; fb.appendChild(btn); f.appendChild(fc);
-    });
-    (function(){ var all=pkSorted().slice().reverse(); if(!all.length){ var ec=card(); ec._body.appendChild(el("div","empty","No sessions logged yet.")); c.appendChild(ec); return; }
-      var week=all.filter(function(s){ var du=daysUntil(s.date); return du>=-6 && du<=0; });
-      var older=all.filter(function(s){ return daysUntil(s.date) < -6; });
-      var lbl=el("div","small dim"); lbl.style.cssText="margin:14px 2px 4px"; lbl.textContent=week.length?("This week, "+week.length+" session"+(week.length===1?"":"s")+", tap one to expand"):"No sessions this week"; c.appendChild(lbl);
-      week.forEach(function(s){ pkSessionItem(c,s); });
-      if(older.length){ pkCollapse(c,"pk_history","History","all older sessions ("+older.length+")",false,function(h){ older.forEach(function(s){ pkSessionItem(h,s); }); }); }
-    })();
   });
 
   /* 4. PERSONAL COACH, coach-voice prose with drills as the only checkboxes (build 92) */
@@ -2728,7 +2745,6 @@ function buildPickle(v){ var pb=state.pickleball||(state.pickleball={});
      (state.pickleball.workOn and state.pickleball.cues) so the agents keep them current. Deep study lives in
      deep-dive.html, daily quick coaching stays in the coach section. */
   pkCollapse(v,"pk_active","Active Pickleball","courtside, what to drill and remember",false,function(ap){
-    (function(){ var ic=card(); ic._body.appendChild(el("span","pill g","On court")); var ii=el("div","small"); ii.style.cssText="margin-top:9px;line-height:1.55;color:var(--gray)"; ii.textContent="Open this at the courts. Quick and glanceable, your drills, what to work on, and cues for between points. The deep teaching is in the Deep Dive page."; ic._body.appendChild(ii); ap.appendChild(ic); })();
     safe(ap,function(){ pb.playbook=(pb.playbook&&typeof pb.playbook==="object")?pb.playbook:{}; if(!pb.playbook.done||typeof pb.playbook.done!=="object") pb.playbook.done={};
       sect(ap,"Drills to run","tap to check off, reset anytime");
       var DR=[
@@ -2755,8 +2771,8 @@ function buildPickle(v){ var pb=state.pickleball||(state.pickleball={});
       gc._body.appendChild(adder("Add your own drill...",function(t){ pb.drills.push({id:uid(),text:t}); save(); render(); })); ap.appendChild(gc);
       var doneN=Object.keys(pb.playbook.done).filter(function(k){return pb.playbook.done[k];}).length; var rc=card(); var rrow=el("div","between"); var lbl=el("div","small dim"); lbl.textContent=doneN+" checked"; rrow.appendChild(lbl); var rb=el("button","btn sm","Reset checks"); rb.onclick=function(){ pb.playbook.done={}; save(); render(); }; rrow.appendChild(rb); rc._body.appendChild(rrow); ap.appendChild(rc);
     },"Active drills");
-    safe(ap,function(){ var wo=(pb.workOn&&pb.workOn.length)?pb.workOn:[]; sect(ap,"Work on","your current priorities"); var cc=card(); if(!wo.length){ cc._body.appendChild(el("div","empty","Your coach will fill this in from your sessions.")); } else { wo.forEach(function(line,i){ var r=el("div","small"); r.style.cssText="line-height:1.5;color:var(--white);font-weight:600"+(i>0?";margin-top:9px":""); var dot=el("span"); dot.style.cssText="color:var(--pk1);font-weight:800;margin-right:8px"; dot.textContent="\u2022"; r.appendChild(dot); r.appendChild(document.createTextNode(line)); cc._body.appendChild(r); }); } ap.appendChild(cc); },"Active workon");
-    safe(ap,function(){ var cu=(pb.cues&&pb.cues.length)?pb.cues:[]; sect(ap,"While playing","glance between points"); var cc=card(); if(!cu.length){ cc._body.appendChild(el("div","empty","Your coach will fill this in from your game plan.")); } else { cu.forEach(function(line,i){ var r=el("div","small"); r.style.cssText="line-height:1.52;color:var(--gray)"+(i>0?";margin-top:9px":""); var dot=el("span"); dot.style.cssText="color:var(--pk2);font-weight:800;margin-right:8px"; dot.textContent="\u203a"; r.appendChild(dot); r.appendChild(document.createTextNode(line)); cc._body.appendChild(r); }); } ap.appendChild(cc); },"Active cues");
+    safe(ap,function(){ var wo=(pb.workOn&&pb.workOn.length)?pb.workOn.slice(0,4):[]; sect(ap,"Work on","top 4"); var cc=card(); if(!wo.length){ cc._body.appendChild(el("div","empty","Your coach will fill this in from your sessions.")); } else { wo.forEach(function(line,i){ var r=el("div","small"); r.style.cssText="line-height:1.5;color:var(--white);font-weight:600"+(i>0?";margin-top:9px":""); var dot=el("span"); dot.style.cssText="color:var(--pk1);font-weight:800;margin-right:8px"; dot.textContent="\u2022"; r.appendChild(dot); r.appendChild(document.createTextNode(line)); cc._body.appendChild(r); }); } ap.appendChild(cc); },"Active workon");
+    safe(ap,function(){ var cu=(pb.cues&&pb.cues.length)?pb.cues.slice(0,6):[]; sect(ap,"While playing","6 cues"); var cc=card(); if(!cu.length){ cc._body.appendChild(el("div","empty","Your coach will fill this in from your game plan.")); } else { cu.forEach(function(line,i){ var r=el("div","small"); r.style.cssText="line-height:1.52;color:var(--gray)"+(i>0?";margin-top:9px":""); var dot=el("span"); dot.style.cssText="color:var(--pk2);font-weight:800;margin-right:8px"; dot.textContent="\u203a"; r.appendChild(dot); r.appendChild(document.createTextNode(line)); cc._body.appendChild(r); }); } ap.appendChild(cc); },"Active cues");
   });
 
   /* 5. PADDLE (bottom) */
@@ -2793,10 +2809,13 @@ function buildStats(v){ safe(v,()=>{ const wk=workoutsThisWeek(); const hs=habit
   v.appendChild(nc);
 }
 function buildMore(v){
-  const _dcx=sect(v,"Daily context, for Claude"); _dcx.insertBefore(claudeAvatar("av-md chip"), _dcx.firstChild); safe(v,()=>contextModule(v),"Context");
-  sect(v,"Goals"); safe(v,()=>goalsListH(v,state.goals),"Goals");
-  sect(v,"To do list"); safe(v,()=>todosModule(v),"To do");
-  if(!hidden("ideas")){ sect(v,"Future ideas","fresh from Claude daily"); safe(v,()=>ideasModule(v),"Ideas"); }
+  sect(v,"Not much here","daily writing moved to Home");
+  var c=card(); var b=c._body;
+  var m=el("div","small"); m.style.cssText="line-height:1.55;color:var(--gray)";
+  m.textContent="This page used to hold the daily input boxes. They are now one box, Today's entry, on the home screen. Goals, ideas and to dos live in their own sections.";
+  b.appendChild(m);
+  var go=el("button","btn block","Go to Today's entry"); go.style.marginTop="11px"; go.onclick=function(){ selectTab("home"); };
+  b.appendChild(go); v.appendChild(c);
 }
 function goalsListH(parent,arr){ const c=card(); const b=c._body; if(!arr.length)b.appendChild(el("div","empty","No goals yet.")); arr.forEach(g=>{ b.appendChild(checkItem(g.done,g.text,null,()=>{g.done=!g.done;save();render();},()=>{ const i=arr.indexOf(g); if(i>-1)arr.splice(i,1); save(); render(); })); }); const wrap=el("div","addrow"); const inp=el("input","in"); inp.placeholder="New goal..."; const bb=el("button","btn sm","Add"); const fire=()=>{ const val=inp.value.trim(); if(!val)return; arr.push({id:uid(),text:val,done:false}); inp.value=""; save(); render(); }; bb.onclick=fire; inp.onkeydown=e=>{if(e.key==="Enter")fire();}; wrap.appendChild(inp); wrap.appendChild(bb); b.appendChild(wrap); parent.appendChild(c); }
 function contextModule(parent){ updateDailySummary(); const c=card("a-blue"); const b=c._body; b.appendChild(el("div","small muted","A clean daily rollup the agent reads. Auto fills as you use the app.")); b.firstChild.style.marginBottom="8px"; const box=el("div","stat"); box.appendChild(el("div","k",fmtShort(TODAY)+" summary")); const val=el("div","v"); val.style.fontSize="13.5px"; val.style.fontWeight="600"; val.style.lineHeight="1.45"; val.textContent=state.context.dailyLog[TODAY].summary||todaySummary(); box.appendChild(val); b.appendChild(box); b.appendChild(el("div","small muted","Your note for today")); b.lastChild.style.margin="11px 0 6px"; const _mv=el("div","small"); _mv.style.cssText="line-height:1.5;color:var(--gray)"; _mv.textContent="Daily writing moved to Today's entry on the home screen, one box for everything."; b.appendChild(_mv); const _mb=el("button","btn block","Open Today's entry"); _mb.style.marginTop="10px"; _mb.onclick=()=>{ selectTab("home"); }; b.appendChild(_mb); parent.appendChild(c); const c2=card(); c2._body.appendChild(el("div","small muted","Notes and instructions for Claude")); c2._body.firstChild.style.marginBottom="6px"; const ta2=el("textarea","in"); ta2.style.minHeight="86px"; ta2.placeholder="Standing context for the daily agent..."; ta2.value=state.context.forClaude||""; ta2.oninput=()=>{ state.context.forClaude=ta2.value; save(); }; c2._body.appendChild(ta2); parent.appendChild(c2); }
@@ -2903,7 +2922,7 @@ function readPipeline(file){ const r=new FileReader(); r.onload=function(){ let 
 function readBrief(file){ const r=new FileReader(); r.onload=function(){ let data; try{ data=JSON.parse(r.result); }catch(e){ toast("Not a valid brief file"); return; } mergeBrief(data); }; r.onerror=function(){ toast("Could not read file"); }; r.readAsText(file); }
 function roundRect(x,ax,ay,w,h,r){ x.beginPath(); x.moveTo(ax+r,ay); x.arcTo(ax+w,ay,ax+w,ay+h,r); x.arcTo(ax+w,ay+h,ax,ay+h,r); x.arcTo(ax,ay+h,ax,ay,r); x.arcTo(ax,ay,ax+w,ay,r); x.closePath(); }
 function makeIcon(size){ const c=document.createElement("canvas"); c.width=c.height=size; const x=c.getContext("2d"); x.fillStyle="#050506"; x.fillRect(0,0,size,size); const pad=size*0.13,w=size-pad*2,r=size*0.22; const g=x.createLinearGradient(pad,pad,size-pad,size-pad); g.addColorStop(0,"#2f6bff"); g.addColorStop(1,"#6fa8ff"); x.fillStyle=g; roundRect(x,pad,pad,w,w,r); x.fill(); x.fillStyle="#04122e"; x.font="900 "+(size*0.34)+"px Helvetica, Arial, sans-serif"; x.textAlign="center"; x.textBaseline="middle"; x.fillText("IM",size/2,size/2+size*0.02); return c.toDataURL("image/png"); }
-function setupPWA(){ try{ const i180=makeIcon(180),i192=makeIcon(192),i512=makeIcon(512); const add=(rel,href,extra)=>{ const l=document.createElement("link"); l.rel=rel; l.href=href; if(extra)for(const k in extra)l.setAttribute(k,extra[k]); document.head.appendChild(l); }; add("apple-touch-icon",i180); add("icon",i192,{sizes:"192x192",type:"image/png"}); const manifest={name:"Ian Dashboard",short_name:"Ian",start_url:".",scope:".",display:"standalone",orientation:"portrait",background_color:"#050506",theme_color:"#050506",icons:[{src:i192,sizes:"192x192",type:"image/png",purpose:"any"},{src:i512,sizes:"512x512",type:"image/png",purpose:"any maskable"}]}; const url=URL.createObjectURL(new Blob([JSON.stringify(manifest)],{type:"application/manifest+json"})); add("manifest",url); }catch(e){} }
+function setupPWA(){ try{ const i180=makeIcon(180),i192=makeIcon(192),i512=makeIcon(512); const add=(rel,href,extra)=>{ const l=document.createElement("link"); l.rel=rel; l.href=href; if(extra)for(const k in extra)l.setAttribute(k,extra[k]); document.head.appendChild(l); }; /* build 114: real PNG files are linked statically instead */ void i180; void i192; void i512; const manifest={name:"Ian Dashboard",short_name:"Ian",start_url:".",scope:".",display:"standalone",orientation:"portrait",background_color:"#050506",theme_color:"#050506",icons:[{src:i192,sizes:"192x192",type:"image/png",purpose:"any"},{src:i512,sizes:"512x512",type:"image/png",purpose:"any maskable"}]}; /* build 114: static manifest.webmanifest is linked in <head>, the old blob manifest is retired because iOS handles it badly. */ void manifest; }catch(e){} }
 
 /* ===== boot ===== */
 function refreshApp(){ try{ save(true); }catch(e){} /* v21 build 56: FLUSH any pending debounced save to localStorage BEFORE reloading, so tapping "Update available" right after checking a card (or any daily checkbox) never discards the check. This was the root cause of the Today-from-Claude checkmarks resetting on redeploy. */ try{ location.replace(location.pathname+"?u="+Date.now()); }catch(e){ try{ location.reload(); }catch(_){ } } }
