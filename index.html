@@ -13,7 +13,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Ian">
 <title>Ian Dashboard</title>
-<meta name="build" content="v21 build 133 (2026-07-22)">
+<meta name="build" content="v21 build 134 (2026-07-22)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -770,7 +770,7 @@ const sess=(function(){ let ok=false,mem={}; try{ const t="__s__"; window.sessio
 })();
 const KEYS={ ian:"ianDashboard.v2", chris:"chrisDashboard.v2" };
 const SEED_VERSION=13;
-const APP_BUILD="v21 build 133 (2026-07-22)";
+const APP_BUILD="v21 build 134 (2026-07-22)";
 const WATER_GOAL=10; /* v21 build 59: daily water goal 12 -> 10 cups (about 2 liters per day). Render-time constant used by the water card, lock-screen widget, and stat tiles; logged water history (state.nutrition.water) is date-keyed and untouched, so no migration is needed and the new goal reaches the device on refresh. */
 const uid=()=>Math.random().toString(36).slice(2,9);
 function todayKey(d){ d=d||new Date(); const p=n=>String(n).padStart(2,"0"); return d.getFullYear()+"-"+p(d.getMonth()+1)+"-"+p(d.getDate()); }
@@ -1443,6 +1443,24 @@ function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]
           source:"Ian's own",side:"Buyer"});
       }
       state.meta.mig133_austin_client=true; save(true);
+  } }catch(e){}
+  /* v21 build 134: Teske deal construction progress. The Teskes are DIGGING THE FOUNDATION in Magnolia Trails,
+     construction started 07.22.2026. Append the progress to the deal note once. Stage stays Building, finish
+     estimate unchanged (early January 2027). Guarded, idempotent, add only. */
+  try{ if(state.realEstate && Array.isArray(state.realEstate.deals) && !state.meta.mig134_teske_dig){
+      state.realEstate.deals.forEach(function(d){ if(d && /teske/i.test(String(d.title||"")) && typeof d.note==="string" && d.note.indexOf("CONSTRUCTION STARTED")<0){
+        d.note=d.note+" CONSTRUCTION STARTED 07.22.2026: digging the foundation (the hole) in MAGNOLIA TRAILS. Underway now, still an early January 2027 estimated finish.";
+      } });
+      state.meta.mig134_teske_dig=true; save(true);
+  } }catch(e){}
+  /* v21 build 134: Austin Thacker TWO PRICING SCENARIOS recorded on the deal note, because the bedroom count is
+     unresolved and is the main swing. Scenario A 2 bed (assessor) vs Scenario B 3 bed conforming (Austin's
+     claim), both discounting the 218k family sale and crediting Scenic marketing. Guarded, idempotent. */
+  try{ if(state.realEstate && Array.isArray(state.realEstate.deals) && !state.meta.mig134_austin_scenarios){
+      state.realEstate.deals.forEach(function(d){ if(d && d.id==="re-austin-thacker" && typeof d.note==="string" && d.note.indexOf("TWO SCENARIOS")<0){
+        d.note=d.note+" PRICING, TWO SCENARIOS (bedroom count is the swing): SCENARIO A, 2 bed as the assessor records, supported about 230k to 250k, likely list ~240k, 260k not supported as a 2 bed. SCENARIO B, 3 bed conforming as Austin says, supported about 248k to 262k, likely list ~255k, 260k defensible at the top with updates and marketing. The conforming 3rd bedroom is worth about 12k to 18k, roughly 15k. Both discount the Dec 2024 218k family sale and credit the Scenic staging and marketing package.";
+      } });
+      state.meta.mig134_austin_scenarios=true; save(true);
   } }catch(e){}
   /* v21 build 111: (a) Cynthia Willis goes LIVE July 30 2026, verified as 10218 Spyglass Dr against the 07.05.2026 CMA on
      file. Note appended and a calendar item added. (b) Venue economics recorded so the agents stop treating venue as free. */
