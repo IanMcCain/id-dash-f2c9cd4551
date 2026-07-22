@@ -13,7 +13,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Ian">
 <title>Ian Dashboard</title>
-<meta name="build" content="v21 build 129 (2026-07-21)">
+<meta name="build" content="v21 build 130 (2026-07-21)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -770,7 +770,7 @@ const sess=(function(){ let ok=false,mem={}; try{ const t="__s__"; window.sessio
 })();
 const KEYS={ ian:"ianDashboard.v2", chris:"chrisDashboard.v2" };
 const SEED_VERSION=13;
-const APP_BUILD="v21 build 129 (2026-07-21)";
+const APP_BUILD="v21 build 130 (2026-07-21)";
 const WATER_GOAL=10; /* v21 build 59: daily water goal 12 -> 10 cups (about 2 liters per day). Render-time constant used by the water card, lock-screen widget, and stat tiles; logged water history (state.nutrition.water) is date-keyed and untouched, so no migration is needed and the new goal reaches the device on refresh. */
 const uid=()=>Math.random().toString(36).slice(2,9);
 function todayKey(d){ d=d||new Date(); const p=n=>String(n).padStart(2,"0"); return d.getFullYear()+"-"+p(d.getMonth()+1)+"-"+p(d.getDate()); }
@@ -2628,8 +2628,8 @@ let gymShowWeek=false;
 function gymWeek(v){ (state.gym.split||[]).forEach(function(d,i){ const c=card(i===DOW?"a-blue":null); const b=c._body; const top=el("div","between"); top.appendChild(el("h3",null,d.day+", "+cleanFocus(d.focus))); top.appendChild(el("span","pill b",d.play)); b.appendChild(top); if(d.note){ const n=el("div","small muted"); n.style.margin="5px 0 4px"; n.textContent=d.note; b.appendChild(n); } (d.exercises||[]).forEach(function(e){ const row=el("div","ex"); row.appendChild(el("span","exname",e.name)); row.appendChild(el("span","scheme",e.scheme)); b.appendChild(row); }); v.appendChild(c); }); }
 function buildGym(v){ objectiveCard(v,"gym","a-blue");
   collapseTool(v,"Workout routine","today's session and full week",()=>{ sect(v,cleanFocus(daySplit(DOW).focus),daySplit(DOW).day+", today"); gymToday(v); });
-  collapseTool(v,"Nutrition, water and supplements","meals, water, supplements and vitamins",()=>{ sect(v,"Water (cups)","log every cup, aim 10"); waterCard(v); nutritionModule(v); });
-  sect(v,"Fitness goals"); safe(v,()=>goalsList(v,state.gym.goals||(state.gym.goals=[])),"Gym goals"); sect(v,"Daily habits"); safe(v,()=>habitsModule(v),"Habits"); sect(v,"Notes"); safe(v,()=>textNotes(v,()=>state.gym.notes,x=>state.gym.notes=x,"Training notes, PRs...",120),"Gym notes"); }
+  collapseTool(v,"Nutrition and water","meals and water, supplements are in the Daily checklist",()=>{ sect(v,"Water (cups)","log every cup, aim 10"); waterCard(v); nutritionModule(v); });
+  sect(v,"Fitness goals"); safe(v,()=>goalsList(v,state.gym.goals||(state.gym.goals=[])),"Gym goals"); sect(v,"Daily checklist","habits and supplements, one place"); safe(v,()=>dailyChecklistModule(v),"Daily checklist"); sect(v,"Notes"); safe(v,()=>textNotes(v,()=>state.gym.notes,x=>state.gym.notes=x,"Training notes, PRs...",120),"Gym notes"); }
 function gymToday(parent){ const day=daySplit(DOW); const log=state.gym.logs[TODAY]||(state.gym.logs[TODAY]={done:{},note:""}); const total=day.exercises.length, dc=day.exercises.filter(e=>log.done[e.id]).length;
   summaryGrid(parent,[ fracTile({label:"Today's session",color:"orange",done:dc,goal:total||1,unit:"sets"}), statTile({label:"This week",color:"orange",value:workoutsThisWeek(),unit:"days",sub:"Workouts logged",spark:weekWorkoutSpark(),sparkH:26}) ]);
   (function(){ var hn=(state.gym&&state.gym.handSpeedNote)||""; if(!hn) return;
@@ -2664,11 +2664,38 @@ function nutritionModule(parent){ const c=card("a-green"); const b=c._body; cons
   parent.appendChild(c);
   const RECS=["Breakfast, eggs or Greek yogurt with fruit and a little oats.","Lunch, grilled chicken or lean beef with rice and veggies.","Snack, protein shake, cottage cheese, or jerky before you play.","Dinner, salmon or chicken with potatoes and a big salad.","Around play, a banana or rice cakes for quick carbs, then protein after."];
   const mc=card(); const mb=mc._body; mb.appendChild(el("div","small muted","Recommended, protein forward")); mb.firstChild.style.marginBottom="8px"; RECS.forEach(function(m){ const r=el("div","mrow"); r.appendChild(el("div","ml",m)); mb.appendChild(r); }); parent.appendChild(mc);
-  const sc=card(); const sb=sc._body; sb.appendChild(el("div","small muted","Daily supplements")); sb.lastChild.style.marginBottom="8px"; const _daily=state.nutrition.supplements.filter(s=>!s.toBuy); const _buy=state.nutrition.supplements.filter(s=>s.toBuy); _daily.forEach(s=>{ sb.appendChild(checkItem(!!s.log[TODAY],s.name,s.dose,()=>{ if(s.log[TODAY])delete s.log[TODAY]; else s.log[TODAY]=true; save(); render(); },()=>{state.nutrition.supplements=state.nutrition.supplements.filter(x=>x.id!==s.id);save();render();})); }); sb.appendChild(adder("Add a supplement...",v2=>{state.nutrition.supplements.push({id:uid(),name:v2,dose:"",log:{}});save();render();})); if(_buy.length){ const bl=el("div","small muted"); bl.style.margin="15px 0 8px"; bl.textContent="To buy, not owned yet"; sb.appendChild(bl); _buy.forEach(s=>{ const row=el("div","chk"); const tx=el("div","ctext"); tx.textContent=s.name; const m=el("span","meta"); m.textContent=(s.dose?s.dose+" · ":"")+"not purchased yet"; tx.appendChild(m); row.appendChild(tx); const got=el("button","btn sm","Got it"); got.onclick=()=>{ s.toBuy=false; save(); render(); }; row.appendChild(got); const del=el("button","del","×"); del.onclick=()=>{ state.nutrition.supplements=state.nutrition.supplements.filter(x=>x.id!==s.id); save(); render(); }; row.appendChild(del); sb.appendChild(row); }); } parent.appendChild(sc); }
+  /* build 130: supplements moved into the unified Daily checklist (dailyChecklistModule), so nutrition
+     no longer renders them here, avoiding two places. Meals and guidance stay. */ }
 /* v21 build 51: a habit or checklist item with weeklyDay set (0 Sun ... 6 Sat) shows and counts only on
    that weekday. Used for the weekly Friday weigh in. No weeklyDay means it is a normal daily item. */
 function habitActiveOn(h,dt){ if(!h||h.weeklyDay==null) return true; try{ var a=String(dt).split("-"); return new Date(a[0],a[1]-1,a[2]).getDay()===h.weeklyDay; }catch(e){ return true; } }
 function habitsActiveOn(dt){ return ((state.routine&&state.routine.habits)||[]).filter(function(h){return habitActiveOn(h,dt);}); }
+/* v21 build 130: UNIFIED DAILY CHECKLIST. Habits (state.routine.habits) and supplements
+   (state.nutrition.supplements) merged into ONE section, a single place to tick everything. Both data stores
+   are untouched, so all daily reset and archive behaviour is preserved. Buy list items (fish oil) render as a
+   greyed buy line, not a checkbox he cannot complete. */
+function dailyChecklistModule(parent){
+  const allH=state.routine.habits||(state.routine.habits=[]);
+  const hs=habitsActiveOn(TODAY);
+  const supps=state.nutrition.supplements||(state.nutrition.supplements=[]);
+  const dailyS=supps.filter(s=>!s.toBuy);
+  const buyS=supps.filter(s=>s.toBuy);
+  const total=hs.length+dailyS.length;
+  const done=hs.filter(h=>h.log[TODAY]).length + dailyS.filter(s=>!!s.log[TODAY]).length;
+  parent.appendChild(ringCard(done,total,"Daily checklist",done+" of "+total+" done \u00b7 "+habitStreak()+" day streak",false,"a-green"));
+  const c=card(); const b=c._body;
+  const grpH=el("div","small muted","Habits"); grpH.style.marginBottom="8px"; b.appendChild(grpH);
+  hs.forEach(h=>{ b.appendChild(checkItem(!!h.log[TODAY],h.name,null,()=>{ if(h.log[TODAY])delete h.log[TODAY]; else h.log[TODAY]=true; save(); render(); },()=>{ state.routine.habits=allH.filter(x=>x.id!==h.id); save(); render(); })); });
+  b.appendChild(adder("Add a habit...",tx=>{ allH.push({id:uid(),name:tx,log:{}}); save(); render(); }));
+  const grpS=el("div","small muted","Supplements"); grpS.style.margin="16px 0 8px"; b.appendChild(grpS);
+  dailyS.forEach(s=>{ b.appendChild(checkItem(!!s.log[TODAY],s.name,s.dose,()=>{ if(s.log[TODAY])delete s.log[TODAY]; else s.log[TODAY]=true; save(); render(); },()=>{ state.nutrition.supplements=supps.filter(x=>x.id!==s.id); save(); render(); })); });
+  b.appendChild(adder("Add a supplement...",tx=>{ supps.push({id:uid(),name:tx,dose:"",log:{},toBuy:false}); save(); render(); }));
+  if(buyS.length){
+    const bl=el("div","small muted"); bl.style.margin="16px 0 8px"; bl.textContent="On the buy list, not owned yet"; b.appendChild(bl);
+    buyS.forEach(s=>{ const row=el("div","chk"); row.style.opacity="0.6"; const tx=el("div","ctext"); tx.textContent=s.name; const m=el("span","meta"); m.textContent=(s.dose?s.dose+" \u00b7 ":"")+"buy list"; tx.appendChild(m); row.appendChild(tx); const got=el("button","btn sm","Got it"); got.onclick=()=>{ s.toBuy=false; save(); render(); }; row.appendChild(got); const del=el("button","del","\u00d7"); del.onclick=()=>{ state.nutrition.supplements=supps.filter(x=>x.id!==s.id); save(); render(); }; row.appendChild(del); b.appendChild(row); });
+  }
+  parent.appendChild(c);
+}
 function habitsModule(parent){ const all=state.routine.habits; const hs=habitsActiveOn(TODAY); const hd=hs.filter(h=>h.log[TODAY]).length; parent.appendChild(ringCard(hd,hs.length,"Daily habits",hd+" of "+hs.length+" done · "+habitStreak()+" day streak",false,"a-green")); const c=card(); const b=c._body; hs.forEach(h=>{ b.appendChild(checkItem(!!h.log[TODAY],h.name,null,()=>{ if(h.log[TODAY])delete h.log[TODAY]; else h.log[TODAY]=true; save(); render(); },()=>{state.routine.habits=all.filter(x=>x.id!==h.id);save();render();})); }); b.appendChild(adder("Add a habit...",t=>{all.push({id:uid(),name:t,log:{}});save();render();})); parent.appendChild(c); }
 /* ===== v21 build 72: pickleball coaching page + helpers (additive, non-destructive) ===== */
 function pkParseMin(s){ if(typeof s==="number") return s; s=String(s||""); if(!s.trim()) return 0; var h=(s.match(/(\d+)\s*h/i)||[])[1], m=(s.match(/(\d+)\s*m(?!s)/i)||[])[1], sec=(s.match(/(\d+)\s*s/i)||[])[1]; var mins=0; if(h)mins+=parseInt(h,10)*60; if(m)mins+=parseInt(m,10); if(sec)mins+=parseInt(sec,10)/60; if(!h&&!m&&!sec){ var n=parseFloat(s); if(!isNaN(n)) mins=n; } return Math.round(mins*10)/10; }
