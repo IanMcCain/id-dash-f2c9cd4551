@@ -13,7 +13,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Ian">
 <title>Ian Dashboard</title>
-<meta name="build" content="v21 build 145 (2026-07-23)">
+<meta name="build" content="v21 build 146 (2026-07-23)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -770,7 +770,7 @@ const sess=(function(){ let ok=false,mem={}; try{ const t="__s__"; window.sessio
 })();
 const KEYS={ ian:"ianDashboard.v2", chris:"chrisDashboard.v2" };
 const SEED_VERSION=13;
-const APP_BUILD="v21 build 145 (2026-07-23)";
+const APP_BUILD="v21 build 146 (2026-07-23)";
 const WATER_GOAL=10; /* v21 build 59: daily water goal 12 -> 10 cups (about 2 liters per day). Render-time constant used by the water card, lock-screen widget, and stat tiles; logged water history (state.nutrition.water) is date-keyed and untouched, so no migration is needed and the new goal reaches the device on refresh. */
 const uid=()=>Math.random().toString(36).slice(2,9);
 function todayKey(d){ d=d||new Date(); const p=n=>String(n).padStart(2,"0"); return d.getFullYear()+"-"+p(d.getMonth()+1)+"-"+p(d.getDate()); }
@@ -1849,6 +1849,74 @@ function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]
   try{ if(false && (state.pickleball && !((state.meta||{}).mig78b_cues_0719))){
       state.pickleball.cues=["Hit it falling, never on the rise", "Moving forward through contact", "Center of the face, 3 mph is the whole shot", "They hit a seven, you answer with a five", "Guide it, let it sit on the paddle", "Quiet wrist, power from the shoulder", "Paddle head down, backhand position, lean in", "Where was their paddle when they hit it", "Aim away from them, into the corners", "Name how the point ended, then next serve"];
       if(!state.meta) state.meta={}; state.meta.mig78b_cues_0719=true; save(true); } }catch(e){}
+  /* v21 build 146: load the full 07.22 five video film SYNTHESIS and CLEAN UP the Active Pickleball lists.
+     Conclusions only, no fabricated accuracy (drill error rates are labeled best estimates at low to medium
+     confidence, and no charted overall percentage is written, overall stays null and gradable false). Adds
+     videoStats for the drop, drive and dink drills and doubles match 2; archives the prior workOn and cues to
+     state.archive.activePickleballPreB146 and sets consolidated flaw first lists; and writes today's coachRec,
+     coachBullets and coachPlan in the harsher construct and finish voice. Placed as the LAST workOn and cues
+     writer in file order per the last writer wins rule, guarded by meta.mig146_synth, idempotent, non destructive,
+     only agent generated coaching copy is touched, never Ian's logged data. */
+  try{ if(state.pickleball && !state.meta.mig146_synth){
+      var P146=state.pickleball;
+      if(!Array.isArray(P146.videoStats)) P146.videoStats=[];
+      var _vs146=[
+        {date:"2026-07-22",overall:null,gradable:false,source:"Film study 07.22, third shot drop drill (IMG_2862)",
+         summary:["About 64 reps, forehand dominant. Real error rate about 55 to 60 percent when deep floaters count as misses (best estimate, low to medium confidence), net clearance about 88 percent which flatters you","Root fault, you set up TALL and load LATE, not sunk from the hips before contact","Dominant miss is drops drifting DEEP past the kitchen, floaty and attackable, not netting","You rise and drift forward through contact, and you barely drilled the backhand drop","Strength, the drop STROKE shape is clean, compact backswing, contact out front, do not rebuild it"],
+         coachNote:"The fix is not touch, it is your base. Load low before the ball arrives so your legs lift it, make the ball PEAK on your side and land in the front two feet of the kitchen, stay down through contact, and put real volume on the backhand drop. The stroke is fine, the height and depth control is the leak."},
+        {date:"2026-07-22",overall:null,gradable:false,source:"Film study 07.22, drive and transition drill (IMG_2864)",
+         summary:["About 100 to 140 contacts, roughly 18 percent error on logged reps (best estimate), all SOFT errors short or popped, zero hard net or out, concentrated in the transition drop","Long LOOPING over the head take back on every drive and overhead, slow and telegraphed for a live point","Transition ball taken too low and on the run, reaching down and forward while walking in","You stand up and rise through contact, the cause of the pop ups","Strength, kitchen dinks and volleys reliable, about one breakdown in 25"],
+         coachNote:"Compact the drive take back below shoulder height and brush up at about 80 percent, it is too big and slow to survive a real point. Meet the transition ball earlier and higher from a STOPPED split step base instead of on the run, and stay down through contact so it stops dying short."},
+        {date:"2026-07-22",overall:null,gradable:false,source:"Film study 07.22, kitchen dink drill (IMG_2866)",
+         summary:["About 88 contacts, roughly 22 to 23 percent error (best estimate), almost all POP UPS floating above the net band, very few net dumps","Backhand is the leakier wing, estimated 15 to 18 percent pop up versus 6 to 8 percent forehand","You pop high or fast incoming balls, lifting them up attackable instead of blocking down","You stand tall and drop the paddle to your side between rallies, losing ready position, and you reach and bend at the waist on low balls","Strength, when set and in rhythm your dinks are quiet, low and off a real athletic base"],
+         coachNote:"On any ball at or above net height stop LIFTING, switch to a firm slightly open punch block with a quiet wrist so it drops just over. Hold a continuous athletic ready with the paddle UP between every contact, move your feet and load your knees on low balls instead of bending at the waist, and start attacking the balls that sit up. The backhand needs the most reps."},
+        {date:"2026-07-22",overall:null,gradable:false,source:"Film study 07.22, doubles match 2 (Ian far)",
+         summary:["Far camera behind the couple, your side reads low to medium confidence, estimates labeled, not a frame perfect ledger","The harsh read, you PLAY NOT TO LOSE, you rally and do not construct, very few speed ups or drives, a wall not a finisher","Your net dumps live on the FIRST ball of the point, the return and the third, best effort 5 to 10 unforced errors, low confidence, and they are NET errors not long","Your dinks are NEUTRAL, dinking to not lose instead of to move them and set up the attack","Strength again, the soft game and the reset are genuinely good and held across three sessions"],
+         coachNote:"This is the ceiling for 4.5 to 5.0. Neutral dinking wins at 3.5 and loses at 4.5 because they will not hand you the error. CONSTRUCT, move them with dinks then attack the pop up, pull the trigger FIRST, and make the return and third a weapon so the point does not die at the tape on ball two. Film from your own end so the net dumps and speed ups are finally countable."}
+      ];
+      _vs146.forEach(function(v){ if(!P146.videoStats.some(function(x){return x&&x.date===v.date&&x.source===v.source;})) P146.videoStats.push(v); });
+      if(!state.archive||typeof state.archive!=="object") state.archive={};
+      if(!state.archive.activePickleballPreB146) state.archive.activePickleballPreB146={workOn:(P146.workOn||[]).slice(),cues:(P146.cues||[]).slice(),at:TODAY};
+      P146.workOn=[
+        "Construct and FINISH, stop rallying neutral. Move them with dinks then attack the first ball that sits up. A wall does not win at 4.5",
+        "Load LOW early and stay down through contact. You play tall and arrive late, the root of your deep drops, short transitions and floated dinks",
+        "Drop depth, make it PEAK on your side and land in the front 2 ft of the kitchen. Your drops drift deep and attackable",
+        "Make the return a deep WEAPON to the backhand. This is where your net dumps live, hit THROUGH it",
+        "Serve deeper, back third of the box, stop the shallow serve that lets them step in",
+        "Compact the looping drive take back below shoulder height, it is slow and telegraphed",
+        "Drill the BACKHAND, it is your leakier wing everywhere, the dink, the block and the drop",
+        "Stop popping up high dinks, punch them DOWN with a firm quiet block instead of lifting"
+      ];
+      P146.cues=[
+        "Play to WIN, not to not lose, attack the first ball that sits up",
+        "Load low early, stay DOWN through contact",
+        "Meet it earlier and out front, not late and tall",
+        "Peak the drop on your side, falling as it crosses",
+        "Return deep and heavy, hit THROUGH it",
+        "Serve to the back third",
+        "High dink, punch it DOWN, do not lift",
+        "Paddle up and in front before they swing, not after",
+        "Expect a speed up on every ball, then be the one who starts it",
+        "Saturday couple, do not out rally them, CONSTRUCT, pick the female and the middle, keep the big guy off high balls"
+      ];
+      if(!P146.coachRec) P146.coachRec={};
+      P146.coachRec["2026-07-23"]={title:"Stop playing not to lose, construct and finish",note:"Five videos say the same thing. Your soft game is real and your reset is your best trait, but you are a WALL, not a finisher, almost no speed ups or drives and you do not attack the pop up. That passivity is the single biggest thing between you and 4.5 to 5.0. Underneath it the root mechanical fault is that you play TALL and arrive LATE, which floats your dinks, drifts your drops deep and dies your transition balls short. Load low early, stay down through contact, meet the ball out front, then start constructing points and pulling the trigger first."};
+      if(!P146.coachBullets) P146.coachBullets={};
+      P146.coachBullets["2026-07-23"]=[
+        "The film verdict, you play NOT TO LOSE. You rally like a wall and almost never construct or finish, few speed ups, few drives, you do not attack the pop up. That is your ceiling, fix it first",
+        "Root mechanical fault across every drill, you play TALL and arrive LATE. A high base floats your dinks, drifts your drops deep and dies your transition balls short. Load LOW early, stay down through contact, meet it out front, this one change fixes the most",
+        "Your errors are NET errors on the FIRST ball, the return and the third shot drop, not long errors. Make the return a deep weapon and the drop PEAK on your side, stop dumping ball two into the tape",
+        "Backhand is your leakier wing everywhere and your drive take back is a slow loop. Drill the backhand, compact the drive below shoulder height, and punch high dinks DOWN instead of popping them up",
+        "Keep what works, the soft game, the resets and the clean drop STROKE are genuinely good, do not rebuild them, weaponize them"
+      ];
+      P146.coachPlan={date:"2026-07-23",paras:[
+        "Ian, five videos today and the picture is complete, so here is the straight version. Your soft game is genuinely good, your reset is the best thing you do on camera across three match sessions, and your drop stroke shape is clean. None of that is the problem. The problem is that you play NOT TO LOSE. You rally, you keep the ball in play, and you wait for the other team to miss. Against 3.5 that wins. Against the 4.5 to 5.0 players in the league next year it loses every time, because they do not hand you the error. You are a wall, and a wall does not win at the level you are chasing. The biggest job now is to become a FINISHER, construct the point with your dinks, move them, and attack the first ball that sits up instead of resetting it.",
+        "Underneath the passivity there is one root mechanical fault and it showed up in every single drill. You play TALL and you arrive LATE, hitting from a high base with contact that is not sunk enough. That one fault explains three different misses. Your drops drift deep and floaty because you do not load low and control the peak. Your transition balls die short because you take them low and on the run instead of early from a stopped base. Your dinks float up because you stand tall and lift the high ball instead of blocking it down. Fix the base and you fix all three. Load LOW before the ball arrives, stay down THROUGH contact, and meet the ball earlier and out front. This is the highest leverage change in your whole game.",
+        "The errors that actually cost you points live on the FIRST ball of the point, the return and the third shot drop, and they are NET errors, not long ones, which means tentative, too low contact when you are rushed early in the point. Turn the return into a weapon, deep and heavy to the backhand, hit through it, and make the third shot drop PEAK on your side so it is falling as it crosses. Stop dumping ball two into the tape. Your leakier wing everywhere is the backhand, so it gets the most drill volume now, the dink, the block and the drop. And compact that drive take back, right now it is a long slow loop over your head that a real opponent reads and punishes.",
+        "So the plan is simple and demanding. Base first, load low and stay down on everything. First ball next, a weapon return and a drop that peaks on your side. Then the mindset, every dink has a job, move them and then ATTACK the pop up, speed up on offense and block down on defense, pull the trigger first. Keep the soft game and the reset exactly as they are, they are your foundation, we build offense on top of them. Saturday with Bianca against the couple, they are patient dinkers, do not try to out rally them, construct and attack first, pick the female and the middle and keep it low and away from the bigger guy. That is the whole project between you and 4.5 to 5.0."
+      ]};
+      state.meta.mig146_synth=true; save(true);
+  } }catch(e){}
   /* new drill: contact point drop reps, off court friendly. */
   try{ if(state.pickleball){ if(!Array.isArray(state.pickleball.drills)) state.pickleball.drills=[];
       if(!state.pickleball.drills.some(function(d){return d&&d.id==="pbk-contact-0719";})){ state.pickleball.drills.push({id:"pbk-contact-0719",text:"Contact point drops. 20 reps focused only on hitting the middle of the face out front, ball falling, never on the rise. Grade each rep by where their paddle would have been, not where it landed."}); save(true); } } }catch(e){}
