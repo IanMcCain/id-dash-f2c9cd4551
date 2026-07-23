@@ -13,7 +13,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Ian">
 <title>Ian Dashboard</title>
-<meta name="build" content="v21 build 148 (2026-07-23)">
+<meta name="build" content="v21 build 149 (2026-07-23)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -770,7 +770,7 @@ const sess=(function(){ let ok=false,mem={}; try{ const t="__s__"; window.sessio
 })();
 const KEYS={ ian:"ianDashboard.v2", chris:"chrisDashboard.v2" };
 const SEED_VERSION=13;
-const APP_BUILD="v21 build 148 (2026-07-23)";
+const APP_BUILD="v21 build 149 (2026-07-23)";
 const WATER_GOAL=10; /* v21 build 59: daily water goal 12 -> 10 cups (about 2 liters per day). Render-time constant used by the water card, lock-screen widget, and stat tiles; logged water history (state.nutrition.water) is date-keyed and untouched, so no migration is needed and the new goal reaches the device on refresh. */
 const uid=()=>Math.random().toString(36).slice(2,9);
 function todayKey(d){ d=d||new Date(); const p=n=>String(n).padStart(2,"0"); return d.getFullYear()+"-"+p(d.getMonth()+1)+"-"+p(d.getDate()); }
@@ -1937,7 +1937,7 @@ function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]
         ]}; save(true);
       }
   } }catch(e){}
-  /* v21 build 148 (2026-07-23): daily brief agent injects today's date keyed content, the brief cards, future
+  /* v21 build 149 (2026-07-23): daily brief agent injects today's date keyed content, the brief cards, future
      ideas, easy wins, the video pick and the research read, and archives the 07-22 GYM line as read. New date keys
      only, additive and idempotent via presence checks, deep merge carries them to the device. Touches no workOn or
      cues array and none of Ian's logged data. */
@@ -1997,6 +1997,41 @@ function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]
         }
       } });
       state.meta.mig148b_austin_comm=true; save(true);
+  } }catch(e){}
+  /* v21 build 149: (A) CYNTHIA WILLIS real listing launch timeline from the image, REPLACES the tentative mid to
+     late August placeholder from build 133. Go live is Thursday morning Aug 6 2026. (B) BARKER, renovations underway,
+     Ian expects a meeting next month (August) to create a timeline. Sets the Willis deal close and note, moves the
+     Willis calendar event to Aug 6, locks the cynthia list date todo, and appends the Barker note. Runs AFTER the
+     build 133 willis push so it wins. Guarded, idempotent, non destructive. */
+  try{ if(!state.meta.mig149_willis_barker){
+      if(state.realEstate && Array.isArray(state.realEstate.deals)){
+        state.realEstate.deals.forEach(function(d){
+          if(d && d.id==="re-cynthia-willis"){
+            d.close="Goes LIVE Thursday morning Aug 6, 2026. Target under contract by Aug 20 (14 day goal). Nebraska close about 30 days after contract.";
+            if(typeof d.note==="string" && d.note.indexOf("REAL TIMELINE")<0){
+              d.note=d.note+" REAL TIMELINE (listing launch timeline image, 07.23.2026, this REPLACES the earlier tentative mid to late August placeholder). 10218 Spyglass Dr, The Scenic Group and NP Dodge. Step 1, NOW through Friday July 31, prepack, declutter, remove artwork, wall touch ups, finish remaining house projects. Step 2, Saturday Aug 1 and Sunday Aug 2, staging weekend, furniture adjustments, accessory placement, final room styling. Step 3, Monday Aug 3, final cleaning and prep, deep clean, smooth bedding, clear counters, fully photo ready. Step 4, Tuesday Aug 4, professional photography and listing video. Step 5, Wednesday Aug 5, final listing prep, review media, finalize listing details, last adjustments. Step 6, THURSDAY MORNING AUG 6, LISTING GOES LIVE, launch on the market. Step 7, by Thursday Aug 20, target under contract, goal to accept an offer within 14 days, ideally sooner. Step 8, Thursday Sept 3, their ARIZONA home closing (the home they are buying, some temporary overlap possible with flexibility). Per the image, the Nebraska home (this listing) closing is typically about 30 days after contract acceptance, and moving trucks and final plans get scheduled once that close date is set.";
+            }
+          }
+          if(d && d.id==="re-barkers"){
+            if(typeof d.note==="string" && d.note.indexOf("RENOVATIONS UNDERWAY")<0){
+              d.note=d.note+" RENOVATIONS UNDERWAY (07.23.2026). Renovations on the property are underway, and Ian expects a MEETING NEXT MONTH (August) to create the timeline. No firm list date yet, the timeline gets set at that August meeting.";
+            }
+          }
+        });
+      }
+      if(Array.isArray(state.events)){
+        state.events.forEach(function(e){ if(e && e.id==="ev-20260730-willis-live"){
+          e.title="Cynthia Willis listing goes live (Thursday AM), 10218 Spyglass Dr";
+          e.date="2026-08-06";
+        } });
+      }
+      if(state.realEstate && Array.isArray(state.realEstate.todos)){
+        state.realEstate.todos.forEach(function(t){ if(t && t.id==="ret-cynthia-listdate-0720"){
+          t.text="Go live date LOCKED to Thursday morning Aug 6 per the listing launch timeline. Prep through July 31, staging Aug 1 to 2, cleaning Aug 3, photos and video Aug 4, final prep Aug 5, live Aug 6.";
+          t.done=true;
+        } });
+      }
+      state.meta.mig149_willis_barker=true; save(true);
   } }catch(e){}
   /* new drill: contact point drop reps, off court friendly. */
   try{ if(state.pickleball){ if(!Array.isArray(state.pickleball.drills)) state.pickleball.drills=[];
