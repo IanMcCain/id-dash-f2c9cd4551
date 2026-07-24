@@ -13,7 +13,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Ian">
 <title>Ian Dashboard</title>
-<meta name="build" content="v21 build 156 (2026-07-23)">
+<meta name="build" content="v21 build 157 (2026-07-23)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -643,6 +643,21 @@ header{ background:rgba(0,0,0,.82); border-bottom:1px solid rgba(255,255,255,.07
 .stpill.c-pink{color:var(--pink)} .stpill.c-teal{color:var(--teal)} .stpill.c-violet{color:var(--violet)}
 .deal-detail{ padding:2px 5px 15px; border-top:1px solid rgba(255,255,255,.05); animation:slidein .2s ease; }
 .deal-detail .in{ margin-top:9px; }
+
+/* v21 build 157 */
+.sg3{gap:8px}
+.sg3>.card{min-width:0}
+.sg3>.card>.cbody{padding:12px 10px}
+.sg3 .st-num{margin-top:8px}
+.sg3 .st-num .n{font-size:21px}
+.sg3 .st-num .u{font-size:11px;margin-left:2px}
+.sg3 .st-label{font-size:11px;gap:5px}
+.sg3 .st-ico{width:12px;height:12px}
+.sg3 .st-sub{font-size:11px;margin-top:5px}
+.sg3 .chev{width:19px;height:19px;font-size:12px}
+.sg3 .pbar{margin-top:8px}
+#p-gym .card{margin-bottom:15px}
+.sgrid > .card .st-sub{margin-bottom:2px}
 </style>
 </head>
 <body>
@@ -717,7 +732,7 @@ const sess=(function(){ let ok=false,mem={}; try{ const t="__s__"; window.sessio
 })();
 const KEYS={ ian:"ianDashboard.v2", chris:"chrisDashboard.v2" };
 const SEED_VERSION=13;
-const APP_BUILD="v21 build 156 (2026-07-23)";
+const APP_BUILD="v21 build 157 (2026-07-23)";
 const WATER_GOAL=10; /* v21 build 59: daily water goal 12 -> 10 cups (about 2 liters per day). Render-time constant used by the water card, lock-screen widget, and stat tiles; logged water history (state.nutrition.water) is date-keyed and untouched, so no migration is needed and the new goal reaches the device on refresh. */
 const uid=()=>Math.random().toString(36).slice(2,9);
 function todayKey(d){ d=d||new Date(); const p=n=>String(n).padStart(2,"0"); return d.getFullYear()+"-"+p(d.getMonth()+1)+"-"+p(d.getDate()); }
@@ -2067,6 +2082,8 @@ function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]
       ];
       state.meta.mig152_pickleclean=true; save(true);
   } }catch(e){}
+  /* v21 build 157: seed pickleball skills radar values, coach estimate, agents may update over time */
+  try{ if(state.pickleball && !state.meta.mig157_skills){ if(!Array.isArray(state.pickleball.skills) || !state.pickleball.skills.length){ state.pickleball.skills=[ {id:"serve",label:"Serve",short:"Serve",current:55,target:85}, {id:"drops",label:"Drops and thirds",short:"Drops",current:50,target:88}, {id:"resets",label:"Resets",short:"Resets",current:58,target:85}, {id:"dinks",label:"Dinks",short:"Dinks",current:66,target:85}, {id:"drives",label:"Drives",short:"Drives",current:72,target:85}, {id:"hands",label:"Speed ups and hands",short:"Hands",current:60,target:85}, {id:"footwork",label:"Footwork",short:"Footwork",current:62,target:85} ]; } state.meta.mig157_skills=true; save(true); } }catch(e){}
   /* new drill: contact point drop reps, off court friendly. */
   try{ if(state.pickleball){ if(!Array.isArray(state.pickleball.drills)) state.pickleball.drills=[];
       if(!state.pickleball.drills.some(function(d){return d&&d.id==="pbk-contact-0719";})){ state.pickleball.drills.push({id:"pbk-contact-0719",text:"Contact point drops. 20 reps focused only on hitting the middle of the face out front, ball falling, never on the rise. Grade each rep by where their paddle would have been, not where it landed."}); save(true); } } }catch(e){}
@@ -2695,9 +2712,9 @@ function safe(parent,fn,label){ try{ fn(); }catch(e){ try{console.error("[dash]"
 function stepper(get,set){ const s=el("div","stepper"); const mn=el("button",null,"−"); const val=el("div","sv",String(get())); const pl=el("button",null,"+"); mn.onclick=()=>{ set(Math.max(0,get()-1)); save(); val.textContent=String(get()); }; pl.onclick=()=>{ set(get()+1); save(); val.textContent=String(get()); }; s.appendChild(mn); s.appendChild(val); s.appendChild(pl); return s; }
 function launchCard(parent,icon,title,sub,tabId){ const c=card(); const b=el("label","launch"); b.setAttribute("for","t-"+tabId); b.innerHTML='<div class="li">'+icon+'</div><div class="lt"><b>'+title+'</b><small>'+sub+'</small></div><div class="larrow">›</div>'; c._body.appendChild(b); parent.appendChild(c); }
 /* ===== v18 Apple style tiles (stat, fraction, grid) ===== */
-function statTile(opts){ const c=el("div","card"+(opts.tab?" tap":"")); const b=el("div","cbody"); c.appendChild(b); const top=el("div","between"); const lab=el("div","st-label"); if(opts.color){ lab.appendChild(el("span","st-ico c-"+opts.color)); } lab.appendChild(document.createTextNode(opts.label)); top.appendChild(lab); if(opts.tab){ top.appendChild(el("div","chev","›")); c.onclick=()=>selectTab(opts.tab); } b.appendChild(top); const num=el("div","st-num"+(opts.color?" c-"+opts.color:"")); const n=el("span","n"); n.textContent=opts.value; num.appendChild(n); if(opts.unit){ const u=el("span","u"); u.textContent=opts.unit; num.appendChild(u); } b.appendChild(num); if(opts.sub){ b.appendChild(el("div","st-sub",opts.sub)); } if(opts.spark&&opts.spark.length){ const ch=barChart(opts.spark.map(p=>({label:"",pct:p})),"",opts.sparkH||52); ch.style.marginTop="10px"; b.appendChild(ch); } return c; }
+function statTile(opts){ const c=el("div","card"+(opts.tab?" tap":"")); const b=el("div","cbody"); c.appendChild(b); const top=el("div","between"); const lab=el("div","st-label"); if(opts.color){ lab.appendChild(el("span","st-ico c-"+opts.color)); } lab.appendChild(document.createTextNode(opts.label)); top.appendChild(lab); if(opts.tab){ top.appendChild(el("div","chev","›")); c.onclick=()=>selectTab(opts.tab); } b.appendChild(top); const num=el("div","st-num"+(opts.color?" c-"+opts.color:"")); const n=el("span","n"); n.textContent=opts.value; num.appendChild(n); if(opts.unit){ const u=el("span","u"); u.textContent=opts.unit; num.appendChild(u); } b.appendChild(num); if(opts.sub){ b.appendChild(el("div","st-sub",opts.sub)); } if(opts.spark&&opts.spark.length){ const ch=barChart(opts.spark.map(p=>({label:"",pct:p})),"",opts.sparkH||52); ch.style.marginTop="10px"; ch.style.marginBottom="4px"; b.appendChild(ch); } return c; }
 function fracTile(opts){ const col=opts.color||"blue"; const c=el("div","card"+(opts.tab?" tap":"")); const b=el("div","cbody"); c.appendChild(b); const top=el("div","between"); const lab=el("div","st-label"); lab.appendChild(el("span","st-ico c-"+col)); lab.appendChild(document.createTextNode(opts.label)); top.appendChild(lab); if(opts.tab){ top.appendChild(el("div","chev","›")); c.onclick=()=>selectTab(opts.tab); } b.appendChild(top); const num=el("div","st-num c-"+col); const n=el("span","n"); n.textContent=opts.done+"/"+opts.goal; num.appendChild(n); if(opts.unit){ const u=el("span","u"); u.textContent=opts.unit; num.appendChild(u); } b.appendChild(num); const pbar=el("div","pbar"); const pi=el("i"); pbar.appendChild(pi); try{ pi.style.background="var(--"+col+")"; }catch(e){} const frac=opts.goal?Math.min(1,(opts.done||0)/opts.goal):0; setTimeout(()=>{try{pi.style.width=(frac*100)+"%";}catch(e){}},40); b.appendChild(pbar); return c; }
-function summaryGrid(parent,tiles){ const t=tiles.filter(x=>x); const g=el("div","grid2 sgrid"); if(t.length===3){ g.style.gridTemplateColumns="repeat(3,1fr)"; } else if(t.length===1){ g.style.gridTemplateColumns="1fr"; } t.forEach(x=>g.appendChild(x)); parent.appendChild(g); }
+function summaryGrid(parent,tiles){ const t=tiles.filter(x=>x); const g=el("div","grid2 sgrid"); if(t.length===3){ g.className="grid2 sgrid sg3"; g.style.gridTemplateColumns="repeat(3,minmax(0,1fr))"; } else if(t.length===1){ g.style.gridTemplateColumns="1fr"; } t.forEach(x=>g.appendChild(x)); parent.appendChild(g); }
 function weekWorkoutSpark(){ const out=[]; for(let i=6;i>=0;i--){ const d=new Date(); d.setDate(d.getDate()-i); const k=todayKey(d); const dow=d.getDay(); const day=daySplit(dow); const log=(state.gym&&state.gym.logs&&state.gym.logs[k])||{done:{}}; const tot=day.exercises.length||1; const done=day.exercises.filter(e=>log.done&&log.done[e.id]).length; out.push(Math.round(done/tot*100)); } return out; }
 function workoutsThisWeek(){ let c=0; for(let i=0;i<7;i++){ const d=new Date(); d.setDate(d.getDate()-i); const k=todayKey(d); const log=(state.gym&&state.gym.logs&&state.gym.logs[k]); if(log&&log.done&&Object.keys(log.done).length) c++; } return c; }
 function ringCard(done,total,title,subtxt,small,accClass){ const c=card(accClass); const rw=el("div","ringwrap"); const ring=el("div","ring"+(small?" sm":"")); const frac=total?done/total:0; const R=38,C=2*Math.PI*R; const sz=small?66:84; const sw=small?9:8;
@@ -3337,7 +3354,7 @@ function buildGym(v){ var _gymTop=el("div"); _gymTop.style.height="14px"; v.appe
   collapseTool(v,"Nutrition","meals, supplements are in the Daily checklist",()=>{ nutritionModule(v); });
   sect(v,"Daily checklist","habits, water, and supplements, one place"); safe(v,()=>dailyChecklistModule(v),"Daily checklist"); }
 function gymToday(parent){ const day=daySplit(DOW); const log=state.gym.logs[TODAY]||(state.gym.logs[TODAY]={done:{},note:""}); var items=[{id:"stretch5",name:"5 to 10 minute stretch",scheme:"warm up"}].concat(day.exercises); const total=items.length, dc=items.filter(e=>log.done[e.id]).length;
-  summaryGrid(parent,[ fracTile({label:"Today's session",color:"orange",done:dc,goal:total||1,unit:"sets"}), statTile({label:"This week",color:"orange",value:workoutsThisWeek(),unit:"days",sub:"Workouts logged",spark:weekWorkoutSpark(),sparkH:26}) ]);
+  summaryGrid(parent,[ fracTile({label:"Today's session",color:"orange",done:dc,goal:total||1,unit:"sets"}), statTile({label:"This week",color:"orange",value:workoutsThisWeek(),unit:"days",sub:"Workouts logged",spark:weekWorkoutSpark(),sparkH:34}) ]);
   (function(){ var hn=(state.gym&&state.gym.handSpeedNote)||""; if(!hn) return;
     var hc=card("a-blue"); var hb=hc._body; hb.appendChild(el("span","pill b","Hand speed, honest read"));
     var ht=el("div","small"); ht.style.cssText="margin-top:9px;line-height:1.55;color:var(--gray)"; ht.textContent=hn; hb.appendChild(ht);
@@ -3455,6 +3472,33 @@ function pkSessionItem(parent,s){
 }
 /* v21 build 88: travel study days (Jul 17 to 20). Off court film study assignments shown at the top of the pickleball page on those dates only. */
 
+function buildSkillsRadar(parent){
+  var pb=state.pickleball||{};
+  var DEF=[{id:"serve",label:"Serve",short:"Serve",current:55,target:85},{id:"drops",label:"Drops and thirds",short:"Drops",current:50,target:88},{id:"resets",label:"Resets",short:"Resets",current:58,target:85},{id:"dinks",label:"Dinks",short:"Dinks",current:66,target:85},{id:"drives",label:"Drives",short:"Drives",current:72,target:85},{id:"hands",label:"Speed ups and hands",short:"Hands",current:60,target:85},{id:"footwork",label:"Footwork",short:"Footwork",current:62,target:85}];
+  var sk=(Array.isArray(pb.skills)&&pb.skills.length)?pb.skills:DEF;
+  var c=card("a-blue"); var b=c._body;
+  b.appendChild(el("h3",null,"Skills radar"));
+  var sub=el("div","small dim"); sub.style.marginTop="3px"; sub.textContent="Coach estimate of your game now vs your 4.5 to 5.0 target. Not a measured DUPR."; b.appendChild(sub);
+  var n=sk.length, cx=150, cy=140, R=84;
+  function ang(i){ return (-90 + i*360/n)*Math.PI/180; }
+  function pt(i,val){ var a=ang(i); var r=R*Math.max(0,Math.min(100,val))/100; return [cx+r*Math.cos(a), cy+r*Math.sin(a)]; }
+  function poly(getter){ return sk.map(function(s,i){ var q=pt(i,getter(s,i)); return q[0].toFixed(1)+","+q[1].toFixed(1); }).join(" "); }
+  var g='<svg viewBox="0 0 300 300" width="100%" style="display:block;margin:12px auto 0;max-width:330px;overflow:visible" xmlns="http://www.w3.org/2000/svg">';
+  [25,50,75,100].forEach(function(lv){ g+='<polygon points="'+poly(function(){return lv;})+'" style="fill:none;stroke:var(--line);opacity:'+(lv===100?0.6:0.3)+'" stroke-width="1"/>'; });
+  sk.forEach(function(s,i){ var e=pt(i,100); g+='<line x1="'+cx+'" y1="'+cy+'" x2="'+e[0].toFixed(1)+'" y2="'+e[1].toFixed(1)+'" style="stroke:var(--line);opacity:0.3" stroke-width="1"/>'; });
+  g+='<polygon points="'+poly(function(s){return s.target;})+'" style="fill:none;stroke:var(--green);opacity:0.92" stroke-width="1.6" stroke-dasharray="4 3"/>';
+  g+='<polygon points="'+poly(function(s){return s.current;})+'" style="fill:var(--accent);fill-opacity:0.26;stroke:var(--accent)" stroke-width="2"/>';
+  sk.forEach(function(s,i){ var q=pt(i,s.current); g+='<circle cx="'+q[0].toFixed(1)+'" cy="'+q[1].toFixed(1)+'" r="2.6" style="fill:var(--accent)"/>'; });
+  sk.forEach(function(s,i){ var lp=pt(i,112); var a=ang(i); var cos=Math.cos(a), sin=Math.sin(a); var an=cos>0.3?"start":(cos<-0.3?"end":"middle"); var dy=sin>0.3?9:(sin<-0.3?-2:3); g+='<text x="'+lp[0].toFixed(1)+'" y="'+(lp[1]+dy).toFixed(1)+'" style="fill:var(--gray);font-size:10.5px;font-weight:700" text-anchor="'+an+'">'+(s.short||s.label)+'</text>'; });
+  g+='</svg>';
+  var holder=el("div"); holder.innerHTML=g; b.appendChild(holder);
+  var leg=el("div"); leg.style.cssText="display:flex;gap:18px;justify-content:center;margin-top:6px;flex-wrap:wrap";
+  function key(varc,txt,dash){ var d=el("div"); d.style.cssText="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--gray);font-weight:600"; var sw=el("span"); sw.style.cssText="width:15px;height:0;border-top:3px "+(dash?"dashed":"solid")+" "+varc+";display:inline-block"; d.appendChild(sw); d.appendChild(document.createTextNode(txt)); return d; }
+  leg.appendChild(key("var(--accent)","Now",false));
+  leg.appendChild(key("var(--green)","Target 4.5 to 5.0",true));
+  b.appendChild(leg);
+  parent.appendChild(c);
+}
 function buildPickle(v){ var pb=state.pickleball||(state.pickleball={});
   if(!Array.isArray(pb.sessions)) pb.sessions=[];
   if(typeof pb.dayNote!=="string") pb.dayNote="";
@@ -3506,6 +3550,7 @@ function buildPickle(v){ var pb=state.pickleball||(state.pickleball={});
     safe(c,function(){ var st=pkStats(); var ins=pkInsights(st); if(!ins.length) return; sect(c,"What your coach sees","from your logged data"); var ic=card(); ins.forEach(function(line,i){ var r=el("div","small"); r.style.cssText="line-height:1.5;color:var(--gray)"+(i>0?";margin-top:6px":""); r.textContent=line; ic._body.appendChild(r); }); c.appendChild(ic); },"Pickle insights");
     
   });
+  safe(v,function(){ buildSkillsRadar(v); },"Skills radar");
   pkCollapse(v,"pk_active","Work on and cues","what to drill and remember while playing",true,function(ap){
     safe(ap,function(){ var wo=(pb.workOn&&pb.workOn.length)?pb.workOn.slice(0,4):[]; sect(ap,"Work on","top 4"); var cc=card(); if(!wo.length){ cc._body.appendChild(el("div","empty","Your coach will fill this in from your sessions.")); } else { wo.forEach(function(line,i){ var r=el("div","small"); r.style.cssText="line-height:1.5;color:var(--white);font-weight:600"+(i>0?";margin-top:9px":""); var dot=el("span"); dot.style.cssText="color:var(--pk1);font-weight:800;margin-right:8px"; dot.textContent="\u2022"; r.appendChild(dot); r.appendChild(document.createTextNode(line)); cc._body.appendChild(r); }); } ap.appendChild(cc); },"Active workon");
     
