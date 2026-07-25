@@ -13,7 +13,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Ian">
 <title>Ian Dashboard</title>
-<meta name="build" content="v21 build 159 (2026-07-23)">
+<meta name="build" content="v21 build 160 (2026-07-24)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -732,7 +732,7 @@ const sess=(function(){ let ok=false,mem={}; try{ const t="__s__"; window.sessio
 })();
 const KEYS={ ian:"ianDashboard.v2", chris:"chrisDashboard.v2" };
 const SEED_VERSION=13;
-const APP_BUILD="v21 build 159 (2026-07-23)";
+const APP_BUILD="v21 build 160 (2026-07-24)";
 const WATER_GOAL=10; 
 const uid=()=>Math.random().toString(36).slice(2,9);
 function todayKey(d){ d=d||new Date(); const p=n=>String(n).padStart(2,"0"); return d.getFullYear()+"-"+p(d.getMonth()+1)+"-"+p(d.getDate()); }
@@ -2086,6 +2086,19 @@ function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]
   try{ if(state.pickleball && !state.meta.mig157_skills){ if(!Array.isArray(state.pickleball.skills) || !state.pickleball.skills.length){ state.pickleball.skills=[ {id:"serve",label:"Serve",short:"Serve",current:55,target:85}, {id:"drops",label:"Drops and thirds",short:"Drops",current:50,target:88}, {id:"resets",label:"Resets",short:"Resets",current:58,target:85}, {id:"dinks",label:"Dinks",short:"Dinks",current:66,target:85}, {id:"drives",label:"Drives",short:"Drives",current:72,target:85}, {id:"hands",label:"Speed ups and hands",short:"Hands",current:60,target:85}, {id:"footwork",label:"Footwork",short:"Footwork",current:62,target:85} ]; } state.meta.mig157_skills=true; save(true); } }catch(e){}
   /* v21 build 158: shorten the hand speed note in saved state (coach copy) */
   try{ if(state.gym && !state.meta.mig158_handspeed){ state.gym.handSpeedNote="Honest read: the gym is a small lever for hand speed, worth about two short blocks a week. Reaction time comes from seeing fast balls at real speed, not from lifting. Gym helps forearm and wrist control, how fast you start a move, and reset stability. The real gains are on court: paddle up early, hands battles, rapid fire feeds, the wall drill. Do not expect to lift your way to faster hands."; state.meta.mig158_handspeed=true; save(true); } }catch(e){}
+  /* v21 build 160: log the 2026-07-24 drill session (Saturday tournament prep with girlfriend), idempotent */
+  try{ if(state.pickleball && !state.meta.mig160_session0724){
+      var P160=state.pickleball;
+      if(!Array.isArray(P160.sessions)) P160.sessions=[];
+      if(!P160.sessions.some(function(s){ return s&&s.id==="pk-20260724-drill"; })){
+        P160.sessions.push({id:"pk-20260724-drill",date:"2026-07-24",kind:"Drill",venue:"Ace",
+          duration:"1h 12m 50s",calories:540,activeCalories:426,avgHr:108,maxHr:129,effort:5,
+          result:"",score:"",opponent:"",
+          note:"Drill and practice session with my girlfriend as partner, prepping for Saturday's tournament. 8:21 to 9:34 PM at Ace in Omaha, moderate effort. Worked my weak spots on purpose, serve consistency, third shot drops into the kitchen, resets, and dinks. Lighter skill session, not a match, just banking reps and touch before Saturday. Felt fine, no new problems."});
+        save(true);
+      }
+      state.meta.mig160_session0724=true; save(true);
+  } }catch(e){}
   /* new drill: contact point drop reps, off court friendly. */
   try{ if(state.pickleball){ if(!Array.isArray(state.pickleball.drills)) state.pickleball.drills=[];
       if(!state.pickleball.drills.some(function(d){return d&&d.id==="pbk-contact-0719";})){ state.pickleball.drills.push({id:"pbk-contact-0719",text:"Contact point drops. 20 reps focused only on hitting the middle of the face out front, ball falling, never on the rise. Grade each rep by where their paddle would have been, not where it landed."}); save(true); } } }catch(e){}
