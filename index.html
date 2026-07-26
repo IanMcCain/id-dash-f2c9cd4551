@@ -13,7 +13,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Ian">
 <title>Ian Dashboard</title>
-<meta name="build" content="v21 build 166 (2026-07-26)">
+<meta name="build" content="v21 build 167 (2026-07-26)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -732,7 +732,7 @@ const sess=(function(){ let ok=false,mem={}; try{ const t="__s__"; window.sessio
 })();
 const KEYS={ ian:"ianDashboard.v2", chris:"chrisDashboard.v2" };
 const SEED_VERSION=13;
-const APP_BUILD="v21 build 166 (2026-07-26)";
+const APP_BUILD="v21 build 167 (2026-07-26)";
 const WATER_GOAL=10; 
 const uid=()=>Math.random().toString(36).slice(2,9);
 function todayKey(d){ d=d||new Date(); const p=n=>String(n).padStart(2,"0"); return d.getFullYear()+"-"+p(d.getMonth()+1)+"-"+p(d.getDate()); }
@@ -2779,6 +2779,7 @@ function cleanFocus(f){ return String(f||"").replace(/\s*\(.*\)/,""); }
 var GYM_TODAY_OVERRIDE={"2026-07-12":"Sat"};
 /* v21 build 88: travel-day bodyweight gym overrides (Jul 17 to 20, hotel, no equipment). Date-keyed full day objects returned by daySplit on those dates only, normal split resumes Jul 21. Non-destructive. */
 var GYM_DATE_OVERRIDE={
+ "2026-07-26":{day:"Sun",focus:"Push, make up (one time)",play:"Play",note:"One time make up. You missed 2 to 3 gym days this week with pickleball, so today runs your Friday PUSH session, the pressing work that pickleball never trains. This is for TODAY ONLY, your recurring Sunday stays a rest day and the normal split resumes Monday unchanged. Monday is also push, so go a touch lighter Monday or swap it if you feel it.",exercises:[{id:"0x81lyf",name:"Incline DB or machine press",scheme:"4\u00d712/10/8/8"},{id:"cea7roe",name:"Pec deck or cable fly",scheme:"3\u00d715/12/12"},{id:"30p1894",name:"Machine shoulder press",scheme:"3\u00d712/10/8"},{id:"ui81mo6",name:"Cable lateral raise",scheme:"3\u00d715/12/12"},{id:"trlite15",name:"Rope pushdown (light)",scheme:"3\u00d715"},{id:"pkl-extrot",name:"Cable external rotation",scheme:"3\u00d715 per side"}]},
  "2026-07-17":{day:"Fri",focus:"Travel bodyweight, push and core",play:"Off",note:"Out of town, hotel workout, no equipment. Short and crisp, rest 45 to 60s, slow tempo for muscle.",exercises:[{id:"bw-0717-1",name:"Pushups",scheme:"3x12-15"},{id:"bw-0717-2",name:"Pike pushups (shoulders)",scheme:"3x8-12"},{id:"bw-0717-3",name:"Diamond pushups (triceps)",scheme:"3x8-12"},{id:"bw-0717-4",name:"Plank",scheme:"3x30-45s"}]},
  "2026-07-18":{day:"Sat",focus:"Travel bodyweight, posterior and core",play:"Off",note:"No pull bar, so posterior chain and rear delts fill in for a pull day. Squeeze at the top.",exercises:[{id:"bw-0718-1",name:"Glute bridges",scheme:"3x15-20"},{id:"bw-0718-2",name:"Superman holds (upper back)",scheme:"3x20-30s"},{id:"bw-0718-3",name:"Reverse snow angels (rear delts)",scheme:"3x12-15"},{id:"bw-0718-4",name:"Reverse plank",scheme:"3x20-30s"},{id:"bw-0718-5",name:"Bicycle crunches",scheme:"3x15-20/side"}]},
  "2026-07-19":{day:"Sun",focus:"Travel mobility and light",play:"Off",note:"Your normal Sunday, keep it light while traveling. Mobility and a walk.",exercises:[{id:"bw-0719-1",name:"Full body stretch and mobility",scheme:"10-15 min"},{id:"bw-0719-2",name:"Easy walk",scheme:"20-40 min"},{id:"bw-0719-3",name:"Bodyweight squats (light)",scheme:"2x15"}]},
