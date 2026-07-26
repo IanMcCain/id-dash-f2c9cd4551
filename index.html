@@ -13,7 +13,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Ian">
 <title>Ian Dashboard</title>
-<meta name="build" content="v21 build 164 (2026-07-26)">
+<meta name="build" content="v21 build 165 (2026-07-26)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -732,7 +732,7 @@ const sess=(function(){ let ok=false,mem={}; try{ const t="__s__"; window.sessio
 })();
 const KEYS={ ian:"ianDashboard.v2", chris:"chrisDashboard.v2" };
 const SEED_VERSION=13;
-const APP_BUILD="v21 build 164 (2026-07-26)";
+const APP_BUILD="v21 build 165 (2026-07-26)";
 const WATER_GOAL=10; 
 const uid=()=>Math.random().toString(36).slice(2,9);
 function todayKey(d){ d=d||new Date(); const p=n=>String(n).padStart(2,"0"); return d.getFullYear()+"-"+p(d.getMonth()+1)+"-"+p(d.getDate()); }
@@ -2155,6 +2155,19 @@ function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]
       if(!P164.coachBullets||typeof P164.coachBullets!=="object") P164.coachBullets={};
       if(!P164.coachBullets["2026-07-26"]){ P164.coachBullets["2026-07-26"]=["You played open play against ADVANCED players today, exactly the reps you need. The beginner bracket could not test your finisher gap, your soft game under real pace, or your speed up defense, advanced competition does. Keep seeking this level, it is where the construct and finish problem gets exposed and where it gets fixed, far higher value than an easy draw."]; }
       state.meta.mig164_session0726=true; save(true);
+  } }catch(e){}
+  /* v21 build 165: 07-26 detailed self report, serve consistency co headline, dink up serve down, hands gap, idempotent */
+  try{ if(state.pickleball && !state.meta.mig165_selfreport0726){
+      var P165=state.pickleball;
+      if(Array.isArray(P165.skills)){ P165.skills.forEach(function(k){ if(!k) return; if(k.id==="dinks" && k.current===68) k.current=70; if(k.id==="serve" && k.current===58) k.current=55; }); }
+      if(!Array.isArray(P165.workOn)) P165.workOn=[];
+      var _oi=P165.workOn.indexOf("Groove ONE repeatable match serve you can land every time, deep to the backhand, then add pace. Stop bailing to a soft attackable serve"); if(_oi>=0) P165.workOn.splice(_oi,1);
+      if(P165.workOn.indexOf("Serve consistency, co priority one. Build a repeatable serve, clear the net by 3 to 4 feet and let topspin bring it down. Your net misses come from too flat an arc and the old tennis hit down instinct, contact is below the waist so swing low to high. Groove the ball drop and contact point, 40 to 50 serves to a deep zone at a 9 of 10 make rate before adding pace. In matches run TWO serves, a near 100 percent money serve as your default and the power topspin as a weapon.")<0){ var _ci=-1; for(var _i=0;_i<P165.workOn.length;_i++){ if(/Construct and FINISH/.test(P165.workOn[_i])){ _ci=_i; break; } } P165.workOn.splice(_ci>=0?_ci+1:0,0,"Serve consistency, co priority one. Build a repeatable serve, clear the net by 3 to 4 feet and let topspin bring it down. Your net misses come from too flat an arc and the old tennis hit down instinct, contact is below the waist so swing low to high. Groove the ball drop and contact point, 40 to 50 serves to a deep zone at a 9 of 10 make rate before adding pace. In matches run TWO serves, a near 100 percent money serve as your default and the power topspin as a weapon."); }
+      if(P165.workOn.indexOf("Faster hands and speed up defense. You are quicker than before but still get beaten by an advanced player's speed up at the net. Drill hands battles and blocking so you can survive and reset a real speed up, not just start your own.")<0){ P165.workOn.push("Faster hands and speed up defense. You are quicker than before but still get beaten by an advanced player's speed up at the net. Drill hands battles and blocking so you can survive and reset a real speed up, not just start your own."); }
+      if(!P165.coachBullets||typeof P165.coachBullets!=="object") P165.coachBullets={};
+      P165.coachBullets["2026-07-26"]=["New co priority number one, SERVE CONSISTENCY. Advanced games exposed it, you missed 4 to 5 serves over 2 games and your power topspin serve nets about a quarter of the time. The fix is arc and reps, clear the net by 3 to 4 feet and let topspin drop it, kill the tennis hit down instinct since contact is below the waist. Groove 40 to 50 serves to a deep zone at 9 of 10 before adding pace, then run two serves in matches, a money serve you almost never miss and the power one as a weapon.","Real wins today against advanced players, your DINK jumped especially under pressure, mostly all in, and reset drilling is paying off. Drives were solid. This is the level that matters, keep playing up. The finisher gap is still the other headline, construct the point then pull the trigger.","Two honest gaps from advanced play, your HANDS are quicker but still get beaten by a real speed up at the net, you could not handle the one strong speed up today, so drill hands battles and speed up defense. And DROPS still need placement work, both the drop and the reset have to land where you want them."];
+      if(Array.isArray(P165.sessions)){ var _ss=P165.sessions.filter(function(x){return x&&x.id==="pk-20260726-drillcomp";})[0]; if(_ss && String(_ss.note||"").indexOf("Detailed self report")<0){ _ss.note=String(_ss.note||"")+" Detailed self report: reset and dink drills first half, my DINK improved noticeably today especially under pressure, mostly all in, missed maybe one, reset practice helped. SERVE was not consistent in the advanced games, a real problem, I missed about 4 to 5 serves across 2 full games and my power topspin serve nets about 25 percent of the time, this is my number one fix, I want a consistent serve with some power and topspin, consistency first. DRIVES pretty good, only 1 or 2 netted. DROPS still need work, I struggle with perfect placement on drops and resets. HANDS quicker than before but still not quick enough at the net for advanced speed ups, one opponent had a strong speed up mostly at my partner and I could not have handled it."; } }
+      state.meta.mig165_selfreport0726=true; save(true);
   } }catch(e){}
   /* new drill: contact point drop reps, off court friendly. */
   try{ if(state.pickleball){ if(!Array.isArray(state.pickleball.drills)) state.pickleball.drills=[];
