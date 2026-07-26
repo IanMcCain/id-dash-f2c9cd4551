@@ -13,7 +13,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Ian">
 <title>Ian Dashboard</title>
-<meta name="build" content="v21 build 163 (2026-07-25)">
+<meta name="build" content="v21 build 164 (2026-07-26)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -732,7 +732,7 @@ const sess=(function(){ let ok=false,mem={}; try{ const t="__s__"; window.sessio
 })();
 const KEYS={ ian:"ianDashboard.v2", chris:"chrisDashboard.v2" };
 const SEED_VERSION=13;
-const APP_BUILD="v21 build 163 (2026-07-25)";
+const APP_BUILD="v21 build 164 (2026-07-26)";
 const WATER_GOAL=10; 
 const uid=()=>Math.random().toString(36).slice(2,9);
 function todayKey(d){ d=d||new Date(); const p=n=>String(n).padStart(2,"0"); return d.getFullYear()+"-"+p(d.getMonth()+1)+"-"+p(d.getDate()); }
@@ -2141,6 +2141,20 @@ function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]
       if(!state.events.some(function(e){return e&&e.id==="ev-20260815-barker-meeting";})){ state.events.push({id:"ev-20260815-barker-meeting",date:"2026-08-15",kind:"Real estate",title:"Barker renovation meeting, tentative, sometime in August, exact date to confirm"}); }
       if(!state.events.some(function(e){return e&&e.id==="ev-20260809-stack-decision";})){ state.events.push({id:"ev-20260809-stack-decision",date:"2026-08-09",kind:"Pickleball",title:"Decide on stacking with Dylan, test it in practice first"}); }
       state.meta.mig163_calendar=true; save(true);
+  } }catch(e){}
+  /* v21 build 164: log the 2026-07-26 Sunday session (drills plus advanced doubles), idempotent */
+  try{ if(state.pickleball && !state.meta.mig164_session0726){
+      var P164=state.pickleball;
+      if(!Array.isArray(P164.sessions)) P164.sessions=[];
+      if(!P164.sessions.some(function(s){ return s&&s.id==="pk-20260726-drillcomp"; })){
+        P164.sessions.push({id:"pk-20260726-drillcomp",date:"2026-07-26",kind:"Drills and doubles",venue:"",
+          duration:"2h 0m 42s",calories:1331,activeCalories:1142,avgHr:126,maxHr:176,effort:9,
+          result:"",score:"",opponent:"Open play vs advanced players",
+          note:"Sunday session, first half drills then open play doubles against ADVANCED players. 8:52 to 10:53 AM in Omaha, about two hours, all out effort. No detailed notes this time, but the second half was real competition against better players, exactly the level that pressure tests my finisher gap, my soft game under pace and my speed up defense, which the beginner tournament could not. Good reps, I want more of this level."});
+      }
+      if(!P164.coachBullets||typeof P164.coachBullets!=="object") P164.coachBullets={};
+      if(!P164.coachBullets["2026-07-26"]){ P164.coachBullets["2026-07-26"]=["You played open play against ADVANCED players today, exactly the reps you need. The beginner bracket could not test your finisher gap, your soft game under real pace, or your speed up defense, advanced competition does. Keep seeking this level, it is where the construct and finish problem gets exposed and where it gets fixed, far higher value than an easy draw."]; }
+      state.meta.mig164_session0726=true; save(true);
   } }catch(e){}
   /* new drill: contact point drop reps, off court friendly. */
   try{ if(state.pickleball){ if(!Array.isArray(state.pickleball.drills)) state.pickleball.drills=[];
