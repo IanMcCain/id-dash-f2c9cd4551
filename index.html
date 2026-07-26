@@ -13,7 +13,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Ian">
 <title>Ian Dashboard</title>
-<meta name="build" content="v21 build 165 (2026-07-26)">
+<meta name="build" content="v21 build 166 (2026-07-26)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -732,7 +732,7 @@ const sess=(function(){ let ok=false,mem={}; try{ const t="__s__"; window.sessio
 })();
 const KEYS={ ian:"ianDashboard.v2", chris:"chrisDashboard.v2" };
 const SEED_VERSION=13;
-const APP_BUILD="v21 build 165 (2026-07-26)";
+const APP_BUILD="v21 build 166 (2026-07-26)";
 const WATER_GOAL=10; 
 const uid=()=>Math.random().toString(36).slice(2,9);
 function todayKey(d){ d=d||new Date(); const p=n=>String(n).padStart(2,"0"); return d.getFullYear()+"-"+p(d.getMonth()+1)+"-"+p(d.getDate()); }
@@ -2169,6 +2169,12 @@ function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]
       if(Array.isArray(P165.sessions)){ var _ss=P165.sessions.filter(function(x){return x&&x.id==="pk-20260726-drillcomp";})[0]; if(_ss && String(_ss.note||"").indexOf("Detailed self report")<0){ _ss.note=String(_ss.note||"")+" Detailed self report: reset and dink drills first half, my DINK improved noticeably today especially under pressure, mostly all in, missed maybe one, reset practice helped. SERVE was not consistent in the advanced games, a real problem, I missed about 4 to 5 serves across 2 full games and my power topspin serve nets about 25 percent of the time, this is my number one fix, I want a consistent serve with some power and topspin, consistency first. DRIVES pretty good, only 1 or 2 netted. DROPS still need work, I struggle with perfect placement on drops and resets. HANDS quicker than before but still not quick enough at the net for advanced speed ups, one opponent had a strong speed up mostly at my partner and I could not have handled it."; } }
       state.meta.mig165_selfreport0726=true; save(true);
   } }catch(e){}
+  /* v21 build 166: 07-26 session was half drills half open play, relabel kind so the heatmap and lists read as both, idempotent */
+  try{ if(state.pickleball && !state.meta.mig166_kind0726){
+      var P166=state.pickleball;
+      if(Array.isArray(P166.sessions)){ var _s=P166.sessions.filter(function(x){return x&&x.id==="pk-20260726-drillcomp";})[0]; if(_s){ _s.kind="Drills and open play"; } }
+      state.meta.mig166_kind0726=true; save(true);
+  } }catch(e){}
   /* new drill: contact point drop reps, off court friendly. */
   try{ if(state.pickleball){ if(!Array.isArray(state.pickleball.drills)) state.pickleball.drills=[];
       if(!state.pickleball.drills.some(function(d){return d&&d.id==="pbk-contact-0719";})){ state.pickleball.drills.push({id:"pbk-contact-0719",text:"Contact point drops. 20 reps focused only on hitting the middle of the face out front, ball falling, never on the rise. Grade each rep by where their paddle would have been, not where it landed."}); save(true); } } }catch(e){}
@@ -3054,9 +3060,9 @@ function buildIanHome(v){ const workout=daySplit(DOW); const reTop=firstUndone(s
       var pb=state.pickleball||{};
       sect(v,"Training consistency","gym and pickleball, target 5 to 6 a week");
       var cardEl=card(); var b=cardEl._body;
-      var KCLS={"open play":"k-open","drills":"k-drill","league":"k-league","tournament":"k-tourn","play":"k-play"};
-      var pkDays={};
-      (pb.sessions||[]).forEach(function(s){ if(!s||!s.date) return; var kk=String(s.kind||"Play").toLowerCase(); pkDays[s.date]=KCLS[kk]||"k-play"; });
+      var KCLS={"open play":"k-open","drills":"k-drill","league":"k-league","tournament":"k-tourn","play":"k-play","drills and open play":"k-mix","open play and drills":"k-mix","drills and doubles":"k-mix"};
+      var pkDays={}; var pkLbl={};
+      (pb.sessions||[]).forEach(function(s){ if(!s||!s.date) return; var kk=String(s.kind||"Play").toLowerCase(); pkDays[s.date]=KCLS[kk]||"k-play"; pkLbl[s.date]=s.kind||"Play"; });
       var gyDays={}; var gl=(state.gym&&state.gym.logs)||{};
       Object.keys(gl).forEach(function(k){ var L=gl[k]; if(!L) return; var d=L.done||{}; var ticked=Object.keys(d).some(function(id){ return d[id]; }); var noted=(typeof L.note==="string" && L.note.trim().length>0); if(ticked||noted) gyDays[k]=true; });
       var today=new Date(); var tk=todayKey(today);
@@ -3080,7 +3086,7 @@ function buildIanHome(v){ const workout=daySplit(DOW); const reTop=firstUndone(s
           else if(hasGy){ cls+=" gymonly"; }
           if(k===tk) cls+=" today";
           var cell=el("div",cls);
-          cell.title=k+(kindCls?" pickleball":"")+(hasGy?" gym":"")+(future?" upcoming":"");
+          cell.title=k+(kindCls?" pickleball, "+(pkLbl[k]||"play"):"")+(hasGy?" gym":"")+(future?" upcoming":"");
           if(kindCls) n++;
           cells.appendChild(cell);
         }
@@ -3090,7 +3096,7 @@ function buildIanHome(v){ const workout=daySplit(DOW); const reTop=firstUndone(s
       }
       var key=el("div","hmkey");
       key.innerHTML='<span><i style="background:#2ee66f"></i>Open play</span>'+
-        '<span><i style="background:#38bdf8"></i>Drills</span>'+
+        '<span><i style="background:#38bdf8"></i>Drills</span>'+'<span><i style="background:linear-gradient(135deg,#38bdf8 0 50%,#2ee66f 50% 100%)"></i>Drills and play</span>'+
         '<span><i style="background:#a78bfa"></i>League</span>'+
         '<span><i style="background:#ffd60a"></i>Tournament</span>'+
         '<span><i style="background:var(--gy1)"></i>Gym</span>'+
@@ -4083,7 +4089,7 @@ section,.card,.sectlabel{scroll-margin-top:calc(var(--hh) + var(--sat) + 8px)}
 
 /* ===== v21 build 117: session kind colours, forward heatmap ===== */
 .hmc.k-open{background:#2ee66f}
-.hmc.k-drill{background:#38bdf8}
+.hmc.k-drill{background:#38bdf8} .hmc.k-mix{background:linear-gradient(135deg,#38bdf8 0 50%,#2ee66f 50% 100%)}
 .hmc.k-league{background:#a78bfa}
 .hmc.k-tourn{background:#ffd60a}
 .hmc.k-play{background:#2ee66f}
