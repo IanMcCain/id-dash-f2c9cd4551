@@ -13,7 +13,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Ian">
 <title>Ian Dashboard</title>
-<meta name="build" content="v21 build 162 (2026-07-25)">
+<meta name="build" content="v21 build 163 (2026-07-25)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -732,7 +732,7 @@ const sess=(function(){ let ok=false,mem={}; try{ const t="__s__"; window.sessio
 })();
 const KEYS={ ian:"ianDashboard.v2", chris:"chrisDashboard.v2" };
 const SEED_VERSION=13;
-const APP_BUILD="v21 build 162 (2026-07-25)";
+const APP_BUILD="v21 build 163 (2026-07-25)";
 const WATER_GOAL=10; 
 const uid=()=>Math.random().toString(36).slice(2,9);
 function todayKey(d){ d=d||new Date(); const p=n=>String(n).padStart(2,"0"); return d.getFullYear()+"-"+p(d.getMonth()+1)+"-"+p(d.getDate()); }
@@ -2132,6 +2132,15 @@ function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]
       P162.coachBullets["2026-07-25"]=["The tournament film confirms your number one ceiling, you are a WALL not a FINISHER. The soft game actually holds up, dinks, resets, drops and getting to the kitchen all work, but it is all NEUTRAL, near zero construction, no speed ups, no put aways. A 36 second neutral dink war in game one is the emblem, you wait for errors instead of building the point. At beginner level the wall wins, against a real team it will not.","Two corrections from the film, you DID dink a lot and dinked well so scrap the untested read, and your footwork is active and athletic, not passive. Resets are your standout, brief and true. The fix is offense, move them with dinks then attack the pop up, and on low transition balls sink your legs instead of bending at the waist.","On stamina, the film could NOT confirm you faded late, there was no clock or score to order the clips and your movement did not visibly collapse, so keep tournament conditioning as a general goal, not a proven in match collapse. Beginner bracket, do not overweight the day either way."];
       if(Array.isArray(P162.sessions)){ var _ts=P162.sessions.filter(function(x){return x&&x.id==="pk-20260725-tourney";})[0]; if(_ts && String(_ts.note||"").indexOf("Film study")<0){ _ts.note=String(_ts.note||"")+" Film study, 3 games real footage: the soft game is functional, dinks, resets, drops and kitchen positioning all work, but it is neutral, a wall not a finisher, near zero construction or put aways. Resets are the standout. Corrections to my self report, I dinked a lot and dinked well, and my footwork is active not passive. The film could not confirm I faded late, no clock to order the games. Full report in the Pickleball Video reports folder."; } }
       state.meta.mig162_film0725=true; save(true);
+  } }catch(e){}
+  /* v21 build 163: reconcile the in-app calendar, reschedule the pushed flyer walk, add the tentative Barker August meeting and the Aug 9 stacking decision, idempotent */
+  try{ if(state && !state.meta.mig163_calendar){
+      if(!Array.isArray(state.events)) state.events=[];
+      var _fw=state.events.filter(function(e){return e&&e.id==="ev-20260722-flyer-walk";})[0];
+      if(_fw){ _fw.date="2026-07-26"; _fw.title="Just sold flyers, Sugar Creek and Walnut Creek Hills (pushed to Sunday Jul 26 or later)"; }
+      if(!state.events.some(function(e){return e&&e.id==="ev-20260815-barker-meeting";})){ state.events.push({id:"ev-20260815-barker-meeting",date:"2026-08-15",kind:"Real estate",title:"Barker renovation meeting, tentative, sometime in August, exact date to confirm"}); }
+      if(!state.events.some(function(e){return e&&e.id==="ev-20260809-stack-decision";})){ state.events.push({id:"ev-20260809-stack-decision",date:"2026-08-09",kind:"Pickleball",title:"Decide on stacking with Dylan, test it in practice first"}); }
+      state.meta.mig163_calendar=true; save(true);
   } }catch(e){}
   /* new drill: contact point drop reps, off court friendly. */
   try{ if(state.pickleball){ if(!Array.isArray(state.pickleball.drills)) state.pickleball.drills=[];
