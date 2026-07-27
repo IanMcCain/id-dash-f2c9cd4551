@@ -13,7 +13,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Ian">
 <title>Ian Dashboard</title>
-<meta name="build" content="v21 build 170 (2026-07-26)">
+<meta name="build" content="v21 build 171 (2026-07-27)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -732,7 +732,7 @@ const sess=(function(){ let ok=false,mem={}; try{ const t="__s__"; window.sessio
 })();
 const KEYS={ ian:"ianDashboard.v2", chris:"chrisDashboard.v2" };
 const SEED_VERSION=13;
-const APP_BUILD="v21 build 170 (2026-07-26)";
+const APP_BUILD="v21 build 171 (2026-07-27)";
 const WATER_GOAL=10; 
 const uid=()=>Math.random().toString(36).slice(2,9);
 function todayKey(d){ d=d||new Date(); const p=n=>String(n).padStart(2,"0"); return d.getFullYear()+"-"+p(d.getMonth()+1)+"-"+p(d.getDate()); }
@@ -2182,6 +2182,100 @@ function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]
       P169.coachBullets["2026-07-26"]=["Today's focus, SERVE CONSISTENCY. Groove a repeatable serve, clear the net 3 to 4 feet, run a money serve plus a power serve.","Also live, construct and finish (stop walling), sharpen drop and reset placement, and faster hands against speed ups. Full detail in Deep Dive."];
       P169.workOn=["Construct and finish, stop walling. Dinks to move them, then attack the pop up.","Serve consistency first. Clear the net 3 to 4 ft, groove it, money serve plus a power serve, aim deep.","Drops and resets peak on your side and land in the kitchen.","Faster hands and speed up defense, handle an advanced player\u2019s hands.","Load low, contact out front, sink the legs on low transition balls.","Deep return to the backhand, and drill the backhand, your leakier wing.","Punch high dinks down, and train it under match pressure.","Tournament stamina, hold your level late into a long day."];
       state.meta.mig169_coachslim=true; save(true);
+  } }catch(e){}
+  /* v21 build 171 (2026-07-27): daily brief agent. Injects today's date keyed content (brief cards, future ideas,
+     easy wins, video, research, coach recommendation, coach bullets), nudges the skills radar from Ian's own 07.26
+     self report, swaps one machine drill for a solo serve drill he explicitly asked for, refreshes workOn and cues
+     with serve consistency at the top, adds the five pipeline closings that had no calendar event, and archives the
+     07.26 daily entry. Placed as the LAST writer of workOn and cues per the build 127 last-writer rule. Additive and
+     idempotent. Touches none of Ian's logged sessions, gym logs, deals, people, notes or checkmarks. */
+  try{ if(profile==="ian" && state.pickleball){
+      var T171="2026-07-27";
+      if(!state.briefing) state.briefing={forIan:{},done:{}};
+      if(!state.briefing.forIan) state.briefing.forIan={};
+      if(!state.briefing.forIan[T171]) state.briefing.forIan[T171]=[
+        {id:"brief-20260727-1",type:"Real estate",title:"Spicer closes in 7 days, appraisal still pending",note:"18734 Olive closes Aug 3 and the appraisal result has been open since before the trip. Call the lender this morning, it is the last unknown on that file. Source: app pipeline and todos, 07.26.",url:"",done:false},
+        {id:"brief-20260727-2",type:"Real estate",title:"Cynthia Willis goes live Thursday Aug 6, prep is a this week job",note:"Ten days out on 10218 Spyglass at 629,900. Photos, listing copy and the just listed push get built this week, not the night before. Source: app pipeline, 07.26.",url:"",done:false},
+        {id:"brief-20260727-3",type:"Pickleball",title:"Your serve is the number one fix, and you called it yourself",note:"Four to five missed serves in two games, topspin serve netting a quarter of the time. Consistency first, power after. Source: your 07.26 session note.",url:"https://www.youtube.com/watch?v=0ptN5X5nKzo",done:false},
+        {id:"brief-20260727-4",type:"Nutrition",title:"Vitamin D is the only thing you are missing",note:"Zero for five straight days while creatine, protein, magnesium and the multi are all near perfect. Fish oil is restocked. Put the D next to the multi. Source: app log 07.22 to 07.26.",url:"",done:false}
+      ];
+      if(!state.futureIdeas) state.futureIdeas={};
+      if(!state.futureIdeas[T171]) state.futureIdeas[T171]=[
+        {id:"fi-20260727-1",text:"Spicer closes Aug 3 and gives you a second Sugar Creek address. Put both sold homes on ONE flyer instead of two, same print cost, twice the proof, and it makes the Sugar Creek walk worth waiting a week for.",url:""},
+        {id:"fi-20260727-2",text:"Log your serve in rate in the session note for the next two weeks, just made over attempted. It is the only way to know whether the fix is landing instead of guessing, and it is the one number you fully control.",url:""},
+        {id:"fi-20260727-3",text:"Book one advanced open play block a week at Ace. You said you want more of that level and you are right, playing up is what moves a level, beating people you already beat does not.",url:""},
+        {id:"fi-20260727-4",text:"Five closings land between Aug 3 and Aug 20. Write the closing gift and review request once as a template now, while it is quiet, instead of five times in three weeks.",url:""}
+      ];
+      if(!state.quickWin) state.quickWin={picks:{},done:{}};
+      if(!state.quickWin.picks) state.quickWin.picks={};
+      if(!state.quickWin.picks[T171]) state.quickWin.picks[T171]=[
+        "Call the Spicer lender for the appraisal result. Closing is Aug 3, seven days out, and this has been pending for weeks.",
+        "Start today's session with sixty serves before anything else. Count how many land, that number is your baseline."
+      ];
+      if(!state.pickleball.videoRec) state.pickleball.videoRec={};
+      if(!state.pickleball.videoRec[T171]) state.pickleball.videoRec[T171]={title:"7 Easy Steps to a Powerful and Consistent Pickleball Serve",url:"https://www.youtube.com/watch?v=0ptN5X5nKzo",note:"Straight at the shot you named as your number one fix. Consistency first then power, which is exactly the order you asked for. Watch the contact point and the arc, your net misses come from swinging too flat."};
+      if(!state.pickleball.research) state.pickleball.research={};
+      if(!state.pickleball.research[T171]) state.pickleball.research[T171]={title:"What a 75 percent serve actually costs you",text:"You miss about a quarter of your power topspin serves. In an 11 point game you serve roughly 8 to 10 times, so a 25 percent miss rate hands over 2 to 3 points before a rally even starts, and it hands them the serve back every time. No shot in this sport is more under your control, there is no opponent, no pace and no pressure you did not create. That is why it is the fastest thing you can fix in 27 days, closed skills answer to reps in a way drops and hands do not. Get the in rate to 9 of 10 at medium pace, then add the topspin back one step at a time.",url:"https://www.youtube.com/watch?v=0ptN5X5nKzo",source:"Serve mechanics breakdown plus your own 07.26 session numbers, 07.27.2026"};
+      if(!state.pickleball.coachRec) state.pickleball.coachRec={};
+      if(!state.pickleball.coachRec[T171]) state.pickleball.coachRec[T171]={title:"Serve block first, every session this week",note:"Sixty serves before you touch anything else, counted, at a pace you can repeat. Nine of ten in before you put the topspin back on. You have 27 days to Aug 23 and this is the only shot on your list that no opponent gets a vote on, which makes it the fastest point you will gain."};
+      if(!state.pickleball.coachBullets||typeof state.pickleball.coachBullets!=="object") state.pickleball.coachBullets={};
+      if(!state.pickleball.coachBullets[T171]) state.pickleball.coachBullets[T171]=[
+        "Today's focus, SERVE. Sixty counted serves before anything else. Nine of ten in at medium pace before the topspin goes back on.",
+        "Why this one first, Ian. It is the only shot nobody else touches, so it fixes fastest. A 25 percent miss rate gives away 2 to 3 points a game before the rally starts.",
+        "Real win yesterday, your dinks under pressure jumped and you felt it. Bank that and keep playing up against advanced players, that level is where the rest gets exposed."
+      ];
+      if(Array.isArray(state.pickleball.skills)){ var _sk171=false; state.pickleball.skills.forEach(function(k){ if(!k) return;
+        if(k.id==="dinks" && k.current===70){ k.current=73; _sk171=true; }
+        if(k.id==="drives" && k.current===72){ k.current=74; _sk171=true; }
+        if(k.id==="hands" && k.current===60){ k.current=62; _sk171=true; }
+        if(k.id==="serve" && k.current===55){ k.current=52; _sk171=true; } });
+      }
+      if(!state.meta) state.meta={};
+      if(!state.meta.mig171_daily0727){
+        if(!Array.isArray(state.pickleball.drills)) state.pickleball.drills=[];
+        state.pickleball.drills=state.pickleball.drills.filter(function(d){ return !(d && d.id==="pkd-m-dink"); });
+        if(!state.pickleball.drills.some(function(d){return d&&d.id==="pkd-m-serve";})){
+          state.pickleball.drills.push({id:"pkd-m-serve",group:"machine",text:"Pressure serve ladder, solo. 10 serves to a deep target, if you miss two you restart the set. Get three clean sets before you add pace, then repeat the whole ladder with topspin."});
+        }
+        state.pickleball.workOn=[
+          "Serve consistency first. Count your in rate, nine of ten at medium pace before you add power.",
+          "Construct and finish, stop walling. Dinks to move them, then attack the pop up.",
+          "Drops and resets peak on your side and land in the kitchen.",
+          "Faster hands and speed up defense, handle an advanced player's hands.",
+          "Load low, contact out front, sink the legs on low transition balls.",
+          "Deep return to the backhand, and drill the backhand, your leakier wing.",
+          "Keep playing up. Advanced open play is what exposes the gaps and fixes them."
+        ];
+        state.pickleball.cues=[
+          "Count your serves in, nine of ten before you add pace",
+          "Arc the serve, three to four feet over the net, let topspin drop it",
+          "Serve deep, to the back third",
+          "Play to WIN, not to not lose, attack the first ball that sits up",
+          "Load low early, stay DOWN through contact",
+          "Meet it earlier and out front, not late and tall",
+          "Peak the drop on your side, falling as it crosses",
+          "Return deep and heavy, hit THROUGH it",
+          "Paddle up and in front before they swing, not after",
+          "Expect a speed up on every ball, then be the one who starts it"
+        ];
+        state.meta.mig171_daily0727=true;
+      }
+      if(!Array.isArray(state.events)) state.events=[];
+      [{id:"ev-20260803-spicer-close",date:"2026-08-03",title:"Chris Spicer closing, 18734 Olive"},
+       {id:"ev-20260811-miller-close",date:"2026-08-11",title:"Michelle Miller closing"},
+       {id:"ev-20260814-johnson-close",date:"2026-08-14",title:"Crystal Johnson closing"},
+       {id:"ev-20260819-bonks-close",date:"2026-08-19",title:"Bonks sell closing"},
+       {id:"ev-20260820-bonks-buy-close",date:"2026-08-20",title:"Bonks buy closing"}].forEach(function(e){
+        if(!state.events.some(function(x){return x&&x.id===e.id;})){ state.events.push({id:e.id,date:e.date,kind:"Real estate",title:e.title}); }
+      });
+      if(!state.context) state.context={dailyLog:{}};
+      if(!state.context.dailyLog) state.context.dailyLog={};
+      var _d26=state.context.dailyLog["2026-07-26"]||(state.context.dailyLog["2026-07-26"]={note:"",summary:""});
+      if(!_d26.claudeAction171){
+        _d26.claudeAction171="Read 07.27. PB line, focus drops, dinks and serves under pressure. Executed: swapped the machine dink drill for a solo pressure serve ladder, made serve consistency the top Work on item and this week's focus, and set the video and research picks to serve consistency. Drops and dinks under pressure already covered by pkd-p-droppress and the reset drills, not duplicated. GYM line, added his own bicep curls on a tired Sunday and did not finish. Read as context, no split change, Saturday stays the light day.";
+        _d26.dailyAgentActed171="2026-07-27";
+      }
+      save(true);
   } }catch(e){}
   /* new drill: contact point drop reps, off court friendly. */
   try{ if(state.pickleball){ if(!Array.isArray(state.pickleball.drills)) state.pickleball.drills=[];
