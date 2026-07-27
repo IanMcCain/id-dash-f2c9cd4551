@@ -13,7 +13,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Ian">
 <title>Ian Dashboard</title>
-<meta name="build" content="v21 build 167 (2026-07-26)">
+<meta name="build" content="v21 build 168 (2026-07-26)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -732,7 +732,7 @@ const sess=(function(){ let ok=false,mem={}; try{ const t="__s__"; window.sessio
 })();
 const KEYS={ ian:"ianDashboard.v2", chris:"chrisDashboard.v2" };
 const SEED_VERSION=13;
-const APP_BUILD="v21 build 167 (2026-07-26)";
+const APP_BUILD="v21 build 168 (2026-07-26)";
 const WATER_GOAL=10; 
 const uid=()=>Math.random().toString(36).slice(2,9);
 function todayKey(d){ d=d||new Date(); const p=n=>String(n).padStart(2,"0"); return d.getFullYear()+"-"+p(d.getMonth()+1)+"-"+p(d.getDate()); }
@@ -3150,9 +3150,29 @@ function pipelineSummaryPipe(parent){
   if(other.length) tiles.push(statTile({label:"Other",color:"cyan",value:other.length,unit:other.length===1?"deal":"deals",sub:"Just sold, follow up"}));
   summaryGrid(parent,tiles);
 }
+function closeSortKey(str){
+  if(!str) return Infinity;
+  var s=String(str).toLowerCase();
+  var M={jan:0,feb:1,mar:2,apr:3,may:4,jun:5,jul:6,aug:7,sep:8,oct:9,nov:10,dec:11};
+  var reMon="(jan(?:uary)?|feb(?:ruary)?|mar(?:ch)?|apr(?:il)?|may|jun(?:e)?|jul(?:y)?|aug(?:ust)?|sep(?:t(?:ember)?)?|oct(?:ober)?|nov(?:ember)?|dec(?:ember)?)";
+  function find(txt){
+    var re=new RegExp(reMon+"\\.?\\s*(\\d{1,2}(?!\\d))?(?:st|nd|rd|th)?(?:\\s*,?\\s*)?(\\d{4})?","i");
+    var m=txt.match(re); if(!m) return null;
+    var mon=M[m[1].slice(0,3)]; if(mon===undefined) return null;
+    return {mon:mon, day:m[2]?parseInt(m[2],10):null, yr:m[3]?parseInt(m[3],10):null};
+  }
+  var ci=s.search(/clos(e|ing)/);
+  var d=(ci>=0?find(s.slice(ci)):null) || find(s);
+  if(!d) return Infinity;
+  var yr=d.yr; if(!yr){ var ym=s.match(/(20\d{2})/); yr=ym?parseInt(ym[1],10):2026; }
+  var day=d.day;
+  if(!day){ if(/end of|late/.test(s)) day=27; else if(/mid/.test(s)) day=15; else if(/early|beginning/.test(s)) day=5; else day=15; }
+  if(day<1||day>31) day=15;
+  return yr*10000 + (d.mon+1)*100 + day;
+}
 function rePipelineGroupedPipe(parent){
   const deals=state.realEstate.deals||[]; const seen={};
-  RE_PIPE_GROUPS.forEach(function(g){ const stage=g[0],label=g[1]; const gd=deals.filter(d=>d.stage===stage); if(!gd.length)return; gd.forEach(d=>seen[d.id]=1); const vol=gd.reduce((a,d)=>a+dealVolume(d),0); collapseGroup(parent,stage,label,gd,vol); });
+  RE_PIPE_GROUPS.forEach(function(g){ const stage=g[0],label=g[1]; const gd=deals.filter(d=>d.stage===stage).map(function(x,ix){return {x:x,ix:ix,k:closeSortKey(x.close)};}).sort(function(a,b){ return a.k!==b.k ? a.k-b.k : a.ix-b.ix; }).map(function(o){return o.x;}); if(!gd.length)return; gd.forEach(d=>seen[d.id]=1); const vol=gd.reduce((a,d)=>a+dealVolume(d),0); collapseGroup(parent,stage,label,gd,vol); });
   const add=card(); add._body.appendChild(adder("New deal...",t=>{ state.realEstate.deals.push({id:uid(),title:t,stage:"Coming Soon",price:"",close:"",note:""}); reStageOpen["Coming Soon"]=true; save(); render(); })); parent.appendChild(add);
 }
 function reProspectsList(parent){
