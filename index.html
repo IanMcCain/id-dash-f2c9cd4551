@@ -13,7 +13,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Ian">
 <title>Ian Dashboard</title>
-<meta name="build" content="v21 build 175 (2026-07-27)">
+<meta name="build" content="v21 build 176 (2026-07-27)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -244,8 +244,8 @@ header{position:fixed;top:0;left:0;right:0;z-index:50;height:calc(var(--hh) + va
 main{position:relative;padding:calc(var(--hh) + var(--sat) + 10px) 14px calc(var(--bh) + var(--sab) + 26px);max-width:560px;margin:0 auto}
 .tabpage{display:none}
 @keyframes slidein{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
-#t-home:checked~main #p-home,#t-stats:checked~main #p-stats,#t-re:checked~main #p-re,#t-gym:checked~main #p-gym,#t-pickle:checked~main #p-pickle,#t-settings:checked~main #p-settings{display:block;animation:slidein .24s cubic-bezier(.22,.61,.36,1)}
-#t-home:checked~header .htt-home,#t-stats:checked~header .htt-stats,#t-re:checked~header .htt-re,#t-gym:checked~header .htt-gym,#t-pickle:checked~header .htt-pickle,#t-settings:checked~header .htt-settings{display:block}
+#t-home:checked~main #p-home,#t-stats:checked~main #p-stats,#t-re:checked~main #p-re,#t-gym:checked~main #p-gym,#t-pickle:checked~main #p-pickle,#t-solara:checked~main #p-solara,#t-settings:checked~main #p-settings{display:block;animation:slidein .24s cubic-bezier(.22,.61,.36,1)}
+#t-home:checked~header .htt-home,#t-stats:checked~header .htt-stats,#t-re:checked~header .htt-re,#t-gym:checked~header .htt-gym,#t-pickle:checked~header .htt-pickle,#t-solara:checked~header .htt-solara,#t-settings:checked~header .htt-settings{display:block}
 #t-home:checked~#t-home:checked~.tabbar label[for=t-home],#t-stats:checked~.tabbar label[for=t-stats],#t-re:checked~.tabbar label[for=t-re],#t-gym:checked~.tabbar label[for=t-gym]{color:var(--white)}
 #t-home:checked~#t-home:checked~.tabbar label[for=t-home] .ti,#t-stats:checked~.tabbar label[for=t-stats] .ti,#t-re:checked~.tabbar label[for=t-re] .ti,#t-gym:checked~.tabbar label[for=t-gym] .ti .ti{transform:translateY(-1px) scale(1.06)}
 #t-home:checked~#t-home:checked~.tabbar label[for=t-home]::before,#t-stats:checked~.tabbar label[for=t-stats]::before,#t-re:checked~.tabbar label[for=t-re]::before,#t-gym:checked~.tabbar label[for=t-gym]::before{content:"";position:absolute;top:0;width:24px;height:3px;border-radius:0 0 4px 4px;background:linear-gradient(90deg,var(--accent),var(--accent2))}
@@ -401,6 +401,7 @@ select.in{appearance:none;-webkit-appearance:none;background-image:linear-gradie
 #p-gym{--sec:var(--amber);--sec2:var(--amber2)}
 #p-pickle{--sec:var(--pk1,#2ee66f);--sec2:var(--pk2,#8af2ac)}
 #p-stats{--sec:var(--cyan);--sec2:var(--cyan2)}
+#p-solara{--sec:var(--violet,#9b6bff);--sec2:var(--violet,#9b6bff)}
 
 
 .a-blue{background:linear-gradient(90deg,var(--sec,var(--accent)),var(--sec2,var(--accent2)))}
@@ -687,12 +688,13 @@ header{ background:rgba(0,0,0,.82); border-bottom:1px solid rgba(255,255,255,.07
 <input class="tabctl" type="radio" name="tab" id="t-re">
 <input class="tabctl" type="radio" name="tab" id="t-gym">
 <input class="tabctl" type="radio" name="tab" id="t-pickle">
+<input class="tabctl" type="radio" name="tab" id="t-solara">
 <input class="tabctl" type="radio" name="tab" id="t-settings">
 
 <header>
   <div class="brand"><div class="logo">IM</div>
     <div class="htitle">
-      <span class="htt htt-home">Today</span><span class="htt htt-stats">Stats</span><span class="htt htt-re">Real Estate</span><span class="htt htt-gym">Gym</span><span class="htt htt-pickle">Pickleball</span><span class="htt htt-settings">Settings</span>
+      <span class="htt htt-home">Today</span><span class="htt htt-stats">Stats</span><span class="htt htt-re">Real Estate</span><span class="htt htt-gym">Gym</span><span class="htt htt-pickle">Pickleball</span><span class="htt htt-solara">Solara</span><span class="htt htt-settings">Settings</span>
     </div>
   </div>
   <label class="gear" for="t-settings" aria-label="Settings">⚙</label>
@@ -704,6 +706,7 @@ header{ background:rgba(0,0,0,.82); border-bottom:1px solid rgba(255,255,255,.07
   <section class="tabpage" id="p-re"></section>
   <section class="tabpage" id="p-gym"></section>
   <section class="tabpage" id="p-pickle"></section>
+  <section class="tabpage" id="p-solara"></section>
   <section class="tabpage" id="p-settings"></section>
 </main>
 
@@ -713,6 +716,7 @@ header{ background:rgba(0,0,0,.82); border-bottom:1px solid rgba(255,255,255,.07
   <label for="t-gym"><span class="ti">🏋️</span><span class="tl" id="tl-gym">Gym</span></label>
   <label for="t-stats"><span class="ti">📊</span><span class="tl" id="tl-stats">Stats</span></label>
   <label for="t-pickle"><span class="ti">🎾</span><span class="tl" id="tl-pickle">Pickle</span></label>
+  <label for="t-solara"><span class="ti">⚡</span><span class="tl" id="tl-solara">Solara</span></label>
 </nav>
 <div class="toast" id="toast"></div>
 
@@ -732,7 +736,7 @@ const sess=(function(){ let ok=false,mem={}; try{ const t="__s__"; window.sessio
 })();
 const KEYS={ ian:"ianDashboard.v2", chris:"chrisDashboard.v2" };
 const SEED_VERSION=13;
-const APP_BUILD="v21 build 175 (2026-07-27)";
+const APP_BUILD="v21 build 176 (2026-07-27)";
 const WATER_GOAL=10; 
 const uid=()=>Math.random().toString(36).slice(2,9);
 function todayKey(d){ d=d||new Date(); const p=n=>String(n).padStart(2,"0"); return d.getFullYear()+"-"+p(d.getMonth()+1)+"-"+p(d.getDate()); }
@@ -3108,60 +3112,26 @@ function closeUrgency(closeStr){
     if(du<0) return "overdue"; if(du>14) return ""; if(du===0) return "due today"; if(du===1) return "due tomorrow"; return "due in "+du+" days";
   }catch(e){ return ""; }
 }
-function buildCommandCenter(parent){
-  try{
-  var c=card("a-blue"); var b=c._body;
-  var items=briefItems(); var openBrief=items.filter(function(it){ return it&&!briefDone(it.id); });
-  var reTodos=(state.realEstate&&state.realEstate.todos)||[]; var openRe=reTodos.filter(function(t){ return t&&!t.done; });
-  var solHid=hidden("solara"); var sol=state.solara||{}; var solTasks=Array.isArray(sol.tasks)?sol.tasks:[]; var openSol=solTasks.filter(function(t){return t&&!t.done;});
-  var totalOpen=openBrief.length+openRe.length;
-  function trunc(x,n){ x=String(x||""); return x.length>n? x.slice(0,n-1).replace(/\s+\S*$/,"").trim()+"…" : x; }
-  function scrollTo(id){ try{ var e=document.getElementById(id); if(e)e.scrollIntoView({behavior:"smooth",block:"start"}); }catch(_){} }
-  var head=el("div","between"); head.appendChild(el("h3",null,"Command center"));
-  var pill=el("span","pill "+(totalOpen?"b":"g")); pill.textContent=totalOpen?(totalOpen+" to handle today"):"All clear"; head.appendChild(pill); b.appendChild(head);
-  var naLabel, naFn;
-  if(openBrief.length){ naLabel=openBrief[0].title||openBrief[0].note||"Handle today's brief"; naFn=function(){ scrollTo("brief-anchor"); }; }
-  else if(openRe.length){ naLabel=openRe[0].text||"Work the pipeline"; naFn=function(){ reView="pipeline"; try{render();}catch(_){} selectTab("re"); }; }
-  else { naLabel="Write today's one thing in Today's entry"; naFn=function(){ scrollTo("todays-entry"); }; }
-  var na=el("button","btn block"); na.style.cssText="text-align:left;margin-top:11px;white-space:normal;line-height:1.35";
-  var naK=el("div"); naK.style.cssText="font-size:10.5px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--gray2,#8a8a99);margin-bottom:3px"; naK.textContent="Next action"; na.appendChild(naK);
-  var naT=el("div"); naT.style.cssText="font-weight:800;font-size:15px;line-height:1.35"; naT.textContent=naLabel; na.appendChild(naT);
-  na.onclick=naFn; b.appendChild(na);
-  var grid=el("div"); grid.style.cssText="display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:11px";
-  function tile(color,label,big,small,fn){ var t=el("div"); t.style.cssText="background:var(--card2,#1c1c24);border-radius:12px;padding:11px 12px;cursor:pointer;min-width:0"; t.appendChild(el("div","small muted",label)); var bg=el("div"); bg.style.cssText="font-weight:800;font-size:17px;letter-spacing:-.02em;margin-top:3px;color:"+color; bg.textContent=big; t.appendChild(bg); var sm=el("div","small dim"); sm.style.cssText="margin-top:2px;line-height:1.3"; sm.textContent=small; t.appendChild(sm); t.onclick=fn; return t; }
-  var uc=((state.realEstate&&state.realEstate.deals)||[]).filter(function(d){return d&&d.stage==="Under Contract";});
-  var ucSorted=uc.slice().sort(function(a,z){ return closeSortKey(a.close)-closeSortKey(z.close); });
-  var near=ucSorted[0]; var ucSub=near?(closeUrgency(near.close)||trunc(near.title,18)):"none pending";
-  grid.appendChild(tile("var(--blue,#3b82f6)","Closings",uc.length+" pending",ucSub,function(){ reView="pipeline"; try{render();}catch(_){} selectTab("re"); }));
-  var pkw=((state.pickleball&&state.pickleball.sessions)||[]).filter(function(sx){ if(!sx||!sx.date)return false; var du=daysUntil(sx.date); return du>=-6&&du<=0; }).length;
-  var pkFoc="keep the reps up"; try{ var pb=state.pickleball||{}; if(pb.coachBullets&&pb.coachBullets[TODAY]&&pb.coachBullets[TODAY][0]) pkFoc=pb.coachBullets[TODAY][0]; else if(Array.isArray(pb.workOn)&&pb.workOn[0]) pkFoc=pb.workOn[0]; }catch(_){}
-  grid.appendChild(tile("var(--green,#2ed78a)","Pickleball",pkw+" of 6",trunc(pkFoc,28),function(){ selectTab("pickle"); }));
-  if(!solHid){ grid.appendChild(tile("var(--violet,#8b7cf6)","Solara",openSol.length+" open",trunc((sol.drop||"Drop 001")+", "+(sol.status||""),24),function(){ try{PK_OPEN["h_solara"]=true;}catch(_){} try{render();}catch(_){} scrollTo("solara-card"); })); }
-  var agSub= items.length? (openBrief.length?(openBrief.length+" to check"):"all checked"):"no brief yet";
-  grid.appendChild(tile("var(--orange,#ff9f43)","Agent",items.length+" cards",agSub,function(){ scrollTo("brief-anchor"); }));
-  b.appendChild(grid);
-  parent.appendChild(c);
-  }catch(e){ try{console.error("[dash] commandCenter",e);}catch(_){} }
-}
-function buildSolaraCard(parent){
-  if(hidden("solara")) return;
+/* build 176: Solara is now its own tab/page (moved off Home). Full workspace lives here. */
+function buildSolara(v){
   try{
   if(!state.solara||typeof state.solara!=="object") state.solara={drop:"Drop 001",status:"In progress",tasks:[],notes:""};
   var sd=state.solara; if(!Array.isArray(sd.tasks)) sd.tasks=[]; if(typeof sd.notes!=="string") sd.notes=""; if(typeof sd.drop!=="string"||!sd.drop) sd.drop="Drop 001"; if(typeof sd.status!=="string") sd.status="In progress";
   var _openS=sd.tasks.filter(function(t){return t&&!t.done;}).length;
-  pkCollapse(parent,"h_solara","Solara",(sd.drop||"Drop 001")+", "+(sd.status||"In progress")+(_openS?", "+_openS+" open":""),false,function(hh){
-    var c=card("a-teal"); var b=c._body;
-    var vs=el("a","btn ghost block"); vs.textContent="Visit the Solara site"; vs.setAttribute("href","https://solaramotorsports.com"); vs.setAttribute("target","_blank"); vs.setAttribute("rel","noopener"); vs.style.marginTop="0"; b.appendChild(vs);
-    var sr=el("div"); sr.style.marginTop="11px"; sr.appendChild(el("div","small muted","Status")); var si=el("input","in"); si.style.marginTop="5px"; si.value=sd.status||""; si.placeholder="In progress, Launched, Paused..."; si.oninput=function(){ sd.status=si.value; save(); }; sr.appendChild(si); b.appendChild(sr);
-    var tw=el("div"); tw.style.marginTop="12px"; tw.appendChild(el("div","small muted","Tasks"));
-    if(!sd.tasks.length){ var em=el("div","empty","No Solara tasks yet."); em.style.marginTop="6px"; tw.appendChild(em); }
-    sd.tasks.slice(0,5).forEach(function(t){ tw.appendChild(checkItem(t.done,t.text,null,function(){ t.done=!t.done; save(); render(); },function(){ var i=sd.tasks.indexOf(t); if(i>-1)sd.tasks.splice(i,1); save(); render(); })); });
-    if(sd.tasks.length>5){ tw.appendChild(el("div","small dim",(sd.tasks.length-5)+" more tasks")); }
-    tw.appendChild(adder("Add a Solara task...",function(txt){ sd.tasks.push({id:uid(),text:txt,done:false}); save(); render(); }));
-    b.appendChild(tw);
-    var nw=el("div"); nw.style.marginTop="12px"; nw.appendChild(el("div","small muted","Notes")); var nt=el("textarea","in"); nt.style.cssText="min-height:60px;margin-top:5px"; nt.value=sd.notes||""; nt.placeholder="Ideas, links, next steps for Solara..."; nt.oninput=function(){ sd.notes=nt.value; save(); }; nw.appendChild(nt); b.appendChild(nw);
-    hh.appendChild(c);
-  },"🛒","teal","solara-card");
+  sect(v,"Solara","your motorsports workspace");
+  var c=card("a-teal"); c.id="solara-card"; var b=c._body;
+  var top=el("div","between"); var dh=el("div"); dh.style.cssText="font-weight:800;font-size:18px;letter-spacing:-.02em"; dh.textContent=sd.drop||"Drop 001"; top.appendChild(dh); var pill=el("span","pill "+(_openS?"b":"g")); pill.textContent=_openS?(_openS+" open"):"all clear"; top.appendChild(pill); b.appendChild(top);
+  var vs=el("a","btn ghost block"); vs.textContent="Visit the Solara site"; vs.setAttribute("href","https://solaramotorsports.com"); vs.setAttribute("target","_blank"); vs.setAttribute("rel","noopener"); vs.style.marginTop="11px"; b.appendChild(vs);
+  var dr=el("div"); dr.style.marginTop="12px"; dr.appendChild(el("div","small muted","Drop")); var di=el("input","in"); di.style.marginTop="5px"; di.value=sd.drop||""; di.placeholder="Drop 001, Launch capsule..."; di.oninput=function(){ sd.drop=di.value; save(); }; dr.appendChild(di); b.appendChild(dr);
+  var sr=el("div"); sr.style.marginTop="12px"; sr.appendChild(el("div","small muted","Status")); var si=el("input","in"); si.style.marginTop="5px"; si.value=sd.status||""; si.placeholder="In progress, Launched, Paused..."; si.oninput=function(){ sd.status=si.value; save(); }; sr.appendChild(si); b.appendChild(sr);
+  var tw=el("div"); tw.style.marginTop="12px"; tw.appendChild(el("div","small muted","Tasks"));
+  if(!sd.tasks.length){ var em=el("div","empty","No Solara tasks yet."); em.style.marginTop="6px"; tw.appendChild(em); }
+  sd.tasks.slice(0,5).forEach(function(t){ tw.appendChild(checkItem(t.done,t.text,null,function(){ t.done=!t.done; save(); render(); },function(){ var i=sd.tasks.indexOf(t); if(i>-1)sd.tasks.splice(i,1); save(); render(); })); });
+  if(sd.tasks.length>5){ tw.appendChild(el("div","small dim",(sd.tasks.length-5)+" more tasks")); }
+  tw.appendChild(adder("Add a Solara task...",function(txt){ sd.tasks.push({id:uid(),text:txt,done:false}); save(); render(); }));
+  b.appendChild(tw);
+  var nw=el("div"); nw.style.marginTop="12px"; nw.appendChild(el("div","small muted","Notes")); var nt=el("textarea","in"); nt.style.cssText="min-height:72px;margin-top:5px"; nt.value=sd.notes||""; nt.placeholder="Ideas, links, next steps for Solara..."; nt.oninput=function(){ sd.notes=nt.value; save(); }; nw.appendChild(nt); b.appendChild(nw);
+  v.appendChild(c);
   }catch(e){ try{console.error("[dash] solara",e);}catch(_){} }
 }
 function buildFutureIdeasHome(parent){
@@ -3183,8 +3153,7 @@ function buildIanHome(v){ const workout=daySplit(DOW); const reTop=firstUndone(s
   if(state.meta&&state.meta.lastReset===TODAY){ const rn=el("div","small"); rn.style.color="var(--sec2,var(--accent2))"; rn.style.fontWeight="700"; rn.style.marginTop="9px"; rn.textContent="New day. Yesterday's log was archived and daily items reset."; b.appendChild(rn); }
   v.appendChild(hero);
   if(!(state.settings&&state.settings.bannerDismissed)){ const bn=el("div","banner"); bn.appendChild(el("div",null,"For full interactivity and saving, open this file in Safari. An in app preview can limit some taps.")); const x=el("button","bx","×"); x.onclick=()=>{ if(!state.settings)state.settings={}; state.settings.bannerDismissed=true; save(); render(); }; bn.appendChild(x); v.appendChild(bn); }
-  safe(v,function(){ buildCommandCenter(v); },"Command center");
-  /* quick actions */
+  /* quick actions (build 176: Command Center removed, Quick actions sits at the top of Home) */
   safe(v,function(){
     var qc=card(); var q=el("div","qa");
     function qb(cls,icon,label,fn){ var b=el("button","qab "+cls); var i=el("div","ic"); i.textContent=icon; b.appendChild(i); var s=el("div"); s.textContent=label; b.appendChild(s); b.onclick=fn; return b; }
@@ -3292,7 +3261,7 @@ function buildIanHome(v){ const workout=daySplit(DOW); const reTop=firstUndone(s
       b.appendChild(key);
       hh.appendChild(cardEl);
     },"📊","green");
-    safe(v,function(){ buildSolaraCard(v); },"Solara"); safe(v,function(){ buildFutureIdeasHome(v); },"Future ideas"); pkCollapse(v,"h_wins","Easy wins","two small wins today",false,function(hh){ quickWinCard(hh); },"✅","green");
+    safe(v,function(){ buildFutureIdeasHome(v); },"Future ideas"); pkCollapse(v,"h_wins","Easy wins","two small wins today",false,function(hh){ quickWinCard(hh); },"✅","green");
   pkCollapse(v,"h_water","Water","aim 10 cups a day",false,function(hh){ waterCard(hh); },"💧","cyan");
   pkCollapse(v,"h_sphere","Stay in touch","your sphere",false,function(hh){ homeSphereNudge(hh); },"🤝","orange");
   pkCollapse(v,"h_prog","Progress and upcoming","where you stand",false,function(hh){ reGoalsCard(hh); homeUpcomingCard(hh); },"📈","blue");
@@ -3989,7 +3958,7 @@ function buildSettings(v){
 }
 
 /* ===== render + profile chrome ===== */
-const IAN_PAGES={ "p-home":buildIanHome,"p-stats":buildStats,"p-re":buildIanRe,"p-gym":buildGym,"p-pickle":buildPickle,"p-settings":buildSettings };
+const IAN_PAGES={ "p-home":buildIanHome,"p-stats":buildStats,"p-re":buildIanRe,"p-gym":buildGym,"p-pickle":buildPickle,"p-solara":buildSolara,"p-settings":buildSettings };
 function applyProfileChrome(){
   const T = {home:"Today",stats:"Stats",re:"Real Estate",gym:"Gym",more:"More",pickle:"Pickleball",settings:"Settings"};
   const TL = {home:"Today",stats:"Stats",re:"Real Est",gym:"Gym",more:"More"};
@@ -3997,7 +3966,10 @@ function applyProfileChrome(){
   try{ for(const k in TL){ const e=document.getElementById("tl-"+k); if(e)e.textContent=TL[k]; } }catch(e){}
 }
 function buildPage(id,fn){ const host=document.getElementById(id); if(!host) return; try{ const wrap=el("div"); fn(wrap); host.innerHTML=""; while(wrap.firstChild) host.appendChild(wrap.firstChild); }catch(e){ try{console.error("[dash] page",id,e);}catch(_){} host.innerHTML=""; const f=el("div","fatal"); f.appendChild(el("h2",null,"Section hiccup")); f.appendChild(el("div","small muted","Your data is safe.")); host.appendChild(f); } }
-function render(){ applyProfileChrome(); const set=IAN_PAGES; for(const id in set) buildPage(id,set[id]); refocus(); animateVisible(); }
+/* build 176: the Settings Solara toggle now shows/hides the Solara TAB. When off, hide the nav label and
+   bounce off the page if it happens to be active. */
+function applySolaraTab(){ try{ var off=hidden("solara"); document.body.classList.toggle("solara-off",off); if(off){ var r=document.getElementById("t-solara"); if(r&&r.checked){ selectTab("home"); } } }catch(e){} }
+function render(){ applyProfileChrome(); const set=IAN_PAGES; for(const id in set) buildPage(id,set[id]); applySolaraTab(); refocus(); animateVisible(); }
 function refocus(){ if(!pendingFocus) return; const ph=pendingFocus; pendingFocus=null; try{ const inp=document.querySelector('.tabpage input[data-add="'+ph.replace(/"/g,'\\"')+'"]'); if(inp) inp.focus(); }catch(e){} }
 function selectTab(which){ const r=document.getElementById("t-"+which); if(r){ r.checked=true; } try{ window.scrollTo(0,0); }catch(e){} animateVisible(); }
 
@@ -4106,9 +4078,10 @@ try{ if(document.readyState==="loading") document.addEventListener("DOMContentLo
     tools:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14.6 6.4a3.5 3.5 0 0 1-4.6 4.6L5 16l3 3 5-4.9a3.5 3.5 0 0 0 4.6-4.6l-2 2-2-2z"/></svg>',
     ball:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M5 9.5c4 .5 9 .5 14 0M5 14.5c5-.5 10-.5 14 0"/></svg>',
     target:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="1"/></svg>',
-    people:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="8.5" cy="9" r="3"/><circle cx="16.5" cy="9.5" r="2.4"/><path d="M3.5 19a5 5 0 0 1 10 0"/><path d="M14.5 19a4.2 4.2 0 0 1 6-3.8"/></svg>'
+    people:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="8.5" cy="9" r="3"/><circle cx="16.5" cy="9.5" r="2.4"/><path d="M3.5 19a5 5 0 0 1 10 0"/><path d="M14.5 19a4.2 4.2 0 0 1 6-3.8"/></svg>',
+    bolt:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 4.5 13.5H11l-1 8.5L19.5 10H13z"/></svg>'
   };
-  var EM={'🏠':'home','🏡':'building','🏋':'dumbbell','📊':'chart','🧭':'more','🌱':'sprout','✅':'check','🧰':'tools','🎾':'ball','🎯':'target','🤝':'people','👥':'people'};
+  var EM={'🏠':'home','🏡':'building','🏋':'dumbbell','📊':'chart','🧭':'more','🌱':'sprout','✅':'check','🧰':'tools','🎾':'ball','🎯':'target','🤝':'people','👥':'people','⚡':'bolt'};
   function baseEmoji(t){ if(!t) return ''; t=t.replace(/[️‍]/g,'').trim(); // strip VS16/ZWJ
     for(var k in EM){ if(t.indexOf(k)===0) return k; } return ''; }
   function swapIcons(){
@@ -4153,6 +4126,13 @@ try{ if(document.readyState==="loading") document.addEventListener("DOMContentLo
 #t-pickle:checked~.tabbar label[for=t-pickle] .ti{transform:translateY(-1px) scale(1.06)}
 #t-pickle:checked~.tabbar label[for=t-pickle] .ti svg{color:var(--accent)}
 #t-pickle:checked~.tabbar label[for=t-pickle]::before{content:"";position:absolute;top:0;width:24px;height:3px;border-radius:0 0 4px 4px;background:linear-gradient(90deg,var(--pk1),var(--pk2))}
+/* Solara promoted to a top-level tab (build 176). Active state uses the Solara violet. */
+#t-solara:checked~.tabbar label[for=t-solara],#t-solara:checked~.tabbar label[for=t-solara] .tl{color:var(--violet,#9b6bff)}
+#t-solara:checked~.tabbar label[for=t-solara] .ti{transform:translateY(-1px) scale(1.06)}
+#t-solara:checked~.tabbar label[for=t-solara] .ti svg{color:var(--violet,#9b6bff)}
+#t-solara:checked~.tabbar label[for=t-solara]::before{content:"";position:absolute;top:0;width:24px;height:3px;border-radius:0 0 4px 4px;background:linear-gradient(90deg,var(--violet,#9b6bff),#c9a8ff)}
+/* hide the Solara tab when Ian turns it off in Settings */
+body.solara-off .tabbar label[for=t-solara]{display:none}
 /* six tabs fit cleanly on a phone */
 .tabbar label .tl{font-size:10px;letter-spacing:-.02em}
 .tabbar label .ti svg{width:23px;height:23px}
