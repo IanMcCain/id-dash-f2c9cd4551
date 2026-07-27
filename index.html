@@ -13,7 +13,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Ian">
 <title>Ian Dashboard</title>
-<meta name="build" content="v21 build 168 (2026-07-26)">
+<meta name="build" content="v21 build 169 (2026-07-26)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -732,7 +732,7 @@ const sess=(function(){ let ok=false,mem={}; try{ const t="__s__"; window.sessio
 })();
 const KEYS={ ian:"ianDashboard.v2", chris:"chrisDashboard.v2" };
 const SEED_VERSION=13;
-const APP_BUILD="v21 build 168 (2026-07-26)";
+const APP_BUILD="v21 build 169 (2026-07-26)";
 const WATER_GOAL=10; 
 const uid=()=>Math.random().toString(36).slice(2,9);
 function todayKey(d){ d=d||new Date(); const p=n=>String(n).padStart(2,"0"); return d.getFullYear()+"-"+p(d.getMonth()+1)+"-"+p(d.getDate()); }
@@ -2175,6 +2175,14 @@ function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]
       if(Array.isArray(P166.sessions)){ var _s=P166.sessions.filter(function(x){return x&&x.id==="pk-20260726-drillcomp";})[0]; if(_s){ _s.kind="Drills and open play"; } }
       state.meta.mig166_kind0726=true; save(true);
   } }catch(e){}
+  /* v21 build 169: simplify coaching, one focus per day (bl0), tighten coachBullets and trim workOn to short items, keep substance */
+  try{ if(state.pickleball && !state.meta.mig169_coachslim){
+      var P169=state.pickleball;
+      if(!P169.coachBullets||typeof P169.coachBullets!=="object") P169.coachBullets={};
+      P169.coachBullets["2026-07-26"]=["Today's focus, SERVE CONSISTENCY. Groove a repeatable serve, clear the net 3 to 4 feet, run a money serve plus a power serve.","Also live, construct and finish (stop walling), sharpen drop and reset placement, and faster hands against speed ups. Full detail in Deep Dive."];
+      P169.workOn=["Construct and finish, stop walling. Dinks to move them, then attack the pop up.","Serve consistency first. Clear the net 3 to 4 ft, groove it, money serve plus a power serve, aim deep.","Drops and resets peak on your side and land in the kitchen.","Faster hands and speed up defense, handle an advanced player\u2019s hands.","Load low, contact out front, sink the legs on low transition balls.","Deep return to the backhand, and drill the backhand, your leakier wing.","Punch high dinks down, and train it under match pressure.","Tournament stamina, hold your level late into a long day."];
+      state.meta.mig169_coachslim=true; save(true);
+  } }catch(e){}
   /* new drill: contact point drop reps, off court friendly. */
   try{ if(state.pickleball){ if(!Array.isArray(state.pickleball.drills)) state.pickleball.drills=[];
       if(!state.pickleball.drills.some(function(d){return d&&d.id==="pbk-contact-0719";})){ state.pickleball.drills.push({id:"pbk-contact-0719",text:"Contact point drops. 20 reps focused only on hitting the middle of the face out front, ball falling, never on the rise. Grade each rep by where their paddle would have been, not where it landed."}); save(true); } } }catch(e){}
@@ -2806,7 +2814,7 @@ function launchCard(parent,icon,title,sub,tabId){ const c=card(); const b=el("la
 /* ===== v18 Apple style tiles (stat, fraction, grid) ===== */
 function statTile(opts){ const c=el("div","card"+(opts.tab?" tap":"")); const b=el("div","cbody"); c.appendChild(b); const top=el("div","between"); const lab=el("div","st-label"); if(opts.color){ lab.appendChild(el("span","st-ico c-"+opts.color)); } lab.appendChild(document.createTextNode(opts.label)); top.appendChild(lab); if(opts.tab){ top.appendChild(el("div","chev","›")); c.onclick=()=>selectTab(opts.tab); } b.appendChild(top); const num=el("div","st-num"+(opts.color?" c-"+opts.color:"")); const n=el("span","n"); n.textContent=opts.value; num.appendChild(n); if(opts.unit){ const u=el("span","u"); u.textContent=opts.unit; num.appendChild(u); } b.appendChild(num); if(opts.sub){ b.appendChild(el("div","st-sub",opts.sub)); } if(opts.spark&&opts.spark.length){ const ch=barChart(opts.spark.map(p=>({label:"",pct:p})),"",opts.sparkH||52); ch.style.marginTop="10px"; ch.style.marginBottom="4px"; b.appendChild(ch); } return c; }
 function fracTile(opts){ const col=opts.color||"blue"; const c=el("div","card"+(opts.tab?" tap":"")); const b=el("div","cbody"); c.appendChild(b); const top=el("div","between"); const lab=el("div","st-label"); lab.appendChild(el("span","st-ico c-"+col)); lab.appendChild(document.createTextNode(opts.label)); top.appendChild(lab); if(opts.tab){ top.appendChild(el("div","chev","›")); c.onclick=()=>selectTab(opts.tab); } b.appendChild(top); const num=el("div","st-num c-"+col); const n=el("span","n"); n.textContent=opts.done+"/"+opts.goal; num.appendChild(n); if(opts.unit){ const u=el("span","u"); u.textContent=opts.unit; num.appendChild(u); } b.appendChild(num); const pbar=el("div","pbar"); const pi=el("i"); pbar.appendChild(pi); try{ pi.style.background="var(--"+col+")"; }catch(e){} const frac=opts.goal?Math.min(1,(opts.done||0)/opts.goal):0; setTimeout(()=>{try{pi.style.width=(frac*100)+"%";}catch(e){}},40); b.appendChild(pbar); return c; }
-function summaryGrid(parent,tiles){ const t=tiles.filter(x=>x); const g=el("div","grid2 sgrid"); if(t.length===3){ g.className="grid2 sgrid sg3"; g.style.gridTemplateColumns="repeat(3,minmax(0,1fr))"; } else if(t.length===1){ g.style.gridTemplateColumns="1fr"; } t.forEach(x=>g.appendChild(x)); parent.appendChild(g); }
+function summaryGrid(parent,tiles){ const t=tiles.filter(x=>x); const g=el("div","grid2 sgrid"); if(t.length===3){ g.className="grid2 sgrid sg3"; g.style.gridTemplateColumns="repeat(3,minmax(0,1fr))"; } else if(t.length===1){ g.style.gridTemplateColumns="1fr"; } t.forEach(x=>g.appendChild(x)); g.style.marginBottom="14px"; parent.appendChild(g); }
 function weekWorkoutSpark(){ const out=[]; for(let i=6;i>=0;i--){ const d=new Date(); d.setDate(d.getDate()-i); const k=todayKey(d); const dow=d.getDay(); const day=daySplit(dow); const log=(state.gym&&state.gym.logs&&state.gym.logs[k])||{done:{}}; const tot=day.exercises.length||1; const done=day.exercises.filter(e=>log.done&&log.done[e.id]).length; out.push(Math.round(done/tot*100)); } return out; }
 function workoutsThisWeek(){ let c=0; for(let i=0;i<7;i++){ const d=new Date(); d.setDate(d.getDate()-i); const k=todayKey(d); const log=(state.gym&&state.gym.logs&&state.gym.logs[k]); if(log&&log.done&&Object.keys(log.done).length) c++; } return c; }
 function ringCard(done,total,title,subtxt,small,accClass){ const c=card(accClass); const rw=el("div","ringwrap"); const ring=el("div","ring"+(small?" sm":"")); const frac=total?done/total:0; const R=38,C=2*Math.PI*R; const sz=small?66:84; const sw=small?9:8;
@@ -3554,10 +3562,10 @@ function pkCollapse(parent,key,title,sub,openDefault,build){
   if(sub){ var s2=el("div","small dim"); s2.style.marginTop="2px"; s2.textContent=sub; left.appendChild(s2); }
   row.appendChild(left);
   var chev=el("div"); chev.textContent="▾"; chev.style.cssText="font-size:16px;color:var(--sec2,#8af2ac);transition:transform .15s ease;transform:rotate("+(open?"180deg":"0deg")+")";
-  row.appendChild(chev); hb.appendChild(row); parent.appendChild(hc);
+  row.appendChild(chev); hb.appendChild(row); var _wrap=el("div"); _wrap.style.marginBottom="13px"; _wrap.appendChild(hc);
   var body=el("div"); body.style.display=open?"block":"none"; body.style.marginTop="2px";
   try{ build(body); }catch(e){ try{console.error("[dash] pkCollapse",key,e);}catch(_){} var er=card(); er._body.appendChild(el("div","small dim","This section could not load.")); body.appendChild(er); }
-  parent.appendChild(body);
+  _wrap.appendChild(body); parent.appendChild(_wrap);
   hc.onclick=function(){ var willOpen=(body.style.display==="none"); body.style.display=willOpen?"block":"none"; chev.style.transform="rotate("+(willOpen?"180deg":"0deg")+")"; PK_OPEN[key]=willOpen; };
 }
 function pkSessionItem(parent,s){
@@ -3623,6 +3631,7 @@ function buildPickle(v){ var pb=state.pickleball||(state.pickleball={});
 
 
     /* v21 build 152: pickleball page CLEANED and reordered coaching first. Removed and archived, the DUPR mega chart, the 7 day minutes chart, the two countdown tiles, the moved Talk to your coach card, the duplicate goals, the hardcoded drill list, and the paddle block (paddle now in Settings). */
+  safe(v,function(){ buildSkillsRadar(v); },"Skills radar");
   pkCollapse(v,"pk_coach","Coach","your plan, focus, and video",true,function(c){
     (function(){ var du=daysUntil("2026-08-23"); var rc=card(); var t=el("div","small"); t.style.cssText="line-height:1.5;color:var(--gray);font-weight:600"; t.textContent="First tournament, August 23"+(du>=0?", in "+du+" day"+(du===1?"":"s"):""); rc._body.appendChild(t); c.appendChild(rc); })();
 
@@ -3638,16 +3647,23 @@ function buildPickle(v){ var pb=state.pickleball||(state.pickleball={});
       }
       if(!bl){ var src=(pb.coachPlan&&pb.coachPlan.paras)||[]; bl=src.slice(0,4).map(function(x){ var s=String(x||"").split(/(?<=[.!?])\s+/); return (s[0]||"").trim(); }).filter(Boolean); }
       if(!bl.length) return;
-      sect(c,"Your coach","today, quick");
+      var _prep=(function(){ try{ var evs=(state.events||[]); for(var _i=0;_i<evs.length;_i++){ var e=evs[_i]; if(!e||!e.date) continue; var du=daysUntil(e.date); var tx=((e.kind||"")+" "+(e.title||"")).toLowerCase(); if(du>=0&&du<=2 && /(tournament|fall cup|tryout|apc|doubles)/.test(tx)) return true; } }catch(e){} return false; })();
+      sect(c,"Your coach", _prep?"prep day, full plan":"today, one focus");
       var cc=card(); var b=cc._body; b.appendChild(el("span","pill s","Coach"));
+      function _addLine(host,line,idx){ var r=el("div"); r.style.cssText="display:flex;gap:9px;align-items:flex-start"+(idx>0?";margin-top:9px":""); var dot=el("span"); dot.style.cssText="color:var(--sec,var(--accent));font-weight:900;line-height:1.5;flex:0 0 auto"; dot.textContent="\u2022"; var s=el("div","small"); s.style.cssText="line-height:1.5;color:var(--gray)"; s.textContent=String(line||"").trim(); r.appendChild(dot); r.appendChild(s); host.appendChild(r); }
       var ul=el("div"); ul.style.marginTop="10px";
-      bl.slice(0,5).forEach(function(line,i){
-        var r=el("div"); r.style.cssText="display:flex;gap:9px;align-items:flex-start"+(i>0?";margin-top:9px":"");
-        var dot=el("span"); dot.style.cssText="color:var(--sec,var(--accent));font-weight:900;line-height:1.5;flex:0 0 auto"; dot.textContent="\u2022";
-        var s=el("div","small"); s.style.cssText="line-height:1.5;color:var(--gray)"; s.textContent=String(line||"").trim();
-        r.appendChild(dot); r.appendChild(s); ul.appendChild(r);
-      });
-      b.appendChild(ul);
+      if(_prep){ bl.slice(0,5).forEach(function(line,i){ _addLine(ul,line,i); }); b.appendChild(ul); }
+      else {
+        _addLine(ul,bl[0],0); b.appendChild(ul);
+        if(bl.length>1){
+          var _more=el("div"); _more.style.display="none"; _more.style.marginTop="9px";
+          bl.slice(1,5).forEach(function(line,i){ _addLine(_more,line,i); });
+          b.appendChild(_more);
+          var _mb=el("button","btn ghost sm block","Show more"); _mb.style.marginTop="10px";
+          _mb.onclick=function(){ var on=_more.style.display==="none"; _more.style.display=on?"block":"none"; _mb.textContent=on?"Show less":"Show more"; };
+          b.appendChild(_mb);
+        }
+      }
       var go=el("button","btn ghost block","Full plan and research in Deep Dive"); go.style.marginTop="12px";
       go.onclick=function(){ try{ window.open("deep-dive.html","_blank","noopener"); }catch(e){ location.href="deep-dive.html"; } };
       b.appendChild(go);
@@ -3662,7 +3678,6 @@ function buildPickle(v){ var pb=state.pickleball||(state.pickleball={});
     safe(c,function(){ var st=pkStats(); var ins=pkInsights(st); if(!ins.length) return; sect(c,"What your coach sees","from your logged data"); var ic=card(); ins.forEach(function(line,i){ var r=el("div","small"); r.style.cssText="line-height:1.5;color:var(--gray)"+(i>0?";margin-top:6px":""); r.textContent=line; ic._body.appendChild(r); }); c.appendChild(ic); },"Pickle insights");
     
   });
-  safe(v,function(){ buildSkillsRadar(v); },"Skills radar");
   pkCollapse(v,"pk_active","Work on and cues","what to drill and remember while playing",true,function(ap){
     safe(ap,function(){ var wo=(pb.workOn&&pb.workOn.length)?pb.workOn.slice(0,4):[]; sect(ap,"Work on","top 4"); var cc=card(); if(!wo.length){ cc._body.appendChild(el("div","empty","Your coach will fill this in from your sessions.")); } else { wo.forEach(function(line,i){ var r=el("div","small"); r.style.cssText="line-height:1.5;color:var(--white);font-weight:600"+(i>0?";margin-top:9px":""); var dot=el("span"); dot.style.cssText="color:var(--pk1);font-weight:800;margin-right:8px"; dot.textContent="\u2022"; r.appendChild(dot); r.appendChild(document.createTextNode(line)); cc._body.appendChild(r); }); } ap.appendChild(cc); },"Active workon");
     
