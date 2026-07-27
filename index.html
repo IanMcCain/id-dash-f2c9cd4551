@@ -13,7 +13,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Ian">
 <title>Ian Dashboard</title>
-<meta name="build" content="v21 build 177 (2026-07-27)">
+<meta name="build" content="v21 build 178 (2026-07-27)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -736,7 +736,7 @@ const sess=(function(){ let ok=false,mem={}; try{ const t="__s__"; window.sessio
 })();
 const KEYS={ ian:"ianDashboard.v2", chris:"chrisDashboard.v2" };
 const SEED_VERSION=13;
-const APP_BUILD="v21 build 177 (2026-07-27)";
+const APP_BUILD="v21 build 178 (2026-07-27)";
 const WATER_GOAL=10; 
 const uid=()=>Math.random().toString(36).slice(2,9);
 function todayKey(d){ d=d||new Date(); const p=n=>String(n).padStart(2,"0"); return d.getFullYear()+"-"+p(d.getMonth()+1)+"-"+p(d.getDate()); }
@@ -2866,6 +2866,55 @@ function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]
   /* v21 build 51: add the Chad Troester just listed launch to-do for 2026-07-09, idempotent and add only,
      so it reaches Ian's device without a SEED_VERSION bump. Adds only if the id is not already present. */
   try{ if(profile==="ian" && state.realEstate){ if(!Array.isArray(state.realEstate.todos)) state.realEstate.todos=[]; if(!state.realEstate.todos.some(function(t){return t&&t.id==="ret-20260709-chad-launch";})){ state.realEstate.todos.push({id:"ret-20260709-chad-launch",text:"Run Chad Troester's just listed launch today, post a teaser or reel and do neighbor outreach around the listing. He lists Thursday 07-09.",done:false,due:"2026-07-09"}); save(true); } } }catch(e){}
+  /* ============================== v21 build 178: questionnaire batch (07.27.2026) ============================== */
+  /* 178a: Austin Thacker marked IFFY, a soft flag. Not dead, nothing has gone wrong, just uncertain. Commission unchanged. */
+  try{ if(state.realEstate && Array.isArray(state.realEstate.deals) && state.meta && !state.meta.mig178_austin_iffy){
+      state.realEstate.deals.forEach(function(d){ if(d && d.id==="re-austin-thacker"){ d.flag="iffy";
+        if(typeof d.note==="string" && d.note.indexOf("STATUS IFFY")<0){ d.note=d.note+" STATUS IFFY (07.27.2026): soft flag, uncertain right now. Nothing has gone wrong and it is NOT dead, just not solid yet. Commission unchanged."; } } });
+      state.meta.mig178_austin_iffy=true; save(true);
+  } }catch(e){}
+  /* 178b: personal basics, age 20, birthday Jan 18 2006, height 6 foot 0, weight 158 (was 159). */
+  try{ if(state.meta && !state.meta.mig178_profile){
+      if(!state.nutrition) state.nutrition={}; if(!state.nutrition.profile) state.nutrition.profile={};
+      state.nutrition.profile.weight="158 lb"; state.nutrition.profile.height="6'0\"";
+      state.nutrition.profile.age=20; state.nutrition.profile.birthday="2006-01-18";
+      state.meta.mig178_profile=true; save(true);
+  } }catch(e){}
+  /* 178c: DUPR self estimate updated to about 3.5 (from the old 3.2 to 3.4 range). */
+  try{ if(state.pickleball && state.meta && !state.meta.mig178_dupr35){
+      if(state.pickleball.skillEstimate){ state.pickleball.skillEstimate.doubles={lo:3.5,hi:3.5}; state.pickleball.skillEstimate.note="Self assessed about DUPR 3.5 in doubles (updated 07.27.2026). Ian is UNRATED, his DUPR gets ESTABLISHED at the Aug 23 APC tournament. Replace with real data once rated."; }
+      if(Array.isArray(state.pickleball.goals)){ state.pickleball.goals.forEach(function(g){ if(g&&g.id==="pk-goal-dupr"){
+        g.text="DUPR ladder, updated 07.27.2026 off your own estimate. You are UNRATED, self assessed about 3.5 in doubles today. Aug 23 is where your rating gets ESTABLISHED, so play your best that day and let the assigned rating reflect it. Target curve from a 3.5 base, about 3.7 to 3.9 by fall, 4.15 by Nov 2026, 4.4 by Feb 2027, and 4.6 by the April 2027 tryouts. Watch the slope more than the number, and replace every estimate here with real data the day you are rated.";
+      } }); }
+      state.meta.mig178_dupr35=true; save(true);
+  } }catch(e){}
+  /* 178d: number one pickleball goal, fix the serve and overall consistency first, consistency before technique. */
+  try{ if(state.pickleball && Array.isArray(state.pickleball.goals) && state.meta && !state.meta.mig178_pk_serve){
+      var _pg=state.pickleball.goals;
+      if(!_pg.some(function(g){return g&&g.id==="pk-goal-serve-consistency";})){
+        _pg.unshift({id:"pk-goal-serve-consistency",done:false,short:"Fix the serve and consistency first",
+          text:"Number one goal, fix the SERVE and overall CONSISTENCY first. Get the serve in at nine of ten, keep every shot repeatable and in, cut the unforced errors. CONSISTENCY BEFORE TECHNIQUE, once you are consistent then work on improving technique and adding weapons."});
+      }
+      _pg.forEach(function(g){ if(g&&g.id==="pk-goal-drops"&&typeof g.text==="string"){ g.text=g.text.replace(/^Top priority:\s*/i,"Next up: "); if(g.short==="Third shot drops and the soft game") g.short="Third shot drops and soft game"; } });
+      state.meta.mig178_pk_serve=true; save(true);
+  } }catch(e){}
+  /* 178e: Solara, Aug 10 is a TARGET, status waiting on press, add the ordered prep milestones, seed the Instagram handle. */
+  try{ if(state.solara && state.meta && !state.meta.mig178_solara){
+      var _sol=state.solara; if(!Array.isArray(_sol.milestones)) _sol.milestones=[];
+      _sol.status="Waiting on clothes back from press";
+      _sol.milestones.forEach(function(m){ if(m&&m.date==="2026-08-10"){ m.label="Drop 001 launch"; m.target=true; } });
+      function _addStep(lbl){ if(!_sol.milestones.some(function(m){return m&&m.label===lbl;})) _sol.milestones.push({id:uid(),date:"",label:lbl,done:false,target:true}); }
+      _addStep("Get clothes back from press");
+      _addStep("Shoot and edit all the content");
+      _addStep("Set everything up to post and go live");
+      if(typeof _sol.instagram!=="string"||!_sol.instagram) _sol.instagram="https://www.instagram.com/solaramotorsports/";
+      state.meta.mig178_solara=true; save(true);
+  } }catch(e){}
+  /* 178f: label the Solara drop calendar event as a target. */
+  try{ if(Array.isArray(state.events) && state.meta && !state.meta.mig178_solara_evt){
+      state.events.forEach(function(e){ if(e&&e.id==="ev-20260810-solara-drop"){ e.title="Solara Drop 001 (target Aug 10)"; } });
+      state.meta.mig178_solara_evt=true; save(true);
+  } }catch(e){}
   focusObj.running=false; try{clearInterval(focusObj.timerId);}catch(e){} focusObj.remaining=null;
   applyAccent(); dailyReset(); save(true);
 }
@@ -2962,7 +3011,7 @@ function briefDone(id){ return !!(state.briefing && state.briefing.done && state
 function briefSetDone(id,v){ if(!state.briefing) state.briefing={forIan:{},done:{}}; if(!state.briefing.done) state.briefing.done={}; if(!state.briefing.done[TODAY]) state.briefing.done[TODAY]={}; if(v) state.briefing.done[TODAY][id]=true; else delete state.briefing.done[TODAY][id]; }
 function briefItems(){ return (state.briefing&&state.briefing.forIan&&state.briefing.forIan[TODAY])||[]; }
 function briefCard(it){ const c=card(TYPECOL[it.type]||"a-blue"); const b=c._body; const top=el("div","between"); const _lft=el("div"); _lft.style.cssText="display:flex;align-items:center;gap:8px"; _lft.appendChild(claudeAvatar("av-sm")); _lft.appendChild(el("span","pill b",it.type||"Info")); top.appendChild(_lft); const lab=el("label","cbmini"); lab.style.marginLeft="auto"; const inp=el("input","cbx"); inp.type="checkbox"; inp.checked=briefDone(it.id); const box=el("span","box mini"); box.innerHTML=CHECK; inp.addEventListener("change",()=>{ var _nv=!briefDone(it.id); briefSetDone(it.id,_nv); it.done=_nv; save(true); render(); }); lab.appendChild(inp); lab.appendChild(box); top.appendChild(lab); b.appendChild(top); const title=el("div","feedtitle",it.title); if(briefDone(it.id)){ title.style.color="var(--dim)"; title.style.textDecoration="line-through"; } b.appendChild(title); if(it.note) b.appendChild(el("div","feednote briefnote",it.note)); if(it.url){ const a=el("a","feedlink",(it.type==="Pickleball"?"Watch":it.type==="Supplement"?"Read the research":"Open")+" ›"); a.href=it.url; a.target="_blank"; a.rel="noopener"; b.appendChild(a); } return c; }
-function eventsModule(parent){ const evs=(state.events||[]).slice().sort((a,b)=>String(a.date).localeCompare(String(b.date))); const c=card(); const b=c._body; if(!evs.length) b.appendChild(el("div","empty","No events yet.")); evs.forEach(ev=>{ const row=el("div","evrow"); const p=evParts(ev.date); const du=daysUntil(ev.date); const dd=el("div","evdate"); dd.innerHTML='<div class="d">'+p.d+'</div><div class="m">'+p.m+'</div>'; row.appendChild(dd); const et=el("div","evt"); et.appendChild(el("div","en",ev.title)); et.appendChild(el("div","ec",ev.kind+(du>=0?(du===0?" · today":du===1?" · tomorrow":" · in "+du+" days"):" · past"))); row.appendChild(et); const del=el("button","del","×"); del.onclick=()=>{ state.events=state.events.filter(x=>x.id!==ev.id); save(); render(); }; row.appendChild(del); b.appendChild(row); }); parent.appendChild(c);
+function eventsModule(parent){ /* build 178: only show upcoming events (today or later). Past dated events are kept in state but hidden from the calendar so nothing stale shows. */ const evs=(state.events||[]).filter(e=>e&&daysUntil(e.date)>=0).slice().sort((a,b)=>String(a.date).localeCompare(String(b.date))); const c=card(); const b=c._body; if(!evs.length) b.appendChild(el("div","empty","No upcoming events.")); evs.forEach(ev=>{ const row=el("div","evrow"); const p=evParts(ev.date); const du=daysUntil(ev.date); const dd=el("div","evdate"); dd.innerHTML='<div class="d">'+p.d+'</div><div class="m">'+p.m+'</div>'; row.appendChild(dd); const et=el("div","evt"); et.appendChild(el("div","en",ev.title)); et.appendChild(el("div","ec",ev.kind+(du>=0?(du===0?" · today":du===1?" · tomorrow":" · in "+du+" days"):" · past"))); row.appendChild(et); const del=el("button","del","×"); del.onclick=()=>{ state.events=state.events.filter(x=>x.id!==ev.id); save(); render(); }; row.appendChild(del); b.appendChild(row); }); parent.appendChild(c);
   let kind="League"; const ac=card(); const ab=ac._body; const kc=el("div"); const setChips=()=>{ [...kc.querySelectorAll(".chip")].forEach(ch=>ch.classList.toggle("on",ch.textContent===kind)); }; kc.appendChild(chipRow(["League","Tournament","Real estate","Personal"],kind,k=>{kind=k;setChips();})); ab.appendChild(kc); const inp=el("input","in"); inp.placeholder="Event..."; inp.setAttribute("data-add","Event..."); inp.style.marginTop="10px"; const dt=el("input","in"); dt.type="date"; dt.style.marginTop="9px"; const btn=el("button","btn block","Add event"); btn.onclick=()=>{ const t=inp.value.trim(); if(!t)return; pendingFocus="Event..."; state.events.push({id:uid(),title:t,date:dt.value||addDays(1),kind:kind}); save(); render(); }; ab.appendChild(inp); ab.appendChild(dt); ab.appendChild(btn); parent.appendChild(ac); }
 function goalsList(parent,arr){ const c=card(); const b=c._body; if(!arr.length)b.appendChild(el("div","empty","No goals yet.")); arr.forEach(g=>{ b.appendChild(checkItem(g.done,g.text,g.horizon||null,()=>{g.done=!g.done;save();render();},()=>{ const i=arr.indexOf(g); if(i>-1)arr.splice(i,1); save(); render(); })); }); b.appendChild(adder("Add a goal...",t=>{ arr.push({id:uid(),text:t,done:false}); save(); render(); })); parent.appendChild(c); }
 function textNotes(parent,get,set,ph,min){ const c=card(); const ta=el("textarea","in"); ta.style.minHeight=(min||150)+"px"; ta.value=get()||""; ta.placeholder=ph; ta.oninput=()=>{set(ta.value);save();}; c._body.appendChild(ta); parent.appendChild(c); }
@@ -3128,7 +3177,7 @@ function buildSolara(v){
   /* build 177: guarded one time seed of the Drop 001 launch date (Aug 10 2026). Runs once, then the
      flag stops it re seeding even if Ian later removes it. Additive, never touches other Solara data. */
   if(!(state.meta&&state.meta.solaraMs001)){
-    if(!sd.milestones.some(function(m){return m&&m.date==="2026-08-10";})) sd.milestones.push({id:uid(),date:"2026-08-10",label:"Drop 001 launch",done:false});
+    if(!sd.milestones.some(function(m){return m&&m.date==="2026-08-10";})) sd.milestones.push({id:uid(),date:"2026-08-10",label:"Drop 001 launch",done:false,target:true});
     if(state.meta) state.meta.solaraMs001=true;
     save();
   }
@@ -3149,14 +3198,20 @@ function buildSolara(v){
   var du=daysUntil("2026-08-10");
   var pills=el("div"); pills.style.cssText="display:flex;flex-wrap:wrap;gap:8px;margin-top:11px";
   function solChip(txt,warm){ var p=el("span"); p.style.cssText="display:inline-block;font-size:11px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;padding:5px 11px;border-radius:999px;border:1px solid "+(warm?"rgba(255,176,32,.42)":"var(--line2)")+";color:"+(warm?"#ffb020":"var(--gray)")+";background:"+(warm?"rgba(255,176,32,.09)":"transparent"); p.textContent=txt; return p; }
-  if(du>0) pills.appendChild(solChip("Drop in "+du+" days",true));
-  else if(du===0) pills.appendChild(solChip("Drop day",true));
-  else pills.appendChild(solChip("Dropped",true));
+  if(du>0) pills.appendChild(solChip("Target drop in "+du+" days",true));
+  else if(du===0) pills.appendChild(solChip("Target drop day",true));
+  else pills.appendChild(solChip("Drop target passed",true));
   pills.appendChild(solChip(sd.status||"In progress",false));
   pills.appendChild(solChip(openTasks?openTasks+" open tasks":"all clear",false));
   hb.appendChild(pills);
 
   var vs=el("a","btn block"); vs.textContent="Visit the Solara site"; vs.setAttribute("href","https://solaramotorsports.com"); vs.setAttribute("target","_blank"); vs.setAttribute("rel","noopener"); vs.style.cssText="display:block;text-align:center;margin-top:16px;text-decoration:none"; hb.appendChild(vs);
+  /* build 178: Instagram link. Ian is confirming the handle, so this is a clean spot. When he sets it in the
+     field below it becomes a real link, until then it shows a muted placeholder. */
+  if(typeof sd.instagram!=="string") sd.instagram="";
+  var igval=(sd.instagram||"").trim();
+  if(igval){ var igu=/^https?:\/\//i.test(igval)?igval:("https://www.instagram.com/"+igval.replace(/^@/,"")); var igtxt=/^https?:\/\//i.test(igval)?("@"+igval.replace(/\/+$/,"").split("/").pop()):("@"+igval.replace(/^@/,"")); var ig=el("a","btn ghost block"); ig.textContent="Instagram "+igtxt; ig.setAttribute("href",igu); ig.setAttribute("target","_blank"); ig.setAttribute("rel","noopener"); ig.style.cssText="display:block;text-align:center;margin-top:9px;text-decoration:none"; hb.appendChild(ig); }
+  else { var igp=el("div","small dim"); igp.style.cssText="margin-top:11px;text-align:center;line-height:1.4"; igp.textContent="Solara Instagram, add the handle below when you have it"; hb.appendChild(igp); }
   v.appendChild(hero);
 
   /* ---- DETAILS (editable drop + status) ---- */
@@ -3165,6 +3220,8 @@ function buildSolara(v){
   var di=el("input","in"); di.style.marginTop="5px"; di.value=sd.drop||""; di.placeholder="Drop 001, Launch capsule..."; di.oninput=function(){ sd.drop=di.value; save(); }; db.appendChild(di);
   var sl=el("div","small muted"); sl.style.marginTop="13px"; sl.textContent="Status"; db.appendChild(sl);
   var si=el("input","in"); si.style.marginTop="5px"; si.value=sd.status||""; si.placeholder="In progress, Launched, Paused..."; si.oninput=function(){ sd.status=si.value; save(); }; db.appendChild(si);
+  var igl=el("div","small muted"); igl.style.marginTop="13px"; igl.textContent="Instagram (handle or link)"; db.appendChild(igl);
+  var igi=el("input","in"); igi.style.marginTop="5px"; igi.value=sd.instagram||""; igi.placeholder="@solaramotorsports or full link"; igi.oninput=function(){ sd.instagram=igi.value; save(); }; db.appendChild(igi);
   v.appendChild(dc);
 
   /* ---- TIMELINE / CALENDAR ---- */
@@ -3174,14 +3231,16 @@ function buildSolara(v){
   if(!ms.length){ tb.appendChild(el("div","empty","No milestones yet. Add your key Solara dates below.")); }
   ms.forEach(function(m,i){
     var row=el("div"); row.style.cssText="display:flex;gap:12px;align-items:flex-start;padding:11px 0"+(i>0?";border-top:1px solid var(--line)":"");
-    var dd=daysUntil(m.date); var past=(dd<0);
+    var dated=!!(m.date&&String(m.date).trim());
+    var dd=dated?daysUntil(m.date):null; var past=(dated&&dd<0);
     var mark=el("div"); mark.style.cssText="flex:0 0 auto;padding-top:4px";
     var dot=el("div"); dot.style.cssText="width:11px;height:11px;border-radius:50%;background:"+(past?"var(--line2)":"#ffb020")+";box-shadow:"+(past?"none":"0 0 0 3px rgba(255,176,32,.18)"); mark.appendChild(dot);
     row.appendChild(mark);
     var col=el("div"); col.style.cssText="min-width:0;flex:1";
     var dtop=el("div"); dtop.style.cssText="display:flex;align-items:center;gap:8px;flex-wrap:wrap";
-    var dchip=el("span"); dchip.style.cssText="font-weight:800;font-size:13px;color:#ffb020"; dchip.textContent=fmtLongDate(m.date); dtop.appendChild(dchip);
-    var rel=el("span","small dim"); rel.textContent=(dd>0?"in "+dd+" days":(dd===0?"today":Math.abs(dd)+" days ago")); dtop.appendChild(rel);
+    var dchip=el("span"); dchip.style.cssText="font-weight:800;font-size:13px;color:#ffb020"; dchip.textContent=dated?fmtLongDate(m.date):"Step "+(i+1); dtop.appendChild(dchip);
+    if(dated){ var rel=el("span","small dim"); rel.textContent=(dd>0?"in "+dd+" days":(dd===0?"today":Math.abs(dd)+" days ago")); dtop.appendChild(rel); }
+    if(m.target){ var tg=el("span"); tg.style.cssText="font-size:10px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:#ffb020;border:1px solid rgba(255,176,32,.42);border-radius:999px;padding:2px 7px"; tg.textContent="target"; dtop.appendChild(tg); }
     col.appendChild(dtop);
     var lbl=el("div"); lbl.style.cssText="font-size:14.5px;font-weight:600;margin-top:2px;line-height:1.35;color:var(--white)"; lbl.textContent=m.label||"Milestone"; col.appendChild(lbl);
     row.appendChild(col);
@@ -3192,9 +3251,9 @@ function buildSolara(v){
   addWrap.appendChild(el("div","small muted","Add a milestone"));
   var arow=el("div"); arow.style.cssText="display:flex;gap:8px;margin-top:6px;flex-wrap:wrap";
   var din=el("input","in"); din.type="date"; din.setAttribute("data-add","solara-date"); din.style.cssText="flex:1 1 140px;min-width:0";
-  var lin=el("input","in"); lin.placeholder="What happens on this date"; lin.setAttribute("data-add","solara-milestone"); lin.style.cssText="flex:2 1 180px;min-width:0";
+  var lin=el("input","in"); lin.placeholder="What happens (date optional)"; lin.setAttribute("data-add","solara-milestone"); lin.style.cssText="flex:2 1 180px;min-width:0";
   arow.appendChild(din); arow.appendChild(lin); addWrap.appendChild(arow);
-  var ab=el("button","btn sm block","Add milestone"); ab.style.marginTop="9px"; ab.onclick=function(){ var d=din.value; var t=(lin.value||"").trim(); if(!d||!t) return; sd.milestones.push({id:uid(),date:d,label:t,done:false}); save(); render(); }; addWrap.appendChild(ab);
+  var ab=el("button","btn sm block","Add milestone"); ab.style.marginTop="9px"; ab.onclick=function(){ var d=din.value; var t=(lin.value||"").trim(); if(!t) return; sd.milestones.push({id:uid(),date:d||"",label:t,done:false}); save(); render(); }; addWrap.appendChild(ab);
   tb.appendChild(addWrap);
   v.appendChild(tc);
 
@@ -3230,7 +3289,7 @@ function buildFutureIdeasHome(parent){
   }catch(e){ try{console.error("[dash] futureIdeas",e);}catch(_){} }
 }
 function buildIanHome(v){ const workout=daySplit(DOW); const reTop=firstUndone(state.realEstate.todos); const nm=(state.settings&&state.settings.name)||"Ian";
-  const hero=card("a-blue"); const b=hero._body; b.classList.add("hero"); const hi=el("div","hi"); hi.innerHTML=GREET+', <span class="name">'+nm.replace(/</g,"")+'</span>'; b.appendChild(hi); b.appendChild(el("div","date",LONGDATE+"  ·  your daily brief")); b.appendChild(el("div","focus","Today, "+cleanFocus(workout.focus)+". "+(reTop?"Real estate, "+reTop.text+".":"Pipeline follow ups are clear.")));
+  const hero=card("a-blue"); const b=hero._body; b.classList.add("hero"); const hi=el("div","hi"); hi.innerHTML=GREET+', <span class="name">'+nm.replace(/</g,"")+'</span>'; b.appendChild(hi); b.appendChild(el("div","date",LONGDATE+"  ·  your daily brief")); b.appendChild(el("div","focus","Priority one, real estate, "+(reTop?reTop.text:"work the pipeline")+". Then stay consistent, gym ("+cleanFocus(workout.focus)+"), pickleball, work, and Solara."));
   if(state.meta&&state.meta.lastReset===TODAY){ const rn=el("div","small"); rn.style.color="var(--sec2,var(--accent2))"; rn.style.fontWeight="700"; rn.style.marginTop="9px"; rn.textContent="New day. Yesterday's log was archived and daily items reset."; b.appendChild(rn); }
   v.appendChild(hero);
   if(!(state.settings&&state.settings.bannerDismissed)){ const bn=el("div","banner"); bn.appendChild(el("div",null,"For full interactivity and saving, open this file in Safari. An in app preview can limit some taps.")); const x=el("button","bx","×"); x.onclick=()=>{ if(!state.settings)state.settings={}; state.settings.bannerDismissed=true; save(); render(); }; bn.appendChild(x); v.appendChild(bn); }
@@ -3251,10 +3310,14 @@ function buildIanHome(v){ const workout=daySplit(DOW); const reTop=firstUndone(s
       try{ render(); }catch(e){}
       selectTab("gym");
     }
+    /* build 178: quick actions reflect Ian's priorities, real estate first, then the consistency areas
+       (gym, pickleball, Solara). 2 by 2 grid. */
+    q.style.gridTemplateColumns="1fr 1fr";
+    q.appendChild(qb("re","\ud83c\udfe1","Real Estate",function(){ reView="pipeline"; try{ render(); }catch(e){} selectTab("re"); }));
     q.appendChild(qb("gy","\ud83c\udfcb","Workout",function(){ gymJump("Workout routine"); }));
-    q.appendChild(qb("nu","\ud83c\udf7d","Nutrition",function(){ gymJump("Nutrition, water and supplements"); }));
     /* build 121: Coach opens the Pickleball tab AND expands the Personal Coach section, which is keyed pk_coach. */
     q.appendChild(qb("pk","\ud83c\udfd3","Coach",function(){ try{ PK_OPEN["pk_coach"]=true; }catch(e){} try{ render(); }catch(e){} selectTab("pickle"); }));
+    q.appendChild(qb("so","\u2600\ufe0f","Solara",function(){ selectTab("solara"); }));
     qc._body.appendChild(q); v.appendChild(qc);
   },"Quick actions");
   safe(v,function(){
@@ -3734,10 +3797,10 @@ function nutritionModule(parent){ const c=card("a-green"); const b=c._body; cons
   const gh=el("div","small muted"); gh.style.margin="12px 0 4px"; gh.textContent="How to eat, no counting"; b.appendChild(gh);
   const gt=el("div","small dim"); gt.style.lineHeight="1.6"; gt.textContent="Goal is to lean out for summer and build a little muscle, not get big. You are OFF the GLP 1 now (tapered the last half dose 07.22), so your appetite is coming back and the lean out is on YOU, not the drug. That means the basics carry it now, protein first at every meal to protect and build muscle, keep portions a touch under full now that hunger is back, stay consistent, and let pickleball burn the rest. No calorie counting, just protein forward, a slight deficit held with discipline, and weekly weigh ins to watch the trend."; b.appendChild(gt);
   parent.appendChild(c);
-  const RECS=["Breakfast, eggs or Greek yogurt with fruit and a little oats.","Lunch, grilled chicken or lean beef with rice and veggies.","Snack, protein shake, cottage cheese, or jerky before you play.","Dinner, salmon or chicken with potatoes and a big salad.","Around play, a banana or rice cakes for quick carbs, then protein after."];
-  const mc=card(); const mb=mc._body; mb.appendChild(el("div","small muted","Recommended, protein forward")); mb.firstChild.style.marginBottom="8px"; RECS.forEach(function(m){ const r=el("div","mrow"); r.appendChild(el("div","ml",m)); mb.appendChild(r); }); parent.appendChild(mc);
-  /* build 130: supplements moved into the unified Daily checklist (dailyChecklistModule), so nutrition
-     no longer renders them here, avoiding two places. Meals and guidance stay. */ }
+  /* build 178: the recommended MEALS card (breakfast/lunch/snack/dinner list) was removed, Ian never used it.
+     The RECS meal list is retired here. The profile line and the eating guidance above stay. Supplements live
+     in the unified Daily checklist (dailyChecklistModule) since build 130. No meal data is stored in state, so
+     nothing was deleted from saved data, only this UI list is gone. */ }
 /* v21 build 51: a habit or checklist item with weeklyDay set (0 Sun ... 6 Sat) shows and counts only on
    that weekday. Used for the weekly Friday weigh in. No weeklyDay means it is a normal daily item. */
 function habitActiveOn(h,dt){ if(!h||h.weeklyDay==null) return true; try{ var a=String(dt).split("-"); return new Date(a[0],a[1]-1,a[2]).getDay()===h.weeklyDay; }catch(e){ return true; } }
@@ -3922,7 +3985,7 @@ function buildPickle(v){ var pb=state.pickleball||(state.pickleball={});
 
   },"🔁","teal");
   pkCollapse(v,"pk_sessions","Sessions","log, this week, and history",false,function(c){
-    (function(){ var rc=card(); var t=el("div","small"); t.style.cssText="line-height:1.55;color:var(--gray)"; t.textContent="Rating status. Self estimate 3.2 to 3.4, target 3.7 to 3.9, and your first real DUPR gets set at the Aug 23 tournament."; rc._body.appendChild(t); c.appendChild(rc); })();
+    (function(){ var rc=card(); var t=el("div","small"); t.style.cssText="line-height:1.55;color:var(--gray)"; t.textContent="Rating status. Self estimate about DUPR 3.5, unrated so far, and your first real DUPR gets set at the Aug 23 tournament."; rc._body.appendChild(t); c.appendChild(rc); })();
 
     
     pkCollapse(c,"pk_logform","Log a session","match details optional",false,function(f){
