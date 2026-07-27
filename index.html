@@ -13,7 +13,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Ian">
 <title>Ian Dashboard</title>
-<meta name="build" content="v21 build 176 (2026-07-27)">
+<meta name="build" content="v21 build 177 (2026-07-27)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -401,7 +401,7 @@ select.in{appearance:none;-webkit-appearance:none;background-image:linear-gradie
 #p-gym{--sec:var(--amber);--sec2:var(--amber2)}
 #p-pickle{--sec:var(--pk1,#2ee66f);--sec2:var(--pk2,#8af2ac)}
 #p-stats{--sec:var(--cyan);--sec2:var(--cyan2)}
-#p-solara{--sec:var(--violet,#9b6bff);--sec2:var(--violet,#9b6bff)}
+#p-solara{--sec:#ffb020;--sec2:#ff8c1a}
 
 
 .a-blue{background:linear-gradient(90deg,var(--sec,var(--accent)),var(--sec2,var(--accent2)))}
@@ -716,7 +716,7 @@ header{ background:rgba(0,0,0,.82); border-bottom:1px solid rgba(255,255,255,.07
   <label for="t-gym"><span class="ti">🏋️</span><span class="tl" id="tl-gym">Gym</span></label>
   <label for="t-stats"><span class="ti">📊</span><span class="tl" id="tl-stats">Stats</span></label>
   <label for="t-pickle"><span class="ti">🎾</span><span class="tl" id="tl-pickle">Pickle</span></label>
-  <label for="t-solara"><span class="ti">⚡</span><span class="tl" id="tl-solara">Solara</span></label>
+  <label for="t-solara"><span class="ti">☀️</span><span class="tl" id="tl-solara">Solara</span></label>
 </nav>
 <div class="toast" id="toast"></div>
 
@@ -736,7 +736,7 @@ const sess=(function(){ let ok=false,mem={}; try{ const t="__s__"; window.sessio
 })();
 const KEYS={ ian:"ianDashboard.v2", chris:"chrisDashboard.v2" };
 const SEED_VERSION=13;
-const APP_BUILD="v21 build 176 (2026-07-27)";
+const APP_BUILD="v21 build 177 (2026-07-27)";
 const WATER_GOAL=10; 
 const uid=()=>Math.random().toString(36).slice(2,9);
 function todayKey(d){ d=d||new Date(); const p=n=>String(n).padStart(2,"0"); return d.getFullYear()+"-"+p(d.getMonth()+1)+"-"+p(d.getDate()); }
@@ -3112,26 +3112,107 @@ function closeUrgency(closeStr){
     if(du<0) return "overdue"; if(du>14) return ""; if(du===0) return "due today"; if(du===1) return "due tomorrow"; return "due in "+du+" days";
   }catch(e){ return ""; }
 }
-/* build 176: Solara is now its own tab/page (moved off Home). Full workspace lives here. */
+/* build 177: Solara page redesign. Sun/warm brand identity, no overlapping elements, a timeline
+   (milestones) section seeded with the Drop 001 launch, a clean site link, tasks and notes.
+   state.solara is preserved and extended additively (milestones). */
+function fmtLongDate(k){ try{ var a=String(k).split("-"); return new Date(a[0],a[1]-1,a[2]).toLocaleDateString("en-US",{month:"short",day:"numeric",year:"numeric"}); }catch(e){ return String(k||""); } }
 function buildSolara(v){
   try{
   if(!state.solara||typeof state.solara!=="object") state.solara={drop:"Drop 001",status:"In progress",tasks:[],notes:""};
-  var sd=state.solara; if(!Array.isArray(sd.tasks)) sd.tasks=[]; if(typeof sd.notes!=="string") sd.notes=""; if(typeof sd.drop!=="string"||!sd.drop) sd.drop="Drop 001"; if(typeof sd.status!=="string") sd.status="In progress";
-  var _openS=sd.tasks.filter(function(t){return t&&!t.done;}).length;
-  sect(v,"Solara","your motorsports workspace");
-  var c=card("a-teal"); c.id="solara-card"; var b=c._body;
-  var top=el("div","between"); var dh=el("div"); dh.style.cssText="font-weight:800;font-size:18px;letter-spacing:-.02em"; dh.textContent=sd.drop||"Drop 001"; top.appendChild(dh); var pill=el("span","pill "+(_openS?"b":"g")); pill.textContent=_openS?(_openS+" open"):"all clear"; top.appendChild(pill); b.appendChild(top);
-  var vs=el("a","btn ghost block"); vs.textContent="Visit the Solara site"; vs.setAttribute("href","https://solaramotorsports.com"); vs.setAttribute("target","_blank"); vs.setAttribute("rel","noopener"); vs.style.marginTop="11px"; b.appendChild(vs);
-  var dr=el("div"); dr.style.marginTop="12px"; dr.appendChild(el("div","small muted","Drop")); var di=el("input","in"); di.style.marginTop="5px"; di.value=sd.drop||""; di.placeholder="Drop 001, Launch capsule..."; di.oninput=function(){ sd.drop=di.value; save(); }; dr.appendChild(di); b.appendChild(dr);
-  var sr=el("div"); sr.style.marginTop="12px"; sr.appendChild(el("div","small muted","Status")); var si=el("input","in"); si.style.marginTop="5px"; si.value=sd.status||""; si.placeholder="In progress, Launched, Paused..."; si.oninput=function(){ sd.status=si.value; save(); }; sr.appendChild(si); b.appendChild(sr);
-  var tw=el("div"); tw.style.marginTop="12px"; tw.appendChild(el("div","small muted","Tasks"));
-  if(!sd.tasks.length){ var em=el("div","empty","No Solara tasks yet."); em.style.marginTop="6px"; tw.appendChild(em); }
-  sd.tasks.slice(0,5).forEach(function(t){ tw.appendChild(checkItem(t.done,t.text,null,function(){ t.done=!t.done; save(); render(); },function(){ var i=sd.tasks.indexOf(t); if(i>-1)sd.tasks.splice(i,1); save(); render(); })); });
-  if(sd.tasks.length>5){ tw.appendChild(el("div","small dim",(sd.tasks.length-5)+" more tasks")); }
-  tw.appendChild(adder("Add a Solara task...",function(txt){ sd.tasks.push({id:uid(),text:txt,done:false}); save(); render(); }));
-  b.appendChild(tw);
-  var nw=el("div"); nw.style.marginTop="12px"; nw.appendChild(el("div","small muted","Notes")); var nt=el("textarea","in"); nt.style.cssText="min-height:72px;margin-top:5px"; nt.value=sd.notes||""; nt.placeholder="Ideas, links, next steps for Solara..."; nt.oninput=function(){ sd.notes=nt.value; save(); }; nw.appendChild(nt); b.appendChild(nw);
-  v.appendChild(c);
+  var sd=state.solara;
+  if(!Array.isArray(sd.tasks)) sd.tasks=[];
+  if(typeof sd.notes!=="string") sd.notes="";
+  if(typeof sd.drop!=="string"||!sd.drop) sd.drop="Drop 001";
+  if(typeof sd.status!=="string"||!sd.status) sd.status="In progress";
+  if(!Array.isArray(sd.milestones)) sd.milestones=[];
+  /* build 177: guarded one time seed of the Drop 001 launch date (Aug 10 2026). Runs once, then the
+     flag stops it re seeding even if Ian later removes it. Additive, never touches other Solara data. */
+  if(!(state.meta&&state.meta.solaraMs001)){
+    if(!sd.milestones.some(function(m){return m&&m.date==="2026-08-10";})) sd.milestones.push({id:uid(),date:"2026-08-10",label:"Drop 001 launch",done:false});
+    if(state.meta) state.meta.solaraMs001=true;
+    save();
+  }
+  var openTasks=sd.tasks.filter(function(t){return t&&!t.done;}).length;
+  var SUN='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4.2"/><path d="M12 1.8v2.6M12 19.6v2.6M4.2 4.2l1.9 1.9M17.9 17.9l1.9 1.9M1.8 12h2.6M19.6 12h2.6M4.2 19.8l1.9-1.9M17.9 6.1l1.9-1.9"/></svg>';
+
+  sect(v,"Solara","Drop 001 workspace");
+
+  /* ---- HERO / STATUS (no overlap, warm sun identity) ---- */
+  var hero=card("a-gold"); hero.id="solara-card"; var hb=hero._body;
+  var brandRow=el("div"); brandRow.style.cssText="display:flex;align-items:center;gap:11px";
+  var sunChip=el("div"); sunChip.style.cssText="width:36px;height:36px;border-radius:12px;display:grid;place-items:center;flex:0 0 auto;color:#ffb020;background:rgba(255,176,32,.14)"; sunChip.innerHTML=SUN; brandRow.appendChild(sunChip);
+  var wm=el("div"); wm.style.minWidth="0"; var wmt=el("div"); wmt.style.cssText="font-weight:800;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:#ffb020"; wmt.textContent="Solara Motorsports"; wm.appendChild(wmt); var wms=el("div","small dim"); wms.style.marginTop="1px"; wms.textContent="your apparel workspace"; wm.appendChild(wms); brandRow.appendChild(wm);
+  hb.appendChild(brandRow);
+
+  var dropName=el("div"); dropName.style.cssText="font-weight:800;font-size:25px;letter-spacing:-.02em;margin-top:14px;line-height:1.1"; dropName.textContent=sd.drop||"Drop 001"; hb.appendChild(dropName);
+
+  var du=daysUntil("2026-08-10");
+  var pills=el("div"); pills.style.cssText="display:flex;flex-wrap:wrap;gap:8px;margin-top:11px";
+  function solChip(txt,warm){ var p=el("span"); p.style.cssText="display:inline-block;font-size:11px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;padding:5px 11px;border-radius:999px;border:1px solid "+(warm?"rgba(255,176,32,.42)":"var(--line2)")+";color:"+(warm?"#ffb020":"var(--gray)")+";background:"+(warm?"rgba(255,176,32,.09)":"transparent"); p.textContent=txt; return p; }
+  if(du>0) pills.appendChild(solChip("Drop in "+du+" days",true));
+  else if(du===0) pills.appendChild(solChip("Drop day",true));
+  else pills.appendChild(solChip("Dropped",true));
+  pills.appendChild(solChip(sd.status||"In progress",false));
+  pills.appendChild(solChip(openTasks?openTasks+" open tasks":"all clear",false));
+  hb.appendChild(pills);
+
+  var vs=el("a","btn block"); vs.textContent="Visit the Solara site"; vs.setAttribute("href","https://solaramotorsports.com"); vs.setAttribute("target","_blank"); vs.setAttribute("rel","noopener"); vs.style.cssText="display:block;text-align:center;margin-top:16px;text-decoration:none"; hb.appendChild(vs);
+  v.appendChild(hero);
+
+  /* ---- DETAILS (editable drop + status) ---- */
+  var dc=card(); var db=dc._body;
+  db.appendChild(el("div","small muted","Drop name"));
+  var di=el("input","in"); di.style.marginTop="5px"; di.value=sd.drop||""; di.placeholder="Drop 001, Launch capsule..."; di.oninput=function(){ sd.drop=di.value; save(); }; db.appendChild(di);
+  var sl=el("div","small muted"); sl.style.marginTop="13px"; sl.textContent="Status"; db.appendChild(sl);
+  var si=el("input","in"); si.style.marginTop="5px"; si.value=sd.status||""; si.placeholder="In progress, Launched, Paused..."; si.oninput=function(){ sd.status=si.value; save(); }; db.appendChild(si);
+  v.appendChild(dc);
+
+  /* ---- TIMELINE / CALENDAR ---- */
+  sect(v,"Timeline","key Solara dates");
+  var tc=card(); var tb=tc._body;
+  var ms=sd.milestones.slice().sort(function(a,z){ return String(a.date||"").localeCompare(String(z.date||"")); });
+  if(!ms.length){ tb.appendChild(el("div","empty","No milestones yet. Add your key Solara dates below.")); }
+  ms.forEach(function(m,i){
+    var row=el("div"); row.style.cssText="display:flex;gap:12px;align-items:flex-start;padding:11px 0"+(i>0?";border-top:1px solid var(--line)":"");
+    var dd=daysUntil(m.date); var past=(dd<0);
+    var mark=el("div"); mark.style.cssText="flex:0 0 auto;padding-top:4px";
+    var dot=el("div"); dot.style.cssText="width:11px;height:11px;border-radius:50%;background:"+(past?"var(--line2)":"#ffb020")+";box-shadow:"+(past?"none":"0 0 0 3px rgba(255,176,32,.18)"); mark.appendChild(dot);
+    row.appendChild(mark);
+    var col=el("div"); col.style.cssText="min-width:0;flex:1";
+    var dtop=el("div"); dtop.style.cssText="display:flex;align-items:center;gap:8px;flex-wrap:wrap";
+    var dchip=el("span"); dchip.style.cssText="font-weight:800;font-size:13px;color:#ffb020"; dchip.textContent=fmtLongDate(m.date); dtop.appendChild(dchip);
+    var rel=el("span","small dim"); rel.textContent=(dd>0?"in "+dd+" days":(dd===0?"today":Math.abs(dd)+" days ago")); dtop.appendChild(rel);
+    col.appendChild(dtop);
+    var lbl=el("div"); lbl.style.cssText="font-size:14.5px;font-weight:600;margin-top:2px;line-height:1.35;color:var(--white)"; lbl.textContent=m.label||"Milestone"; col.appendChild(lbl);
+    row.appendChild(col);
+    var del=el("button","del","×"); del.onclick=function(){ var ix=sd.milestones.indexOf(m); if(ix>-1)sd.milestones.splice(ix,1); save(); render(); }; row.appendChild(del);
+    tb.appendChild(row);
+  });
+  var addWrap=el("div"); addWrap.style.cssText="margin-top:13px;border-top:1px solid var(--line);padding-top:13px";
+  addWrap.appendChild(el("div","small muted","Add a milestone"));
+  var arow=el("div"); arow.style.cssText="display:flex;gap:8px;margin-top:6px;flex-wrap:wrap";
+  var din=el("input","in"); din.type="date"; din.setAttribute("data-add","solara-date"); din.style.cssText="flex:1 1 140px;min-width:0";
+  var lin=el("input","in"); lin.placeholder="What happens on this date"; lin.setAttribute("data-add","solara-milestone"); lin.style.cssText="flex:2 1 180px;min-width:0";
+  arow.appendChild(din); arow.appendChild(lin); addWrap.appendChild(arow);
+  var ab=el("button","btn sm block","Add milestone"); ab.style.marginTop="9px"; ab.onclick=function(){ var d=din.value; var t=(lin.value||"").trim(); if(!d||!t) return; sd.milestones.push({id:uid(),date:d,label:t,done:false}); save(); render(); }; addWrap.appendChild(ab);
+  tb.appendChild(addWrap);
+  v.appendChild(tc);
+
+  /* ---- TASKS ---- */
+  sect(v,"Tasks","what to move on");
+  var kc=card(); var kb=kc._body;
+  if(!sd.tasks.length){ kb.appendChild(el("div","empty","No Solara tasks yet.")); }
+  sd.tasks.slice(0,20).forEach(function(t){ kb.appendChild(checkItem(t.done,t.text,null,function(){ t.done=!t.done; save(); render(); },function(){ var ix=sd.tasks.indexOf(t); if(ix>-1)sd.tasks.splice(ix,1); save(); render(); })); });
+  if(sd.tasks.length>20){ kb.appendChild(el("div","small dim",(sd.tasks.length-20)+" more tasks")); }
+  kb.appendChild(adder("Add a Solara task...",function(txt){ sd.tasks.push({id:uid(),text:txt,done:false}); save(); render(); }));
+  v.appendChild(kc);
+
+  /* ---- NOTES ---- */
+  sect(v,"Notes","ideas and next steps");
+  var nc=card(); var nbd=nc._body;
+  var nt=el("textarea","in"); nt.style.cssText="min-height:96px"; nt.value=sd.notes||""; nt.placeholder="Ideas, links, next steps for Solara..."; nt.oninput=function(){ sd.notes=nt.value; save(); }; nbd.appendChild(nt);
+  v.appendChild(nc);
+
   }catch(e){ try{console.error("[dash] solara",e);}catch(_){} }
 }
 function buildFutureIdeasHome(parent){
@@ -4079,9 +4160,10 @@ try{ if(document.readyState==="loading") document.addEventListener("DOMContentLo
     ball:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M5 9.5c4 .5 9 .5 14 0M5 14.5c5-.5 10-.5 14 0"/></svg>',
     target:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="1"/></svg>',
     people:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="8.5" cy="9" r="3"/><circle cx="16.5" cy="9.5" r="2.4"/><path d="M3.5 19a5 5 0 0 1 10 0"/><path d="M14.5 19a4.2 4.2 0 0 1 6-3.8"/></svg>',
-    bolt:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 4.5 13.5H11l-1 8.5L19.5 10H13z"/></svg>'
+    bolt:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 4.5 13.5H11l-1 8.5L19.5 10H13z"/></svg>',
+    sun:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4.1"/><path d="M12 2v2.6M12 19.4V22M4.2 4.2l1.85 1.85M17.95 17.95 19.8 19.8M2 12h2.6M19.4 12H22M4.2 19.8l1.85-1.85M17.95 6.05 19.8 4.2"/></svg>'
   };
-  var EM={'🏠':'home','🏡':'building','🏋':'dumbbell','📊':'chart','🧭':'more','🌱':'sprout','✅':'check','🧰':'tools','🎾':'ball','🎯':'target','🤝':'people','👥':'people','⚡':'bolt'};
+  var EM={'🏠':'home','🏡':'building','🏋':'dumbbell','📊':'chart','🧭':'more','🌱':'sprout','✅':'check','🧰':'tools','🎾':'ball','🎯':'target','🤝':'people','👥':'people','⚡':'bolt','☀':'sun'};
   function baseEmoji(t){ if(!t) return ''; t=t.replace(/[️‍]/g,'').trim(); // strip VS16/ZWJ
     for(var k in EM){ if(t.indexOf(k)===0) return k; } return ''; }
   function swapIcons(){
@@ -4126,11 +4208,11 @@ try{ if(document.readyState==="loading") document.addEventListener("DOMContentLo
 #t-pickle:checked~.tabbar label[for=t-pickle] .ti{transform:translateY(-1px) scale(1.06)}
 #t-pickle:checked~.tabbar label[for=t-pickle] .ti svg{color:var(--accent)}
 #t-pickle:checked~.tabbar label[for=t-pickle]::before{content:"";position:absolute;top:0;width:24px;height:3px;border-radius:0 0 4px 4px;background:linear-gradient(90deg,var(--pk1),var(--pk2))}
-/* Solara promoted to a top-level tab (build 176). Active state uses the Solara violet. */
-#t-solara:checked~.tabbar label[for=t-solara],#t-solara:checked~.tabbar label[for=t-solara] .tl{color:var(--violet,#9b6bff)}
+/* Solara promoted to a top-level tab (build 176, warm sun accent build 177). */
+#t-solara:checked~.tabbar label[for=t-solara],#t-solara:checked~.tabbar label[for=t-solara] .tl{color:#ffb020}
 #t-solara:checked~.tabbar label[for=t-solara] .ti{transform:translateY(-1px) scale(1.06)}
-#t-solara:checked~.tabbar label[for=t-solara] .ti svg{color:var(--violet,#9b6bff)}
-#t-solara:checked~.tabbar label[for=t-solara]::before{content:"";position:absolute;top:0;width:24px;height:3px;border-radius:0 0 4px 4px;background:linear-gradient(90deg,var(--violet,#9b6bff),#c9a8ff)}
+#t-solara:checked~.tabbar label[for=t-solara] .ti svg{color:#ffb020}
+#t-solara:checked~.tabbar label[for=t-solara]::before{content:"";position:absolute;top:0;width:24px;height:3px;border-radius:0 0 4px 4px;background:linear-gradient(90deg,#ffb020,#ff8c1a)}
 /* hide the Solara tab when Ian turns it off in Settings */
 body.solara-off .tabbar label[for=t-solara]{display:none}
 /* six tabs fit cleanly on a phone */
