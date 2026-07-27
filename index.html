@@ -13,7 +13,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Ian">
 <title>Ian Dashboard</title>
-<meta name="build" content="v21 build 181 (2026-07-27)">
+<meta name="build" content="v21 build 182 (2026-07-27)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -736,7 +736,7 @@ const sess=(function(){ let ok=false,mem={}; try{ const t="__s__"; window.sessio
 })();
 const KEYS={ ian:"ianDashboard.v2", chris:"chrisDashboard.v2" };
 const SEED_VERSION=13;
-const APP_BUILD="v21 build 181 (2026-07-27)";
+const APP_BUILD="v21 build 182 (2026-07-27)";
 const WATER_GOAL=10; 
 const uid=()=>Math.random().toString(36).slice(2,9);
 function todayKey(d){ d=d||new Date(); const p=n=>String(n).padStart(2,"0"); return d.getFullYear()+"-"+p(d.getMonth()+1)+"-"+p(d.getDate()); }
@@ -2950,6 +2950,31 @@ function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]
       if(!rest.some(function(m){ return m && (m.date==="2026-08-10" || String(m.label||"").toLowerCase()==="drop 001 launch"); })) rest.push({id:uid(),date:"2026-08-10",label:"Drop 001 launch",done:false,target:true});
       _s.milestones=stepObjs.concat(rest);
       state.meta.mig181_solara_full=true; save(true);
+  } }catch(e){}
+  /* v21 build 182: log Monday 07-27 advanced open play session and the SERVE BREAKTHROUGH coaching. Radar
+     serve 52 to 54 (modest, self report, still developing). Everything else held. Guarded, idempotent. */
+  try{ if(state.pickleball && state.meta && !state.meta.mig182_mon0727){
+      var _pk=state.pickleball;
+      if(!Array.isArray(_pk.sessions)) _pk.sessions=[];
+      if(!_pk.sessions.some(function(s){return s&&s.id==="pk-20260727-openplay";})){
+        _pk.sessions.push({id:"pk-20260727-openplay",date:"2026-07-27",kind:"Open play",venue:"Omaha",duration:"1h 0m 11s",calories:788,activeCalories:694,avgHr:143,maxHr:184,effort:10,opponent:"Random advanced players, doubles",note:"Open play doubles vs random ADVANCED players, went all out. 5:36 to 6:36 PM, Omaha, 1:00:11. Effort 10, All Out. SERVE BREAKTHROUGH, slowing the serve 10 to 15 percent gets it in a lot more consistently, and he steps BACK to reset when he wants to hit it harder. Validates the number one goal, serve consistency, the two serve plan working. Strengths, drives good and resets good, both held up vs advanced. Faults, DROPS again the main fault, plus random unforced errors he should not have missed. Theme, shot discipline and cutting the free errors."});
+      }
+      if(Array.isArray(_pk.skills)){ _pk.skills.forEach(function(k){ if(k&&k.id==="serve"&&k.current===52){ k.current=54; } }); }
+      if(Array.isArray(_pk.workOn)){
+        var _rest=_pk.workOn.filter(function(x){ return !/^serve/i.test(String(x||"")); });
+        _pk.workOn=[
+          "Serve, your consistency breakthrough. Slow it 10 to 15 percent to groove it in, and STEP BACK to reset when you want pace. Keep doing exactly this, it is your money serve.",
+          "Drops are still the main fault. Drill third shot drops until they land soft in the kitchen under pressure.",
+          "Cut the random unforced errors. Shot discipline and patience, take only the shot that is there, stop handing advanced players free points."
+        ].concat(_rest);
+      }
+      if(!_pk.coachBullets||typeof _pk.coachBullets!=="object") _pk.coachBullets={};
+      _pk.coachBullets["2026-07-27"]=[
+        "Serve breakthrough, this is the win. Slowing your serve 10 to 15 percent gets it in a LOT more, and stepping back to reset when you want pace is the two serve plan working. Keep doing it every serve.",
+        "Drops are still the main fault, and random unforced errors gave away free points to advanced players. Shot discipline, take only the shot that is there.",
+        "Drives and resets held up against advanced players, good. Bank those and keep playing up."
+      ];
+      state.meta.mig182_mon0727=true; save(true);
   } }catch(e){}
   focusObj.running=false; try{clearInterval(focusObj.timerId);}catch(e){} focusObj.remaining=null;
   applyAccent(); dailyReset(); save(true);
