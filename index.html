@@ -13,7 +13,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Ian">
 <title>Ian Dashboard</title>
-<meta name="build" content="v21 build 172 (2026-07-27)">
+<meta name="build" content="v21 build 173 (2026-07-27)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -732,7 +732,7 @@ const sess=(function(){ let ok=false,mem={}; try{ const t="__s__"; window.sessio
 })();
 const KEYS={ ian:"ianDashboard.v2", chris:"chrisDashboard.v2" };
 const SEED_VERSION=13;
-const APP_BUILD="v21 build 172 (2026-07-27)";
+const APP_BUILD="v21 build 173 (2026-07-27)";
 const WATER_GOAL=10; 
 const uid=()=>Math.random().toString(36).slice(2,9);
 function todayKey(d){ d=d||new Date(); const p=n=>String(n).padStart(2,"0"); return d.getFullYear()+"-"+p(d.getMonth()+1)+"-"+p(d.getDate()); }
@@ -2175,6 +2175,16 @@ function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]
       if(Array.isArray(P166.sessions)){ var _s=P166.sessions.filter(function(x){return x&&x.id==="pk-20260726-drillcomp";})[0]; if(_s){ _s.kind="Drills and open play"; } }
       state.meta.mig166_kind0726=true; save(true);
   } }catch(e){}
+  /* v21 build 173: Solara workspace state, additive, only add missing fields, preserve existing */
+  try{ if(profile==="ian" && !state.meta.mig173_solara){
+      if(!state.solara||typeof state.solara!=="object") state.solara={};
+      var _sol=state.solara;
+      if(typeof _sol.drop!=="string"||!_sol.drop) _sol.drop="Drop 001";
+      if(typeof _sol.status!=="string"||!_sol.status) _sol.status="In progress";
+      if(!Array.isArray(_sol.tasks)) _sol.tasks=[];
+      if(typeof _sol.notes!=="string") _sol.notes="";
+      state.meta.mig173_solara=true; save(true);
+  } }catch(e){}
   /* v21 build 169: simplify coaching, one focus per day (bl0), tighten coachBullets and trim workOn to short items, keep substance */
   try{ if(state.pickleball && !state.meta.mig169_coachslim){
       var P169=state.pickleball;
@@ -3060,7 +3070,7 @@ function dealEditors(parent,d){
 function dealRow(parent,d){
   const wrap=el("div","dealwrap");
   const row=el("button","deal-row");
-  const left=el("div","dl"); left.appendChild(el("div","dn",d.title)); if(d.close)left.appendChild(el("div","dsub",d.close)); row.appendChild(left);
+  const left=el("div","dl"); left.appendChild(el("div","dn",d.title)); if(d.close)left.appendChild(el("div","dsub",d.close)); var _tn=dealIanNet(d); if(_tn>0){ var _th=el("div","dsub"); _th.textContent="Est. take home "+fmtMoney(_tn); _th.style.color="var(--sec2,var(--accent2))"; _th.style.fontWeight="700"; left.appendChild(_th); } var _urg=closeUrgency(d.close); if(_urg){ var _u=el("div","dsub"); _u.textContent=_urg; _u.style.color=(_urg==="overdue"||_urg==="due today")?"var(--danger,#ff6363)":"var(--gray2,#8a8a99)"; _u.style.fontWeight="700"; left.appendChild(_u); } row.appendChild(left);
   const right=el("div","dr"); if(d.price)right.appendChild(el("div","dp",d.price)); right.appendChild(stagePill(d.stage)); row.appendChild(right);
   row.onclick=()=>{ reDealOpen[d.id]=!reDealOpen[d.id]; render(); };
   wrap.appendChild(row);
@@ -3091,8 +3101,87 @@ function collapseTool(parent,title,sub,buildFn){
 }
 
 /* ===== IAN pages ===== */
+function closeUrgency(closeStr){
+  try{ var k=closeSortKey(closeStr); if(!isFinite(k)) return "";
+    var y=Math.floor(k/10000), mo=Math.floor((k%10000)/100), da=k%100;
+    var iso=y+"-"+("0"+mo).slice(-2)+"-"+("0"+da).slice(-2); var du=daysUntil(iso);
+    if(du<0) return "overdue"; if(du>14) return ""; if(du===0) return "due today"; if(du===1) return "due tomorrow"; return "due in "+du+" days";
+  }catch(e){ return ""; }
+}
+function buildCommandCenter(parent){
+  try{
+  var c=card("a-blue"); var b=c._body;
+  var items=briefItems(); var openBrief=items.filter(function(it){ return it&&!briefDone(it.id); });
+  var reTodos=(state.realEstate&&state.realEstate.todos)||[]; var openRe=reTodos.filter(function(t){ return t&&!t.done; });
+  var solHid=hidden("solara"); var sol=state.solara||{}; var solTasks=Array.isArray(sol.tasks)?sol.tasks:[]; var openSol=solTasks.filter(function(t){return t&&!t.done;});
+  var totalOpen=openBrief.length+openRe.length;
+  function trunc(x,n){ x=String(x||""); return x.length>n? x.slice(0,n-1).replace(/\s+\S*$/,"").trim()+"…" : x; }
+  function scrollTo(id){ try{ var e=document.getElementById(id); if(e)e.scrollIntoView({behavior:"smooth",block:"start"}); }catch(_){} }
+  var head=el("div","between"); head.appendChild(el("h3",null,"Command center"));
+  var pill=el("span","pill "+(totalOpen?"b":"g")); pill.textContent=totalOpen?(totalOpen+" to handle today"):"All clear"; head.appendChild(pill); b.appendChild(head);
+  var naLabel, naFn;
+  if(openBrief.length){ naLabel=openBrief[0].title||openBrief[0].note||"Handle today's brief"; naFn=function(){ scrollTo("brief-anchor"); }; }
+  else if(openRe.length){ naLabel=openRe[0].text||"Work the pipeline"; naFn=function(){ reView="pipeline"; try{render();}catch(_){} selectTab("re"); }; }
+  else { naLabel="Write today's one thing in Today's entry"; naFn=function(){ scrollTo("todays-entry"); }; }
+  var na=el("button","btn block"); na.style.cssText="text-align:left;margin-top:11px;white-space:normal;line-height:1.35";
+  var naK=el("div"); naK.style.cssText="font-size:10.5px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--gray2,#8a8a99);margin-bottom:3px"; naK.textContent="Next action"; na.appendChild(naK);
+  var naT=el("div"); naT.style.cssText="font-weight:800;font-size:15px;line-height:1.35"; naT.textContent=naLabel; na.appendChild(naT);
+  na.onclick=naFn; b.appendChild(na);
+  var grid=el("div"); grid.style.cssText="display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:11px";
+  function tile(color,label,big,small,fn){ var t=el("div"); t.style.cssText="background:var(--card2,#1c1c24);border-radius:12px;padding:11px 12px;cursor:pointer;min-width:0"; t.appendChild(el("div","small muted",label)); var bg=el("div"); bg.style.cssText="font-weight:800;font-size:17px;letter-spacing:-.02em;margin-top:3px;color:"+color; bg.textContent=big; t.appendChild(bg); var sm=el("div","small dim"); sm.style.cssText="margin-top:2px;line-height:1.3"; sm.textContent=small; t.appendChild(sm); t.onclick=fn; return t; }
+  var uc=((state.realEstate&&state.realEstate.deals)||[]).filter(function(d){return d&&d.stage==="Under Contract";});
+  var ucSorted=uc.slice().sort(function(a,z){ return closeSortKey(a.close)-closeSortKey(z.close); });
+  var near=ucSorted[0]; var ucSub=near?(closeUrgency(near.close)||trunc(near.title,18)):"none pending";
+  grid.appendChild(tile("var(--blue,#3b82f6)","Closings",uc.length+" pending",ucSub,function(){ reView="pipeline"; try{render();}catch(_){} selectTab("re"); }));
+  var pkw=((state.pickleball&&state.pickleball.sessions)||[]).filter(function(sx){ if(!sx||!sx.date)return false; var du=daysUntil(sx.date); return du>=-6&&du<=0; }).length;
+  var pkFoc="keep the reps up"; try{ var pb=state.pickleball||{}; if(pb.coachBullets&&pb.coachBullets[TODAY]&&pb.coachBullets[TODAY][0]) pkFoc=pb.coachBullets[TODAY][0]; else if(Array.isArray(pb.workOn)&&pb.workOn[0]) pkFoc=pb.workOn[0]; }catch(_){}
+  grid.appendChild(tile("var(--green,#2ed78a)","Pickleball",pkw+" of 6",trunc(pkFoc,28),function(){ selectTab("pickle"); }));
+  if(!solHid){ grid.appendChild(tile("var(--violet,#8b7cf6)","Solara",openSol.length+" open",trunc((sol.drop||"Drop 001")+", "+(sol.status||""),24),function(){ scrollTo("solara-card"); })); }
+  var agSub= items.length? (openBrief.length?(openBrief.length+" to check"):"all checked"):"no brief yet";
+  grid.appendChild(tile("var(--orange,#ff9f43)","Agent",items.length+" cards",agSub,function(){ scrollTo("brief-anchor"); }));
+  b.appendChild(grid);
+  parent.appendChild(c);
+  }catch(e){ try{console.error("[dash] commandCenter",e);}catch(_){} }
+}
+function buildSolaraCard(parent){
+  if(hidden("solara")) return;
+  try{
+  if(!state.solara||typeof state.solara!=="object") state.solara={drop:"Drop 001",status:"In progress",tasks:[],notes:""};
+  var sd=state.solara; if(!Array.isArray(sd.tasks)) sd.tasks=[]; if(typeof sd.notes!=="string") sd.notes=""; if(typeof sd.drop!=="string"||!sd.drop) sd.drop="Drop 001"; if(typeof sd.status!=="string") sd.status="In progress";
+  sect(parent,"Solara","your product workspace");
+  var c=card("a-teal"); c.id="solara-card"; var b=c._body;
+  var top=el("div"); top.style.cssText="display:flex;align-items:center;gap:9px"; top.appendChild(el("h3",null,"Solara")); top.appendChild(el("span","pill b",sd.drop||"Drop 001")); b.appendChild(top);
+  var sr=el("div"); sr.style.marginTop="10px"; sr.appendChild(el("div","small muted","Status")); var si=el("input","in"); si.style.marginTop="5px"; si.value=sd.status||""; si.placeholder="In progress, Launched, Paused..."; si.oninput=function(){ sd.status=si.value; save(); }; sr.appendChild(si); b.appendChild(sr);
+  var tw=el("div"); tw.style.marginTop="12px"; tw.appendChild(el("div","small muted","Tasks"));
+  if(!sd.tasks.length){ var em=el("div","empty","No Solara tasks yet."); em.style.marginTop="6px"; tw.appendChild(em); }
+  sd.tasks.slice(0,5).forEach(function(t){ tw.appendChild(checkItem(t.done,t.text,null,function(){ t.done=!t.done; save(); render(); },function(){ var i=sd.tasks.indexOf(t); if(i>-1)sd.tasks.splice(i,1); save(); render(); })); });
+  if(sd.tasks.length>5){ tw.appendChild(el("div","small dim",(sd.tasks.length-5)+" more tasks")); }
+  tw.appendChild(adder("Add a Solara task...",function(txt){ sd.tasks.push({id:uid(),text:txt,done:false}); save(); render(); }));
+  b.appendChild(tw);
+  var nw=el("div"); nw.style.marginTop="12px"; nw.appendChild(el("div","small muted","Notes")); var nt=el("textarea","in"); nt.style.cssText="min-height:60px;margin-top:5px"; nt.value=sd.notes||""; nt.placeholder="Ideas, links, next steps for Solara..."; nt.oninput=function(){ sd.notes=nt.value; save(); }; nw.appendChild(nt); b.appendChild(nw);
+  parent.appendChild(c);
+  }catch(e){ try{console.error("[dash] solara",e);}catch(_){} }
+}
+function buildFutureIdeasHome(parent){
+  try{
+  var fi=state.futureIdeas; if(!fi||typeof fi!=="object") return;
+  var keys=Object.keys(fi).filter(function(k){ return Array.isArray(fi[k])&&fi[k].length&&k<=TODAY; }).sort();
+  if(!keys.length) return; var latest=keys[keys.length-1]; var arr=fi[latest]||[]; if(!arr.length) return;
+  sect(parent,"Future ideas","suggestions, not tasks");
+  var c=card("a-green"); var b=c._body;
+  b.appendChild(el("div","small dim","From your daily agent, "+fmtShort(latest)+". Ideas to consider, not to do items."));
+  arr.slice(0,3).forEach(function(it,i){ var r=el("div"); r.style.cssText="display:flex;gap:9px;align-items:flex-start;padding:9px 0"+(i>0?";border-top:1px solid var(--line)":""); var dot=el("span"); dot.style.cssText="color:var(--sec,var(--accent));font-weight:900;flex:0 0 auto"; dot.textContent="•"; var col=el("div"); col.style.minWidth="0"; var tx=el("div","small"); tx.style.cssText="line-height:1.5;color:var(--gray)"; tx.textContent=(typeof it==="string"?it:(it.text||it.title||"")); col.appendChild(tx); if(it&&it.url){ var a=el("a","small"); a.textContent="source"; a.setAttribute("href",it.url); a.setAttribute("target","_blank"); a.setAttribute("rel","noopener"); a.style.cssText="color:var(--sec2,var(--accent2));margin-top:3px;display:inline-block"; col.appendChild(a); } r.appendChild(dot); r.appendChild(col); b.appendChild(r); });
+  if(arr.length>3){ b.appendChild(el("div","small dim",(arr.length-3)+" more ideas from today")); }
+  parent.appendChild(c);
+  }catch(e){ try{console.error("[dash] futureIdeas",e);}catch(_){} }
+}
 function buildIanHome(v){ const workout=daySplit(DOW); const reTop=firstUndone(state.realEstate.todos); const nm=(state.settings&&state.settings.name)||"Ian";
-  /* v21 build 113: quick actions, the three things he actually opens the app for */
+  const hero=card("a-blue"); const b=hero._body; b.classList.add("hero"); const hi=el("div","hi"); hi.innerHTML=GREET+', <span class="name">'+nm.replace(/</g,"")+'</span>'; b.appendChild(hi); b.appendChild(el("div","date",LONGDATE+"  ·  your daily brief")); b.appendChild(el("div","focus","Today, "+cleanFocus(workout.focus)+". "+(reTop?"Real estate, "+reTop.text+".":"Pipeline follow ups are clear.")));
+  if(state.meta&&state.meta.lastReset===TODAY){ const rn=el("div","small"); rn.style.color="var(--sec2,var(--accent2))"; rn.style.fontWeight="700"; rn.style.marginTop="9px"; rn.textContent="New day. Yesterday's log was archived and daily items reset."; b.appendChild(rn); }
+  v.appendChild(hero);
+  if(!(state.settings&&state.settings.bannerDismissed)){ const bn=el("div","banner"); bn.appendChild(el("div",null,"For full interactivity and saving, open this file in Safari. An in app preview can limit some taps.")); const x=el("button","bx","×"); x.onclick=()=>{ if(!state.settings)state.settings={}; state.settings.bannerDismissed=true; save(); render(); }; bn.appendChild(x); v.appendChild(bn); }
+  safe(v,function(){ buildCommandCenter(v); },"Command center");
+  /* quick actions */
   safe(v,function(){
     var qc=card(); var q=el("div","qa");
     function qb(cls,icon,label,fn){ var b=el("button","qab "+cls); var i=el("div","ic"); i.textContent=icon; b.appendChild(i); var s=el("div"); s.textContent=label; b.appendChild(s); b.onclick=fn; return b; }
@@ -3115,14 +3204,8 @@ function buildIanHome(v){ const workout=daySplit(DOW); const reTop=firstUndone(s
     q.appendChild(qb("pk","\ud83c\udfd3","Coach",function(){ try{ PK_OPEN["pk_coach"]=true; }catch(e){} try{ render(); }catch(e){} selectTab("pickle"); }));
     qc._body.appendChild(q); v.appendChild(qc);
   },"Quick actions");
-  /* v21 build 113: ONE consolidated daily entry, replaces the scattered per section boxes */
-  
-  if(!(state.settings&&state.settings.bannerDismissed)){ const bn=el("div","banner"); bn.appendChild(el("div",null,"For full interactivity and saving, open this file in Safari. An in app preview can limit some taps.")); const x=el("button","bx","×"); x.onclick=()=>{ if(!state.settings)state.settings={}; state.settings.bannerDismissed=true; save(); render(); }; bn.appendChild(x); v.appendChild(bn); }
-  const hero=card("a-blue"); const b=hero._body; b.classList.add("hero"); const hi=el("div","hi"); hi.innerHTML=GREET+', <span class="name">'+nm.replace(/</g,"")+'</span>'; b.appendChild(hi); b.appendChild(el("div","date",LONGDATE+"  ·  your daily brief")); b.appendChild(el("div","focus","Today, "+cleanFocus(workout.focus)+". "+(reTop?"Real estate, "+reTop.text+".":"Pipeline follow ups are clear.")));
-  if(state.meta&&state.meta.lastReset===TODAY){ const rn=el("div","small"); rn.style.color="var(--sec2,var(--accent2))"; rn.style.fontWeight="700"; rn.style.marginTop="9px"; rn.textContent="New day. Yesterday's log was archived and daily items reset."; b.appendChild(rn); }
-  v.appendChild(hero);
   safe(v,function(){
-    sect(v,"Today's entry","one place for everything");
+    var _te=sect(v,"Today's entry","one place for everything"); if(_te)_te.id="todays-entry";
     if(!state.daily||typeof state.daily!=="object") state.daily={};
     if(!state.daily[TODAY]) state.daily[TODAY]={text:""};
     var c=card(); var b=c._body;
@@ -3155,7 +3238,7 @@ function buildIanHome(v){ const workout=daySplit(DOW); const reTop=firstUndone(s
     b.appendChild(foot);
     v.appendChild(c);
   },"Daily entry");
-  const _clsec=sect(v,"Today from Claude","new to check out"); _clsec.insertBefore(claudeAvatar("av-md chip"), _clsec.firstChild); { const items=briefItems(); if(!items.length){ const c=card(); c._body.appendChild(el("div","empty","No briefing yet for today. Your daily agent will add items here.")); v.appendChild(c); } else { items.forEach(it=>v.appendChild(briefCard(it))); v.appendChild(el("div","notice","Example items. Your daily agent will replace these each morning.")); } }
+  const _clsec=sect(v,"Today from Claude","new to check out"); if(_clsec)_clsec.id="brief-anchor"; _clsec.insertBefore(claudeAvatar("av-md chip"), _clsec.firstChild); { const items=briefItems(); if(!items.length){ const c=card(); c._body.appendChild(el("div","empty","No briefing yet for today. Your daily agent will add items here.")); v.appendChild(c); } else { items.forEach(it=>v.appendChild(briefCard(it))); v.appendChild(el("div","notice","Example items. Your daily agent will replace these each morning.")); } }
 /* v21 build 133: TRAINING HEATMAP moved from the Pickleball page to Home. It shows BOTH gym and pickleball
      sessions, not just pickleball, so it belongs on Home where Ian sees it on open. Forward looking layout,
      pickleball colour coding and gym colour intact, weekly count against the 5 to 6 target intact. */
@@ -3207,7 +3290,7 @@ function buildIanHome(v){ const workout=daySplit(DOW); const reTop=firstUndone(s
       b.appendChild(key);
       v.appendChild(cardEl);
     },"Training heatmap");
-    sect(v,"Easy wins","two small wins today"); quickWinCard(v);
+    safe(v,function(){ buildSolaraCard(v); },"Solara"); safe(v,function(){ buildFutureIdeasHome(v); },"Future ideas"); sect(v,"Easy wins","two small wins today"); quickWinCard(v);
   sect(v,"Water (cups)","tap to log, aim 10"); safe(v,()=>waterCard(v),"Water home");
   sect(v,"Stay in touch","your sphere"); safe(v,()=>homeSphereNudge(v),"Sphere nudge");
   sect(v,"Progress and upcoming","where you stand"); safe(v,()=>reGoalsCard(v),"RE goals"); safe(v,()=>homeUpcomingCard(v),"Upcoming RE");
@@ -3900,7 +3983,7 @@ function buildSettings(v){
   const who=el("div","small dim"); who.style.marginTop="12px"; who.textContent="Signed in as "+(profile==="chris"?"Chris McCain":"Ian McCain")+(state.settings&&state.settings.phone?"  ·  "+state.settings.phone:""); pc._body.appendChild(who); v.appendChild(pc);
   sect(v,"Paddle","your current paddle and specs, edit anytime"); (function(){ if(!state.pickleball||typeof state.pickleball!=="object") state.pickleball={}; const ppc=card(); ppc._body.appendChild(el("div","small muted","Current paddle and specs")); ppc._body.firstChild.style.marginBottom="6px"; const pta=el("textarea","in"); pta.style.minHeight="74px"; pta.value=state.pickleball.paddle||""; pta.placeholder="e.g. JOOLA Perseus IV, 16mm, elongated, small grip plus one overgrip"; pta.oninput=function(){ state.pickleball.paddle=pta.value; save(); }; ppc._body.appendChild(pta); v.appendChild(ppc); })();
   sect(v,"Accent color"); const ac=card(); ac._body.appendChild(el("div","small muted","Defaults to blue.")); ac._body.firstChild.style.marginBottom="8px"; const sw=el("div","swatches"); ACCENTS.forEach(pair=>{ const s=el("div","sw"+(state.settings.accent===pair[0]?" on":"")); s.style.background=pair[0]; s.onclick=()=>{ state.settings.accent=pair[0]; state.settings.accent2=pair[1]; applyAccent(); save(); render(); }; sw.appendChild(s); }); ac._body.appendChild(sw); v.appendChild(ac);
-  sect(v,"Show or hide"); const hc=card(); const hb=hc._body; const toggles=[["neighborhoods","Neighborhoods"],["scripts","Quick scripts"],["ideas","Ideas and notes"]]; toggles.forEach(([key,label])=>{ const r=el("div","mrow"); r.appendChild(el("div","ml",label)); const tg=el("div","toggle"+(!hidden(key)?" on":"")); tg.onclick=()=>{ if(!state.settings.hidden)state.settings.hidden={}; if(hidden(key))delete state.settings.hidden[key]; else state.settings.hidden[key]=true; save(); render(); }; r.appendChild(tg); hb.appendChild(r); }); v.appendChild(hc);
+  sect(v,"Show or hide"); const hc=card(); const hb=hc._body; const toggles=[["neighborhoods","Neighborhoods"],["scripts","Quick scripts"],["ideas","Ideas and notes"],["solara","Solara"]]; toggles.forEach(([key,label])=>{ const r=el("div","mrow"); r.appendChild(el("div","ml",label)); const tg=el("div","toggle"+(!hidden(key)?" on":"")); tg.onclick=()=>{ if(!state.settings.hidden)state.settings.hidden={}; if(hidden(key))delete state.settings.hidden[key]; else state.settings.hidden[key]=true; save(); render(); }; r.appendChild(tg); hb.appendChild(r); }); v.appendChild(hc);
   sect(v,"Account"); const acc=card(); const ab=acc._body; const lk=el("button","btn ghost block","Lock now"); lk.style.marginTop="0"; lk.onclick=()=>{ lockNow(); }; ab.appendChild(lk); v.appendChild(acc);
   sect(v,"Data"); const dc=card(); const db=dc._body; const eb=el("button","btn ghost block","Export backup"); eb.style.marginTop="0"; eb.onclick=doExport; db.appendChild(eb); const ib=el("button","btn ghost block","Import backup"); ib.onclick=()=>document.getElementById("importFile").click(); db.appendChild(ib); const rb=el("button","btn danger block","Reset and clear this profile"); rb.onclick=()=>{ if(confirm("This clears "+(profile==="chris"?"Chris":"Ian")+"'s saved data and restores the starter content. Continue?")){ try{ store.remove(KEYS[profile]); }catch(e){} state=seedFor(profile); applyAccent(); save(true); selectTab("home"); toast("Data reset"); } }; db.appendChild(rb); v.appendChild(dc);
   sect(v,"App version"); const vc=card("a-blue"); const vb=vc._body; vb.appendChild(el("div","small muted","You are running")); vb.firstChild.style.marginBottom="4px"; const vv=el("div"); vv.style.cssText="font-weight:800;font-size:16px;letter-spacing:-.01em"; vv.textContent=APP_BUILD; vb.appendChild(vv); const rfb=el("button","btn block","Check for updates / Refresh app"); rfb.style.marginTop="13px"; rfb.onclick=refreshApp; vb.appendChild(rfb); const vhint=el("div","small dim"); vhint.style.marginTop="9px"; vhint.textContent="Reloads the app to pull the newest version from the web. Your saved data and today\u2019s entries are kept."; vb.appendChild(vhint); v.appendChild(vc);
