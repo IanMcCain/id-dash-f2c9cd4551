@@ -13,7 +13,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Ian">
 <title>Ian Dashboard</title>
-<meta name="build" content="v21 build 180 (2026-07-27)">
+<meta name="build" content="v21 build 181 (2026-07-27)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -736,7 +736,7 @@ const sess=(function(){ let ok=false,mem={}; try{ const t="__s__"; window.sessio
 })();
 const KEYS={ ian:"ianDashboard.v2", chris:"chrisDashboard.v2" };
 const SEED_VERSION=13;
-const APP_BUILD="v21 build 180 (2026-07-27)";
+const APP_BUILD="v21 build 181 (2026-07-27)";
 const WATER_GOAL=10; 
 const uid=()=>Math.random().toString(36).slice(2,9);
 function todayKey(d){ d=d||new Date(); const p=n=>String(n).padStart(2,"0"); return d.getFullYear()+"-"+p(d.getMonth()+1)+"-"+p(d.getDate()); }
@@ -2937,6 +2937,20 @@ function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]
       });
       state.meta.mig180_deal_fixes=true; save(true);
   } }catch(e){}
+  /* v21 build 181: restore the full Solara milestone set (Ian accidentally removed one). Ensure the three
+     prep steps lead in order, then the Aug 10 target drop, preserving any milestones or edits he made.
+     Guarded, idempotent, add only. */
+  try{ if(state.solara && state.meta && !state.meta.mig181_solara_full){
+      var _s=state.solara; if(!Array.isArray(_s.milestones)) _s.milestones=[];
+      var STEPS=[["get clothes back from press","Get clothes back from press"],["shoot and edit all the content","Shoot and edit all the content"],["set everything up to post and go live","Set everything up to post and go live"]];
+      var have={}; _s.milestones.forEach(function(m){ if(m) have[String(m.label||"").toLowerCase()]=m; });
+      var stepObjs=STEPS.map(function(p){ return have[p[0]] || {id:uid(),date:"",label:p[1],done:false,target:true}; });
+      var stepSet={}; STEPS.forEach(function(p){ stepSet[p[0]]=1; });
+      var rest=_s.milestones.filter(function(m){ return m && !stepSet[String(m.label||"").toLowerCase()]; });
+      if(!rest.some(function(m){ return m && (m.date==="2026-08-10" || String(m.label||"").toLowerCase()==="drop 001 launch"); })) rest.push({id:uid(),date:"2026-08-10",label:"Drop 001 launch",done:false,target:true});
+      _s.milestones=stepObjs.concat(rest);
+      state.meta.mig181_solara_full=true; save(true);
+  } }catch(e){}
   focusObj.running=false; try{clearInterval(focusObj.timerId);}catch(e){} focusObj.remaining=null;
   applyAccent(); dailyReset(); save(true);
 }
@@ -2949,6 +2963,9 @@ function save(now){ try{ clearTimeout(saveT);}catch(e){}
 /* ===== helpers ===== */
 const el=(t,c,txt)=>{ const e=document.createElement(t); if(c)e.className=c; if(txt!=null)e.textContent=txt; return e; };
 const CHECK='<svg viewBox="0 0 24 24" fill="none" stroke="#04122e" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
+/* build 181: custom PICKLEBALL icon (paddle plus a wiffle style ball with holes). There is no dedicated
+   pickleball emoji in Unicode, so this replaces the table tennis stand in. Line style to match the app. */
+const PICKLE_SVG='<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14.6 3.2c3 1.25 4.35 4.7 3.05 7.65s-4.7 4.35-7.65 3.05-4.35-4.7-3.05-7.65S11.65 1.95 14.6 3.2Z"/><path d="M8.5 13 4.2 19.8"/><circle cx="17.4" cy="17.4" r="3.2"/><circle cx="16.5" cy="16.6" r=".5" fill="currentColor" stroke="none"/><circle cx="18.4" cy="16.7" r=".5" fill="currentColor" stroke="none"/><circle cx="17.4" cy="18.3" r=".5" fill="currentColor" stroke="none"/></svg>';
 const CLAUDE_SVG='<svg viewBox="0 0 28 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect x="5" y="4" width="18" height="12" rx="3.5" fill="#c8795a"/><rect x="6.6" y="15.4" width="2.7" height="4" rx="0.7" fill="#c8795a"/><rect x="10.6" y="15.4" width="2.7" height="4" rx="0.7" fill="#c8795a"/><rect x="14.6" y="15.4" width="2.7" height="4" rx="0.7" fill="#c8795a"/><rect x="18.6" y="15.4" width="2.7" height="4" rx="0.7" fill="#c8795a"/><rect x="10" y="7.8" width="3.1" height="3.9" rx="0.7" fill="#161616"/><rect x="15" y="7.8" width="3.1" height="3.9" rx="0.7" fill="#161616"/></svg>';
 function claudeAvatar(cls){ const sp=el("span","cav "+(cls||"av-sm")); sp.innerHTML=CLAUDE_SVG; return sp; }
 function toast(m){ try{ const t=document.getElementById("toast"); t.textContent=m; t.classList.add("show"); clearTimeout(t._t); t._t=setTimeout(()=>t.classList.remove("show"),1600);}catch(e){} }
@@ -3217,15 +3234,18 @@ function buildSolara(v){
 
   var dropName=el("div"); dropName.style.cssText="font-weight:800;font-size:25px;letter-spacing:-.02em;margin-top:14px;line-height:1.1"; dropName.textContent=sd.drop||"Drop 001"; hb.appendChild(dropName);
 
+  /* build 181: the TOP highlights only the single most important thing, DROP DAY. The full milestone
+     timeline lives once, lower down. No second timeline up here. */
   var du=daysUntil("2026-08-10");
-  var pills=el("div"); pills.style.cssText="display:flex;flex-wrap:wrap;gap:8px;margin-top:11px";
-  function solChip(txt,warm){ var p=el("span"); p.style.cssText="display:inline-block;font-size:11px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;padding:5px 11px;border-radius:999px;border:1px solid "+(warm?"rgba(255,176,32,.42)":"var(--line2)")+";color:"+(warm?"#ffb020":"var(--gray)")+";background:"+(warm?"rgba(255,176,32,.09)":"transparent"); p.textContent=txt; return p; }
-  if(du>0) pills.appendChild(solChip("Target drop in "+du+" days",true));
-  else if(du===0) pills.appendChild(solChip("Target drop day",true));
-  else pills.appendChild(solChip("Drop target passed",true));
-  pills.appendChild(solChip(sd.status||"In progress",false));
-  pills.appendChild(solChip(openTasks?openTasks+" open tasks":"all clear",false));
-  hb.appendChild(pills);
+  var dday=el("div"); dday.style.cssText="margin-top:15px;border:1px solid rgba(255,176,32,.4);background:rgba(255,176,32,.08);border-radius:14px;padding:13px 15px";
+  var ddTop=el("div"); ddTop.style.cssText="display:flex;align-items:center;gap:8px";
+  var ddLab=el("div"); ddLab.style.cssText="font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#ffb020"; ddLab.textContent="Drop day"; ddTop.appendChild(ddLab);
+  var ddTag=el("span"); ddTag.style.cssText="font-size:10px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:#ffb020;border:1px solid rgba(255,176,32,.42);border-radius:999px;padding:2px 7px"; ddTag.textContent="target"; ddTop.appendChild(ddTag);
+  dday.appendChild(ddTop);
+  var ddBig=el("div"); ddBig.style.cssText="font-weight:800;font-size:23px;letter-spacing:-.02em;margin-top:6px;color:var(--white)"; ddBig.textContent=(du>0?(du+(du===1?" day to go":" days to go")):(du===0?"Today":"Target date passed")); dday.appendChild(ddBig);
+  var ddSub=el("div","small dim"); ddSub.style.marginTop="2px"; ddSub.textContent="Aug 10, 2026, aim"; dday.appendChild(ddSub);
+  hb.appendChild(dday);
+  var stLine=el("div","small dim"); stLine.style.marginTop="11px"; stLine.textContent="Status, "+(sd.status||"In progress")+(openTasks?"  ·  "+openTasks+" open tasks":""); hb.appendChild(stLine);
 
   var vs=el("a","btn block"); vs.textContent="Visit the Solara site"; vs.setAttribute("href","https://solaramotorsports.com"); vs.setAttribute("target","_blank"); vs.setAttribute("rel","noopener"); vs.style.cssText="display:block;text-align:center;margin-top:16px;text-decoration:none"; hb.appendChild(vs);
   /* build 178: Instagram link. Ian is confirming the handle, so this is a clean spot. When he sets it in the
@@ -3288,11 +3308,8 @@ function buildSolara(v){
   kb.appendChild(adder("Add a Solara task...",function(txt){ sd.tasks.push({id:uid(),text:txt,done:false}); save(); render(); }));
   v.appendChild(kc);
 
-  /* ---- NOTES ---- */
-  sect(v,"Notes","ideas and next steps");
-  var nc=card(); var nbd=nc._body;
-  var nt=el("textarea","in"); nt.style.cssText="min-height:96px"; nt.value=sd.notes||""; nt.placeholder="Ideas, links, next steps for Solara..."; nt.oninput=function(){ sd.notes=nt.value; save(); }; nbd.appendChild(nt);
-  v.appendChild(nc);
+  /* build 181: the Notes section was removed from the Solara page at Ian's request, he keeps notes in the
+     Home notes area now. state.solara.notes is preserved in state, just not rendered here. */
 
   }catch(e){ try{console.error("[dash] solara",e);}catch(_){} }
 }
@@ -3318,7 +3335,7 @@ function buildIanHome(v){ const workout=daySplit(DOW); const reTop=firstUndone(s
   /* quick actions (build 176: Command Center removed, Quick actions sits at the top of Home) */
   safe(v,function(){
     var qc=card(); var q=el("div","qa");
-    function qb(cls,icon,label,fn){ var b=el("button","qab "+cls); var i=el("div","ic"); i.textContent=icon; b.appendChild(i); var s=el("div"); s.textContent=label; b.appendChild(s); b.onclick=fn; return b; }
+    function qb(cls,icon,label,fn){ var b=el("button","qab "+cls); var i=el("div","ic"); if(/^\s*<svg/.test(icon)){ i.innerHTML=icon; } else { i.textContent=icon; } b.appendChild(i); var s=el("div"); s.textContent=label; b.appendChild(s); b.onclick=fn; return b; }
     /* build 121 NAV FIX: the Gym page has two collapsibles keyed by TITLE in reToolOpen. Both buttons used to
        just land on the Gym page with whatever was last open, so Nutrition opened the workout routine. Each
        button now opens its own section and closes the other, then navigates. */
@@ -3338,7 +3355,7 @@ function buildIanHome(v){ const workout=daySplit(DOW); const reTop=firstUndone(s
     q.appendChild(qb("re","\ud83c\udfe1","Real Estate",function(){ reView="pipeline"; try{ render(); }catch(e){} selectTab("re"); }));
     q.appendChild(qb("gy","\ud83c\udfcb","Workout",function(){ gymJump("Workout routine"); }));
     /* build 121: Coach opens the Pickleball tab AND expands the Personal Coach section, which is keyed pk_coach. */
-    q.appendChild(qb("pk","\ud83c\udfd3","Coach",function(){ try{ PK_OPEN["pk_coach"]=true; }catch(e){} try{ render(); }catch(e){} selectTab("pickle"); }));
+    q.appendChild(qb("pk",PICKLE_SVG,"Coach",function(){ try{ PK_OPEN["pk_coach"]=true; }catch(e){} try{ render(); }catch(e){} selectTab("pickle"); }));
     q.appendChild(qb("so","\u2600\ufe0f","Solara",function(){ selectTab("solara"); }));
     qc._body.appendChild(q); v.appendChild(qc);
   },"Quick actions");
@@ -3873,7 +3890,7 @@ function pkCollapse(parent,key,title,sub,openDefault,build,icon,accent,id){
   var TINT={blue:"rgba(59,130,246,.16)",green:"rgba(46,215,138,.16)",orange:"rgba(255,159,67,.16)",cyan:"rgba(56,189,248,.16)",purple:"rgba(167,139,250,.16)",teal:"rgba(45,212,191,.16)",red:"rgba(255,99,99,.16)",pink:"rgba(244,114,182,.16)",violet:"rgba(139,124,246,.16)"};
   var hc=card("a-"+acc); hc.style.cursor="pointer"; hc.style.marginBottom="0"; var hb=hc._body;
   var row=el("div"); row.style.cssText="display:flex;align-items:center;gap:11px";
-  if(icon){ var ic=el("div"); ic.style.cssText="width:34px;height:34px;border-radius:11px;display:grid;place-items:center;font-size:18px;flex:0 0 auto;background:"+(TINT[acc]||TINT.blue); ic.textContent=icon; row.appendChild(ic); }
+  if(icon){ var ic=el("div"); ic.style.cssText="width:34px;height:34px;border-radius:11px;display:grid;place-items:center;font-size:18px;flex:0 0 auto;background:"+(TINT[acc]||TINT.blue); if(/^\s*<svg/.test(icon)){ ic.innerHTML=icon; } else { ic.textContent=icon; } row.appendChild(ic); }
   var left=el("div"); left.style.flex="1"; left.style.minWidth="0";
   var t=el("div"); t.style.cssText="font-weight:800;font-size:17px;letter-spacing:-.02em"; t.textContent=title; left.appendChild(t);
   if(sub){ var s2=el("div","small dim"); s2.style.marginTop="2px"; s2.textContent=sub; left.appendChild(s2); }
@@ -4001,7 +4018,7 @@ function buildPickle(v){ var pb=state.pickleball||(state.pickleball={});
     
     safe(ap,function(){ var cu=(pb.cues&&pb.cues.length)?pb.cues.slice(0,6):[]; sect(ap,"While playing","6 cues"); var cc=card(); if(!cu.length){ cc._body.appendChild(el("div","empty","Your coach will fill this in from your game plan.")); } else { cu.forEach(function(line,i){ var r=el("div","small"); r.style.cssText="line-height:1.52;color:var(--gray)"+(i>0?";margin-top:9px":""); var dot=el("span"); dot.style.cssText="color:var(--pk2);font-weight:800;margin-right:8px"; dot.textContent="\u203a"; r.appendChild(dot); r.appendChild(document.createTextNode(line)); cc._body.appendChild(r); }); } ap.appendChild(cc); },"Active cues");
   
-  },"🎾","orange");
+  },PICKLE_SVG,"orange");
   pkCollapse(v,"pk_drills","Drills","one capped list, machine and partner",false,function(ap){
     safe(ap,function(){ if(!Array.isArray(pb.drills)) pb.drills=[]; function pkGrp(host,label,sub,key){ var list=pb.drills.filter(function(d){return d&&d.group===key;}).slice(0,4); if(!list.length) return; sect(host,label,sub); var gc=card(); list.forEach(function(d){ var r=el("div","small"); r.style.cssText="line-height:1.5;color:var(--gray)"; if(gc._body.childElementCount) r.style.marginTop="9px"; var dot=el("span"); dot.style.cssText="color:var(--sec,var(--accent));font-weight:800;margin-right:8px"; dot.textContent="\u2022"; r.appendChild(dot); r.appendChild(document.createTextNode(d.text||"")); gc._body.appendChild(r); }); host.appendChild(gc); } pkGrp(ap,"Machine drills","club ball machine, 3 to 4 max","machine"); pkGrp(ap,"With a partner","live reps, 3 to 4 max","partner"); },"Pickle drills capped");
 
@@ -4246,9 +4263,10 @@ try{ if(document.readyState==="loading") document.addEventListener("DOMContentLo
     target:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="1"/></svg>',
     people:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="8.5" cy="9" r="3"/><circle cx="16.5" cy="9.5" r="2.4"/><path d="M3.5 19a5 5 0 0 1 10 0"/><path d="M14.5 19a4.2 4.2 0 0 1 6-3.8"/></svg>',
     bolt:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 4.5 13.5H11l-1 8.5L19.5 10H13z"/></svg>',
-    sun:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4.1"/><path d="M12 2v2.6M12 19.4V22M4.2 4.2l1.85 1.85M17.95 17.95 19.8 19.8M2 12h2.6M19.4 12H22M4.2 19.8l1.85-1.85M17.95 6.05 19.8 4.2"/></svg>'
+    sun:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4.1"/><path d="M12 2v2.6M12 19.4V22M4.2 4.2l1.85 1.85M17.95 17.95 19.8 19.8M2 12h2.6M19.4 12H22M4.2 19.8l1.85-1.85M17.95 6.05 19.8 4.2"/></svg>',
+    pickle:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14.6 3.2c3 1.25 4.35 4.7 3.05 7.65s-4.7 4.35-7.65 3.05-4.35-4.7-3.05-7.65S11.65 1.95 14.6 3.2Z"/><path d="M8.5 13 4.2 19.8"/><circle cx="17.4" cy="17.4" r="3.2"/><circle cx="16.5" cy="16.6" r=".5" fill="currentColor" stroke="none"/><circle cx="18.4" cy="16.7" r=".5" fill="currentColor" stroke="none"/><circle cx="17.4" cy="18.3" r=".5" fill="currentColor" stroke="none"/></svg>'
   };
-  var EM={'🏠':'home','🏡':'building','🏋':'dumbbell','📊':'chart','🧭':'more','🌱':'sprout','✅':'check','🧰':'tools','🎾':'ball','🎯':'target','🤝':'people','👥':'people','⚡':'bolt','☀':'sun'};
+  var EM={'🏠':'home','🏡':'building','🏋':'dumbbell','📊':'chart','🧭':'more','🌱':'sprout','✅':'check','🧰':'tools','🎾':'pickle','🎯':'target','🤝':'people','👥':'people','⚡':'bolt','☀':'sun'};
   function baseEmoji(t){ if(!t) return ''; t=t.replace(/[️‍]/g,'').trim(); // strip VS16/ZWJ
     for(var k in EM){ if(t.indexOf(k)===0) return k; } return ''; }
   function swapIcons(){
