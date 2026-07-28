@@ -13,7 +13,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Ian">
 <title>Ian Dashboard</title>
-<meta name="build" content="v21 build 185 (2026-07-28)">
+<meta name="build" content="v21 build 186 (2026-07-28)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -736,7 +736,7 @@ const sess=(function(){ let ok=false,mem={}; try{ const t="__s__"; window.sessio
 })();
 const KEYS={ ian:"ianDashboard.v2", chris:"chrisDashboard.v2" };
 const SEED_VERSION=13;
-const APP_BUILD="v21 build 185 (2026-07-28)";
+const APP_BUILD="v21 build 186 (2026-07-28)";
 const WATER_GOAL=10; 
 const uid=()=>Math.random().toString(36).slice(2,9);
 function todayKey(d){ d=d||new Date(); const p=n=>String(n).padStart(2,"0"); return d.getFullYear()+"-"+p(d.getMonth()+1)+"-"+p(d.getDate()); }
@@ -3067,6 +3067,17 @@ function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]
   try{ if(state.todos && Array.isArray(state.todos)){
       if(!state.todos.some(function(t){ return t && t.id==="td-nsq-decision-0728"; })){
         state.todos.push({id:"td-nsq-decision-0728",text:"Decide by August 5 whether to enter the Nebraska State Qualifier in Lincoln, Aug 14 to 16. DUPR rated with a 3.5 division, round robin then single elimination, most teams done in 4 to 5 hours, top 4 qualify for the state championships. The tradeoff: it would set your DUPR baseline BEFORE Aug 23 and it eats your taper week.",done:false,due:"2026-08-05"});
+        save(true);
+      }
+  } }catch(e){}
+  /* v21 build 186: log the Tuesday 2026-07-28 open play session from Ian's Apple Watch. Open play, Omaha, 1:21 to
+     2:33 PM, 1:12:12, avg HR 121, max 158, effort 8 Hard, 735 total calories (622 active). Every load idempotent add
+     keyed on the id and the date, only pushes if no 2026-07-28 session and no pk-20260728-openplay exists, so it
+     never duplicates. kind Open play so it carries the open play heat map color and shows in this week and history.
+     No coaching, radar or self report change. Non-destructive, touches nothing else. */
+  try{ if(profile==="ian" && state.pickleball && Array.isArray(state.pickleball.sessions)){
+      if(!state.pickleball.sessions.some(function(x){ return x && (x.id==="pk-20260728-openplay" || x.date==="2026-07-28"); })){
+        state.pickleball.sessions.push({id:"pk-20260728-openplay",date:"2026-07-28",kind:"Open play",venue:"Omaha",duration:"1h 12m 12s",calories:735,activeCalories:622,avgHr:121,maxHr:158,effort:8,note:"Open play, Omaha, 1:21 to 2:33 PM, 1:12:12. Effort 8, Hard. From Apple Watch."});
         save(true);
       }
   } }catch(e){}
