@@ -13,7 +13,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Ian">
 <title>Ian Dashboard</title>
-<meta name="build" content="v21 build 184 (2026-07-27)">
+<meta name="build" content="v21 build 185 (2026-07-28)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -736,7 +736,7 @@ const sess=(function(){ let ok=false,mem={}; try{ const t="__s__"; window.sessio
 })();
 const KEYS={ ian:"ianDashboard.v2", chris:"chrisDashboard.v2" };
 const SEED_VERSION=13;
-const APP_BUILD="v21 build 184 (2026-07-27)";
+const APP_BUILD="v21 build 185 (2026-07-28)";
 const WATER_GOAL=10; 
 const uid=()=>Math.random().toString(36).slice(2,9);
 function todayKey(d){ d=d||new Date(); const p=n=>String(n).padStart(2,"0"); return d.getFullYear()+"-"+p(d.getMonth()+1)+"-"+p(d.getDate()); }
@@ -3019,6 +3019,58 @@ function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]
       } });
       state.meta.mig184b_winchester=true; save(true);
   } }catch(e){}
+  /* v21 build 185 (2026-07-28): daily brief agent injects today's date keyed content, the brief cards, future ideas,
+     easy wins, the video pick, the research read, this week focus and today's coach bullets. Also surfaces the
+     Nebraska State Qualifier (Lincoln, Aug 14 to 16, DUPR rated, 3.5 division) as a calendar event plus a decision
+     todo, adds the two in one drop ladder drill, and refreshes Work on and Cues to the serve mechanics from the
+     07.28 research run. The workOn and cues WHOLE ARRAY assignments sit here deliberately, LAST in file order, so no
+     earlier every load writer can clobber them (build 127 lesson). New date keys only, presence checked, additive
+     and idempotent. Touches none of Ian's logged sessions, gym logs, deals, people, notes or check offs. */
+  try{ if(profile==="ian" && state.pickleball){
+      var TID185="2026-07-28";
+      if(!state.briefing) state.briefing={forIan:{},done:{}};
+      if(!state.briefing.forIan) state.briefing.forIan={};
+      if(!state.briefing.forIan[TID185]) state.briefing.forIan[TID185]=[{"id": "brief-20260728-1", "type": "Real estate", "title": "Spicer closes in 6 days and the appraisal is still not in", "note": "18734 Olive, $474,900, closes August 3. The appraisal has been the only open unknown on that file for weeks. Call the lender this morning. Source: app pipeline, 07.28.", "url": "", "done": false}, {"id": "brief-20260728-2", "type": "Real estate", "title": "Cynthia Willis goes live Thursday August 6, prep is a this week job", "note": "Nine days out on 10218 Spyglass at $629,900. Photos, listing copy, syndication check and the just listed push get built this week, not the night before. Source: app pipeline, 07.28.", "url": "", "done": false}, {"id": "brief-20260728-3", "type": "Pickleball", "title": "Serve higher, not harder. About 4 feet over the net", "note": "The world number one aims for height and lets topspin drop it, swinging out and up at 45 degrees. Your flat tennis instinct is why a quarter of your power serves find the tape.", "url": "https://www.youtube.com/watch?v=_ew47Dqi-3w", "done": false}, {"id": "brief-20260728-4", "type": "Pickleball", "title": "A DUPR rated 3.5 event sits 7 days before your tournament", "note": "Nebraska State Qualifier, Lincoln, August 14 to 16. It would set your DUPR before Aug 23 and eat your taper week. Real tradeoff, decide by early August. Source: pickleballtournaments.com, 07.28.", "url": "https://www.pickleballtournaments.com/", "done": false}];
+      if(!state.futureIdeas||typeof state.futureIdeas!=="object") state.futureIdeas={};
+      if(!state.futureIdeas[TID185]) state.futureIdeas[TID185]=[{"id": "fi-20260728-1", "text": "Put a QR code on the just sold flyers that lands on an instant home value page. A flyer that only says sold is a brag, a flyer that answers what is mine worth is lead generation, and both Sugar Creek and Walnut Creek Hills are walks you have not done yet.", "url": ""}, {"id": "fi-20260728-2", "text": "Twenty minutes, phone contacts, top to bottom. Write down 25 names with zero filter for whether they are buying. A sphere is everyone who could ever refer you, not a list of active buyers, and yours has two people in it while seven deals are under contract.", "url": ""}, {"id": "fi-20260728-3", "text": "Film 30 seconds of your serve from behind the baseline at Ace tonight, then hold it next to the Staksrud clip. You cannot feel your own arc, but you can see it, and the whole fix this week is a height number you have to calibrate.", "url": "https://www.youtube.com/watch?v=_ew47Dqi-3w"}, {"id": "fi-20260728-4", "text": "Shoot one Solara clip in low light with a flash. Reflective print is the thing nobody else can show in a photo, and Drop 001 targets August 10, so the teaser wants the one feature that only reads on video.", "url": ""}];
+      if(!state.quickWin) state.quickWin={items:[],done:{},picks:{}};
+      if(!state.quickWin.picks) state.quickWin.picks={};
+      if(!state.quickWin.picks[TID185]) state.quickWin.picks[TID185]=["Build the Troester just sold flyer for 1709 Diane. It is two days overdue and Walnut Creek Hills stays blocked until it exists.", "Open today's session with the serve calibration block. Twenty drop and catch reps with no swing, then 40 serves aimed 4 feet over the net."];
+      var _p185=state.pickleball;
+      if(!_p185.videoRec||typeof _p185.videoRec!=="object") _p185.videoRec={};
+      if(!_p185.videoRec[TID185]) _p185.videoRec[TID185]={"title": "Federico Staksrud Teaches How to Serve in Pickleball (Pickleball Playbook)", "url": "https://www.youtube.com/watch?v=_ew47Dqi-3w", "note": "The world number one breaking down his own serve, and it answers your exact problem. He wants power and heavy topspin the same as you, and he keeps it in by hitting HIGH over the net instead of flat. Watch the 45 degree swing path and the calibration method for finding your height."};
+      if(!_p185.research||typeof _p185.research!=="object") _p185.research={};
+      if(!_p185.research[TID185]) _p185.research[TID185]={"title": "Height gets you depth. Find your number.", "text": "Staksrud does not aim for depth, he aims for HEIGHT and lets the topspin bring it down, serving about 4 feet over the net. The method is a basket of serves where you deliberately go too high, watch how deep it lands, and lower it until you find the height where you can swing at 80 to 85 percent and still land in the back two feet. That height is your number. Your tennis instinct is to hit down and flat, which is exactly where a 25 percent net rate comes from.", "url": "https://www.youtube.com/watch?v=_ew47Dqi-3w", "source": "Pickleball Playbook with Federico Staksrud, pulled 07.28.2026"};
+      if(!_p185.coachRec||typeof _p185.coachRec!=="object") _p185.coachRec={};
+      if(!_p185.coachRec[TID185]) _p185.coachRec[TID185]={"title": "Groove the serve, then earn the pace back", "note": "You are handing over 2 to 3 points a game before a rally starts, and it is the cheapest fix on your list because nobody is interfering with you. Serve 40 to 50 a session at the arc you can make 9 out of 10, then finish with five minutes of reps at a raised heart rate so the motion survives a match instead of only working when you are fresh."};
+      if(!_p185.coachBullets||typeof _p185.coachBullets!=="object") _p185.coachBullets={};
+      if(!_p185.coachBullets[TID185]) _p185.coachBullets[TID185]=["Today's focus, the arc. Hit the serve about 4 feet over the net, out and up at roughly 45 degrees, and let the topspin bring it down. Your tennis instinct to hit down and flat is exactly where a 25 percent net rate comes from.", "Your Monday discovery holds up and the research is blunter than you expect. Spin amplifies whatever inconsistency is already in the motion, so the slower serve is not a bailout, it IS the serve. The pace goes back on top of a base that is already automatic.", "Same ball drop every single time. Drop and catch it 20 times with no swing before you care where anything lands, then lock contact just in front of your lead hip. Inches of variance at contact become feet at the baseline.", "Stay low the whole way through. Starting low then standing up is the most common serve fault there is, and it is the same rise through contact that floats your dinks and drifts your drops. One fault, three shots.", "Finish serve practice at a raised heart rate, ten jumping jacks then serve. You average 143 beats a minute in open play, and a serve grooved at rest is not a serve you own."];
+      /* new drill, additive push guard so it never duplicates and his check offs survive */
+      if(!Array.isArray(_p185.drills)) _p185.drills=[];
+      if(!_p185.drills.some(function(d){ return d && d.id==="pbk-dropladder-0728"; })){
+        _p185.drills.push({id:"pbk-dropladder-0728",t:"Drop ladder, kitchen to baseline and back, two balls per station, grip stays at 3"});
+      }
+      /* Nebraska State Qualifier surfaced as a calendar event, NOT entered, decision needed */
+      if(!Array.isArray(state.events)) state.events=[];
+      if(!state.events.some(function(e){ return e && e.id==="ev-20260814-nsq-lincoln"; })){
+        state.events.push({id:"ev-20260814-nsq-lincoln",date:"2026-08-14",kind:"Pickleball",title:"Nebraska State Qualifier, Lincoln, Aug 14 to 16, DUPR rated 3.5 division (not entered, decision needed)"});
+      }
+      if(state.realEstate && !Array.isArray(state.realEstate.todos)) state.realEstate.todos=[];
+      /* serve and cue refresh, WHOLE ARRAY, intentionally last in file order */
+      _p185.workOn=["Serve arc, about 4 feet over the net, out and up at 45 degrees, and let the topspin bring it down.", "Same ball drop every serve, same height and release, and contact just in front of your lead hip.", "Stay low through the whole serve. That same rise through contact floats your dinks and drifts your drops.", "Finish serve practice at a raised heart rate. A serve grooved at rest is not a serve you own.", "Drops are still the main fault. Run the drop ladder, kitchen to baseline and back, two balls per station.", "Footwork, split step just before they contact the ball, then small adjustment steps to get set and balanced BEFORE you hit.", "Construct and finish, stop walling. Dinks to move them, then attack the pop up, but take only the shot that is there."];
+      _p185.cues=["High over the net, not flat at the line", "Out and up at 45, never straight forward", "Same ball drop, every single serve", "Contact in front of the lead hip", "Stay down through contact", "Money serve first, power serve second", "In a match, pick a spot and go, no technique thoughts", "Drop is a big dink, grip stays at 3", "Paddle up and in front before they swing, not after", "Play to WIN, attack the first ball that sits up"];
+      save(true);
+  } }catch(e){}
+  /* v21 build 185: pickleball decision todo for the Nebraska State Qualifier, additive push guard on a stable id so
+     it never duplicates and Ian's done state is preserved. Kept separate from the content block above so a failure
+     in one cannot block the other. */
+  try{ if(state.todos && Array.isArray(state.todos)){
+      if(!state.todos.some(function(t){ return t && t.id==="td-nsq-decision-0728"; })){
+        state.todos.push({id:"td-nsq-decision-0728",text:"Decide by August 5 whether to enter the Nebraska State Qualifier in Lincoln, Aug 14 to 16. DUPR rated with a 3.5 division, round robin then single elimination, most teams done in 4 to 5 hours, top 4 qualify for the state championships. The tradeoff: it would set your DUPR baseline BEFORE Aug 23 and it eats your taper week.",done:false,due:"2026-08-05"});
+        save(true);
+      }
+  } }catch(e){}
+
   focusObj.running=false; try{clearInterval(focusObj.timerId);}catch(e){} focusObj.remaining=null;
   applyAccent(); dailyReset(); save(true);
 }
