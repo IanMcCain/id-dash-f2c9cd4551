@@ -13,7 +13,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Ian">
 <title>Ian Dashboard</title>
-<meta name="build" content="v21 build 182 (2026-07-27)">
+<meta name="build" content="v21 build 183 (2026-07-27)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -736,7 +736,7 @@ const sess=(function(){ let ok=false,mem={}; try{ const t="__s__"; window.sessio
 })();
 const KEYS={ ian:"ianDashboard.v2", chris:"chrisDashboard.v2" };
 const SEED_VERSION=13;
-const APP_BUILD="v21 build 182 (2026-07-27)";
+const APP_BUILD="v21 build 183 (2026-07-27)";
 const WATER_GOAL=10; 
 const uid=()=>Math.random().toString(36).slice(2,9);
 function todayKey(d){ d=d||new Date(); const p=n=>String(n).padStart(2,"0"); return d.getFullYear()+"-"+p(d.getMonth()+1)+"-"+p(d.getDate()); }
@@ -2976,6 +2976,21 @@ function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]
       ];
       state.meta.mig182_mon0727=true; save(true);
   } }catch(e){}
+  /* v21 build 183: FOOTWORK coaching plus skills radar target redesign (07.27.2026). Adds a footwork work on item,
+     nudges radar footwork 64 to 62, retargets the green line to a 4.0 milestone (target 80, a nearer intermediate
+     target that sits between the Now line and the outer ring), and reframes the grey outer ring as the 4.5 to 5.0
+     ceiling. Guarded by mig183_footwork, idempotent, additive. Does NOT move the Now line values and preserves all
+     logged sessions, deals, gym and water data. */
+  try{ if(state.pickleball && state.meta && !state.meta.mig183_footwork){
+      var _p183=state.pickleball;
+      if(Array.isArray(_p183.skills)){ _p183.skills.forEach(function(k){ if(!k) return;
+        if(k.id==="footwork" && k.current===64){ k.current=62; }
+        if(typeof k.target==="number" && k.target>80){ k.target=80; } }); }
+      if(!Array.isArray(_p183.workOn)) _p183.workOn=[];
+      var _fw183="Footwork, split step just before they contact the ball, then small adjustment steps to get set and balanced BEFORE you hit. Stay low, and stop taking balls on the run or reaching, get your feet there first.";
+      if(_p183.workOn.indexOf(_fw183)<0){ _p183.workOn.push(_fw183); }
+      state.meta.mig183_footwork=true; save(true);
+  } }catch(e){}
   focusObj.running=false; try{clearInterval(focusObj.timerId);}catch(e){} focusObj.remaining=null;
   applyAccent(); dailyReset(); save(true);
 }
@@ -3953,17 +3968,17 @@ function pkSessionItem(parent,s){
 
 function buildSkillsRadar(parent){
   var pb=state.pickleball||{};
-  var DEF=[{id:"serve",label:"Serve",short:"Serve",current:55,target:85},{id:"drops",label:"Drops and thirds",short:"Drops",current:50,target:88},{id:"resets",label:"Resets",short:"Resets",current:58,target:85},{id:"dinks",label:"Dinks",short:"Dinks",current:66,target:85},{id:"drives",label:"Drives",short:"Drives",current:72,target:85},{id:"hands",label:"Speed ups and hands",short:"Hands",current:60,target:85},{id:"footwork",label:"Footwork",short:"Footwork",current:62,target:85}];
+  var DEF=[{id:"serve",label:"Serve",short:"Serve",current:55,target:80},{id:"drops",label:"Drops and thirds",short:"Drops",current:50,target:80},{id:"resets",label:"Resets",short:"Resets",current:58,target:80},{id:"dinks",label:"Dinks",short:"Dinks",current:66,target:80},{id:"drives",label:"Drives",short:"Drives",current:72,target:80},{id:"hands",label:"Speed ups and hands",short:"Hands",current:60,target:80},{id:"footwork",label:"Footwork",short:"Footwork",current:62,target:80}];
   var sk=(Array.isArray(pb.skills)&&pb.skills.length)?pb.skills:DEF;
   var c=card("a-blue"); var b=c._body;
   b.appendChild(el("h3",null,"Skills radar"));
-  var sub=el("div","small dim"); sub.style.marginTop="3px"; sub.textContent="Coach estimate of your game now vs your 4.5 to 5.0 target. Not a measured DUPR."; b.appendChild(sub);
-  var n=sk.length, cx=150, cy=140, R=84;
+  var sub=el("div","small dim"); sub.style.marginTop="3px"; sub.textContent="Coach estimate of your game now vs a 4.0 milestone. The grey outer ring is your 4.5 to 5.0 ceiling. Not a measured DUPR."; b.appendChild(sub);
+  var n=sk.length, cx=150, cy=140, R=92;
   function ang(i){ return (-90 + i*360/n)*Math.PI/180; }
   function pt(i,val){ var a=ang(i); var r=R*Math.max(0,Math.min(100,val))/100; return [cx+r*Math.cos(a), cy+r*Math.sin(a)]; }
   function poly(getter){ return sk.map(function(s,i){ var q=pt(i,getter(s,i)); return q[0].toFixed(1)+","+q[1].toFixed(1); }).join(" "); }
   var g='<svg viewBox="0 0 300 300" width="100%" style="display:block;margin:12px auto 0;max-width:330px;overflow:visible" xmlns="http://www.w3.org/2000/svg">';
-  [25,50,75,100].forEach(function(lv){ g+='<polygon points="'+poly(function(){return lv;})+'" style="fill:none;stroke:var(--line);opacity:'+(lv===100?0.6:0.3)+'" stroke-width="1"/>'; });
+  [25,50,75,100].forEach(function(lv){ var _out=(lv===100); g+='<polygon points="'+poly(function(){return lv;})+'" style="fill:none;stroke:'+(_out?"var(--gray)":"var(--line)")+';opacity:'+(_out?0.85:0.28)+'" stroke-width="'+(_out?1.6:1)+'"/>'; });
   sk.forEach(function(s,i){ var e=pt(i,100); g+='<line x1="'+cx+'" y1="'+cy+'" x2="'+e[0].toFixed(1)+'" y2="'+e[1].toFixed(1)+'" style="stroke:var(--line);opacity:0.3" stroke-width="1"/>'; });
   g+='<polygon points="'+poly(function(s){return s.target;})+'" style="fill:none;stroke:var(--green);opacity:0.92" stroke-width="1.6" stroke-dasharray="4 3"/>';
   g+='<polygon points="'+poly(function(s){return s.current;})+'" style="fill:var(--accent);fill-opacity:0.26;stroke:var(--accent)" stroke-width="2"/>';
@@ -3974,7 +3989,8 @@ function buildSkillsRadar(parent){
   var leg=el("div"); leg.style.cssText="display:flex;gap:18px;justify-content:center;margin-top:6px;flex-wrap:wrap";
   function key(varc,txt,dash){ var d=el("div"); d.style.cssText="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--gray);font-weight:600"; var sw=el("span"); sw.style.cssText="width:15px;height:0;border-top:3px "+(dash?"dashed":"solid")+" "+varc+";display:inline-block"; d.appendChild(sw); d.appendChild(document.createTextNode(txt)); return d; }
   leg.appendChild(key("var(--accent)","Now",false));
-  leg.appendChild(key("var(--green)","Target 4.5 to 5.0",true));
+  leg.appendChild(key("var(--green)","Target 4.0",true));
+  leg.appendChild(key("var(--gray)","Ceiling 4.5 to 5.0",false));
   b.appendChild(leg);
   parent.appendChild(c);
 }
@@ -3991,7 +4007,7 @@ function buildPickle(v){ var pb=state.pickleball||(state.pickleball={});
 
     /* v21 build 152: pickleball page CLEANED and reordered coaching first. Removed and archived, the DUPR mega chart, the 7 day minutes chart, the two countdown tiles, the moved Talk to your coach card, the duplicate goals, the hardcoded drill list, and the paddle block (paddle now in Settings). */
   safe(v,function(){ buildSkillsRadar(v); },"Skills radar");
-  safe(v,function(){ var _sw=(pb.sessions||[]).filter(function(s){ if(!s||!s.date) return false; var du=daysUntil(s.date); return du>=-6 && du<=0; }); var _n=_sw.length; var _g=6; var _pct=Math.min(1,_n/_g); var c=card("a-green"); var b=c._body; b.appendChild(el("div","small muted","This week")); var num=el("div"); num.style.cssText="font-weight:800;font-size:30px;letter-spacing:-.03em;margin-top:4px;color:var(--white)"; num.innerHTML=_n+' <span style="font-size:15px;font-weight:700;color:var(--gray2,#8a8a99)">of '+_g+" sessions</span>"; b.appendChild(num); var pbar=el("div","pbar"); pbar.style.marginTop="10px"; var pi=el("i"); pbar.appendChild(pi); try{ pi.style.background="var(--green)"; }catch(e){} setTimeout(function(){ try{ pi.style.width=(_pct*100)+"%"; }catch(e){} },40); b.appendChild(pbar); var sub=el("div","small dim"); sub.style.marginTop="8px"; sub.textContent="Target 5 to 6 a week. "+(_n>=5?"On track.":_n>=1?"Keep it going.":"Get one in this week."); b.appendChild(sub); v.appendChild(c); },"This week");
+  /* v21 build 183: removed the This week sessions per week card (Ian's request). The underlying pb.sessions data is untouched and still drives the training heatmap and the session log, only this per week counter card is gone from the Pickleball page. */
   pkCollapse(v,"pk_coach","Coach","your plan, focus, and video",true,function(c){
     (function(){ var du=daysUntil("2026-08-23"); var rc=card(); var t=el("div","small"); t.style.cssText="line-height:1.5;color:var(--gray);font-weight:600"; t.textContent="First tournament, August 23"+(du>=0?", in "+du+" day"+(du===1?"":"s"):""); rc._body.appendChild(t); c.appendChild(rc); })();
 
