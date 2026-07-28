@@ -13,7 +13,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Ian">
 <title>Ian Dashboard</title>
-<meta name="build" content="v21 build 183 (2026-07-27)">
+<meta name="build" content="v21 build 184 (2026-07-27)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -736,7 +736,7 @@ const sess=(function(){ let ok=false,mem={}; try{ const t="__s__"; window.sessio
 })();
 const KEYS={ ian:"ianDashboard.v2", chris:"chrisDashboard.v2" };
 const SEED_VERSION=13;
-const APP_BUILD="v21 build 183 (2026-07-27)";
+const APP_BUILD="v21 build 184 (2026-07-27)";
 const WATER_GOAL=10; 
 const uid=()=>Math.random().toString(36).slice(2,9);
 function todayKey(d){ d=d||new Date(); const p=n=>String(n).padStart(2,"0"); return d.getFullYear()+"-"+p(d.getMonth()+1)+"-"+p(d.getDate()); }
@@ -2990,6 +2990,34 @@ function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]
       var _fw183="Footwork, split step just before they contact the ball, then small adjustment steps to get set and balanced BEFORE you hit. Stay low, and stop taking balls on the run or reaching, get your feet there first.";
       if(_p183.workOn.indexOf(_fw183)<0){ _p183.workOn.push(_fw183); }
       state.meta.mig183_footwork=true; save(true);
+  } }catch(e){}
+  /* v21 build 184: Spicer new construction (re-allison-spicer-buy) close date moved to November 13, 2026 (was the
+     vague likely late September estimate). Updates the deal close field so the pipeline closings sort and the close
+     urgency badges (both derived from closeSortKey on the string) pick up November, and adds a matching Real estate
+     calendar closing event, additive, the same pattern as the other firm closings. Price, side (sell side, the team
+     represents the builder), source and split are untouched so the take home stays about $5,474. Guarded by
+     mig184_spicer_nov13, presence checked, idempotent, non destructive. */
+  try{ if(state.realEstate && Array.isArray(state.realEstate.deals) && state.meta && !state.meta.mig184_spicer_nov13){
+      state.realEstate.deals.forEach(function(d){ if(d && d.id==="re-allison-spicer-buy"){
+        if(d.close!=="November 13, 2026"){ d.close="November 13, 2026"; }
+        if(typeof d.note==="string" && d.note.indexOf("CLOSE DATE 07.27.2026")<0){ d.note=d.note+" CLOSE DATE 07.27.2026: moved to November 13, 2026 (was the likely late September estimate). Price, side and split unchanged."; }
+      } });
+      if(!Array.isArray(state.events)) state.events=[];
+      if(!state.events.some(function(e){ return e && e.id==="ev-20261113-spicer-buy-close"; })){
+        state.events.push({id:"ev-20261113-spicer-buy-close",date:"2026-11-13",kind:"Real estate",title:"Spicer new construction closing"});
+      }
+      state.meta.mig184_spicer_nov13=true; save(true);
+  } }catch(e){}
+  /* v21 build 184: Brandon Winchester (re-brandon-winchester, dual agency new construction) timeline moved to Late
+     May 2027 (was the March to May 2027 estimate). Updates the close field only so the pipeline sort reads late May.
+     Price, dual side, source, dualRate (0.05) and the 50 percent split are untouched so the take home stays about
+     $26,650. Guarded by mig184b_winchester, presence checked, idempotent, non destructive. */
+  try{ if(state.realEstate && Array.isArray(state.realEstate.deals) && state.meta && !state.meta.mig184b_winchester){
+      state.realEstate.deals.forEach(function(d){ if(d && d.id==="re-brandon-winchester"){
+        if(d.close!=="Late May 2027"){ d.close="Late May 2027"; }
+        if(typeof d.note==="string" && d.note.indexOf("TIMELINE 07.27.2026 b")<0){ d.note=d.note+" TIMELINE 07.27.2026 b: now looking like LATE MAY 2027 (was the March to May 2027 estimate). Price, dual side and split unchanged."; }
+      } });
+      state.meta.mig184b_winchester=true; save(true);
   } }catch(e){}
   focusObj.running=false; try{clearInterval(focusObj.timerId);}catch(e){} focusObj.remaining=null;
   applyAccent(); dailyReset(); save(true);
