@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 201 (2026-07-30)">
+<meta name="build" content="v21 build 202 (2026-07-29)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -363,9 +363,41 @@ textarea.in{resize:vertical;min-height:110px;line-height:1.5}
    the chart was still loading. */
 @keyframes skGrowIn{ from{ transform:scale(0); opacity:.35 } 30%{ opacity:1 } to{ transform:scale(1); opacity:1 } }
 @keyframes skGrowSubtle{ from{ transform:scale(.92); opacity:.8 } 40%{ opacity:1 } to{ transform:scale(1); opacity:1 } }
+/* v21 build 202: CHART ENTRANCE, everywhere. Ian watched the skills radar fill in and asked for the
+   same slow grow on every chart and graph in the app. These are the keyframes; the driver is chRun().
+
+   THE ONE RULE, and it is the reason build 199 had to be rewritten. Every keyframe below declares
+   only a `from` (plus an early opacity landing). None of them declares a `to`. That means the end
+   state is the element's OWN computed style, so the RESTING state of every chart is the finished
+   chart and the animation is something played over the top of it. Nothing in here decides whether a
+   chart can be seen. If the animation never runs, if the clock is frozen, if the JS path changes,
+   the chart is simply there and correct. That is the only acceptable failure.
+
+   Opacity lands at 30 percent of the timeline, carried over from build 201. Across 1500ms a fade
+   that runs the whole way reads as "still loading"; landing it early means what he is watching is
+   the SHAPE filling out, not the chart arriving.
+
+   Each type gets the growth that belongs to it rather than one transform bolted onto everything.
+   A bar grows UP from its baseline. A progress bar grows RIGHT from its left edge. A ring SWEEPS.
+   A radial chart grows OUT from its own centre. A heatmap week WIPES left to right, Monday to
+   Sunday, which is the direction time runs in it. Bars and pbars animate their natural dimension
+   rather than a scale so their rounded caps do not squash mid flight. */
+@keyframes chUp    { from{ height:0; opacity:.35 } 30%{ opacity:1 } }
+@keyframes chRight { from{ width:0;  opacity:.35 } 30%{ opacity:1 } }
+@keyframes chSweep { from{ stroke-dashoffset:239; opacity:.5 } 30%{ opacity:1 } }
+@keyframes chWipe  { from{ clip-path:inset(0 100% 0 0); opacity:.45 } 30%{ opacity:1 } }
+@keyframes chFade  { from{ opacity:.15 } 40%{ opacity:1 } }
+/* the subtle replay on a genuine re entry. Smaller and faster so a chart he comes back to still
+   feels alive without turning into a tic. */
+@keyframes chUpS   { from{ height:0; opacity:.8 } 40%{ opacity:1 } }
+@keyframes chRightS{ from{ width:0;  opacity:.8 } 40%{ opacity:1 } }
+@keyframes chSweepS{ from{ stroke-dashoffset:239; opacity:.85 } 40%{ opacity:1 } }
+@keyframes chWipeS { from{ clip-path:inset(0 24% 0 0); opacity:.85 } 40%{ opacity:1 } }
+@keyframes chFadeS { from{ opacity:.55 } 40%{ opacity:1 } }
 @media (prefers-reduced-motion: reduce){
-  /* belt and braces alongside the JS check, so the motion cannot play even if the JS path changes */
-  .skgrow{ animation:none !important }
+  /* belt and braces alongside the JS check, so the motion cannot play even if the JS path changes.
+     Killing it here costs nothing, because the resting state already IS the finished chart. */
+  .skgrow,.bar .fill,.pbar > i,.ring .prog,.hmcells,.orbgrow,.orbnode{ animation:none !important }
 }
 .pbar{height:8px;border-radius:99px;background:var(--card2);overflow:hidden;margin-top:10px}
 .pbar > i{display:block;height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));width:0;transition:.6s}
@@ -3242,18 +3274,194 @@ function stepper(get,set){ const s=el("div","stepper"); const mn=el("button",nul
 function launchCard(parent,icon,title,sub,tabId){ const c=card(); const b=el("label","launch"); b.setAttribute("for","t-"+tabId); b.innerHTML='<div class="li">'+icon+'</div><div class="lt"><b>'+title+'</b><small>'+sub+'</small></div><div class="larrow">›</div>'; c._body.appendChild(b); parent.appendChild(c); }
 /* ===== v18 Apple style tiles (stat, fraction, grid) ===== */
 function statTile(opts){ const c=el("div","card"+(opts.tab?" tap":"")); const b=el("div","cbody"); c.appendChild(b); const top=el("div","between"); const lab=el("div","st-label"); if(opts.color){ lab.appendChild(el("span","st-ico c-"+opts.color)); } lab.appendChild(document.createTextNode(opts.label)); top.appendChild(lab); if(opts.tab){ top.appendChild(el("div","chev","›")); c.onclick=()=>selectTab(opts.tab); } b.appendChild(top); const num=el("div","st-num"+(opts.color?" c-"+opts.color:"")); const n=el("span","n"); n.textContent=opts.value; num.appendChild(n); if(opts.unit){ const u=el("span","u"); u.textContent=opts.unit; num.appendChild(u); } b.appendChild(num); if(opts.sub){ b.appendChild(el("div","st-sub",opts.sub)); } if(opts.spark&&opts.spark.length){ const ch=barChart(opts.spark.map(p=>({label:"",pct:p})),"",opts.sparkH||52); ch.style.marginTop="10px"; ch.style.marginBottom="4px"; b.appendChild(ch); } return c; }
-function fracTile(opts){ const col=opts.color||"blue"; const c=el("div","card"+(opts.tab?" tap":"")); const b=el("div","cbody"); c.appendChild(b); const top=el("div","between"); const lab=el("div","st-label"); lab.appendChild(el("span","st-ico c-"+col)); lab.appendChild(document.createTextNode(opts.label)); top.appendChild(lab); if(opts.tab){ top.appendChild(el("div","chev","›")); c.onclick=()=>selectTab(opts.tab); } b.appendChild(top); const num=el("div","st-num c-"+col); const n=el("span","n"); n.textContent=opts.done+"/"+opts.goal; num.appendChild(n); if(opts.unit){ const u=el("span","u"); u.textContent=opts.unit; num.appendChild(u); } b.appendChild(num); const pbar=el("div","pbar"); const pi=el("i"); pbar.appendChild(pi); try{ pi.style.background="var(--"+col+")"; }catch(e){} const frac=opts.goal?Math.min(1,(opts.done||0)/opts.goal):0; setTimeout(()=>{try{pi.style.width=(frac*100)+"%";}catch(e){}},40); b.appendChild(pbar); return c; }
+function fracTile(opts){ const col=opts.color||"blue"; const c=el("div","card"+(opts.tab?" tap":"")); const b=el("div","cbody"); c.appendChild(b); const top=el("div","between"); const lab=el("div","st-label"); lab.appendChild(el("span","st-ico c-"+col)); lab.appendChild(document.createTextNode(opts.label)); top.appendChild(lab); if(opts.tab){ top.appendChild(el("div","chev","›")); c.onclick=()=>selectTab(opts.tab); } b.appendChild(top); const num=el("div","st-num c-"+col); const n=el("span","n"); n.textContent=opts.done+"/"+opts.goal; num.appendChild(n); if(opts.unit){ const u=el("span","u"); u.textContent=opts.unit; num.appendChild(u); } b.appendChild(num); const pbar=el("div","pbar"); const pi=el("i"); pbar.appendChild(pi); try{ pi.style.background="var(--"+col+")"; }catch(e){} const frac=opts.goal?Math.min(1,(opts.done||0)/opts.goal):0; /* build 202: final width set at construction, not in a setTimeout. The grow is a keyframe over the top. */ try{pi.style.width=(frac*100)+"%";}catch(e){} b.appendChild(pbar); return c; }
 function summaryGrid(parent,tiles){ const t=tiles.filter(x=>x); const g=el("div","grid2 sgrid"); if(t.length===3){ g.className="grid2 sgrid sg3"; g.style.gridTemplateColumns="repeat(3,minmax(0,1fr))"; } else if(t.length===1){ g.style.gridTemplateColumns="1fr"; } t.forEach(x=>g.appendChild(x)); g.style.marginBottom="14px"; parent.appendChild(g); }
 function weekWorkoutSpark(){ const out=[]; for(let i=6;i>=0;i--){ const d=new Date(); d.setDate(d.getDate()-i); const k=todayKey(d); const dow=d.getDay(); const day=daySplit(dow); const log=(state.gym&&state.gym.logs&&state.gym.logs[k])||{done:{}}; const tot=day.exercises.length||1; const done=day.exercises.filter(e=>log.done&&log.done[e.id]).length; out.push(Math.round(done/tot*100)); } return out; }
 function workoutsThisWeek(){ let c=0; for(let i=0;i<7;i++){ const d=new Date(); d.setDate(d.getDate()-i); const k=todayKey(d); const log=(state.gym&&state.gym.logs&&state.gym.logs[k]); if(log&&log.done&&Object.keys(log.done).length) c++; } return c; }
 function ringCard(done,total,title,subtxt,small,accClass){ const c=card(accClass); const rw=el("div","ringwrap"); const ring=el("div","ring"+(small?" sm":"")); const frac=total?done/total:0; const R=38,C=2*Math.PI*R; const sz=small?66:84; const sw=small?9:8;
-  ring.innerHTML='<svg viewBox="0 0 90 90" width="'+sz+'" height="'+sz+'"><circle cx="45" cy="45" r="'+R+'" fill="none" stroke="#26262e" stroke-width="'+sw+'"/><circle class="prog" cx="45" cy="45" r="'+R+'" fill="none" stroke="var(--sec,var(--accent))" stroke-width="'+sw+'" stroke-linecap="round" stroke-dasharray="'+C+'" stroke-dashoffset="'+C+'" data-off="'+(C*(1-frac))+'"/></svg><div class="rc"><b>'+done+"/"+total+'</b><span>today</span></div>';
+  ring.innerHTML='<svg viewBox="0 0 90 90" width="'+sz+'" height="'+sz+'"><circle cx="45" cy="45" r="'+R+'" fill="none" stroke="#26262e" stroke-width="'+sw+'"/><circle class="prog" cx="45" cy="45" r="'+R+'" fill="none" stroke="var(--sec,var(--accent))" stroke-width="'+sw+'" stroke-linecap="round" stroke-dasharray="'+C+'" stroke-dashoffset="'+(C*(1-frac)).toFixed(2)+'" data-off="'+(C*(1-frac))+'"/></svg><div class="rc"><b>'+done+"/"+total+'</b><span>today</span></div>';
   const meta=el("div","ringmeta"); meta.appendChild(el("div","rt",title)); meta.appendChild(el("div","rs",subtxt)); rw.appendChild(ring); rw.appendChild(meta); c._body.appendChild(rw); return c; }
-function barChart(items,cls,h){ const c=el("div","bars"); if(h) c.style.height=h+"px"; items.forEach(it=>{ const b=el("div","bar"); if(it.cap!=null) b.appendChild(el("div","cap",String(it.cap))); const f=el("div","fill"+(cls?" "+cls:"")); /* build 189: a true zero renders as zero instead of the old 4 percent stub that read as a rendering bug (07.11 design review item). Tiny nonzero values still get the 4 percent visibility floor. */ const tgt=(it.pct>0?Math.max(4,it.pct):0); f.style.height="0%"; f.setAttribute("data-h",tgt); b.appendChild(f); b.appendChild(el("div","lbl",it.label)); c.appendChild(b); }); return c; }
-function animate(root){ if(!root) return;
-  try{ root.querySelectorAll(".fill[data-h]").forEach(f=>{ const h=f.getAttribute("data-h"); f.style.height="0%"; void f.offsetWidth; requestAnimationFrame(()=>{ f.style.height=h+"%"; }); }); }catch(e){}
-  try{ root.querySelectorAll(".ring .prog[data-off]").forEach(p=>{ const off=p.getAttribute("data-off"); const c=p.getAttribute("stroke-dasharray"); p.style.strokeDashoffset=c; void p.getBoundingClientRect(); requestAnimationFrame(()=>{ p.style.strokeDashoffset=off; }); }); }catch(e){}
-  try{ root.querySelectorAll(".countup[data-n]").forEach(n=>{ const target=parseFloat(n.getAttribute("data-n"))||0; const finalText=String(Math.round(target)); /* v21 build 41: guarantee the final value even if the tab was backgrounded and requestAnimationFrame was throttled (the streak used to freeze at a low number). If hidden, show the value immediately; otherwise animate but always snap to the true value, with a timeout fallback. */ if(document.hidden){ n.textContent=finalText; return; } let s=null; const dur=850; function step(ts){ if(s===null)s=ts; const p=Math.min(1,(ts-s)/dur); n.textContent=String(Math.round(target*p)); if(p<1)requestAnimationFrame(step); else n.textContent=finalText; } n.textContent="0"; requestAnimationFrame(step); setTimeout(function(){ n.textContent=finalText; }, dur+300); }); }catch(e){}
+function barChart(items,cls,h){ const c=el("div","bars"); if(h) c.style.height=h+"px"; items.forEach(it=>{ const b=el("div","bar"); if(it.cap!=null) b.appendChild(el("div","cap",String(it.cap))); const f=el("div","fill"+(cls?" "+cls:"")); /* build 189: a true zero renders as zero instead of the old 4 percent stub that read as a rendering bug (07.11 design review item). Tiny nonzero values still get the 4 percent visibility floor. */ /* build 202: the bar is built at its FINAL height. It used to be built at 0 and filled in by animate(), which meant a bar chart whose animate step never ran was a chart of nothing. The grow is now a keyframe over the top of a finished bar. */ const tgt=(it.pct>0?Math.max(4,it.pct):0); f.style.height=tgt+"%"; f.setAttribute("data-h",tgt); b.appendChild(f); b.appendChild(el("div","lbl",it.label)); c.appendChild(b); }); return c; }
+/* ===== v21 build 202: CHART REVEAL ==============================================================
+   Ian watched the skills radar fill in and asked for the same slow entrance on every chart and graph
+   in the app. This is the one driver that does it, for all of them. The radar's bespoke version from
+   builds 196 to 201 is gone and the radar is registered here like everything else, keeping its own
+   keyframes unchanged so what he already approved on his phone looks identical.
+
+   WHAT THIS GUARANTEES, in priority order.
+
+   1. EVERY CHART IS CORRECT WITH NO ANIMATION AT ALL. The builders now render their FINISHED state,
+      and the keyframes up in the stylesheet declare only a `from`, so the resting state is the
+      answer. This entire driver can fail and every chart still reads correctly. That is an inversion
+      of what the app used to do: bars were built at height 0, rings at a full dash offset, progress
+      bars at width 0, and the real values were painted in afterwards by the old animate(). Any chart
+      whose animate step did not run was a chart of nothing. That is the same failure build 199 fixed
+      on the radar, it was sitting in five other places, and it is worse than having no animation.
+   2. IT NEVER REPLAYS ON A RE RENDER. render() runs on every checkbox tick, every cup of water,
+      every saved note. A 1500ms crawl on each of those would be intolerable. A chart plays its full
+      grow ONCE per key per session. After that, only a genuine tab entry earns the shorter replay.
+   3. IT NEVER BLOCKS INTERACTION. Nothing animated here is a tap target. The radar's hit circles are
+      built outside .skgrow, the orbit's contact nodes are faded in place and never moved or scaled,
+      and a card carrying a bar or a ring is tappable on the card, not on the chart. Every tap target
+      is full size and hit testable from frame zero.
+
+   WHY NOT IntersectionObserver, so this is not relearned a third time. Build 196 tried it and it did
+   not work. Every tab page is built once at render time and the inactive ones are display:none, so
+   an observer registered against a hidden, detached subtree never reported the element when the tab
+   was later switched on by the CSS radio, and the chart sat collapsed forever. The app already knows
+   exactly when a section becomes visible: the tab radio changes. That is the trigger, plus a scroll
+   check for a chart below the fold, plus one immediate check for a chart already on screen. */
+var CH_FULL=1500;                 /* the slow grow */
+var CH_SUB=700;                   /* the subtler replay on a genuine re entry */
+var CH_EASE="cubic-bezier(.4,0,.25,1)";
+/* Build 201 chose that curve deliberately and it carries over unchanged. A hard ease out like
+   cubic-bezier(.19,.9,.32,1) puts about 62 percent of the growth into the first 20 percent of the
+   time, which reads as snappy at 760ms but rubbery at 1500ms: the chart lurches out and then crawls
+   to the finish with nothing left to watch. This curve is close to even, roughly 16 percent done a
+   fifth of the way through, 60 at halfway, 92 at four fifths, so the motion stays visible the whole
+   way and still lands softly instead of stopping dead. */
+var CH_STAGGER=90;                /* between charts that share a screen */
+var CH_STAGGER_MAX=5;             /* capped, so a busy page does not push the last chart out to 2s */
+/* The heatmap is eight week rows wiping in one after another. Each row is SHORTER than the standard
+   1500ms so the whole grid still finishes at about 1460ms: 7 x 120ms of stagger plus a 620ms row.
+   Letting each row run the full 1500 would have taken the heatmap 2.7 seconds, which on the surface
+   Ian opens the app to read is a delay, not a flourish. Same perceived duration, eight ordered
+   steps instead of one. */
+var CH_ROW=120, CH_ROW_MS=620, CH_ROW_MS_SUB=300;
+/* Orbit contact nodes fade in around the circle while the rings draw, finishing just inside the
+   rings' 1500ms rather than trailing past it. */
+var CH_NODE=45, CH_NODE_MAX=560, CH_NODE_MS=700;
+var CH_SEEN={};                   /* chart key -> its full grow has already played this session */
+var CH_PASS={};                   /* page id -> chRun has run for this page at least once */
+var CH_ARMED={};                  /* page id -> a genuine tab entry is pending and earns a replay */
+var CH_PENDING=[];                /* charts waiting to scroll into view */
+var CH_SCROLLING=false;
+var CH_REDUCE=false;
+try{ CH_REDUCE=!!(window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches); }catch(e){}
+
+function chVisible(n){
+  /* Deliberately rect based rather than offsetParent based: .skgrow and .orbgrow are SVG groups and
+     SVG elements have no offsetParent. An element inside a display:none page measures 0 by 0, which
+     is the hidden test we need anyway. Failing this check means no animation, and no animation means
+     the chart is simply sitting there finished, so a false negative costs nothing. */
+  try{
+    if(!n) return false;
+    var r=n.getBoundingClientRect();
+    if(!(r.width>0&&r.height>0)) return false;
+    var vh=window.innerHeight||document.documentElement.clientHeight||800;
+    return r.top<vh*0.92 && r.bottom>0;
+  }catch(e){ return false; }
+}
+
+function chUnits(root){
+  var page=(root&&root.id)||"p-home", out=[];
+  var all=function(sel){ try{ return [].slice.call(root.querySelectorAll(sel)); }catch(e){ return []; } };
+  var add=function(kind,idx,box,nodes,full,sub,o){
+    if(!box||!nodes||!nodes.length) return; o=o||{};
+    /* ms defaults to the standard 1500. A chart whose parts are STAGGERED shortens its own parts so
+       that its whole entrance still lands inside roughly 1500ms, rather than each part running the
+       full duration and the chart taking three seconds to finish. Same perceived length everywhere,
+       which is what "the same animation" actually means once a chart has more than one moving piece. */
+    out.push({key:page+"|"+kind+"|"+idx,page:page,box:box,nodes:nodes,full:full,sub:sub,
+              step:o.step||0,stepMax:o.stepMax||0,ms:o.ms||CH_FULL,msSub:o.msSub||CH_SUB});
+  };
+  /* COLUMN BARS grow up from the baseline. Every bar in one chart rises TOGETHER rather than in a
+     left to right cascade, which matches the radar: it grows as one shape, not vertex by vertex. A
+     per bar cascade turns a 7 bar chart into 7 events, and the Stats page already carries five
+     charts. Height rather than scaleY so the rounded bar caps do not squash mid flight. */
+  all(".bars").forEach(function(c,ix){ add("bar",ix,c,[].slice.call(c.querySelectorAll(".fill")),"chUp","chUpS"); });
+  /* HORIZONTAL PROGRESS BARS grow right from the left edge. Width rather than scaleX, same reason:
+     a pill with a 99px radius distorts badly under a horizontal scale. */
+  all(".pbar").forEach(function(c,ix){ var f=c.querySelector("i"); add("pbar",ix,c,f?[f]:[],"chRight","chRightS"); });
+  /* PROGRESS RINGS sweep. The dash offset already runs from the full circumference to the value, so
+     the sweep is what the shape wanted; it only needed the duration and the curve. 239 in the
+     keyframe is 2 pi r at r=38, which is every ring in the app, small and large alike. */
+  all(".ring").forEach(function(c,ix){ var p=c.querySelector(".prog"); add("ring",ix,c,p?[p]:[],"chSweep","chSweepS"); });
+  /* THE TRAINING HEATMAP is ONE chart of eight week rows, not eight charts and definitely not 56
+     cells. Each week wipes in left to right, Monday to Sunday, staggered oldest week first so the
+     grid draws itself chronologically and lands on the current week, which is the row that matters.
+     A per cell scale was considered and rejected: 56 independent pops on a dense grid is confetti,
+     not a grow, and this is one of Ian's two favourite things in the app. Eight ordered events read
+     as satisfying; 56 unordered ones read as noise. */
+  var rows=all(".hmcells");
+  if(rows.length){ add("heat",0,(rows[0].parentNode&&rows[0].parentNode.parentNode)||rows[0],rows,"chWipe","chWipeS",{ms:CH_ROW_MS,msSub:CH_ROW_MS_SUB,step:CH_ROW,stepMax:9e5}); }
+  /* RADIAL CHARTS grow out from their own centre. The skills radar and the sphere orbit's dashed
+     rings are the same shape of problem, so they share the radar's original keyframes untouched. */
+  all(".skgrow").forEach(function(c,ix){ add("radar",ix,c,[c],"skGrowIn","skGrowSubtle"); });
+  all(".orbgrow").forEach(function(c,ix){ add("orbit",ix,c,[c],"skGrowIn","skGrowSubtle"); });
+  /* ORBIT CONTACT NODES land on the rings as they draw, staggered around the circle. Opacity ONLY.
+     They are tap targets, so they must never move or scale, and opacity does not affect hit testing,
+     which means a tap at frame zero on a node's final position still opens that contact. */
+  var nodes=all(".orbnode");
+  if(nodes.length){ add("orbnode",0,nodes[0].ownerSVGElement||nodes[0],nodes,"chFade","chFadeS",{ms:CH_NODE_MS,msSub:400,step:CH_NODE,stepMax:CH_NODE_MAX}); }
+  /* Document order, not selector order. chUnits collects by type, so without this the Stats page
+     would cascade bottom to top: its three bar charts are collected before the three progress tiles
+     that physically sit above them. A cascade that runs against reading order reads as a glitch. */
+  try{ out.sort(function(x,y){ var r=x.box.compareDocumentPosition(y.box); if(r&4) return -1; if(r&2) return 1; return 0; }); }catch(e){}
+  return out;
+}
+
+function chPlay(u,delay,subtle){
+  var ms=subtle?(u.msSub||CH_SUB):(u.ms||CH_FULL), name=subtle?u.sub:u.full, n=u.nodes, last=delay+ms;
+  for(var i=0;i<n.length;i++){
+    var d=delay+(u.step?Math.min(i*u.step,u.stepMax||1e9):0);
+    if(d+ms>last) last=d+ms;
+    try{ n[i].style.animation=name+" "+ms+"ms "+CH_EASE+" "+d+"ms backwards"; }catch(e){}
+  }
+  /* GUARANTEED RELEASE, and this is the load bearing line. `backwards` fill holds the collapsed
+     first frame through the stagger delay, which is needed so a delayed chart does not render at
+     full size and then snap to zero the moment its turn comes. The cost is that an animation whose
+     clock never advances parks the chart on that first frame. That is not hypothetical: it happens
+     any time the page is not being painted, and it is exactly how two earlier attempts at the radar
+     failed. So the fill is cleared on a plain timer, which keeps running when the animation clock
+     does not. If the animation ran, this is a no op on something already finished. If the clock was
+     frozen, the chart snaps in rather than never appearing. Either way it ends at the resting state,
+     and the resting state is the finished chart. Nothing here may fail into invisible. */
+  setTimeout(function(){ for(var j=0;j<n.length;j++){ try{ n[j].style.animation=""; }catch(e){} } }, last+200);
+}
+
+function chSweep(){
+  if(!CH_PENDING.length) return;
+  var still=[], fired=0;
+  for(var i=0;i<CH_PENDING.length;i++){
+    var u=CH_PENDING[i];
+    if(!chVisible(u.box)){ still.push(u); continue; }
+    CH_SEEN[u.key]=true;
+    chPlay(u, Math.min(fired,CH_STAGGER_MAX)*CH_STAGGER, u.mode==="subtle");
+    fired++;
+  }
+  CH_PENDING=still;
+}
+
+function chRun(root){
+  if(CH_REDUCE) return;   /* the resting state already IS the chart, so there is nothing to do */
+  var page=(root&&root.id)||"p-home";
+  var fresh=!CH_PASS[page]; CH_PASS[page]=true;
+  var replay=!!CH_ARMED[page]; CH_ARMED[page]=false;
+  var units=chUnits(root); CH_PENDING=[];
+  for(var i=0;i<units.length;i++){
+    var u=units[i], seen=!!CH_SEEN[u.key];
+    /* The full grow is a first impression. A chart never seen before, on the first pass over its
+       page or on a deliberate return to it, earns the whole 1500ms. A chart that appears LATER in a
+       page's life (opening a collapsed section, or a chart index shifting because something above it
+       opened) gets the subtle version instead, so expanding Water never sets the workout bar off on
+       a fresh 1.5 second crawl. A chart already seen animates only on a genuine tab re entry. */
+    if(!seen) u.mode=(fresh||replay)?"full":"subtle";
+    else if(replay) u.mode="subtle";
+    else continue;
+    CH_PENDING.push(u);
+  }
+  if(!CH_SCROLLING){
+    /* ONE listener for the life of the app, not one per render. CH_PENDING is replaced wholesale on
+       every run, so there is nothing to leak and nothing to tear down. */
+    CH_SCROLLING=true;
+    try{ window.addEventListener("scroll",chSweep,{passive:true}); }catch(e){ try{ window.addEventListener("scroll",chSweep); }catch(e2){} }
+  }
+  setTimeout(chSweep,60);
+}
+
+function animate(root){ if(!root) return; chRun(root);
+  try{ root.querySelectorAll(".countup[data-n]").forEach(n=>{ const target=parseFloat(n.getAttribute("data-n"))||0; const finalText=String(Math.round(target)); /* v21 build 41: guarantee the final value even if the tab was backgrounded and requestAnimationFrame was throttled (the streak used to freeze at a low number). If hidden, show the value immediately; otherwise animate but always snap to the true value, with a timeout fallback. */ if(document.hidden){ n.textContent=finalText; return; } let s=null; /* build 202: 850 -> 1500 so the number rolls up on the same clock as the chart it sits under. Its hard snap to the true value below is unchanged and still the safety net. */ const dur=CH_FULL; function step(ts){ if(s===null)s=ts; const p=Math.min(1,(ts-s)/dur); n.textContent=String(Math.round(target*p)); if(p<1)requestAnimationFrame(step); else n.textContent=finalText; } n.textContent="0"; requestAnimationFrame(step); setTimeout(function(){ n.textContent=finalText; }, dur+300); }); }catch(e){}
 }
 function currentPageId(){ try{ const r=document.querySelector('input[name="tab"]:checked'); return r?"p-"+r.id.slice(2):"p-home"; }catch(e){ return "p-home"; } }
 function animateVisible(){ try{ requestAnimationFrame(()=>animate(document.getElementById(currentPageId()))); }catch(e){} }
@@ -3770,7 +3978,7 @@ function buildIanHome(v){ const workout=daySplit(DOW); const reTop=firstUndone(s
     var meta=el("div","small dim"); meta.style.marginTop="3px";
     meta.textContent=doneN+" of "+exs.length+" exercises logged"; b.appendChild(meta);
     var track=el("div","pbar"); var fill=el("i"); track.appendChild(fill); b.appendChild(track);
-    try{ var pct=exs.length?Math.round(doneN/exs.length*100):0; setTimeout(function(){ try{ fill.style.width=pct+"%"; }catch(e){} },30); }catch(e){}
+    try{ var pct=exs.length?Math.round(doneN/exs.length*100):0; fill.style.width=pct+"%"; }catch(e){}
     var names=el("div","small"); names.style.cssText="margin-top:9px;line-height:1.5;color:var(--gray)";
     names.textContent=exs.slice(0,4).map(function(e){ return e.name; }).join(", ")+(exs.length>4?", and "+(exs.length-4)+" more":"");
     b.appendChild(names);
@@ -3921,7 +4129,7 @@ function reGoalsCard(parent){
   const g=(state.realEstate&&state.realEstate.goals2026)||{}; const PROD_GOAL=g.production||10000000; const DEALS_GOAL=g.deals||20;
   const c=card("a-teal"); const b=c._body;
   b.appendChild(el("div","small muted","2026 production goals"));
-  const mk=(label,valHtml,frac,col)=>{ const wrap=el("div","goalrow"); const top=el("div","between"); top.appendChild(el("div","goal-lab",label)); const vv=el("div","goal-val"); vv.innerHTML=valHtml; top.appendChild(vv); wrap.appendChild(top); const bar=el("div","pbar"); const i=el("i"); bar.appendChild(i); wrap.appendChild(bar); setTimeout(()=>{ try{ i.style.width=Math.min(100,frac*100)+"%"; i.style.background="var(--"+col+")"; }catch(e){} },40); return wrap; };
+  const mk=(label,valHtml,frac,col)=>{ const wrap=el("div","goalrow"); const top=el("div","between"); top.appendChild(el("div","goal-lab",label)); const vv=el("div","goal-val"); vv.innerHTML=valHtml; top.appendChild(vv); wrap.appendChild(top); const bar=el("div","pbar"); const i=el("i"); bar.appendChild(i); wrap.appendChild(bar); try{ i.style.width=Math.min(100,frac*100)+"%"; i.style.background="var(--"+col+")"; }catch(e){} return wrap; };
   b.appendChild(mk("Production",'<b>'+fmtMoneyShort(production)+'</b> <span>of '+fmtMoneyShort(PROD_GOAL)+'</span>',PROD_GOAL?production/PROD_GOAL:0,"teal"));
   b.appendChild(mk("Deals",'<b>'+dealsDone+'</b> <span>of '+DEALS_GOAL+'</span>',DEALS_GOAL?dealsDone/DEALS_GOAL:0,"teal2"));
   const incClosed=sumIanNet(closed); const incUc=sumIanNet(uc);
@@ -4034,9 +4242,20 @@ function sphereOrbit(parent){
   bg.addEventListener("click",function(){ if(orbitSel){ orbitSel=null; render(); } });
   svg.appendChild(bg);
   /* faint dashed orbit rings with labels */
+  /* v21 build 202: the rings go inside a .orbgrow group so they can grow OUT from Ian at the centre,
+     which is the honest reading of "grow from zero" for a node graph: the structure draws itself and
+     the contacts land on it. The nested translate pair is the same manual transform origin trick the
+     skills radar uses, rather than transform-box:fill-box, because that is the one already proven on
+     Ian's phone. The contact nodes are deliberately NOT in here. They are tap targets, so they must
+     never move or scale; they get an opacity only fade instead, which leaves them hit testable at
+     full size from frame zero. */
+  var orbG=svgEl("g",{transform:"translate("+cx+","+cy+")"});
+  var orbGrow=svgEl("g",{class:"orbgrow"});
+  var orbInner=svgEl("g",{transform:"translate("+(-cx)+","+(-cy)+")"});
+  orbGrow.appendChild(orbInner); orbG.appendChild(orbGrow); svg.appendChild(orbG);
   [[Ri,"PROSPECTS"],[Ro,"SPHERE CRM"]].forEach(function(rg){
-    svg.appendChild(svgEl("circle",{cx:cx,cy:cy,r:rg[0],fill:"none",stroke:"#33415a","stroke-width":1,"stroke-dasharray":"3 5",opacity:0.55}));
-    var lab=svgEl("text",{x:cx,y:cy-rg[0]-6,"text-anchor":"middle",fill:"#5b6b86","font-size":8,"letter-spacing":1.4,"font-weight":700}); lab.textContent=rg[1]; svg.appendChild(lab);
+    orbInner.appendChild(svgEl("circle",{cx:cx,cy:cy,r:rg[0],fill:"none",stroke:"#33415a","stroke-width":1,"stroke-dasharray":"3 5",opacity:0.55}));
+    var lab=svgEl("text",{x:cx,y:cy-rg[0]-6,"text-anchor":"middle",fill:"#5b6b86","font-size":8,"letter-spacing":1.4,"font-weight":700}); lab.textContent=rg[1]; orbInner.appendChild(lab);
   });
   function placeRing(list,R,isPro){
     var n=list.length||1;
@@ -4048,7 +4267,8 @@ function sphereOrbit(parent){
       var fill,stroke;
       if(isPro){ fill="#f59e0b"; stroke="#7a4d06"; }
       else { var good=(item.quality==="Good"); fill=good?"#2fd27a":"#8a94a6"; stroke=good?"#12633a":"#3f4a5c"; }
-      var g=svgEl("g",{}); g.style.cursor="pointer"; g.setAttribute("role","button");
+      /* build 202: .orbnode marks this as a faded-in-place node. Opacity only, never a transform, because this group is the tap target. */
+      var g=svgEl("g",{class:"orbnode"}); g.style.cursor="pointer"; g.setAttribute("role","button");
       var sel=orbitSel && ((isPro&&orbitSel.kind==="prospect")||(!isPro&&orbitSel.kind==="sphere")) && orbitSel.id===item.id;
       if(!isPro && contactOverdue(item)){ g.appendChild(svgEl("circle",{cx:x,cy:y,r:rr+4,fill:"none",stroke:"#ef4444","stroke-width":2})); }
       if(sel){ g.appendChild(svgEl("circle",{cx:x,cy:y,r:rr+6,fill:"none",stroke:"#eaf1ff","stroke-width":1.5,opacity:0.9})); }
@@ -4196,7 +4416,7 @@ function gymToday(parent){ const day=daySplit(DOW); const log=state.gym.logs[TOD
     hg.onclick=function(){ try{ PK_OPEN["pk_active"]=true; }catch(e){} try{ render(); }catch(e){} selectTab("pickle"); };
     hb.appendChild(hg); parent.appendChild(hc); })();
   
-  const c=card("a-blue"); const b=c._body; const top=el("div","between"); const left=el("div"); left.appendChild(el("h3",null,cleanFocus(day.focus))); const sub=el("div","small muted"); sub.textContent="Today. "+day.day+". Pickleball: "+day.play; left.appendChild(sub); top.appendChild(left); top.appendChild(el("span","pill b",day.play)); b.appendChild(top); if(day.note){ const n=el("div","small muted"); n.style.marginTop="6px"; n.textContent=day.note; b.appendChild(n); } const pbar=el("div","pbar"); const pi=el("i"); pbar.appendChild(pi); b.appendChild(pbar); setTimeout(()=>{try{pi.style.width=(total?dc/total*100:0)+"%";}catch(e){}},40); const pl=el("div","small dim"); pl.style.marginTop="7px"; pl.textContent=dc+" of "+total+" logged"; b.appendChild(pl); const list=el("div"); list.style.marginTop="6px"; items.forEach(e=>{ const done=!!log.done[e.id]; const row=el("label","ex"); const inp=el("input","cbx"); inp.type="checkbox"; inp.checked=done; const box=el("span","box"); box.innerHTML=CHECK; inp.addEventListener("change",()=>{ if(log.done[e.id])delete log.done[e.id]; else log.done[e.id]=true; save(); render(); }); row.appendChild(inp); row.appendChild(box); row.appendChild(el("span","exname",e.name)); row.appendChild(el("span","scheme",e.scheme)); list.appendChild(row); }); b.appendChild(list); if(total){ const btn=el("button","btn ghost sm block",dc<total?"Check all":"Reset today"); btn.onclick=()=>{ if(dc<total)items.forEach(e=>log.done[e.id]=true); else items.forEach(e=>delete log.done[e.id]); save(); render(); }; b.appendChild(btn); } parent.appendChild(c);
+  const c=card("a-blue"); const b=c._body; const top=el("div","between"); const left=el("div"); left.appendChild(el("h3",null,cleanFocus(day.focus))); const sub=el("div","small muted"); sub.textContent="Today. "+day.day+". Pickleball: "+day.play; left.appendChild(sub); top.appendChild(left); top.appendChild(el("span","pill b",day.play)); b.appendChild(top); if(day.note){ const n=el("div","small muted"); n.style.marginTop="6px"; n.textContent=day.note; b.appendChild(n); } const pbar=el("div","pbar"); const pi=el("i"); pbar.appendChild(pi); b.appendChild(pbar); try{pi.style.width=(total?dc/total*100:0)+"%";}catch(e){} const pl=el("div","small dim"); pl.style.marginTop="7px"; pl.textContent=dc+" of "+total+" logged"; b.appendChild(pl); const list=el("div"); list.style.marginTop="6px"; items.forEach(e=>{ const done=!!log.done[e.id]; const row=el("label","ex"); const inp=el("input","cbx"); inp.type="checkbox"; inp.checked=done; const box=el("span","box"); box.innerHTML=CHECK; inp.addEventListener("change",()=>{ if(log.done[e.id])delete log.done[e.id]; else log.done[e.id]=true; save(); render(); }); row.appendChild(inp); row.appendChild(box); row.appendChild(el("span","exname",e.name)); row.appendChild(el("span","scheme",e.scheme)); list.appendChild(row); }); b.appendChild(list); if(total){ const btn=el("button","btn ghost sm block",dc<total?"Check all":"Reset today"); btn.onclick=()=>{ if(dc<total)items.forEach(e=>log.done[e.id]=true); else items.forEach(e=>delete log.done[e.id]); save(); render(); }; b.appendChild(btn); } parent.appendChild(c);
   const nc=card(); nc._body.appendChild(el("div","small muted","Session note (today)")); const ta=el("textarea","in"); ta.style.minHeight="58px"; ta.style.marginTop="6px"; ta.placeholder="Weights, PRs, how it felt..."; ta.value=log.note||""; ta.oninput=()=>{log.note=ta.value;save();}; nc._body.appendChild(ta); parent.appendChild(nc);
   const tog=el("div"); tog.style.margin="2px 2px 0"; const link=el("button"); link.style.cssText="background:none;border:none;color:var(--sec2,var(--accent2));font-weight:700;font-size:13px;padding:6px 2px"; link.textContent=gymShowWeek?"Hide full week":"View full week"; link.onclick=()=>{ gymShowWeek=!gymShowWeek; render(); }; tog.appendChild(link); parent.appendChild(tog);
   if(gymShowWeek){ sect(parent,"Full week reference","for reference only"); gymWeek(parent); }
@@ -4208,7 +4428,7 @@ function waterCard(parent){
   const l=el("div"); l.appendChild(el("h3",null,"Water (cups)")); l.appendChild(el("div","small dim","Tap plus for each cup. Aim "+WATER_GOAL+" cups.")); top.appendChild(l);
   const big=el("div"); big.style.cssText="font-size:23px;font-weight:800;font-variant-numeric:tabular-nums;color:var(--cyan);white-space:nowrap"; big.textContent=get()+" / "+WATER_GOAL; top.appendChild(big);
   wb.appendChild(top);
-  const bar=el("div","pbar"); const bi=el("i"); bar.appendChild(bi); wb.appendChild(bar); setTimeout(()=>{try{bi.style.width=Math.min(100,get()/WATER_GOAL*100)+"%"; bi.style.background="var(--cyan)";}catch(e){}},40);
+  const bar=el("div","pbar"); const bi=el("i"); bar.appendChild(bi); wb.appendChild(bar); try{bi.style.width=Math.min(100,get()/WATER_GOAL*100)+"%"; bi.style.background="var(--cyan)";}catch(e){}
   const row=el("div"); row.style.cssText="display:flex;gap:10px;margin-top:13px";
   const minus=el("button","btn ghost","\u2212 Cup"); minus.style.flex="1"; minus.onclick=()=>{ state.nutrition.water[TODAY]=Math.max(0,get()-1); save(); render(); };
   const plus=el("button","btn","+ Cup"); plus.style.flex="2"; plus.onclick=()=>{ state.nutrition.water[TODAY]=get()+1; save(); render(); };
@@ -4360,7 +4580,7 @@ const PK_SELF_ASSESS={
 };
 /* module level, deliberately NOT persisted. It only decides full grow vs subtle replay, and it
    resetting on a real page reload is the correct behaviour, not a bug. */
-var PK_RADAR_SEEN=false;
+var PK_RADAR_SEEN=false; /* build 202: no longer read. The radar's own reveal driver was folded into the shared chart engine, which tracks seen state in CH_SEEN. Kept as a harmless declaration rather than deleted so nothing that may still reference it throws. */
 function pkAnchor(rating){ return (Number(rating)-3.0)*30+30; }
 function pkSelf(id){
   var r=PK_SELF_ASSESS.ranges[id]; if(!r) return null;
@@ -4563,80 +4783,17 @@ function buildSkillsRadar(parent){
   sk.forEach(function(s,i){ var q=pt(i,s.current); g+='<circle class="skhit" data-skill="'+s.id+'" cx="'+q[0].toFixed(1)+'" cy="'+q[1].toFixed(1)+'" r="20" style="fill:transparent;cursor:pointer"/>'; });
   g+='</svg>';
   var holder=el("div"); holder.innerHTML=g; b.appendChild(holder);
-  /* v21 build 196: play the grow when the card actually comes INTO VIEW, not on app load, so it is
-     not burned off while he is still on Home. Once per session it plays in full; a genuine re entry
-     to the page replays a shorter, smaller version so it still feels alive without becoming a tic.
-     The observer disconnects after firing, so scrolling up and down inside the page does not retrigger.
-     prefers-reduced-motion skips straight to the final shape with no transition at all. */
-  try{
-    var grow=holder.querySelector(".skgrow");
-    if(grow){
-      var reduce=false;
-      try{ reduce=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches; }catch(e){}
-      if(reduce){ /* nothing to do, the resting state is already the final shape */ }
-      else{
-        var first=!PK_RADAR_SEEN;
-        /* build 201: roughly double the old duration, Ian wants to watch it fill in.
-           760 -> 1500 for the full grow, 340 -> 700 for the subtle replay. */
-        var ms=first?1500:700;
-        /* NO collapsed inline state is set here. The chart sits at its natural full size from the
-           moment it is built, and play() just runs a keyframe over the top of it. */
-        var play=function(){
-          try{
-            /* build 201: the easing had to change with the duration, not just the number.
-               The old curve, cubic-bezier(.19,.9,.32,1), is a hard ease out: about 62 percent of the
-               growth happened in the first 20 percent of the time. That reads as snappy at 760ms, but
-               stretched to 1500ms it becomes rubbery, the chart lurches out and then crawls to the
-               finish with nothing to watch. cubic-bezier(.4,0,.25,1) is close to even, roughly 16
-               percent done at a fifth of the way, 60 at halfway, 92 at four fifths, so the motion
-               stays visible the whole way through and still lands softly instead of stopping dead. */
-            grow.style.animation=(first?"skGrowIn ":"skGrowSubtle ")+ms+"ms cubic-bezier(.4,0,.25,1)";
-          }catch(e){}
-          /* GUARANTEED SETTLE. An animation whose clock never advances would otherwise park the
-             element on its first keyframe, which for skGrowIn is scale(0), invisible. That is not
-             hypothetical: it happens whenever the page is not being painted, and it is exactly how
-             the two earlier attempts at this failed. Clearing the animation just after its nominal
-             duration returns the element to its resting state, which is the finished shape. If the
-             animation ran properly this is a no-op on an already finished animation; if the clock
-             was frozen the chart snaps in rather than never appearing. Either way it ends visible. */
-          setTimeout(function(){ try{ grow.style.animation=""; }catch(e){} }, ms+140);
-          PK_RADAR_SEEN=true;
-        };
-        /* IntersectionObserver was the obvious tool here and it did NOT work, so this does it
-           directly instead. Every tab page is built once at render time and the inactive ones are
-           display:none, so the radar is constructed while Ian is still on Home. An observer set up
-           against a display:none element inside a detached subtree never reported the element when
-           the tab was later switched on by the CSS radio, and the chart sat at scale(0), invisible,
-           permanently. Caught in a real browser; jsdom has no IntersectionObserver so it could not
-           have shown this.
-           The app already knows exactly when the section becomes visible: the tab radio changes.
-           That is the trigger, plus a scroll check for the case where the page is open but the card
-           is below the fold, plus one immediate check for when it is on screen at build time. */
-        var armed=true;
-        var onScroll=null, radio=null;
-        var cleanup=function(){
-          try{ if(onScroll) window.removeEventListener("scroll",onScroll); }catch(e){}
-          try{ if(radio&&onRadio) radio.removeEventListener("change",onRadio); }catch(e){}
-        };
-        var visibleNow=function(){
-          try{
-            if(c.offsetParent===null) return false;
-            var r=c.getBoundingClientRect();
-            if(!(r.height>0&&r.width>0)) return false;
-            var vh=window.innerHeight||document.documentElement.clientHeight||800;
-            return r.top<vh*0.92 && r.bottom>0;
-          }catch(e){ return true; }
-        };
-        var tryPlay=function(){ if(!armed) return; if(!visibleNow()) return; armed=false; cleanup(); play(); };
-        var onRadio=function(){ setTimeout(tryPlay,40); };
-        radio=document.getElementById("t-pickle");
-        if(radio) radio.addEventListener("change",onRadio);
-        onScroll=function(){ tryPlay(); };
-        try{ window.addEventListener("scroll",onScroll,{passive:true}); }catch(e){ window.addEventListener("scroll",onScroll); }
-        setTimeout(tryPlay,60);
-      }
-    }
-  }catch(e){ /* the resting state is already the final shape, so a failure here just means no animation */ }
+  /* v21 build 202: the radar's bespoke reveal driver, builds 196 to 201, has been REMOVED and folded
+     into the shared chart engine at chRun(). Everything it did, the shared engine now does for every
+     chart: play on the element actually becoming visible rather than on app load, once per view, a
+     shorter replay on a genuine re entry, prefers-reduced-motion respected, and a hard timer that
+     releases the animation whether or not the clock ever advanced. The radar keeps its own skGrowIn
+     and skGrowSubtle keyframes, so what Ian approved on his phone is visually unchanged. Two drivers
+     doing the same job meant every future change had to be made twice, and the bespoke one already
+     carried the only correct answers to problems the rest of the app still had.
+     The .skgrow group closes ABOVE this line, before the spoke labels and the 20px hit circles, so
+     the tap targets sit outside the animated group and are full size from frame zero. Keep it that
+     way: anything moved inside .skgrow becomes a tap target that scales. */
   /* the detail panel lives directly under the map so the map stays on screen, see skillDetailPanel */
   var panel=el("div"); panel.id="sk-detail"; b.appendChild(panel);
   var openId=(state.meta&&state.meta.skOpen)||null;
@@ -4900,7 +5057,7 @@ function buildPage(id,fn){ const host=document.getElementById(id); if(!host) ret
 function applySolaraTab(){ try{ var off=hidden("solara"); document.body.classList.toggle("solara-off",off); if(off){ var r=document.getElementById("t-solara"); if(r&&r.checked){ selectTab("home"); } } }catch(e){} }
 function render(){ applyProfileChrome(); const set=IAN_PAGES; for(const id in set) buildPage(id,set[id]); applySolaraTab(); refocus(); animateVisible(); }
 function refocus(){ if(!pendingFocus) return; const ph=pendingFocus; pendingFocus=null; try{ const inp=document.querySelector('.tabpage input[data-add="'+ph.replace(/"/g,'\\"')+'"]'); if(inp) inp.focus(); }catch(e){} }
-function selectTab(which){ const r=document.getElementById("t-"+which); if(r){ r.checked=true; } try{ window.scrollTo(0,0); }catch(e){} animateVisible(); }
+function selectTab(which){ const r=document.getElementById("t-"+which); if(r){ r.checked=true; } try{ window.scrollTo(0,0); }catch(e){} /* build 202: arm the chart reveal. Setting .checked in code does NOT fire a change event, so the tab bar listener below never sees a programmatic jump and this has to arm it directly. */ try{ CH_ARMED["p-"+which]=true; }catch(e){} animateVisible(); }
 
 /* ===== lock flow ===== */
 const PASSCODE="2007";
@@ -4963,7 +5120,9 @@ function boot(){
   try{ let f=document.getElementById("importFile"); if(!f){ f=document.createElement("input"); f.type="file"; f.id="importFile"; f.accept="application/json"; f.style.display="none"; document.body.appendChild(f); } f.onchange=e=>{ if(e.target.files[0])doImport(e.target.files[0]); e.target.value=""; }; }catch(e){}
  
   try{ let pf=document.getElementById("pipelineFile"); if(!pf){ pf=document.createElement("input"); pf.type="file"; pf.id="pipelineFile"; pf.accept="application/json,.json"; pf.style.display="none"; document.body.appendChild(pf); } pf.onchange=e=>{ if(e.target.files[0])readPipeline(e.target.files[0]); e.target.value=""; }; }catch(e){}
-  try{ document.querySelectorAll('input[name="tab"]').forEach(r=>r.addEventListener("change",()=>{ try{window.scrollTo(0,0);}catch(e){} animateVisible(); })); }catch(e){}
+  /* build 202: a tab tap is the genuine re entry that earns a chart replay. This is the user driven
+     half; selectTab() arms the programmatic half, since setting .checked in code fires no change. */
+  try{ document.querySelectorAll('input[name="tab"]').forEach(r=>r.addEventListener("change",()=>{ try{window.scrollTo(0,0);}catch(e){} try{ CH_ARMED[currentPageId()]=true; }catch(e){} animateVisible(); })); }catch(e){}
   try{ const reRadio=document.getElementById("t-re"); if(reRadio) reRadio.addEventListener("change",()=>{ if(reRadio.checked){ reView="landing"; try{render();}catch(e){} } }); }catch(e){}
   // show lock unless session says unlocked
   if(sessionData&&sessionData.unlocked){ const l=document.getElementById("lock"); if(l)l.style.display="none"; }
