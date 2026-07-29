@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 190 (2026-07-29)">
+<meta name="build" content="v21 build 191 (2026-07-29)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -3539,7 +3539,20 @@ function buildIanHome(v){ const workout=daySplit(DOW); const reTop=firstUndone(s
     q.appendChild(qb("so","\u2600\ufe0f","Solara",function(){ selectTab("solara"); }));
     qc._body.appendChild(q); v.appendChild(qc);
   },"Quick actions");
-  safe(v,function(){
+  /* ===================================================================================
+     v21 build 191: HOME REORDERED AROUND HOW IAN ACTUALLY OPENS THE APP.
+     His words: he opens it in the morning to see his daily wins, his schedule and his gym
+     workout, in that order. He does NOT look at real estate first thing, only when something
+     is due that day or when he is looking at closing money. Deep workout and pickleball
+     review is an after-a-session thing, not a morning thing. The training heatmap is one of
+     his favourite parts of the app and he asked for it HIGH, so it sits directly under the
+     workout it reflects, forming one training block, still above the writing box and the feed.
+
+     Every section below is now defined as a named function and the ORDER lives in one list
+     at the bottom of this function. Reordering Home is a one line change from here on, which
+     is the point; the old version had the order tangled through 130 lines of build sequence.
+     =================================================================================== */
+  var secEntry=function(){ safe(v,function(){
     var _te=sect(v,"Today's entry","one place for everything"); if(_te)_te.id="todays-entry";
     if(!state.daily||typeof state.daily!=="object") state.daily={};
     if(!state.daily[TODAY]) state.daily[TODAY]={text:""};
@@ -3572,12 +3585,14 @@ function buildIanHome(v){ const workout=daySplit(DOW); const reTop=firstUndone(s
     foot.textContent="Your coach reads this every morning, splits it by label, and routes each part to the right section. Resets and archives daily like before.";
     b.appendChild(foot);
     v.appendChild(c);
-  },"Daily entry");
-  const _clsec=sect(v,"Today from Claude","new to check out"); if(_clsec)_clsec.id="brief-anchor"; _clsec.insertBefore(claudeAvatar("av-md chip"), _clsec.firstChild); { const items=briefItems(); if(!items.length){ const c=card(); c._body.appendChild(el("div","empty","No briefing yet for today. Your daily agent will add items here.")); v.appendChild(c); } else { items.forEach(it=>v.appendChild(briefCard(it))); v.appendChild(el("div","notice","Example items. Your daily agent will replace these each morning.")); } }
+  },"Daily entry"); };
+  var secBrief=function(){ const _clsec=sect(v,"Today from Claude","new to check out"); if(_clsec)_clsec.id="brief-anchor"; _clsec.insertBefore(claudeAvatar("av-md chip"), _clsec.firstChild); { const items=briefItems(); if(!items.length){ const c=card(); c._body.appendChild(el("div","empty","No briefing yet for today. Your daily agent will add items here.")); v.appendChild(c); } else { items.forEach(it=>v.appendChild(briefCard(it))); v.appendChild(el("div","notice","Example items. Your daily agent will replace these each morning.")); } } };
 /* v21 build 133: TRAINING HEATMAP moved from the Pickleball page to Home. It shows BOTH gym and pickleball
      sessions, not just pickleball, so it belongs on Home where Ian sees it on open. Forward looking layout,
      pickleball colour coding and gym colour intact, weekly count against the 5 to 6 target intact. */
-  pkCollapse(v,"h_heat","Training consistency","gym and pickleball, target 5 to 6 a week",false,function(hh){
+  /* build 191: open by default now. Ian named the heatmap one of his two favourite things in
+     the app, and a favourite that starts collapsed is a favourite he has to go find. */
+  var secHeat=function(){ pkCollapse(v,"h_heat","Training consistency","gym and pickleball, target 5 to 6 a week",true,function(hh){
       var pb=state.pickleball||{};
       var cardEl=card(); var b=cardEl._body;
       function _pkCls(kind){ var k=String(kind||"").toLowerCase(); if(/tournament|fall cup|\bapc\b/.test(k)) return "k-tourn"; if(k.indexOf("league")>=0) return "k-league"; var dr=/drill/.test(k); var pl=/open play|doubles|\bplay\b/.test(k); if(dr&&pl) return "k-mix"; if(dr) return "k-drill"; if(pl) return "k-open"; return "k-play"; }
@@ -3623,13 +3638,99 @@ function buildIanHome(v){ const workout=daySplit(DOW); const reTop=firstUndone(s
         '<span><i style="border:1px dashed #33333f;background:transparent"></i>Upcoming</span>';
       b.appendChild(key);
       hh.appendChild(cardEl);
-    },"📊","green");
-    safe(v,function(){ buildFutureIdeasHome(v); },"Future ideas"); pkCollapse(v,"h_wins","Easy wins","two small wins today",false,function(hh){ quickWinCard(hh); },"✅","green");
-  pkCollapse(v,"h_water","Water","aim 10 cups a day",false,function(hh){ waterCard(hh); },"💧","cyan");
-  pkCollapse(v,"h_sphere","Stay in touch","your sphere",false,function(hh){ homeSphereNudge(hh); },"🤝","orange");
-  pkCollapse(v,"h_prog","Progress and upcoming","where you stand",false,function(hh){ reGoalsCard(hh); homeUpcomingCard(hh); },"📈","blue");
-  pkCollapse(v,"h_summary","Daily summary","today at a glance",false,function(hh){ const gday=daySplit(DOW); const glog=(state.gym.logs&&state.gym.logs[TODAY])||{done:{}}; const gT=gday.exercises.length||0, gD=gday.exercises.filter(e=>glog.done&&glog.done[e.id]).length; const hs=habitsActiveOn(TODAY); const hD=hs.filter(h=>h.log&&h.log[TODAY]).length; const water=(state.nutrition&&state.nutrition.water&&state.nutrition.water[TODAY])||0; summaryGrid(hh,[ fracTile({label:"Workout",color:"orange",done:gD,goal:gT||1,unit:"sets",tab:"gym"}), fracTile({label:"Habits",color:"green",done:hD,goal:hs.length||7,unit:"done",tab:"gym"}), fracTile({label:"Water",color:"cyan",done:water,goal:WATER_GOAL,unit:"cups",tab:"gym"}) ]); },"📋","teal");
-  pkCollapse(v,"h_cal","Calendar","upcoming events",false,function(hh){ eventsModule(hh); },"📅","purple");
+    },"📊","green"); };
+  var secIdeas=function(){ safe(v,function(){ buildFutureIdeasHome(v); },"Future ideas"); };
+  /* build 191: Easy wins opens by default. It is the first thing he wants to see and a
+     collapsed win list is not a win list. */
+  var secWins=function(){ pkCollapse(v,"h_wins","Easy wins","two small wins today",true,function(hh){ quickWinCard(hh); },"✅","green"); };
+  var secWater=function(){ pkCollapse(v,"h_water","Water","aim 10 cups a day",false,function(hh){ waterCard(hh); },"💧","cyan"); };
+  var secSphere=function(){ pkCollapse(v,"h_sphere","Stay in touch","your sphere",false,function(hh){ homeSphereNudge(hh); },"🤝","orange"); };
+  var secProg=function(){ pkCollapse(v,"h_prog","Progress and upcoming","where you stand",false,function(hh){ reGoalsCard(hh); homeUpcomingCard(hh); },"📈","blue"); };
+  var secSummary=function(){ pkCollapse(v,"h_summary","Daily summary","today at a glance",false,function(hh){ const gday=daySplit(DOW); const glog=(state.gym.logs&&state.gym.logs[TODAY])||{done:{}}; const gT=gday.exercises.length||0, gD=gday.exercises.filter(e=>glog.done&&glog.done[e.id]).length; const hs=habitsActiveOn(TODAY); const hD=hs.filter(h=>h.log&&h.log[TODAY]).length; const water=(state.nutrition&&state.nutrition.water&&state.nutrition.water[TODAY])||0; summaryGrid(hh,[ fracTile({label:"Workout",color:"orange",done:gD,goal:gT||1,unit:"sets",tab:"gym"}), fracTile({label:"Habits",color:"green",done:hD,goal:hs.length||7,unit:"done",tab:"gym"}), fracTile({label:"Water",color:"cyan",done:water,goal:WATER_GOAL,unit:"cups",tab:"gym"}) ]); },"📋","teal"); };
+  /* build 191: promoted from dead last to the top block and renamed. It is his schedule, and
+     "Calendar" sitting under Daily summary meant he never saw it in the morning. */
+  var secSchedule=function(){ pkCollapse(v,"h_cal","Today's schedule","today and what is coming",true,function(hh){ eventsModule(hh); },"📅","purple"); };
+
+  /* build 191 NEW: TODAY'S WORKOUT on Home. Ian named the workout one of the three things he
+     opens the app for, and it had no surface on Home at all, only a Quick actions button. This
+     reads the existing gym split and the existing id keyed done log. It adds no data and writes
+     nothing, so it cannot affect set persistence. Renders nothing on a rest day. */
+  var secWorkout=function(){ safe(v,function(){
+    var day=daySplit(DOW); var exs=(day&&day.exercises)||[];
+    if(!exs.length) return;
+    var log=(state.gym&&state.gym.logs&&state.gym.logs[TODAY])||{done:{}};
+    var doneN=exs.filter(function(e){ return log.done&&log.done[e.id]; }).length;
+    sect(v,"Today's workout","tap to open the gym");
+    var c=card("a-orange"); c.className+=" tap"; var b=c._body;
+    var top=el("div","between");
+    var t=el("div"); t.style.cssText="font-weight:800;font-size:17px;letter-spacing:-.02em";
+    t.textContent=cleanFocus(day.focus)||"Workout";
+    top.appendChild(t); top.appendChild(el("div","chev","›")); b.appendChild(top);
+    var meta=el("div","small dim"); meta.style.marginTop="3px";
+    meta.textContent=doneN+" of "+exs.length+" exercises logged"; b.appendChild(meta);
+    var track=el("div","pbar"); var fill=el("i"); track.appendChild(fill); b.appendChild(track);
+    try{ var pct=exs.length?Math.round(doneN/exs.length*100):0; setTimeout(function(){ try{ fill.style.width=pct+"%"; }catch(e){} },30); }catch(e){}
+    var names=el("div","small"); names.style.cssText="margin-top:9px;line-height:1.5;color:var(--gray)";
+    names.textContent=exs.slice(0,4).map(function(e){ return e.name; }).join(", ")+(exs.length>4?", and "+(exs.length-4)+" more":"");
+    b.appendChild(names);
+    c.onclick=function(){ try{ reToolOpen["Workout routine"]=true; reToolOpen["Nutrition, water and supplements"]=false; }catch(e){} try{ render(); }catch(e){} selectTab("gym"); };
+    v.appendChild(c);
+  },"Today's workout"); };
+
+  /* build 191 NEW: REAL ESTATE, CONDITIONAL. Ian only wants real estate in his face when it is
+     actually time sensitive, so this renders NOTHING unless one of three things is true: an
+     undone to-do is due today or overdue, a Real estate event lands within two days, or a deal
+     is closing within thirty days. Otherwise real estate stays one tap away in Quick actions
+     and the tab bar, exactly as he asked. Read only, writes no state. */
+  var secReAlert=function(){ safe(v,function(){
+    var out=[];
+    var pd=function(k){ try{ return daysUntil(k); }catch(e){ return 999; } };
+    ((state.realEstate&&state.realEstate.todos)||[]).forEach(function(t){
+      if(!t||t.done||!t.due) return; var d=pd(t.due);
+      if(d<=0) out.push({label:t.text, meta:(d<0?"overdue":"due today"), sk:d});
+    });
+    (Array.isArray(state.events)?state.events:[]).forEach(function(e){
+      if(!e||!e.date||e.kind!=="Real estate") return; var d=pd(e.date);
+      if(d>=0&&d<=2) out.push({label:e.title, meta:(d===0?"today":d===1?"tomorrow":"in 2 days"), sk:d+0.1});
+    });
+    ((state.realEstate&&state.realEstate.deals)||[]).forEach(function(dd){
+      if(!dd||!dd.close) return; if(dd.stage!=="Under Contract"&&dd.stage!=="Coming Soon") return;
+      var d=pd(dd.close); if(d>=0&&d<=30) out.push({label:dd.title, meta:"closing in "+d+" day"+(d===1?"":"s"), sk:d+0.2});
+    });
+    if(!out.length) return;
+    out.sort(function(a,b){ return a.sk-b.sk; });
+    sect(v,"Real estate needs you","only when something is time sensitive");
+    var c=card("a-blue"); c.className+=" tap"; var b=c._body;
+    out.slice(0,3).forEach(function(r,i){
+      var row=el("div","between"); if(i) row.style.marginTop="10px";
+      var lft=el("div"); lft.style.cssText="min-width:0;flex:1;padding-right:10px";
+      var ln=el("div","small"); ln.style.cssText="font-weight:700;color:var(--white);line-height:1.4"; ln.textContent=r.label; lft.appendChild(ln);
+      var mt=el("div","small dim"); mt.style.marginTop="2px"; mt.textContent=r.meta; lft.appendChild(mt);
+      row.appendChild(lft); b.appendChild(row);
+    });
+    if(out.length>3){ var more=el("div","small dim"); more.style.marginTop="10px"; more.textContent="and "+(out.length-3)+" more in the pipeline"; b.appendChild(more); }
+    c.onclick=function(){ reView="pipeline"; try{ render(); }catch(e){} selectTab("re"); };
+    v.appendChild(c);
+  },"RE alert"); };
+
+  /* ===================================================================================
+     THE ORDER. This list is the Home screen. Change it here and nowhere else.
+     Morning block first (wins, schedule, workout, then the training heatmap that reflects
+     the workout), then the agent feed and his writing box, then real estate only if it is
+     shouting, then the reference material he goes looking for rather than glances at.
+     =================================================================================== */
+  secWins();       /* daily wins,      he asked for this first  */
+  secSchedule();   /* his schedule,    was dead last            */
+  secWorkout();    /* his gym workout, was not on Home at all   */
+  secHeat();       /* favourite, high, pairs with the workout   */
+  secBrief();      /* what Claude left him overnight            */
+  secEntry();      /* where he writes the day up                */
+  secReAlert();    /* real estate, silent unless time sensitive */
+  secProg();       /* goal pace and closing money               */
+  secWater();
+  secSphere();
+  secSummary();
+  secIdeas();
 }
 /* ===== v21 real estate: calm landing of section cards, each opens its own view ===== */
 const RE_PIPE_GROUPS=[["Under Contract","Under contract / pending"],["Coming Soon","Coming soon"],["Active","Active listings"],["Building","Building / New Construction"],["Closed","Closed"],["Just Sold","Just sold"],["Follow up","Follow up"]];
