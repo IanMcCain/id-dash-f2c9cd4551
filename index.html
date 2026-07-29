@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 198 (2026-07-30)">
+<meta name="build" content="v21 build 199 (2026-07-30)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -350,6 +350,19 @@ textarea.in{resize:vertical;min-height:110px;line-height:1.5}
 .btn.danger{background:#200c0c;color:var(--red);border:1px solid #5a2626}
 .empty{color:var(--dim);font-size:14px;padding:16px 2px;text-align:center}
 .notice{font-size:12px;color:var(--dim);margin-top:11px;line-height:1.5}
+/* v21 build 199: skills radar grow. The RESTING state is fully visible, and the animation is a
+   keyframe played on top of it. That ordering matters. The previous version set the collapsed state
+   inline and relied on a CSS transition to reach the visible state, which meant that if the
+   transition did not run for any reason the radar stayed at scale(0), invisible, permanently. A
+   cosmetic flourish must never be the thing that decides whether the chart can be seen. With a
+   keyframe and no fill mode, the worst case is that the animation does not play and the chart is
+   simply there, which is exactly the right failure. */
+@keyframes skGrowIn{ from{ transform:scale(0); opacity:.35 } to{ transform:scale(1); opacity:1 } }
+@keyframes skGrowSubtle{ from{ transform:scale(.9); opacity:.75 } to{ transform:scale(1); opacity:1 } }
+@media (prefers-reduced-motion: reduce){
+  /* belt and braces alongside the JS check, so the motion cannot play even if the JS path changes */
+  .skgrow{ animation:none !important }
+}
 .pbar{height:8px;border-radius:99px;background:var(--card2);overflow:hidden;margin-top:10px}
 .pbar > i{display:block;height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));width:0;transition:.6s}
 .chips{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px;-webkit-overflow-scrolling:touch}
@@ -4556,25 +4569,16 @@ function buildSkillsRadar(parent){
     if(grow){
       var reduce=false;
       try{ reduce=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches; }catch(e){}
-      if(reduce){ grow.style.transform="none"; }
+      if(reduce){ /* nothing to do, the resting state is already the final shape */ }
       else{
         var first=!PK_RADAR_SEEN;
-        var from=first?0:0.9, ms=first?760:340;
-        grow.style.transform="scale("+from+")";
-        grow.style.opacity=first?"0.35":"0.75";
+        var ms=first?760:340;
+        /* NO collapsed inline state is set here. The chart sits at its natural full size from the
+           moment it is built, and play() just runs a keyframe over the top of it. */
         var play=function(){
-          grow.style.transition="transform "+ms+"ms cubic-bezier(.19,.9,.32,1), opacity "+Math.round(ms*0.7)+"ms ease-out";
-          /* Force a style flush instead of waiting on a double requestAnimationFrame. rAF does not
-             fire, or is throttled hard, whenever the page is not actively being painted, and the
-             earlier rAF version left the chart stuck at scale(0) with the transition applied but the
-             final transform never assigned. Reading a layout property makes the browser commit the
-             collapsed state, so assigning the final transform on the next line animates reliably
-             with no dependency on frame callbacks. */
-          try{ void grow.getBoundingClientRect(); }catch(e){}
-          grow.style.transform="scale(1)";
-          grow.style.opacity="1";
-          /* last resort: if the transition itself never runs, the shape is still correct and visible
-             because the final transform is already assigned above. */
+          try{
+            grow.style.animation=(first?"skGrowIn ":"skGrowSubtle ")+ms+"ms cubic-bezier(.19,.9,.32,1)";
+          }catch(e){}
           PK_RADAR_SEEN=true;
         };
         /* IntersectionObserver was the obvious tool here and it did NOT work, so this does it
@@ -4611,7 +4615,7 @@ function buildSkillsRadar(parent){
         setTimeout(tryPlay,60);
       }
     }
-  }catch(e){ try{ var _g=holder.querySelector(".skgrow"); if(_g) _g.style.transform="none"; }catch(_){} }
+  }catch(e){ /* the resting state is already the final shape, so a failure here just means no animation */ }
   /* the detail panel lives directly under the map so the map stays on screen, see skillDetailPanel */
   var panel=el("div"); panel.id="sk-detail"; b.appendChild(panel);
   var openId=(state.meta&&state.meta.skOpen)||null;
