@@ -13,7 +13,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Ian">
 <title>Ian Dashboard</title>
-<meta name="build" content="v21 build 186 (2026-07-28)">
+<meta name="build" content="v21 build 187 (2026-07-28)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -736,7 +736,7 @@ const sess=(function(){ let ok=false,mem={}; try{ const t="__s__"; window.sessio
 })();
 const KEYS={ ian:"ianDashboard.v2", chris:"chrisDashboard.v2" };
 const SEED_VERSION=13;
-const APP_BUILD="v21 build 186 (2026-07-28)";
+const APP_BUILD="v21 build 187 (2026-07-28)";
 const WATER_GOAL=10; 
 const uid=()=>Math.random().toString(36).slice(2,9);
 function todayKey(d){ d=d||new Date(); const p=n=>String(n).padStart(2,"0"); return d.getFullYear()+"-"+p(d.getMonth()+1)+"-"+p(d.getDate()); }
@@ -3080,6 +3080,20 @@ function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]
         state.pickleball.sessions.push({id:"pk-20260728-openplay",date:"2026-07-28",kind:"Open play",venue:"Omaha",duration:"1h 12m 12s",calories:735,activeCalories:622,avgHr:121,maxHr:158,effort:8,note:"Open play, Omaha, 1:21 to 2:33 PM, 1:12:12. Effort 8, Hard. From Apple Watch."});
         save(true);
       }
+  } }catch(e){}
+  /* v21 build 187: Austin Thacker (re-austin-thacker, selling, iffy) PRICING update (07.28.2026). Revised down
+     slightly. As is, 3 legal bedrooms no egress, $245,000 to $250,000 (was $250 to $255k). With an egress window
+     added for a conforming 4th bedroom, $255,000 to $260,000 (was $260k). Deal price set to the full range so the
+     card shows both ends. Own client, sell side 3.6 percent and the 80 percent split are UNCHANGED, take home is
+     price x 0.036 x 0.85 x 0.80, about $5,998 at $245k up to about $6,365 at $260k, roughly $6,242 at a $255k
+     midpoint. The iffy flag, the list Aug 13 and close before Sep 25 timeline, and everything else stay intact.
+     Guarded by mig187_austin_price, presence checked, idempotent, non destructive. */
+  try{ if(state.realEstate && Array.isArray(state.realEstate.deals) && state.meta && !state.meta.mig187_austin_price){
+      state.realEstate.deals.forEach(function(d){ if(d && d.id==="re-austin-thacker"){
+        if(d.price!=="$245,000 to $260,000"){ d.price="$245,000 to $260,000"; }
+        if(typeof d.note==="string" && d.note.indexOf("PRICE UPDATE 07.28.2026")<0){ d.note=d.note+" PRICE UPDATE 07.28.2026 (supersedes the earlier figures, revised down slightly): AS IS, 3 legal bedrooms, no egress, $245,000 to $250,000. WITH an egress window added for a conforming 4th bedroom, $255,000 to $260,000. Deal price set to the full range $245,000 to $260,000. Own client, sell side 3.6 percent, broker 15 percent, Ian 80 percent split, so take home is about $5,998 at $245k (as is floor), about $6,120 at $250k, about $6,242 at a $255k midpoint, and about $6,365 at $260k with the egress. Still iffy, still Coming Soon, list Aug 13 target and close before Sep 25 timeline unchanged."; }
+      } });
+      state.meta.mig187_austin_price=true; save(true);
   } }catch(e){}
 
   focusObj.running=false; try{clearInterval(focusObj.timerId);}catch(e){} focusObj.remaining=null;
