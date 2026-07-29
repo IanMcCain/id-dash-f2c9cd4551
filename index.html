@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 196 (2026-07-30)">
+<meta name="build" content="v21 build 197 (2026-07-30)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -4569,25 +4569,38 @@ function buildSkillsRadar(parent){
           }); });
           PK_RADAR_SEEN=true;
         };
-        if(typeof IntersectionObserver==="function"){
-          var io=new IntersectionObserver(function(ents){
-            ents.forEach(function(en){ if(en.isIntersecting){ io.disconnect(); play(); } });
-          },{threshold:0.35});
-          io.observe(c);
-          /* Safety net, but a VISIBILITY AWARE one. The first version of this just played after
-             1400ms no matter what, which quietly defeated the whole feature: every tab page is built
-             at render time, so the radar exists while Ian is still on Home, the timer fired against a
-             display:none card, and the one full grow was spent before he ever opened the page. Now it
-             only rescues the case where the card is genuinely on screen and the observer has not
-             reported it. If the card is still hidden the observer stays connected and fires properly
-             when he navigates in. */
-          setTimeout(function(){
-            if(grow.style.transform==="scale(1)") return;
-            var visible=false;
-            try{ var r=c.getBoundingClientRect(); visible=(r.height>0 && r.width>0 && c.offsetParent!==null); }catch(e){}
-            if(visible){ try{ io.disconnect(); }catch(e){} play(); }
-          },1400);
-        } else { play(); }
+        /* IntersectionObserver was the obvious tool here and it did NOT work, so this does it
+           directly instead. Every tab page is built once at render time and the inactive ones are
+           display:none, so the radar is constructed while Ian is still on Home. An observer set up
+           against a display:none element inside a detached subtree never reported the element when
+           the tab was later switched on by the CSS radio, and the chart sat at scale(0), invisible,
+           permanently. Caught in a real browser; jsdom has no IntersectionObserver so it could not
+           have shown this.
+           The app already knows exactly when the section becomes visible: the tab radio changes.
+           That is the trigger, plus a scroll check for the case where the page is open but the card
+           is below the fold, plus one immediate check for when it is on screen at build time. */
+        var armed=true;
+        var onScroll=null, radio=null;
+        var cleanup=function(){
+          try{ if(onScroll) window.removeEventListener("scroll",onScroll); }catch(e){}
+          try{ if(radio&&onRadio) radio.removeEventListener("change",onRadio); }catch(e){}
+        };
+        var visibleNow=function(){
+          try{
+            if(c.offsetParent===null) return false;
+            var r=c.getBoundingClientRect();
+            if(!(r.height>0&&r.width>0)) return false;
+            var vh=window.innerHeight||document.documentElement.clientHeight||800;
+            return r.top<vh*0.92 && r.bottom>0;
+          }catch(e){ return true; }
+        };
+        var tryPlay=function(){ if(!armed) return; if(!visibleNow()) return; armed=false; cleanup(); play(); };
+        var onRadio=function(){ setTimeout(tryPlay,40); };
+        radio=document.getElementById("t-pickle");
+        if(radio) radio.addEventListener("change",onRadio);
+        onScroll=function(){ tryPlay(); };
+        try{ window.addEventListener("scroll",onScroll,{passive:true}); }catch(e){ window.addEventListener("scroll",onScroll); }
+        setTimeout(tryPlay,60);
       }
     }
   }catch(e){ try{ var _g=holder.querySelector(".skgrow"); if(_g) _g.style.transform="none"; }catch(_){} }
