@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 194 (2026-07-30)">
+<meta name="build" content="v21 build 195 (2026-07-30)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -4478,7 +4478,9 @@ function buildSkillsRadar(parent){
   /* the detail panel lives directly under the map so the map stays on screen, see skillDetailPanel */
   var panel=el("div"); panel.id="sk-detail"; b.appendChild(panel);
   var openId=(state.meta&&state.meta.skOpen)||null;
+  var hintEl=null; /* build 194: set below, hidden whenever a panel is open */
   var paint=function(id){
+    try{ if(hintEl) hintEl.style.display=id?"none":""; }catch(e){}
     try{ if(!state.meta) state.meta={}; state.meta.skOpen=id; }catch(e){}
     try{ holder.querySelectorAll('[data-skill]').forEach(function(n){
       var on=(n.getAttribute("data-skill")===id);
@@ -4491,8 +4493,13 @@ function buildSkillsRadar(parent){
     n.addEventListener("click",function(ev){ ev.stopPropagation(); var id=n.getAttribute("data-skill");
       paint(id===((state.meta||{}).skOpen)?null:id); });
   }); }catch(e){}
-  if(openId) paint(openId);
-  else { var hint=el("div","small dim"); hint.style.cssText="text-align:center;margin-top:8px;line-height:1.45"; hint.textContent="Tap any skill on the map for that skill on its own."; b.appendChild(hint); }
+  /* build 194: the hint is always built, and paint() hides it while a panel is open. It used to be
+     built only when nothing was open, which meant opening a skill from the not rated chips left
+     "Tap any skill on the map" sitting underneath the panel that had just answered it. */
+  hintEl=el("div","small dim"); hintEl.style.cssText="text-align:center;margin-top:8px;line-height:1.45";
+  hintEl.textContent="Tap any skill on the map for that skill on its own.";
+  b.appendChild(hintEl);
+  paint(openId);
   var leg=el("div"); leg.style.cssText="display:flex;gap:18px;justify-content:center;margin-top:6px;flex-wrap:wrap";
   function key(varc,txt,dash){ var d=el("div"); d.style.cssText="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--gray);font-weight:600"; var sw=el("span"); sw.style.cssText="width:15px;height:0;border-top:3px "+(dash?"dashed":"solid")+" "+varc+";display:inline-block"; d.appendChild(sw); d.appendChild(document.createTextNode(txt)); return d; }
   leg.appendChild(key("var(--accent)","Now, about 3.25",false));
