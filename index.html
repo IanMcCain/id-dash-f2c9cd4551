@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 199 (2026-07-30)">
+<meta name="build" content="v21 build 201 (2026-07-30)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -357,8 +357,12 @@ textarea.in{resize:vertical;min-height:110px;line-height:1.5}
    cosmetic flourish must never be the thing that decides whether the chart can be seen. With a
    keyframe and no fill mode, the worst case is that the animation does not play and the chart is
    simply there, which is exactly the right failure. */
-@keyframes skGrowIn{ from{ transform:scale(0); opacity:.35 } to{ transform:scale(1); opacity:1 } }
-@keyframes skGrowSubtle{ from{ transform:scale(.9); opacity:.75 } to{ transform:scale(1); opacity:1 } }
+/* build 201: opacity finishes early, at 30 percent of the timeline, so the shape is solid for most
+   of the grow and what he is watching is the SHAPE filling out rather than a fade. At the old 760ms
+   the fade was over before you noticed it; at 1500ms a fade running the whole way would look like
+   the chart was still loading. */
+@keyframes skGrowIn{ from{ transform:scale(0); opacity:.35 } 30%{ opacity:1 } to{ transform:scale(1); opacity:1 } }
+@keyframes skGrowSubtle{ from{ transform:scale(.92); opacity:.8 } 40%{ opacity:1 } to{ transform:scale(1); opacity:1 } }
 @media (prefers-reduced-motion: reduce){
   /* belt and braces alongside the JS check, so the motion cannot play even if the JS path changes */
   .skgrow{ animation:none !important }
@@ -4572,13 +4576,30 @@ function buildSkillsRadar(parent){
       if(reduce){ /* nothing to do, the resting state is already the final shape */ }
       else{
         var first=!PK_RADAR_SEEN;
-        var ms=first?760:340;
+        /* build 201: roughly double the old duration, Ian wants to watch it fill in.
+           760 -> 1500 for the full grow, 340 -> 700 for the subtle replay. */
+        var ms=first?1500:700;
         /* NO collapsed inline state is set here. The chart sits at its natural full size from the
            moment it is built, and play() just runs a keyframe over the top of it. */
         var play=function(){
           try{
-            grow.style.animation=(first?"skGrowIn ":"skGrowSubtle ")+ms+"ms cubic-bezier(.19,.9,.32,1)";
+            /* build 201: the easing had to change with the duration, not just the number.
+               The old curve, cubic-bezier(.19,.9,.32,1), is a hard ease out: about 62 percent of the
+               growth happened in the first 20 percent of the time. That reads as snappy at 760ms, but
+               stretched to 1500ms it becomes rubbery, the chart lurches out and then crawls to the
+               finish with nothing to watch. cubic-bezier(.4,0,.25,1) is close to even, roughly 16
+               percent done at a fifth of the way, 60 at halfway, 92 at four fifths, so the motion
+               stays visible the whole way through and still lands softly instead of stopping dead. */
+            grow.style.animation=(first?"skGrowIn ":"skGrowSubtle ")+ms+"ms cubic-bezier(.4,0,.25,1)";
           }catch(e){}
+          /* GUARANTEED SETTLE. An animation whose clock never advances would otherwise park the
+             element on its first keyframe, which for skGrowIn is scale(0), invisible. That is not
+             hypothetical: it happens whenever the page is not being painted, and it is exactly how
+             the two earlier attempts at this failed. Clearing the animation just after its nominal
+             duration returns the element to its resting state, which is the finished shape. If the
+             animation ran properly this is a no-op on an already finished animation; if the clock
+             was frozen the chart snaps in rather than never appearing. Either way it ends visible. */
+          setTimeout(function(){ try{ grow.style.animation=""; }catch(e){} }, ms+140);
           PK_RADAR_SEEN=true;
         };
         /* IntersectionObserver was the obvious tool here and it did NOT work, so this does it
