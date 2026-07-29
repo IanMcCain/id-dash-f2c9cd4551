@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 191 (2026-07-29)">
+<meta name="build" content="v21 build 192 (2026-07-29)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -3508,7 +3508,13 @@ function buildFutureIdeasHome(parent){
   }catch(e){ try{console.error("[dash] futureIdeas",e);}catch(_){} }
 }
 function buildIanHome(v){ const workout=daySplit(DOW); const reTop=firstUndone(state.realEstate.todos); const nm=(state.settings&&state.settings.name)||"Ian";
-  const hero=card("a-blue"); const b=hero._body; b.classList.add("hero"); const hi=el("div","hi"); hi.innerHTML=GREET+', <span class="name">'+nm.replace(/</g,"")+'</span>'; b.appendChild(hi); b.appendChild(el("div","date",LONGDATE+"  ·  your daily brief")); b.appendChild(el("div","focus","Priority one, real estate, "+(reTop?reTop.text:"work the pipeline")+". Then stay consistent, gym ("+cleanFocus(workout.focus)+"), pickleball, work, and Solara."));
+  const hero=card("a-blue"); const b=hero._body; b.classList.add("hero"); const hi=el("div","hi"); hi.innerHTML=GREET+', <span class="name">'+nm.replace(/</g,"")+'</span>'; b.appendChild(hi); b.appendChild(el("div","date",LONGDATE+"  ·  your daily brief")); /* build 191: the old focus line opened with "Priority one, real estate, <whole to-do text>" and
+     ran four lines. Ian says he does not look at real estate first thing, and a four line paragraph
+     at the top of a 844px screen is expensive. It now states the day in one line. Real estate still
+     surfaces on its own, right below, whenever something is actually time sensitive. */
+  (function(){ var _ev=(state.events||[]).filter(function(e){ return e&&daysUntil(e.date)===0; }).length;
+    var _txt="Today, "+cleanFocus(workout.focus)+"."+(_ev?(" "+_ev+" thing"+(_ev===1?"":"s")+" on your schedule."):"");
+    b.appendChild(el("div","focus",_txt)); })();
   if(state.meta&&state.meta.lastReset===TODAY){ const rn=el("div","small"); rn.style.color="var(--sec2,var(--accent2))"; rn.style.fontWeight="700"; rn.style.marginTop="9px"; rn.textContent="New day. Yesterday's log was archived and daily items reset."; b.appendChild(rn); }
   v.appendChild(hero);
   if(!(state.settings&&state.settings.bannerDismissed)){ const bn=el("div","banner"); bn.appendChild(el("div",null,"For full interactivity and saving, open this file in Safari. An in app preview can limit some taps.")); const x=el("button","bx","×"); x.onclick=()=>{ if(!state.settings)state.settings={}; state.settings.bannerDismissed=true; save(); render(); }; bn.appendChild(x); v.appendChild(bn); }
@@ -3531,7 +3537,10 @@ function buildIanHome(v){ const workout=daySplit(DOW); const reTop=firstUndone(s
     }
     /* build 178: quick actions reflect Ian's priorities, real estate first, then the consistency areas
        (gym, pickleball, Solara). 2 by 2 grid. */
-    q.style.gridTemplateColumns="1fr 1fr";
+    /* build 191: one row of four instead of a 2 by 2 block. On a 390px phone the 2 by 2 cost
+       182px of prime morning space for four buttons; a single row does the same job in about 90
+       and buys that back for the wins, the schedule and the workout. */
+    q.style.gridTemplateColumns="repeat(4,minmax(0,1fr))";
     q.appendChild(qb("re","\ud83c\udfe1","Real Estate",function(){ reView="pipeline"; try{ render(); }catch(e){} selectTab("re"); }));
     q.appendChild(qb("gy","\ud83c\udfcb","Workout",function(){ gymJump("Workout routine"); }));
     /* build 121: Coach opens the Pickleball tab AND expands the Personal Coach section, which is keyed pk_coach. */
@@ -3649,7 +3658,46 @@ function buildIanHome(v){ const workout=daySplit(DOW); const reTop=firstUndone(s
   var secSummary=function(){ pkCollapse(v,"h_summary","Daily summary","today at a glance",false,function(hh){ const gday=daySplit(DOW); const glog=(state.gym.logs&&state.gym.logs[TODAY])||{done:{}}; const gT=gday.exercises.length||0, gD=gday.exercises.filter(e=>glog.done&&glog.done[e.id]).length; const hs=habitsActiveOn(TODAY); const hD=hs.filter(h=>h.log&&h.log[TODAY]).length; const water=(state.nutrition&&state.nutrition.water&&state.nutrition.water[TODAY])||0; summaryGrid(hh,[ fracTile({label:"Workout",color:"orange",done:gD,goal:gT||1,unit:"sets",tab:"gym"}), fracTile({label:"Habits",color:"green",done:hD,goal:hs.length||7,unit:"done",tab:"gym"}), fracTile({label:"Water",color:"cyan",done:water,goal:WATER_GOAL,unit:"cups",tab:"gym"}) ]); },"📋","teal"); };
   /* build 191: promoted from dead last to the top block and renamed. It is his schedule, and
      "Calendar" sitting under Daily summary meant he never saw it in the morning. */
-  var secSchedule=function(){ pkCollapse(v,"h_cal","Today's schedule","today and what is coming",true,function(hh){ eventsModule(hh); },"📅","purple"); };
+  /* build 191 FIX, caught in the phone width pass: promoting the full calendar to the top and
+     opening it rendered 1733px of events, more than two phone screens, which shoved the workout
+     and the heatmap three screens down. That is the opposite of the brief. Home now gets a
+     COMPACT schedule, today plus the next three, and the full browsable calendar stays as a
+     collapsible lower down. eventsModule itself is untouched, so nothing else changes. */
+  var secSchedule=function(){ safe(v,function(){
+    var evs=(state.events||[]).filter(function(e){ return e&&daysUntil(e.date)>=0; })
+      .slice().sort(function(a,b){ return String(a.date).localeCompare(String(b.date)); });
+    var todays=evs.filter(function(e){ return daysUntil(e.date)===0; });
+    var next=evs.filter(function(e){ return daysUntil(e.date)>0; }).slice(0,3);
+    sect(v,"Today's schedule",evs.length?(evs.length+" coming up"):"nothing on the books");
+    var c=card("a-purple"); var b=c._body;
+    var line=function(e,isToday){
+      var row=el("div","between"); if(b.childElementCount) row.style.marginTop="10px";
+      var lft=el("div"); lft.style.cssText="min-width:0;flex:1;padding-right:10px";
+      var t=el("div","small"); t.style.cssText="font-weight:700;line-height:1.4;color:"+(isToday?"var(--white)":"var(--gray)");
+      t.textContent=e.title||"(untitled)"; lft.appendChild(t);
+      var d=daysUntil(e.date);
+      var when=el("div","small dim"); when.style.marginTop="2px";
+      when.textContent=(d===0?"today":d===1?"tomorrow":"in "+d+" days")+(e.kind?"  ·  "+e.kind:"");
+      lft.appendChild(when); row.appendChild(lft); b.appendChild(row);
+    };
+    if(todays.length){ todays.forEach(function(e){ line(e,true); }); }
+    else { var none=el("div","small dim"); none.style.lineHeight="1.45"; none.textContent="Nothing scheduled today."; b.appendChild(none); }
+    if(next.length){
+      var hr=el("div"); hr.style.cssText="height:1px;background:var(--line);margin:12px 0 2px;opacity:.6"; b.appendChild(hr);
+      next.forEach(function(e){ line(e,false); });
+    }
+    if(evs.length>todays.length+next.length){
+      var more=el("button","btn block","See the full calendar");
+      more.style.marginTop="12px";
+      more.onclick=function(){ try{ PK_OPEN["h_cal"]=true; }catch(e){} try{ render(); }catch(e){}
+        setTimeout(function(){ try{ var t=document.getElementById("home-cal-anchor"); if(t) t.scrollIntoView({behavior:"smooth",block:"start"}); }catch(e){} },60); };
+      b.appendChild(more);
+    }
+    v.appendChild(c);
+  },"Today's schedule"); };
+  /* the full browsable calendar, collapsed, lower down. Same eventsModule as before. */
+  var secCal=function(){ var a=el("div"); a.id="home-cal-anchor"; v.appendChild(a);
+    pkCollapse(v,"h_cal","Calendar","everything coming up",false,function(hh){ eventsModule(hh); },"📅","purple"); };
 
   /* build 191 NEW: TODAY'S WORKOUT on Home. Ian named the workout one of the three things he
      opens the app for, and it had no surface on Home at all, only a Quick actions button. This
@@ -3727,6 +3775,7 @@ function buildIanHome(v){ const workout=daySplit(DOW); const reTop=firstUndone(s
   secEntry();      /* where he writes the day up                */
   secReAlert();    /* real estate, silent unless time sensitive */
   secProg();       /* goal pace and closing money               */
+  secCal();        /* full calendar, collapsed, for browsing     */
   secWater();
   secSphere();
   secSummary();
