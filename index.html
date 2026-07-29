@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 193 (2026-07-29)">
+<meta name="build" content="v21 build 194 (2026-07-30)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -4333,62 +4333,98 @@ function skillDetailPanel(host,id){
 
   var para=function(txt,cls){ var d=el("div","small"); d.style.cssText="line-height:1.6;color:var(--gray);margin-top:8px"; d.textContent=txt; if(cls) d.className="small "+cls; b.appendChild(d); return d; };
   var heading=function(t,color){ var d=el("div","small"); d.style.cssText="margin-top:15px;margin-bottom:2px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;font-size:11px;color:"+(color||"var(--gray)"); d.textContent=t; b.appendChild(d); };
-  var bullets=function(arr,dotColor){ (arr||[]).forEach(function(t){
-      var r=el("div","small"); r.style.cssText="line-height:1.55;color:var(--gray);margin-top:7px;display:flex;gap:8px";
-      var dot=el("span"); dot.style.cssText="color:"+dotColor+";font-weight:800;flex:0 0 auto"; dot.textContent="•";
-      var tx=el("span"); tx.textContent=t; r.appendChild(dot); r.appendChild(tx); b.appendChild(r); }); };
+  /* v21 build 194: bullets show the FIRST SENTENCE only. Ian said the panel was too long and wanted
+     bullet points, but the fault detail is the part he actually reads, so nothing is deleted. The
+     opening sentence of each point carries the finding, and the full wording sits one level deeper
+     under "Longer version". This is a mechanical split on sentence boundaries, no rewriting, because
+     the coaching content is authored by the research agent and must not be paraphrased here. */
+  var firstSentence=function(t){
+    t=String(t||"").trim();
+    var m=t.match(/^[\s\S]*?[.!?](?=\s|$)/);
+    var head=m?m[0].trim():t;
+    /* One sentence is the bullet. The threshold only guards against a fragment so short it carries
+       no meaning; a punchy opener like "You never initiate." is exactly what Ian asked for and must
+       stand alone rather than dragging the following sentence up with it. */
+    if(head.length<18 && head.length<t.length){
+      var rest=t.slice(head.length).trim();
+      var m2=rest.match(/^[\s\S]*?[.!?](?=\s|$)/);
+      if(m2) head=(head+" "+m2[0].trim()).trim();
+    }
+    return head;
+  };
+  var bullets=function(arr,cap){
+    (arr||[]).slice(0,cap||3).forEach(function(t){
+      var r=el("div","small"); r.style.cssText="line-height:1.5;color:var(--gray);margin-top:6px;display:flex;gap:7px";
+      var dot=el("span"); dot.style.cssText="color:var(--gray);opacity:.55;font-weight:800;flex:0 0 auto"; dot.textContent="•";
+      var tx=el("span"); tx.textContent=firstSentence(t);
+      r.appendChild(dot); r.appendChild(tx); b.appendChild(r);
+    });
+  };
 
   /* ---- UNRATED ---- */
   if(!s&&u){
     var badge=el("span","pill"); badge.textContent="NOT RATED"; badge.style.cssText="display:inline-block;margin-top:9px;border:1px dashed var(--line);color:var(--gray);background:transparent";
     b.appendChild(badge);
-    if(u.reason){ heading("Why there is no number"); para(u.reason); }
-    if(u.howToRate){ heading("How to make it gradeable","var(--green)"); para(u.howToRate); }
+    if(u.reason){ heading("Why there is no number"); bullets([u.reason],1); }
+    if(u.howToRate){ heading("How to make it gradeable"); bullets([u.howToRate],1); }
+    if(u.reason||u.howToRate){
+      var ud=el("details"); ud.style.cssText="margin-top:13px";
+      var us=el("summary"); us.textContent="Longer version";
+      us.style.cssText="font-size:12px;color:var(--gray);font-weight:700;cursor:pointer;opacity:.85"; ud.appendChild(us);
+      [u.reason,u.howToRate].forEach(function(t){ if(!t) return; var d=el("div","small"); d.style.cssText="line-height:1.55;color:var(--gray);margin-top:8px"; d.textContent=t; ud.appendChild(d); });
+      b.appendChild(ud);
+    }
     host.appendChild(c); return;
   }
   if(!s){ para("No coach content for this skill yet. Your research agent fills these in."); host.appendChild(c); return; }
 
-  /* ---- RATED ---- */
+  /* ---- RATED ----
+     v21 build 194: the level chip is the ONLY status shown. The previous build put a red "down 38
+     from 60" chip next to it. Ian does not want a rating that moved down called out, in red or in
+     any softened form, so the delta, the arrow and the previous value are gone completely rather
+     than restyled. The number stands on its own. */
   var chips=el("div"); chips.style.cssText="display:flex;gap:7px;flex-wrap:wrap;align-items:center;margin-top:9px";
   var lvl=el("span","pill g"); lvl.textContent=s.rating+" level"; chips.appendChild(lvl);
-  if(typeof s.delta==="number"&&s.delta!==0){
-    var dz=el("span","pill"); var down=s.delta<0;
-    dz.textContent=(down?"▼ ":"▲ ")+Math.abs(s.delta)+" from "+s.previousValue;
-    dz.style.cssText="background:"+(down?"rgba(255,99,99,.14)":"rgba(46,215,138,.14)")+";color:"+(down?"var(--red,#ff6363)":"var(--green)");
-    chips.appendChild(dz);
-  }
   if(s.confidence){ var cf=el("span","pill"); cf.textContent=s.confidence+" confidence"; cf.style.cssText="background:var(--card2);color:var(--gray)"; chips.appendChild(cf); }
   b.appendChild(chips);
 
-  if(s.position){ heading("Where it sits"); para(s.position); }
-  if(s.wrong&&s.wrong.length){ heading("What is going wrong","var(--red,#ff6363)"); bullets(s.wrong,"var(--red,#ff6363)"); }
-  if(s.right&&s.right.length){ heading("What you are doing right","var(--green)"); bullets(s.right,"var(--green)"); }
-  if(s.toLevelUp){
-    heading("What to work on","var(--accent)");
-    if(s.toLevelUp.target) para("Target, "+s.toLevelUp.target);
-    bullets(s.toLevelUp.requirements,"var(--accent)");
+  if(s.position){ heading("Where it sits"); bullets([s.position],1); }
+  if(s.wrong&&s.wrong.length){ heading("Going wrong"); bullets(s.wrong,3); }
+  if(s.right&&s.right.length){ heading("Going right"); bullets(s.right,2); }
+  if(s.toLevelUp&&s.toLevelUp.requirements&&s.toLevelUp.requirements.length){
+    heading("Work on"); bullets(s.toLevelUp.requirements,3);
   }
   if(s.drills&&s.drills.length){
-    heading("Drills for this skill","var(--sec2,var(--accent2))");
-    s.drills.forEach(function(d){
-      var dc=el("div"); dc.style.cssText="margin-top:9px;padding:10px 11px;border-radius:12px;background:var(--card2);border:1px solid var(--line)";
-      var top=el("div","between");
-      var nm=el("div","small"); nm.style.cssText="font-weight:800;color:var(--white)"; nm.textContent=d.name||"Drill";
-      top.appendChild(nm);
-      if(d.partner){ var pg=el("span","pill"); pg.textContent=d.partner; pg.style.cssText="background:var(--card);color:var(--gray);font-size:10px"; top.appendChild(pg); }
-      dc.appendChild(top);
-      if(d.detail){ var dd=el("div","small"); dd.style.cssText="line-height:1.5;color:var(--gray);margin-top:5px"; dd.textContent=d.detail; dc.appendChild(dd); }
-      b.appendChild(dc);
+    heading("Drills");
+    s.drills.slice(0,3).forEach(function(d){
+      var row=el("div","between"); row.style.cssText="display:flex;align-items:center;gap:8px;margin-top:7px";
+      var nm=el("div","small"); nm.style.cssText="font-weight:700;color:var(--white);line-height:1.4;flex:1;min-width:0";
+      nm.textContent=d.name||"Drill"; row.appendChild(nm);
+      if(d.partner){ var pg=el("span","pill"); pg.textContent=d.partner; pg.style.cssText="background:var(--card2);color:var(--gray);font-size:10px;flex:0 0 auto"; row.appendChild(pg); }
+      b.appendChild(row);
     });
   }
-  if(s.grounding&&s.grounding.length){
-    var det=el("details"); det.style.cssText="margin-top:14px";
-    var sm=el("summary"); sm.textContent="Evidence this is based on";
-    sm.style.cssText="font-size:12px;color:var(--gray);font-weight:700;cursor:pointer";
-    det.appendChild(sm);
-    s.grounding.forEach(function(t){ var r=el("div","small"); r.style.cssText="line-height:1.5;color:var(--gray);margin-top:7px;opacity:.9"; r.textContent=t; det.appendChild(r); });
-    b.appendChild(det);
-  }
+
+  /* everything that is genuinely a paragraph lives one level deeper, per Ian's own note that a
+     thing too long to bullet belongs deeper rather than staying as prose on the surface */
+  var det=el("details"); det.style.cssText="margin-top:14px";
+  var sm=el("summary"); sm.textContent="Longer version";
+  sm.style.cssText="font-size:12px;color:var(--gray);font-weight:700;cursor:pointer;opacity:.85";
+  det.appendChild(sm);
+  var deep=function(title,arr){
+    if(!arr||!arr.length) return;
+    var h=el("div","small"); h.style.cssText="margin-top:11px;font-weight:800;font-size:11px;letter-spacing:.04em;text-transform:uppercase;color:var(--gray);opacity:.8";
+    h.textContent=title; det.appendChild(h);
+    arr.forEach(function(t){ if(!t) return; var d=el("div","small"); d.style.cssText="line-height:1.55;color:var(--gray);margin-top:6px"; d.textContent=t; det.appendChild(d); });
+  };
+  deep("Where it sits",[s.position]);
+  deep("Going wrong",s.wrong);
+  deep("Going right",s.right);
+  if(s.toLevelUp) deep("Work on",[s.toLevelUp.target?("Target, "+s.toLevelUp.target):null].concat(s.toLevelUp.requirements||[]).filter(Boolean));
+  if(s.drills&&s.drills.length) deep("Drills",s.drills.map(function(d){ return (d.name||"Drill")+(d.detail?". "+d.detail:""); }));
+  if(s.confidenceNote) deep("On the confidence",[s.confidenceNote]);
+  deep("Evidence",s.grounding);
+  b.appendChild(det);
   host.appendChild(c);
 }
 
@@ -4416,7 +4452,16 @@ function buildSkillsRadar(parent){
      rings is a genuine half point of rating rather than a quarter of an arbitrary bar. */
   var RINGS=[{v:30,t:"3.0"},{v:45,t:"3.5"},{v:60,t:"4.0"},{v:75,t:"4.5"},{v:90,t:"5.0"}];
   RINGS.forEach(function(r){ var _out=(r.v===90); g+='<polygon points="'+poly(function(){return r.v;})+'" style="fill:none;stroke:'+(_out?"var(--gray)":"var(--line)")+';opacity:'+(_out?0.8:0.26)+'" stroke-width="'+(_out?1.4:1)+'"/>'; });
-  RINGS.forEach(function(r){ var y=cy-R*r.v/100; g+='<text x="'+(cx+3)+'" y="'+(y+3.5).toFixed(1)+'" style="fill:var(--gray);font-size:8px;font-weight:700;opacity:.55">'+r.t+'</text>'; });
+  /* v21 build 194: THE NUMERIC TICK LABELS ARE GONE. They ran straight down the vertical axis, which
+     is the worst line on a radar to put anything on: the Serve label owns the top of that axis and
+     the plotted polygon covers the bottom of it, so 3.0 sat half hidden under the fill and the middle
+     of the chart read as clutter. The other placements are no better at 390px. Outside the outer ring
+     collides with the seven axis labels that already sit there. Fewer ticks still collides with Serve.
+     Any off axis position lands inside the polygon on at least one skill as the numbers move.
+     So the numeric scale is dropped entirely and the RINGS carry the reference instead: the green
+     dashed ring is Target 4.0 and the outer grey ring is the 5.0 ceiling, both already named in the
+     legend directly underneath. Nothing is lost, because the exact rating for a skill was never
+     readable off these ticks anyway, it is one tap away in the panel where it is stated in words. */
   sk.forEach(function(s,i){ var e=pt(i,100); g+='<line x1="'+cx+'" y1="'+cy+'" x2="'+e[0].toFixed(1)+'" y2="'+e[1].toFixed(1)+'" style="stroke:var(--line);opacity:0.3" stroke-width="1"/>'; });
   g+='<polygon points="'+poly(function(s){return s.target;})+'" style="fill:none;stroke:var(--green);opacity:0.92" stroke-width="1.6" stroke-dasharray="4 3"/>';
   g+='<polygon points="'+poly(function(s){return s.current;})+'" style="fill:var(--accent);fill-opacity:0.26;stroke:var(--accent)" stroke-width="2"/>';
