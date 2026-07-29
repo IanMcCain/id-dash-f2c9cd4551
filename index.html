@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 195 (2026-07-30)">
+<meta name="build" content="v21 build 196 (2026-07-30)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -4317,6 +4317,41 @@ const PK_SKILL_CONTENT={"meta":{"generated":"2026-07-29","scaleAnchor":{"note":"
 
    CONTENT COMES FROM PK_SKILL_CONTENT, never from this function. Nothing here is authored. If a
    field is missing the section is skipped rather than faked. */
+/* v21 build 196: IAN'S OWN SELF ASSESSMENT, given 07.30.2026. This is deliberately NOT merged into
+   the evidence values and does NOT overwrite them. The gap between what he thinks and what the film
+   shows is the most useful coaching information on the page, and replacing one with the other erases
+   it. Both are plotted.
+
+   Conversion uses the same anchor as everything else, value = (rating - 3.0) * 30 + 30:
+     serve     3.0  to 3.25  mid 3.125  -> 33.8   film 38 (3.25)   he is 0.12 UNDER the film
+     drops     3.25          mid 3.25   -> 37.5   film 30 (3.0)    he is 0.25 OVER
+     resets    3.25 to 3.5   mid 3.375  -> 41.2   film 45 (3.5)    he is 0.12 UNDER
+     dinks     3.5           mid 3.5    -> 45.0   film 38 (3.25)   he is 0.25 OVER
+     drives    3.5  to 3.75  mid 3.625  -> 48.8   film 45 (3.5)    he is 0.12 OVER
+     hands     3.0  to 3.25  mid 3.125  -> 33.8   film 22 (2.75)   he is 0.38 OVER, the widest gap
+     footwork  3.25 to 3.5   mid 3.375  -> 41.2   film 45 (3.5)    he is 0.12 UNDER
+
+   MIDPOINT, not a band. A band needs an inner and an outer polygon with a fill between them, and
+   this chart already carries five rings, a dashed target and a filled Now polygon. A sixth and
+   seventh outline at 390px is the exact clutter that was just cleaned off this card. The range is
+   not lost, it is printed in words in the drill down where there is room for it. */
+const PK_SELF_ASSESS={
+  date:"2026-07-30",
+  source:"Ian's own read on his game, given 07.30.2026",
+  ranges:{ serve:[3.0,3.25], drops:[3.25,3.25], resets:[3.25,3.5], dinks:[3.5,3.5],
+           drives:[3.5,3.75], hands:[3.0,3.25], footwork:[3.25,3.5] }
+};
+/* module level, deliberately NOT persisted. It only decides full grow vs subtle replay, and it
+   resetting on a real page reload is the correct behaviour, not a bug. */
+var PK_RADAR_SEEN=false;
+function pkAnchor(rating){ return (Number(rating)-3.0)*30+30; }
+function pkSelf(id){
+  var r=PK_SELF_ASSESS.ranges[id]; if(!r) return null;
+  var lo=r[0], hi=r[1], mid=(lo+hi)/2;
+  return { lo:lo, hi:hi, mid:mid, value:pkAnchor(mid),
+           label:(lo===hi)?String(lo):(lo+" to "+hi) };
+}
+
 function skillDetailPanel(host,id){
   var C=(typeof PK_SKILL_CONTENT!=="undefined")?PK_SKILL_CONTENT:{skills:[],unrated:[]};
   var s=(C.skills||[]).filter(function(x){ return x&&x.id===id; })[0];
@@ -4388,6 +4423,26 @@ function skillDetailPanel(host,id){
   if(s.confidence){ var cf=el("span","pill"); cf.textContent=s.confidence+" confidence"; cf.style.cssText="background:var(--card2);color:var(--gray)"; chips.appendChild(cf); }
   b.appendChild(chips);
 
+  /* build 196: his own call against the film, stated plainly. No red, no arrow, no warning colour,
+     per his instruction on the old delta chip. It reports two numbers and the distance between them
+     and leaves the conclusion to Aug 23. Note this compares his MIDPOINT to the film rating; his
+     full range is printed so nothing is hidden behind the midpoint. */
+  (function(){
+    var sv=(typeof pkSelf==="function")?pkSelf(id):null;
+    if(!sv||typeof s.rating!=="number") return;
+    var gap=sv.mid-s.rating;
+    var mag=Math.abs(gap).toFixed(2).replace(/0$/,"");
+    heading("Your call vs the film");
+    /* one fact per bullet. Bullets render only their first sentence, so packing "You said X. The
+       film says Y." into a single string silently dropped the film number. Decimals are safe, the
+       sentence split needs whitespace after the period, so 3.25 does not break. */
+    var line1="You said "+sv.label+(sv.lo!==sv.hi?(", mid "+sv.mid):"");
+    var line2="The film says "+s.rating;
+    var line3=(Math.abs(gap)<0.01)
+      ? "Your read and the footage agree here"
+      : (gap>0 ? "That is "+mag+" of a rating above the footage" : "That is "+mag+" of a rating below the footage");
+    bullets([line1,line2,line3],3);
+  })();
   if(s.position){ heading("Where it sits"); bullets([s.position],1); }
   if(s.wrong&&s.wrong.length){ heading("Going wrong"); bullets(s.wrong,3); }
   if(s.right&&s.right.length){ heading("Going right"); bullets(s.right,2); }
@@ -4463,9 +4518,25 @@ function buildSkillsRadar(parent){
      legend directly underneath. Nothing is lost, because the exact rating for a skill was never
      readable off these ticks anyway, it is one tap away in the panel where it is stated in words. */
   sk.forEach(function(s,i){ var e=pt(i,100); g+='<line x1="'+cx+'" y1="'+cy+'" x2="'+e[0].toFixed(1)+'" y2="'+e[1].toFixed(1)+'" style="stroke:var(--line);opacity:0.3" stroke-width="1"/>'; });
+  /* v21 build 196: GROW ON ENTRY. Only the plotted shapes animate. The rings, the spokes, the axis
+     labels and the tap targets are all OUTSIDE this group and never move, so nothing is jittering
+     around the edges while the shape fills in, and a tap lands correctly from the very first frame
+     because the hit circles are already at full size at their final positions.
+     The nested translate / scale / translate is deliberate: scaling a bare CSS transform on an SVG
+     group needs transform-origin plus transform-box to behave, and Safari has been inconsistent
+     about that. Translating to the centre first means a plain scale() collapses to the centre with
+     no origin property at all, which works everywhere. */
+  g+='<g transform="translate('+cx+','+cy+')"><g class="skgrow"><g transform="translate('+(-cx)+','+(-cy)+')">';
   g+='<polygon points="'+poly(function(s){return s.target;})+'" style="fill:none;stroke:var(--green);opacity:0.92" stroke-width="1.6" stroke-dasharray="4 3"/>';
+  /* Ian's own read, plotted UNDER nothing and OVER the target so it stays legible, but deliberately
+     subordinate to the evidence line: no fill, no dots, one thin stroke. The purple filled polygon
+     is the one grounded in footage and it should still be what the eye lands on first. */
+  var selfPts=sk.map(function(s,i){ var sv=pkSelf(s.id); if(!sv) return null; var q=pt(i,sv.value); return q[0].toFixed(1)+","+q[1].toFixed(1); });
+  var haveSelf=selfPts.every(function(p){ return !!p; });
+  if(haveSelf){ g+='<polygon class="skself" points="'+selfPts.join(" ")+'" style="fill:none;stroke:#ffab3d;opacity:.85" stroke-width="1.4"/>'; }
   g+='<polygon points="'+poly(function(s){return s.current;})+'" style="fill:var(--accent);fill-opacity:0.26;stroke:var(--accent)" stroke-width="2"/>';
   sk.forEach(function(s,i){ var q=pt(i,s.current); g+='<circle cx="'+q[0].toFixed(1)+'" cy="'+q[1].toFixed(1)+'" r="2.6" style="fill:var(--accent)"/>'; });
+  g+='</g></g></g>';
   sk.forEach(function(s,i){ var lp=pt(i,112); var a=ang(i); var cos=Math.cos(a), sin=Math.sin(a); var an=cos>0.3?"start":(cos<-0.3?"end":"middle"); var dy=sin>0.3?9:(sin<-0.3?-2:3); g+='<text data-skill="'+s.id+'" x="'+lp[0].toFixed(1)+'" y="'+(lp[1]+dy).toFixed(1)+'" style="fill:var(--gray);font-size:10.5px;font-weight:700;cursor:pointer" text-anchor="'+an+'">'+(s.short||s.label)+'</text>'; });
   /* v21 build 192: TAP TARGETS. Ian asked to stop getting one wall of coach text and instead tap a
      single skill to see just that skill. These are invisible 20px circles sitting over each spoke,
@@ -4475,6 +4546,51 @@ function buildSkillsRadar(parent){
   sk.forEach(function(s,i){ var q=pt(i,s.current); g+='<circle class="skhit" data-skill="'+s.id+'" cx="'+q[0].toFixed(1)+'" cy="'+q[1].toFixed(1)+'" r="20" style="fill:transparent;cursor:pointer"/>'; });
   g+='</svg>';
   var holder=el("div"); holder.innerHTML=g; b.appendChild(holder);
+  /* v21 build 196: play the grow when the card actually comes INTO VIEW, not on app load, so it is
+     not burned off while he is still on Home. Once per session it plays in full; a genuine re entry
+     to the page replays a shorter, smaller version so it still feels alive without becoming a tic.
+     The observer disconnects after firing, so scrolling up and down inside the page does not retrigger.
+     prefers-reduced-motion skips straight to the final shape with no transition at all. */
+  try{
+    var grow=holder.querySelector(".skgrow");
+    if(grow){
+      var reduce=false;
+      try{ reduce=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches; }catch(e){}
+      if(reduce){ grow.style.transform="none"; }
+      else{
+        var first=!PK_RADAR_SEEN;
+        var from=first?0:0.9, ms=first?760:340;
+        grow.style.transform="scale("+from+")";
+        grow.style.opacity=first?"0.35":"0.75";
+        var play=function(){
+          grow.style.transition="transform "+ms+"ms cubic-bezier(.19,.9,.32,1), opacity "+Math.round(ms*0.7)+"ms ease-out";
+          requestAnimationFrame(function(){ requestAnimationFrame(function(){
+            grow.style.transform="scale(1)"; grow.style.opacity="1";
+          }); });
+          PK_RADAR_SEEN=true;
+        };
+        if(typeof IntersectionObserver==="function"){
+          var io=new IntersectionObserver(function(ents){
+            ents.forEach(function(en){ if(en.isIntersecting){ io.disconnect(); play(); } });
+          },{threshold:0.35});
+          io.observe(c);
+          /* Safety net, but a VISIBILITY AWARE one. The first version of this just played after
+             1400ms no matter what, which quietly defeated the whole feature: every tab page is built
+             at render time, so the radar exists while Ian is still on Home, the timer fired against a
+             display:none card, and the one full grow was spent before he ever opened the page. Now it
+             only rescues the case where the card is genuinely on screen and the observer has not
+             reported it. If the card is still hidden the observer stays connected and fires properly
+             when he navigates in. */
+          setTimeout(function(){
+            if(grow.style.transform==="scale(1)") return;
+            var visible=false;
+            try{ var r=c.getBoundingClientRect(); visible=(r.height>0 && r.width>0 && c.offsetParent!==null); }catch(e){}
+            if(visible){ try{ io.disconnect(); }catch(e){} play(); }
+          },1400);
+        } else { play(); }
+      }
+    }
+  }catch(e){ try{ var _g=holder.querySelector(".skgrow"); if(_g) _g.style.transform="none"; }catch(_){} }
   /* the detail panel lives directly under the map so the map stays on screen, see skillDetailPanel */
   var panel=el("div"); panel.id="sk-detail"; b.appendChild(panel);
   var openId=(state.meta&&state.meta.skOpen)||null;
@@ -4502,10 +4618,18 @@ function buildSkillsRadar(parent){
   paint(openId);
   var leg=el("div"); leg.style.cssText="display:flex;gap:18px;justify-content:center;margin-top:6px;flex-wrap:wrap";
   function key(varc,txt,dash){ var d=el("div"); d.style.cssText="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--gray);font-weight:600"; var sw=el("span"); sw.style.cssText="width:15px;height:0;border-top:3px "+(dash?"dashed":"solid")+" "+varc+";display:inline-block"; d.appendChild(sw); d.appendChild(document.createTextNode(txt)); return d; }
-  leg.appendChild(key("var(--accent)","Now, about 3.25",false));
+  leg.appendChild(key("var(--accent)","Film, about 3.25",false));
+  if(haveSelf) leg.appendChild(key("#ffab3d","Your call",false));
   leg.appendChild(key("var(--green)","Target 4.0",true));
   leg.appendChild(key("var(--gray)","5.0 ceiling",false));
   b.appendChild(leg);
+  /* build 196: one line of framing under the legend rather than repeating it in all seven panels.
+     The gap is a question, not a verdict, and there is a date on the calendar that answers it. */
+  if(haveSelf){
+    var gapNote=el("div","small dim"); gapNote.style.cssText="text-align:center;margin-top:9px;line-height:1.45";
+    gapNote.textContent="Where your read and the film disagree, your first DUPR on Aug 23 settles it.";
+    b.appendChild(gapNote);
+  }
   /* v21 build 193: UNRATED skills get a real state instead of a zero. Two skills (return of serve,
      overheads) have no evidence behind them, and plotting them at 0 would draw a spike into the
      middle of the chart that reads as "terrible" when the truth is "never filmed". They sit below
