@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 204 (2026-07-30)">
+<meta name="build" content="v21 build 205 (2026-07-30)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -3308,6 +3308,39 @@ function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]
         }
         save(true);
       }
+  } }catch(e){}
+  /* ===== v21 build 205: pickleball session, Thursday 07.30.2026 ================================
+     Open play in Omaha, 5:23 to 8:12 PM, 2:48:51 on the watch. Apple Watch screenshot only, NO
+     footage, so this is a session LOG and not a film study. It carries no rating change and the
+     skills radar is untouched: nothing here writes to state.pickleball.skills.
+
+     FIELD MAPPING. Every number Ian gave has a real field on the existing session shape, so nothing
+     was invented and nothing was pushed into prose to make it fit. duration, calories (total),
+     activeCalories, avgHr, maxHr (his peak), minHr (his low), effort, kind, venue, date. The start
+     and end times are the one thing with no field, and they go in the note because that is the
+     convention every one of the sixteen existing sessions already follows and the note renders.
+
+     Two of those fields are STORED BUT NEVER DISPLAYED: activeCalories and minHr have zero readers
+     anywhere in this file, as does venue. The session card renders duration, calories, avgHr, maxHr
+     and effort only. That is a display gap, not a storage gap; the values are here, they export,
+     and they are one line away from being on screen. Flagged to Ian rather than silently duplicated
+     into the note, because a number restated in prose is a number that will drift from its field.
+
+     GUARDED TWICE, and the second guard is new. Every previous session migration in this file is
+     presence checked ONLY, on id or date, which means a session Ian DELETES comes straight back on
+     the next load. mig205_pk0730 lives in saved state (never in seedIan().meta, which is the trap
+     that self skipped two earlier migrations) so a deletion sticks, and the presence check still
+     stops a duplicate if the flag is ever lost. */
+  try{ if(profile==="ian" && state.pickleball && Array.isArray(state.pickleball.sessions) && state.meta && !state.meta.mig205_pk0730){
+      if(!state.pickleball.sessions.some(function(x){ return x && (x.id==="pk-20260730-openplay" || x.date==="2026-07-30"); })){
+        state.pickleball.sessions.push({
+          id:"pk-20260730-openplay", date:"2026-07-30", kind:"Open play", venue:"Omaha",
+          duration:"2h 48m 51s", calories:1919, activeCalories:1655,
+          avgHr:130, maxHr:161, minHr:72, effort:8,
+          note:"Open play, Omaha, 5:23 to 8:12 PM, 2:48:51. Effort 8 of 10, Hard. From Apple Watch. No footage from this one, so it is a session log rather than a film study and it carries no rating change. The skill map is unchanged. DUPR is set August 23, so what this session counts for is frequency between now and then."
+        });
+      }
+      state.meta.mig205_pk0730=true; save(true);
   } }catch(e){}
 
   focusObj.running=false; try{clearInterval(focusObj.timerId);}catch(e){} focusObj.remaining=null;
