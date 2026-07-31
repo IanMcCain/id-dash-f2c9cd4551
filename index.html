@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 206 (2026-07-30)">
+<meta name="build" content="v21 build 207 (2026-07-31)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -4053,8 +4053,20 @@ function buildIanHome(v){ const workout=daySplit(DOW); const reTop=firstUndone(s
       var pb=state.pickleball||{};
       var cardEl=card(); var b=cardEl._body;
       function _pkCls(kind){ var k=String(kind||"").toLowerCase(); if(/tournament|fall cup|\bapc\b/.test(k)) return "k-tourn"; if(k.indexOf("league")>=0) return "k-league"; var dr=/drill/.test(k); var pl=/open play|doubles|\bplay\b/.test(k); if(dr&&pl) return "k-mix"; if(dr) return "k-drill"; if(pl) return "k-open"; return "k-play"; }
-      var pkDays={}; var pkLbl={};
-      (pb.sessions||[]).forEach(function(s){ if(!s||!s.date) return; pkDays[s.date]=_pkCls(s.kind); pkLbl[s.date]=s.kind||"Play"; });
+      var pkDays={}; var pkLbl={}; var pkMin={};
+      (pb.sessions||[]).forEach(function(s){ if(!s||!s.date) return; pkDays[s.date]=_pkCls(s.kind); pkLbl[s.date]=s.kind||"Play"; var _m=pkParseMin(s.duration); if(_m>0) pkMin[s.date]=_m; });
+      /* v21 build 207: SESSION LENGTH AS CELL DEPTH. The grid counted days and said nothing about how
+         long any of them were, so a 45 minute hit and a 2h48m night were the same cell. Four bands
+         rather than a continuous ramp, because Ian's sessions cluster between 60 and 170 minutes and a
+         linear ramp over that range separates neighbours by a few percent, which is not legible. Bands
+         guarantee a visible step. The floor is 46 percent, checked against an empty day on screen
+         before shipping: a short session is a clearly coloured cell and an empty day is grey, and the
+         two are never confusable, which was the hard requirement.
+         COUNT SEMANTICS ARE UNTOUCHED. n++ still fires once per session and the weekly x/6 is
+         unchanged. Depth signals length only. A session is still a session.
+         Gym only days and any session with no recorded duration render at full strength, because
+         there is no length to show and dimming them would invent a fact. */
+      var _hmBand=function(m){ return m<45?46:(m<90?64:(m<150?82:100)); };
       var gyDays={}; var gl=(state.gym&&state.gym.logs)||{};
       Object.keys(gl).forEach(function(k){ var L=gl[k]; if(!L) return; var d=L.done||{}; var ticked=Object.keys(d).some(function(id){ return d[id]; }); var noted=(typeof L.note==="string" && L.note.trim().length>0); if(ticked||noted) gyDays[k]=true; });
       var today=new Date(); var tk=todayKey(today);
@@ -4078,7 +4090,10 @@ function buildIanHome(v){ const workout=daySplit(DOW); const reTop=firstUndone(s
           else if(hasGy){ cls+=" gymonly"; }
           if(k===tk) cls+=" today";
           var cell=el("div",cls);
-          cell.title=k+(kindCls?" pickleball, "+(pkLbl[k]||"play"):"")+(hasGy?" gym":"")+(future?" upcoming":"");
+          /* build 207: depth for length. Only when this day has a real pickleball duration. */
+          if(kindCls && pkMin[k]){ var _b=_hmBand(pkMin[k]);
+            if(_b<100){ cell.className+=" dur"; try{ cell.style.setProperty("--hmdim",((100-_b)/100).toFixed(2)); }catch(e){} } }
+          cell.title=k+(kindCls?" pickleball, "+(pkLbl[k]||"play"):"")+(pkMin[k]?", "+Math.round(pkMin[k])+" min":"")+(hasGy?" gym":"")+(future?" upcoming":"");
           if(kindCls) n++;
           cells.appendChild(cell);
         }
@@ -4092,7 +4107,9 @@ function buildIanHome(v){ const workout=daySplit(DOW); const reTop=firstUndone(s
         '<span><i style="background:#a78bfa"></i>League</span>'+
         '<span><i style="background:#ffd60a"></i>Tournament</span>'+
         '<span><i style="background:var(--gy1)"></i>Gym</span>'+
-        '<span><i style="border:1px dashed #33333f;background:transparent"></i>Upcoming</span>';
+        '<span><i style="border:1px dashed #33333f;background:transparent"></i>Upcoming</span>'+
+        /* build 207: the depth scale, so the shading is a legend entry rather than something to work out */
+        '<span style="display:flex;align-items:center;gap:4px"><i style="background:#2ee66f;position:relative"><b style="position:absolute;inset:0;background:rgba(14,14,18,.54);border-radius:inherit"></b></i><i style="background:#2ee66f;position:relative"><b style="position:absolute;inset:0;background:rgba(14,14,18,.18);border-radius:inherit"></b></i><i style="background:#2ee66f"></i>Shorter to longer session</span>';
       b.appendChild(key);
       hh.appendChild(cardEl);
     },"📊","green"); };
@@ -5522,6 +5539,19 @@ section,.card,.sectlabel{scroll-margin-top:calc(var(--hh) + var(--sat) + 8px)}
 .hmc.gymonly{background:var(--gy1)}
 .hmc.future{background:transparent;border:1px dashed #33333f}
 .hmc.today{box-shadow:0 0 0 2px var(--pk2) inset}
+/* v21 build 207: session length as cell depth. A dark layer painted OVER the class colour rather
+   than opacity on the cell, and the difference matters. opacity would blend the cell toward the page
+   behind it, so a short session would drift toward the empty cell colour and the two could be
+   confused. A background-image overlay leaves the colour reading as itself, just deeper, so the
+   faintest session is still obviously a coloured cell. It also leaves the today ring and the gym
+   corner mark alone: an inset box-shadow paints above the background layers, and ::after is content,
+   so both sit on top of the overlay untouched.
+   The two gradient classes need the overlay composed as a second background layer rather than
+   replacing them, since a bare .dur rule would win on specificity order and wipe the gradient. */
+.hmc{ --hmdim:0 }
+.hmc.dur{ background-image:linear-gradient(rgba(14,14,18,var(--hmdim)),rgba(14,14,18,var(--hmdim))) }
+.hmc.k-mix.dur{ background-image:linear-gradient(rgba(14,14,18,var(--hmdim)),rgba(14,14,18,var(--hmdim))),linear-gradient(135deg,#38bdf8 0 50%,#2ee66f 50% 100%) }
+.hmc.both.dur{ background-image:linear-gradient(rgba(14,14,18,var(--hmdim)),rgba(14,14,18,var(--hmdim))),linear-gradient(135deg,var(--pk1) 0 50%,var(--gy1) 50% 100%) }
 .hmkey{gap:9px 12px}
 .hmkey span{white-space:nowrap;font-size:10px}
 .hmrow.tourn .hmwk{color:#ffd60a}
