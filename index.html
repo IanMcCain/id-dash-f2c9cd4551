@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 212 (2026-08-02)">
+<meta name="build" content="v21 build 213 (2026-08-02)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -3505,6 +3505,24 @@ function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]
         });
       }
       state.meta.mig210_pk0801=true; save(true);
+  } }catch(e){}
+  /* v21 build 213: the 08.02 casual session. Logged DELIBERATELY as low evidential weight.
+     Ian's instruction, and it is the whole reason this entry is worded the way it is: this must
+     not be allowed to look like a fourth data point behind 07.30, 07.31 and 08.01. Effort 5
+     against 8, average heart rate 111 against 131 to 133, and casual play against his girlfriend
+     rather than open play against experienced players. It is stored, it counts for frequency
+     before Aug 23, and it moves no rating. activeCalories, minHr and venue are stored and not
+     displayed, per the 07.31 standing rule, which is deliberate and not a gap. */
+  try{ if(profile==="ian" && state.pickleball && Array.isArray(state.pickleball.sessions) && state.meta && !state.meta.mig213_pk0802){
+      if(!state.pickleball.sessions.some(function(x){ return x && (x.id==="pk-20260802-casual" || x.date==="2026-08-02"); })){
+        state.pickleball.sessions.push({
+          id:"pk-20260802-casual", date:"2026-08-02", kind:"Casual play", venue:"Omaha",
+          duration:"1h 9m 20s", calories:559, activeCalories:451,
+          avgHr:111, maxHr:156, minHr:73, effort:5,
+          note:"Casual play with his girlfriend, Omaha, 4:56 to 6:06 PM, 1:09:20. Effort 5 of 10, Moderate. From Apple Watch. No footage. LOW EVIDENTIAL WEIGHT, AND THAT IS THE POINT OF THIS ENTRY. It is not a fourth data point behind 07.30, 07.31 and 08.01 and must never be read as one. Effort 5 against 8 on all three of those. Average heart rate 111 against 131 to 133. Casual play against his girlfriend rather than open play against experienced players. Everything feeling good at moderate effort against a partner who does not pressure him tells us very little, because very little was tested. He is playing a different game here. In particular this does NOT support the hands trend, which needs pace to mean anything. What it does count for is frequency between now and DUPR on Aug 23. SELF REPORT, 08.02.2026, in Ian's words. Evidence class SELF REPORT, and weaker than usual for the reasons above. \"really light day, played with my girlfriend, everything felt good, serves could be more consistent but they felt good. Drives felt really good, didn't get a chance for many drops or any dinks, hands felt good I wish my resets were a little more aggressive though.\" THE ONE THING THAT CARRIES: drives felt really good. His drives have been going LONG since he took the overgrip off, because less mass at the pivot lowers swingweight and the same grooved swing carries further, and whether he would recalibrate has been the open question from that change since 08.01. A session where the drives felt good is a small signal that he may be recalibrating. Weak, low effort, no footage, and it is a feel report rather than a count. On the record anyway, because it is the first read we have on that open question. RESETS, A WANTING AND NOT A FAULT: he wants them more aggressive. This is new and different in kind from everything before it. Resets have been rated GOOD at low to medium pace across three sessions and the film called them the standout. He is not saying they are inaccurate, he is saying they are PASSIVE. Recorded as his wanting only. Nobody has established that more aggressive resets are correct at his level, so this does not become a fault, a rating change, a Work on item or a drill until someone does. DROPS AND DINKS GOT NO OBSERVATION TODAY. Almost no drops and no dinks at all. That is a BLANK, not an unchanged. Do not carry the previous read on either forward as though this session supported it.\""
+        });
+      }
+      state.meta.mig213_pk0802=true; save(true);
   } }catch(e){}
   try{ if(profile==="ian" && state.realEstate && state.meta && !state.meta.mig210_colabello_out){
       var _NID="re-nick-colabello";
