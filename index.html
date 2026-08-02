@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 211 (2026-08-02)">
+<meta name="build" content="v21 build 212 (2026-08-02)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -3890,7 +3890,22 @@ const TYPECOL={"Pickleball":"a-blue","Supplement":"a-green","Real estate":"a-gol
 function briefDone(id){ return !!(state.briefing && state.briefing.done && state.briefing.done[TODAY] && state.briefing.done[TODAY][id]); }
 function briefSetDone(id,v){ if(!state.briefing) state.briefing={forIan:{},done:{}}; if(!state.briefing.done) state.briefing.done={}; if(!state.briefing.done[TODAY]) state.briefing.done[TODAY]={}; if(v) state.briefing.done[TODAY][id]=true; else delete state.briefing.done[TODAY][id]; }
 function briefItems(){ return (state.briefing&&state.briefing.forIan&&state.briefing.forIan[TODAY])||[]; }
-function briefCard(it){ const c=card(TYPECOL[it.type]||"a-blue"); const b=c._body; const top=el("div","between"); const _lft=el("div"); _lft.style.cssText="display:flex;align-items:center;gap:8px"; _lft.appendChild(claudeAvatar("av-sm")); _lft.appendChild(el("span","pill b",it.type||"Info")); top.appendChild(_lft); const lab=el("label","cbmini"); lab.style.marginLeft="auto"; const inp=el("input","cbx"); inp.type="checkbox"; inp.checked=briefDone(it.id); const box=el("span","box mini"); box.innerHTML=CHECK; inp.addEventListener("change",()=>{ var _nv=!briefDone(it.id); briefSetDone(it.id,_nv); it.done=_nv; save(true); render(); }); lab.appendChild(inp); lab.appendChild(box); top.appendChild(lab); b.appendChild(top); const title=el("div","feedtitle",it.title); if(briefDone(it.id)){ title.style.color="var(--dim)"; title.style.textDecoration="line-through"; } b.appendChild(title); if(it.note) b.appendChild(el("div","feednote briefnote",it.note)); if(it.url){ const a=el("a","feedlink",(it.type==="Pickleball"?"Watch":it.type==="Supplement"?"Read the research":"Open")+" ›"); a.href=it.url; a.target="_blank"; a.rel="noopener"; b.appendChild(a); } return c; }
+/* v21 build 212: ONE next focus, derived from the film studies already sitting in state.
+   pickleball.videoStats has been written by the video coach skill since build 131 and was
+   rendered NOWHERE. Seven studies, about 35 conclusions and seven coach notes that Ian has
+   never seen in the app. This reads the newest study that carries a coach note. Read only,
+   it writes nothing, so a malformed entry costs a null and never a broken page. */
+function pkNextFocus(){
+  try{
+    var pb=state.pickleball||{}; var vs=Array.isArray(pb.videoStats)?pb.videoStats:[];
+    var withNote=vs.filter(function(x){ return x&&x.coachNote; });
+    if(!withNote.length) return null;
+    var sorted=withNote.slice().sort(function(a,b){ return String(a.date||"").localeCompare(String(b.date||"")); });
+    var last=sorted[sorted.length-1];
+    return {note:last.coachNote, date:last.date, source:last.source, n:vs.length};
+  }catch(e){ return null; }
+}
+function briefCard(it){ const c=card(TYPECOL[it.type]||"a-blue"); const b=c._body; const top=el("div","between"); const _lft=el("div"); _lft.style.cssText="display:flex;align-items:center;gap:8px"; _lft.appendChild(claudeAvatar("av-sm")); _lft.appendChild(el("span","pill b",it.type||"Info")); top.appendChild(_lft); const lab=el("label","cbmini"); lab.style.marginLeft="auto"; const inp=el("input","cbx"); inp.type="checkbox"; inp.checked=briefDone(it.id); const box=el("span","box mini"); box.innerHTML=CHECK; inp.addEventListener("change",()=>{ var _nv=!briefDone(it.id); briefSetDone(it.id,_nv); it.done=_nv; save(true); render(); }); lab.appendChild(inp); lab.appendChild(box); top.appendChild(lab); b.appendChild(top); const title=el("div","feedtitle",it.title); if(briefDone(it.id)){ title.style.color="var(--dim)"; title.style.textDecoration="line-through"; } b.appendChild(title); if(it.note) b.appendChild(el("div","feednote briefnote",it.note)); /* v21 build 212: THE DRIVER TAG. RULES.md P1 requires that when the app acts on something it knows about Ian, it says so. A few words, never a paragraph. Optional field, so every card written before build 212 renders exactly as it did. */ if(it.why){ var _wy=el("div","small dim"); _wy.style.cssText="margin-top:7px;line-height:1.4"; _wy.textContent=it.why; b.appendChild(_wy); } if(it.url){ const a=el("a","feedlink",(it.type==="Pickleball"?"Watch":it.type==="Supplement"?"Read the research":"Open")+" ›"); a.href=it.url; a.target="_blank"; a.rel="noopener"; b.appendChild(a); } return c; }
 function eventsModule(parent){ /* build 178: only show upcoming events (today or later). Past dated events are kept in state but hidden from the calendar so nothing stale shows. */ const evs=(state.events||[]).filter(e=>e&&daysUntil(e.date)>=0).slice().sort((a,b)=>String(a.date).localeCompare(String(b.date))); const c=card(); const b=c._body; if(!evs.length) b.appendChild(el("div","empty","No upcoming events.")); evs.forEach(ev=>{ const row=el("div","evrow"); const p=evParts(ev.date); const du=daysUntil(ev.date); const dd=el("div","evdate"); dd.innerHTML='<div class="d">'+p.d+'</div><div class="m">'+p.m+'</div>'; row.appendChild(dd); const et=el("div","evt"); et.appendChild(el("div","en",ev.title)); et.appendChild(el("div","ec",ev.kind+(du>=0?(du===0?" · today":du===1?" · tomorrow":" · in "+du+" days"):" · past"))); row.appendChild(et); const del=el("button","del","×"); del.onclick=()=>{ state.events=state.events.filter(x=>x.id!==ev.id); save(); render(); }; row.appendChild(del); b.appendChild(row); }); parent.appendChild(c);
   let kind="League"; const ac=card(); const ab=ac._body; const kc=el("div"); const setChips=()=>{ [...kc.querySelectorAll(".chip")].forEach(ch=>ch.classList.toggle("on",ch.textContent===kind)); }; kc.appendChild(chipRow(["League","Tournament","Real estate","Personal"],kind,k=>{kind=k;setChips();})); ab.appendChild(kc); const inp=el("input","in"); inp.placeholder="Event..."; inp.setAttribute("data-add","Event..."); inp.style.marginTop="10px"; const dt=el("input","in"); dt.type="date"; dt.style.marginTop="9px"; const btn=el("button","btn block","Add event"); btn.onclick=()=>{ const t=inp.value.trim(); if(!t)return; pendingFocus="Event..."; state.events.push({id:uid(),title:t,date:dt.value||addDays(1),kind:kind}); save(); render(); }; ab.appendChild(inp); ab.appendChild(dt); ab.appendChild(btn); parent.appendChild(ac); }
 function goalsList(parent,arr){ const c=card(); const b=c._body; if(!arr.length)b.appendChild(el("div","empty","No goals yet.")); arr.forEach(g=>{ b.appendChild(checkItem(g.done,g.text,g.horizon||null,()=>{g.done=!g.done;save();render();},()=>{ const i=arr.indexOf(g); if(i>-1)arr.splice(i,1); save(); render(); })); }); b.appendChild(adder("Add a goal...",t=>{ arr.push({id:uid(),text:t,done:false}); save(); render(); })); parent.appendChild(c); }
@@ -4346,7 +4361,12 @@ function buildIanHome(v){ const workout=daySplit(DOW); const reTop=firstUndone(s
       .slice().sort(function(a,b){ return String(a.date).localeCompare(String(b.date)); });
     var todays=evs.filter(function(e){ return daysUntil(e.date)===0; });
     var next=evs.filter(function(e){ return daysUntil(e.date)>0; }).slice(0,3);
-    sect(v,"Today's schedule",evs.length?(evs.length+" coming up"):"nothing on the books");
+    /* build 212: an empty day used to print a full weight section header reading "nothing
+       on the books". That is a section earning prime space to say nothing, which is exactly
+       the page feeling. It now hands one clause to the quiet line at the bottom instead.
+       Nothing is hidden, the calendar section below is untouched and still browsable. */
+    if(!evs.length){ QUIET.push("nothing on your schedule"); return; }
+    sect(v,"Today's schedule",evs.length+" coming up");
     var c=card("a-purple"); var b=c._body;
     var line=function(e,isToday){
       var row=el("div","between"); if(b.childElementCount) row.style.marginTop="10px";
@@ -4383,7 +4403,7 @@ function buildIanHome(v){ const workout=daySplit(DOW); const reTop=firstUndone(s
      nothing, so it cannot affect set persistence. Renders nothing on a rest day. */
   var secWorkout=function(){ safe(v,function(){
     var day=daySplit(DOW); var exs=(day&&day.exercises)||[];
-    if(!exs.length) return;
+    if(!exs.length){ QUIET.push("gym is a rest day"); return; } /* build 212: was a bare return, so a rest day looked identical to a bug */
     var log=(state.gym&&state.gym.logs&&state.gym.logs[TODAY])||{done:{}};
     var doneN=exs.filter(function(e){ return log.done&&log.done[e.id]; }).length;
     sect(v,"Today's workout","tap to open the gym");
@@ -4440,24 +4460,137 @@ function buildIanHome(v){ const workout=daySplit(DOW); const reTop=firstUndone(s
   },"RE alert"); };
 
   /* ===================================================================================
+     v21 build 212: THREE TIER HOME. Ian, 08.02.2026: "it just looks like a disorganized
+     page instead of an organized app." A page is a list at equal weight. An app puts one
+     thing first, shows the rest only when it is relevant, and keeps depth behind a tap.
+     That is RULES.md P2 rules 5 and 6, and P3, stated as a design complaint.
+
+     Three additions and two gates. No data model change, no migration, nothing removed,
+     no existing section rewritten. Everything below reads state that already exists.
+       secFirstThing  ONE computed lead item, carrying the reason it won.
+       secLearn       the Learning Mode door. Quick by default, depth on demand.
+       secQuiet       one grey line naming what was suppressed, so gating is never silent.
+     The gates live inside secSchedule and secWorkout, which now push to QUIET and return
+     instead of printing an empty section header at full weight.
+
+     WHY THE REASON LINE IS NOT DECORATION. RULES.md P1: storing personal information is
+     not using it, and the app must be able to say when something it knows about Ian drove
+     an update. Every candidate below carries a `why` built from the actual field that won,
+     so the card cannot claim a reason it does not have.
+     =================================================================================== */
+  var QUIET=[];
+  var secFirstThing=function(){ safe(v,function(){
+    var k2d=function(k){ if(!isFinite(k)) return 999; var s=String(k); return daysUntil(s.slice(0,4)+"-"+s.slice(4,6)+"-"+s.slice(6,8)); };
+    var C=[]; var push=function(rank,title,why,go){ if(title) C.push({rank:rank,title:String(title),why:why,go:go}); };
+    var goRe=function(){ reView="pipeline"; try{ render(); }catch(e){} selectTab("re"); };
+    var goStudy=function(){ try{ PK_OPEN["pk_study"]=true; }catch(e){} try{ render(); }catch(e){} selectTab("pickle"); };
+    /* 1. dated money. Reuses closeSortKey, the same parser the pipeline sorts by, so a
+          close date written in prose still ranks correctly instead of being ignored. */
+    try{ ((state.realEstate&&state.realEstate.deals)||[]).forEach(function(d){
+      if(!d||!d.close) return;
+      if(d.stage!=="Under Contract"&&d.stage!=="Coming Soon") return;
+      var days=k2d(closeSortKey(d.close)); if(days<0||days>4) return;
+      var when=days===0?"today":days===1?"tomorrow":"in "+days+" days";
+      var uc=(d.stage==="Under Contract");
+      var who=String(d.title||"A deal").split(",")[0];
+      push((uc?10:16)+days, who+(uc?", closes "+when:", goes live "+when),
+        "Because "+(d.price?d.price+", ":"")+(d.side?String(d.side).toLowerCase()+" side, ":"")+(uc?"closing ":"listing ")+when+".", goRe);
+    }); }catch(e){}
+    /* 2. anything on the calendar for today. */
+    try{ (Array.isArray(state.events)?state.events:[]).forEach(function(ev){
+      if(!ev||!ev.date||daysUntil(ev.date)!==0) return;
+      push(14, ev.title+", today", "Because it is on your calendar for today.", null);
+    }); }catch(e){}
+    /* 3. a to do you dated yourself and have not closed. */
+    try{ ((state.realEstate&&state.realEstate.todos)||[]).forEach(function(t){
+      if(!t||t.done||!t.due) return; var days=daysUntil(t.due); if(days>0) return;
+      /* clamp at -8, NOT at the raw overdue count. First pass used Math.max(days,-20), which
+         let a to do 24 days overdue score 10 and tie a deal closing tomorrow. Caught in
+         verification against Ian's real profile: it picked a Jul 9 Troester task over Spicer
+         closing Aug 3. Age is not urgency, and dated money outranks a stale checkbox. */
+      push(30+Math.max(days,-8), t.text,
+        days<0?"Because you set this for "+fmtShort(t.due)+" and it is still open.":"Because you set this for today.", goRe);
+    }); }catch(e){}
+    /* 4. the tournament runway. skillEstimate has never been rendered anywhere in the app,
+          and it is the field that knows he is UNRATED and that Aug 23 is where that changes. */
+    try{ (function(){
+      var pb=state.pickleball||{}; var se=pb.skillEstimate||null;
+      var ev=(Array.isArray(state.events)?state.events:[]).filter(function(e){
+        return e&&e.date&&/tournament/i.test(String(e.kind||"")+" "+String(e.title||""))&&daysUntil(e.date)>=0; })
+        .sort(function(a,b){ return daysUntil(a.date)-daysUntil(b.date); })[0];
+      if(!ev) return; var d=daysUntil(ev.date); if(d>45) return;
+      var sk=(Array.isArray(pb.skills)?pb.skills:[]).filter(function(s){ return s&&typeof s.current==="number"; })
+        .sort(function(a,b){ return a.current-b.current; })[0];
+      if(!sk||!sk.label) return;
+      var tgt=(se&&se.goalAug23&&se.goalAug23.lo)?(", target "+se.goalAug23.lo+" to "+se.goalAug23.hi):"";
+      push(50+Math.min(d,44), sk.label+" is your weakest at "+sk.current+", "+d+" day"+(d===1?"":"s")+" out",
+        "Because "+(se&&se.rated===false?"you are unrated and this is where your DUPR gets established":"the tournament is close")+tgt+".", goStudy);
+    })(); }catch(e){}
+    /* 5. fallbacks, so the card is never empty on a genuinely quiet day. */
+    try{ (function(){ var day=daySplit(DOW); var exs=(day&&day.exercises)||[]; if(!exs.length) return;
+      push(90, cleanFocus(day.focus)+" today", "Because it is "+(day.day||"today")+" on your split.", function(){ selectTab("gym"); }); })(); }catch(e){}
+    try{ (function(){ var rt=((state.realEstate&&state.realEstate.routineTasks)||[])[0];
+      if(!rt||!rt.text) return;
+      push(95, rt.text, "Because it is one of your standing daily real estate tasks.", goRe); })(); }catch(e){}
+    if(!C.length) return;
+    C.sort(function(a,b){ return a.rank-b.rank; });
+    var top=C[0];
+    sect(v,"First thing today",C.length>1?(C.length-1)+" more today":"one thing");
+    var c=card("a-purple"); if(top.go) c.className+=" tap"; var b=c._body;
+    var t=el("div"); t.style.cssText="font-weight:800;font-size:18px;letter-spacing:-.02em;line-height:1.32"; t.textContent=top.title; b.appendChild(t);
+    if(top.why){ var w=el("div","small"); w.style.cssText="margin-top:9px;padding-top:8px;border-top:1px solid var(--line);color:var(--sec2,var(--accent2));line-height:1.45"; w.textContent=top.why; b.appendChild(w); }
+    if(top.go) c.onclick=top.go;
+    v.appendChild(c);
+  },"First thing"); };
+  var secLearn=function(){ safe(v,function(){
+    var pb=state.pickleball||{}; var vs=Array.isArray(pb.videoStats)?pb.videoStats:[];
+    if(!vs.length) return;
+    var nf=pkNextFocus();
+    sect(v,"Go deeper","only when you want to");
+    var c=card("a-green"); c.className+=" tap"; var b=c._body;
+    var row=el("div"); row.style.cssText="display:flex;align-items:center;gap:11px";
+    var ic=el("div"); ic.style.cssText="width:34px;height:34px;border-radius:11px;display:grid;place-items:center;font-size:18px;flex:0 0 auto;background:rgba(46,215,138,.16)";
+    try{ ic.innerHTML=PICKLE_SVG; }catch(e){ ic.textContent="🎬"; }
+    row.appendChild(ic);
+    var lf=el("div"); lf.style.cssText="flex:1;min-width:0";
+    var t=el("div"); t.style.cssText="font-weight:800;font-size:17px;letter-spacing:-.02em"; t.textContent="Pickleball study"; lf.appendChild(t);
+    var s=el("div","small dim"); s.style.cssText="margin-top:2px;line-height:1.4";
+    s.textContent=vs.length+" film stud"+(vs.length===1?"y":"ies")+" from your own footage"+(nf?". Next focus is set.":".");
+    lf.appendChild(s); row.appendChild(lf);
+    var cv=el("div","dim"); cv.textContent="›"; cv.style.cssText="font-size:20px;flex:0 0 auto"; row.appendChild(cv);
+    b.appendChild(row);
+    c.onclick=function(){ try{ PK_OPEN["pk_study"]=true; }catch(e){} try{ render(); }catch(e){} selectTab("pickle"); };
+    v.appendChild(c);
+  },"Learning mode"); };
+  var secQuiet=function(){ safe(v,function(){
+    if(!QUIET.length) return;
+    var d=el("div","small dim"); d.style.cssText="margin:16px 2px 6px;line-height:1.5";
+    d.textContent="Quiet today: "+QUIET.join(", ")+".";
+    v.appendChild(d);
+  },"Quiet"); };
+
+  /* ===================================================================================
      THE ORDER. This list is the Home screen. Change it here and nowhere else.
      Morning block first (wins, schedule, workout, then the training heatmap that reflects
      the workout), then the agent feed and his writing box, then real estate only if it is
      shouting, then the reference material he goes looking for rather than glances at.
      =================================================================================== */
+  secFirstThing(); /* build 212: ONE thing, computed, with the reason it won  */
   secWins();       /* daily wins,      he asked for this first  */
-  secSchedule();   /* his schedule,    was dead last            */
-  secWorkout();    /* his gym workout, was not on Home at all   */
+  secSchedule();   /* his schedule,    silent on an empty day   */
+  secWorkout();    /* his gym workout, silent on a rest day     */
   secHeat();       /* favourite, high, pairs with the workout   */
   secBrief();      /* what Claude left him overnight            */
   secEntry();      /* where he writes the day up                */
   secReAlert();    /* real estate, silent unless time sensitive */
+  secLearn();      /* build 212: the Learning Mode door          */
   secProg();       /* goal pace and closing money               */
   secCal();        /* full calendar, collapsed, for browsing     */
   secWater();
   secSphere();
   secSummary();
   secIdeas();
+  secQuiet();      /* build 212: what was gated, one grey line   */
 }
 /* ===== v21 real estate: calm landing of section cards, each opens its own view ===== */
 const RE_PIPE_GROUPS=[["Under Contract","Under contract / pending"],["Coming Soon","Coming soon"],["Active","Active listings"],["Building","Building / New Construction"],["Closed","Closed"],["Just Sold","Just sold"],["Follow up","Follow up"]];
@@ -4822,7 +4955,12 @@ let gymShowWeek=false;
 function gymWeek(v){ (state.gym.split||[]).forEach(function(d,i){ const c=card(i===DOW?"a-blue":null); const b=c._body; const top=el("div","between"); top.appendChild(el("h3",null,d.day+", "+cleanFocus(d.focus))); top.appendChild(el("span","pill b",d.play)); b.appendChild(top); if(d.note){ const n=el("div","small muted"); n.style.margin="5px 0 4px"; n.textContent=d.note; b.appendChild(n); } (d.exercises||[]).forEach(function(e){ const row=el("div","ex"); row.appendChild(el("span","exname",e.name)); row.appendChild(el("span","scheme",e.scheme)); b.appendChild(row); }); v.appendChild(c); }); }
 function buildGym(v){ var _gymTop=el("div"); _gymTop.style.height="14px"; v.appendChild(_gymTop); objectiveCard(v,"gym","a-blue");
   collapseTool(v,"Workout routine","today's session and full week",()=>{ gymToday(v); });
-  collapseTool(v,"Nutrition","meals, supplements are in the Daily checklist",()=>{ nutritionModule(v); });
+  /* build 212: sublabel said "meals, supplements are in the Daily checklist" while the meals card
+     itself was removed at build 178 because Ian never used it. A label advertising a surface that
+     does not exist is how a future session concludes meals are missing and rebuilds them. Ian
+     closed this for good on 08.02.2026: "get rid of the meal plan and suggestions, that's totally
+     not going to be used at all." See RULES.md, Meal planning is closed. */
+  collapseTool(v,"Nutrition","supplements are in the Daily checklist",()=>{ nutritionModule(v); });
   sect(v,"Daily checklist","habits, water, and supplements, one place"); safe(v,()=>dailyChecklistModule(v),"Daily checklist"); }
 function gymToday(parent){ const day=daySplit(DOW); const log=state.gym.logs[TODAY]||(state.gym.logs[TODAY]={done:{},note:""}); var items=[{id:"stretch5",name:"5 to 10 minute stretch",scheme:"warm up"}].concat(day.exercises); const total=items.length, dc=items.filter(e=>log.done[e.id]).length;
   summaryGrid(parent,[ fracTile({label:"Today's session",color:"orange",done:dc,goal:total||1,unit:"sets"}), statTile({label:"This week",color:"orange",value:workoutsThisWeek(),unit:"days",sub:"Workouts logged",spark:weekWorkoutSpark(),sparkH:34}) ]);
@@ -5333,6 +5471,58 @@ function buildPickle(v){ var pb=state.pickleball||(state.pickleball={});
     safe(c,function(){ var st=pkStats(); var ins=pkInsights(st); if(!ins.length) return; sect(c,"What your coach sees","from your logged data"); var ic=card(); ins.forEach(function(line,i){ var r=el("div","small"); r.style.cssText="line-height:1.5;color:var(--gray)"+(i>0?";margin-top:6px":""); r.textContent=line; ic._body.appendChild(r); }); c.appendChild(ic); },"Pickle insights");
     
   },"🎯","green");
+  /* =====================================================================================
+     v21 build 212: LEARNING MODE. RULES.md P3. Pickleball is the deliberate exception to
+     short daily use, so this section is allowed to be long, and it is CLOSED BY DEFAULT so
+     it never lengthens a normal day. The Home card sets PK_OPEN["pk_study"] before it
+     navigates, so it is one tap from Today and full depth when he asks for it.
+
+     It renders pickleball.videoStats and pickleball.skillEstimate, both of which have been
+     written into state since build 131 and build 119 and rendered NOWHERE until now. Seven
+     studies of his own footage, about 35 conclusions and seven coach notes he has never
+     seen in the app. Read only. It writes nothing and owns nothing, so it cannot disturb
+     the coach sections above it or the session history below it.
+     ===================================================================================== */
+  pkCollapse(v,"pk_study","Pickleball study","your film, your rating, your next focus",false,function(c){
+    var _pb=state.pickleball||{}; var _vs=Array.isArray(_pb.videoStats)?_pb.videoStats:[];
+    var _nf=pkNextFocus();
+    if(_nf&&_nf.note){
+      sect(c,"Next session, one focus","");
+      var fc=card("a-green"); var fb=fc._body;
+      var fk=el("div","small"); fk.style.cssText="font-weight:800;letter-spacing:.09em;text-transform:uppercase;color:var(--sec2,var(--accent2))"; fk.textContent="Do this next time"; fb.appendChild(fk);
+      var ft=el("div"); ft.style.cssText="font-weight:800;font-size:16px;line-height:1.36;margin-top:6px"; ft.textContent=_nf.note; fb.appendChild(ft);
+      var fw=el("div","small dim"); fw.style.cssText="margin-top:9px;padding-top:8px;border-top:1px solid var(--line);line-height:1.45";
+      fw.textContent="From your own film"+(_nf.source?", "+_nf.source:(_nf.date?", "+fmtShort(_nf.date):""))+". "+_nf.n+" stud"+(_nf.n===1?"y":"ies")+" on file.";
+      fb.appendChild(fw); c.appendChild(fc);
+    }
+    if(_vs.length){
+      sect(c,"What your film actually said",_vs.length+" stud"+(_vs.length===1?"y":"ies"));
+      _vs.slice().sort(function(a,b){ return String((b&&b.date)||"").localeCompare(String((a&&a.date)||"")); }).forEach(function(x){
+        if(!x) return;
+        var vc=card(); var vb=vc._body;
+        var h=el("div"); h.style.cssText="font-weight:800;font-size:15px;letter-spacing:-.01em;line-height:1.35"; h.textContent=x.source||(x.date?"Film study "+x.date:"Film study"); vb.appendChild(h);
+        if(x.date){ var dt=el("div","small dim"); dt.style.marginTop="3px"; dt.textContent=fmtShort(x.date)+(x.gradable===false?", estimates rather than a frame perfect ledger":""); vb.appendChild(dt); }
+        (Array.isArray(x.summary)?x.summary:[]).forEach(function(s){
+          if(!s) return; var r=el("div","small"); r.style.cssText="margin-top:8px;line-height:1.45;padding-left:11px;border-left:2px solid var(--line)"; r.textContent=String(s); vb.appendChild(r);
+        });
+        if(x.coachNote){ var cn=el("div","small"); cn.style.cssText="margin-top:10px;padding-top:9px;border-top:1px solid var(--line);line-height:1.45;color:var(--sec2,var(--accent2))"; cn.textContent=x.coachNote; vb.appendChild(cn); }
+        c.appendChild(vc);
+      });
+    }
+    var _se=_pb.skillEstimate;
+    if(_se&&_se.doubles){
+      sect(c,"Rating and the target","");
+      var rc=card("a-purple"); var rb=rc._body;
+      var rt=el("div"); rt.style.cssText="font-weight:800;font-size:16px;line-height:1.35";
+      rt.textContent="Self assessed "+_se.doubles.lo+(_se.doubles.hi!==_se.doubles.lo?" to "+_se.doubles.hi:"")+" doubles"+(_se.rated===false?", unrated":"");
+      rb.appendChild(rt);
+      if(_se.goalAug23&&_se.goalAug23.lo){ var gg=el("div","small"); gg.style.cssText="margin-top:6px;line-height:1.45"; gg.textContent="Target "+_se.goalAug23.lo+" to "+_se.goalAug23.hi+"."; rb.appendChild(gg); }
+      if(_se.note){ var nn=el("div","small dim"); nn.style.cssText="margin-top:8px;line-height:1.45"; nn.textContent=_se.note; rb.appendChild(nn); }
+      if(_se.source||_se.date){ var ss=el("div","small dim"); ss.style.marginTop="7px"; ss.textContent="Source: "+(_se.source||"")+(_se.date?", "+fmtShort(_se.date):""); rb.appendChild(ss); }
+      c.appendChild(rc);
+    }
+    if(!_vs.length&&!(_se&&_se.doubles)){ var ec=card(); ec._body.appendChild(el("div","empty","No film studies yet. Run the video coach on a session and the conclusions land here.")); c.appendChild(ec); }
+  },"🎬","green");
   pkCollapse(v,"pk_active","Work on and cues","what to drill and remember while playing",false,function(ap){
     safe(ap,function(){ var wo=(pb.workOn&&pb.workOn.length)?pb.workOn.slice(0,4):[]; sect(ap,"Work on","top 4"); var cc=card(); if(!wo.length){ cc._body.appendChild(el("div","empty","Your coach will fill this in from your sessions.")); } else { wo.forEach(function(line,i){ var r=el("div","small"); r.style.cssText="line-height:1.5;color:var(--white);font-weight:600"+(i>0?";margin-top:9px":""); var dot=el("span"); dot.style.cssText="color:var(--pk1);font-weight:800;margin-right:8px"; dot.textContent="\u2022"; r.appendChild(dot); r.appendChild(document.createTextNode(line)); cc._body.appendChild(r); }); } ap.appendChild(cc); },"Active workon");
     
