@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 213 (2026-08-02)">
+<meta name="build" content="v21 build 214 (2026-08-02)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -808,21 +808,63 @@ const APP_BUILD=(function(){ try{ var m=document.querySelector('meta[name="build
 const WATER_GOAL=10; 
 const uid=()=>Math.random().toString(36).slice(2,9);
 function todayKey(d){ d=d||new Date(); const p=n=>String(n).padStart(2,"0"); return d.getFullYear()+"-"+p(d.getMonth()+1)+"-"+p(d.getDate()); }
-const NOW=new Date(), TODAY=todayKey(NOW), DOW=NOW.getDay();
+/* ===== v21 build 214: THE DATE IS NOW LIVE, NOT A STAMP TAKEN AT LOAD =======================
+   THE ROOT BUG, and it is the parent of several things Ian reported on 08.02.2026.
+   NOW, TODAY and DOW were `const`, evaluated ONCE when the script parsed, and never recomputed.
+   GREET and LONGDATE were the same. As an installed PWA this page can stay resident for days, so
+   every one of the 130 places that read TODAY, and daySplit(DOW), and dailyReset, and the water,
+   habit, quick win, gym log and briefing done stores, all kept writing to and reading from
+   WHATEVER DAY THE PAGE WAS FIRST OPENED. A page opened Saturday and resumed Sunday renders
+   Saturday's workout, labels it Saturday, ticks Saturday's boxes and never rolls over. GREET was
+   worse in a smaller way: opened in the morning it said "Good morning" until the page was closed.
+
+   Build 189 added a wake guard for exactly this and it did not hold, for two reasons worth
+   naming because they are the actual defects, not the symptom.
+     1. IT WAS ONE SHOT. `_dayGuardRan` was set true before the reload and never cleared, so the
+        guard defended against the FIRST rollover in a document's life and no other. A latch
+        against a recurring event is a latch that expires.
+     2. ITS ONLY REMEDY WAS location.reload(). If the reload was refused, deferred or swallowed,
+        nothing else changed, so the app carried on writing to the stale key with no fallback.
+   Both are the same mistake: the stale value was left in place and something else was asked to
+   go and fix it. So the fix is to stop having a stale value.
+
+   refreshDay() recomputes NOW, TODAY, DOW, GREET and LONGDATE from the clock. Every existing
+   reference reads the live binding, so correctness no longer depends on a reload happening. The
+   guard still reloads on a genuine rollover, because a clean boot is what runs the migrations and
+   the daily archive, but it recomputes and re renders FIRST so the data is already right if the
+   reload never lands. It cannot loop: after refreshDay() the key matches, so the next check is a
+   no op, which is what the latch was there for. It is also on a 30s timer now, because an app left
+   open on screen through midnight never fires visibilitychange, pageshow or focus at all, and that
+   is the one case the event only guard could never have caught. */
+let NOW=new Date(), TODAY=todayKey(NOW), DOW=NOW.getDay();
 let LONGDATE,GREET;
-try{ LONGDATE=NOW.toLocaleDateString("en-US",{weekday:"long",month:"long",day:"numeric",year:"numeric"}); }catch(e){ LONGDATE=NOW.toDateString(); }
-(function(){ const h=NOW.getHours(); GREET=h<12?"Good morning":h<18?"Good afternoon":"Good evening"; })();
+function _stampDay(){
+  try{ LONGDATE=NOW.toLocaleDateString("en-US",{weekday:"long",month:"long",day:"numeric",year:"numeric"}); }catch(e){ LONGDATE=NOW.toDateString(); }
+  var h=NOW.getHours(); GREET=h<12?"Good morning":h<18?"Good afternoon":"Good evening";
+}
+_stampDay();
+/* Returns true only on a real calendar rollover. Always leaves the globals current. */
+function refreshDay(){ var n=new Date(); var k=todayKey(n); var rolled=(k!==TODAY); NOW=n; TODAY=k; DOW=n.getDay(); _stampDay(); return rolled; }
+const DAY3=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+const DAYFULL=["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
 function addDays(n){ const d=new Date(); d.setDate(d.getDate()+n); return todayKey(d); }
-/* build 189: NEW DAY WAKE GUARD. TODAY, DOW, GREET and every date keyed render are computed once at load, but as
-   an installed PWA the page can stay resident overnight, so opening the app the next morning used to keep writing
-   checkmarks, water and logs onto YESTERDAY's keys until a manual reload. When the app returns to the foreground
-   (or is restored from the back forward cache) on a different calendar day, flush any pending save and reload so
-   the normal boot runs the daily archive and reset for the real day. Reload safe: after reloading, todayKey()
-   equals TODAY again so the guard never loops. Cosmetic and data correctness only, touches no stores. */
-(function(){ var _dayGuardRan=false; function dayGuard(){ try{ if(_dayGuardRan) return; if(todayKey()!==TODAY){ _dayGuardRan=true; try{ if(typeof save==="function") save(true); }catch(e){} try{ location.reload(); }catch(e){} } }catch(e){} }
+(function(){
+  function dayGuard(){ try{
+    var g0=GREET;
+    if(refreshDay()){
+      /* Correct the running document FIRST, then reboot. Order is deliberate: if the reload is
+         refused the app is still on the right day, which is exactly what build 189 got wrong. */
+      try{ if(typeof save==="function") save(true); }catch(e){}
+      try{ if(typeof dailyReset==="function") dailyReset(); }catch(e){}
+      try{ if(typeof save==="function") save(true); }catch(e){}
+      try{ if(typeof render==="function") render(); }catch(e){}
+      try{ location.reload(); }catch(e){}
+    } else if(g0!==GREET){ try{ if(typeof render==="function") render(); }catch(e){} }
+  }catch(e){} }
   try{ document.addEventListener("visibilitychange",function(){ if(!document.hidden) dayGuard(); }); }catch(e){}
   try{ window.addEventListener("pageshow",function(){ dayGuard(); }); }catch(e){}
   try{ window.addEventListener("focus",function(){ dayGuard(); }); }catch(e){}
+  try{ setInterval(dayGuard,30000); }catch(e){}
 })();
 /* ===== seeds ===== */
 function seedIan(){
@@ -3628,6 +3670,51 @@ function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]
       state.meta.mig211_solara815=true; save(true);
   } }catch(e){}
 
+  /* ===== v21 build 214: THE 08.02 NOTE AND THE CARD CALLED THE SAME DAY TWO DIFFERENT THINGS ===
+     Ian read the Gym page on 08.02 and concluded the override had moved the wrong session. It had
+     not. The override moved SATURDAY and that is correct. What went wrong is that the note beside
+     the card and the card itself use DIFFERENT NAMES FOR THE SAME DAY, so the page contradicted
+     itself and there was no way to tell which half was right.
+
+     Traced rather than assumed, against his real saved profile:
+       Saturday, split index 6, focus "Forearms + light pull, light day". Four exercises: LAT
+       PULLDOWN vary grip 4x12/10/8/8, then fast wrist flexion and extension, DB pronation and
+       supination, and fast grip squeezes. One back movement, three forearm movements, NO CURLS.
+       It was made deliberately light on 07.22 by mig141_sat_light, which stripped the second row,
+       the face pull, both curls and the heavy wrist curl out of it.
+       Tuesday, split index 2, focus "Pull (back, biceps, rear delts)". Lat pulldown, chest
+       supported row, face pull, machine curl, cable curl. That is the full back and biceps day
+       and it was trained on Tuesday 07.28. Nothing was skipped and nothing is owed.
+
+     So both names are defensible and that is exactly the problem. Ian calls Saturday his back and
+     biceps day, and BRAIN 01_FITNESS_CONTEXT already records that as his word for it. Build 211
+     wrote his name into the note. The card prints the split's name. Neither is a lie, and a screen
+     showing both without reconciling them is worse than either one alone, because it reads as the
+     app having moved the wrong workout.
+
+     The note now names the day BOTH ways and states what is actually in it, so the card and the
+     note agree and the vocabulary gap is closed on screen instead of in a context file he does not
+     read on his phone.
+
+     Surgical replace, not an unconditional set. A gym log note is Class A, Ian's, and he can edit
+     it on his phone, so overwriting the whole string to fix one clause would throw away anything he
+     added. Only the one sentence is replaced, the rest of the note survives, and a second pass is a
+     no op because the old sentence is gone. Guard flag in saved state only, never in seedIan().meta. */
+  try{ if(profile==="ian" && state.gym && state.gym.logs && state.meta && !state.meta.mig214_gymnote0802){
+      var _WRONG="Back and biceps pull work shifted off 08.01 because the gym closed early.";
+      var _RIGHT="This is the day you call back and biceps. The app calls it Forearms plus light pull, "
+        +"and both names are on the same Saturday session, which is why the card and this note used to disagree. "
+        +"What is actually in it: lat pulldown, then wrist flexion and extension, pronation and supination, and grip squeezes. "
+        +"One back movement and three forearm movements, no curls, because Saturday was made a genuinely light day on 07.22. "
+        +"It shifted off 08.01 because the gym closed early. "
+        +"Your FULL back and biceps day, lat pulldown, row, face pull and two curls, is TUESDAY, and you trained it on Tuesday 07.28, so nothing was skipped.";
+      var _e=state.gym.logs["2026-08-02"];
+      if(_e && typeof _e==="object" && typeof _e.note==="string" && _e.note.indexOf(_WRONG)>-1){
+        _e.note=_e.note.replace(_WRONG,_RIGHT);
+      }
+      state.meta.mig214_gymnote0802=true; save(true);
+  } }catch(e){}
+
   focusObj.running=false; try{clearInterval(focusObj.timerId);}catch(e){} focusObj.remaining=null;
   applyAccent(); dailyReset(); save(true);
 }
@@ -3673,6 +3760,18 @@ var GYM_DATE_OVERRIDE={
  "2026-07-20":{day:"Mon",focus:"Travel bodyweight, legs and full body",play:"Off",note:"Legs travel well with no equipment. Controlled tempo, short rest to keep it lean.",exercises:[{id:"bw-0720-1",name:"Bodyweight squats",scheme:"3x20"},{id:"bw-0720-2",name:"Reverse lunges",scheme:"3x12/leg"},{id:"bw-0720-3",name:"Split squats (foot on bed or chair)",scheme:"3x10/leg"},{id:"bw-0720-4",name:"Calf raises",scheme:"3x20"},{id:"bw-0720-5",name:"Glute bridges",scheme:"3x15-20"},{id:"bw-0720-6",name:"Plank",scheme:"3x30-45s"}]}
 };
 function daySplit(i){ const s=(state.gym&&state.gym.split)||[]; try{ var _dov=(typeof GYM_DATE_OVERRIDE!=="undefined")&&GYM_DATE_OVERRIDE[TODAY]; if(_dov&&i===DOW) return _dov; }catch(e){} try{ var _od=GYM_TODAY_OVERRIDE[TODAY]; if(_od&&i===DOW){ for(var _j=0;_j<s.length;_j++){ if(s[_j]&&s[_j].day===_od) return s[_j]; } } }catch(e){} return s[i]||s[0]||{day:"",focus:"Workout",play:"Off",note:"",exercises:[]}; }
+/* v21 build 214: WHICH DAY'S SESSION IS ON THE CARD, answered from the CLOCK.
+   The gym card used to print `day.day`, the day name carried on the split object it was handed. On
+   a normal day that is today's name and it looks fine. On an override day daySplit returns ANOTHER
+   day's object, so on Sunday 08.02 the card read "Today. Sat." and Ian reasonably read that as the
+   app believing it was Saturday. It did not. It was labelling a swapped in Saturday workout with
+   Saturday's name and never saying it had been moved. A one off swap is a legitimate thing to show;
+   showing it without saying so is the defect. Returns null when nothing is swapped. */
+function daySwapInfo(){
+  try{ if(typeof GYM_DATE_OVERRIDE!=="undefined" && GYM_DATE_OVERRIDE[TODAY]) return {kind:"special"}; }catch(e){}
+  try{ var od=GYM_TODAY_OVERRIDE[TODAY]; if(od && od!==DAY3[DOW]){ var i=DAY3.indexOf(od); return {kind:"swap",fromShort:od,from:(i>-1?DAYFULL[i]:od)}; } }catch(e){}
+  return null;
+}
 function habitStreak(){ const h=(state.routine&&state.routine.habits)||[]; if(!h.length)return 0; let st=0; for(let i=0;i<400;i++){ const d=new Date();d.setDate(d.getDate()-i); const k=todayKey(d); const any=h.some(x=>x.log&&x.log[k]); if(any)st++; else if(i===0)continue; else break; } return st; }
 function autoObjective(hub){ try{ if(hub==="re"){ const t=firstUndone(state.realEstate.todos); return t?t.text:"Prospect and follow up leads"; } if(hub==="gym"){ return daySplit(DOW).focus+".  Warm up, then log your sets."; } const g=firstUndone(state.goals),td=firstUndone(state.todos); return g?g.text:(td?td.text:"Reset, log pickleball, jot ideas"); }catch(e){ return "Set a focus for today"; } }
 function hidden(key){ return !!(state.settings&&state.settings.hidden&&state.settings.hidden[key]); }
@@ -4315,6 +4414,23 @@ function buildIanHome(v){ const workout=daySplit(DOW); const reTop=firstUndone(s
       var _hmBand=function(m){ return m<45?46:(m<90?64:(m<150?82:100)); };
       var gyDays={}; var gl=(state.gym&&state.gym.logs)||{};
       Object.keys(gl).forEach(function(k){ var L=gl[k]; if(!L) return; var d=L.done||{}; var ticked=Object.keys(d).some(function(id){ return d[id]; }); var noted=(typeof L.note==="string" && L.note.trim().length>0); if(ticked||noted) gyDays[k]=true; });
+      /* ===== v21 build 214: TWO HEATMAP FIXES, both reported by Ian on 08.02.2026 ==============
+         1. THE COUNT DID NOT COUNT GYM. `if(kindCls) n++` fired only on a pickleball day, while the
+            section header promises "gym and pickleball, target 5 to 6 a week" and a gym only day is
+            drawn as a filled cell. The week of 7/27 therefore showed SEVEN filled cells and read
+            6/6, because Wednesday 7/29 was a pure gym day: coloured in, worth nothing. It was never
+            a cap, it was an undercount against the heatmap's own stated definition, and it made a
+            trained day look like a missing one. A day now counts if it has pickleball OR gym, which
+            is what the label always said, so the number and the filled cells finally agree. The
+            number can now read above the target, which is honest and is the point.
+         2. AN EMPTY WEEK BEFORE ANY RECORD EXISTS IS NOT A ZERO. The June rows read 0/6 because
+            there is genuinely no data: the earliest record anywhere in state is 2026-07-06, for
+            both gym.logs and pickleball.sessions. Nothing is missing and NOTHING IS INVENTED here.
+            But 0/6 asserts he trained zero times, which is a claim the app cannot make about a week
+            it has no records for. Weeks that end before the first record now read n/a with the
+            reason printed under the grid. Missing data and a bad week are different facts. */
+      var _firstRec=null;
+      Object.keys(gyDays).concat(Object.keys(pkDays)).forEach(function(k){ if(!_firstRec||k<_firstRec) _firstRec=k; });
       var today=new Date(); var tk=todayKey(today);
       var dow=today.getDay(); var mondayOffset=(dow===0?6:dow-1);
       var curMon=new Date(today); curMon.setDate(curMon.getDate()-mondayOffset);
@@ -4340,11 +4456,16 @@ function buildIanHome(v){ const workout=daySplit(DOW); const reTop=firstUndone(s
           if(kindCls && pkMin[k]){ var _b=_hmBand(pkMin[k]);
             if(_b<100){ cell.className+=" dur"; try{ cell.style.setProperty("--hmdim",((100-_b)/100).toFixed(2)); }catch(e){} } }
           cell.title=k+(kindCls?" pickleball, "+(pkLbl[k]||"play"):"")+(pkMin[k]?", "+Math.round(pkMin[k])+" min":"")+(hasGy?" gym":"")+(future?" upcoming":"");
-          if(kindCls) n++;
+          if(kindCls||hasGy) n++; /* build 214: a gym only day is a training day, see the note above */
           cells.appendChild(cell);
         }
         row.appendChild(cells);
-        var cnt=el("div","hmn"+(n>=5?" hit":"")); cnt.textContent=n+"/6"; row.appendChild(cnt);
+        /* build 214: no records at all before this week ended, so say so instead of claiming zero */
+        var _preHist=(!!_firstRec && todayKey(we)<_firstRec);
+        var cnt=el("div","hmn"+(_preHist?" norec":(n>=5?" hit":"")));
+        cnt.textContent=_preHist?"n/a":(n+"/6");
+        if(_preHist){ row.title="No gym or pickleball records exist for this week. Tracking starts "+fmtShort(_firstRec)+"."; }
+        row.appendChild(cnt);
         b.appendChild(row);
       }
       var key=el("div","hmkey");
@@ -4357,6 +4478,11 @@ function buildIanHome(v){ const workout=daySplit(DOW); const reTop=firstUndone(s
         /* build 207: the depth scale, so the shading is a legend entry rather than something to work out */
         '<span style="display:flex;align-items:center;gap:4px"><i style="background:#2ee66f;position:relative"><b style="position:absolute;inset:0;background:rgba(14,14,18,.54);border-radius:inherit"></b></i><i style="background:#2ee66f;position:relative"><b style="position:absolute;inset:0;background:rgba(14,14,18,.18);border-radius:inherit"></b></i><i style="background:#2ee66f"></i>Shorter to longer session</span>';
       b.appendChild(key);
+      /* build 214: the count is gym OR pickleball, and a week with no records says n/a rather than
+         zero. Both stated on screen, because a number whose rule is not visible gets misread. */
+      if(_firstRec){ var _fn=el("div","small dim"); _fn.style.cssText="margin-top:8px;line-height:1.45";
+        _fn.textContent="A day counts if you played or lifted. Weeks marked n/a have no records at all, tracking starts "+fmtShort(_firstRec)+", so they are not zero weeks.";
+        b.appendChild(_fn); }
       hh.appendChild(cardEl);
     },"📊","green"); };
   var secIdeas=function(){ safe(v,function(){ buildFutureIdeasHome(v); },"Future ideas"); };
@@ -4546,7 +4672,10 @@ function buildIanHome(v){ const workout=daySplit(DOW); const reTop=firstUndone(s
     })(); }catch(e){}
     /* 5. fallbacks, so the card is never empty on a genuinely quiet day. */
     try{ (function(){ var day=daySplit(DOW); var exs=(day&&day.exercises)||[]; if(!exs.length) return;
-      push(90, cleanFocus(day.focus)+" today", "Because it is "+(day.day||"today")+" on your split.", function(){ selectTab("gym"); }); })(); }catch(e){}
+      /* build 214: same clock fix as the gym card. This printed day.day, so on an override day it
+         claimed "Because it is Sat on your split" on a Sunday. Reason comes from the real day now. */
+      var _sw2=daySwapInfo();
+      push(90, cleanFocus(day.focus)+" today", (_sw2&&_sw2.kind==="swap")?("Because "+_sw2.from+"'s session moved to today."):("Because it is "+DAYFULL[DOW]+" on your split."), function(){ selectTab("gym"); }); })(); }catch(e){}
     try{ (function(){ var rt=((state.realEstate&&state.realEstate.routineTasks)||[])[0];
       if(!rt||!rt.text) return;
       push(95, rt.text, "Because it is one of your standing daily real estate tasks.", goRe); })(); }catch(e){}
@@ -4989,7 +5118,7 @@ function gymToday(parent){ const day=daySplit(DOW); const log=state.gym.logs[TOD
     hg.onclick=function(){ try{ PK_OPEN["pk_active"]=true; }catch(e){} try{ render(); }catch(e){} selectTab("pickle"); };
     hb.appendChild(hg); parent.appendChild(hc); })();
   
-  const c=card("a-blue"); const b=c._body; const top=el("div","between"); const left=el("div"); left.appendChild(el("h3",null,cleanFocus(day.focus))); const sub=el("div","small muted"); sub.textContent="Today. "+day.day+". Pickleball: "+day.play; left.appendChild(sub); top.appendChild(left); top.appendChild(el("span","pill b",day.play)); b.appendChild(top); if(day.note){ const n=el("div","small muted"); n.style.marginTop="6px"; n.textContent=day.note; b.appendChild(n); } const pbar=el("div","pbar"); const pi=el("i"); pbar.appendChild(pi); b.appendChild(pbar); try{pi.style.width=(total?dc/total*100:0)+"%";}catch(e){} const pl=el("div","small dim"); pl.style.marginTop="7px"; pl.textContent=dc+" of "+total+" logged"; b.appendChild(pl); const list=el("div"); list.style.marginTop="6px"; items.forEach(e=>{ const done=!!log.done[e.id]; const row=el("label","ex"); const inp=el("input","cbx"); inp.type="checkbox"; inp.checked=done; const box=el("span","box"); box.innerHTML=CHECK; inp.addEventListener("change",()=>{ if(log.done[e.id])delete log.done[e.id]; else log.done[e.id]=true; save(); render(); }); row.appendChild(inp); row.appendChild(box); row.appendChild(el("span","exname",e.name)); row.appendChild(el("span","scheme",e.scheme)); list.appendChild(row); }); b.appendChild(list); if(total){ const btn=el("button","btn ghost sm block",dc<total?"Check all":"Reset today"); btn.onclick=()=>{ if(dc<total)items.forEach(e=>log.done[e.id]=true); else items.forEach(e=>delete log.done[e.id]); save(); render(); }; b.appendChild(btn); } parent.appendChild(c);
+  const c=card("a-blue"); const b=c._body; const top=el("div","between"); const left=el("div"); left.appendChild(el("h3",null,cleanFocus(day.focus))); const sub=el("div","small muted"); /* build 214: day name from the clock, and a swapped in session says so */ const _sw=daySwapInfo(); sub.textContent="Today, "+DAYFULL[DOW]+". "+(_sw&&_sw.kind==="swap"?"Running "+_sw.from+"'s session. ":"")+"Pickleball: "+day.play; left.appendChild(sub); top.appendChild(left); top.appendChild(el("span","pill b",day.play)); b.appendChild(top); if(day.note){ const n=el("div","small muted"); n.style.marginTop="6px"; n.textContent=day.note; b.appendChild(n); } const pbar=el("div","pbar"); const pi=el("i"); pbar.appendChild(pi); b.appendChild(pbar); try{pi.style.width=(total?dc/total*100:0)+"%";}catch(e){} const pl=el("div","small dim"); pl.style.marginTop="7px"; pl.textContent=dc+" of "+total+" logged"; b.appendChild(pl); const list=el("div"); list.style.marginTop="6px"; items.forEach(e=>{ const done=!!log.done[e.id]; const row=el("label","ex"); const inp=el("input","cbx"); inp.type="checkbox"; inp.checked=done; const box=el("span","box"); box.innerHTML=CHECK; inp.addEventListener("change",()=>{ if(log.done[e.id])delete log.done[e.id]; else log.done[e.id]=true; save(); render(); }); row.appendChild(inp); row.appendChild(box); row.appendChild(el("span","exname",e.name)); row.appendChild(el("span","scheme",e.scheme)); list.appendChild(row); }); b.appendChild(list); if(total){ const btn=el("button","btn ghost sm block",dc<total?"Check all":"Reset today"); btn.onclick=()=>{ if(dc<total)items.forEach(e=>log.done[e.id]=true); else items.forEach(e=>delete log.done[e.id]); save(); render(); }; b.appendChild(btn); } parent.appendChild(c);
   const nc=card(); nc._body.appendChild(el("div","small muted","Session note (today)")); const ta=el("textarea","in"); ta.style.minHeight="58px"; ta.style.marginTop="6px"; ta.placeholder="Weights, PRs, how it felt..."; ta.value=log.note||""; ta.oninput=()=>{log.note=ta.value;save();}; nc._body.appendChild(ta); parent.appendChild(nc);
   const tog=el("div"); tog.style.margin="2px 2px 0"; const link=el("button"); link.style.cssText="background:none;border:none;color:var(--sec2,var(--accent2));font-weight:700;font-size:13px;padding:6px 2px"; link.textContent=gymShowWeek?"Hide full week":"View full week"; link.onclick=()=>{ gymShowWeek=!gymShowWeek; render(); }; tog.appendChild(link); parent.appendChild(tog);
   if(gymShowWeek){ sect(parent,"Full week reference","for reference only"); gymWeek(parent); }
@@ -5919,6 +6048,7 @@ body.solara-off .tabbar label[for=t-solara]{display:none}
 .hmc.both{background:linear-gradient(135deg,var(--pk1) 0 50%,var(--gy1) 50% 100%)}
 .hmn{width:34px;flex:0 0 auto;text-align:right;font-size:10.5px;font-weight:800;color:var(--gray2)}
 .hmn.hit{color:var(--pk1)}
+.hmn.norec{color:#4a4a56;font-weight:700;font-style:italic}
 .hmkey{display:flex;gap:12px;flex-wrap:wrap;margin-top:9px;font-size:10.5px;font-weight:700;color:var(--gray2)}
 .hmkey i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px}
 
