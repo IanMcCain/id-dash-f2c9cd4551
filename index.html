@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 215 (2026-08-02)">
+<meta name="build" content="v21 build 216 (2026-08-02)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -730,20 +730,30 @@ header{ background:rgba(0,0,0,.82); border-bottom:1px solid rgba(255,255,255,.07
    cluster tightly and a continuous ramp separates neighbours by a few percent, which does
    not survive a phone screen. */
 
-/* Session load. Height is duration, dim is effort, colour is session type. */
+/* Session load. Height is duration, dim is effort, colour is session type.
+   THE COLOUR CLASSES ARE REDECLARED HERE ON PURPOSE. The heatmap's k-tourn, k-league, k-drill,
+   k-open and k-mix rules are scoped under .hmc, so an unscoped .slf inherited nothing and every
+   bar rendered fully transparent. Same hex values, declared where this element can use them.
+   Found by reading getComputedStyle in a real browser; the jsdom suite passed all 32 checks and
+   could not have seen it, because jsdom does no layout and no cascade resolution. */
+.slf.k-open,.slf.k-play{background:#2ee66f}
+.slf.k-drill{background:#38bdf8}
+.slf.k-league{background:#a78bfa}
+.slf.k-tourn{background:#ffd60a}
+/* vertical split on a vertical bar, not the heatmap's 135deg, which reads as a smear at 16px wide */
+.slf.k-mix{background:linear-gradient(180deg,#38bdf8 0 50%,#2ee66f 50% 100%)}
 .slwrap{display:flex;gap:4px;align-items:flex-end;height:52px;margin-top:4px}
 .slb{flex:1 1 0;min-width:0;height:100%;display:flex;align-items:flex-end;border-radius:5px;background:#20202a;overflow:hidden}
 .slf{width:100%;border-radius:5px;--sldim:0;position:relative}
 .slf::after{content:"";position:absolute;inset:0;border-radius:5px;background:rgba(14,14,18,var(--sldim))}
-.slaxis{display:flex;gap:4px;margin-top:5px}
-.slaxis span{flex:1 1 0;min-width:0;text-align:center;font-size:8.5px;font-weight:700;color:#4a4a56;overflow:hidden;white-space:nowrap}
-.slaxis span.mk{color:var(--gray2)}
+.slaxis{display:flex;justify-content:space-between;margin-top:6px}
+.slaxis span{font-size:9.5px;font-weight:700;color:var(--gray2);white-space:nowrap}
 .slnote{margin-top:9px;font-size:11.5px;line-height:1.5;color:var(--gray)}
 .slnote b{color:var(--fg,#fff)}
 
 /* Per habit 14 day strip. Wider label gutter than the heatmap, the names are long. */
 .hst .hmrow{margin-bottom:6px}
-.hst .hmwk{width:88px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:10px}
+.hst .hmwk{width:96px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:10px}
 .hst .hmcells{gap:3px}
 .hst .hmc{border-radius:4px}
 .hst .hmc.hit{background:var(--pk1)}
@@ -6046,11 +6056,13 @@ function pkLoadStrip(parent){
   });
   b.appendChild(wrap);
 
+  /* Three anchored labels, not one per bar. A 16px wide column clips "07/21" to "07/1", which is
+     worse than no label at all because it reads as a real date. */
   var ax=el("div","slaxis");
-  last.forEach(function(s,i){
-    var t=(i===0||i===last.length-1||i===Math.floor(last.length/2))?String(s.date).slice(5).replace("-","/"):"";
-    var sp=el("span",t?"mk":null,t); ax.appendChild(sp);
-  });
+  var fmt=function(d){ return String(d).slice(5).replace("-","/"); };
+  ax.appendChild(el("span",null,fmt(last[0].date)));
+  ax.appendChild(el("span",null,fmt(last[Math.floor(last.length/2)].date)));
+  ax.appendChild(el("span",null,fmt(last[last.length-1].date)));
   b.appendChild(ax);
 
   /* The sentence under it is the answer, not a caption. Weekly counts, not a total, because the
