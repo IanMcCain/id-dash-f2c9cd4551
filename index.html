@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 218 (2026-08-02)">
+<meta name="build" content="v21 build 219 (2026-08-02)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -3550,6 +3550,121 @@ function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]
         evidence:"The 07.23 launch timeline and your 08.02 word that it is fully staged.",
         undo:"Real estate tab, reopen the todo or edit the event."});
       state.meta.mig215_willis=true; save(true);
+  } }catch(e){}
+
+  /* ===== v21 build 219: TO DO LIST CLEANUP AND THE FIELDS THAT KEEP IT CLEAN =================
+     Ian, 08.02.2026: "the things to do list needs to be updated, I have checked a bunch of
+     those and some are kind of repetitive, or just make sure the daily agent checks those
+     every day and gets rid of checked ones and creates new ones, limit of 10."
+     Root cause analysis is in the file header. This is the one time cleanup plus the schema. */
+  try{ if(state.realEstate && Array.isArray(state.realEstate.todos) && !state.meta.mig219_todos){
+      var _T=state.realEstate.todos;
+      if(!state.archive||typeof state.archive!=="object") state.archive={};
+      if(!Array.isArray(state.archive.todosDone)) state.archive.todosDone=[];
+
+      /* NOTHING IS DELETED. A done item is a record of work, so it moves to the archive with
+         the reason it left the live list, per the preserve history rule. */
+      var _retire=function(id,reason){
+        var hit=_T.filter(function(t){return t&&t.id===id;})[0];
+        if(!hit) return;
+        _T=_T.filter(function(t){return !t||t.id!==id;});
+        state.archive.todosDone.push({id:hit.id,text:hit.text,done:!!hit.done,
+          retiredOn:"2026-08-02",reason:reason});
+      };
+
+      /* DONE, or dead because the thing it was about has happened. Each reason is evidence,
+         not a judgement: a date that has passed, a stage that has moved, a resolved question. */
+      _retire("ret-cynthia-listdate-0720","Done. The go live date is fixed at Thursday Aug 6, closed in build 215.");
+      _retire("ret-20260709-chad-launch","Dead. Chad Troester's just listed launch was July 9 and the deal is now Under Contract.");
+      _retire("ret-20260710-trip-coverage","Dead. It was coverage for the Tennessee trip, which ran July 17 to 20.");
+      _retire("ret-20260718-leadgen","Dead by date. It said Tuesday July 21, twelve days ago. The underlying need is real and survives as the sphere item.");
+      _retire("ret-spicer-appraisal","Dead. The Spicer appraisal was resolved on 07.29.2026. It is the reason the concurrent logging rule exists.");
+
+      /* DUPLICATES. Merged rather than both kept, and the survivor carries the better text. */
+      _retire("ret-20260719-sphere","Duplicate of ret-sphere-build-0720, same task created a day apart under the other id convention.");
+
+      var _set=function(id,fields){
+        var hit=_T.filter(function(t){return t&&t.id===id;})[0];
+        if(hit) for(var k in fields) hit[k]=fields[k];
+      };
+      /* The 07.13 flyer item overlapped BOTH neighbourhood items. Narrowed to the only
+         neighbourhood the other two do not cover rather than retired, because Cattail Creek is
+         a real gap and deleting it would lose a fact. */
+      _set("ret-20260713-justsold-flyers",{
+        text:"Create and hand out just sold flyers in Cattail Creek (the Michelle Miller home, sold in 3 days). Narrowed 08.02.2026: this used to also cover Chad Troester's neighbourhood, which is now the Walnut Creek Hills item.",
+        key:"flyer-cattailcreek", src:"Miller sale, neighbourhood not covered by another flyer item", exp:""});
+      _set("ret-sphere-build-0720",{
+        text:"Add 10 names to the sphere list with a quality and a cadence. It is at two people and nothing is entering the top of the funnel, which is the stated constraint on the 20 deal goal.",
+        key:"sphere-build-10", src:"realEstate.people count, 2 contacts against a 20 deal goal", exp:""});
+
+      /* THE THREE FIELDS THAT STOP THIS RECURRING.
+         key  a STABLE subject. Two runs that want the same thing produce the same key, so the
+              second one updates rather than appends. This is what "no duplicate" needed and
+              never had.
+         src  what grounds it. An item with no src should never have been created.
+         exp  the date it stops being true, empty when it has no natural end. An item past its
+              exp is retired automatically instead of sitting there for twelve days. */
+      var _meta={
+        "ret-cynthia-prep-0722":{key:"willis-golive-prep",src:"Willis listing goes live Thu Aug 6",exp:"2026-08-06"},
+        "ret-troester-flyer-build":{key:"flyer-build-troester",src:"Troester Under Contract, flyer half built",exp:""},
+        "ret-flyers-walnutcreekhills":{key:"flyer-walnutcreekhills",src:"Troester sale, blocked on flyer-build-troester",exp:""},
+        "ret-flyers-sugarcreek":{key:"flyer-sugarcreek",src:"Spicer sale, flyer finished and ready",exp:""},
+        "ret-rosecreek-couple":{key:"rosecreek-couple",src:"Active prospect, build site conversation",exp:""},
+        "ret-20260707-tysdal":{key:"tysdal-checkin",src:"Wants to list, timing maybe fall",exp:""},
+        "ret-20260707-evan":{key:"evan-buyer-search",src:"Buyer search 250k to 300k, end of 2026",exp:""}
+      };
+      Object.keys(_meta).forEach(function(id){ _set(id,_meta[id]); });
+
+      /* ONE NEW ITEM, and it is created because the evidence demands it rather than to reach a
+         number. Bruce O'Neil is the largest thing in the pipeline and finding him an open lot
+         roughly doubles Ian's take on him, $4,896 to $6,120 buyer side against $9,840 to
+         $15,300 both sides. That makes lot sourcing the highest value activity attached to him,
+         not a service detail. */
+      if(!_T.some(function(t){return t&&t.key==="bruce-lot-sourcing";})){
+        _T.push({id:"ret-20260802-bruce-lot",key:"bruce-lot-sourcing",done:false,due:"",
+          text:"Source lake lots in the $350k to $450k range for Bruce O'Neil. Finding an open lot means both sides rather than buyer side only, which is roughly double: $9,840 to $15,300 instead of $4,896 to $6,120 on the same build. None of the seven Blondo Point lots fit, that is an inland subdivision.",
+          src:"Bruce O'Neil, largest pipeline item, commission structure confirmed by Ian 08.02.2026"});
+      }
+
+      /* ORDER BY WHAT MATTERS, NOT BY WHEN IT WAS ADDED. Same logic the brief cards use: a hard
+         date first, then a blocker that gates other work, then value, then everything else. A
+         ten item list where nothing is first is the page problem again. */
+      var _order=["ret-cynthia-prep-0722","ret-troester-flyer-build","ret-20260802-bruce-lot",
+                  "ret-flyers-walnutcreekhills","ret-flyers-sugarcreek","ret-sphere-build-0720",
+                  "ret-rosecreek-couple","ret-20260707-tysdal","ret-20260707-evan",
+                  "ret-20260713-justsold-flyers"];
+      _T.sort(function(a,b){
+        var ia=_order.indexOf(a&&a.id), ib=_order.indexOf(b&&b.id);
+        if(ia<0) ia=999; if(ib<0) ib=999; return ia-ib;
+      });
+
+      state.realEstate.todos=_T;
+      if(!Array.isArray(state.autoLog)) state.autoLog=[];
+      if(!state.autoLog.some(function(x){return x&&x.id==="auto-20260802-todos";})){
+        state.autoLog.unshift({id:"auto-20260802-todos",date:"2026-08-02",area:"Real estate",
+          what:"Cleaned the to do list from 15 items to 10, archived 6 and added 1",
+          why:"You said a bunch were checked or repetitive. Five were dead (a July 21 lead gen block, coverage for a trip that ended July 20, Chad's July 9 launch, the resolved Spicer appraisal, and the Willis date which is now fixed) and one was a straight duplicate of the sphere item.",
+          evidence:"Nothing was deleted. All six are in the archive with the reason each one left. The list is now ordered by what matters rather than when it was added.",
+          undo:"Real estate tab, or ask Claude to restore any archived item by name."});
+      }
+      state.meta.mig219_todos=true; save(true);
+  } }catch(e){}
+
+  /* v21 build 219: EXPIRY SWEEP, runs every load, not a one time migration.
+     An item past its `exp` date is retired automatically. This is the piece that stops the list
+     silently refilling with things that stopped being true, which is how "Block two lead gen
+     hours Tuesday July 21" survived twelve days past that Tuesday. Idempotent and cheap: it
+     reads a field already in memory and touches nothing without an exp. */
+  try{ if(state.realEstate && Array.isArray(state.realEstate.todos)){
+      if(!state.archive||typeof state.archive!=="object") state.archive={};
+      if(!Array.isArray(state.archive.todosDone)) state.archive.todosDone=[];
+      var _exp=state.realEstate.todos.filter(function(t){ return t&&t.exp&&t.exp<TODAY&&!t.done; });
+      if(_exp.length){
+        _exp.forEach(function(t){ state.archive.todosDone.push({id:t.id,text:t.text,done:false,
+          retiredOn:TODAY,reason:"Expired. Its date, "+t.exp+", has passed."}); });
+        state.realEstate.todos=state.realEstate.todos.filter(function(t){ return !(t&&t.exp&&t.exp<TODAY&&!t.done); });
+        save(true);
+      }
   } }catch(e){}
   /* THE SERVE PROTOCOL RUNS EVERY LOAD, UNGUARDED, AND THAT IS NOT AN OVERSIGHT.
      It was written as part of the one shot block above and the verification caught it vanishing on
