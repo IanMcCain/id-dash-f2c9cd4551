@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 216 (2026-08-02)">
+<meta name="build" content="v21 build 217 (2026-08-02)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -765,6 +765,11 @@ header{ background:rgba(0,0,0,.82); border-bottom:1px solid rgba(255,255,255,.07
 .hst .hmn{width:38px}
 .hst .hmn.ok{color:var(--pk1)}
 .hst .hmn.warn{color:#ffd60a}
+.hmc.future.planned{border-color:#4c4c5c}
+.hmrow.cur .hmwk{color:var(--pk2)}
+.hmrow.ahead .hmwk{color:#5a5a68}
+.hmn.wip{color:var(--gray2)}
+.hmn.ahead{color:#4a4a56;font-weight:700;font-style:italic;font-size:9.5px}
 </style>
 </head>
 <body>
@@ -4555,19 +4560,39 @@ function buildIanHome(v){ const workout=daySplit(DOW); const reTop=firstUndone(s
       var dow=today.getDay(); var mondayOffset=(dow===0?6:dow-1);
       var curMon=new Date(today); curMon.setDate(curMon.getDate()-mondayOffset);
       var TOURN=todayKey(new Date("2026-08-23T00:00:00"));
-      for(var w=0; w<8; w++){
-        var ws=new Date(curMon); ws.setDate(ws.getDate()+(w-7)*7);
+      /* ===== v21 build 217: FOUR WEEK WINDOW, TWO BACK TO ONE AHEAD (Ian, 08.02.2026) =========
+         The grid ran EIGHT weeks backwards and stopped at the current week. Two problems with
+         that shape. It reached into June where no record exists, so five of the eight rows read
+         n/a and the row he actually cares about was one line in a wall of nothing. And it drew
+         only the past, when half of what he does with this surface is look at what is coming.
+         Now: -2, -1, current with today ringed, and +1. Four rows, all of them load bearing. */
+      for(var w=-2; w<=1; w++){
+        var ws=new Date(curMon); ws.setDate(ws.getDate()+w*7);
         var we=new Date(ws); we.setDate(we.getDate()+6);
         var isT=(todayKey(ws)<=TOURN && TOURN<=todayKey(we));
-        var row=el("div","hmrow"+(isT?" tourn":""));
-        var lab=el("div","hmwk"); lab.textContent=(ws.getMonth()+1)+"/"+ws.getDate(); row.appendChild(lab);
+        /* PRE HISTORY ROWS ARE NOT DRAWN. Replaces the build 214 n/a cell, which was the right
+           answer for an eight week window reaching back before any data existed and is the wrong
+           answer now. If we have no records for a week, the honest thing is not to draw a row
+           about it. Nothing is hidden: the first record date is printed under the grid. */
+        var _preHist=(!!_firstRec && todayKey(we)<_firstRec);
+        if(_preHist) continue;
+        var _isCur=(w===0), _isAhead=(w===1);
+        var row=el("div","hmrow"+(isT?" tourn":"")+(_isCur?" cur":"")+(_isAhead?" ahead":""));
+        var lab=el("div","hmwk"); lab.textContent=_isCur?"This wk":(_isAhead?"Next wk":((ws.getMonth()+1)+"/"+ws.getDate())); row.appendChild(lab);
         var cells=el("div","hmcells"); var n=0;
         for(var i2=0;i2<7;i2++){
           var dd=new Date(ws); dd.setDate(dd.getDate()+i2); var k=todayKey(dd);
           var kindCls=pkDays[k]||null, hasGy=!!gyDays[k];
           var future=(k>tk);
           var cls="hmc";
-          if(future && !kindCls && !hasGy){ cls+=" future"; }
+          /* An upcoming day is drawn from the PLAN, not from data, and it must never be
+             confusable with a day that happened. Dashed outline throughout; a day the split
+             gives real work to gets a slightly stronger outline than a rest day, so the week
+             ahead reads as a shape rather than seven identical boxes. */
+          if(future && !kindCls && !hasGy){
+            cls+=" future";
+            try{ var _pd=daySplit(dd.getDay()); if(_pd && _pd.exercises && _pd.exercises.length>2) cls+=" planned"; }catch(e){}
+          }
           else if(kindCls){ cls+=" "+kindCls+(hasGy?" gymdot":""); }
           else if(hasGy){ cls+=" gymonly"; }
           if(k===tk) cls+=" today";
@@ -4580,11 +4605,25 @@ function buildIanHome(v){ const workout=daySplit(DOW); const reTop=firstUndone(s
           cells.appendChild(cell);
         }
         row.appendChild(cells);
-        /* build 214: no records at all before this week ended, so say so instead of claiming zero */
-        var _preHist=(!!_firstRec && todayKey(we)<_firstRec);
-        var cnt=el("div","hmn"+(_preHist?" norec":(n>=5?" hit":"")));
-        cnt.textContent=_preHist?"n/a":(n+"/6");
-        if(_preHist){ row.title="No gym or pickleball records exist for this week. Tracking starts "+fmtShort(_firstRec)+"."; }
+        /* THE COUNT IS AGAINST THE FULL WEEK, NEVER AGAINST DAYS ELAPSED. Decided 08.02.2026.
+           The target is 5 to 6 SESSIONS A WEEK, a weekly quantity, so the denominator is the week.
+           Dividing by days elapsed would make the same number mean something different every day
+           and turn a normal Tuesday into an apparent miss, which is the failure mode the whole
+           surface exists to avoid. The current week is instead marked IN PROGRESS: its count is
+           never coloured as a shortfall while the week is still running, because 2 of 6 on a
+           Tuesday is not a fact about his training, it is a fact about the calendar.
+           THE WEEK AHEAD HAS NO COUNT AT ALL. Zero out of six for a week that has not happened is
+           a claim about the future, and the app does not get to make one. It reads "ahead". */
+        var cnt;
+        if(_isAhead){
+          cnt=el("div","hmn ahead"); cnt.textContent="ahead";
+          row.title="The week ahead. Nothing has happened yet, so there is no count.";
+        } else if(_isCur){
+          cnt=el("div","hmn"+(n>=5?" hit":" wip")); cnt.textContent=n+"/6";
+          row.title="This week so far, "+n+" of a 5 to 6 target. Counted against the full week, not days elapsed.";
+        } else {
+          cnt=el("div","hmn"+(n>=5?" hit":"")); cnt.textContent=n+"/6";
+        }
         row.appendChild(cnt);
         b.appendChild(row);
       }
