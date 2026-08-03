@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 217 (2026-08-02)">
+<meta name="build" content="v21 build 218 (2026-08-02)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -4578,7 +4578,7 @@ function buildIanHome(v){ const workout=daySplit(DOW); const reTop=firstUndone(s
         if(_preHist) continue;
         var _isCur=(w===0), _isAhead=(w===1);
         var row=el("div","hmrow"+(isT?" tourn":"")+(_isCur?" cur":"")+(_isAhead?" ahead":""));
-        var lab=el("div","hmwk"); lab.textContent=_isCur?"This wk":(_isAhead?"Next wk":((ws.getMonth()+1)+"/"+ws.getDate())); row.appendChild(lab);
+        var lab=el("div","hmwk"); lab.textContent=_isCur?"This":(_isAhead?"Next":((ws.getMonth()+1)+"/"+ws.getDate())); row.appendChild(lab);
         var cells=el("div","hmcells"); var n=0;
         for(var i2=0;i2<7;i2++){
           var dd=new Date(ws); dd.setDate(dd.getDate()+i2); var k=todayKey(dd);
@@ -4640,7 +4640,7 @@ function buildIanHome(v){ const workout=daySplit(DOW); const reTop=firstUndone(s
       /* build 214: the count is gym OR pickleball, and a week with no records says n/a rather than
          zero. Both stated on screen, because a number whose rule is not visible gets misread. */
       if(_firstRec){ var _fn=el("div","small dim"); _fn.style.cssText="margin-top:8px;line-height:1.45";
-        _fn.textContent="A day counts if you played or lifted. Weeks marked n/a have no records at all, tracking starts "+fmtShort(_firstRec)+", so they are not zero weeks.";
+        _fn.textContent="A day counts if you played or lifted. Four weeks: two back, this week with today ringed, and the week ahead. This week counts against the FULL week, not days elapsed, so a low number mid week is the calendar rather than a miss. The week ahead has no count because it has not happened. Weeks with no records at all are not drawn rather than shown as zero; tracking starts Jul 6."+fmtShort(_firstRec)+", so they are not zero weeks.";
         b.appendChild(_fn); }
       hh.appendChild(cardEl);
     },"📊","green"); };
