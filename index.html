@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 219 (2026-08-02)">
+<meta name="build" content="v21 build 220 (2026-08-03)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -855,7 +855,7 @@ const SEED_VERSION=13;
    only works on a literal string, not on anything computed at runtime. Editing the meta tag alone
    is now a complete build bump. The fallback below only fires if the tag is missing entirely. */
 const APP_BUILD=(function(){ try{ var m=document.querySelector('meta[name="build"]'); var c=m&&m.getAttribute("content"); return (c&&c.trim())||"v21 (build stamp missing)"; }catch(e){ return "v21 (build stamp missing)"; } })();
-const WATER_GOAL=10; 
+const WATER_GOAL=9; /* build 220: stage 2 water detector action 08.03.2026, was 10, bounds never below 8 */ 
 const uid=()=>Math.random().toString(36).slice(2,9);
 function todayKey(d){ d=d||new Date(); const p=n=>String(n).padStart(2,"0"); return d.getFullYear()+"-"+p(d.getMonth()+1)+"-"+p(d.getDate()); }
 /* ===== v21 build 214: THE DATE IS NOW LIVE, NOT A STAMP TAKEN AT LOAD =======================
@@ -3953,6 +3953,85 @@ function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]
         _e.note=_e.note.replace(_WRONG,_RIGHT);
       }
       state.meta.mig214_gymnote0802=true; save(true);
+  } }catch(e){}
+
+
+  /* ===== v21 build 220: the 6am run, 08.03.2026 ================================================
+     Daily content for Aug 3, the water stage 2 action (WATER_GOAL const 10 to 9 near line 858),
+     to do maintenance, and one workOn dedupe (separate block below, after the last workOn writer).
+     Date keyed content is add only by date key. Todos retire to state.archive.todosDone with a
+     reason each. Guard flag mig220_daily lives in SAVED STATE ONLY, never in seedIan().meta. */
+  try{ if(profile==="ian"){
+      var T220="2026-08-03";
+      if(!state.briefing) state.briefing={forIan:{},done:{}};
+      if(!state.briefing.forIan) state.briefing.forIan={};
+      if(!state.briefing.forIan[T220]) state.briefing.forIan[T220]=[
+        {"id":"brief-20260803-1","type":"Real estate","title":"Spicer closes today, 18734 Olive","note":"Closing day on the $474,900 Sugar Creek sale, about $2,906 to you on Chris's seller side. Once it records, the Sugar Creek just sold flyer walk is live and the flyer is already print ready. Source: app pipeline, 08.02 export.","why":"Because it closes today, seller side","url":"","done":false},
+        {"id":"brief-20260803-2","type":"Real estate","title":"Willis goes live Thursday, 3 days out","note":"10218 Spyglass at $619,900, staged and confirmed for Thursday morning. Wednesday is the final check: MLS entry, photos, syndication, and the just listed push queued. Target under contract by Aug 20. Source: app pipeline, 08.02 export.","why":"Because the list date is locked to Aug 6","url":"","done":false},
+        {"id":"brief-20260803-3","type":"Pickleball","title":"Stack test with Dylan before Sunday","note":"The Aug 9 stacking call needs live games both ways and none are on record. Book Dylan this week, start with a half stack on the return only, and judge it on middle coverage and blown switches. Source: pk-goal-stack, set 07.20.","why":"Because pk-goal-stack decides Aug 9 and no stacked games are logged","url":"https://www.youtube.com/watch?v=dXU16wHK8iE","done":false}];
+      if(!state.futureIdeas||typeof state.futureIdeas!=="object") state.futureIdeas={};
+      if(!state.futureIdeas[T220]) state.futureIdeas[T220]=[
+        {"id":"fi-20260803-1","text":"Pair the Spicer closing with the Sugar Creek flyer walk this week and shoot one just closed post covering both, one trip, two pieces.","url":""},
+        {"id":"fi-20260803-2","text":"Thirty second just listed reel at 10218 Spyglass on Thursday morning, shot while you are there for go live anyway.","url":""},
+        {"id":"fi-20260803-3","text":"Ask Ace about a 30 minute club ball machine block before Friday open play, rapid chest feeds for the speed up initiation work.","url":""},
+        {"id":"fi-20260803-4","text":"Confirm Fall Cup registration with Dylan before Aug 23 so the Sept 12 bracket does not fill while you are heads down on APC.","url":""}];
+      if(!state.quickWin) state.quickWin={items:[],done:{},picks:{}};
+      if(!state.quickWin.picks) state.quickWin.picks={};
+      if(!state.quickWin.picks[T220]) state.quickWin.picks[T220]=["Text the Spicers a congrats when it records today and ask for the review while it is warm.","Film tonight from behind your own baseline, return depth finally becomes gradable and your hands number may already be wrong in your favour."];
+      if(state.pickleball){
+        var _p220=state.pickleball;
+        if(!_p220.videoRec||typeof _p220.videoRec!=="object") _p220.videoRec={};
+        if(!_p220.videoRec[T220]) _p220.videoRec[T220]={"title":"Stacking 101, Everything You Need To Know About Stacking (Briones Pickleball)","url":"https://www.youtube.com/watch?v=dXU16wHK8iE","note":"Watch before the Dylan session. The Aug 9 call needs live games both ways, and this is the how. Start with a half stack on the return only. Source: knowledge base, pulled 07.19.2026."};
+        if(!_p220.research||typeof _p220.research!=="object") _p220.research={};
+        if(!_p220.research[T220]) _p220.research[T220]={"title":"Neutral dinking wins at 3.5 and loses at 4.5","text":"The 07.22 film synthesis was blunt, you rally and do not construct, a wall not a finisher, and the 07.25 tournament film counted zero speed ups all day. At 4.5 nobody hands you the error. Move them with the dink and take the first ball above net height. Your 08.01 note says the hands are finally quick enough to try it.","url":"","source":"Film studies 07.22 and 07.25 plus the 07.29 regrade, hands 22 of 60"};
+        if(!_p220.coachRec||typeof _p220.coachRec!=="object") _p220.coachRec={};
+        if(!_p220.coachRec[T220]) _p220.coachRec[T220]={"title":"Pull the trigger first","note":"This week is about initiating, dink to move them, then attack the first ball above net height. The serve is holding with the pre play drill, so the focus moves to the finish. Stack test with Dylan before Sunday decides Aug 9."};
+        if(!_p220.coachBullets||typeof _p220.coachBullets!=="object") _p220.coachBullets={};
+        if(!_p220.coachBullets[T220]) _p220.coachBullets[T220]=[
+          "Pull the trigger first. Move them with the dink, then attack the first ball above net height. Both 07.22 film studies and the 07.25 tournament film agree you construct nothing, and your own 08.01 note says your hands are finally quick enough to back it.",
+          "Keep the pre play serve drill, ten per side, every session including tonight. 07.31 and 08.01 are the only sessions where the serve was good from the start, and both ran it.",
+          "Drives are carrying long with the overgrip off, same swing, lighter head. Aim the baseline, not the back fence, and give it two or three sessions before deciding the grip goes back on. The 08.02 session was the first sign it is settling.",
+          "Aug 23 is 20 days out. Self assessed 3.5, unrated, and the job is playing 3.7 to 3.9 on the day so the first rating reflects it. What moves it in 20 days is drilling and the stack test, not more open play volume."];
+        /* refine the partner speed up drill toward initiation. Set by id, every load, idempotent,
+           his check off state lives elsewhere and survives. */
+        if(Array.isArray(_p220.drills)){ _p220.drills.forEach(function(d){ if(d&&d.id==="pkd-p-speedup"){ d.text="Speed up initiation game with Dylan, kitchen line. A point only counts if it is won off YOUR speed up or your counter of theirs. Pick the ball at net height or above, go body or backhand shoulder, paddle straight back to center."; } }); }
+      }
+      if(state.meta && !state.meta.mig220_daily){
+        if(!state.archive||typeof state.archive!=="object") state.archive={};
+        if(!Array.isArray(state.archive.todosDone)) state.archive.todosDone=[];
+        if(state.realEstate&&Array.isArray(state.realEstate.todos)){
+          var _ret220={"ret-cynthia-prep-0722":"Checked. Willis go live content prepped, the go live day item replaces it.","ret-troester-flyer-build":"Checked. Flyer built and handed out.","ret-flyers-walnutcreekhills":"Checked. Walk done.","ret-sphere-build-0720":"Checked by Ian.","ret-rosecreek-couple":"Checked. Outreach made.","ret-20260713-justsold-flyers":"Checked. Cattail Creek covered."};
+          state.realEstate.todos=state.realEstate.todos.filter(function(t){
+            if(t&&_ret220[t.id]&&t.done){ if(!state.archive.todosDone.some(function(x){return x&&x.id===t.id;})){ state.archive.todosDone.push({id:t.id,text:t.text,done:true,retiredOn:T220,reason:_ret220[t.id]}); } return false; }
+            return true; });
+          var _up220=function(item){ var ex=state.realEstate.todos.filter(function(t){return t&&t.key===item.key;}); if(ex.length){ ex[0].text=item.text; ex[0].exp=item.exp; ex[0].src=item.src; } else { state.realEstate.todos.push(item); } };
+          _up220({id:"ret-20260803-willis-live",key:"willis-golive-day",text:"Willis goes live Thursday morning. Wednesday final check, MLS entry, photos, syndication, just listed push queued.",done:false,exp:"2026-08-06",src:"Willis go live locked Aug 6"});
+          _up220({id:"ret-20260803-thacker-prep",key:"thacker-list-prep",text:"Thacker listing prep for the Aug 13 target at 4911 S 131st, photos and copy this week.",done:false,exp:"2026-08-13",src:"Thacker list target Aug 13"});
+          _up220({id:"ret-20260803-sphere",key:"sphere-reachout",text:"Text Mason, and work one open lead, the Zillow 132nd St ranch inquiry or the Trails open house sign in.",done:false,exp:"",src:"people.last, Mason never contacted, 2 leads unworked"});
+          state.realEstate.todos.forEach(function(t){ if(t&&t.id==="ret-flyers-sugarcreek"){ t.text="Sugar Creek just sold flyer walk, unblocked now the Spicer closing records today. Flyer is print ready."; t.src="Spicer closed Aug 3, flyer ready"; } });
+        }
+        if(state.context&&state.context.dailyLog&&state.context.dailyLog["2026-07-28"]&&!state.context.dailyLog["2026-07-28"].claudeAction){ state.context.dailyLog["2026-07-28"].claudeAction="Read 08.03, soreness and the 7-11 drill note folded into coaching context, no action needed."; }
+        if(!Array.isArray(state.autoLog)) state.autoLog=[];
+        if(!state.autoLog.some(function(x){return x&&x.id==="auto-20260803-water";})){
+          state.autoLog.unshift({id:"auto-20260803-water",date:"2026-08-03",area:"Gym",
+            what:"Lowered the daily water target from 10 cups to 9",
+            why:"Second fire on the water detector. 6 of the last 7 days under target, average 7.9, and the earlier reminder change did not hold it, which reads as the target set wrong rather than the prompting.",
+            evidence:"07-27 10, 07-28 7, 07-29 8, 07-30 7, 07-31 8, 08-01 7, 08-02 8. Bounds, never below 8, one cup a week at most, and it goes back up when you hold it.",
+            undo:"Tell Claude to put the target back to 10."});
+        }
+        if(state.realEstate&&Array.isArray(state.realEstate.todos)){
+          var _rank220={"willis-golive-day":1,"flyer-sugarcreek":2,"thacker-list-prep":3,"bruce-lot-sourcing":4,"sphere-reachout":5,"tysdal-checkin":6,"evan-buyer-search":7};
+          state.realEstate.todos.sort(function(a,b){ return (_rank220[(a&&a.key)||""]||99)-(_rank220[(b&&b.key)||""]||99); });
+        }
+        state.meta.mig220_daily=true; save(true);
+      }
+  } }catch(e){}
+  /* v21 build 220: workOn dedupe. Unguarded and idempotent by content check because it competes
+     with the build 185 whole array writer and the build 208 unshift above it. Removes the
+     standalone raised heart rate serve item, which now lives inside the pre play drill line. */
+  try{ if(state.pickleball&&Array.isArray(state.pickleball.workOn)){
+      var _w220=state.pickleball.workOn.filter(function(s){ return !(typeof s==="string"&&s.indexOf("Finish serve practice at a raised heart rate")===0); });
+      if(_w220.length!==state.pickleball.workOn.length){ state.pickleball.workOn=_w220; save(true); }
   } }catch(e){}
 
   focusObj.running=false; try{clearInterval(focusObj.timerId);}catch(e){} focusObj.remaining=null;
