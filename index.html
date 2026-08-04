@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 221 (2026-08-03)">
+<meta name="build" content="v21 build 222 (2026-08-04)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -4065,6 +4065,33 @@ function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]
       }
       state.meta.mig221_depth=true; save(true);
   } }catch(e){}
+
+  /* ===== v21 build 222: TOMBSTONES. Why the archived to dos came back ==========================
+     Build 219 archived six dead items. Ian's 08-03 export had all six back, 18 open where 7 was
+     right. The cause: SIX UNGUARDED EVERY LOAD BLOCKS push those ids back if missing, written
+     months ago as "ensure this exists", and two also sit in seedIan. A ONE TIME GUARDED REMOVAL
+     CANNOT BEAT AN UNGUARDED EVERY LOAD RE ADD. The removal ran once, the re adders run on every
+     load, last writer wins, and they were later in the file.
+
+     A CLASS OF BUG, NOT SIX INSTANCES. Any future cleanup of any field hits the same shape, so
+     the fix is a tombstone list rather than six surgical edits. One unguarded sweep, positioned
+     after every re adder AND after deepMergeDefaults, removes tombstoned ids on every load. That
+     defeats the existing six, the two seed copies, and any re adder added later, none of which
+     surgical edits would cover. Nothing is deleted: the items are in archive.todosDone with the
+     reason each one left. Ian can still add a new to do, it gets a new id and is untouched. */
+  try{ if(!state.meta) state.meta={};
+      if(!Array.isArray(state.meta.retiredTodoIds)) state.meta.retiredTodoIds=[];
+      var _TOMB=["ret-20260718-leadgen", "ret-20260710-trip-coverage", "ret-20260709-chad-launch", "ret-spicer-appraisal", "ret-cynthia-listdate-0720", "ret-20260719-sphere"];
+      _TOMB.forEach(function(id){ if(state.meta.retiredTodoIds.indexOf(id)<0) state.meta.retiredTodoIds.push(id); });
+      ((state.archive&&state.archive.todosDone)||[]).forEach(function(a){
+        if(a&&a.id&&state.meta.retiredTodoIds.indexOf(a.id)<0) state.meta.retiredTodoIds.push(a.id); });
+      if(state.realEstate && Array.isArray(state.realEstate.todos)){
+        var _n=state.realEstate.todos.length;
+        state.realEstate.todos=state.realEstate.todos.filter(function(t){
+          return !(t && state.meta.retiredTodoIds.indexOf(t.id)>=0); });
+        if(state.realEstate.todos.length!==_n) save(true);
+      }
+  }catch(e){}
   /* v21 build 220: workOn dedupe. Unguarded and idempotent by content check because it competes
      with the build 185 whole array writer and the build 208 unshift above it. Removes the
      standalone raised heart rate serve item, which now lives inside the pre play drill line. */
