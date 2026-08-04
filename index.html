@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 220 (2026-08-03)">
+<meta name="build" content="v21 build 221 (2026-08-03)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -4025,6 +4025,45 @@ function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]
         }
         state.meta.mig220_daily=true; save(true);
       }
+  } }catch(e){}
+
+  /* ===== v21 build 221: THE 08.03 SESSION =====================================================
+     Logged to BRAIN on 08.03 and never shipped to the app, which is why Ian could not see it.
+     Session records are what he looks at, so this is the copy that matters. Idempotent by id. */
+  try{ if(state.pickleball && Array.isArray(state.pickleball.sessions) && !state.meta.mig221_pk0803){
+      if(!state.pickleball.sessions.some(function(x){return x&&x.id==="pk-20260803-openplay";})){
+        state.pickleball.sessions.push({
+          id:"pk-20260803-openplay", date:"2026-08-03", kind:"Open play", venue:"Omaha",
+          duration:"2h 38m 8s", calories:1717, activeCalories:1469,
+          avgHr:129, maxHr:177, minHr:77, effort:9,
+          note:"Open play, Omaha, 4:42 to 7:20 PM, 2:38:08. Effort 9 of 10, All Out. From Apple Watch. No footage, so this is a session log and it carries no rating change. HARDEST SESSION ON RECORD: effort 9 is his highest ever logged and 177 is his highest peak HR. The volume and the intensity are there, the gap is technical rather than effort. SELF REPORT, 08.03.2026, in Ian's words. Evidence class SELF REPORT: recorded and tracked, weighed against footage, and it does NOT move a rating on its own. \"open play session, did a bunch of doubles, I would say it went well. I didn't get a lot of dinks. My serves felt really good for the most part. My drives felt pretty good for the most part. Drops: I need to be doing more drops and my drops were not good. They weren't horrible but I need to be more consistent with them. I'm going a little bit long on them and they're just hammering them down on me when I do them. My dinks when I did do them were good but I didn't do a lot of dinks in these lower levels. Every ball is pretty easy to speed up or slam down so a lot of the time there isn't really good reasoning to dink. When there is I am going for it. My goal is to go for more drops and more dinks in my next open play session. This session was also not with Dylan and I need to get more sessions in with Dylan, he just got a different schedule than me.\" READ: the long drop is the SECOND sighting of the grip change depth effect, after 08.01, from a different session and a different shot. Serves and drives good, drops long, so it is the shots needing a soft precise landing that are overshooting. It has now cost points rather than being cosmetic. Depth calibration is the number one technical item. One more session, then a thin grip goes back on. LEVEL: he is right that at this level there is often no good reason to dink, and his shot selection is correct. The consequence is that he cannot develop the soft game where the hard one goes unpunished, so dinks good here is weakly evidenced and drops not good is the strongest signal in the report."
+        });
+      }
+      /* NEXT SESSION FOCUS, SET FROM HIS OWN WORDS. When Ian names his own focus it WINS over
+         anything derived from the film studies, so this is his sentence rather than a rewrite. */
+      if(!state.pickleball.coachRec||typeof state.pickleball.coachRec!=="object") state.pickleball.coachRec={};
+      state.pickleball.coachRec["2026-08-03"]={
+        title:"Your call: more drops and more dinks next open play",
+        note:"Your goal, in your words, and it is the right one. The drop is the failing shot and the dink is the underdeveloped one, and going for them deliberately is the only way to get reps at a level that does not demand them. Count the drops rather than judging them by feel: while the depth is still off from the grip change, a drop that gets hammered still tells you something."};
+      state.meta.mig221_pk0803=true; save(true);
+  } }catch(e){}
+
+  /* v21 build 221: depth calibration onto the Work on list, because it is now the number one
+     technical item and it has a decision date rather than being an open note. */
+  try{ if(state.pickleball && Array.isArray(state.pickleball.workOn) && !state.meta.mig221_depth){
+      if(!state.pickleball.workOn.some(function(x){return x&&String(x.id||"")==="wo-depth-grip";})){
+        state.pickleball.workOn.unshift({id:"wo-depth-grip",
+          text:"Drop and dink DEPTH after the grip change. Same swing, less intent, aim the top of the net and the front of the kitchen. Second sighting on 08.03 and it is now costing points. One more session, then a thin grip goes back on."});
+      }
+      if(!Array.isArray(state.autoLog)) state.autoLog=[];
+      if(!state.autoLog.some(function(x){return x&&x.id==="auto-20260803-pk";})){
+        state.autoLog.unshift({id:"auto-20260803-pk",date:"2026-08-03",area:"Pickleball",
+          what:"Added Monday's session, set your next session focus, and put drop depth at the top of Work on",
+          why:"Your drops going long is the second sighting of the grip change depth effect, after 08.01, and this time it cost you points rather than being cosmetic.",
+          evidence:"Serves and drives good, drops long. The shots needing a soft precise landing are the ones overshooting, which is what taking weight off the handle end does to touch. One more session, then a thin grip goes back on.",
+          undo:"Pickleball tab, edit or remove the Work on item."});
+      }
+      state.meta.mig221_depth=true; save(true);
   } }catch(e){}
   /* v21 build 220: workOn dedupe. Unguarded and idempotent by content check because it competes
      with the build 185 whole array writer and the build 208 unshift above it. Removes the
