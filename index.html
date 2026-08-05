@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 222 (2026-08-04)">
+<meta name="build" content="v21 build 223 (2026-08-04)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -4064,6 +4064,58 @@ function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]
           undo:"Pickleball tab, edit or remove the Work on item."});
       }
       state.meta.mig221_depth=true; save(true);
+  } }catch(e){}
+
+  /* ===== v21 build 223: THE 08.04 SESSION, AND THREE THINGS THAT OUTRANK IT =================== */
+  try{ if(state.pickleball && Array.isArray(state.pickleball.sessions) && !state.meta.mig223_pk0804){
+      if(!state.pickleball.sessions.some(function(x){return x&&x.id==="pk-20260804-openplay";})){
+        state.pickleball.sessions.push({
+          id:"pk-20260804-openplay", date:"2026-08-04", kind:"Open play", venue:"Omaha",
+          duration:"1h 48m 20s", calories:1123, activeCalories:954,
+          avgHr:122, maxHr:172, minHr:72, effort:8,
+          note:"Open play doubles, Omaha, 5:51 to 7:39 PM, 1:48:20. Effort 8 of 10, Hard. From Apple Watch. No footage, so this is a session log and it carries no rating change. He rates the whole session 80 to 85 percent himself. SELF REPORT, 08.04.2026, in Ian's words. Evidence class SELF REPORT: recorded and tracked, weighed against footage, and it does NOT move a rating on its own. \"felt amazing actually, felt great. My drives were pretty good, could have been a little better, drives are not my strong point. Serves were pretty good, I had a few errors but still improving. My hands were decent on the kitchen line but I would panic every time somebody's about to slam the ball on me and that's mostly a mental thing. My dinks were good when I did them. My drops were not great, actually didn't get to do any drops or any good ones at that, but I also wasn't centering on drops, I was going for a lot more drives than I should have been. There are some chances where I should be doing drops and I didn't, and I just think I need to get some more drop practice in or I need to do it on a day where I drill. I want to go back tomorrow but it'll be with Bianca so it'll be a light day, I aim to go for drops tomorrow. Overall today I would say it was like 80 to 85 percent. My resets were good, my drives were decent, my serves were good, my drops were not there, my dinks were good. Overall I felt like when I play calm I play a little bit better. If I play relaxed but still aggressive I play better than if I'm upset and trying to go for everything.\" READ, and the log entry is the least of it. 1. HE DID NOT DO HIS OWN FOCUS AND HE SAW IT. Yesterday he set more drops and more dinks. Today he took drives instead: \"I wasn't centering on drops, I was going for a lot more drives than I should have been.\" That is not a lapse to soften, it is the most useful line in the report, because it RECLASSIFIES the drop. The shot is not failing, it is not being CHOSEN. That is a decision problem, not a technique problem, and it has a different fix. His own answer is the right one: drill days. You cannot practise shot selection in open play where the easy option keeps working, which is the same trap he identified about lower levels on 08.03. 2. THE PANIC REFRAMES HANDS. \"I would panic every time somebody's about to slam the ball on me and that's mostly a mental thing.\" Three prior sources said he never initiates and cannot absorb pace. This is not a fourth observation, it is the MECHANISM behind the other three: anticipation and reaction under threat, not technique. Hand speed drills do not fix a freeze. Exposure to incoming pace under control does. 3. CALM BEATS FORCING. \"When I play calm I play a little bit better. If I play relaxed but still aggressive I play better than if I'm upset and trying to go for everything.\" His own self regulation finding, tracked from today at pickleball.mindset."
+        });
+      }
+
+      /* NEXT SESSION FOCUS: DROPS AGAIN, and the tension is stated rather than hidden.
+         He plans to play tomorrow with Bianca, light and social. That is a poor environment to
+         practise drops for exactly the reason he identified himself on 08.03: where the hard ball
+         is never punished, the soft shot is optional and he will drift back to drives. Saying so
+         is not discouragement, it is the difference between a focus he can hold and one he will
+         abandon again without noticing. Attempting them there still beats not attempting them. */
+      if(!state.pickleball.coachRec||typeof state.pickleball.coachRec!=="object") state.pickleball.coachRec={};
+      state.pickleball.coachRec["2026-08-04"]={
+        title:"Drops again, and this time count them",
+        note:"You set drops yesterday and took drives instead, and you caught it yourself. That is the finding: the drop is not failing, it is not getting chosen. Tomorrow with Bianca is light and social, which is a weak place to practise drops for the same reason you named about lower levels, so make it mechanical rather than intentional. Pick a number before you start, ten drops, and count them out loud in your head. A counted drop that gets attacked is still a rep. An uncounted session is where the drive wins again."};
+
+      /* THE MINDSET FINDING GETS ITS OWN HOME rather than being buried in a session note.
+         Nothing in the app tracked self regulation before today. It is his own observation, it is
+         about performance rather than technique, and it is the kind of thing that gets lost inside
+         a 2,000 character note nobody re reads. */
+      if(!state.pickleball.mindset||typeof state.pickleball.mindset!=="object") state.pickleball.mindset={};
+      state.pickleball.mindset["2026-08-04"]={
+        finding:"Calm and relaxed but still aggressive beats upset and forcing.",
+        source:"Ian, 08.04.2026, his own words",
+        note:"\"When I play calm I play a little bit better. If I play relaxed but still aggressive I play better than if I'm upset and trying to go for everything.\" Relaxed is not passive here, he is explicit that aggression stays. Worth watching against effort: 08.03 was effort 9 all out and he called the drops bad, 08.04 was effort 8 and he called the session 80 to 85 percent. Two points is not a trend, so watch it rather than concluding."};
+      state.meta.mig223_pk0804=true; save(true);
+  } }catch(e){}
+
+  /* v21 build 223: Work on list. The drop moves from a depth problem to a SELECTION problem, and
+     the panic is folded into hands as its mechanism rather than added as a fourth item. */
+  try{ if(state.pickleball && Array.isArray(state.pickleball.workOn) && !state.meta.mig223_workon){
+      var _add=function(id,text){ if(!state.pickleball.workOn.some(function(x){return x&&String(x.id||"")===id;}))
+        state.pickleball.workOn.unshift({id:id,text:text}); };
+      _add("wo-drop-selection","CHOOSE the drop, do not just hit it better. 08.04: you set drops as your focus and took drives instead, your own words. The shot is not failing, it is not getting picked. Count drops per session and do it on a DRILL day, because open play rewards the drive and you will drift.");
+      _add("wo-hands-panic","The hands problem is a PANIC, not a technique gap. Your words 08.04: you panic when someone is about to slam it and it is mostly mental. That is the mechanism behind never initiating and not absorbing pace. Exposure to incoming pace under control, not more hand speed reps.");
+      if(!Array.isArray(state.autoLog)) state.autoLog=[];
+      if(!state.autoLog.some(function(x){return x&&x.id==="auto-20260804-pk";})){
+        state.autoLog.unshift({id:"auto-20260804-pk",date:"2026-08-04",area:"Pickleball",
+          what:"Logged Tuesday, reclassified the drop as a selection problem, folded the panic into hands, and started tracking mindset",
+          why:"You set drops as yesterday's focus and took drives instead, and you noticed it yourself. That changes the drop from a technique problem into a decision problem, which has a different fix.",
+          evidence:"Your words: I wasn't centering on drops, I was going for a lot more drives than I should have been. Plus the panic line, which is the mechanism behind three earlier findings about hands rather than a fourth finding.",
+          undo:"Pickleball tab, edit or remove any Work on item."});
+      }
+      state.meta.mig223_workon=true; save(true);
   } }catch(e){}
 
   /* ===== v21 build 222: TOMBSTONES. Why the archived to dos came back ==========================
