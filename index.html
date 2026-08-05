@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 223 (2026-08-04)">
+<meta name="build" content="v21 build 224 (2026-08-04)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -4758,7 +4758,7 @@ function buildIanHome(v){ const workout=daySplit(DOW); const reTop=firstUndone(s
     function gymJump(openTitle){
       try{
         reToolOpen["Workout routine"]=(openTitle==="Workout routine");
-        reToolOpen["Nutrition, water and supplements"]=(openTitle==="Nutrition, water and supplements");
+        /* build 224: the second Gym collapsible was Nutrition and it is gone, so there is nothing to close here. This key was ALREADY stale before 224, the section had been renamed to plain "Nutrition" and this line had been a no-op since. */
       }catch(e){}
       /* build 122: selectTab only flips the radio, it does NOT rebuild the page, so setting the open flag
          alone left the gym page showing whatever section was rendered at load. Re-render first. */
@@ -5034,7 +5034,7 @@ function buildIanHome(v){ const workout=daySplit(DOW); const reTop=firstUndone(s
     var names=el("div","small"); names.style.cssText="margin-top:9px;line-height:1.5;color:var(--gray)";
     names.textContent=exs.slice(0,4).map(function(e){ return e.name; }).join(", ")+(exs.length>4?", and "+(exs.length-4)+" more":"");
     b.appendChild(names);
-    c.onclick=function(){ try{ reToolOpen["Workout routine"]=true; reToolOpen["Nutrition, water and supplements"]=false; }catch(e){} try{ render(); }catch(e){} selectTab("gym"); };
+    c.onclick=function(){ try{ reToolOpen["Workout routine"]=true; /* build 224: Nutrition collapsible removed, nothing to close. */ }catch(e){} try{ render(); }catch(e){} selectTab("gym"); };
     v.appendChild(c);
   },"Today's workout"); };
 
@@ -5578,7 +5578,20 @@ function buildGym(v){ var _gymTop=el("div"); _gymTop.style.height="14px"; v.appe
      does not exist is how a future session concludes meals are missing and rebuilds them. Ian
      closed this for good on 08.02.2026: "get rid of the meal plan and suggestions, that's totally
      not going to be used at all." See RULES.md, Meal planning is closed. */
-  collapseTool(v,"Nutrition","supplements are in the Daily checklist",()=>{ nutritionModule(v); });
+  /* v21 build 224, 08.04.2026: THE NUTRITION SECTION IS REMOVED FROM THE GYM PAGE. Ian's decision,
+     in his words: "I don't really need that, that doesn't really help me. If I want nutritional value
+     I'll just ask you." The test he set is whether he would LOOK at a surface or whether he would just
+     ask, and anything he would ask for does not need a screen. The macro targets and the eating
+     guidance are both ask-for-it information, so they lose their screen.
+     NOTHING WAS DELETED FROM SAVED DATA. state.nutrition.profile (height, weight, age, birthday,
+     phase), state.nutrition.targets, state.nutrition.water and state.nutrition.supplements are all
+     still written, still merged, and still in the export. Water keeps its own card, the lock screen
+     quick-log and the Home tile. Supplements keep their rows in the Daily checklist below. Only the
+     read-only Nutrition panel is gone. nutritionModule() is retained directly below, marked RETIRED
+     and no longer called, per the BRAIN convention of keeping a retired thing in place rather than
+     archiving it, so nobody rebuilds it from scratch.
+     DO NOT RE-ADD THIS as a missing capability in an audit. Same standing as meal planning, which was
+     closed twice before it stuck. See RULES.md P1a and the filter Ian set on 08.04.2026. */
   sect(v,"Daily checklist","habits, water, and supplements, one place"); safe(v,()=>dailyChecklistModule(v),"Daily checklist"); }
 function gymToday(parent){ const day=daySplit(DOW); const log=state.gym.logs[TODAY]||(state.gym.logs[TODAY]={done:{},note:""}); var items=[{id:"stretch5",name:"5 to 10 minute stretch",scheme:"warm up"}].concat(day.exercises); const total=items.length, dc=items.filter(e=>log.done[e.id]).length;
   summaryGrid(parent,[ fracTile({label:"Today's session",color:"orange",done:dc,goal:total||1,unit:"sets"}), statTile({label:"This week",color:"orange",value:workoutsThisWeek(),unit:"days",sub:"Workouts logged",spark:weekWorkoutSpark(),sparkH:34}) ]);
@@ -5608,6 +5621,9 @@ function waterCard(parent){
   row.appendChild(minus); row.appendChild(plus); wb.appendChild(row);
   parent.appendChild(w);
 }
+/* RETIRED 08.04.2026 (build 224). NOT CALLED ANYWHERE. Kept in place, not deleted, so the content is
+   recoverable and so a future session reads this note instead of rebuilding a nutrition panel. Ian
+   removed the surface, not the data. Do not wire this back up without him asking for it by name. */
 function nutritionModule(parent){ const c=card("a-green"); const b=c._body; const pr=el("div","between"); pr.appendChild(el("div","small muted",(state.nutrition.profile.height||"")+" · "+(state.nutrition.profile.weight||""))); pr.appendChild(el("span","pill b","Lean out")); b.appendChild(pr);
   const gh=el("div","small muted"); gh.style.margin="12px 0 4px"; gh.textContent="How to eat, no counting"; b.appendChild(gh);
   const gt=el("div","small dim"); gt.style.lineHeight="1.6"; gt.textContent="Goal is to lean out for summer and build a little muscle, not get big. You are OFF the GLP 1 now (tapered the last half dose 07.22), so your appetite is coming back and the lean out is on YOU, not the drug. That means the basics carry it now, protein first at every meal to protect and build muscle, keep portions a touch under full now that hunger is back, stay consistent, and let pickleball burn the rest. No calorie counting, just protein forward, a slight deficit held with discipline, and weekly weigh ins to watch the trend."; b.appendChild(gt);
