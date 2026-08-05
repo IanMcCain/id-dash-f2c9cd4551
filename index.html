@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 225 (2026-08-04)">
+<meta name="build" content="v21 build 226 (2026-08-05)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -4156,6 +4156,80 @@ function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]
   try{ if(state.pickleball&&Array.isArray(state.pickleball.workOn)){
       var _w220=state.pickleball.workOn.filter(function(s){ return !(typeof s==="string"&&s.indexOf("Finish serve practice at a raised heart rate")===0); });
       if(_w220.length!==state.pickleball.workOn.length){ state.pickleball.workOn=_w220; save(true); }
+  } }catch(e){}
+
+  /* ===== v21 build 226: THE 08.05 DAILY BRIEF ==================================================
+     Written by the 6am ian-daily-brief run. Date keyed content deep merges by the if(!x[T226])
+     guards, every load, idempotent. The one time part is guarded by state.meta.mig226_daily which
+     lives in SAVED STATE ONLY, never in seedIan().meta. workOn and cues are whole array writes and
+     they sit here, AFTER every earlier assignment in the file, per the last writer wins rule. */
+  try{ if(profile==="ian"){
+      var T226="2026-08-05";
+      if(!state.briefing) state.briefing={forIan:{},done:{}};
+      if(!state.briefing.forIan) state.briefing.forIan={};
+      if(!state.briefing.forIan[T226]) state.briefing.forIan[T226]=[
+        {"id":"brief-20260805-1","type":"System","title":"You got no brief yesterday, the 6am run hung","note":"The 08.04 run stamped START at 06:05, hung at the old folder access step before doing any work, and never finished. That step was rewritten last night and today came through clean. Source: RUN_LOG.tsv and STEP_TRACE.tsv, 08.05.","why":"Because heartbeat check reports the 08.04 run never finished","url":"","done":false},
+        {"id":"brief-20260805-2","type":"Real estate","title":"Willis goes live tomorrow morning, final check today","note":"10218 Spyglass Dr at $619,900 hits the MLS Thursday AM. Confirm photos, listing copy, syndication and the just listed push are queued today. Under contract target is Aug 20. Source: app pipeline, 08.04 export.","why":"Because it goes live Aug 6 and today is the last prep day","url":"","done":false},
+        {"id":"brief-20260805-3","type":"Pickleball","title":"Text Dylan two windows today, stack call locks Sunday","note":"Offer Saturday the 8th or Sunday the 9th, one session tests the stack both ways before the Aug 9 deadline you set. His schedule changed, so name times instead of asking when works. No window by Sunday means natural sides for Aug 23. Source: 08.03 session note, goal pk-goal-stack.","why":"Because you said his schedule changed and the decision is dated Aug 9","url":"","done":false}];
+      if(!state.futureIdeas||typeof state.futureIdeas!=="object") state.futureIdeas={};
+      if(!state.futureIdeas[T226]) state.futureIdeas[T226]=[
+        {"id":"fi-20260805-1","text":"Five closings land Aug 10 to 20, Troester, Miller, Johnson and both Bonks sides. Pre draft the just sold flyers and the review asks this week so each records day is a send, not a build.","url":""},
+        {"id":"fi-20260805-2","text":"Book a weekend open house at Spyglass while it is fresh. The sign in sheet is your fastest sphere feeder, the Trails lead came from exactly that.","url":""},
+        {"id":"fi-20260805-3","text":"Circle early November to register for the Omaha Dec 4 to 5 qualifier, DUPR rated and likely at the NPL home floor. Prices rise a month out and registering after Aug 23 locks your real rating. Source: pickleballtournaments.com, verified 08.04.","url":""},
+        {"id":"fi-20260805-4","text":"Set a saved GPRMLS search for lake lots at $350k to $450k for Bruce. New lots hit your inbox on their own, and finding one makes it both sides, roughly $9,840 to $15,300 instead of $4,896 to $6,120.","url":""}];
+      if(!state.quickWin) state.quickWin={items:[],done:{},picks:{}};
+      if(!state.quickWin.picks) state.quickWin.picks={};
+      if(!state.quickWin.picks[T226]) state.quickWin.picks[T226]=["Text Mason plus one lead, the Zillow 132nd St ranch inquiry or the Trails open house sign in. Three short texts, ten minutes.","The machine curl call: skipped both Tuesdays while you went hard on cable curls. Say drop it or keep it in tomorrow's entry and I make the split change."];
+      if(state.pickleball){
+        var _p226=state.pickleball;
+        if(!_p226.coachBullets||typeof _p226.coachBullets!=="object"||Array.isArray(_p226.coachBullets)) _p226.coachBullets={};
+        if(!_p226.coachBullets[T226]) _p226.coachBullets[T226]=[
+          "Today with Bianca is the drop count session. Pick the number before you start, grade every drop on depth, peak on your side, front two feet. Still long at the end means the thin grip goes back on tonight, your own 08.01 rule.",
+          "Yesterday reclassified the drop. 80 to 85 by your own grade, but you took drives when drops were there and said so yourself. Selection, not technique, and counted reps today are the fix.",
+          "The panic on incoming slams is anticipation, not slow hands. Ten minutes of slam block exposure with Bianca or a wall, block only, paddle up in the triangle before every feed. New drill is in your list.",
+          "Calm and relaxed but still aggressive is on record now as your own finding. One breath between rallies, and play the light session that way on purpose.",
+          "Aug 23 is 18 days out. 5 sessions in the last 7 days against 7 the week before, 112 minutes at effort 7.3 against 124 at 8.0. Inside your 5 to 6 target, a note not a slip. And text Dylan two weekend windows, the stack call locks Sunday."];
+        if(!_p226.coachRec||typeof _p226.coachRec!=="object") _p226.coachRec={};
+        if(!_p226.coachRec[T226]) _p226.coachRec[T226]={"title":"Count the drops, make the grip call","note":"Ten counted drops minimum with Bianca, graded on depth only, peak on your side and land in the front two feet. Still running long at the end means the thin overgrip goes back on tonight, the deal you set 08.01. A counted drop that gets attacked still counts."};
+        if(!_p226.videoRec||typeof _p226.videoRec!=="object") _p226.videoRec={};
+        if(!_p226.videoRec[T226]) _p226.videoRec[T226]={"title":"Forehand 3rd Shot Drop Technique, key mechanics (Prime Time Pickleball)","url":"https://www.youtube.com/watch?v=pD6eN7-lQKE","note":"Watch before the Bianca session. The checklist for a drop running long: feet set, same contact spot out front, locked laid back wrist, low to high from the legs, clear the net by 2 to 3 feet and land it short. Aim the arc, not the push. Source: research pointer, 08.04."};
+        if(!_p226.research||typeof _p226.research!=="object") _p226.research={};
+        if(!_p226.research[T226]) _p226.research[T226]={"title":"The kitchen has zones, and above the net is a green light","text":"Enhance splits the kitchen into a pressurized back band, a neutral middle and a shallow front. Aggressive dinks press the back band at their sides, defensive dinks land short and LOW, and a dead dink is the one that sits up. Then the traffic light: below the knee never accelerate, knee to hip be careful, and any ball contacted above net height gets accelerated every single time. At your zero recorded speed ups that last rule is your flaw with a trigger attached.","url":"https://www.youtube.com/watch?v=nRo0mvVA-DM","source":"Enhance Pickleball, pulled 07.26.2026, extracted 08.04.2026"};
+        if(Array.isArray(_p226.drills) && !_p226.drills.some(function(d){return d&&d.id==="pbk-slamblock-0805";})){
+          _p226.drills.push({"id":"pbk-slamblock-0805","text":"Slam block exposure, for the panic. Bianca or a wall feeds hard at your chest from mid court, 3 rounds of 15, block only, no swing. Breathe before every feed, paddle up in the triangle, judged on no flinch and paddle back to center, not on winning the ball. Different job from rapid fire, this trains the freeze, not the hands.","done":false});
+        }
+        _p226.workOn=[
+          "Drop depth off the bare paddle, count them, this session decides the grip",
+          "More drops and more dinks, your own focus, force the reps",
+          "Same contact spot out front, feet set before every drop",
+          "Defensive dink short and low, never one that sits up",
+          "Green zone, above net height gets accelerated every time",
+          "Stack untested, Dylan window by Aug 9 or lock natural sides",
+          "Slam panic is anticipation, train block only exposure, not more hand speed"];
+        _p226.cues=[
+          "Feet set, same spot, out front",
+          "Low to high from the legs, stay down",
+          "Locked wrist, no flick",
+          "Clear by 2 to 3 feet, land it short",
+          "Aim the arc, not the push",
+          "Take dinks out of the air, do not back up",
+          "Slice to defend, topspin to press",
+          "Above the net, pull the trigger",
+          "Wide base, lunge, recover to middle",
+          "Calm and relaxed, still aggressive"];
+      }
+      if(state.meta && !state.meta.mig226_daily){
+        if(state.context&&state.context.dailyLog){
+          if(state.context.dailyLog["2026-08-04"]){
+            if(!state.context.dailyLog["2026-08-04"].claudeAction) state.context.dailyLog["2026-08-04"].claudeAction="Read 08.05. GYM line, went hard on cable curls so skipped machine curls: archived, pattern surfaced as the machine curl decision in easy win 2, no silent split change.";
+            state.context.dailyLog["2026-08-04"].dailyAgentActed="2026-08-05";
+          }
+          if(state.context.dailyLog["2026-08-02"] && !state.context.dailyLog["2026-08-02"].gymNoteAgentActed){
+            state.context.dailyLog["2026-08-02"].gymNoteAgentActed="2026-08-05";
+          }
+        }
+        state.meta.mig226_daily=true; save(true);
+      }
   } }catch(e){}
 
   /* build 225: focus timer removed, nothing to clear here anymore. */
