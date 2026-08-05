@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 224 (2026-08-04)">
+<meta name="build" content="v21 build 225 (2026-08-04)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -825,9 +825,15 @@ header{ background:rgba(0,0,0,.82); border-bottom:1px solid rgba(255,255,255,.07
   <label for="t-home"><span class="ti">🏠</span><span class="tl" id="tl-home">Today</span></label>
   <label for="t-re"><span class="ti">🏡</span><span class="tl" id="tl-re">Real Est</span></label>
   <label for="t-gym"><span class="ti">🏋️</span><span class="tl" id="tl-gym">Gym</span></label>
-  <label for="t-stats"><span class="ti">📊</span><span class="tl" id="tl-stats">Stats</span></label>
+  <!-- build 225: Stats tab RETIRED. Every number on it already lived on the page that owned the
+       subject, and the two that did not (the 7 day habit chart, follow ups due in 7 days) were PLACED
+       before this label came out. The radio and the p-stats section stay in the DOM so nothing that
+       references them breaks. See BRAIN/Personal/Context/APP_REMOVED_FEATURES.md section 3. -->
   <label for="t-pickle"><span class="ti">🎾</span><span class="tl" id="tl-pickle">Pickle</span></label>
-  <label for="t-solara"><span class="ti">☀️</span><span class="tl" id="tl-solara">Solara</span></label>
+  <!-- build 225: Solara is no longer a TAB. Ian's call 08.04.2026: it becomes a card on Home that
+       opens the full page. The page itself is untouched and still reachable via selectTab("solara"),
+       so nothing about Solara was reduced, only its nav slot was. That takes the bar to four tabs plus
+       Settings behind the gear, which is what his context always described. -->
 </nav>
 <div class="toast" id="toast"></div>
 
@@ -4152,7 +4158,7 @@ function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]
       if(_w220.length!==state.pickleball.workOn.length){ state.pickleball.workOn=_w220; save(true); }
   } }catch(e){}
 
-  focusObj.running=false; try{clearInterval(focusObj.timerId);}catch(e){} focusObj.remaining=null;
+  /* build 225: focus timer removed, nothing to clear here anymore. */
   applyAccent(); dailyReset(); save(true);
 }
 let saveT;
@@ -4464,19 +4470,22 @@ function eventsModule(parent){ /* build 178: only show upcoming events (today or
   let kind="League"; const ac=card(); const ab=ac._body; const kc=el("div"); const setChips=()=>{ [...kc.querySelectorAll(".chip")].forEach(ch=>ch.classList.toggle("on",ch.textContent===kind)); }; kc.appendChild(chipRow(["League","Tournament","Real estate","Personal"],kind,k=>{kind=k;setChips();})); ab.appendChild(kc); const inp=el("input","in"); inp.placeholder="Event..."; inp.setAttribute("data-add","Event..."); inp.style.marginTop="10px"; const dt=el("input","in"); dt.type="date"; dt.style.marginTop="9px"; const btn=el("button","btn block","Add event"); btn.onclick=()=>{ const t=inp.value.trim(); if(!t)return; pendingFocus="Event..."; state.events.push({id:uid(),title:t,date:dt.value||addDays(1),kind:kind}); save(); render(); }; ab.appendChild(inp); ab.appendChild(dt); ab.appendChild(btn); parent.appendChild(ac); }
 function goalsList(parent,arr){ const c=card(); const b=c._body; if(!arr.length)b.appendChild(el("div","empty","No goals yet.")); arr.forEach(g=>{ b.appendChild(checkItem(g.done,g.text,g.horizon||null,()=>{g.done=!g.done;save();render();},()=>{ const i=arr.indexOf(g); if(i>-1)arr.splice(i,1); save(); render(); })); }); b.appendChild(adder("Add a goal...",t=>{ arr.push({id:uid(),text:t,done:false}); save(); render(); })); parent.appendChild(c); }
 function textNotes(parent,get,set,ph,min){ const c=card(); const ta=el("textarea","in"); ta.style.minHeight=(min||150)+"px"; ta.value=get()||""; ta.placeholder=ph; ta.oninput=()=>{set(ta.value);save();}; c._body.appendChild(ta); parent.appendChild(c); }
-/* ===== focus timer ===== */
-const focusObj={ running:false, remaining:null, timerId:null };
-function fmtTime(s){ s=Math.max(0,s|0); const m=Math.floor(s/60), ss=s%60; return String(m).padStart(2,"0")+":"+String(ss).padStart(2,"0"); }
-function focusDur(){ return ((state.realEstate.focus&&state.realEstate.focus.minutes)||25)*60; }
-function focusTick(){ if(!focusObj.running)return; focusObj.remaining--; const t=document.getElementById("focusTime"); if(t)t.textContent=fmtTime(focusObj.remaining); if(focusObj.remaining<=0){ focusComplete(); } }
-function focusStart(){ if(focusObj.running)return; if(focusObj.remaining==null||focusObj.remaining<=0)focusObj.remaining=focusDur(); focusObj.running=true; clearInterval(focusObj.timerId); focusObj.timerId=setInterval(focusTick,1000); render(); }
-function focusPause(){ focusObj.running=false; clearInterval(focusObj.timerId); render(); }
-function focusReset(){ focusObj.running=false; clearInterval(focusObj.timerId); focusObj.remaining=focusDur(); const t=document.getElementById("focusTime"); if(t)t.textContent=fmtTime(focusObj.remaining); render(); }
-function focusComplete(){ focusObj.running=false; clearInterval(focusObj.timerId); const f=state.realEstate.focus; if(!f.count)f.count={}; f.count[TODAY]=(f.count[TODAY]||0)+1; focusObj.remaining=focusDur(); save(); toast("Focus session done"); render(); }
-function focusTimerCard(parent){ if(focusObj.remaining==null) focusObj.remaining=focusDur(); const fc=card("a-blue"); const fb=fc._body; const tim=el("div","timer"); const tt=el("div","tt"); tt.id="focusTime"; tt.textContent=fmtTime(focusObj.remaining); tim.appendChild(tt); const cnt=((state.realEstate.focus&&state.realEstate.focus.count&&state.realEstate.focus.count[TODAY])||0); tim.appendChild(el("div","tsub","Sessions today: "+cnt+"  ·  "+((state.realEstate.focus.minutes)||25)+" min blocks")); const trow=el("div","trow"); const startBtn=el("button","btn",focusObj.running?"Pause":"Start"); startBtn.onclick=()=> focusObj.running?focusPause():focusStart(); const resetBtn=el("button","btn ghost","Reset"); resetBtn.onclick=focusReset; trow.appendChild(startBtn); trow.appendChild(resetBtn); tim.appendChild(trow); const durc=el("div"); durc.style.marginTop="14px"; durc.appendChild(chipRow(["15","25","45"],String((state.realEstate.focus.minutes)||25),m=>{ state.realEstate.focus.minutes=parseInt(m,10); if(!focusObj.running)focusObj.remaining=focusDur(); save(); render(); })); tim.appendChild(durc); fb.appendChild(tim); parent.appendChild(fc); }
-
+/* ===== focus timer, REMOVED build 225, 08.04.2026 =====
+   Ian's instruction, after being shown that state.realEstate.focus.count was {} for the entire life of
+   the app: remove it, and keep a record of how to build it in case he wants it back. That record is
+   BRAIN/Personal/Context/APP_REMOVED_FEATURES.md section 1, which holds the VERBATIM source of all of
+   focusObj, fmtTime, focusDur, focusTick, focusStart, focusPause, focusReset, focusComplete and
+   focusTimerCard, the state shape, the wiring, and the one non obvious part (the timer is deliberately
+   not persisted, and boot clears it so a stale interval id cannot leak across profile loads).
+   state.realEstate.focus IS STILL IN STATE and still exports. Only the code and the surface are gone.
+   HE REMOVED THIS. It was built, it shipped, it was never used once. Do not raise it as a gap.
+   The .timer .tt .tsub .trow CSS rules are intentionally left in the stylesheet for a rebuild. */
 /* ===== real estate modules (shared by Ian and Chris) ===== */
 const RESTAGES=["Prospecting","Buyer","Coming Soon","Active","Building","Under Contract","Just Sold","Closed","Follow up"];
+/* RETIRED 08.04.2026 (build 225). NOT CALLED. Ian asked what these counts were, which was itself the
+   answer. metrics.log held one date with every counter at zero, and that row was written by THIS
+   function as a side effect of rendering, not by him. Kept in place per the BRAIN convention; the data
+   stays in state. See APP_REMOVED_FEATURES.md section 2. Do not wire it back up. */
 function metricsModule(parent){ const m=state.realEstate.metrics; if(!m.log)m.log={}; if(!m.log[TODAY])m.log[TODAY]={calls:0,appointments:0,listings:0,doors:0}; const day=m.log[TODAY]; const tg=m.targets||{calls:10,appointments:2,doors:20}; const c=card(); const b=c._body; const rows=[["calls","Calls",tg.calls],["appointments","Appointments",tg.appointments],["doors","Doors knocked",tg.doors],["listings","Listings taken",null]]; rows.forEach(([key,label,target])=>{ const r=el("div","mrow"); const l=el("div","ml"); l.appendChild(document.createTextNode(label)); if(target!=null){ l.appendChild(el("small",null,"target "+target)); } r.appendChild(l); r.appendChild(stepper(()=>day[key]||0,(nv)=>{ day[key]=nv; })); b.appendChild(r); }); parent.appendChild(c); }
 function objectiveCard(parent,hub,acc){ const c=card(acc); const b=c._body; b.appendChild(el("div","small muted","Today's objective")); const oa=el("div"); oa.style.fontSize="17px"; oa.style.fontWeight="800"; oa.style.margin="7px 0 0"; oa.textContent=autoObjective(hub); b.appendChild(oa); /* build 128: this textarea was orphaned by the build 113 consolidation. It still wrote to state.objectives,
      which both agents had been told was retired, so anything typed here was silently ignored. It also kept
@@ -4957,6 +4966,24 @@ function buildIanHome(v){ const workout=daySplit(DOW); const reTop=firstUndone(s
       hh.appendChild(cardEl);
     },"📊","green"); };
   var secIdeas=function(){ safe(v,function(){ buildFutureIdeasHome(v); },"Future ideas"); };
+  /* build 225: SOLARA IS A CARD HERE, NOT A TAB. Ian's call 08.04.2026. It is an entry point rather
+     than a summary: it carries the one fact that changes (days to drop) plus the current status, and
+     tapping it opens the untouched full Solara page. The Settings "Solara" toggle still hides it. */
+  var secSolara=function(){ safe(v,function(){
+    if(hidden("solara")) return;
+    var sd=state.solara||{}; var du=(typeof daysUntil==="function")?daysUntil("2026-08-15"):null;
+    sect(v,"Solara","Drop 001");
+    var c=el("div","card tap"); c.id="home-solara-card"; var b=el("div","cbody"); c.appendChild(b);
+    var top=el("div","between");
+    var L=el("div"); L.appendChild(el("h3",null,sd.drop||"Drop 001"));
+    L.appendChild(el("div","small dim",sd.status||"In progress")); top.appendChild(L);
+    var R=el("div"); R.style.cssText="text-align:right;flex:0 0 auto";
+    if(du!=null&&du>=0){ var n=el("div"); n.style.cssText="font-weight:800;font-size:19px;color:#ffb020"; n.textContent=du;
+      R.appendChild(n); R.appendChild(el("div","small dim",du===1?"day to drop":"days to drop")); }
+    top.appendChild(R); b.appendChild(top);
+    c.onclick=function(){ selectTab("solara"); };
+    v.appendChild(c);
+  },"Solara card"); };
   /* build 191: Easy wins opens by default. It is the first thing he wants to see and a
      collapsed win list is not a win list. */
   var secWins=function(){ pkCollapse(v,"h_wins","Easy wins","two small wins today",true,function(hh){ quickWinCard(hh); },"✅","green"); };
@@ -5164,7 +5191,6 @@ function buildIanHome(v){ const workout=daySplit(DOW); const reTop=firstUndone(s
     var pb=state.pickleball||{}; var vs=Array.isArray(pb.videoStats)?pb.videoStats:[];
     if(!vs.length) return;
     var nf=pkNextFocus();
-    sect(v,"Go deeper","only when you want to");
     var c=card("a-green"); c.className+=" tap"; var b=c._body;
     var row=el("div"); row.style.cssText="display:flex;align-items:center;gap:11px";
     var ic=el("div"); ic.style.cssText="width:34px;height:34px;border-radius:11px;display:grid;place-items:center;font-size:18px;flex:0 0 auto;background:rgba(46,215,138,.16)";
@@ -5201,6 +5227,13 @@ function buildIanHome(v){ const workout=daySplit(DOW); const reTop=firstUndone(s
   secBrief();      /* what Claude left him overnight            */
   secEntry();      /* where he writes the day up                */
   secReAlert();    /* real estate, silent unless time sensitive */
+  secSolara();     /* build 225: the Solara door, replaces the tab  */
+  /* build 225: ONE depth mechanism, not two. Ian's call 08.04.2026: keep every drawer, since he may
+     want them before a tournament or on a free day, and fold them into Learning Mode rather than
+     running a second hidden mechanism beside it. The header used to be printed INSIDE secLearn and was
+     gated on there being video stats, so on a profile with none, six collapsed drawers rendered under
+     no header at all. It is unconditional now and it covers everything below it. */
+  safe(v,function(){ sect(v,"Learning mode","depth when you want it, none of it daily"); },"Learning mode header");
   secLearn();      /* build 212: the Learning Mode door          */
   secProg();       /* goal pace and closing money               */
   secCal();        /* full calendar, collapsed, for browsing     */
@@ -5534,11 +5567,15 @@ function reViewLanding(v){
   const openTodos=(state.realEstate.todos||[]).filter(t=>!t.done).length;
   sect(v,"Real Estate","tap a section");
   reNavCard(v,"\ud83d\udcca","Pipeline",pipe.length+(pipe.length===1?" deal":" deals")+"  \u00b7  "+fmtMoney(vol)+" volume","pipeline");
-  reNavCard(v,"\u2705","Things I need to do",openTodos+(openTodos===1?" open task":" open tasks"),"todo");
+  /* build 225: PLACED FROM THE RETIRED STATS TAB. "Follow ups due soon" was the only follow up
+     number with no other home, so it joins the card that owns follow ups instead of being dropped. */
+  { var _dueSoon=(state.realEstate.todos||[]).filter(function(t){ return t&&!t.done&&t.due&&daysUntil(t.due)<=7; }).length;
+    var _tsub=openTodos+(openTodos===1?" open task":" open tasks")+(_dueSoon?"  \u00b7  "+_dueSoon+" due in 7 days":"");
+    reNavCard(v,"\u2705","Things I need to do",_tsub,"todo"); }
   /* v21 build 49: standalone Prospects card removed. Prospects now live inside the Sphere Orbit (inner ring),
      so this card carries the prospect count too and opens the orbit. */
   { const _sp=sphereList(); const _ov=sphereOverdue().length; var _pn=prospects.length; var _sub=(_pn?(_pn+(_pn===1?" prospect":" prospects")):"")+((_pn&&_sp.length)?"  \u00b7  ":"")+(_sp.length?(_sp.length+" in sphere"):"")+(_ov?"  \u00b7  "+_ov+" to reach out":""); if(!_pn&&!_sp.length) _sub="add your sphere"; reNavCard(v,"\ud83e\udd1d","Sphere & prospects",_sub,"sphere"); }
-  reNavCard(v,"\ud83e\uddf0","Tools","Focus timer, activity, contacts, scripts, notes","tools");
+  reNavCard(v,"\ud83e\uddf0","Tools","Goals, contacts, scripts, notes","tools");  /* build 225: no longer advertises the removed timer and activity counts */
   sect(v,"Your pipeline data","import");
   { const ic=card(); const ib=el("button","btn ghost block","Import my pipeline"); ib.style.marginTop="0"; ib.onclick=()=>{ const pf=document.getElementById("pipelineFile"); if(pf)pf.click(); }; const ih=el("div","small dim"); ih.style.marginTop="9px"; ih.textContent="Load real_estate_pipeline.json to replace your pipeline with your deals and follow ups. Your other data stays."; ic._body.appendChild(ib); ic._body.appendChild(ih); v.appendChild(ic); }
 }
@@ -5555,9 +5592,14 @@ function reViewTodo(v){
 }
 function reViewTools(v){
   reBack(v,"Real Estate");
-  sect(v,"Focus and activity","timer and daily counts");
-  safe(v,()=>focusTimerCard(v),"Timer");
-  safe(v,()=>metricsModule(v),"Metrics");
+  /* build 225: THE FOCUS TIMER AND THE METRIC COUNTS ARE REMOVED. Ian's call 08.04.2026 after being
+     shown the evidence: state.realEstate.focus.count was {} for the life of the app, and metrics.log
+     held one date with every counter at zero, itself an artifact of metricsModule writing on render
+     rather than a record of use. Neither had ever been used once.
+     BOTH KEEP THEIR DATA in state and in the export. Full implementation, including verbatim source so
+     either could be rebuilt without rediscovery, is in
+     BRAIN/Personal/Context/APP_REMOVED_FEATURES.md sections 1 and 2. He removed these, they were never
+     missing, so do not raise either as a gap. */
   sect(v,"Goals");
   safe(v,()=>goalsList(v,state.realEstate.goals||(state.realEstate.goals=[])),"RE goals");
   sect(v,"More tools","leads, contacts, farm, scripts, notes");
@@ -5592,7 +5634,19 @@ function buildGym(v){ var _gymTop=el("div"); _gymTop.style.height="14px"; v.appe
      archiving it, so nobody rebuilds it from scratch.
      DO NOT RE-ADD THIS as a missing capability in an audit. Same standing as meal planning, which was
      closed twice before it stuck. See RULES.md P1a and the filter Ian set on 08.04.2026. */
-  sect(v,"Daily checklist","habits, water, and supplements, one place"); safe(v,()=>dailyChecklistModule(v),"Daily checklist"); }
+  sect(v,"Daily checklist","habits, water, and supplements, one place"); safe(v,()=>dailyChecklistModule(v),"Daily checklist");
+  /* build 225: PLACED FROM THE RETIRED STATS TAB. The seven day habit consistency chart was the only
+     habit number with no other home in the app, so it moves to the page that owns habits rather than
+     being dropped with the tab. The streak it used to sit beside is already on the checklist ring. */
+  safe(v,()=>habitConsistencyCard(v),"Habit consistency"); }
+/* build 225: lifted verbatim out of buildStats so no behaviour changed, only where it renders. */
+function habitConsistencyCard(parent){
+  const items=[]; for(let i=6;i>=0;i--){ const d=new Date(); d.setDate(d.getDate()-i); const k=todayKey(d);
+    const hk=habitsActiveOn(k); const hsn=hk.length||1; const done=hk.filter(h=>h.log&&h.log[k]).length;
+    items.push({label:["Su","Mo","Tu","We","Th","Fr","Sa"][d.getDay()],pct:Math.round(done/hsn*100)}); }
+  const c=card("a-green"); c._body.appendChild(el("div","small muted","Habit consistency, last 7 days"));
+  c._body.firstChild.style.marginBottom="6px";
+  c._body.appendChild(barChart(items,"g",120)); parent.appendChild(c); }
 function gymToday(parent){ const day=daySplit(DOW); const log=state.gym.logs[TODAY]||(state.gym.logs[TODAY]={done:{},note:""}); var items=[{id:"stretch5",name:"5 to 10 minute stretch",scheme:"warm up"}].concat(day.exercises); const total=items.length, dc=items.filter(e=>log.done[e.id]).length;
   summaryGrid(parent,[ fracTile({label:"Today's session",color:"orange",done:dc,goal:total||1,unit:"sets"}), statTile({label:"This week",color:"orange",value:workoutsThisWeek(),unit:"days",sub:"Workouts logged",spark:weekWorkoutSpark(),sparkH:34}) ]);
   (function(){ var hn=(state.gym&&state.gym.handSpeedNote)||""; if(!hn) return;
@@ -6236,6 +6290,10 @@ function buildPickle(v){ var pb=state.pickleball||(state.pickleball={});
     
   },"Deep dive section");
 }
+/* RETIRED 08.04.2026 (build 225). NOT IN IAN_PAGES, never called. Kept in place per the BRAIN
+   convention for retired things. Ian retired the tab on the condition that every number on it had a
+   home elsewhere first; the two that did not were placed in this same build. Do not re-add this tab.
+   See BRAIN/Personal/Context/APP_REMOVED_FEATURES.md section 3. */
 function buildStats(v){ safe(v,()=>{ const wk=workoutsThisWeek(); const hs=habitsActiveOn(TODAY); const hD=hs.filter(h=>h.log&&h.log[TODAY]).length; const water=(state.nutrition&&state.nutrition.water&&state.nutrition.water[TODAY])||0; const m=(state.realEstate.metrics&&state.realEstate.metrics.log&&state.realEstate.metrics.log[TODAY])||{}; const cg=(state.realEstate.metrics&&state.realEstate.metrics.targets&&state.realEstate.metrics.targets.calls)||10; const sp=weekWorkoutSpark(); var _statsTop=el("div"); _statsTop.style.height="14px"; v.appendChild(_statsTop); sect(v,"Summary","this week and today"); summaryGrid(v,[ fracTile({label:"Workouts",color:"orange",done:wk,goal:5,unit:"days",tab:"gym"}), fracTile({label:"Habits",color:"green",done:hD,goal:hs.length||7,unit:"today",tab:"gym"}), fracTile({label:"Water",color:"cyan",done:water,goal:WATER_GOAL,unit:"cups",tab:"gym"}) ]); v.appendChild(statTile({label:"Workout completion",color:"orange",value:(sp.slice(-1)[0]||0)+"%",unit:"today",sub:"Last 7 days",spark:sp,sparkH:64})); },"Stats summary"); sectG(v,"Habit consistency"); const c2=card("a-green"); const hItems=[]; for(let i=6;i>=0;i--){ const d=new Date(); d.setDate(d.getDate()-i); const k=todayKey(d); const hk=habitsActiveOn(k); const hsn=hk.length||1; const done=hk.filter(h=>h.log[k]).length; hItems.push({label:["Su","Mo","Tu","We","Th","Fr","Sa"][d.getDay()],pct:Math.round(done/hsn*100)}); } c2._body.appendChild(barChart(hItems,"g",132)); const _hstreak=habitStreak(); const sl=el("div","small dim"); sl.style.marginTop="8px"; sl.innerHTML='Current streak: <span class="countup" data-n="'+_hstreak+'">'+_hstreak+'</span> '+(_hstreak===1?"day":"days"); c2._body.appendChild(sl); v.appendChild(c2);
   sect(v,"Real estate pipeline","active stages and closed");
   const _deals=state.realEstate.deals||[];
@@ -6287,7 +6345,9 @@ function buildSettings(v){
 }
 
 /* ===== render + profile chrome ===== */
-const IAN_PAGES={ "p-home":buildIanHome,"p-stats":buildStats,"p-re":buildIanRe,"p-gym":buildGym,"p-pickle":buildPickle,"p-solara":buildSolara,"p-settings":buildSettings };
+/* build 225: "p-stats" removed from this map, so buildStats no longer runs on every render.
+   buildStats is retained in place and marked RETIRED rather than deleted. */
+const IAN_PAGES={ "p-home":buildIanHome,"p-re":buildIanRe,"p-gym":buildGym,"p-pickle":buildPickle,"p-solara":buildSolara,"p-settings":buildSettings };
 function applyProfileChrome(){
   const T = {home:"Today",stats:"Stats",re:"Real Estate",gym:"Gym",more:"More",pickle:"Pickleball",settings:"Settings"};
   const TL = {home:"Today",stats:"Stats",re:"Real Est",gym:"Gym",more:"More"};
