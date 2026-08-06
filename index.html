@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 228 (2026-08-05)">
+<meta name="build" content="v21 build 229 (2026-08-06)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -3260,7 +3260,7 @@ function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]
       if(!_p185.coachBullets[TID185]) _p185.coachBullets[TID185]=["Today's focus, the arc. Hit the serve about 4 feet over the net, out and up at roughly 45 degrees, and let the topspin bring it down. Your tennis instinct to hit down and flat is exactly where a 25 percent net rate comes from.", "Your Monday discovery holds up and the research is blunter than you expect. Spin amplifies whatever inconsistency is already in the motion, so the slower serve is not a bailout, it IS the serve. The pace goes back on top of a base that is already automatic.", "Same ball drop every single time. Drop and catch it 20 times with no swing before you care where anything lands, then lock contact just in front of your lead hip. Inches of variance at contact become feet at the baseline.", "Stay low the whole way through. Starting low then standing up is the most common serve fault there is, and it is the same rise through contact that floats your dinks and drifts your drops. One fault, three shots.", "Finish serve practice at a raised heart rate, ten jumping jacks then serve. You average 143 beats a minute in open play, and a serve grooved at rest is not a serve you own."];
       /* new drill, additive push guard so it never duplicates and his check offs survive */
       if(!Array.isArray(_p185.drills)) _p185.drills=[];
-      if(!_p185.drills.some(function(d){ return d && d.id==="pbk-dropladder-0728"; })){
+      if(false && !_p185.drills.some(function(d){ return d && d.id==="pbk-dropladder-0728"; })){ /* neutralized build 229, drill retired to archive.pkDrillsPruned0806, duplicate of pkd-m-drop */
         _p185.drills.push({id:"pbk-dropladder-0728",t:"Drop ladder, kitchen to baseline and back, two balls per station, grip stays at 3"});
       }
       /* Nebraska State Qualifier surfaced as a calendar event, NOT entered, decision needed */
@@ -4300,6 +4300,58 @@ function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]
       if(state.meta && !state.meta.mig228_selfassess){
         state.meta.mig228_selfassess=true; save(true);
       }
+  } }catch(e){}
+
+  /* ===== v21 build 229: THE 08.06 DAILY BRIEF ==================================================
+     Written by the 6am ian-daily-brief run. Date keyed content deep merges by the if(!x[T229])
+     guards, every load, idempotent. No whole array writes to workOn or cues in this block. The
+     drill prune is a targeted retire with a presence guard, archive not delete. Guard flag
+     mig229_daily lives in SAVED STATE ONLY, never in seedIan().meta. */
+  try{ if(profile==="ian"){
+      var T229="2026-08-06";
+      if(!state.briefing) state.briefing={forIan:{},done:{}};
+      if(!state.briefing.forIan) state.briefing.forIan={};
+      if(!state.briefing.forIan[T229]) state.briefing.forIan[T229]=[
+        {"id":"brief-20260806-1","type":"Real estate","title":"Willis is live this morning, confirm it and push it","note":"10218 Spyglass hits GPRMLS at $619,900 today. Confirm the listing renders clean on the portals, then send the just listed push and get the sign set. Under contract target is Aug 20. Source: app pipeline, 08.04 export.","why":"Because go live was locked to Thursday Aug 6","url":"","done":false},
+        {"id":"brief-20260806-2","type":"Pickleball","title":"Drop drill day, count direction not feel","note":"Last night's call stands, bare paddle held because drops missed high, not long. Long on 08.01 and 08.03 then high on 08.05 is overcorrection, so open with a counted drill block, 30 drops, tally long, high or landed, before any live points. Source: 08.05 session log.","why":"Because drops have missed both directions since the grip came off and the call needs direction data","url":"","done":false},
+        {"id":"brief-20260806-3","type":"Real estate","title":"Thacker prep this week, photos and copy for Aug 13","note":"The list target is a week out and close before Sep 25 leaves no slack behind it. Book the 4911 S 131st photo slot and draft the listing copy by the weekend. Source: deal re-austin-thacker, 08.04 export.","why":"Because the Aug 13 list target is 7 days out","url":"","done":false}];
+      if(!state.futureIdeas) state.futureIdeas={};
+      if(!state.futureIdeas[T229]) state.futureIdeas[T229]=[
+        {"id":"fi-20260806-1","text":"Film a 30 second Spyglass walkthrough reel today while the staging is fresh. One cut posts as just listed, a second cut is banked for the under contract announcement.","url":""},
+        {"id":"fi-20260806-2","text":"Tiburon door pass while the sign is new. The launch is a reason to knock, just listed at 10218 Spyglass, and every conversation is a sphere add in the one neighborhood already paying attention.","url":""},
+        {"id":"fi-20260806-3","text":"Book a Friday court hour as a pure drill day, club ball machine, 50 drop reps counted on direction. Open play cannot give you that data, your own words from 08.04.","url":""},
+        {"id":"fi-20260806-4","text":"Solara, keep the Day 0 press inspection checklist ready so the shoot sequence starts the hour the garments land. Window was Aug 4 to 7, drop target Aug 15.","url":""}];
+      if(!state.quickWin) state.quickWin={items:[],done:{},picks:{}};
+      if(!state.quickWin.picks) state.quickWin.picks={};
+      if(!state.quickWin.picks[T229]) state.quickWin.picks[T229]=[
+        "GPRMLS pass on Tiburon status changes, specifically whether 9901 S 176th is still sitting at $574,900. Launch morning read on Spyglass traffic and the day 10 plan.",
+        "After the abs circuit, hit both cable chop sets with real intent, low to high, 2x12 per side. Drive and drop power, not filler."];
+      if(state.pickleball){
+        var _p229=state.pickleball;
+        if(!_p229.coachBullets||typeof _p229.coachBullets!=="object"||Array.isArray(_p229.coachBullets)) _p229.coachBullets={};
+        if(!_p229.coachBullets[T229]) _p229.coachBullets[T229]=[
+          "Drop drill block before any live points today. 30 counted drops, tally each one long, high or landed. Long on 08.01 and 08.03, high last night, and missing both ways is overcorrection, which is why the bare paddle held and the grip call now waits on direction data. Feel lies here, the count does not.",
+          "Film one session this week from behind your own baseline. Your self assessment moved to 3.34 to 3.44 last night while the film record ends 07.25, before the grip change and the serve routine. One filmed session closes that gap, makes return depth gradable at last, and settles hands, self 3.3 against film 2.75. Seventeen days to a real rating.",
+          "Ten minutes on the slam block drill, feeds at the chest, paddle up in the triangle before every feed. The 08.04 panic line is anticipation, not hand speed, and controlled exposure is the fix.",
+          "Stack call locks Sunday. No Dylan window by Aug 9 means natural sides for Aug 23, locked, and the item comes off your list. Nothing debuts cold on tournament day.",
+          "Thursday cable chops with intent, low to high, 2x12 per side. Drive and drop power wearing an ab day label."];
+        if(!_p229.videoRec) _p229.videoRec={};
+        if(!_p229.videoRec[T229]) _p229.videoRec[T229]={"title":"Everything to Know About Speed Ups (ThatPickleballGuy)","url":"https://www.youtube.com/watch?v=pCXvUVoBcVo","note":"When to pull the trigger and what comes after it. Pairs with the slam block drill, the green zone rule needs a decision habit and this is the decision half. From the research bank, on disk since the 07.26 pull."};
+        if(!_p229.research) _p229.research={};
+        if(!_p229.research[T229]) _p229.research[T229]={"title":"Transition zone doubles playbook, the lead in read","text":"From the Briones pro point breakdown in the knowledge base. Read your partner's third off the paddle, come in on a good one, hold or step back on a high one, never rush in blind. One up one back during the work in is normal, synchronize the split step rather than the depth. Send transition balls crosscourt to the deeper player, and from a low contact never target the up player's feet.","url":"","source":"Knowledge base run 6, 08.04.2026"};
+        if(!_p229.coachRec) _p229.coachRec={};
+        if(!_p229.coachRec[T229]) _p229.coachRec[T229]={"title":"Direction data on the drop, then the grip call","note":"Counted drill reps decide it, not open play feel. Tally long, high or landed on every drop this session. A clear lean long puts the thin grip back on, high means calibration is still moving and the bare paddle holds."};
+        if(Array.isArray(_p229.drills)){
+          var _dl229=_p229.drills.filter(function(d){return d&&d.id==="pbk-dropladder-0728";});
+          if(_dl229.length){
+            if(!state.archive) state.archive={};
+            if(!Array.isArray(state.archive.pkDrillsPruned0806)) state.archive.pkDrillsPruned0806=[];
+            _dl229.forEach(function(d){ if(!state.archive.pkDrillsPruned0806.some(function(a){return a&&a.id===d.id;})) state.archive.pkDrillsPruned0806.push(d); });
+            _p229.drills=_p229.drills.filter(function(d){return !(d&&d.id==="pbk-dropladder-0728");});
+          }
+        }
+      }
+      if(state.meta && !state.meta.mig229_daily){ state.meta.mig229_daily=true; save(true); }
   } }catch(e){}
 
   /* build 225: focus timer removed, nothing to clear here anymore. */
