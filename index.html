@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 230 (2026-08-06)">
+<meta name="build" content="v21 build 233 (2026-08-06)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -808,7 +808,7 @@ header{ background:rgba(0,0,0,.82); border-bottom:1px solid rgba(255,255,255,.07
       <span class="htt htt-home">Today</span><span class="htt htt-stats">Stats</span><span class="htt htt-re">Real Estate</span><span class="htt htt-gym">Gym</span><span class="htt htt-pickle">Pickleball</span><span class="htt htt-solara">Solara</span><span class="htt htt-settings">Settings</span>
     </div>
   </div>
-  <label class="gear" for="t-settings" aria-label="Settings">⚙</label>
+  <label class="gear" for="t-settings" aria-label="Settings">‚öô</label>
 </header>
 
 <main>
@@ -822,14 +822,14 @@ header{ background:rgba(0,0,0,.82); border-bottom:1px solid rgba(255,255,255,.07
 </main>
 
 <nav class="tabbar">
-  <label for="t-home"><span class="ti">🏠</span><span class="tl" id="tl-home">Today</span></label>
-  <label for="t-re"><span class="ti">🏡</span><span class="tl" id="tl-re">Real Est</span></label>
-  <label for="t-gym"><span class="ti">🏋️</span><span class="tl" id="tl-gym">Gym</span></label>
+  <label for="t-home"><span class="ti">üè†</span><span class="tl" id="tl-home">Today</span></label>
+  <label for="t-re"><span class="ti">üè°</span><span class="tl" id="tl-re">Real Est</span></label>
+  <label for="t-gym"><span class="ti">üèãÔ∏è</span><span class="tl" id="tl-gym">Gym</span></label>
   <!-- build 225: Stats tab RETIRED. Every number on it already lived on the page that owned the
        subject, and the two that did not (the 7 day habit chart, follow ups due in 7 days) were PLACED
        before this label came out. The radio and the p-stats section stay in the DOM so nothing that
        references them breaks. See BRAIN/Personal/Context/APP_REMOVED_FEATURES.md section 3. -->
-  <label for="t-pickle"><span class="ti">🎾</span><span class="tl" id="tl-pickle">Pickle</span></label>
+  <label for="t-pickle"><span class="ti">üéæ</span><span class="tl" id="tl-pickle">Pickle</span></label>
   <!-- build 225: Solara is no longer a TAB. Ian's call 08.04.2026: it becomes a card on Home that
        opens the full page. The page itself is untouched and still reachable via selectTab("solara"),
        so nothing about Solara was reduced, only its nav slot was. That takes the bar to four tabs plus
@@ -972,7 +972,7 @@ function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]
       if(fresh&&fresh.gym&&Array.isArray(fresh.gym.split)){ if(!state.gym) state.gym={}; state.gym.split=mergeGymSplit(state.gym.split,fresh.gym.split); }
       try{ if(state.pickleball&&Array.isArray(state.pickleball.sessions)){ var _ps=state.pickleball.sessions.map(function(x){return x&&x.id;}); if(_ps.indexOf("pk-20260706-league")<0){ state.pickleball.sessions.push({id:"pk-20260706-league",date:"2026-07-06",kind:"League",duration:"2h 44m 35s",calories:1897,activeCalories:1636,avgHr:139,maxHr:181,minHr:84,note:"League night, Omaha, 6:29 to 9:13 PM. HR zones Z1 1:14:42, Z2 29:41, Z3 37:08, Z4 22:06, Z5 0:50. Recovery 136 to 129 (1 min) to 119 (2 min)."}); } } }catch(e){}
       try{ if(state.context){ if(!state.context.dailyLog) state.context.dailyLog={}; var _D="2026-07-06"; if(!state.context.dailyLog[_D]) state.context.dailyLog[_D]={note:"",summary:""}; var _n=state.context.dailyLog[_D].note||""; if(_n.indexOf("Pickleball league")<0){ state.context.dailyLog[_D].note=(_n?_n+" ":"")+"Pickleball league (Omaha) 6:29 to 9:13 PM: 2h 44m 35s, 1,897 cal (1,636 active), avg HR 139, max 181, min 84."; } } }catch(e){}
-      try{ var _clrFC="Check if any workout days need lightened, do a little more workout research to see if there’s somewhere to improve, specefic to me of course"; if(state.context && typeof state.context.forClaude==="string" && state.context.forClaude.trim()===_clrFC.trim()){ state.context.forClaude=""; if(!state.context.dailyLog) state.context.dailyLog={}; if(!state.context.dailyLog["2026-07-07"]) state.context.dailyLog["2026-07-07"]={note:"",summary:""}; if(!state.context.dailyLog["2026-07-07"].forClaudeArchive){ state.context.dailyLog["2026-07-07"].forClaudeArchive=_clrFC; state.context.dailyLog["2026-07-07"].claudeAction="Archived and cleared on the 07.07.2026 deploy."; } } }catch(e){}
+      try{ var _clrFC="Check if any workout days need lightened, do a little more workout research to see if there‚Äôs somewhere to improve, specefic to me of course"; if(state.context && typeof state.context.forClaude==="string" && state.context.forClaude.trim()===_clrFC.trim()){ state.context.forClaude=""; if(!state.context.dailyLog) state.context.dailyLog={}; if(!state.context.dailyLog["2026-07-07"]) state.context.dailyLog["2026-07-07"]={note:"",summary:""}; if(!state.context.dailyLog["2026-07-07"].forClaudeArchive){ state.context.dailyLog["2026-07-07"].forClaudeArchive=_clrFC; state.context.dailyLog["2026-07-07"].claudeAction="Archived and cleared on the 07.07.2026 deploy."; } } }catch(e){}
     }
     state.meta.seedVersion=SEED_VERSION;
   }catch(e){}
@@ -1798,7 +1798,7 @@ function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]
       if(!Array.isArray(state.archive.gymMonSwap0722)) state.archive.gymMonSwap0722=[];
       var _thuArch=Array.isArray(state.archive.gymThuTrim0722)?state.archive.gymThuTrim0722:[];
       var _pa=_thuArch.filter(function(a){return a&&a.id==="hs-cablepress-fast";})[0];
-      var _pressDef=_pa?{id:"hs-cablepress-fast",name:(_pa.name||"Explosive cable press, light and fast"),scheme:(_pa.scheme||"4×5 per side, light, max intent")}:{id:"hs-cablepress-fast",name:"Explosive cable press, light and fast",scheme:"4×5 per side, light, max intent"};
+      var _pressDef=_pa?{id:"hs-cablepress-fast",name:(_pa.name||"Explosive cable press, light and fast"),scheme:(_pa.scheme||"4√ó5 per side, light, max intent")}:{id:"hs-cablepress-fast",name:"Explosive cable press, light and fast",scheme:"4√ó5 per side, light, max intent"};
       state.gym.split.forEach(function(d){ if(d && d.day==="Mon" && Array.isArray(d.exercises)){
         var _pd=d.exercises.filter(function(x){return x&&x.id==="ofr477a";})[0];
         if(_pd && !state.archive.gymMonSwap0722.some(function(a){return a&&a.id==="ofr477a";})){
@@ -1914,7 +1914,7 @@ function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]
      exercise id 5igu8kh so logged sets survive; only acts while the old scheme is present. Guard flag NOT in the seed. */
   try{ if(!state.meta) state.meta={}; if(!state.meta.mig73_chestpress_scheme && state.gym && Array.isArray(state.gym.split)){
       var _cpChg=false;
-      state.gym.split.forEach(function(day){ if(!day||!Array.isArray(day.exercises)) return; day.exercises.forEach(function(ex){ if(ex&&ex.id==="5igu8kh"&&/8\/8\/6/.test(String(ex.scheme||""))){ ex.scheme="4×10/8/6/4"; _cpChg=true; } }); });
+      state.gym.split.forEach(function(day){ if(!day||!Array.isArray(day.exercises)) return; day.exercises.forEach(function(ex){ if(ex&&ex.id==="5igu8kh"&&/8\/8\/6/.test(String(ex.scheme||""))){ ex.scheme="4√ó10/8/6/4"; _cpChg=true; } }); });
       state.meta.mig73_chestpress_scheme=true;
       if(_cpChg) save(true);
     }
@@ -2187,10 +2187,10 @@ function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]
         d.focus="Abs and cardio";
         d.note="Abs and cardio, Ian's own day set 07.23.2026, holds every week. The CABLE CHOPS are pickleball crossover for drive and drop power and mechanics, low to high both sides: set 1 is forehand drives plus one hand left hand drives, set 2 is forehand drives plus two hand backhand drives.";
         d.exercises=[
-          {id:"abc-elevate",name:"Elevate machine, incline knee raise (hands overhead, pull knees to chest)",scheme:"3×10"},
-          {id:"abc-crunch",name:"Machine crunches",scheme:"3×10"},
-          {id:"abc-rotary",name:"Rotary twist machine (rotary torso, oblique twists)",scheme:"3×10"},
-          {id:"pkl-cablechop",name:"Cable chop, low to high, both sides (pickleball drives and drops)",scheme:"2×12 per side"},
+          {id:"abc-elevate",name:"Elevate machine, incline knee raise (hands overhead, pull knees to chest)",scheme:"3√ó10"},
+          {id:"abc-crunch",name:"Machine crunches",scheme:"3√ó10"},
+          {id:"abc-rotary",name:"Rotary twist machine (rotary torso, oblique twists)",scheme:"3√ó10"},
+          {id:"pkl-cablechop",name:"Cable chop, low to high, both sides (pickleball drives and drops)",scheme:"2√ó12 per side"},
           {id:"abc-rollout",name:"Ab rollouts",scheme:"3 sets, 8/6/6"},
           {id:"abc-cardio",name:"Treadmill finisher, incline 6, speed 2.5 walk",scheme:"10 min"}
         ];
@@ -2733,7 +2733,7 @@ function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]
     state.gym.split.forEach(function(d){ if(d&&Array.isArray(d.exercises)){
       var _tb=d.exercises.length;
       d.exercises=d.exercises.filter(function(x){ return !(x&&(x.name==="Close grip Smith press or dip"||x.name==="Cable overhead extension")); });
-      if(d.exercises.length!==_tb){ if(!d.exercises.some(function(x){return x&&x.name==="Rope pushdown (light)";})){ d.exercises.push({id:"trlite15",name:"Rope pushdown (light)",scheme:"3×15"}); } _triChanged=true; }
+      if(d.exercises.length!==_tb){ if(!d.exercises.some(function(x){return x&&x.name==="Rope pushdown (light)";})){ d.exercises.push({id:"trlite15",name:"Rope pushdown (light)",scheme:"3√ó15"}); } _triChanged=true; }
     } });
     if(_triChanged) save(true);
   } }catch(e){}
@@ -4433,6 +4433,205 @@ function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]
       if(state.meta && !state.meta.mig229_daily){ state.meta.mig229_daily=true; save(true); }
   } }catch(e){}
 
+
+  /* ===== v21 build 232: LAUNCH DAY. Spicer sell CLOSED and PAID, Willis LIVE. ==================
+     Ian, 08.06.2026, on the Spicer sale: "fully done by the way, I got paid, you can move it."
+     Willis went active this morning at $619,900, MLS 22622436, verified on five portals.
+
+     WHY THIS IS A STAGE MOVE AND NOT A LABEL EDIT. Production, deal count and take home are all
+     DERIVED in reGoalsCard from d.stage, so moving stage is what moves the numbers. Nothing here
+     hardcodes a total. Read the honest consequence before assuming this lifts the goal bars:
+     production and dealsDone count Closed PLUS Under Contract, so Spicer sell was ALREADY inside
+     both. What actually moves is the take home split, $2,906.39 crosses from pending into closed
+     (474900 x 0.036 seller default x 0.85 brokerage x 0.20 Chris's client share).
+
+     THE SPICER GUARD, AND IT IS THE POINT OF THIS BLOCK. re-spicer-sell and re-allison-spicer-buy
+     are TWO deals for ONE client and they have been merged once already, which understated the
+     deal count. This block matches on the EXACT id re-spicer-sell, asserts the purchase is
+     untouched afterwards, and aborts the whole migration rather than saving a merged pair.
+
+     Guard flag mig232_launchday lives in SAVED STATE ONLY, never in seedIan().meta. */
+  try{ if(profile==="ian" && state.meta && !state.meta.mig232_launchday){
+      var _D232=(state.realEstate&&Array.isArray(state.realEstate.deals))?state.realEstate.deals:null;
+      if(_D232){
+        var _get232=function(id){ var r=null; _D232.forEach(function(d){ if(d&&d.id===id) r=d; }); return r; };
+        var _sell232=_get232("re-spicer-sell");
+        var _buy232=_get232("re-allison-spicer-buy");
+        /* Snapshot the purchase BEFORE, so the assert below compares against reality, not a hope. */
+        var _buySnap232=_buy232?JSON.stringify({s:_buy232.stage,p:_buy232.price,c:_buy232.close,sd:_buy232.side,sr:_buy232.source}):null;
+
+        /* 1. SPICER SELL, 18734 Olive. Under Contract -> Closed. Closed Monday August 3 2026. */
+        if(_sell232 && _sell232.stage!=="Closed"){
+          _sell232.stage="Closed";
+          _sell232.close="August 3, 2026 (CLOSED and PAID)";
+          if(String(_sell232.note||"").indexOf("CLOSED AND PAID 08.06.2026")<0){
+            _sell232.note=String(_sell232.note||"")+" CLOSED AND PAID 08.06.2026. Ian: \"fully done by the way, I got paid, you can move it.\" Sale closed Monday August 3 2026 at $474,900, 18734 Olive, Sugar Creek. Seller side, Chris's client, seller rate 3.6 percent default, so Ian's take home is $2,906.39 and it is REALIZED, not projected. This is the SELL only. The Spicer new construction purchase (re-allison-spicer-buy, $894,446, closes November 13 2026, coded SELLER side because The Scenic Group represents the BUILDER) is a SEPARATE deal and is deliberately untouched.";
+          }
+        }
+
+        /* 2. WILLIS, 10218 Spyglass Dr. Coming Soon -> Active. Listed today. */
+        var _w232=_get232("re-cynthia-willis");
+        if(_w232 && _w232.stage!=="Active"){
+          _w232.stage="Active";
+          _w232.listDate="2026-08-06";
+          _w232.close="LIVE since Aug 6, 2026. Target under contract by Aug 20 (14 day goal). Nebraska close about 30 days after contract.";
+          if(String(_w232.note||"").indexOf("WENT LIVE 08.06.2026")<0){
+            _w232.note=String(_w232.note||"")+" WENT LIVE 08.06.2026 at $619,900 as decided. MLS 22622436, Great Plains Regional MLS, published as 10218 Spyglass Dr, Omaha NE 68136 (Sarpy County, Tiburon, Gretna schools). Verified live on Zillow, Redfin, Realtor.com, Homes.com and NP Dodge the same morning: price, 4 beds, 3 baths, 3,424 finished sqft and 36 photos all correct and consistent. Signs are in the yard, no showings or offers yet as of 08.06. DAY 10 TRIGGER IS NOW A DATE: AUGUST 16 2026. No strong offer or heavy showing traffic by then, move to $609,900 immediately. Drift is the risk on this file, not underpricing, because the Tiburon comp set is two fast sales and four to five slow ones.";
+          }
+        }
+
+        /* 3. THE SPICER ASSERT. If the purchase moved at all, roll back the whole block. */
+        var _buyNow232=_buy232?JSON.stringify({s:_buy232.stage,p:_buy232.price,c:_buy232.close,sd:_buy232.side,sr:_buy232.source}):null;
+        if(_buySnap232!==_buyNow232){
+          throw new Error("mig232 ABORT: re-allison-spicer-buy changed. Spicer sell and Spicer buy must never merge.");
+        }
+
+        /* 4. EVENTS. Fix the go live event to the real date, add the conditional open house. */
+        if(!Array.isArray(state.events)) state.events=[];
+        var _ev232=function(id){ var r=null; state.events.forEach(function(e){ if(e&&e.id===id) r=e; }); return r; };
+        var _live232=_ev232("ev-20260730-willis-live");
+        if(_live232){
+          _live232.date="2026-08-06";
+          _live232.title="Cynthia Willis listing WENT LIVE, 10218 Spyglass Dr, $619,900";
+          _live232.kind="Real estate";
+          _live232.note="Live on the market 08.06.2026. Date is FIXED, not tentative. Do not ask Ian to confirm it.";
+          delete _live232.tentative; delete _live232.approx;
+        }
+        if(!_ev232("ev-20260809-willis-openhouse")){
+          state.events.push({
+            id:"ev-20260809-willis-openhouse",
+            title:"Open house, 10218 Spyglass Dr, 12 to 2pm (only if not sold)",
+            date:"2026-08-09",
+            kind:"Real estate",
+            conditional:true,
+            note:"CONDITIONAL. Runs Sunday August 9 2026, 12 to 2pm, ONLY IF the home has not gone under contract before then. Under contract target is Aug 20, so at 3 days on market this is expected to run. It is published on Redfin, Homes.com and NP Dodge. It is NOT on Realtor.com, which says there are no upcoming open houses, and it was not visible in the Zillow page text either. Both need checking."
+          });
+        }
+        if(!_ev232("ev-20260816-willis-day10")){
+          state.events.push({
+            id:"ev-20260816-willis-day10",
+            title:"Willis DAY 10 decision, hold $619,900 or drop to $609,900",
+            date:"2026-08-16",
+            kind:"Real estate",
+            note:"Listed Aug 6, so day 10 is August 16 2026. Ian agreed the rule in advance: no strong offer and no heavy showing traffic by this date, the price moves to $609,900 immediately. This is a DATE, not a principle. Supported value is about $605,000 and expected appraisal is $598,000 to $622,000, so $609,900 still sits inside the range."
+          });
+        }
+
+        /* 5. TODOS. Close out what launch day answered, open what it created. */
+        if(!state.realEstate) state.realEstate={};
+        if(!Array.isArray(state.realEstate.todos)) state.realEstate.todos=[];
+        var _T232=state.realEstate.todos;
+        var _done232=function(id){ _T232.forEach(function(t){ if(t&&t.id===id) t.done=true; }); };
+        /* The go live todo is answered by the listing being live. The two that still tell him to
+           CONFIRM a date are superseded, the date is fixed. Marked done, not deleted. */
+        _done232("ret-20260803-willis-live");
+        _done232("ret-cynthia-listdate-0720");
+        _done232("ret-cynthia-prep-0722");
+        /* The Sugar Creek just sold flyer was blocked on the Spicer closing recording. It just did. */
+        _T232.forEach(function(t){
+          if(t&&t.id==="ret-flyers-sugarcreek"&&!t.done){
+            t.text="Sugar Creek just sold flyer walk. UNBLOCKED, the Spicer sale at 18734 Olive closed Aug 3 and is paid, so it is a real just sold. Flyer is print ready.";
+            t.src="Spicer sale closed and paid, confirmed 08.06.2026";
+          }
+        });
+        var _add232=function(item){
+          var ex=_T232.filter(function(t){return t&&t.key===item.key;});
+          if(ex.length){ ex[0].text=item.text; ex[0].exp=item.exp; ex[0].src=item.src; }
+          else { _T232.push(item); }
+        };
+        _add232({id:"ret-20260806-willis-portalfix",key:"willis-portal-fix",done:false,exp:"2026-08-09",
+          text:"Fix three published listing errors on 10218 Spyglass while it is day one and cheap. Realtor.com shows NO open house (Redfin, Homes.com and NP Dodge all show Sun Aug 9, 12 to 2), Realtor.com lists Chris only and drops Ian entirely, and Realtor.com carries a false Water view tag on a golf course lot, most likely auto tagged off the Water Softener in the appliance list. Also confirm the Aug 9 open house is actually showing on Zillow.",
+          src:"Five portal verification, 08.06.2026 launch morning"});
+        _add232({id:"ret-20260816-willis-day10",key:"willis-day10",done:false,exp:"2026-08-16",
+          text:"WILLIS DAY 10, August 16. Decide: hold $619,900 or drop to $609,900. The rule Ian agreed in advance is that no strong offer and no heavy showing traffic by day 10 means the price moves immediately. Bring showing count, saves and any offer activity to the call.",
+          src:"Day 10 trigger, dated from the Aug 6 list date"});
+
+        state.meta.mig232_launchday=true; save(true);
+      }
+  } }catch(e){ try{ console.warn("mig232 did not apply:",e&&e.message); }catch(_){} }
+
+
+  /* ===== v21 build 233: ACTUALS BEAT THE MODEL. Plus sphere, Bruce, and the portal fix. ========
+     Ian, 08.06.2026, on the Spicer sale: "idk how the math was off so just whatever." He was paid
+     $2,770. The model said $2,906.39. Gap $136.39, which is 4.69 percent.
+
+     WHAT THE GAP IS, AND WHAT IT IS NOT. It was not guessed at. Every single cause hypothesis was
+     solved against the real numbers and THREE of them fit within one dollar of $2,770:
+       flat $800 off the gross commission  -> $2,770.39
+       an extra 4 percent off the top (19) -> $2,769.62
+       an effective seller rate of 3.43    -> $2,769.14
+     Those are 86 cents apart. ONE closing cannot separate them, and no fee has been invented here
+     to make the arithmetic close. The model is therefore UNCHANGED and left as it was.
+
+     WHY THIS MATTERS BEYOND ONE DEAL. If the cause is systematic it applies to all 22 deals and the
+     pipeline take home is overstated by roughly $2,273 to $2,560 across closed plus under contract.
+     It does NOT move production volume or the deal count, which are price based, not commission
+     based, so the pace picture and the $10M gap are unaffected either way.
+
+     THE FIX SHIPPED HERE IS STRUCTURAL, NOT ARITHMETIC. dealIanNet now returns d.actualNet when one
+     is present, so a real paid figure always beats a computed one and can never be recalculated
+     away by a later model change. Spicer carries actualNet 2770.
+
+     Guard flag mig233_actuals lives in SAVED STATE ONLY, never in seedIan().meta. */
+  try{ if(profile==="ian" && state.meta && !state.meta.mig233_actuals){
+      var _D233=(state.realEstate&&Array.isArray(state.realEstate.deals))?state.realEstate.deals:null;
+      if(_D233){
+        var _g233=function(id){ var r=null; _D233.forEach(function(d){ if(d&&d.id===id) r=d; }); return r; };
+
+        /* 1. SPICER SELL. Actual paid figure, marked as actual so nothing recomputes it. */
+        var _sp233=_g233("re-spicer-sell");
+        if(_sp233 && typeof _sp233.actualNet!=="number"){
+          _sp233.actualNet=2770;
+          _sp233.actualNetSource="Ian, 08.06.2026, what he was actually paid";
+          _sp233.actualNetNote="Model computed $2,906.39 from 474900 x 0.036 x 0.85 x 0.20. Actual was $2,770, a gap of $136.39 or 4.69 percent. Cause UNRESOLVED: flat $800 off gross, an extra 4 percent off the top, and a 3.43 percent effective rate all fit within a dollar and one closing cannot separate them. No fee has been assumed. To settle it, one more actual on a deal with a different share, ideally Ashley Gilliam, where the three models sit $285 apart.";
+        }
+
+        /* 2. BRUCE STAYS IFFY. Ian, 08.06.2026: still looking for lots and he is picky, for good
+           reason. Pickiness changes HOW LONG, not WHETHER, so it is a timeline fact not a risk to
+           his realness. He must not sit in any forecast as a probable. */
+        ["re-bruce-oneil","s0wqsf9"].forEach(function(bid){
+          var b=_g233(bid); if(!b) return;
+          b.flag="iffy";
+          if(String(b.note||"").indexOf("STILL IFFY 08.06.2026")<0){
+            b.note=String(b.note||"")+" STILL IFFY 08.06.2026, confirmed by Ian and NOT to be upgraded. They are actively looking for lots and he is PICKY, which Ian says is for good reason. Read that as a timeline fact, not a doubt about whether he is real: pickiness lengthens the search, it does not reduce the probability. ACTIVE WORK IS LOT SOURCING, that is the thing to do rather than the thing to wait for, and it is worth roughly double since an open lot turns buyer side only into both sides. He has NO timeline and NOTHING scheduled, so he must never be counted in a forecast as a probable.";
+          }
+        });
+
+        /* 3. SPHERE REACH OUTS. Mason contacted 08.06, Evan 08.05. contactOverdue() treats an empty
+           lastContacted as permanently overdue, so Mason has been showing as overdue since he was
+           added. Setting the date is what actually resets the 90 day cadence clock. */
+        if(!state.realEstate) state.realEstate={};
+        if(!Array.isArray(state.realEstate.sphere)) state.realEstate.sphere=[];
+        var _S233=state.realEstate.sphere;
+        var _byName233=function(n){ var r=null; _S233.forEach(function(k){ if(k&&String(k.name||"").toLowerCase().indexOf(n)>=0) r=k; }); return r; };
+        var _mason=_byName233("mason");
+        if(_mason){ if(!_mason.lastContacted || _mason.lastContacted<"2026-08-06"){ _mason.lastContacted="2026-08-06"; } if(!_mason.cadence) _mason.cadence=90; if(!_mason.quality) _mason.quality="Iffy"; }
+        var _evan=_byName233("evan");
+        if(!_evan){
+          _S233.push({ id:"sph-evan", name:"Evan", type:"Sphere", phone:"",
+            lastContacted:"2026-08-05", quality:"Iffy", cadence:90,
+            note:"Added to the sphere 08.06.2026 because Ian contacted him 08.05 and the touch had nowhere to live. He is ALSO an active buyer prospect, deal re-evan, $250k to $300k targeting end of 2026, Ian's own client. Not a duplicate: the deal is the transaction, this is the nurture clock. Quality defaults to Iffy per the standing rule since none was given." });
+        } else { if(!_evan.lastContacted || _evan.lastContacted<"2026-08-05"){ _evan.lastContacted="2026-08-05"; } if(!_evan.cadence) _evan.cadence=90; if(!_evan.quality) _evan.quality="Iffy"; }
+
+        /* 4. TODOS. Close the sphere todo Ian just actioned, add the portal fix steps. */
+        if(!Array.isArray(state.realEstate.todos)) state.realEstate.todos=[];
+        var _T233=state.realEstate.todos;
+        _T233.forEach(function(t){
+          if(t&&t.id==="ret-20260803-sphere"&&!t.done){
+            t.text="Sphere: Mason contacted Aug 6 and Evan Aug 5, both logged and their cadence clocks reset. STILL OPEN: work one of the two untouched leads, the Zillow 132nd St ranch inquiry or the Trails open house sign in. Sphere expansion is the August priority and top of funnel is the real constraint on 20 deals, so two touches in two days is the first movement on it in a while.";
+            t.src="Ian reported both touches 08.06.2026";
+          }
+        });
+        var _add233=function(item){ var ex=_T233.filter(function(t){return t&&t.key===item.key;});
+          if(ex.length){ ex[0].text=item.text; ex[0].exp=item.exp; ex[0].src=item.src; } else { _T233.push(item); } };
+        _add233({id:"ret-20260806-realtor-fix",key:"willis-portal-fix",done:false,exp:"2026-08-09",
+          text:"REALTOR.COM FIX, 10218 Spyglass, MLS 22622436. Three lines. ONE, in Paragon open the listing and in the VIEW field uncheck Water so only Golf Course remains, and while in there confirm Ian is in the Co List Agent field, then save. The false water view is a standard RESO View value that Realtor.com renders as a big feature chip while Zillow and Redfin bury it, which is why it only shows there. TWO, in Paragon go to Listings, Maintain Listings, Select an Action, Add Edit Open House, and confirm the Sunday Aug 9 12 to 2 record exists with type PUBLIC not Broker or Office, then resave to push a fresh timestamp. THREE, call Realtor.com Customer Care on 800 878 4166 today or email dl-mlssupport@move.com copying mlssupport@realtor.com with the MLS number, ask for a forced re pull, and claim Ian's agent profile at realtor.com/realestateagents using his GPRMLS id, because Realtor.com does NOT pull agent identity from the MLS and there must be a profile for the feed to attach him to. Re syndication runs 24 to 72 hours, and the open house is Sunday, so do not wait on the feed.",
+          src:"Portal verification plus MLS and RESO research, 08.06.2026"});
+
+        state.meta.mig233_actuals=true; save(true);
+      }
+  } }catch(e){ try{ console.warn("mig233 did not apply:",e&&e.message); }catch(_){} }
+
   /* build 225: focus timer removed, nothing to clear here anymore. */
   applyAccent(); dailyReset(); save(true);
 }
@@ -4495,7 +4694,7 @@ function autoObjective(hub){ try{ if(hub==="re"){ const t=firstUndone(state.real
 function hidden(key){ return !!(state.settings&&state.settings.hidden&&state.settings.hidden[key]); }
 function card(accClass){ const c=el("div","card"); if(accClass){ c.appendChild(el("div","accent "+accClass)); } const b=el("div","cbody"); c.appendChild(b); c._body=b; return c; }
 let pendingFocus=null;
-function checkItem(done,label,meta,onToggle,onDelete){ const row=el("div","chk"); const lab=el("label","cbwrap"); const inp=el("input","cbx"); inp.type="checkbox"; inp.checked=!!done; const box=el("span","box"); box.innerHTML=CHECK; const t=el("span","ctext"); t.textContent=label; if(meta){ const m=el("span","meta"); m.textContent=meta; t.appendChild(m); } lab.appendChild(inp); lab.appendChild(box); lab.appendChild(t); if(onToggle) inp.addEventListener("change",onToggle); row.appendChild(lab); if(onDelete){ const d=el("button","del","×"); d.onclick=onDelete; row.appendChild(d); } return row; }
+function checkItem(done,label,meta,onToggle,onDelete){ const row=el("div","chk"); const lab=el("label","cbwrap"); const inp=el("input","cbx"); inp.type="checkbox"; inp.checked=!!done; const box=el("span","box"); box.innerHTML=CHECK; const t=el("span","ctext"); t.textContent=label; if(meta){ const m=el("span","meta"); m.textContent=meta; t.appendChild(m); } lab.appendChild(inp); lab.appendChild(box); lab.appendChild(t); if(onToggle) inp.addEventListener("change",onToggle); row.appendChild(lab); if(onDelete){ const d=el("button","del","√ó"); d.onclick=onDelete; row.appendChild(d); } return row; }
 function adder(ph,onAdd){ const wrap=el("div","addrow"); const inp=el("input","in"); inp.placeholder=ph; inp.setAttribute("data-add",ph); const b=el("button","btn sm","Add"); const fire=()=>{ const v=inp.value.trim(); if(!v)return; pendingFocus=ph; onAdd(v); }; b.onclick=fire; inp.onkeydown=e=>{ if(e.key==="Enter")fire(); }; wrap.appendChild(inp); wrap.appendChild(b); return wrap; }
 function chipRow(opts,cur,onPick){ const r=el("div","chips"); opts.forEach(o=>{ const c=el("div","chip"+(o===cur?" on":""),o); c.onclick=()=>onPick(o); r.appendChild(c); }); return r; }
 /* v21 build 40: chip row with separate display label and stored value, so a chip can read
@@ -4505,11 +4704,11 @@ function chipRowKV(pairs,cur,onPick){ const r=el("div","chips"); pairs.forEach(f
 function sect(parent,text,sub,onTap){ const s=el("div","sectlabel"); s.appendChild(document.createTextNode(text)); if(sub){ const a=el("span","sub",sub); if(onTap){a.onclick=onTap;a.style.cursor="pointer";} s.appendChild(a);} parent.appendChild(s); return s; }
 function sectG(parent,text,sub){ const s=sect(parent,text,sub); s.classList.add("g"); return s; }
 function safe(parent,fn,label){ try{ fn(); }catch(e){ try{console.error("[dash]",label,e);}catch(_){} const c=card(); c._body.appendChild(el("div","small dim",(label||"section")+" could not load.")); if(parent)parent.appendChild(c); } }
-function stepper(get,set){ const s=el("div","stepper"); const mn=el("button",null,"−"); const val=el("div","sv",String(get())); const pl=el("button",null,"+"); mn.onclick=()=>{ set(Math.max(0,get()-1)); save(); val.textContent=String(get()); }; pl.onclick=()=>{ set(get()+1); save(); val.textContent=String(get()); }; s.appendChild(mn); s.appendChild(val); s.appendChild(pl); return s; }
-function launchCard(parent,icon,title,sub,tabId){ const c=card(); const b=el("label","launch"); b.setAttribute("for","t-"+tabId); b.innerHTML='<div class="li">'+icon+'</div><div class="lt"><b>'+title+'</b><small>'+sub+'</small></div><div class="larrow">›</div>'; c._body.appendChild(b); parent.appendChild(c); }
+function stepper(get,set){ const s=el("div","stepper"); const mn=el("button",null,"‚àí"); const val=el("div","sv",String(get())); const pl=el("button",null,"+"); mn.onclick=()=>{ set(Math.max(0,get()-1)); save(); val.textContent=String(get()); }; pl.onclick=()=>{ set(get()+1); save(); val.textContent=String(get()); }; s.appendChild(mn); s.appendChild(val); s.appendChild(pl); return s; }
+function launchCard(parent,icon,title,sub,tabId){ const c=card(); const b=el("label","launch"); b.setAttribute("for","t-"+tabId); b.innerHTML='<div class="li">'+icon+'</div><div class="lt"><b>'+title+'</b><small>'+sub+'</small></div><div class="larrow">‚Ä∫</div>'; c._body.appendChild(b); parent.appendChild(c); }
 /* ===== v18 Apple style tiles (stat, fraction, grid) ===== */
-function statTile(opts){ const c=el("div","card"+(opts.tab?" tap":"")); const b=el("div","cbody"); c.appendChild(b); const top=el("div","between"); const lab=el("div","st-label"); if(opts.color){ lab.appendChild(el("span","st-ico c-"+opts.color)); } lab.appendChild(document.createTextNode(opts.label)); top.appendChild(lab); if(opts.tab){ top.appendChild(el("div","chev","›")); c.onclick=()=>selectTab(opts.tab); } b.appendChild(top); const num=el("div","st-num"+(opts.color?" c-"+opts.color:"")); const n=el("span","n"); n.textContent=opts.value; num.appendChild(n); if(opts.unit){ const u=el("span","u"); u.textContent=opts.unit; num.appendChild(u); } b.appendChild(num); if(opts.sub){ b.appendChild(el("div","st-sub",opts.sub)); } if(opts.spark&&opts.spark.length){ const ch=barChart(opts.spark.map(p=>({label:"",pct:p})),"",opts.sparkH||52); ch.style.marginTop="10px"; ch.style.marginBottom="4px"; b.appendChild(ch); } return c; }
-function fracTile(opts){ const col=opts.color||"blue"; const c=el("div","card"+(opts.tab?" tap":"")); const b=el("div","cbody"); c.appendChild(b); const top=el("div","between"); const lab=el("div","st-label"); lab.appendChild(el("span","st-ico c-"+col)); lab.appendChild(document.createTextNode(opts.label)); top.appendChild(lab); if(opts.tab){ top.appendChild(el("div","chev","›")); c.onclick=()=>selectTab(opts.tab); } b.appendChild(top); const num=el("div","st-num c-"+col); const n=el("span","n"); n.textContent=opts.done+"/"+opts.goal; num.appendChild(n); if(opts.unit){ const u=el("span","u"); u.textContent=opts.unit; num.appendChild(u); } b.appendChild(num); const pbar=el("div","pbar"); const pi=el("i"); pbar.appendChild(pi); try{ pi.style.background="var(--"+col+")"; }catch(e){} const frac=opts.goal?Math.min(1,(opts.done||0)/opts.goal):0; /* build 202: final width set at construction, not in a setTimeout. The grow is a keyframe over the top. */ try{pi.style.width=(frac*100)+"%";}catch(e){} b.appendChild(pbar); return c; }
+function statTile(opts){ const c=el("div","card"+(opts.tab?" tap":"")); const b=el("div","cbody"); c.appendChild(b); const top=el("div","between"); const lab=el("div","st-label"); if(opts.color){ lab.appendChild(el("span","st-ico c-"+opts.color)); } lab.appendChild(document.createTextNode(opts.label)); top.appendChild(lab); if(opts.tab){ top.appendChild(el("div","chev","‚Ä∫")); c.onclick=()=>selectTab(opts.tab); } b.appendChild(top); const num=el("div","st-num"+(opts.color?" c-"+opts.color:"")); const n=el("span","n"); n.textContent=opts.value; num.appendChild(n); if(opts.unit){ const u=el("span","u"); u.textContent=opts.unit; num.appendChild(u); } b.appendChild(num); if(opts.sub){ b.appendChild(el("div","st-sub",opts.sub)); } if(opts.spark&&opts.spark.length){ const ch=barChart(opts.spark.map(p=>({label:"",pct:p})),"",opts.sparkH||52); ch.style.marginTop="10px"; ch.style.marginBottom="4px"; b.appendChild(ch); } return c; }
+function fracTile(opts){ const col=opts.color||"blue"; const c=el("div","card"+(opts.tab?" tap":"")); const b=el("div","cbody"); c.appendChild(b); const top=el("div","between"); const lab=el("div","st-label"); lab.appendChild(el("span","st-ico c-"+col)); lab.appendChild(document.createTextNode(opts.label)); top.appendChild(lab); if(opts.tab){ top.appendChild(el("div","chev","‚Ä∫")); c.onclick=()=>selectTab(opts.tab); } b.appendChild(top); const num=el("div","st-num c-"+col); const n=el("span","n"); n.textContent=opts.done+"/"+opts.goal; num.appendChild(n); if(opts.unit){ const u=el("span","u"); u.textContent=opts.unit; num.appendChild(u); } b.appendChild(num); const pbar=el("div","pbar"); const pi=el("i"); pbar.appendChild(pi); try{ pi.style.background="var(--"+col+")"; }catch(e){} const frac=opts.goal?Math.min(1,(opts.done||0)/opts.goal):0; /* build 202: final width set at construction, not in a setTimeout. The grow is a keyframe over the top. */ try{pi.style.width=(frac*100)+"%";}catch(e){} b.appendChild(pbar); return c; }
 function summaryGrid(parent,tiles){ const t=tiles.filter(x=>x); const g=el("div","grid2 sgrid"); if(t.length===3){ g.className="grid2 sgrid sg3"; g.style.gridTemplateColumns="repeat(3,minmax(0,1fr))"; } else if(t.length===1){ g.style.gridTemplateColumns="1fr"; } t.forEach(x=>g.appendChild(x)); g.style.marginBottom="14px"; parent.appendChild(g); }
 function weekWorkoutSpark(){ const out=[]; for(let i=6;i>=0;i--){ const d=new Date(); d.setDate(d.getDate()-i); const k=todayKey(d); const dow=d.getDay(); const day=daySplit(dow); const log=(state.gym&&state.gym.logs&&state.gym.logs[k])||{done:{}}; const tot=day.exercises.length||1; const done=day.exercises.filter(e=>log.done&&log.done[e.id]).length; out.push(Math.round(done/tot*100)); } return out; }
 function workoutsThisWeek(){ let c=0; for(let i=0;i<7;i++){ const d=new Date(); d.setDate(d.getDate()-i); const k=todayKey(d); const log=(state.gym&&state.gym.logs&&state.gym.logs[k]); if(log&&log.done&&Object.keys(log.done).length) c++; } return c; }
@@ -4740,8 +4939,8 @@ function pkNextFocus(){
     return {note:last.coachNote, date:last.date, source:last.source, n:vs.length};
   }catch(e){ return null; }
 }
-function briefCard(it){ const c=card(TYPECOL[it.type]||"a-blue"); const b=c._body; const top=el("div","between"); const _lft=el("div"); _lft.style.cssText="display:flex;align-items:center;gap:8px"; _lft.appendChild(claudeAvatar("av-sm")); _lft.appendChild(el("span","pill b",it.type||"Info")); top.appendChild(_lft); const lab=el("label","cbmini"); lab.style.marginLeft="auto"; const inp=el("input","cbx"); inp.type="checkbox"; inp.checked=briefDone(it.id); const box=el("span","box mini"); box.innerHTML=CHECK; inp.addEventListener("change",()=>{ var _nv=!briefDone(it.id); briefSetDone(it.id,_nv); it.done=_nv; save(true); render(); }); lab.appendChild(inp); lab.appendChild(box); top.appendChild(lab); b.appendChild(top); const title=el("div","feedtitle",it.title); if(briefDone(it.id)){ title.style.color="var(--dim)"; title.style.textDecoration="line-through"; } b.appendChild(title); if(it.note) b.appendChild(el("div","feednote briefnote",it.note)); /* v21 build 212: THE DRIVER TAG. RULES.md P1 requires that when the app acts on something it knows about Ian, it says so. A few words, never a paragraph. Optional field, so every card written before build 212 renders exactly as it did. */ if(it.why){ var _wy=el("div","small dim"); _wy.style.cssText="margin-top:7px;line-height:1.4"; _wy.textContent=it.why; b.appendChild(_wy); } if(it.url){ const a=el("a","feedlink",(it.type==="Pickleball"?"Watch":it.type==="Supplement"?"Read the research":"Open")+" ›"); a.href=it.url; a.target="_blank"; a.rel="noopener"; b.appendChild(a); } return c; }
-function eventsModule(parent){ /* build 178: only show upcoming events (today or later). Past dated events are kept in state but hidden from the calendar so nothing stale shows. */ const evs=(state.events||[]).filter(e=>e&&daysUntil(e.date)>=0).slice().sort((a,b)=>String(a.date).localeCompare(String(b.date))); const c=card(); const b=c._body; if(!evs.length) b.appendChild(el("div","empty","No upcoming events.")); evs.forEach(ev=>{ const row=el("div","evrow"); const p=evParts(ev.date); const du=daysUntil(ev.date); const dd=el("div","evdate"); dd.innerHTML='<div class="d">'+p.d+'</div><div class="m">'+p.m+'</div>'; row.appendChild(dd); const et=el("div","evt"); et.appendChild(el("div","en",ev.title)); et.appendChild(el("div","ec",ev.kind+(du>=0?(du===0?" · today":du===1?" · tomorrow":" · in "+du+" days"):" · past"))); row.appendChild(et); const del=el("button","del","×"); del.onclick=()=>{ state.events=state.events.filter(x=>x.id!==ev.id); save(); render(); }; row.appendChild(del); b.appendChild(row); }); parent.appendChild(c);
+function briefCard(it){ const c=card(TYPECOL[it.type]||"a-blue"); const b=c._body; const top=el("div","between"); const _lft=el("div"); _lft.style.cssText="display:flex;align-items:center;gap:8px"; _lft.appendChild(claudeAvatar("av-sm")); _lft.appendChild(el("span","pill b",it.type||"Info")); top.appendChild(_lft); const lab=el("label","cbmini"); lab.style.marginLeft="auto"; const inp=el("input","cbx"); inp.type="checkbox"; inp.checked=briefDone(it.id); const box=el("span","box mini"); box.innerHTML=CHECK; inp.addEventListener("change",()=>{ var _nv=!briefDone(it.id); briefSetDone(it.id,_nv); it.done=_nv; save(true); render(); }); lab.appendChild(inp); lab.appendChild(box); top.appendChild(lab); b.appendChild(top); const title=el("div","feedtitle",it.title); if(briefDone(it.id)){ title.style.color="var(--dim)"; title.style.textDecoration="line-through"; } b.appendChild(title); if(it.note) b.appendChild(el("div","feednote briefnote",it.note)); /* v21 build 212: THE DRIVER TAG. RULES.md P1 requires that when the app acts on something it knows about Ian, it says so. A few words, never a paragraph. Optional field, so every card written before build 212 renders exactly as it did. */ if(it.why){ var _wy=el("div","small dim"); _wy.style.cssText="margin-top:7px;line-height:1.4"; _wy.textContent=it.why; b.appendChild(_wy); } if(it.url){ const a=el("a","feedlink",(it.type==="Pickleball"?"Watch":it.type==="Supplement"?"Read the research":"Open")+" ‚Ä∫"); a.href=it.url; a.target="_blank"; a.rel="noopener"; b.appendChild(a); } return c; }
+function eventsModule(parent){ /* build 178: only show upcoming events (today or later). Past dated events are kept in state but hidden from the calendar so nothing stale shows. */ const evs=(state.events||[]).filter(e=>e&&daysUntil(e.date)>=0).slice().sort((a,b)=>String(a.date).localeCompare(String(b.date))); const c=card(); const b=c._body; if(!evs.length) b.appendChild(el("div","empty","No upcoming events.")); evs.forEach(ev=>{ const row=el("div","evrow"); const p=evParts(ev.date); const du=daysUntil(ev.date); const dd=el("div","evdate"); dd.innerHTML='<div class="d">'+p.d+'</div><div class="m">'+p.m+'</div>'; row.appendChild(dd); const et=el("div","evt"); et.appendChild(el("div","en",ev.title)); et.appendChild(el("div","ec",ev.kind+(du>=0?(du===0?" ¬∑ today":du===1?" ¬∑ tomorrow":" ¬∑ in "+du+" days"):" ¬∑ past"))); row.appendChild(et); const del=el("button","del","√ó"); del.onclick=()=>{ state.events=state.events.filter(x=>x.id!==ev.id); save(); render(); }; row.appendChild(del); b.appendChild(row); }); parent.appendChild(c);
   let kind="League"; const ac=card(); const ab=ac._body; const kc=el("div"); const setChips=()=>{ [...kc.querySelectorAll(".chip")].forEach(ch=>ch.classList.toggle("on",ch.textContent===kind)); }; kc.appendChild(chipRow(["League","Tournament","Real estate","Personal"],kind,k=>{kind=k;setChips();})); ab.appendChild(kc); const inp=el("input","in"); inp.placeholder="Event..."; inp.setAttribute("data-add","Event..."); inp.style.marginTop="10px"; const dt=el("input","in"); dt.type="date"; dt.style.marginTop="9px"; const btn=el("button","btn block","Add event"); btn.onclick=()=>{ const t=inp.value.trim(); if(!t)return; pendingFocus="Event..."; state.events.push({id:uid(),title:t,date:dt.value||addDays(1),kind:kind}); save(); render(); }; ab.appendChild(inp); ab.appendChild(dt); ab.appendChild(btn); parent.appendChild(ac); }
 function goalsList(parent,arr){ const c=card(); const b=c._body; if(!arr.length)b.appendChild(el("div","empty","No goals yet.")); arr.forEach(g=>{ b.appendChild(checkItem(g.done,g.text,g.horizon||null,()=>{g.done=!g.done;save();render();},()=>{ const i=arr.indexOf(g); if(i>-1)arr.splice(i,1); save(); render(); })); }); b.appendChild(adder("Add a goal...",t=>{ arr.push({id:uid(),text:t,done:false}); save(); render(); })); parent.appendChild(c); }
 function textNotes(parent,get,set,ph,min){ const c=card(); const ta=el("textarea","in"); ta.style.minHeight=(min||150)+"px"; ta.value=get()||""; ta.placeholder=ph; ta.oninput=()=>{set(ta.value);save();}; c._body.appendChild(ta); parent.appendChild(c); }
@@ -4808,7 +5007,14 @@ function sourceShare(source,d){ if(d&&typeof d.ianSplit==="number") return d.ian
 function dualRate(d){ return (d&&typeof d.dualRate==="number")?d.dualRate:0.06; }
 function dealGrossCommission(d){ if(dealSource(d)==="Dual agency"){ var _full=priceNum(d&&d.price)*dualRate(d); return (dealSide(d)==="Both")?_full:_full/2; } var _sd=dealSide(d); return priceNum(d&&d.price) * (_sd==="Buyer"?0.024:sellerRate(d)); }
 function dealBrokerage(d){ if(dealSource(d)==="Dual agency"){ var _fee=priceNum(d&&d.price)*0.15*0.06; return (dealSide(d)==="Both")?_fee:_fee/2; } return dealGrossCommission(d)*0.15; }
-function dealIanNet(d){ return (dealGrossCommission(d)-dealBrokerage(d)) * sourceShare(dealSource(d),d); }
+/* v21 build 233: AN ACTUAL PAID FIGURE ALWAYS BEATS THE MODEL. If a deal carries actualNet,
+   that is what Ian was really paid and it is returned unchanged. The computed path is only a
+   fallback for deals with no actual yet. This exists because the Spicer sale paid $2,770 against
+   a modelled $2,906.39 and the cause could not be identified from one closing. Setting an actual
+   is how a known number survives any later change to the model. */
+function dealIanNet(d){ if(d&&typeof d.actualNet==="number") return d.actualNet; return (dealGrossCommission(d)-dealBrokerage(d)) * sourceShare(dealSource(d),d); }
+function dealNetIsActual(d){ return !!(d&&typeof d.actualNet==="number"); }
+function countActualNets(arr){ return (arr||[]).filter(dealNetIsActual).length; }
 function sumIanNet(arr){ return (arr||[]).reduce(function(a,d){ return a+dealIanNet(d); },0); }
 /* v21 build 43: a dual agency deal counts DOUBLE for production volume and for the deal count (both sides
    on one property), even though it shows as one entry. Non-dual deals count once.
@@ -4819,11 +5025,11 @@ function dealVolume(d){ return priceNum(d&&d.price) * (dealSource(d)==="Dual age
 function dealCountWeight(d){ return dealSource(d)==="Dual agency"?2:1; }
 function dealCard(parent,d){ const c=card(); const b=c._body; const head=el("div"); head.appendChild(el("h3",null,d.title)); if(d.price){ const p=el("div"); p.style.color="var(--sec2,var(--accent2))"; p.style.fontWeight="800"; p.style.marginTop="4px"; p.style.fontSize="16px"; p.textContent=d.price; head.appendChild(p);} if(d.close){ const cd=el("div","small dim"); cd.style.marginTop="3px"; cd.textContent="Close: "+d.close; head.appendChild(cd);} b.appendChild(head); const cs=el("div"); cs.style.marginTop="11px"; cs.appendChild(chipRow(RESTAGES,d.stage,s=>{d.stage=s;save();render();})); b.appendChild(cs); const pr=el("input","in"); pr.placeholder="Price"; pr.value=d.price||""; pr.style.marginTop="10px"; pr.oninput=()=>{d.price=pr.value;save();}; b.appendChild(pr); const cl=el("input","in"); cl.placeholder="Close date"; cl.value=d.close||""; cl.style.marginTop="9px"; cl.oninput=()=>{ d.close=cl.value; save(); }; b.appendChild(cl); const ta=el("textarea","in"); ta.style.minHeight="52px"; ta.style.marginTop="9px"; ta.value=d.note||""; ta.placeholder="Notes, next step..."; ta.oninput=()=>{d.note=ta.value;save();}; b.appendChild(ta); const del=el("button","del","Remove"); del.style.fontSize="13px"; del.style.marginTop="8px"; del.onclick=()=>{ if(confirm("Remove this deal?")){ state.realEstate.deals=state.realEstate.deals.filter(x=>x.id!==d.id); save(); render(); } }; b.appendChild(del); parent.appendChild(c); }
 function rePipeline(parent){ state.realEstate.deals.forEach(d=>{ const c=card(d.stage==="Just Sold"?"a-blue":"a-gold"); const b=c._body; const head=el("div"); head.appendChild(el("h3",null,d.title)); if(d.price){ const p=el("div","small"); p.style.color="var(--accent2)"; p.style.fontWeight="700"; p.textContent=d.price; head.appendChild(p);} b.appendChild(head); const cs=el("div"); cs.style.marginTop="10px"; cs.appendChild(chipRow(RESTAGES,d.stage,s=>{d.stage=s;save();render();})); b.appendChild(cs); const pr=el("input","in"); pr.placeholder="Price (optional)"; pr.value=d.price||""; pr.style.marginTop="10px"; pr.oninput=()=>{d.price=pr.value;save();}; b.appendChild(pr); const ta=el("textarea","in"); ta.style.minHeight="52px"; ta.style.marginTop="10px"; ta.value=d.note||""; ta.placeholder="Notes, next step..."; ta.oninput=()=>{d.note=ta.value;save();}; b.appendChild(ta); const del=el("button","del","Remove"); del.style.fontSize="13px"; del.style.marginTop="8px"; del.onclick=()=>{ if(confirm("Remove this deal?")){ state.realEstate.deals=state.realEstate.deals.filter(x=>x.id!==d.id); save(); render(); } }; b.appendChild(del); parent.appendChild(c); }); const add=card(); add._body.appendChild(adder("New deal or prospect...",t=>{state.realEstate.deals.push({id:uid(),title:t,stage:"Prospecting",price:"",note:""});save();render();})); parent.appendChild(add); }
-function leadsModule(parent){ const c=card(); const b=c._body; const ls=state.realEstate.leads||(state.realEstate.leads=[]); if(!ls.length)b.appendChild(el("div","empty","No leads yet.")); ls.forEach(l=>{ const row=el("div","chk"); const t=el("div","ctext"); t.textContent=l.name; const m=el("span","meta"); m.textContent=(l.source?l.source+" · ":"")+(l.status||"New")+(l.note?" · "+l.note:""); t.appendChild(m); row.appendChild(t); const d=el("button","del","×"); d.onclick=()=>{ state.realEstate.leads=ls.filter(x=>x.id!==l.id); save(); render(); }; row.appendChild(d); b.appendChild(row); }); b.appendChild(adder("Add a lead...",n=>{ ls.push({id:uid(),name:n,source:"",status:"New",note:""}); save(); render(); })); parent.appendChild(c); }
+function leadsModule(parent){ const c=card(); const b=c._body; const ls=state.realEstate.leads||(state.realEstate.leads=[]); if(!ls.length)b.appendChild(el("div","empty","No leads yet.")); ls.forEach(l=>{ const row=el("div","chk"); const t=el("div","ctext"); t.textContent=l.name; const m=el("span","meta"); m.textContent=(l.source?l.source+" ¬∑ ":"")+(l.status||"New")+(l.note?" ¬∑ "+l.note:""); t.appendChild(m); row.appendChild(t); const d=el("button","del","√ó"); d.onclick=()=>{ state.realEstate.leads=ls.filter(x=>x.id!==l.id); save(); render(); }; row.appendChild(d); b.appendChild(row); }); b.appendChild(adder("Add a lead...",n=>{ ls.push({id:uid(),name:n,source:"",status:"New",note:""}); save(); render(); })); parent.appendChild(c); }
 function reTodos(parent){ const c=card(); const b=c._body; const rt=state.realEstate.todos; if(!rt.length)b.appendChild(el("div","empty","Nothing yet.")); rt.forEach(t=>{ b.appendChild(checkItem(t.done,t.text,t.due?dueLabel(t.due):null,()=>{t.done=!t.done;save();render();},()=>{state.realEstate.todos=rt.filter(x=>x.id!==t.id);save();render();})); }); const inp=el("input","in"); inp.placeholder="Add a follow up..."; inp.setAttribute("data-add","Add a follow up..."); const dt=el("input","in"); dt.type="date"; dt.style.marginTop="9px"; const btn=el("button","btn block","Add task"); btn.onclick=()=>{ const v=inp.value.trim(); if(!v)return; pendingFocus="Add a follow up..."; rt.push({id:uid(),text:v,done:false,due:dt.value||""}); save(); render(); }; const wrap=el("div"); wrap.style.marginTop="12px"; wrap.appendChild(inp); wrap.appendChild(dt); wrap.appendChild(btn); b.appendChild(wrap); parent.appendChild(c); }
-function reContacts(parent){ const c=card(); const b=c._body; state.realEstate.contacts.forEach(k=>{ const row=el("div","chk"); const t=el("div","ctext"); t.textContent=k.name; const m=el("span","meta"); m.textContent=(k.role?k.role+". ":"")+(k.detail||""); t.appendChild(m); row.appendChild(t); const d=el("button","del","×"); d.onclick=()=>{state.realEstate.contacts=state.realEstate.contacts.filter(x=>x.id!==k.id);save();render();}; row.appendChild(d); b.appendChild(row); }); b.appendChild(adder("Add a contact...",n=>{state.realEstate.contacts.push({id:uid(),name:n,role:"",detail:""});save();render();})); parent.appendChild(c); }
-function reNeigh(parent){ const c=card(); const b=c._body; state.realEstate.neighborhoods.forEach(n=>{ const row=el("div","chk"); const t=el("div","ctext"); t.textContent=n.name; const m=el("span","meta"); m.textContent=n.note||""; t.appendChild(m); row.appendChild(t); const d=el("button","del","×"); d.onclick=()=>{state.realEstate.neighborhoods=state.realEstate.neighborhoods.filter(x=>x.id!==n.id);save();render();}; row.appendChild(d); b.appendChild(row); }); b.appendChild(adder("Add a neighborhood...",n=>{state.realEstate.neighborhoods.push({id:uid(),name:n,note:""});save();render();})); parent.appendChild(c); }
-function scriptsModule(parent){ (state.realEstate.scripts||[]).forEach(s=>{ const c=card(); const b=c._body; const head=el("div","between"); head.appendChild(el("h3",null,s.title)); const del=el("button","del","×"); del.onclick=()=>{ state.realEstate.scripts=state.realEstate.scripts.filter(x=>x.id!==s.id); save(); render(); }; head.appendChild(del); b.appendChild(head); const ta=el("textarea","in"); ta.style.minHeight="90px"; ta.style.marginTop="9px"; ta.value=s.body||""; ta.oninput=()=>{ s.body=ta.value; save(); }; b.appendChild(ta); parent.appendChild(c); }); const add=card(); add._body.appendChild(adder("New script title...",t=>{ state.realEstate.scripts.push({id:uid(),title:t,body:"Write your script here."}); save(); render(); })); parent.appendChild(add); }
+function reContacts(parent){ const c=card(); const b=c._body; state.realEstate.contacts.forEach(k=>{ const row=el("div","chk"); const t=el("div","ctext"); t.textContent=k.name; const m=el("span","meta"); m.textContent=(k.role?k.role+". ":"")+(k.detail||""); t.appendChild(m); row.appendChild(t); const d=el("button","del","√ó"); d.onclick=()=>{state.realEstate.contacts=state.realEstate.contacts.filter(x=>x.id!==k.id);save();render();}; row.appendChild(d); b.appendChild(row); }); b.appendChild(adder("Add a contact...",n=>{state.realEstate.contacts.push({id:uid(),name:n,role:"",detail:""});save();render();})); parent.appendChild(c); }
+function reNeigh(parent){ const c=card(); const b=c._body; state.realEstate.neighborhoods.forEach(n=>{ const row=el("div","chk"); const t=el("div","ctext"); t.textContent=n.name; const m=el("span","meta"); m.textContent=n.note||""; t.appendChild(m); row.appendChild(t); const d=el("button","del","√ó"); d.onclick=()=>{state.realEstate.neighborhoods=state.realEstate.neighborhoods.filter(x=>x.id!==n.id);save();render();}; row.appendChild(d); b.appendChild(row); }); b.appendChild(adder("Add a neighborhood...",n=>{state.realEstate.neighborhoods.push({id:uid(),name:n,note:""});save();render();})); parent.appendChild(c); }
+function scriptsModule(parent){ (state.realEstate.scripts||[]).forEach(s=>{ const c=card(); const b=c._body; const head=el("div","between"); head.appendChild(el("h3",null,s.title)); const del=el("button","del","√ó"); del.onclick=()=>{ state.realEstate.scripts=state.realEstate.scripts.filter(x=>x.id!==s.id); save(); render(); }; head.appendChild(del); b.appendChild(head); const ta=el("textarea","in"); ta.style.minHeight="90px"; ta.style.marginTop="9px"; ta.value=s.body||""; ta.oninput=()=>{ s.body=ta.value; save(); }; b.appendChild(ta); parent.appendChild(c); }); const add=card(); add._body.appendChild(adder("New script title...",t=>{ state.realEstate.scripts.push({id:uid(),title:t,body:"Write your script here."}); save(); render(); })); parent.appendChild(add); }
 
 /* ===== v20 real estate: collapsible stages, simplified deals, grouped secondary tools ===== */
 const STAGE_COL={ "Closed":"green","Under Contract":"blue","Active":"orange","Coming Soon":"purple","Prospecting":"pink","Building":"violet","Buyer":"cyan","Just Sold":"teal","Follow up":"cyan" };
@@ -4868,8 +5074,8 @@ function collapseGroup(parent,stage,label,gd,vol){
   const c=card(); c._body.style.padding="0";
   const head=el("button","collapse-head");
   const lft=el("div","ch-left"); lft.appendChild(el("span","ch-dot c-"+(STAGE_COL[stage]||"blue")));
-  const tt=el("div"); tt.appendChild(el("div","ch-title",label)); tt.appendChild(el("div","ch-sub",gd.length+(gd.length===1?" deal":" deals")+(vol?"  ·  "+fmtMoney(vol):""))); lft.appendChild(tt);
-  head.appendChild(lft); head.appendChild(el("span","ch-chev"+(open?" open":""),"›"));
+  const tt=el("div"); tt.appendChild(el("div","ch-title",label)); tt.appendChild(el("div","ch-sub",gd.length+(gd.length===1?" deal":" deals")+(vol?"  ¬∑  "+fmtMoney(vol):""))); lft.appendChild(tt);
+  head.appendChild(lft); head.appendChild(el("span","ch-chev"+(open?" open":""),"‚Ä∫"));
   head.onclick=()=>{ reStageOpen[stage]=!open; render(); };
   c._body.appendChild(head);
   if(open){ const body=el("div","collapse-body"); gd.forEach(d=>dealRow(body,d)); c._body.appendChild(body); }
@@ -4880,7 +5086,7 @@ function collapseTool(parent,title,sub,buildFn){
   const c=card(); c._body.style.padding="0";
   const head=el("button","collapse-head");
   const lft=el("div","ch-left"); const tt=el("div"); tt.appendChild(el("div","ch-title",title)); if(sub)tt.appendChild(el("div","ch-sub",sub)); lft.appendChild(tt);
-  head.appendChild(lft); head.appendChild(el("span","ch-chev"+(open?" open":""),"›"));
+  head.appendChild(lft); head.appendChild(el("span","ch-chev"+(open?" open":""),"‚Ä∫"));
   head.onclick=()=>{ reToolOpen[title]=!open; render(); };
   c._body.appendChild(head); parent.appendChild(c);
   if(open){ safe(parent,buildFn,title); }
@@ -4939,7 +5145,7 @@ function buildSolara(v){
   var ddBig=el("div"); ddBig.style.cssText="font-weight:800;font-size:23px;letter-spacing:-.02em;margin-top:6px;color:var(--white)"; ddBig.textContent=(du>0?(du+(du===1?" day to go":" days to go")):(du===0?"Today":"Target date passed")); dday.appendChild(ddBig);
   var ddSub=el("div","small dim"); ddSub.style.marginTop="2px"; ddSub.textContent="Aug 15, 2026, aim"; dday.appendChild(ddSub);
   hb.appendChild(dday);
-  var stLine=el("div","small dim"); stLine.style.marginTop="11px"; stLine.textContent="Status, "+(sd.status||"In progress")+(openTasks?"  ·  "+openTasks+" open tasks":""); hb.appendChild(stLine);
+  var stLine=el("div","small dim"); stLine.style.marginTop="11px"; stLine.textContent="Status, "+(sd.status||"In progress")+(openTasks?"  ¬∑  "+openTasks+" open tasks":""); hb.appendChild(stLine);
 
   var vs=el("a","btn block"); vs.textContent="Visit the Solara site"; vs.setAttribute("href","https://solaramotorsports.com"); vs.setAttribute("target","_blank"); vs.setAttribute("rel","noopener"); vs.style.cssText="display:block;text-align:center;margin-top:16px;text-decoration:none"; hb.appendChild(vs);
   /* build 178: Instagram link. Ian is confirming the handle, so this is a clean spot. When he sets it in the
@@ -4980,7 +5186,7 @@ function buildSolara(v){
     col.appendChild(dtop);
     var lbl=el("div"); lbl.style.cssText="font-size:14.5px;font-weight:600;margin-top:2px;line-height:1.35;color:var(--white)"; lbl.textContent=m.label||"Milestone"; col.appendChild(lbl);
     row.appendChild(col);
-    var del=el("button","del","×"); del.onclick=function(){ var ix=sd.milestones.indexOf(m); if(ix>-1)sd.milestones.splice(ix,1); save(); render(); }; row.appendChild(del);
+    var del=el("button","del","√ó"); del.onclick=function(){ var ix=sd.milestones.indexOf(m); if(ix>-1)sd.milestones.splice(ix,1); save(); render(); }; row.appendChild(del);
     tb.appendChild(row);
   });
   var addWrap=el("div"); addWrap.style.cssText="margin-top:13px;border-top:1px solid var(--line);padding-top:13px";
@@ -5015,14 +5221,14 @@ function buildFutureIdeasHome(parent){
   pkCollapse(parent,"h_ideas","Future ideas",fmtShort(latest)+", suggestions not tasks",false,function(hh){
     var c=card("a-green"); var b=c._body;
     b.appendChild(el("div","small dim","From your daily agent. Ideas to consider, not to do items."));
-    arr.slice(0,3).forEach(function(it,i){ var r=el("div"); r.style.cssText="display:flex;gap:9px;align-items:flex-start;padding:9px 0"+(i>0?";border-top:1px solid var(--line)":""); var dot=el("span"); dot.style.cssText="color:var(--sec,var(--accent));font-weight:900;flex:0 0 auto"; dot.textContent="•"; var col=el("div"); col.style.minWidth="0"; var tx=el("div","small"); tx.style.cssText="line-height:1.5;color:var(--gray)"; tx.textContent=(typeof it==="string"?it:(it.text||it.title||"")); col.appendChild(tx); if(it&&it.url){ var a=el("a","small"); a.textContent="source"; a.setAttribute("href",it.url); a.setAttribute("target","_blank"); a.setAttribute("rel","noopener"); a.style.cssText="color:var(--sec2,var(--accent2));margin-top:3px;display:inline-block"; col.appendChild(a); } r.appendChild(dot); r.appendChild(col); b.appendChild(r); });
+    arr.slice(0,3).forEach(function(it,i){ var r=el("div"); r.style.cssText="display:flex;gap:9px;align-items:flex-start;padding:9px 0"+(i>0?";border-top:1px solid var(--line)":""); var dot=el("span"); dot.style.cssText="color:var(--sec,var(--accent));font-weight:900;flex:0 0 auto"; dot.textContent="‚Ä¢"; var col=el("div"); col.style.minWidth="0"; var tx=el("div","small"); tx.style.cssText="line-height:1.5;color:var(--gray)"; tx.textContent=(typeof it==="string"?it:(it.text||it.title||"")); col.appendChild(tx); if(it&&it.url){ var a=el("a","small"); a.textContent="source"; a.setAttribute("href",it.url); a.setAttribute("target","_blank"); a.setAttribute("rel","noopener"); a.style.cssText="color:var(--sec2,var(--accent2));margin-top:3px;display:inline-block"; col.appendChild(a); } r.appendChild(dot); r.appendChild(col); b.appendChild(r); });
     if(arr.length>3){ b.appendChild(el("div","small dim",(arr.length-3)+" more ideas from today")); }
     hh.appendChild(c);
-  },"💡","green");
+  },"üí°","green");
   }catch(e){ try{console.error("[dash] futureIdeas",e);}catch(_){} }
 }
 function buildIanHome(v){ const workout=daySplit(DOW); const reTop=firstUndone(state.realEstate.todos); const nm=(state.settings&&state.settings.name)||"Ian";
-  const hero=card("a-blue"); const b=hero._body; b.classList.add("hero"); const hi=el("div","hi"); hi.innerHTML=GREET+', <span class="name">'+nm.replace(/</g,"")+'</span>'; b.appendChild(hi); b.appendChild(el("div","date",LONGDATE+"  ·  your daily brief")); /* build 191: the old focus line opened with "Priority one, real estate, <whole to-do text>" and
+  const hero=card("a-blue"); const b=hero._body; b.classList.add("hero"); const hi=el("div","hi"); hi.innerHTML=GREET+', <span class="name">'+nm.replace(/</g,"")+'</span>'; b.appendChild(hi); b.appendChild(el("div","date",LONGDATE+"  ¬∑  your daily brief")); /* build 191: the old focus line opened with "Priority one, real estate, <whole to-do text>" and
      ran four lines. Ian says he does not look at real estate first thing, and a four line paragraph
      at the top of a 844px screen is expensive. It now states the day in one line. Real estate still
      surfaces on its own, right below, whenever something is actually time sensitive. */
@@ -5031,7 +5237,7 @@ function buildIanHome(v){ const workout=daySplit(DOW); const reTop=firstUndone(s
     b.appendChild(el("div","focus",_txt)); })();
   if(state.meta&&state.meta.lastReset===TODAY){ const rn=el("div","small"); rn.style.color="var(--sec2,var(--accent2))"; rn.style.fontWeight="700"; rn.style.marginTop="9px"; rn.textContent="New day. Yesterday's log was archived and daily items reset."; b.appendChild(rn); }
   v.appendChild(hero);
-  if(!(state.settings&&state.settings.bannerDismissed)){ const bn=el("div","banner"); bn.appendChild(el("div",null,"For full interactivity and saving, open this file in Safari. An in app preview can limit some taps.")); const x=el("button","bx","×"); x.onclick=()=>{ if(!state.settings)state.settings={}; state.settings.bannerDismissed=true; save(); render(); }; bn.appendChild(x); v.appendChild(bn); }
+  if(!(state.settings&&state.settings.bannerDismissed)){ const bn=el("div","banner"); bn.appendChild(el("div",null,"For full interactivity and saving, open this file in Safari. An in app preview can limit some taps.")); const x=el("button","bx","√ó"); x.onclick=()=>{ if(!state.settings)state.settings={}; state.settings.bannerDismissed=true; save(); render(); }; bn.appendChild(x); v.appendChild(bn); }
   /* quick actions (build 176: Command Center removed, Quick actions sits at the top of Home) */
   safe(v,function(){
     var qc=card(); var q=el("div","qa");
@@ -5239,7 +5445,7 @@ function buildIanHome(v){ const workout=daySplit(DOW); const reTop=firstUndone(s
         _fn.textContent="A day counts if you played or lifted. Four weeks: two back, this week with today ringed, and the week ahead. This week counts against the FULL week, not days elapsed, so a low number mid week is the calendar rather than a miss. The week ahead has no count because it has not happened. Weeks with no records at all are not drawn rather than shown as zero; tracking starts Jul 6."+fmtShort(_firstRec)+", so they are not zero weeks.";
         b.appendChild(_fn); }
       hh.appendChild(cardEl);
-    },"📊","green"); };
+    },"üìä","green"); };
   var secIdeas=function(){ safe(v,function(){ buildFutureIdeasHome(v); },"Future ideas"); };
   /* build 225: SOLARA IS A CARD HERE, NOT A TAB. Ian's call 08.04.2026. It is an entry point rather
      than a summary: it carries the one fact that changes (days to drop) plus the current status, and
@@ -5261,11 +5467,11 @@ function buildIanHome(v){ const workout=daySplit(DOW); const reTop=firstUndone(s
   },"Solara card"); };
   /* build 191: Easy wins opens by default. It is the first thing he wants to see and a
      collapsed win list is not a win list. */
-  var secWins=function(){ pkCollapse(v,"h_wins","Easy wins","two small wins today",true,function(hh){ quickWinCard(hh); },"✅","green"); };
-  var secWater=function(){ pkCollapse(v,"h_water","Water","aim 10 cups a day",false,function(hh){ waterCard(hh); },"💧","cyan"); };
-  var secSphere=function(){ pkCollapse(v,"h_sphere","Stay in touch","your sphere",false,function(hh){ homeSphereNudge(hh); },"🤝","orange"); };
-  var secProg=function(){ pkCollapse(v,"h_prog","Progress and upcoming","where you stand",false,function(hh){ reGoalsCard(hh); homeUpcomingCard(hh); },"📈","blue"); };
-  var secSummary=function(){ pkCollapse(v,"h_summary","Daily summary","today at a glance",false,function(hh){ const gday=daySplit(DOW); const glog=(state.gym.logs&&state.gym.logs[TODAY])||{done:{}}; const gT=gday.exercises.length||0, gD=gday.exercises.filter(e=>glog.done&&glog.done[e.id]).length; const hs=habitsActiveOn(TODAY); const hD=hs.filter(h=>h.log&&h.log[TODAY]).length; const water=(state.nutrition&&state.nutrition.water&&state.nutrition.water[TODAY])||0; summaryGrid(hh,[ fracTile({label:"Workout",color:"orange",done:gD,goal:gT||1,unit:"sets",tab:"gym"}), fracTile({label:"Habits",color:"green",done:hD,goal:hs.length||7,unit:"done",tab:"gym"}), fracTile({label:"Water",color:"cyan",done:water,goal:WATER_GOAL,unit:"cups",tab:"gym"}) ]); },"📋","teal"); };
+  var secWins=function(){ pkCollapse(v,"h_wins","Easy wins","two small wins today",true,function(hh){ quickWinCard(hh); },"‚úÖ","green"); };
+  var secWater=function(){ pkCollapse(v,"h_water","Water","aim 10 cups a day",false,function(hh){ waterCard(hh); },"üíß","cyan"); };
+  var secSphere=function(){ pkCollapse(v,"h_sphere","Stay in touch","your sphere",false,function(hh){ homeSphereNudge(hh); },"ü§ù","orange"); };
+  var secProg=function(){ pkCollapse(v,"h_prog","Progress and upcoming","where you stand",false,function(hh){ reGoalsCard(hh); homeUpcomingCard(hh); },"üìà","blue"); };
+  var secSummary=function(){ pkCollapse(v,"h_summary","Daily summary","today at a glance",false,function(hh){ const gday=daySplit(DOW); const glog=(state.gym.logs&&state.gym.logs[TODAY])||{done:{}}; const gT=gday.exercises.length||0, gD=gday.exercises.filter(e=>glog.done&&glog.done[e.id]).length; const hs=habitsActiveOn(TODAY); const hD=hs.filter(h=>h.log&&h.log[TODAY]).length; const water=(state.nutrition&&state.nutrition.water&&state.nutrition.water[TODAY])||0; summaryGrid(hh,[ fracTile({label:"Workout",color:"orange",done:gD,goal:gT||1,unit:"sets",tab:"gym"}), fracTile({label:"Habits",color:"green",done:hD,goal:hs.length||7,unit:"done",tab:"gym"}), fracTile({label:"Water",color:"cyan",done:water,goal:WATER_GOAL,unit:"cups",tab:"gym"}) ]); },"üìã","teal"); };
   /* build 191: promoted from dead last to the top block and renamed. It is his schedule, and
      "Calendar" sitting under Daily summary meant he never saw it in the morning. */
   /* build 191 FIX, caught in the phone width pass: promoting the full calendar to the top and
@@ -5292,7 +5498,7 @@ function buildIanHome(v){ const workout=daySplit(DOW); const reTop=firstUndone(s
       t.textContent=e.title||"(untitled)"; lft.appendChild(t);
       var d=daysUntil(e.date);
       var when=el("div","small dim"); when.style.marginTop="2px";
-      when.textContent=(d===0?"today":d===1?"tomorrow":"in "+d+" days")+(e.kind?"  ·  "+e.kind:"");
+      when.textContent=(d===0?"today":d===1?"tomorrow":"in "+d+" days")+(e.kind?"  ¬∑  "+e.kind:"");
       lft.appendChild(when); row.appendChild(lft); b.appendChild(row);
     };
     if(todays.length){ todays.forEach(function(e){ line(e,true); }); }
@@ -5312,7 +5518,7 @@ function buildIanHome(v){ const workout=daySplit(DOW); const reTop=firstUndone(s
   },"Today's schedule"); };
   /* the full browsable calendar, collapsed, lower down. Same eventsModule as before. */
   var secCal=function(){ var a=el("div"); a.id="home-cal-anchor"; v.appendChild(a);
-    pkCollapse(v,"h_cal","Calendar","everything coming up",false,function(hh){ eventsModule(hh); },"📅","purple"); };
+    pkCollapse(v,"h_cal","Calendar","everything coming up",false,function(hh){ eventsModule(hh); },"üìÖ","purple"); };
 
   /* build 191 NEW: TODAY'S WORKOUT on Home. Ian named the workout one of the three things he
      opens the app for, and it had no surface on Home at all, only a Quick actions button. This
@@ -5328,7 +5534,7 @@ function buildIanHome(v){ const workout=daySplit(DOW); const reTop=firstUndone(s
     var top=el("div","between");
     var t=el("div"); t.style.cssText="font-weight:800;font-size:17px;letter-spacing:-.02em";
     t.textContent=cleanFocus(day.focus)||"Workout";
-    top.appendChild(t); top.appendChild(el("div","chev","›")); b.appendChild(top);
+    top.appendChild(t); top.appendChild(el("div","chev","‚Ä∫")); b.appendChild(top);
     var meta=el("div","small dim"); meta.style.marginTop="3px";
     meta.textContent=doneN+" of "+exs.length+" exercises logged"; b.appendChild(meta);
     var track=el("div","pbar"); var fill=el("i"); track.appendChild(fill); b.appendChild(track);
@@ -5469,14 +5675,14 @@ function buildIanHome(v){ const workout=daySplit(DOW); const reTop=firstUndone(s
     var c=card("a-green"); c.className+=" tap"; var b=c._body;
     var row=el("div"); row.style.cssText="display:flex;align-items:center;gap:11px";
     var ic=el("div"); ic.style.cssText="width:34px;height:34px;border-radius:11px;display:grid;place-items:center;font-size:18px;flex:0 0 auto;background:rgba(46,215,138,.16)";
-    try{ ic.innerHTML=PICKLE_SVG; }catch(e){ ic.textContent="🎬"; }
+    try{ ic.innerHTML=PICKLE_SVG; }catch(e){ ic.textContent="üé¨"; }
     row.appendChild(ic);
     var lf=el("div"); lf.style.cssText="flex:1;min-width:0";
     var t=el("div"); t.style.cssText="font-weight:800;font-size:17px;letter-spacing:-.02em"; t.textContent="Pickleball study"; lf.appendChild(t);
     var s=el("div","small dim"); s.style.cssText="margin-top:2px;line-height:1.4";
     s.textContent=vs.length+" film stud"+(vs.length===1?"y":"ies")+" from your own footage"+(nf?". Next focus is set.":".");
     lf.appendChild(s); row.appendChild(lf);
-    var cv=el("div","dim"); cv.textContent="›"; cv.style.cssText="font-size:20px;flex:0 0 auto"; row.appendChild(cv);
+    var cv=el("div","dim"); cv.textContent="‚Ä∫"; cv.style.cssText="font-size:20px;flex:0 0 auto"; row.appendChild(cv);
     b.appendChild(row);
     c.onclick=function(){ try{ PK_OPEN["pk_study"]=true; }catch(e){} try{ render(); }catch(e){} selectTab("pickle"); };
     v.appendChild(c);
@@ -5490,17 +5696,55 @@ function buildIanHome(v){ const workout=daySplit(DOW); const reTop=firstUndone(s
 
   /* ===================================================================================
      THE ORDER. This list is the Home screen. Change it here and nowhere else.
-     Morning block first (wins, schedule, workout, then the training heatmap that reflects
-     the workout), then the agent feed and his writing box, then real estate only if it is
+     Morning block first (wins, schedule, THEN HIS ENTRY BOX, then workout and the training
+     heatmap that reflects it), then the agent feed, then real estate only if it is
      shouting, then the reference material he goes looking for rather than glances at.
+
+     v21 build 231, 08.06.2026, Ian: today's entry moves UP into the top third.
+     WHY IT IS A DESIGN ERROR AND NOT A PREFERENCE, which is what decides the placement.
+     Today's entry is not a card he reads, it is the INPUT THE WHOLE SYSTEM RUNS ON. What he
+     writes here is what the 6am agent acts on, what the detectors read, what turns into app
+     changes and coaching content. Every other section on this page is downstream of it. At
+     position 7 of 17 the one field that feeds everything sat below four things it produces,
+     which inverts the dependency. It now sits with the two surfaces he actually opens the app
+     for, his wins and his schedule, and above everything informational.
+     It reads as something to FILL IN rather than something to look at, so it belongs in the
+     doing block, not the reading block.
+
+     IT SITS ABOVE THE SCHEDULE, AND THAT IS A DELIBERATE DEPARTURE FROM WHAT IAN SAID, measured
+     rather than assumed. He named wins AND schedule as the two surfaces that beat it, and he
+     defined the top third as above the fold on 390x844. On his real profile those two cannot both
+     hold: his schedule is about 590px tall today (five events plus the calendar link), so placing
+     the entry after it puts its header at 1249, which is 405px BELOW the fold. Placing it after
+     wins and before schedule puts the header at 867, 23px below the fold, with the textarea from
+     970. Measured in a true 390x844 viewport on his own exported profile.
+     So schedule was demoted by one on purpose. The tiebreak: the schedule is a READ surface he can
+     scroll to and the entry is a WRITE surface that has to be seen to be used, which is the same
+     argument that justifies the move at all. If he wants it strictly above the fold it has to go
+     above WINS too, at position 2, which would put it near 550. That is his call, not one to take
+     for him.
+
+     WHAT MOVED AND WHETHER THAT IS SAFE. secWorkout, secHeat and secBrief each shift down one.
+     The 212 ordering was reasoned rather than arbitrary, and the reasoning survives: the only
+     stated adjacency was "workout, then the training heatmap that reflects the workout", and
+     those two are still adjacent and still in that order. secWorkout and secSchedule keep their
+     QUIET gates, so on a rest day with nothing scheduled the entry box rises further rather than
+     leaving a hole. secBrief is unaffected by position, it is a read surface either way.
+
+     ONE THING THIS DOES NOT CLAIM, checked rather than assumed. His entry rate DID collapse,
+     from 8 of 9 days (07.20 to 07.28) to 1 of 7 (07.29 to 08.04). But the blank run STARTS
+     07.29 and the three tier restructure shipped 08.02, four days later, so the restructure
+     cannot be the cause and this move should not be sold as the fix. What 07.29 does coincide
+     with is the start of the 6am agent failures. Placement is being corrected because it is
+     wrong on the merits, not because it is the known cause of the drop.
      =================================================================================== */
   secFirstThing(); /* build 212: ONE thing, computed, with the reason it won  */
   secWins();       /* daily wins,      he asked for this first  */
+  secEntry();      /* build 231: HIS INPUT, above everything it feeds  */
   secSchedule();   /* his schedule,    silent on an empty day   */
   secWorkout();    /* his gym workout, silent on a rest day     */
   secHeat();       /* favourite, high, pairs with the workout   */
   secBrief();      /* what Claude left him overnight            */
-  secEntry();      /* where he writes the day up                */
   secReAlert();    /* real estate, silent unless time sensitive */
   secSolara();     /* build 225: the Solara door, replaces the tab  */
   /* build 225: ONE depth mechanism, not two. Ian's call 08.04.2026: keep every drawer, since he may
@@ -5613,7 +5857,30 @@ function reGoalsCard(parent){
   incLine.appendChild(el("div","goal-lab","Est. take-home"));
   const incVal=el("div","goal-val"); incVal.innerHTML='<b>'+fmtMoney(incClosed)+'</b> <span>closed'+(incUc?', '+fmtMoney(incUc)+' pending':'')+'</span>'; incLine.appendChild(incVal);
   b.appendChild(incLine);
-  const foot=el("div","small dim"); foot.style.marginTop="12px"; foot.textContent="Production is closed and under contract volume toward your goal. Take-home is your estimated net after the 15% broker cut and your split. Source tags default to your side, check them per deal."; b.appendChild(foot);
+  /* v21 build 233: THE GOAL BAR WAS TELLING A TRUE NUMBER THAT IMPLIED A FALSE THING.
+     Production counts Closed plus Under Contract, which is correct, but a bar reading 65 percent in
+     August reads as on track. It is not. Teskes finishes January 2027 and Brandon Winchester late May
+     2027, so that volume CANNOT land in 2026 no matter how well anything goes. This adds two honest
+     lines under the bars: what is still in flight for this year, and what is parked in 2027. Both are
+     computed from the deals, nothing is hardcoded, and a close date that stops saying 2027 moves
+     itself. Ian should not find this out in December. */
+  const is27=d=>/20(2[7-9]|[3-9]\d)/.test(String((d&&d.close)||""));
+  const inFlight=deals.filter(d=>(d.stage==="Active"||d.stage==="Coming Soon")&&!is27(d));
+  const parked27=deals.filter(is27);
+  const ceiling=production+vol(inFlight);
+  const ceilDeals=dealsDone+inFlight.reduce((a,d)=>a+dealCountWeight(d),0);
+  const note=el("div","small"); note.style.cssText="margin-top:11px;padding:9px 10px;border-radius:9px;background:rgba(255,255,255,.04);line-height:1.5";
+  note.innerHTML='<b>'+fmtMoneyShort(ceiling)+' and '+ceilDeals+' deals</b> is the ceiling if everything live also closes this year'
+    +(parked27.length?('. <b>'+fmtMoneyShort(vol(parked27))+'</b> across '+parked27.length+' deal'+(parked27.length===1?"":"s")+' cannot land in 2026 at all, it finishes in 2027.'):'.');
+  b.appendChild(note);
+  if(ceiling<PROD_GOAL){ const warn=el("div","small"); warn.style.cssText="margin-top:7px;font-weight:700;color:var(--accent2)";
+    warn.textContent="That ceiling is "+fmtMoneyShort(PROD_GOAL-ceiling)+" short of the goal, so closing it needs new business, not execution on what is already here."; b.appendChild(warn); }
+  const nActual=countActualNets(closed);
+  const foot=el("div","small dim"); foot.style.marginTop="12px";
+  foot.textContent="Production is closed and under contract volume toward your goal. Take-home is your estimated net after the 15% broker cut and your split"
+    +(nActual?(", except "+nActual+" deal"+(nActual===1?"":"s")+" showing what you were actually paid."):".")
+    +" The model was $136 high on the one deal with a real figure to check against, so treat pending take-home as approximate. Source tags default to your side, check them per deal.";
+  b.appendChild(foot);
   parent.appendChild(c);
 }
 let comingUpOpen=false;
@@ -5672,9 +5939,9 @@ function contactRow(parent,k){
   const dot=el("span"); dot.style.cssText="width:9px;height:9px;border-radius:50%;flex:none;background:"+((q==="Good")?"#2fd27a":"#8a94a6"); nmrow.appendChild(dot);
   nmrow.appendChild(el("div","dn",k.name||"(no name)")); left.appendChild(nmrow);
   const ds=daysSinceDate(k.lastContacted); const sub=el("div","dsub");
-  sub.textContent=q+"  ·  "+(k.type||"Sphere")+"  ·  "+(k.lastContacted?("last "+ds+"d ago"):"no contact logged");
+  sub.textContent=q+"  ¬∑  "+(k.type||"Sphere")+"  ¬∑  "+(k.lastContacted?("last "+ds+"d ago"):"no contact logged");
   left.appendChild(sub); row.appendChild(left);
-  const right=el("div","dr"); if(contactOverdue(k)) right.appendChild(el("span","stpill c-pink","reach out")); right.appendChild(el("span","ch-chev"+(open?" open":""),"›")); row.appendChild(right);
+  const right=el("div","dr"); if(contactOverdue(k)) right.appendChild(el("span","stpill c-pink","reach out")); right.appendChild(el("span","ch-chev"+(open?" open":""),"‚Ä∫")); row.appendChild(right);
   row.onclick=()=>{ const willOpen=!sphereOpen[k.id]; sphereOpen={}; if(willOpen) sphereOpen[k.id]=true; render(); }; wrap.appendChild(row);
   if(open){ const det=el("div","deal-detail"); contactEditors(det,k); wrap.appendChild(det); }
   parent.appendChild(wrap);
@@ -5682,7 +5949,7 @@ function contactRow(parent,k){
 function reachOutRow(parent,k){
   const c=card("a-teal"); const b=c._body; const top=el("div","between");
   const l=el("div"); const nm=el("div"); nm.style.fontWeight="800"; nm.style.fontSize="16px"; nm.textContent=k.name||"(no name)"; l.appendChild(nm);
-  const ds=daysSinceDate(k.lastContacted); const meta=el("div","small dim"); meta.style.marginTop="3px"; meta.textContent=(k.lastContacted?("Last contacted "+ds+" days ago"):"No contact logged yet")+(k.phone?("  ·  "+k.phone):""); l.appendChild(meta);
+  const ds=daysSinceDate(k.lastContacted); const meta=el("div","small dim"); meta.style.marginTop="3px"; meta.textContent=(k.lastContacted?("Last contacted "+ds+" days ago"):"No contact logged yet")+(k.phone?("  ¬∑  "+k.phone):""); l.appendChild(meta);
   top.appendChild(l);
   const mc=el("button","btn sm","Mark contacted"); mc.onclick=()=>markContacted(k); top.appendChild(mc);
   b.appendChild(top); parent.appendChild(c);
@@ -5699,7 +5966,7 @@ function sphereAdder(parent){ const c=card(); c._body.appendChild(adder("Add a n
 const SVGNS="http://www.w3.org/2000/svg";
 let orbitSel=null; /* {kind:"prospect"|"sphere", id} */
 function svgEl(tag,attrs){ var e=document.createElementNS(SVGNS,tag); if(attrs){ for(var k in attrs) e.setAttribute(k,attrs[k]); } return e; }
-function firstName(s){ s=String(s||"").trim(); if(!s) return "?"; s=s.replace(/\(.*$/,"").trim(); var t=s.split(/[\s,]+/)[0]||s; return t.length>10?(t.slice(0,9)+"…"):t; }
+function firstName(s){ s=String(s||"").trim(); if(!s) return "?"; s=s.replace(/\(.*$/,"").trim(); var t=s.split(/[\s,]+/)[0]||s; return t.length>10?(t.slice(0,9)+"‚Ä¶"):t; }
 function orbitProspects(){ var d=(state.realEstate&&Array.isArray(state.realEstate.deals))?state.realEstate.deals:[]; return d.filter(reIsProspect); }
 function sphereOrbit(parent){
   var prospects=orbitProspects(); var sphere=sphereList();
@@ -5765,7 +6032,7 @@ function sphereOrbit(parent){
   svg.appendChild(center);
   b.appendChild(svg);
   /* caption + legend */
-  var cap=el("div","small dim"); cap.style.textAlign="center"; cap.textContent=prospects.length+" prospect"+(prospects.length===1?"":"s")+" · "+sphere.length+" in sphere"; b.appendChild(cap);
+  var cap=el("div","small dim"); cap.style.textAlign="center"; cap.textContent=prospects.length+" prospect"+(prospects.length===1?"":"s")+" ¬∑ "+sphere.length+" in sphere"; b.appendChild(cap);
   var leg=el("div","small dim"); leg.style.cssText="margin-top:8px;display:flex;flex-wrap:wrap;gap:10px;justify-content:center;line-height:1.4";
   function chip(color,label,ring){ var s=el("span"); s.style.cssText="display:inline-flex;align-items:center;gap:5px"; var d=el("span"); d.style.cssText="width:10px;height:10px;border-radius:50%;background:"+color+";"+(ring?"box-shadow:0 0 0 2px #ef4444;":""); s.appendChild(d); s.appendChild(document.createTextNode(label)); return s; }
   leg.appendChild(chip("#f59e0b","Prospects"));
@@ -5819,7 +6086,7 @@ function homeSphereNudge(parent){
   if(!sphere.length){
     b.appendChild(el("div","feedtitle","Add your sphere"));
     b.appendChild(el("div","feednote","Your referral business runs on staying in touch. Add the people you and Chris nurture and each morning the app will tell you who to reach out to."));
-    const go=el("button","feedlink","Open sphere ›"); go.style.marginTop="11px"; go.onclick=()=>{ reView="sphere"; selectTab("re"); render(); }; b.appendChild(go);
+    const go=el("button","feedlink","Open sphere ‚Ä∫"); go.style.marginTop="11px"; go.onclick=()=>{ reView="sphere"; selectTab("re"); render(); }; b.appendChild(go);
     parent.appendChild(c); return;
   }
   const overdue=sphereOverdue();
@@ -5829,7 +6096,7 @@ function homeSphereNudge(parent){
   const tt=el("div","feedtitle"); tt.style.marginTop="7px"; tt.textContent="Reach out to "+(k.name||"someone")+" today"; b.appendChild(tt);
   b.appendChild(el("div","feednote",(k.lastContacted?("It has been "+ds+" days since you connected."):"You have not logged a touch with them yet.")+(k.phone?("  "+k.phone):"")+(overdue.length>1?("  "+(overdue.length-1)+" more are also due."):"")));
   const mc=el("button","btn sm block","Mark contacted today"); mc.style.marginTop="12px"; mc.onclick=()=>markContacted(k); b.appendChild(mc);
-  const go=el("button","feedlink","See all in Sphere ›"); go.style.marginTop="10px"; go.onclick=()=>{ reView="sphere"; selectTab("re"); render(); }; b.appendChild(go);
+  const go=el("button","feedlink","See all in Sphere ‚Ä∫"); go.style.marginTop="10px"; go.onclick=()=>{ reView="sphere"; selectTab("re"); render(); }; b.appendChild(go);
   parent.appendChild(c);
 }
 function reViewLanding(v){
@@ -5953,7 +6220,7 @@ function waterCard(parent){
 /* RETIRED 08.04.2026 (build 224). NOT CALLED ANYWHERE. Kept in place, not deleted, so the content is
    recoverable and so a future session reads this note instead of rebuilding a nutrition panel. Ian
    removed the surface, not the data. Do not wire this back up without him asking for it by name. */
-function nutritionModule(parent){ const c=card("a-green"); const b=c._body; const pr=el("div","between"); pr.appendChild(el("div","small muted",(state.nutrition.profile.height||"")+" · "+(state.nutrition.profile.weight||""))); pr.appendChild(el("span","pill b","Lean out")); b.appendChild(pr);
+function nutritionModule(parent){ const c=card("a-green"); const b=c._body; const pr=el("div","between"); pr.appendChild(el("div","small muted",(state.nutrition.profile.height||"")+" ¬∑ "+(state.nutrition.profile.weight||""))); pr.appendChild(el("span","pill b","Lean out")); b.appendChild(pr);
   const gh=el("div","small muted"); gh.style.margin="12px 0 4px"; gh.textContent="How to eat, no counting"; b.appendChild(gh);
   const gt=el("div","small dim"); gt.style.lineHeight="1.6"; gt.textContent="Goal is to lean out for summer and build a little muscle, not get big. You are OFF the GLP 1 now (tapered the last half dose 07.22), so your appetite is coming back and the lean out is on YOU, not the drug. That means the basics carry it now, protein first at every meal to protect and build muscle, keep portions a touch under full now that hunger is back, stay consistent, and let pickleball burn the rest. No calorie counting, just protein forward, a slight deficit held with discipline, and weekly weigh ins to watch the trend."; b.appendChild(gt);
   parent.appendChild(c);
@@ -5992,7 +6259,7 @@ function dailyChecklistModule(parent){
   }
   parent.appendChild(c);
 }
-function habitsModule(parent){ const all=state.routine.habits; const hs=habitsActiveOn(TODAY); const hd=hs.filter(h=>h.log[TODAY]).length; parent.appendChild(ringCard(hd,hs.length,"Daily habits",hd+" of "+hs.length+" done · "+habitStreak()+" day streak",false,"a-green")); const c=card(); const b=c._body; hs.forEach(h=>{ b.appendChild(checkItem(!!h.log[TODAY],h.name,null,()=>{ if(h.log[TODAY])delete h.log[TODAY]; else h.log[TODAY]=true; save(); render(); },()=>{state.routine.habits=all.filter(x=>x.id!==h.id);save();render();})); }); b.appendChild(adder("Add a habit...",t=>{all.push({id:uid(),name:t,log:{}});save();render();})); parent.appendChild(c); }
+function habitsModule(parent){ const all=state.routine.habits; const hs=habitsActiveOn(TODAY); const hd=hs.filter(h=>h.log[TODAY]).length; parent.appendChild(ringCard(hd,hs.length,"Daily habits",hd+" of "+hs.length+" done ¬∑ "+habitStreak()+" day streak",false,"a-green")); const c=card(); const b=c._body; hs.forEach(h=>{ b.appendChild(checkItem(!!h.log[TODAY],h.name,null,()=>{ if(h.log[TODAY])delete h.log[TODAY]; else h.log[TODAY]=true; save(); render(); },()=>{state.routine.habits=all.filter(x=>x.id!==h.id);save();render();})); }); b.appendChild(adder("Add a habit...",t=>{all.push({id:uid(),name:t,log:{}});save();render();})); parent.appendChild(c); }
 /* ===== v21 build 72: pickleball coaching page + helpers (additive, non-destructive) ===== */
 function pkParseMin(s){ if(typeof s==="number") return s; s=String(s||""); if(!s.trim()) return 0; var h=(s.match(/(\d+)\s*h/i)||[])[1], m=(s.match(/(\d+)\s*m(?!s)/i)||[])[1], sec=(s.match(/(\d+)\s*s/i)||[])[1]; var mins=0; if(h)mins+=parseInt(h,10)*60; if(m)mins+=parseInt(m,10); if(sec)mins+=parseInt(sec,10)/60; if(!h&&!m&&!sec){ var n=parseFloat(s); if(!isNaN(n)) mins=n; } return Math.round(mins*10)/10; }
 function pkEffort(s){ if(s&&typeof s.effort==="number") return s.effort; var t=String(s&&s.note||""); var m=t.match(/effort\s*(\d+(?:\.\d+)?)\s*(?:of|\/)\s*10/i); return m?parseFloat(m[1]):null; }
@@ -6016,7 +6283,7 @@ function pkCollapse(parent,key,title,sub,openDefault,build,icon,accent,id){
   var t=el("div"); t.style.cssText="font-weight:800;font-size:17px;letter-spacing:-.02em"; t.textContent=title; left.appendChild(t);
   if(sub){ var s2=el("div","small dim"); s2.style.marginTop="2px"; s2.textContent=sub; left.appendChild(s2); }
   row.appendChild(left);
-  var chev=el("div"); chev.textContent="▾"; chev.style.cssText="font-size:16px;color:var(--sec2,#8af2ac);transition:transform .15s ease;transform:rotate("+(open?"180deg":"0deg")+")";
+  var chev=el("div"); chev.textContent="‚ñæ"; chev.style.cssText="font-size:16px;color:var(--sec2,#8af2ac);transition:transform .15s ease;transform:rotate("+(open?"180deg":"0deg")+")";
   row.appendChild(chev); hb.appendChild(row); var _wrap=el("div"); _wrap.style.marginBottom="16px"; if(id)_wrap.id=id; _wrap.appendChild(hc);
   var body=el("div"); body.style.display=open?"block":"none"; body.style.marginTop="8px";
   try{ build(body); }catch(e){ try{console.error("[dash] pkCollapse",key,e);}catch(_){} var er=card(); er._body.appendChild(el("div","small dim","This section could not load.")); body.appendChild(er); }
@@ -6030,17 +6297,17 @@ function pkSessionItem(parent,s){
   var top=el("div"); top.style.cssText="display:flex;align-items:center;justify-content:space-between;gap:10px";
   var lead=el("div"); lead.style.cssText="font-weight:800;font-size:14.5px;display:flex;align-items:center;gap:8px;flex-wrap:wrap";
   var bits=[fmtShort(s.date)]; if(s.duration) bits.push(s.duration); if(s.calories) bits.push((s.calories.toLocaleString?s.calories.toLocaleString():s.calories)+" cal");
-  lead.appendChild(document.createTextNode(bits.join("  ·  ")));
+  lead.appendChild(document.createTextNode(bits.join("  ¬∑  ")));
   var r=String(s.result||"").toLowerCase(); if(r==="win"||r==="loss"){ var bd=el("span"); bd.textContent=(r==="win"?"W":"L"); bd.style.cssText="display:inline-grid;place-items:center;width:18px;height:18px;border-radius:5px;font-size:11px;font-weight:800;color:#06121f;background:"+(r==="win"?"var(--green)":"var(--red)"); lead.appendChild(bd); }
   top.appendChild(lead);
-  var chev=el("div"); chev.textContent="▾"; chev.style.cssText="font-size:14px;color:var(--gray);transition:transform .15s;transform:rotate("+(open?"180deg":"0deg")+")"; top.appendChild(chev);
+  var chev=el("div"); chev.textContent="‚ñæ"; chev.style.cssText="font-size:14px;color:var(--gray);transition:transform .15s;transform:rotate("+(open?"180deg":"0deg")+")"; top.appendChild(chev);
   b.appendChild(top);
   var det=el("div"); det.style.display=open?"block":"none"; det.style.marginTop="8px";
   var kindline=el("div","small"); kindline.style.cssText="color:var(--sec2,#8af2ac);font-weight:700"; kindline.textContent=(s.kind||"Play"); det.appendChild(kindline);
-  if(s.score||s.opponent){ var mr=el("div","small"); mr.style.cssText="color:var(--gray);font-weight:700;margin-top:5px"; mr.textContent=[s.score?("Score "+s.score):"",s.opponent?("vs "+s.opponent):""].filter(Boolean).join("  ·  "); det.appendChild(mr); }
-  var stats=[]; if(s.duration) stats.push(s.duration); if(s.calories) stats.push((s.calories.toLocaleString?s.calories.toLocaleString():s.calories)+" cal"); if(s.avgHr) stats.push("avg "+s.avgHr+" bpm"); if(s.maxHr) stats.push("max "+s.maxHr); var _e=pkEffort(s); if(_e!=null) stats.push("effort "+_e+"/10"); if(stats.length){ var sl=el("div","small"); sl.style.cssText="color:var(--gray);font-weight:600;margin-top:6px;line-height:1.5"; sl.textContent=stats.join("  ·  "); det.appendChild(sl); }
+  if(s.score||s.opponent){ var mr=el("div","small"); mr.style.cssText="color:var(--gray);font-weight:700;margin-top:5px"; mr.textContent=[s.score?("Score "+s.score):"",s.opponent?("vs "+s.opponent):""].filter(Boolean).join("  ¬∑  "); det.appendChild(mr); }
+  var stats=[]; if(s.duration) stats.push(s.duration); if(s.calories) stats.push((s.calories.toLocaleString?s.calories.toLocaleString():s.calories)+" cal"); if(s.avgHr) stats.push("avg "+s.avgHr+" bpm"); if(s.maxHr) stats.push("max "+s.maxHr); var _e=pkEffort(s); if(_e!=null) stats.push("effort "+_e+"/10"); if(stats.length){ var sl=el("div","small"); sl.style.cssText="color:var(--gray);font-weight:600;margin-top:6px;line-height:1.5"; sl.textContent=stats.join("  ¬∑  "); det.appendChild(sl); }
   if(s.note){ var n=el("div","small dim"); n.style.cssText="margin-top:6px;line-height:1.5"; n.textContent=s.note; det.appendChild(n); }
-  var del=el("button","del","× remove"); del.style.marginTop="10px"; del.onclick=function(ev){ if(ev&&ev.stopPropagation) ev.stopPropagation(); if(state.pickleball&&Array.isArray(state.pickleball.sessions)){ state.pickleball.sessions=state.pickleball.sessions.filter(function(x){return x.id!==s.id;}); } save(); render(); }; det.appendChild(del);
+  var del=el("button","del","√ó remove"); del.style.marginTop="10px"; del.onclick=function(ev){ if(ev&&ev.stopPropagation) ev.stopPropagation(); if(state.pickleball&&Array.isArray(state.pickleball.sessions)){ state.pickleball.sessions=state.pickleball.sessions.filter(function(x){return x.id!==s.id;}); } save(); render(); }; det.appendChild(del);
   b.appendChild(det);
   c.onclick=function(){ var willOpen=(det.style.display==="none"); det.style.display=willOpen?"block":"none"; chev.style.transform="rotate("+(willOpen?"180deg":"0deg")+")"; PK_OPEN[key]=willOpen; };
   parent.appendChild(c);
@@ -6117,7 +6384,7 @@ function skillDetailPanel(host,id){
   var ht=el("div"); ht.style.cssText="font-weight:800;font-size:17px;letter-spacing:-.02em";
   ht.textContent=(s&&s.label)||(u&&u.label)||id;
   head.appendChild(ht);
-  var x=el("button","bx","×"); x.style.cssText="background:none;border:0;color:var(--gray);font-size:20px;line-height:1;cursor:pointer";
+  var x=el("button","bx","√ó"); x.style.cssText="background:none;border:0;color:var(--gray);font-size:20px;line-height:1;cursor:pointer";
   x.onclick=function(ev){ ev.stopPropagation(); try{ if(!state.meta) state.meta={}; state.meta.skOpen=null; }catch(e){} try{ render(); }catch(e){} };
   head.appendChild(x); b.appendChild(head);
 
@@ -6145,7 +6412,7 @@ function skillDetailPanel(host,id){
   var bullets=function(arr,cap){
     (arr||[]).slice(0,cap||3).forEach(function(t){
       var r=el("div","small"); r.style.cssText="line-height:1.5;color:var(--gray);margin-top:6px;display:flex;gap:7px";
-      var dot=el("span"); dot.style.cssText="color:var(--gray);opacity:.55;font-weight:800;flex:0 0 auto"; dot.textContent="•";
+      var dot=el("span"); dot.style.cssText="color:var(--gray);opacity:.55;font-weight:800;flex:0 0 auto"; dot.textContent="‚Ä¢";
       var tx=el("span"); tx.textContent=firstSentence(t);
       r.appendChild(dot); r.appendChild(tx); b.appendChild(r);
     });
@@ -6429,11 +6696,11 @@ function buildPickle(v){ var pb=state.pickleball||(state.pickleball={});
     (function(){ var cr=(pb.coachRec&&(pb.coachRec[TODAY]||pkLatest(pb.coachRec)))||null; if(!cr) return; var title=(typeof cr==="string")?"":(cr.title||""); var body=(cr&&typeof cr==="object")?(cr.note||cr.text||""):String(cr||""); if(!title&&!body) return; sect(c,"This week's focus","picked by your coach"); var cc=card(); var b=cc._body; if(title){ var t=el("div"); t.style.cssText="font-weight:800;font-size:15.5px;letter-spacing:-.01em;margin-bottom:7px"; t.textContent=title; b.appendChild(t); } if(body){ pkParas(b,body); } c.appendChild(cc); })();
     
     sect(c,"Today's video","picked by your coach");
-    (function(){ var vr=(pb.videoRec&&pb.videoRec[TODAY])||pkLatest(pb.videoRec)||{title:"Third shot drop, groove the soft game",url:"https://www.youtube.com/results?search_query=pickleball+third+shot+drop+drill",note:"Default pick. Your daily coach swaps this each morning.",_default:true}; var cc=card(); var b=cc._body; b.appendChild(el("span","pill g","Watch")); var t=el("div"); t.style.cssText="font-weight:800;font-size:16px;margin-top:8px;letter-spacing:-.01em"; t.textContent=vr.title||"Pickleball video"; b.appendChild(t); if(vr.note){ var n=el("div","small muted"); n.style.marginTop="5px"; n.textContent=vr.note; b.appendChild(n); } if(vr.url){ var a=el("a","feedlink"); a.href=vr.url; a.target="_blank"; a.rel="noopener"; a.textContent="Watch ›"; a.style.marginTop="12px"; a.style.display="inline-block"; b.appendChild(a); } c.appendChild(cc); })();
+    (function(){ var vr=(pb.videoRec&&pb.videoRec[TODAY])||pkLatest(pb.videoRec)||{title:"Third shot drop, groove the soft game",url:"https://www.youtube.com/results?search_query=pickleball+third+shot+drop+drill",note:"Default pick. Your daily coach swaps this each morning.",_default:true}; var cc=card(); var b=cc._body; b.appendChild(el("span","pill g","Watch")); var t=el("div"); t.style.cssText="font-weight:800;font-size:16px;margin-top:8px;letter-spacing:-.01em"; t.textContent=vr.title||"Pickleball video"; b.appendChild(t); if(vr.note){ var n=el("div","small muted"); n.style.marginTop="5px"; n.textContent=vr.note; b.appendChild(n); } if(vr.url){ var a=el("a","feedlink"); a.href=vr.url; a.target="_blank"; a.rel="noopener"; a.textContent="Watch ‚Ä∫"; a.style.marginTop="12px"; a.style.display="inline-block"; b.appendChild(a); } c.appendChild(cc); })();
     
     safe(c,function(){ var st=pkStats(); var ins=pkInsights(st); if(!ins.length) return; sect(c,"What your coach sees","from your logged data"); var ic=card(); ins.forEach(function(line,i){ var r=el("div","small"); r.style.cssText="line-height:1.5;color:var(--gray)"+(i>0?";margin-top:6px":""); r.textContent=line; ic._body.appendChild(r); }); c.appendChild(ic); },"Pickle insights");
     
-  },"🎯","green");
+  },"üéØ","green");
   /* =====================================================================================
      v21 build 212: LEARNING MODE. RULES.md P3. Pickleball is the deliberate exception to
      short daily use, so this section is allowed to be long, and it is CLOSED BY DEFAULT so
@@ -6485,7 +6752,7 @@ function buildPickle(v){ var pb=state.pickleball||(state.pickleball={});
       c.appendChild(rc);
     }
     if(!_vs.length&&!(_se&&_se.doubles)){ var ec=card(); ec._body.appendChild(el("div","empty","No film studies yet. Run the video coach on a session and the conclusions land here.")); c.appendChild(ec); }
-  },"🎬","green");
+  },"üé¨","green");
   pkCollapse(v,"pk_active","Work on and cues","what to drill and remember while playing",false,function(ap){
     safe(ap,function(){ var wo=(pb.workOn&&pb.workOn.length)?pb.workOn.slice(0,4):[]; sect(ap,"Work on","top 4"); var cc=card(); if(!wo.length){ cc._body.appendChild(el("div","empty","Your coach will fill this in from your sessions.")); } else { wo.forEach(function(line,i){ var r=el("div","small"); r.style.cssText="line-height:1.5;color:var(--white);font-weight:600"+(i>0?";margin-top:9px":""); var dot=el("span"); dot.style.cssText="color:var(--pk1);font-weight:800;margin-right:8px"; dot.textContent="\u2022"; r.appendChild(dot); r.appendChild(document.createTextNode(line)); cc._body.appendChild(r); }); } ap.appendChild(cc); },"Active workon");
     
@@ -6495,7 +6762,7 @@ function buildPickle(v){ var pb=state.pickleball||(state.pickleball={});
   pkCollapse(v,"pk_drills","Drills","one capped list, machine and partner",false,function(ap){
     safe(ap,function(){ if(!Array.isArray(pb.drills)) pb.drills=[]; function pkGrp(host,label,sub,key){ var list=pb.drills.filter(function(d){return d&&d.group===key;}).slice(0,4); if(!list.length) return; sect(host,label,sub); var gc=card(); list.forEach(function(d){ var r=el("div","small"); r.style.cssText="line-height:1.5;color:var(--gray)"; if(gc._body.childElementCount) r.style.marginTop="9px"; var dot=el("span"); dot.style.cssText="color:var(--sec,var(--accent));font-weight:800;margin-right:8px"; dot.textContent="\u2022"; r.appendChild(dot); r.appendChild(document.createTextNode(d.text||"")); gc._body.appendChild(r); }); host.appendChild(gc); } pkGrp(ap,"Machine drills","club ball machine, 3 to 4 max","machine"); pkGrp(ap,"With a partner","live reps, 3 to 4 max","partner"); },"Pickle drills capped");
 
-  },"🔁","teal");
+  },"üîÅ","teal");
   pkCollapse(v,"pk_sessions","Sessions","log, this week, and history",false,function(c){
     (function(){ var rc=card(); var t=el("div","small"); t.style.cssText="line-height:1.55;color:var(--gray)"; t.textContent="Rating status. Self estimate about DUPR 3.5, unrated so far, and your first real DUPR gets set at the Aug 23 tournament."; rc._body.appendChild(t); c.appendChild(rc); })();
 
@@ -6506,7 +6773,7 @@ function buildPickle(v){ var pb=state.pickleball||(state.pickleball={});
       var fc=card(); var fb=fc._body; var dl=el("div","small muted","Date"); dl.style.marginBottom="4px"; fb.appendChild(dl); var din=el("input","in"); din.type="date"; din.value=TODAY; fb.appendChild(din); var kind="League"; var kc=el("div"); kc.style.marginTop="11px"; var setc=function(){ Array.prototype.slice.call(kc.querySelectorAll(".chip")).forEach(function(ch){ ch.classList.toggle("on",ch.textContent===kind); }); }; kc.appendChild(chipRow(["League","Open play","Drills","Tournament"],kind,function(k){kind=k;setc();})); fb.appendChild(kc);
       var vl=el("div","small muted","Venue"); vl.style.margin="13px 0 5px"; fb.appendChild(vl); var venue="Ace"; var vc=el("div"); var setv=function(){ Array.prototype.slice.call(vc.querySelectorAll(".chip")).forEach(function(ch){ ch.classList.toggle("on",ch.textContent===venue); }); }; vc.appendChild(chipRow(["Ace","Midwest","Prairie Lane","Other"],venue,function(k){venue=k;setv();})); fb.appendChild(vc);
       var g=el("div","grid2"); g.style.marginTop="11px"; var durIn=el("input","in"); durIn.placeholder="Duration, e.g. 1h 20m"; g.appendChild(durIn); var calIn=el("input","in"); calIn.type="number"; calIn.placeholder="Calories"; g.appendChild(calIn); var hrIn=el("input","in"); hrIn.type="number"; hrIn.placeholder="Avg HR"; g.appendChild(hrIn); var maxIn=el("input","in"); maxIn.type="number"; maxIn.placeholder="Max HR"; g.appendChild(maxIn); var effIn=el("input","in"); effIn.type="number"; effIn.min="1"; effIn.max="10"; effIn.placeholder="Effort 1-10"; g.appendChild(effIn); fb.appendChild(g);
-      var ml=el("div","small muted","Match result, optional"); ml.style.margin="13px 0 5px"; fb.appendChild(ml); var result=""; var rc=el("div"); var setr=function(){ Array.prototype.slice.call(rc.querySelectorAll(".chip")).forEach(function(ch){ ch.classList.toggle("on", (ch.textContent==="Win"&&result==="Win")||(ch.textContent==="Loss"&&result==="Loss")||(ch.textContent==="—"&&result==="")); }); }; rc.appendChild(chipRow(["Win","Loss","—"],"—",function(k){ result=(k==="—")?"":k; setr(); })); fb.appendChild(rc);
+      var ml=el("div","small muted","Match result, optional"); ml.style.margin="13px 0 5px"; fb.appendChild(ml); var result=""; var rc=el("div"); var setr=function(){ Array.prototype.slice.call(rc.querySelectorAll(".chip")).forEach(function(ch){ ch.classList.toggle("on", (ch.textContent==="Win"&&result==="Win")||(ch.textContent==="Loss"&&result==="Loss")||(ch.textContent==="‚Äî"&&result==="")); }); }; rc.appendChild(chipRow(["Win","Loss","‚Äî"],"‚Äî",function(k){ result=(k==="‚Äî")?"":k; setr(); })); fb.appendChild(rc);
       var g2=el("div","grid2"); g2.style.marginTop="11px"; var scoreIn=el("input","in"); scoreIn.placeholder="Score, e.g. 11-7, 11-9"; g2.appendChild(scoreIn); var oppIn=el("input","in"); oppIn.placeholder="Partner / opponent"; g2.appendChild(oppIn); fb.appendChild(g2);
       var noteIn=el("textarea","in"); noteIn.style.minHeight="54px"; noteIn.style.marginTop="11px"; noteIn.placeholder="Match note, what you worked on, how it felt..."; fb.appendChild(noteIn);
       var btn=el("button","btn block","Log session"); btn.style.marginTop="12px"; btn.onclick=function(){ var e=parseInt(effIn.value,10); pb.sessions.push({id:uid(),date:din.value||TODAY,kind:kind,venue:venue,duration:durIn.value.trim(),calories:calIn.value?parseInt(calIn.value,10):0,avgHr:hrIn.value?parseInt(hrIn.value,10):0,maxHr:maxIn.value?parseInt(maxIn.value,10):0,effort:(!isNaN(e)?e:null),result:result,score:scoreIn.value.trim(),opponent:oppIn.value.trim(),note:noteIn.value.trim()}); save(); render(); }; fb.appendChild(btn); f.appendChild(fc);
@@ -6520,7 +6787,7 @@ function buildPickle(v){ var pb=state.pickleball||(state.pickleball={});
     })();
 
     
-  },"📅","blue");
+  },"üìÖ","blue");
   pkCollapse(v,"pk_goals","Goals and events","tap to expand",false,function(gv){
       (function(){ if(!Array.isArray(pb.goals)) pb.goals=[]; var gc=card(); var gb=gc._body; if(!pb.goals.length){ gb.appendChild(el("div","empty","No goals yet.")); } pb.goals.forEach(function(g,i){ var row=el("div"); row.style.cssText="padding:10px 0"+(i>0?";border-top:1px solid var(--line)":""); var head=el("div","between"); head.style.cursor="pointer"; var lt=el("div"); lt.style.cssText="display:flex;gap:9px;align-items:center;min-width:0"; var cb=el("input","cbx"); cb.type="checkbox"; cb.checked=!!g.done; cb.onclick=function(ev){ ev.stopPropagation(); g.done=cb.checked; save(); }; var lab=el("div"); lab.style.cssText="font-weight:700;font-size:14px;letter-spacing:-.01em"+(g.done?";text-decoration:line-through;opacity:.6":""); lab.textContent=g.short||String(g.text||"").split(/(?<=[.!?])\s/)[0]; lt.appendChild(cb); lt.appendChild(lab); head.appendChild(lt); var chev=el("div","chev","\u203a"); head.appendChild(chev); row.appendChild(head); var body=el("div"); body.style.cssText="display:none;margin-top:8px;line-height:1.55;color:var(--gray);font-size:13px"; body.textContent=g.text||""; row.appendChild(body); head.onclick=function(){ var on=body.style.display==="none"; body.style.display=on?"block":"none"; chev.style.transform=on?"rotate(90deg)":""; }; gb.appendChild(row); }); gv.appendChild(gc); })();
       var PREP={
@@ -6558,7 +6825,7 @@ function buildPickle(v){ var pb=state.pickleball||(state.pickleball={});
       if(!evs.length){ b.appendChild(el("div","empty","No upcoming events.")); }
       gv.appendChild(cc);
       
-    },"🏆","purple");
+    },"üèÜ","purple");
   safe(v,function(){
     sect(v,"Deep Dive","your full study guide");
     (function(){ var dc=card(); var b=dc._body; b.appendChild(el("span","pill g","Study")); var tx=el("div","small"); tx.style.cssText="margin-top:9px;line-height:1.55;color:var(--gray)"; tx.textContent="All the heavy teaching lives here now, footwork, shot form vs the pros, drops and dinks, hands battles, patterns, your paddle, stacking, weights, and the six answers. Open it when you want to study."; b.appendChild(tx); var btn=el("button","btn block","Open Deep Dive"+String.fromCharCode(160)+String.fromCharCode(8250)); btn.style.marginTop="12px"; btn.onclick=function(){ try{ window.open("deep-dive.html","_blank","noopener"); }catch(e){ location.href="deep-dive.html"; } }; b.appendChild(btn); v.appendChild(dc); })();
@@ -6606,10 +6873,10 @@ function checklistModule(parent){ const blocks=[["morning","Morning"],["day","Da
 const ACCENTS=[["#2f6bff","#6fa8ff"],["#3d9bff","#8fd0ff"],["#18c3b3","#66e6da"],["#7c5cff","#b39dff"],["#2fd27a","#7ff0b8"]];
 function applyAccent(){ try{ const a=(state.settings&&state.settings.accent)||"#2f6bff"; const a2=(state.settings&&state.settings.accent2)||"#6fa8ff"; document.documentElement.style.setProperty("--accent",a); document.documentElement.style.setProperty("--accent2",a2); }catch(e){} }
 function buildSettings(v){
-  const backc=el("div","backrow"); const back=el("label","btn ghost sm"); back.setAttribute("for","t-home"); back.style.display="inline-block"; back.textContent="‹ Done"; backc.appendChild(back); v.appendChild(backc);
+  const backc=el("div","backrow"); const back=el("label","btn ghost sm"); back.setAttribute("for","t-home"); back.style.display="inline-block"; back.textContent="‚Äπ Done"; backc.appendChild(back); v.appendChild(backc);
   sect(v,"Profile"); const pc=card(); pc._body.appendChild(el("div","small muted","Display name")); pc._body.firstChild.style.marginBottom="6px"; const nin=el("input","in"); nin.value=(state.settings&&state.settings.name)||""; nin.placeholder="Your name"; nin.oninput=()=>{ state.settings.name=nin.value; save(); }; pc._body.appendChild(nin);
   const phl=el("div","small muted","Contact number"); phl.style.margin="13px 0 6px"; pc._body.appendChild(phl); const phin=el("input","in"); phin.type="tel"; phin.placeholder="Your phone"; phin.value=(state.settings&&state.settings.phone)||(profile==="chris"?"":"402-591-1133"); if(state.settings&&!state.settings.phone&&profile!=="chris"){ state.settings.phone="402-591-1133"; } phin.oninput=()=>{ state.settings.phone=phin.value; save(); }; pc._body.appendChild(phin);
-  const who=el("div","small dim"); who.style.marginTop="12px"; who.textContent="Signed in as "+(profile==="chris"?"Chris McCain":"Ian McCain")+(state.settings&&state.settings.phone?"  ·  "+state.settings.phone:""); pc._body.appendChild(who); v.appendChild(pc);
+  const who=el("div","small dim"); who.style.marginTop="12px"; who.textContent="Signed in as "+(profile==="chris"?"Chris McCain":"Ian McCain")+(state.settings&&state.settings.phone?"  ¬∑  "+state.settings.phone:""); pc._body.appendChild(who); v.appendChild(pc);
   sect(v,"Paddle","your current paddle and specs, edit anytime"); (function(){ if(!state.pickleball||typeof state.pickleball!=="object") state.pickleball={}; const ppc=card(); ppc._body.appendChild(el("div","small muted","Current paddle and specs")); ppc._body.firstChild.style.marginBottom="6px"; const pta=el("textarea","in"); pta.style.minHeight="74px"; pta.value=state.pickleball.paddle||""; pta.placeholder="e.g. JOOLA Perseus IV, 16mm, elongated, small grip plus one overgrip"; pta.oninput=function(){ state.pickleball.paddle=pta.value; save(); }; ppc._body.appendChild(pta); v.appendChild(ppc); })();
   sect(v,"Accent color"); const ac=card(); ac._body.appendChild(el("div","small muted","Defaults to blue.")); ac._body.firstChild.style.marginBottom="8px"; const sw=el("div","swatches"); ACCENTS.forEach(pair=>{ const s=el("div","sw"+(state.settings.accent===pair[0]?" on":"")); s.style.background=pair[0]; s.onclick=()=>{ state.settings.accent=pair[0]; state.settings.accent2=pair[1]; applyAccent(); save(); render(); }; sw.appendChild(s); }); ac._body.appendChild(sw); v.appendChild(ac);
   sect(v,"Show or hide"); const hc=card(); const hb=hc._body; const toggles=[["neighborhoods","Neighborhoods"],["scripts","Quick scripts"],["ideas","Ideas and notes"],["solara","Solara"]]; toggles.forEach(([key,label])=>{ const r=el("div","mrow"); r.appendChild(el("div","ml",label)); const tg=el("div","toggle"+(!hidden(key)?" on":"")); tg.onclick=()=>{ if(!state.settings.hidden)state.settings.hidden={}; if(hidden(key))delete state.settings.hidden[key]; else state.settings.hidden[key]=true; save(); render(); }; r.appendChild(tg); hb.appendChild(r); }); v.appendChild(hc);
@@ -6641,7 +6908,7 @@ function selectTab(which){ const r=document.getElementById("t-"+which); if(r){ r
 const PASSCODE="2007";
 let entered="";
 function buildKeypad(){ const kp=document.getElementById("keypad"); if(!kp||kp._built)return; kp._built=true; const keys=["1","2","3","4","5","6","7","8","9","","0","del"];
-  keys.forEach(k=>{ if(k===""){ kp.appendChild(el("div")); return; } const b=el("button","key"+(k==="del"?" fn":"")); b.textContent=k==="del"?"⌫":k; b.onclick=()=> k==="del"?padDel():padPress(k); kp.appendChild(b); }); }
+  keys.forEach(k=>{ if(k===""){ kp.appendChild(el("div")); return; } const b=el("button","key"+(k==="del"?" fn":"")); b.textContent=k==="del"?"‚å´":k; b.onclick=()=> k==="del"?padDel():padPress(k); kp.appendChild(b); }); }
 function updateDots(){ const dots=document.querySelectorAll("#lockDots .dot"); dots.forEach((d,i)=>d.classList.toggle("on",i<entered.length)); }
 function padPress(d){ if(entered.length>=4)return; const sub=document.getElementById("lockSub"); if(sub){ sub.classList.remove("err"); if(sub.textContent!=="Enter passcode")sub.textContent="Enter passcode"; } entered+=d; updateDots(); if(entered.length===4) setTimeout(checkCode,150); }
 function padDel(){ entered=entered.slice(0,-1); updateDots(); }
@@ -6655,7 +6922,7 @@ function lockNow(){ try{ sess.remove("ianDash.session"); }catch(e){} const l=doc
    showKeypad calls renderLockWater() whenever the lock is shown. */
 const LOCK_WATER_GOAL=WATER_GOAL;
 function lockWaterAdjust(n){ try{ if(!state) return; if(!state.nutrition) state.nutrition={}; if(!state.nutrition.water) state.nutrition.water={}; var cur=state.nutrition.water[TODAY]||0; state.nutrition.water[TODAY]=Math.max(0,cur+n); save(true); renderLockWater(); }catch(e){} }
-function renderLockWater(){ try{ var host=document.getElementById("lockWater"); if(!host) return; var goal=LOCK_WATER_GOAL; var cur=0; try{ cur=(state&&state.nutrition&&state.nutrition.water&&state.nutrition.water[TODAY])||0; }catch(e){ cur=0; } var pct=Math.max(0,Math.min(100,goal?(cur/goal*100):0)); host.innerHTML='<div class="lw-top"><div class="lw-lab">Water</div><div class="lw-amt">'+cur+' / '+goal+' cups</div></div><div class="lw-main"><button class="lw-btn" id="lwMinus" aria-label="Remove a cup of water">−</button><div class="lw-bar"><i style="width:'+pct+'%"></i></div><button class="lw-btn" id="lwPlus" aria-label="Add a cup of water">+</button></div>'; var mi=document.getElementById("lwMinus"), pl=document.getElementById("lwPlus"); if(mi) mi.onclick=function(){ lockWaterAdjust(-1); }; if(pl) pl.onclick=function(){ lockWaterAdjust(1); }; }catch(e){} }
+function renderLockWater(){ try{ var host=document.getElementById("lockWater"); if(!host) return; var goal=LOCK_WATER_GOAL; var cur=0; try{ cur=(state&&state.nutrition&&state.nutrition.water&&state.nutrition.water[TODAY])||0; }catch(e){ cur=0; } var pct=Math.max(0,Math.min(100,goal?(cur/goal*100):0)); host.innerHTML='<div class="lw-top"><div class="lw-lab">Water</div><div class="lw-amt">'+cur+' / '+goal+' cups</div></div><div class="lw-main"><button class="lw-btn" id="lwMinus" aria-label="Remove a cup of water">‚àí</button><div class="lw-bar"><i style="width:'+pct+'%"></i></div><button class="lw-btn" id="lwPlus" aria-label="Add a cup of water">+</button></div>'; var mi=document.getElementById("lwMinus"), pl=document.getElementById("lwPlus"); if(mi) mi.onclick=function(){ lockWaterAdjust(-1); }; if(pl) pl.onclick=function(){ lockWaterAdjust(1); }; }catch(e){} }
 
 /* ===== export / import / pwa ===== */
 function doExport(){ try{ state.meta.lastSaved=new Date().toISOString(); updateDailySummary(); const blob=new Blob([JSON.stringify(state,null,2)],{type:"application/json"}); const url=URL.createObjectURL(blob); const a=document.createElement("a"); a.href=url; a.download=(profile==="chris"?"chris":"ian")+"-dashboard-"+TODAY+".json"; a.click(); setTimeout(()=>{try{URL.revokeObjectURL(url);}catch(e){}},500); toast("Backup downloaded"); }catch(e){ toast("Export failed"); } }
@@ -6894,7 +7161,7 @@ function autoLogCard(area){
 
 })();
 </script>
-<!-- ===================== RESTRAINED REDESIGN — v21 build 73 (2026-07-12) =====================
+<!-- ===================== RESTRAINED REDESIGN ‚Äî v21 build 73 (2026-07-12) =====================
      Applied after Ian approved Preview 1 (Restrained). ADDITIVE and COSMETIC ONLY.
      Line icons replace emoji (tab bar + launchers), per-section color leak fixed,
      redundancies removed, spacing tightened. Touches NO seed data, NO SEED_VERSION,
@@ -6942,8 +7209,8 @@ function autoLogCard(area){
     sun:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4.1"/><path d="M12 2v2.6M12 19.4V22M4.2 4.2l1.85 1.85M17.95 17.95 19.8 19.8M2 12h2.6M19.4 12H22M4.2 19.8l1.85-1.85M17.95 6.05 19.8 4.2"/></svg>',
     pickle:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14.6 3.2c3 1.25 4.35 4.7 3.05 7.65s-4.7 4.35-7.65 3.05-4.35-4.7-3.05-7.65S11.65 1.95 14.6 3.2Z"/><path d="M8.5 13 4.2 19.8"/><circle cx="17.4" cy="17.4" r="3.2"/><circle cx="16.5" cy="16.6" r=".5" fill="currentColor" stroke="none"/><circle cx="18.4" cy="16.7" r=".5" fill="currentColor" stroke="none"/><circle cx="17.4" cy="18.3" r=".5" fill="currentColor" stroke="none"/></svg>'
   };
-  var EM={'🏠':'home','🏡':'building','🏋':'dumbbell','📊':'chart','🧭':'more','🌱':'sprout','✅':'check','🧰':'tools','🎾':'pickle','🎯':'target','🤝':'people','👥':'people','⚡':'bolt','☀':'sun'};
-  function baseEmoji(t){ if(!t) return ''; t=t.replace(/[️‍]/g,'').trim(); // strip VS16/ZWJ
+  var EM={'üè†':'home','üè°':'building','üèã':'dumbbell','üìä':'chart','üß≠':'more','üå±':'sprout','‚úÖ':'check','üß∞':'tools','üéæ':'pickle','üéØ':'target','ü§ù':'people','üë•':'people','‚ö°':'bolt','‚òÄ':'sun'};
+  function baseEmoji(t){ if(!t) return ''; t=t.replace(/[Ô∏è‚Äç]/g,'').trim(); // strip VS16/ZWJ
     for(var k in EM){ if(t.indexOf(k)===0) return k; } return ''; }
   function swapIcons(){
     document.querySelectorAll('.ti,.li').forEach(function(el){
