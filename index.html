@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 227 (2026-08-05)">
+<meta name="build" content="v21 build 228 (2026-08-05)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -4275,6 +4275,33 @@ function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]
       }
   } }catch(e){}
 
+
+  /* ===== v21 build 228: IAN'S OWN SKILL SELF ASSESSMENT, 08.05 =================================
+     Lives at state.pickleball.selfAssessment, a DATE KEYED map, and it is a SEPARATE FIELD from
+     state.pickleball.skills ON PURPOSE. skills holds the FILM BASED coach grade from the 07.29
+     regrade and NOTHING HERE TOUCHES IT. A self report does not move a rating, per the standing
+     rule, and the whole value of this record is that the two can be read against each other.
+     Date keyed so the 07.29 set stays as history rather than being overwritten, because the
+     MOVEMENT between the two is the finding, not either set on its own.
+     The 07.29 values were given as RANGES and are stored as {lo,hi}. The 08.05 values are single
+     points and are stored as numbers. Do not flatten the ranges into points in the store; the
+     render takes midpoints for comparison and says so. */
+  try{ if(profile==="ian" && state.pickleball){
+      var _p228=state.pickleball;
+      if(!_p228.selfAssessment || typeof _p228.selfAssessment!=="object") _p228.selfAssessment={};
+      if(!_p228.selfAssessment["2026-07-29"]) _p228.selfAssessment["2026-07-29"]={
+        label:"07.29.2026", source:"Ian self assessed", form:"ranges",
+        skills:{serve:{lo:3.0,hi:3.25},drops:{lo:3.25,hi:3.25},resets:{lo:3.25,hi:3.5},dinks:{lo:3.5,hi:3.5},drives:{lo:3.5,hi:3.75},hands:{lo:3.0,hi:3.25},footwork:{lo:3.25,hi:3.5}},
+        note:"Given as ranges. Kept as history, never overwritten."};
+      if(!_p228.selfAssessment["2026-08-05"]) _p228.selfAssessment["2026-08-05"]={
+        label:"08.05.2026", source:"Ian self assessed", form:"points",
+        skills:{serve:3.5,drops:3.2,resets:3.4,dinks:3.5,drives:3.7,hands:3.3,footwork:3.5},
+        note:"HIS SELF ASSESSMENT MOVED IN THE DIRECTIONS HIS OWN SESSION REPORTS POINTED, and that internal consistency is the finding rather than the numbers. Serves is the biggest riser, +0.38, and serves is the one skill where he CHANGED A BEHAVIOUR, the pre play serve drill. Hands is second, +0.18, and hands is where the grip change landed. Drops is the ONLY faller, -0.05, and drops is the shot he has been actively attempting and failing at all week. That is self perception tracking his own observations rather than drifting on feel, which is the opposite of July, when the ratings were inflated enough to need the 07.29 regrade. It raises how much weight a self report should carry, though it does not make one sufficient on its own. ONE EXCEPTION, recorded because it is the only place the pattern does not hold: DINKS HELD FLAT at 3.5 while his reports moved DOWN, mid on 08.01 and off on 08.05. Six of seven track, dinks does not. THE FILM RATINGS DO NOT MOVE ON THIS. Self 3.44 against a film based 3.25, and the honest read of that 0.19 gap is NOT that he is overrating himself, it is that NOBODY KNOWS, because the film evidence is from 07.18 to 07.25 and predates both the grip change and the serve routine. The staleness is the finding. With DUPR on Aug 23 that is the single biggest open question in the pickleball file, and ONE FILMED SESSION CLOSES IT."};
+      if(state.meta && !state.meta.mig228_selfassess){
+        state.meta.mig228_selfassess=true; save(true);
+      }
+  } }catch(e){}
+
   /* build 225: focus timer removed, nothing to clear here anymore. */
   applyAccent(); dailyReset(); save(true);
 }
@@ -6683,6 +6710,55 @@ function autoLogCard(area){
   habitsModule=function(parent){ _hm(parent); safe(parent,function(){ var s=habitStrip14(); if(s) parent.appendChild(s); },"Habit 14 day strip"); };
   var _gm=(typeof gymToday==="function")?gymToday:null;
   if(_gm){ gymToday=function(parent){ _gm(parent); safe(parent,function(){ var a=autoLogCard("Gym"); if(a) parent.appendChild(a); },"Gym auto log"); }; }
+
+  /* build 228: Ian's own read, rendered under the Skills radar so the self numbers and the film
+     numbers are never seen apart. Wrapped, not edited inline, same as the two above. */
+  function selfAssessCard(){
+    try{
+      var pb=state.pickleball||{}; var SA=pb.selfAssessment||{};
+      var ds=Object.keys(SA).sort(); if(ds.length<1) return null;
+      var cur=SA[ds[ds.length-1]]; if(!cur||!cur.skills) return null;
+      var prev=ds.length>1?SA[ds[ds.length-2]]:null;
+      var film={}; (pb.skills||[]).forEach(function(k){ if(k&&!k.unrated&&typeof k.rating==="number") film[k.id]=k.rating; });
+      function mid(v){ if(v==null) return null; if(typeof v==="number") return v; if(typeof v==="object"&&typeof v.lo==="number"&&typeof v.hi==="number") return (v.lo+v.hi)/2; return null; }
+      function avg(o){ var t=0,n=0; for(var k in o){ var m=mid(o[k]); if(m!=null){ t+=m; n++; } } return n?t/n:null; }
+      var ids=["serve","drops","resets","dinks","drives","hands","footwork"];
+      var LAB={serve:"Serve",drops:"Drops",resets:"Resets",dinks:"Dinks",drives:"Drives",hands:"Hands",footwork:"Footwork"};
+      var selfAvg=avg(cur.skills), prevAvg=prev?avg(prev.skills):null;
+      var filmAvg=avg(film);
+      var c=card("a-blue"); var b=c._body;
+      var hd=el("div"); hd.appendChild(el("h3",null,"Your own read"));
+      var sb=el("div","small dim"); sb.style.marginTop="3px";
+      sb.textContent=(cur.label||ds[ds.length-1])+". Your self assessment beside the film grade. Self report is tracked, it does not move a rating.";
+      hd.appendChild(sb); b.appendChild(hd);
+      var head=el("div","small"); head.style.cssText="display:grid;grid-template-columns:1.25fr .6fr .6fr .75fr;gap:4px;margin-top:11px;font-weight:800;color:var(--gray2)";
+      ["","You","Film","vs "+(prev?(prev.label||"").replace(".2026",""):"prev")].forEach(function(t){ var d=el("div",null,t); head.appendChild(d); });
+      b.appendChild(head);
+      ids.forEach(function(id){
+        var s=mid(cur.skills[id]); if(s==null) return;
+        var f=(typeof film[id]==="number")?film[id]:null;
+        var p=prev?mid(prev.skills[id]):null;
+        var dz=(p==null)?null:(s-p);
+        var row=el("div","small"); row.style.cssText="display:grid;grid-template-columns:1.25fr .6fr .6fr .75fr;gap:4px;margin-top:7px;padding-top:7px;border-top:1px solid var(--card2);line-height:1.4";
+        var n=el("div",null,LAB[id]||id); n.style.fontWeight="700"; row.appendChild(n);
+        row.appendChild(el("div",null,s.toFixed(2)));
+        row.appendChild(el("div",null,f==null?"n/a":f.toFixed(2)));
+        var dv=el("div",null,dz==null?"n/a":(Math.abs(dz)<0.001?"flat":(dz>0?"+":"")+dz.toFixed(2)));
+        if(dz!=null&&Math.abs(dz)>=0.001) dv.style.fontWeight="800";
+        row.appendChild(dv);
+        b.appendChild(row);
+      });
+      var tot=el("div","small"); tot.style.cssText="margin-top:11px;padding-top:9px;border-top:1px solid var(--card2);line-height:1.55;font-weight:700";
+      tot.textContent="Overall you "+(selfAvg!=null?selfAvg.toFixed(2):"n/a")+", film "+(filmAvg!=null?filmAvg.toFixed(2):"n/a")+(prevAvg!=null?", and you were "+prevAvg.toFixed(2)+" on 07.29":"");
+      b.appendChild(tot);
+      var w=el("div","small"); w.style.cssText="margin-top:8px;line-height:1.6;color:var(--gray)";
+      w.textContent="The gap does not mean you are overrating yourself. It means nobody knows. The film behind that grade is 07.18 to 07.25, so it predates the grip change and the pre play serve drill, the two things your own numbers moved on. With Aug 23 close, that staleness is the biggest open question here and one filmed session closes it.";
+      b.appendChild(w);
+      return c;
+    }catch(e){ return null; }
+  }
+  var _bsr=(typeof buildSkillsRadar==="function")?buildSkillsRadar:null;
+  if(_bsr){ buildSkillsRadar=function(parent){ _bsr(parent); safe(parent,function(){ var s=selfAssessCard(); if(s) parent.appendChild(s); },"Self assessment"); }; }
 })();
 
 })();
