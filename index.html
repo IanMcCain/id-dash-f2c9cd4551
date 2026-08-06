@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 226 (2026-08-05)">
+<meta name="build" content="v21 build 227 (2026-08-05)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -4229,6 +4229,49 @@ function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]
           }
         }
         state.meta.mig226_daily=true; save(true);
+      }
+  } }catch(e){}
+
+
+  /* ===== v21 build 227: THE 08.05 PICKLEBALL SESSION ==========================================
+     Logged from Ian's watch data and self report at 19:19 on 08.05, after the 06:05 brief had
+     already shipped build 226. Placed AFTER the build 226 block on purpose: 226 rewrites workOn
+     and cues unconditionally on every load, so per the last writer wins rule this has to sit
+     below it to survive. The one time part is guarded by state.meta.mig227_pk0805 which lives in
+     SAVED STATE ONLY, never in seedIan().meta, per the migration guard rule.
+     Evidence class SELF REPORT. NO RATING MOVES, and no session quality grade, per settled rules.
+     maxHr and minHr are deliberately ABSENT rather than zero: the watch summary did not show a
+     peak, and the card render skips falsy values, so Missing stays Missing on the page. */
+  try{ if(profile==="ian" && state.pickleball){
+      var _p227=state.pickleball;
+      if(Array.isArray(_p227.sessions) && !_p227.sessions.some(function(s){ return s && s.id==="pk-20260805-openplay"; })){
+        _p227.sessions.push({id:"pk-20260805-openplay",date:"2026-08-05",kind:"Open play",venue:"Omaha",duration:"2h 47m 42s",calories:1712,activeCalories:1450,avgHr:125,effort:7,note:"Open play doubles, Omaha, 4:27 to 7:14 PM, 2:47:42. Effort 7 of 10, Hard. From Apple Watch. Avg HR 125, active 1,450, total 1,712. PEAK HR NOT SHOWN on the watch summary, recorded as Missing rather than guessed. No footage, so this is a session log and it carries no rating change. SELF REPORT, 08.05.2026, in Ian's words. Evidence class SELF REPORT: recorded and tracked, weighed against footage, and it does NOT move a rating on its own. \"light open play session all doubles. Felt pretty good on serves and drives and resets. My drops popped up too high and my dinks are kind of off. My drops and dinks could be better today but other than that I played fairly well.\" READ, three findings and one observation, and two of them correct the record. 1. HE CHOSE THE DROPS THIS TIME, AND THAT IS THE PROGRESS. On 08.04 he set drops as his focus and then took drives instead, which reclassified the drop from a technique problem to a DECISION problem. Today he attempted them, and that is the only reason he can report how they failed. Attempting a shot badly is a different state from avoiding it, so this is real movement on the decision layer, the exact thing he was trying to change, and it does not disappear because the drops were poor. 2. THE ERROR CHANGED SHAPE, AND THAT IS DIAGNOSTIC. Since the overgrip came off, his drops have gone LONG and been attacked, 08.01 and 08.03. Today they popped UP TOO HIGH. That is a different fault, and the likely cause is OVERCORRECTION: taking pace off to stop them running long lifts the arc instead. A high drop is punished as hard as a long one, so this is not an improvement, it is the same depth problem approached from the other side. THIRD OBSERVATION on the grip change, after 08.01 and 08.03. He is now missing the target from both directions, which is what depth calibration looks like in progress, and it is the case for a DRILL session rather than more open play, which is what he said himself on 08.04. 3. DINKS OFF, AND THIS IS THE SECOND TIME, NOT THE FIRST. Correction to the record: dinks were reported MID on 08.01, the session immediately after the overgrip came off, and the knowledge base logged dinks good to mid that day. So today is the second sighting below good and both sit after the grip change. The 08.03 and 08.04 good readings each came with him saying he barely dinked, which the 08.03 entry already flagged as weakly evidenced. Read together: when he dinks in volume after the grip change they are not good, and when he calls them good the volume was low. That strengthens the grip hypothesis rather than adding a separate concern. 4. LIGHT BY INTENSITY, NOT BY LENGTH, and this is an observation for the record rather than a correction to him. He calls it a light session and on intensity he is right: effort 7 is his joint second lowest of 23 sessions, beaten only by two effort 5 casual days, and avg HR 125 sits below his recent range of 122 to 133. The DURATION is not light. At 2:47:42 it is his FOURTH longest ever, behind the 07.25 tournament, the 07.13 league and 07.30. Long and easy, not short and easy, and the correct read of it is a high volume low intensity day, which is exactly the right shape the day before a harder session."});
+      }
+      if(Array.isArray(_p227.drills) && !_p227.drills.some(function(d){ return d && d.id==="pbk-dropapex-0805"; })){
+        _p227.drills.push({id:"pbk-dropapex-0805",text:"Drop apex calibration, both directions. Feed yourself 20 drops. Call LONG, HIGH or GOOD out loud before the ball lands, then check. You have now missed long (08.01, 08.03) and high (08.05), so the job is not softer or firmer, it is knowing which way you missed. Judged on calling it right, not on landing it.",done:false});
+      }
+      _p227.workOn=[
+        "Drop apex, you are now missing BOTH ways, long on 08.01 and 08.03, high today. Name the miss before you fix it",
+        "Take pace off without lifting the arc. Softer hands, same low to high path, not a scooped face",
+        "Dinks off for the second time since the grip change, first was 08.01. Watch them, do not assume they are fine",
+        "You chose the drops today after skipping them on 08.04. Keep choosing them, that was the actual win",
+        "Drill day, not open play. Depth calibration needs a feeder and a count, your own 08.04 conclusion",
+        "Stack untested, Dylan window by Aug 9 or lock natural sides",
+        "Slam panic is anticipation, train block only exposure, not more hand speed"];
+      _p227.cues=[
+        "Which way did I miss, long or high",
+        "Soft hands, same path, do not scoop",
+        "Clear by 2 to 3 feet, land it short",
+        "Feet set, same spot, out front",
+        "Locked wrist, no flick",
+        "Take dinks out of the air, do not back up",
+        "Above the net, pull the trigger",
+        "Wide base, lunge, recover to middle",
+        "Calm and relaxed, still aggressive"];
+      if(!_p227.coachRec || typeof _p227.coachRec!=="object") _p227.coachRec={};
+      if(!_p227.coachRec["2026-08-06"]) _p227.coachRec["2026-08-06"]={title:"Drill day. Call the miss before you fix it.",note:"Today you missed drops HIGH after two sessions of missing them LONG, which means the swing is not the problem, the calibration is. Twenty fed drops, call long, high or good out loud before it lands, then check yourself. That is the drill open play cannot give you, and you said so yourself on 08.04."};
+      if(state.meta && !state.meta.mig227_pk0805){
+        state.meta.mig227_pk0805=true; save(true);
       }
   } }catch(e){}
 
