@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 229 (2026-08-06)">
+<meta name="build" content="v21 build 230 (2026-08-06)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -4300,6 +4300,85 @@ function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]
       if(state.meta && !state.meta.mig228_selfassess){
         state.meta.mig228_selfassess=true; save(true);
       }
+  } }catch(e){}
+
+
+  /* ===== v21 build 230: HAND SPEED MOVES TO SUNDAY. IAN OVERRULED THE AUTOMATIC MOVE ==========
+     THIS IS AN OVERRIDE OF A SILENT ACTION, NOT A FRESH PREFERENCE, and the distinction is the
+     reason this comment is long. On 08.02 the detector layer moved these three exercises from
+     Saturday to Thursday on its own authority (build 215, autoLog auto-20260802-handspeed). Today,
+     08.06, the first Thursday they actually landed on, Ian moved them to Sunday. So the automatic
+     choice was WRONG, and it is the first silent action he has corrected.
+
+     WHAT THE DETECTOR HAD TO GO ON, and whether Sunday was available to it.
+     Attendance on record at the time: Thursday 3 of 3 days started (07.09, 07.23, 07.30), Sunday
+     2 of 3 (07.12 yes, 07.26 yes, 08.02 no), Saturday 1 of 3 (07.25 warmup only, 07.11 and 08.01
+     nothing). So SUNDAY WAS AVAILABLE AND IT WAS THE SECOND BEST DAY ON THE DATA. The detector did
+     not weigh it and reject it, it was never a candidate, because the rule it follows says move a
+     block "to a day he actually TRAINS" and Sunday is labelled Stretch / Relax, play Off or light.
+     The rule excluded the answer.
+
+     SO THE DETECTOR WAS NOT WRONG ON ITS EVIDENCE, IT OPTIMISED THE WRONG VARIABLE. It maximised
+     the day he most reliably completes work on. It could not see the thing Ian was actually
+     optimising: keeping light accessory work off a real training day so it does not compete with the
+     session. Nothing in the data expresses that, so no amount of attendance history would have
+     produced Sunday. This is the shape to remember: the detector picks the best available proxy, and
+     a proxy cannot contain a reason that was never written down.
+
+     CORRECTED 08.06.2026 BY IAN, AND IT SHARPENS THE ORIGINAL FINDING RATHER THAN SOFTENING IT.
+     An earlier draft of this block recorded a risk that a rest day is a day he might not open the
+     gym page. THAT IS WRONG AND IT IS STRUCK. HE OPENS EVERY GYM DAY, EVERY DAY. So visibility was
+     never the variable, and no detector should treat it as one.
+     What that means for the Saturday history is stronger, not weaker: he OPENED those Saturday
+     pages, saw these three exercises, and did not do them. 07.11 nothing, 07.25 one item, 08.01
+     nothing. That is AVOIDANCE of the exercises or of that day, not a failure to see them. A move to
+     a more visible day was therefore never going to fix it, which is the deeper reason the automatic
+     choice missed. Attendance history measures whether he DOES the work, not whether he sees it.
+     The watch that remains, and it is watched rather than raised with him: the same avoidance can
+     repeat on Sunday. If these go unstarted two Sundays running, that is the detector firing a second
+     time on the same subject, and per the pin below it must SAY SO PLAINLY AND NOT MOVE THEM A THIRD
+     TIME. A third move would be the system arguing with him.
+
+     HIS CHOICE WINS AND STAYS. Each exercise carries pinned:true and pinnedBy:"Ian". detectors.py
+     carries the matching guard. No agent moves these again without him saying so. */
+  try{ if(state.gym && Array.isArray(state.gym.split) && state.meta && !state.meta.mig230_handspeed_sun){
+      var _HS230=["hs-wrist-fast","hs-pronation","hs-gripfast"];
+      var _thu230=null,_sun230=null,_sat230=null;
+      state.gym.split.forEach(function(d){
+        if(d&&d.day==="Thu")_thu230=d; if(d&&d.day==="Sun")_sun230=d; if(d&&d.day==="Sat")_sat230=d;
+      });
+      if(_thu230&&_sun230&&Array.isArray(_thu230.exercises)&&Array.isArray(_sun230.exercises)){
+        var _mv230=[];
+        _HS230.forEach(function(id){
+          var hit=_thu230.exercises.filter(function(e){return e&&e.id===id;})[0];
+          if(hit) _mv230.push(hit);
+        });
+        /* Idempotent both ways: if a previous load already moved them, _mv230 is empty and the
+           Sunday side is already populated, so nothing happens twice. */
+        if(_mv230.length){
+          _thu230.exercises=_thu230.exercises.filter(function(e){ return !e||_HS230.indexOf(e.id)<0; });
+          _mv230.forEach(function(e){
+            if(!_sun230.exercises.some(function(x){return x&&x.id===e.id;})){
+              e.movedFrom="Thu"; e.movedOn="2026-08-06"; e.movedBy="Ian";
+              e.pinned=true; e.pinnedBy="Ian"; e.pinnedOn="2026-08-06";
+              e.pinNote="Ian put these here on 08.06.2026, overruling the automatic Saturday to Thursday move of 08.02. Do not relocate them again without him saying so. If they get skipped, report it, do not move it.";
+              _sun230.exercises.push(e);
+            }
+          });
+          /* Cascade: every note that described the old arrangement is now wrong. Fix all three
+             rather than only the one that changed, per the cascade consistency rule. */
+          _thu230.note=String(_thu230.note||"").replace(/\s*HAND SPEED MOVED HERE 08\.02\.2026[^]*?pickleball crossover\./,"")
+            +" Hand speed moved OFF this day to Sunday on 08.06.2026, Ian's call, overruling the automatic move that put it here on 08.02. The cable chops stay, they are the pickleball crossover work on this day.";
+          _sun230.note="Mobility and stretch, or just rest, plus the three hand speed exercises. IAN PUT THE HAND SPEED HERE ON 08.06.2026, overruling the automatic move that had sent it to Thursday on 08.02. They are light and low load and they belong on a day where nothing competes with them. He opens every gym day, so putting them here costs no visibility. PINNED: these do not get relocated again by any agent. If they go unstarted two Sundays running, that gets reported plainly, not fixed by moving them a third time.";
+          if(_sat230) _sat230.note=String(_sat230.note||"").replace(/Hand speed work moved to Thursday on 08\.02\.2026 because it was never getting started here\./,"Hand speed work left this day on 08.02.2026 because it was never getting started here. It went to Thursday automatically, and Ian moved it to Sunday on 08.06.2026.");
+          _autoLog({id:"auto-20260806-handspeed-override",date:"2026-08-06",area:"Gym",
+            what:"Moved the three hand speed exercises from Thursday to Sunday, your call, overruling an automatic move",
+            why:"This is an OVERRIDE of a silent action, not a new preference. On 08.02 the system moved these from Saturday to Thursday by itself because you had never started a Saturday block. Today is the first Thursday they actually landed on, and you moved them to Sunday. The automatic choice was wrong.",
+            evidence:"It optimised the day you most reliably finish work on: Thursday 3 of 3, Sunday 2 of 3, Saturday 1 of 3. Sunday was available and was the second best day, it just was not a candidate, because the rule says move work to a day you actually train and Sunday reads as a rest day. It could not see that you wanted light work OFF a training day. And since you open every gym day, the Saturday problem was never that you could not see these, it was that you saw them and skipped them, so moving them somewhere more visible was never the fix.",
+            undo:"Gym tab, or tell Claude to put them back on Thursday. They are pinned to Sunday, so nothing will move them on its own."});
+        }
+      }
+      state.meta.mig230_handspeed_sun=true; save(true);
   } }catch(e){}
 
   /* ===== v21 build 229: THE 08.06 DAILY BRIEF ==================================================
