@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 235 (2026-08-06)">
+<meta name="build" content="v21 build 236 (2026-08-06)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -5487,7 +5487,8 @@ function buildIanHome(v){ const workout=daySplit(DOW); const reTop=firstUndone(s
     /* build 212: an empty day used to print a full weight section header reading "nothing
        on the books". That is a section earning prime space to say nothing, which is exactly
        the page feeling. It now hands one clause to the quiet line at the bottom instead.
-       Nothing is hidden, the calendar section below is untouched and still browsable. */
+       Nothing is hidden, the calendar section beside it is untouched and still browsable.
+       build 236: both of these now render at the BOTTOM of Home, see THE ORDER. */
     if(!evs.length){ QUIET.push("nothing on your schedule"); return; }
     sect(v,"Today's schedule",evs.length+" coming up");
     var c=card("a-purple"); var b=c._body;
@@ -5741,11 +5742,17 @@ function buildIanHome(v){ const workout=daySplit(DOW); const reTop=firstUndone(s
   secFirstThing(); /* build 212: ONE thing, computed, with the reason it won  */
   secWins();       /* daily wins,      he asked for this first  */
   secEntry();      /* build 231: HIS INPUT, above everything it feeds  */
-  secSchedule();   /* his schedule,    silent on an empty day   */
   secWorkout();    /* his gym workout, silent on a rest day     */
   secHeat();       /* favourite, high, pairs with the workout   */
   secBrief();      /* what Claude left him overnight            */
-  secReAlert();    /* real estate, silent unless time sensitive */
+  /* secReAlert REMOVED build 236, 08.06.2026, Ian: "it is the same as the calendar to me".
+     Audited before removal per the Stats discipline. It drew on three sources and NONE of them
+     dies with it: calendar events inside 2 days are the calendar itself, overdue todos live in
+     Real estate > Things I need to do (whose nav card already counts what is due in 7 days), and
+     closings inside 30 days live on every pipeline card. All three are ALSO already candidates
+     inside secFirstThing, which promotes the most urgent one to the top of Home with its reason
+     attached, so the time sensitive signal did not just survive the removal, it sits higher than
+     it did. The function is kept in place per the BRAIN convention and is not called. */
   secSolara();     /* build 225: the Solara door, replaces the tab  */
   /* build 225: ONE depth mechanism, not two. Ian's call 08.04.2026: keep every drawer, since he may
      want them before a tournament or on a free day, and fold them into Learning Mode rather than
@@ -5755,11 +5762,17 @@ function buildIanHome(v){ const workout=daySplit(DOW); const reTop=firstUndone(s
   safe(v,function(){ sect(v,"Learning mode","depth when you want it, none of it daily"); },"Learning mode header");
   secLearn();      /* build 212: the Learning Mode door          */
   secProg();       /* goal pace and closing money               */
-  secCal();        /* full calendar, collapsed, for browsing     */
   secWater();
   secSphere();
   secSummary();
   secIdeas();
+  /* build 236, 08.06.2026, Ian: schedule and calendar to the BOTTOM of Home. They are reference,
+     not a morning decision, and on 08.06 the schedule at 590px tall was the thing pushing his own
+     entry box below the fold. Build 231 solved that by demoting the entry above the schedule; this
+     solves it outright. secSchedule still gates itself to the quiet line on an empty day, and it
+     still runs BEFORE secQuiet so that clause still lands. */
+  secSchedule();   /* his schedule,    silent on an empty day   */
+  secCal();        /* full calendar, collapsed, for browsing     */
   secQuiet();      /* build 212: what was gated, one grey line   */
 }
 /* ===== v21 real estate: calm landing of section cards, each opens its own view ===== */
@@ -6698,7 +6711,14 @@ function buildPickle(v){ var pb=state.pickleball||(state.pickleball={});
     sect(c,"Today's video","picked by your coach");
     (function(){ var vr=(pb.videoRec&&pb.videoRec[TODAY])||pkLatest(pb.videoRec)||{title:"Third shot drop, groove the soft game",url:"https://www.youtube.com/results?search_query=pickleball+third+shot+drop+drill",note:"Default pick. Your daily coach swaps this each morning.",_default:true}; var cc=card(); var b=cc._body; b.appendChild(el("span","pill g","Watch")); var t=el("div"); t.style.cssText="font-weight:800;font-size:16px;margin-top:8px;letter-spacing:-.01em"; t.textContent=vr.title||"Pickleball video"; b.appendChild(t); if(vr.note){ var n=el("div","small muted"); n.style.marginTop="5px"; n.textContent=vr.note; b.appendChild(n); } if(vr.url){ var a=el("a","feedlink"); a.href=vr.url; a.target="_blank"; a.rel="noopener"; a.textContent="Watch \u203A"; a.style.marginTop="12px"; a.style.display="inline-block"; b.appendChild(a); } c.appendChild(cc); })();
     
-    safe(c,function(){ var st=pkStats(); var ins=pkInsights(st); if(!ins.length) return; sect(c,"What your coach sees","from your logged data"); var ic=card(); ins.forEach(function(line,i){ var r=el("div","small"); r.style.cssText="line-height:1.5;color:var(--gray)"+(i>0?";margin-top:6px":""); r.textContent=line; ic._body.appendChild(r); }); c.appendChild(ic); },"Pickle insights");
+    /* "What your coach sees" REMOVED build 236, 08.06.2026, on Ian's instruction.
+       Audited before removal per the Stats discipline: NOTHING unique died with it. Every line it
+       printed was a rollup of values that are still on screen. Sessions this week and minutes on
+       court are the Training consistency heatmap. Win and loss, effort and average HR are on each
+       session card. The next event is on the calendar and is a secFirstThing candidate. It stored
+       nothing at all, pkInsights() is pure and derives from pkStats() at render time, so no field
+       was dropped and nothing needed moving. pkInsights and pkRecord are kept in place per the
+       BRAIN convention and are now uncalled. */
     
   },"\uD83C\uDFAF","green");
   /* =====================================================================================
@@ -7084,20 +7104,52 @@ function habitStrip14(){
 
 /* The autoLog surface. It renders on the page the change was made to, so the answer is next to
    the thing that changed rather than in a settings screen nobody opens. */
+/* ===== build 236, 08.06.2026. COLLAPSED BY DEFAULT, AND ABSENT ENTIRELY WHEN NOTHING IS RECENT.
+   Ian: the card exists so an automatic action is traceable, which matters, but it should not
+   occupy space daily when nothing changed. Two separate behaviours, and the second is the one
+   he actually asked for:
+     1. Nothing in the window  -> return null. No header, no empty shell, no row of any kind.
+        An empty collapsed header is still a thing on the page saying nothing, which is the
+        page feeling RULES.md P2 rule 6 exists to stop.
+     2. Something in the window -> ONE header line, closed. The what, the why, the evidence and
+        the undo are all still there, one tap away, because a change he cannot trace is worse
+        than no change (RULES.md P4a) and that is unchanged by hiding it.
+   AUTOLOG_WINDOW_DAYS is the whole definition of "recent". Entries older than it stay in
+   state.autoLog forever and still export, they simply stop being surfaced. Nothing is deleted. */
+var AUTOLOG_WINDOW_DAYS=14;
 function autoLogCard(area){
-  var L=(state.autoLog||[]).filter(function(x){ return x&&x.area===area; }).slice(0,3);
-  if(!L.length) return null;
+  var all=(state.autoLog||[]).filter(function(x){ return x&&x.area===area; });
+  var L=all.filter(function(x){
+    if(!x.date) return true;                       /* undated entry counts as current, never hide a change we cannot date */
+    try{ return daysUntil(x.date)>=-AUTOLOG_WINDOW_DAYS; }catch(e){ return true; }
+  }).slice(0,3);
+  if(!L.length) return null;                       /* the whole section disappears, header included */
+  var key="autolog_"+area;
+  var open=(key in PK_OPEN)?PK_OPEN[key]:false;    /* closed by default, remembered within the session */
   var c=card("a-blue"); var b=c._body;
-  var h=el("div"); h.appendChild(el("h3",null,"Changes I made"));
-  h.appendChild(el("div","small","automatic, and why")); b.appendChild(h);
+  var hd=el("div"); hd.style.cssText="display:flex;align-items:center;gap:10px;cursor:pointer";
+  var lf=el("div"); lf.style.cssText="flex:1;min-width:0";
+  var h=el("h3",null,"Changes I made"); h.style.margin="0"; lf.appendChild(h);
+  var sb=el("div","small dim"); sb.style.marginTop="2px";
+  sb.textContent=L.length+" automatic change"+(L.length===1?"":"s")+", tap for why";
+  lf.appendChild(sb); hd.appendChild(lf);
+  var ar=el("div","small dim"); ar.textContent=open?"\u2039":"\u203a";
+  ar.style.cssText="font-size:19px;line-height:1;transform:rotate("+(open?"90deg":"0deg")+")";
+  hd.appendChild(ar); b.appendChild(hd);
+  var body=el("div"); body.style.display=open?"":"none"; b.appendChild(body);
   L.forEach(function(r){
     var w=el("div"); w.style.cssText="margin-top:10px;padding-top:10px;border-top:1px solid var(--card2)";
     var t=el("div"); t.style.cssText="font-size:12.5px;font-weight:800;line-height:1.4"; t.textContent=r.what; w.appendChild(t);
     var y=el("div","small"); y.style.cssText="margin-top:4px;line-height:1.5;color:var(--gray)"; y.textContent=r.why; w.appendChild(y);
     if(r.evidence){ var e=el("div","small"); e.style.cssText="margin-top:4px;line-height:1.5;color:var(--gray2)"; e.textContent=r.evidence; w.appendChild(e); }
     if(r.undo){ var u=el("div","small"); u.style.cssText="margin-top:4px;line-height:1.5;color:var(--gray2);font-style:italic"; u.textContent="Undo: "+r.undo; w.appendChild(u); }
-    b.appendChild(w);
+    body.appendChild(w);
   });
+  hd.onclick=function(ev){ try{ ev.stopPropagation(); }catch(e){}
+    open=!open; PK_OPEN[key]=open;
+    body.style.display=open?"":"none";
+    ar.textContent=open?"\u2039":"\u203a";
+    ar.style.transform="rotate("+(open?"90deg":"0deg")+")"; };
   return c;
 }
 
@@ -7109,49 +7161,137 @@ function autoLogCard(area){
   var _gm=(typeof gymToday==="function")?gymToday:null;
   if(_gm){ gymToday=function(parent){ _gm(parent); safe(parent,function(){ var a=autoLogCard("Gym"); if(a) parent.appendChild(a); },"Gym auto log"); }; }
 
-  /* build 228: Ian's own read, rendered under the Skills radar so the self numbers and the film
-     numbers are never seen apart. Wrapped, not edited inline, same as the two above. */
+  /* ===== build 236, 08.06.2026. "YOU VERSUS ME" IS NOW A DATED HISTORY, HIDDEN BY DEFAULT.
+     Ian: hide the list by default, and when it opens show DATES against each change, his example
+     being "8/21 average personal rank went up to 3.3". So this stopped being a snapshot of the
+     current self set beside the film set, and became a chronological record of every read that
+     has ever been taken of his game, newest first.
+
+     THE RADAR IS UNTOUCHED. He likes it. This card renders under it, exactly as before.
+
+     BUILT ONLY FROM WHAT EXISTS, no invented entries. Three reads are on record:
+       2026-08-05  self, points   (state.pickleball.selfAssessment)
+       2026-07-29  self, ranges   (same, kept as ranges, midpoint used for arithmetic)
+       2026-07-29  film, regrade  (state.pickleball.skills[].rating, gradeVersion 2026-07-29-regrade)
+     If a fourth read lands, self or film, it appears here with no code change.
+
+     THE TWO SOURCES ARE DELIBERATELY DISTINCT, because the whole point is seeing his read against
+     the film read. Self entries carry a blue YOU chip and a left blue rule; the film entry carries
+     a purple FILM chip and a left purple rule. Movement is only ever computed WITHIN a source, a
+     self set against the previous self set and a film set against the previous film set. Comparing
+     a self number to a film number as if it were movement would manufacture a change that never
+     happened, and the standing rule is that a self report is tracked and never moves a rating. */
   function selfAssessCard(){
     try{
       var pb=state.pickleball||{}; var SA=pb.selfAssessment||{};
-      var ds=Object.keys(SA).sort(); if(ds.length<1) return null;
-      var cur=SA[ds[ds.length-1]]; if(!cur||!cur.skills) return null;
-      var prev=ds.length>1?SA[ds[ds.length-2]]:null;
-      var film={}; (pb.skills||[]).forEach(function(k){ if(k&&!k.unrated&&typeof k.rating==="number") film[k.id]=k.rating; });
-      function mid(v){ if(v==null) return null; if(typeof v==="number") return v; if(typeof v==="object"&&typeof v.lo==="number"&&typeof v.hi==="number") return (v.lo+v.hi)/2; return null; }
+      function mid(v){ if(v==null) return null; if(typeof v==="number") return v;
+        if(typeof v==="object"&&typeof v.lo==="number"&&typeof v.hi==="number") return (v.lo+v.hi)/2; return null; }
       function avg(o){ var t=0,n=0; for(var k in o){ var m=mid(o[k]); if(m!=null){ t+=m; n++; } } return n?t/n:null; }
+      function fmtDate(iso){ var m=String(iso||"").match(/^(\d{4})-(\d{2})-(\d{2})/);
+        return m?(parseInt(m[2],10)+"/"+parseInt(m[3],10)+"/"+m[1].slice(2)):String(iso||""); }
       var ids=["serve","drops","resets","dinks","drives","hands","footwork"];
       var LAB={serve:"Serve",drops:"Drops",resets:"Resets",dinks:"Dinks",drives:"Drives",hands:"Hands",footwork:"Footwork"};
-      var selfAvg=avg(cur.skills), prevAvg=prev?avg(prev.skills):null;
-      var filmAvg=avg(film);
-      var c=card("a-blue"); var b=c._body;
-      var hd=el("div"); hd.appendChild(el("h3",null,"Your own read"));
-      var sb=el("div","small dim"); sb.style.marginTop="3px";
-      sb.textContent=(cur.label||ds[ds.length-1])+". Your self assessment beside the film grade. Self report is tracked, it does not move a rating.";
-      hd.appendChild(sb); b.appendChild(hd);
-      var head=el("div","small"); head.style.cssText="display:grid;grid-template-columns:1.25fr .6fr .6fr .75fr;gap:4px;margin-top:11px;font-weight:800;color:var(--gray2)";
-      ["","You","Film","vs "+(prev?(prev.label||"").replace(".2026",""):"prev")].forEach(function(t){ var d=el("div",null,t); head.appendChild(d); });
-      b.appendChild(head);
-      ids.forEach(function(id){
-        var s=mid(cur.skills[id]); if(s==null) return;
-        var f=(typeof film[id]==="number")?film[id]:null;
-        var p=prev?mid(prev.skills[id]):null;
-        var dz=(p==null)?null:(s-p);
-        var row=el("div","small"); row.style.cssText="display:grid;grid-template-columns:1.25fr .6fr .6fr .75fr;gap:4px;margin-top:7px;padding-top:7px;border-top:1px solid var(--card2);line-height:1.4";
-        var n=el("div",null,LAB[id]||id); n.style.fontWeight="700"; row.appendChild(n);
-        row.appendChild(el("div",null,s.toFixed(2)));
-        row.appendChild(el("div",null,f==null?"n/a":f.toFixed(2)));
-        var dv=el("div",null,dz==null?"n/a":(Math.abs(dz)<0.001?"flat":(dz>0?"+":"")+dz.toFixed(2)));
-        if(dz!=null&&Math.abs(dz)>=0.001) dv.style.fontWeight="800";
-        row.appendChild(dv);
-        b.appendChild(row);
+
+      /* ---- assemble every read on record, oldest first, so movement can be computed forward ---- */
+      var reads=[];
+      Object.keys(SA).sort().forEach(function(d){
+        var e=SA[d]; if(!e||!e.skills) return;
+        var sk={}; ids.forEach(function(id){ var m=mid(e.skills[id]); if(m!=null) sk[id]=m; });
+        if(!Object.keys(sk).length) return;
+        reads.push({date:d,src:"self",label:e.label||fmtDate(d),skills:sk,form:e.form||"",note:e.note||""});
       });
-      var tot=el("div","small"); tot.style.cssText="margin-top:11px;padding-top:9px;border-top:1px solid var(--card2);line-height:1.55;font-weight:700";
-      tot.textContent="Overall you "+(selfAvg!=null?selfAvg.toFixed(2):"n/a")+", film "+(filmAvg!=null?filmAvg.toFixed(2):"n/a")+(prevAvg!=null?", and you were "+prevAvg.toFixed(2)+" on 07.29":"");
-      b.appendChild(tot);
-      var w=el("div","small"); w.style.cssText="margin-top:8px;line-height:1.6;color:var(--gray)";
-      w.textContent="The gap does not mean you are overrating yourself. It means nobody knows. The film behind that grade is 07.18 to 07.25, so it predates the grip change and the pre play serve drill, the two things your own numbers moved on. With Aug 23 close, that staleness is the biggest open question here and one filmed session closes it.";
-      b.appendChild(w);
+      var film={}, fdate=null;
+      (pb.skills||[]).forEach(function(k){
+        if(!k||k.unrated||typeof k.rating!=="number") return;
+        film[k.id]=k.rating;
+        if(!fdate&&k.gradeVersion){ var m=String(k.gradeVersion).match(/^(\d{4}-\d{2}-\d{2})/); if(m) fdate=m[1]; }
+      });
+      if(Object.keys(film).length){
+        reads.push({date:fdate||"2026-07-29",src:"film",label:fmtDate(fdate||"2026-07-29"),skills:film,
+                    form:"graded from footage",note:""});
+      }
+      if(!reads.length) return null;
+      reads.sort(function(a,b){ return String(a.date).localeCompare(String(b.date)); });
+      /* movement is computed against the previous read OF THE SAME SOURCE, never across sources */
+      var lastBySrc={};
+      reads.forEach(function(r){ r.prev=lastBySrc[r.src]||null; lastBySrc[r.src]=r; });
+      var hist=reads.slice().reverse();   /* newest first for display */
+
+      var key="pk_youvsme";
+      var open=(key in PK_OPEN)?PK_OPEN[key]:false;   /* HIDDEN BY DEFAULT, per Ian */
+      var c=card("a-blue"); var b=c._body;
+
+      var hd=el("div"); hd.style.cssText="display:flex;align-items:center;gap:10px;cursor:pointer";
+      var lf=el("div"); lf.style.cssText="flex:1;min-width:0";
+      var h=el("h3",null,"You versus me"); h.style.margin="0"; lf.appendChild(h);
+      var sb=el("div","small dim"); sb.style.marginTop="2px";
+      sb.textContent=hist.length+" read"+(hist.length===1?"":"s")+" on record, newest first. Tap to open.";
+      lf.appendChild(sb); hd.appendChild(lf);
+      var ar=el("div","small dim"); ar.textContent=open?"\u2039":"\u203a";
+      ar.style.cssText="font-size:19px;line-height:1;transform:rotate("+(open?"90deg":"0deg")+")";
+      hd.appendChild(ar); b.appendChild(hd);
+
+      var body=el("div"); body.style.display=open?"":"none"; b.appendChild(body);
+
+      hist.forEach(function(r,idx){
+        var isSelf=(r.src==="self");
+        var col=isSelf?"var(--accent,#3b82f6)":"#a78bfa";
+        var w=el("div");
+        w.style.cssText="margin-top:"+(idx?"14px":"12px")+";padding-left:11px;border-left:3px solid "+col;
+
+        var top=el("div"); top.style.cssText="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap";
+        var chip=el("div","small"); chip.textContent=isSelf?"YOU":"FILM";
+        chip.style.cssText="font-weight:800;letter-spacing:.06em;font-size:10.5px;padding:2px 7px;border-radius:6px;color:"+col+";background:color-mix(in srgb,"+col+" 16%, transparent)";
+        top.appendChild(chip);
+        var dt=el("div"); dt.style.cssText="font-weight:800;font-size:13.5px"; dt.textContent=fmtDate(r.date); top.appendChild(dt);
+        if(r.form){ var fm=el("div","small dim"); fm.textContent=r.form; top.appendChild(fm); }
+        w.appendChild(top);
+
+        /* the headline line, in the shape Ian asked for */
+        var a1=avg(r.skills), a0=r.prev?avg(r.prev.skills):null;
+        var lead=el("div","small"); lead.style.cssText="margin-top:5px;line-height:1.5;font-weight:700;color:var(--white)";
+        var what=isSelf?"average personal rank":"average film grade";
+        if(a0==null){ lead.textContent=fmtDate(r.date)+" "+what+" recorded at "+a1.toFixed(2)+", the first "+(isSelf?"self read":"film read")+"."; }
+        else{
+          var d=a1-a0;
+          lead.textContent=fmtDate(r.date)+" "+what+" "+(Math.abs(d)<0.005?"held at ":(d>0?"went up to ":"went down to "))+a1.toFixed(2)+
+            (Math.abs(d)<0.005?"":", from "+a0.toFixed(2)+" on "+fmtDate(r.prev.date));
+        }
+        w.appendChild(lead);
+
+        /* per skill, with the movement that happened ON THIS DATE */
+        var movers=[], flat=[];
+        ids.forEach(function(id){
+          var v=r.skills[id]; if(v==null) return;
+          var p=r.prev?r.prev.skills[id]:null;
+          if(p==null||Math.abs(v-p)<0.005) flat.push({id:id,v:v}); else movers.push({id:id,v:v,d:v-p});
+        });
+        movers.sort(function(x,y){ return Math.abs(y.d)-Math.abs(x.d); });
+        movers.forEach(function(m){
+          var row=el("div","small"); row.style.cssText="display:grid;grid-template-columns:1fr auto auto;gap:8px;margin-top:6px;line-height:1.4";
+          var n=el("div",null,LAB[m.id]||m.id); n.style.fontWeight="700"; row.appendChild(n);
+          row.appendChild(el("div",null,m.v.toFixed(2)));
+          var dv=el("div",null,(m.d>0?"+":"")+m.d.toFixed(2));
+          dv.style.cssText="font-weight:800;color:"+(m.d>0?"var(--good,#2dd78a)":"var(--bad,#ff6363)");
+          row.appendChild(dv); w.appendChild(row);
+        });
+        if(flat.length){
+          var fl=el("div","small dim"); fl.style.cssText="margin-top:6px;line-height:1.5";
+          fl.textContent=(r.prev?"Unchanged: ":"")+flat.map(function(x){ return (LAB[x.id]||x.id)+" "+x.v.toFixed(2); }).join(", ")+".";
+          w.appendChild(fl);
+        }
+        body.appendChild(w);
+      });
+
+      var w2=el("div","small"); w2.style.cssText="margin-top:14px;padding-top:10px;border-top:1px solid var(--card2);line-height:1.6;color:var(--gray)";
+      w2.textContent="Blue is your own read, purple is the film. Movement is only ever measured against the previous read of the SAME colour, because a self report is tracked and never moves a rating. There is one film read on record, 07.29, and the footage behind it is 07.18 to 07.25, so it predates the grip change and the pre play serve drill. A gap between the two colours means nobody has measured you since, not that you are overrating yourself.";
+      body.appendChild(w2);
+
+      hd.onclick=function(ev){ try{ ev.stopPropagation(); }catch(e){}
+        open=!open; PK_OPEN[key]=open;
+        body.style.display=open?"":"none";
+        ar.textContent=open?"\u2039":"\u203a";
+        ar.style.transform="rotate("+(open?"90deg":"0deg")+")"; };
       return c;
     }catch(e){ return null; }
   }
