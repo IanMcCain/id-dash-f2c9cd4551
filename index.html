@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 236 (2026-08-06)">
+<meta name="build" content="v21 build 237 (2026-08-06)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -808,7 +808,7 @@ header{ background:rgba(0,0,0,.82); border-bottom:1px solid rgba(255,255,255,.07
       <span class="htt htt-home">Today</span><span class="htt htt-stats">Stats</span><span class="htt htt-re">Real Estate</span><span class="htt htt-gym">Gym</span><span class="htt htt-pickle">Pickleball</span><span class="htt htt-solara">Solara</span><span class="htt htt-settings">Settings</span>
     </div>
   </div>
-  <label class="gear" for="t-settings" aria-label="Settings">&#x2699;</label>
+  <label class="gear" for="t-settings" aria-label="Settings"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9.2a2.8 2.8 0 1 0 0 5.6 2.8 2.8 0 0 0 0-5.6ZM19 12c0-.5 0-1-.1-1.4l1.7-1.3-1.7-3-2 .8a7 7 0 0 0-2.4-1.4L14.2 3.6H9.8l-.3 2.1a7 7 0 0 0-2.4 1.4l-2-.8-1.7 3 1.7 1.3a8 8 0 0 0 0 2.8l-1.7 1.3 1.7 3 2-.8a7 7 0 0 0 2.4 1.4l.3 2.1h4.4l.3-2.1a7 7 0 0 0 2.4-1.4l2 .8 1.7-3-1.7-1.3c.1-.4.1-.9.1-1.4Z"/></svg></label>
 </header>
 
 <main>
@@ -822,14 +822,14 @@ header{ background:rgba(0,0,0,.82); border-bottom:1px solid rgba(255,255,255,.07
 </main>
 
 <nav class="tabbar">
-  <label for="t-home"><span class="ti">&#x1F3E0;</span><span class="tl" id="tl-home">Today</span></label>
-  <label for="t-re"><span class="ti">&#x1F3E1;</span><span class="tl" id="tl-re">Real Est</span></label>
-  <label for="t-gym"><span class="ti">&#x1F3CB;&#xFE0F;</span><span class="tl" id="tl-gym">Gym</span></label>
+  <label for="t-home"><span class="ti"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3.6 10.4 12 3.8l8.4 6.6M5.6 9v10.2h12.8V9M9.8 19.2v-5.4h4.4v5.4"/></svg></span><span class="tl" id="tl-home">Today</span></label>
+  <label for="t-re"><span class="ti"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3.6 10.4 12 3.8l8.4 6.6M5.6 9v10.2h12.8V9M9.2 12.6h2M13 12.6h2M9.2 15.8h2M13 15.8h2"/></svg></span><span class="tl" id="tl-re">Real Est</span></label>
+  <label for="t-gym"><span class="ti"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9.4v5.2M7 7.6v8.8M17 7.6v8.8M20 9.4v5.2M7 12h10"/></svg></span><span class="tl" id="tl-gym">Gym</span></label>
   <!-- build 225: Stats tab RETIRED. Every number on it already lived on the page that owned the
        subject, and the two that did not (the 7 day habit chart, follow ups due in 7 days) were PLACED
        before this label came out. The radio and the p-stats section stay in the DOM so nothing that
        references them breaks. See BRAIN/Personal/Context/APP_REMOVED_FEATURES.md section 3. -->
-  <label for="t-pickle"><span class="ti">&#x1F3BE;</span><span class="tl" id="tl-pickle">Pickle</span></label>
+  <label for="t-pickle"><span class="ti"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9.9 3.5c3.6 0 6.5 2.8 6.5 6.3 0 3.4-2.9 6.2-6.5 6.2S3.4 13.2 3.4 9.8c0-3.5 2.9-6.3 6.5-6.3ZM9.9 16v3.1a1.4 1.4 0 0 0 2.8 0V15M18.9 15.4a2.2 2.2 0 1 0 0 4.4 2.2 2.2 0 0 0 0-4.4Z"/></svg></span><span class="tl" id="tl-pickle">Pickle</span></label>
   <!-- build 225: Solara is no longer a TAB. Ian's call 08.04.2026: it becomes a card on Home that
        opens the full page. The page itself is untouched and still reachable via selectTab("solara"),
        so nothing about Solara was reduced, only its nav slot was. That takes the bar to four tabs plus
@@ -4643,10 +4643,83 @@ function save(now){ try{ clearTimeout(saveT);}catch(e){}
 
 /* ===== helpers ===== */
 const el=(t,c,txt)=>{ const e=document.createElement(t); if(c)e.className=c; if(txt!=null)e.textContent=txt; return e; };
-const CHECK='<svg viewBox="0 0 24 24" fill="none" stroke="#04122e" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
+/* build 237, THE ONE STROKE THAT IS NOT 1.8, AND IT IS DELIBERATE. This tick is not an icon,
+   it is a control glyph drawn dark on a filled checkbox at 14px, and stroke weight is optical,
+   not nominal: on a 24 grid the rendered stroke is nominal x (size/24). At 14px a nominal 1.8
+   renders at 1.05px and vanishes against the fill, while the icon set at 24px renders at 1.8px.
+   3.1 at 14px renders at 1.81px, so this MATCHES the set optically, which is what the eye
+   actually judges. It was 3.5, which rendered at 2.04px and read heavy. If this ever moves to
+   24px, set it to 1.8 like everything else. */
+const CHECK='<svg viewBox="0 0 24 24" fill="none" stroke="#04122e" stroke-width="3.1" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
 /* build 181: custom PICKLEBALL icon (paddle plus a wiffle style ball with holes). There is no dedicated
    pickleball emoji in Unicode, so this replaces the table tennis stand in. Line style to match the app. */
-const PICKLE_SVG='<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14.6 3.2c3 1.25 4.35 4.7 3.05 7.65s-4.7 4.35-7.65 3.05-4.35-4.7-3.05-7.65S11.65 1.95 14.6 3.2Z"/><path d="M8.5 13 4.2 19.8"/><circle cx="17.4" cy="17.4" r="3.2"/><circle cx="16.5" cy="16.6" r=".5" fill="currentColor" stroke="none"/><circle cx="18.4" cy="16.7" r=".5" fill="currentColor" stroke="none"/><circle cx="17.4" cy="18.3" r=".5" fill="currentColor" stroke="none"/></svg>';
+
+/* ==========================================================================================
+   v21 build 237, 08.06.2026. THE ICON SET. ONE GRID, ONE SIZE, ONE STROKE, ONE COLOUR SOURCE.
+   Ian: "instead of emojis in most places create your own thing, your own design, and remember
+   we want that professional Apple look, this should be sleek, modern, and good looking."
+
+   THIS EXTENDS rr-b69 RATHER THAN REPLACING IT. That block already carried 14 of these glyphs
+   and already swapped them into the tab bar and the launcher cards at RUNTIME, by reading the
+   emoji text out of the DOM and substituting SVG. Two things were wrong with stopping there.
+   The collapsible section headers never went through that swap, so every one of them still
+   rendered a raw emoji, which is most of what he was looking at. And the runtime swap depends
+   on matching an emoji character, which is exactly the thing that broke on 08.06 when a bad
+   encoding hop mangled the emoji and the lookup key with it, so every icon silently missed.
+
+   SO THE ICONS NOW LIVE AT SOURCE. This library is the single definition, the markup and the
+   call sites reference it directly, and nothing has to be recognised at runtime to work. It is
+   pure ASCII inline SVG with no character above 0x7F anywhere in it, which means the failure
+   class that destroyed the icons on 08.06 cannot reach them at all. That is the actual reason
+   this job was worth doing, not the drawing.
+
+   THE RULES, and consistency here is what reads as professional rather than any single glyph:
+     24 x 24 viewBox, every icon, no exceptions.
+     24px rendered, every icon, so the nominal stroke IS the optical stroke.
+     stroke-width 1.8, round caps and joins, fill none.
+     stroke="currentColor", so an icon takes the colour of the text around it and never carries
+     its own. Colour in this app means something (section accents, heatmap session types), and
+     an icon with an opinion about colour is decoration competing with the signal.
+
+   WHAT IS DELIBERATELY NOT AN ICON. The heatmap session colours and the skills radar are
+   untouched, on Ian's instruction and on the merits, since both encode data rather than label
+   a thing. The typographic marks stay typographic: the chevrons, the multiplication sign in
+   rep schemes, the minus on the water stepper, the disclosure caret, the backspace and the
+   arrow. Those are punctuation doing punctuation's job.
+   ========================================================================================== */
+var ICO={
+  home:'<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3.6 10.4 12 3.8l8.4 6.6M5.6 9v10.2h12.8V9M9.8 19.2v-5.4h4.4v5.4"/></svg>',
+  property:'<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3.6 10.4 12 3.8l8.4 6.6M5.6 9v10.2h12.8V9M9.2 12.6h2M13 12.6h2M9.2 15.8h2M13 15.8h2"/></svg>',
+  dumbbell:'<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9.4v5.2M7 7.6v8.8M17 7.6v8.8M20 9.4v5.2M7 12h10"/></svg>',
+  chart:'<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h16M7.4 20v-6.2M12 20V8.2M16.6 20v-9"/></svg>',
+  trend:'<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.4 9.6 13l3.4 3.2 6.6-7.4M16.2 8.8h3.6v3.6"/></svg>',
+  compass:'<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.9a8.1 8.1 0 1 0 0 16.2 8.1 8.1 0 0 0 0-16.2ZM14.9 9.1l-1.6 4.2-4.2 1.6 1.6-4.2 4.2-1.6Z"/></svg>',
+  sprout:'<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20.2v-6.6M12 13.6C12 10.9 9.8 8.7 7.1 8.7c0 2.7 2.2 4.9 4.9 4.9ZM12 13.6c0-3 2.5-5.5 5.5-5.5 0 3-2.5 5.5-5.5 5.5Z"/></svg>',
+  check:'<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.9a8.1 8.1 0 1 0 0 16.2 8.1 8.1 0 0 0 0-16.2ZM8.4 12.2l2.6 2.6 4.6-5"/></svg>',
+  tools:'<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15.6 4.3a4.6 4.6 0 0 0-4.2 6.4L4.6 17.5a1.9 1.9 0 0 0 2.7 2.7l6.8-6.8a4.6 4.6 0 0 0 5.7-6.1l-2.7 2.7-2.6-.7-.7-2.6 2.8-2.4Z"/></svg>',
+  ball:'<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9.9 3.5c3.6 0 6.5 2.8 6.5 6.3 0 3.4-2.9 6.2-6.5 6.2S3.4 13.2 3.4 9.8c0-3.5 2.9-6.3 6.5-6.3ZM9.9 16v3.1a1.4 1.4 0 0 0 2.8 0V15M18.9 15.4a2.2 2.2 0 1 0 0 4.4 2.2 2.2 0 0 0 0-4.4Z"/></svg>',
+  target:'<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.9a8.1 8.1 0 1 0 0 16.2 8.1 8.1 0 0 0 0-16.2ZM12 8.4a3.6 3.6 0 1 0 0 7.2 3.6 3.6 0 0 0 0-7.2ZM12 11.4v1.2"/></svg>',
+  people:'<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9.2 11.4a2.9 2.9 0 1 0 0-5.8 2.9 2.9 0 0 0 0 5.8ZM3.8 19.4c0-2.8 2.4-5 5.4-5s5.4 2.2 5.4 5M16 6.1a2.9 2.9 0 0 1 0 5.6M17.6 14.9c1.7.7 2.8 2.4 2.8 4.5"/></svg>',
+  bolt:'<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M13.2 3.8 5.8 13.4h5.2l-.6 6.8 7.4-9.6h-5.2l.6-6.8Z"/></svg>',
+  sun:'<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8.2a3.8 3.8 0 1 0 0 7.6 3.8 3.8 0 0 0 0-7.6ZM12 3.4v1.8M12 18.8v1.8M4.6 12H2.8M21.2 12h-1.8M6.8 6.8 5.5 5.5M18.5 18.5l-1.3-1.3M17.2 6.8l1.3-1.3M5.5 18.5l1.3-1.3"/></svg>',
+  idea:'<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9.6 17.2a5.6 5.6 0 1 1 4.8 0M9.6 17.2v1.4h4.8v-1.4M10.4 20.6h3.2"/></svg>',
+  water:'<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.9c3 3.5 5.4 6.3 5.4 9.1a5.4 5.4 0 0 1-10.8 0c0-2.8 2.4-5.6 5.4-9.1Z"/></svg>',
+  clipboard:'<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5.4H7.2c-.9 0-1.6.7-1.6 1.6v11.6c0 .9.7 1.6 1.6 1.6h9.6c.9 0 1.6-.7 1.6-1.6V7c0-.9-.7-1.6-1.6-1.6H15M9 5.4c0-1 .8-1.8 1.8-1.8h2.4c1 0 1.8.8 1.8 1.8M9 5.4c0 1 .8 1.8 1.8 1.8h2.4c1 0 1.8-.8 1.8-1.8M8.8 12h6.4M8.8 15.6h4.2"/></svg>',
+  calendar:'<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5.4 6.6h13.2c.9 0 1.6.7 1.6 1.6v10.2c0 .9-.7 1.6-1.6 1.6H5.4c-.9 0-1.6-.7-1.6-1.6V8.2c0-.9.7-1.6 1.6-1.6ZM8.2 4v4.4M15.8 4v4.4M3.8 11.4h16.4"/></svg>',
+  video:'<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5.4 5.4h13.2c.9 0 1.6.7 1.6 1.6v10c0 .9-.7 1.6-1.6 1.6H5.4c-.9 0-1.6-.7-1.6-1.6V7c0-.9.7-1.6 1.6-1.6ZM10.2 9.4l4.4 2.6-4.4 2.6V9.4Z"/></svg>',
+  repeat:'<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4.6 10.4A5.4 5.4 0 0 1 10 5h9.4M16.6 2.2 19.8 5l-3.2 2.8M19.4 13.6A5.4 5.4 0 0 1 14 19H4.6M7.4 21.8 4.2 19l3.2-2.8"/></svg>',
+  trophy:'<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 4.4h8v4.8a4 4 0 0 1-8 0V4.4ZM8 6h-2.6a2.6 2.6 0 0 0 2.6 4M16 6h2.6a2.6 2.6 0 0 1-2.6 4M12 13.2v3.4M9 20h6M9.6 16.6h4.8l.6 3.4H9Z"/></svg>',
+  gear:'<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9.2a2.8 2.8 0 1 0 0 5.6 2.8 2.8 0 0 0 0-5.6ZM19 12c0-.5 0-1-.1-1.4l1.7-1.3-1.7-3-2 .8a7 7 0 0 0-2.4-1.4L14.2 3.6H9.8l-.3 2.1a7 7 0 0 0-2.4 1.4l-2-.8-1.7 3 1.7 1.3a8 8 0 0 0 0 2.8l-1.7 1.3 1.7 3 2-.8a7 7 0 0 0 2.4 1.4l.3 2.1h4.4l.3-2.1a7 7 0 0 0 2.4-1.4l2 .8 1.7-3-1.7-1.3c.1-.4.1-.9.1-1.4Z"/></svg>'
+};
+/* build 237: the rr-b69 block is a SEPARATE <script>, so it cannot see a binding declared inside
+   this IIFE. Publish it deliberately, once, rather than duplicating the library into that block,
+   which is the two copies that drift problem this whole change exists to end. */
+try{ window.ICO=ICO; }catch(e){}
+
+/* build 237: was its own 1.6 weight paddle drawing. It is now the library glyph, so there is
+   exactly one definition of the paddle and it matches every other icon. Name kept, every
+   existing reference keeps working. */
+const PICKLE_SVG=ICO.ball;
 const CLAUDE_SVG='<svg viewBox="0 0 28 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect x="5" y="4" width="18" height="12" rx="3.5" fill="#c8795a"/><rect x="6.6" y="15.4" width="2.7" height="4" rx="0.7" fill="#c8795a"/><rect x="10.6" y="15.4" width="2.7" height="4" rx="0.7" fill="#c8795a"/><rect x="14.6" y="15.4" width="2.7" height="4" rx="0.7" fill="#c8795a"/><rect x="18.6" y="15.4" width="2.7" height="4" rx="0.7" fill="#c8795a"/><rect x="10" y="7.8" width="3.1" height="3.9" rx="0.7" fill="#161616"/><rect x="15" y="7.8" width="3.1" height="3.9" rx="0.7" fill="#161616"/></svg>';
 function claudeAvatar(cls){ const sp=el("span","cav "+(cls||"av-sm")); sp.innerHTML=CLAUDE_SVG; return sp; }
 function toast(m){ try{ const t=document.getElementById("toast"); t.textContent=m; t.classList.add("show"); clearTimeout(t._t); t._t=setTimeout(()=>t.classList.remove("show"),1600);}catch(e){} }
@@ -5121,7 +5194,7 @@ function buildSolara(v){
     save();
   }
   var openTasks=sd.tasks.filter(function(t){return t&&!t.done;}).length;
-  var SUN='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4.2"/><path d="M12 1.8v2.6M12 19.6v2.6M4.2 4.2l1.9 1.9M17.9 17.9l1.9 1.9M1.8 12h2.6M19.6 12h2.6M4.2 19.8l1.9-1.9M17.9 6.1l1.9-1.9"/></svg>';
+  var SUN=ICO.sun;   /* build 237: was a separate 1.7 weight sun, now the library glyph */
 
   sect(v,"Solara","Drop 001 workspace");
 
@@ -5224,7 +5297,7 @@ function buildFutureIdeasHome(parent){
     arr.slice(0,3).forEach(function(it,i){ var r=el("div"); r.style.cssText="display:flex;gap:9px;align-items:flex-start;padding:9px 0"+(i>0?";border-top:1px solid var(--line)":""); var dot=el("span"); dot.style.cssText="color:var(--sec,var(--accent));font-weight:900;flex:0 0 auto"; dot.textContent="\u2022"; var col=el("div"); col.style.minWidth="0"; var tx=el("div","small"); tx.style.cssText="line-height:1.5;color:var(--gray)"; tx.textContent=(typeof it==="string"?it:(it.text||it.title||"")); col.appendChild(tx); if(it&&it.url){ var a=el("a","small"); a.textContent="source"; a.setAttribute("href",it.url); a.setAttribute("target","_blank"); a.setAttribute("rel","noopener"); a.style.cssText="color:var(--sec2,var(--accent2));margin-top:3px;display:inline-block"; col.appendChild(a); } r.appendChild(dot); r.appendChild(col); b.appendChild(r); });
     if(arr.length>3){ b.appendChild(el("div","small dim",(arr.length-3)+" more ideas from today")); }
     hh.appendChild(c);
-  },"\uD83D\uDCA1","green");
+  },ICO.idea,"green");
   }catch(e){ try{console.error("[dash] futureIdeas",e);}catch(_){} }
 }
 function buildIanHome(v){ const workout=daySplit(DOW); const reTop=firstUndone(state.realEstate.todos); const nm=(state.settings&&state.settings.name)||"Ian";
@@ -5261,11 +5334,11 @@ function buildIanHome(v){ const workout=daySplit(DOW); const reTop=firstUndone(s
        182px of prime morning space for four buttons; a single row does the same job in about 90
        and buys that back for the wins, the schedule and the workout. */
     q.style.gridTemplateColumns="repeat(4,minmax(0,1fr))";
-    q.appendChild(qb("re","\ud83c\udfe1","Real Estate",function(){ reView="pipeline"; try{ render(); }catch(e){} selectTab("re"); }));
-    q.appendChild(qb("gy","\ud83c\udfcb","Workout",function(){ gymJump("Workout routine"); }));
+    q.appendChild(qb("re",ICO.property,"Real Estate",function(){ reView="pipeline"; try{ render(); }catch(e){} selectTab("re"); }));
+    q.appendChild(qb("gy",ICO.dumbbell,"Workout",function(){ gymJump("Workout routine"); }));
     /* build 121: Coach opens the Pickleball tab AND expands the Personal Coach section, which is keyed pk_coach. */
     q.appendChild(qb("pk",PICKLE_SVG,"Coach",function(){ try{ PK_OPEN["pk_coach"]=true; }catch(e){} try{ render(); }catch(e){} selectTab("pickle"); }));
-    q.appendChild(qb("so","\u2600\ufe0f","Solara",function(){ selectTab("solara"); }));
+    q.appendChild(qb("so",ICO.sun,"Solara",function(){ selectTab("solara"); }));
     qc._body.appendChild(q); v.appendChild(qc);
   },"Quick actions");
   /* ===================================================================================
@@ -5445,7 +5518,7 @@ function buildIanHome(v){ const workout=daySplit(DOW); const reTop=firstUndone(s
         _fn.textContent="A day counts if you played or lifted. Four weeks: two back, this week with today ringed, and the week ahead. This week counts against the FULL week, not days elapsed, so a low number mid week is the calendar rather than a miss. The week ahead has no count because it has not happened. Weeks with no records at all are not drawn rather than shown as zero; tracking starts Jul 6."+fmtShort(_firstRec)+", so they are not zero weeks.";
         b.appendChild(_fn); }
       hh.appendChild(cardEl);
-    },"\uD83D\uDCCA","green"); };
+    },ICO.chart,"green"); };
   var secIdeas=function(){ safe(v,function(){ buildFutureIdeasHome(v); },"Future ideas"); };
   /* build 225: SOLARA IS A CARD HERE, NOT A TAB. Ian's call 08.04.2026. It is an entry point rather
      than a summary: it carries the one fact that changes (days to drop) plus the current status, and
@@ -5467,11 +5540,11 @@ function buildIanHome(v){ const workout=daySplit(DOW); const reTop=firstUndone(s
   },"Solara card"); };
   /* build 191: Easy wins opens by default. It is the first thing he wants to see and a
      collapsed win list is not a win list. */
-  var secWins=function(){ pkCollapse(v,"h_wins","Easy wins","two small wins today",true,function(hh){ quickWinCard(hh); },"\u2705","green"); };
-  var secWater=function(){ pkCollapse(v,"h_water","Water","aim 10 cups a day",false,function(hh){ waterCard(hh); },"\uD83D\uDCA7","cyan"); };
-  var secSphere=function(){ pkCollapse(v,"h_sphere","Stay in touch","your sphere",false,function(hh){ homeSphereNudge(hh); },"\uD83E\uDD1D","orange"); };
-  var secProg=function(){ pkCollapse(v,"h_prog","Progress and upcoming","where you stand",false,function(hh){ reGoalsCard(hh); homeUpcomingCard(hh); },"\uD83D\uDCC8","blue"); };
-  var secSummary=function(){ pkCollapse(v,"h_summary","Daily summary","today at a glance",false,function(hh){ const gday=daySplit(DOW); const glog=(state.gym.logs&&state.gym.logs[TODAY])||{done:{}}; const gT=gday.exercises.length||0, gD=gday.exercises.filter(e=>glog.done&&glog.done[e.id]).length; const hs=habitsActiveOn(TODAY); const hD=hs.filter(h=>h.log&&h.log[TODAY]).length; const water=(state.nutrition&&state.nutrition.water&&state.nutrition.water[TODAY])||0; summaryGrid(hh,[ fracTile({label:"Workout",color:"orange",done:gD,goal:gT||1,unit:"sets",tab:"gym"}), fracTile({label:"Habits",color:"green",done:hD,goal:hs.length||7,unit:"done",tab:"gym"}), fracTile({label:"Water",color:"cyan",done:water,goal:WATER_GOAL,unit:"cups",tab:"gym"}) ]); },"\uD83D\uDCCB","teal"); };
+  var secWins=function(){ pkCollapse(v,"h_wins","Easy wins","two small wins today",true,function(hh){ quickWinCard(hh); },ICO.check,"green"); };
+  var secWater=function(){ pkCollapse(v,"h_water","Water","aim 10 cups a day",false,function(hh){ waterCard(hh); },ICO.water,"cyan"); };
+  var secSphere=function(){ pkCollapse(v,"h_sphere","Stay in touch","your sphere",false,function(hh){ homeSphereNudge(hh); },ICO.people,"orange"); };
+  var secProg=function(){ pkCollapse(v,"h_prog","Progress and upcoming","where you stand",false,function(hh){ reGoalsCard(hh); homeUpcomingCard(hh); },ICO.trend,"blue"); };
+  var secSummary=function(){ pkCollapse(v,"h_summary","Daily summary","today at a glance",false,function(hh){ const gday=daySplit(DOW); const glog=(state.gym.logs&&state.gym.logs[TODAY])||{done:{}}; const gT=gday.exercises.length||0, gD=gday.exercises.filter(e=>glog.done&&glog.done[e.id]).length; const hs=habitsActiveOn(TODAY); const hD=hs.filter(h=>h.log&&h.log[TODAY]).length; const water=(state.nutrition&&state.nutrition.water&&state.nutrition.water[TODAY])||0; summaryGrid(hh,[ fracTile({label:"Workout",color:"orange",done:gD,goal:gT||1,unit:"sets",tab:"gym"}), fracTile({label:"Habits",color:"green",done:hD,goal:hs.length||7,unit:"done",tab:"gym"}), fracTile({label:"Water",color:"cyan",done:water,goal:WATER_GOAL,unit:"cups",tab:"gym"}) ]); },ICO.clipboard,"teal"); };
   /* build 191: promoted from dead last to the top block and renamed. It is his schedule, and
      "Calendar" sitting under Daily summary meant he never saw it in the morning. */
   /* build 191 FIX, caught in the phone width pass: promoting the full calendar to the top and
@@ -5519,7 +5592,7 @@ function buildIanHome(v){ const workout=daySplit(DOW); const reTop=firstUndone(s
   },"Today's schedule"); };
   /* the full browsable calendar, collapsed, lower down. Same eventsModule as before. */
   var secCal=function(){ var a=el("div"); a.id="home-cal-anchor"; v.appendChild(a);
-    pkCollapse(v,"h_cal","Calendar","everything coming up",false,function(hh){ eventsModule(hh); },"\uD83D\uDCC5","purple"); };
+    pkCollapse(v,"h_cal","Calendar","everything coming up",false,function(hh){ eventsModule(hh); },ICO.calendar,"purple"); };
 
   /* build 191 NEW: TODAY'S WORKOUT on Home. Ian named the workout one of the three things he
      opens the app for, and it had no surface on Home at all, only a Quick actions button. This
@@ -5676,7 +5749,7 @@ function buildIanHome(v){ const workout=daySplit(DOW); const reTop=firstUndone(s
     var c=card("a-green"); c.className+=" tap"; var b=c._body;
     var row=el("div"); row.style.cssText="display:flex;align-items:center;gap:11px";
     var ic=el("div"); ic.style.cssText="width:34px;height:34px;border-radius:11px;display:grid;place-items:center;font-size:18px;flex:0 0 auto;background:rgba(46,215,138,.16)";
-    try{ ic.innerHTML=PICKLE_SVG; }catch(e){ ic.textContent="\uD83C\uDFAC"; }
+    try{ ic.innerHTML=PICKLE_SVG; }catch(e){ ic.textContent="Video"; }
     row.appendChild(ic);
     var lf=el("div"); lf.style.cssText="flex:1;min-width:0";
     var t=el("div"); t.style.cssText="font-weight:800;font-size:17px;letter-spacing:-.02em"; t.textContent="Pickleball study"; lf.appendChild(t);
@@ -6121,16 +6194,16 @@ function reViewLanding(v){
   const vol=pipe.reduce((a,d)=>a+dealVolume(d),0);
   const openTodos=(state.realEstate.todos||[]).filter(t=>!t.done).length;
   sect(v,"Real Estate","tap a section");
-  reNavCard(v,"\ud83d\udcca","Pipeline",pipe.length+(pipe.length===1?" deal":" deals")+"  \u00b7  "+fmtMoney(vol)+" volume","pipeline");
+  reNavCard(v,ICO.chart,"Pipeline",pipe.length+(pipe.length===1?" deal":" deals")+"  \u00b7  "+fmtMoney(vol)+" volume","pipeline");
   /* build 225: PLACED FROM THE RETIRED STATS TAB. "Follow ups due soon" was the only follow up
      number with no other home, so it joins the card that owns follow ups instead of being dropped. */
   { var _dueSoon=(state.realEstate.todos||[]).filter(function(t){ return t&&!t.done&&t.due&&daysUntil(t.due)<=7; }).length;
     var _tsub=openTodos+(openTodos===1?" open task":" open tasks")+(_dueSoon?"  \u00b7  "+_dueSoon+" due in 7 days":"");
-    reNavCard(v,"\u2705","Things I need to do",_tsub,"todo"); }
+    reNavCard(v,ICO.check,"Things I need to do",_tsub,"todo"); }
   /* v21 build 49: standalone Prospects card removed. Prospects now live inside the Sphere Orbit (inner ring),
      so this card carries the prospect count too and opens the orbit. */
-  { const _sp=sphereList(); const _ov=sphereOverdue().length; var _pn=prospects.length; var _sub=(_pn?(_pn+(_pn===1?" prospect":" prospects")):"")+((_pn&&_sp.length)?"  \u00b7  ":"")+(_sp.length?(_sp.length+" in sphere"):"")+(_ov?"  \u00b7  "+_ov+" to reach out":""); if(!_pn&&!_sp.length) _sub="add your sphere"; reNavCard(v,"\ud83e\udd1d","Sphere & prospects",_sub,"sphere"); }
-  reNavCard(v,"\ud83e\uddf0","Tools","Goals, contacts, scripts, notes","tools");  /* build 225: no longer advertises the removed timer and activity counts */
+  { const _sp=sphereList(); const _ov=sphereOverdue().length; var _pn=prospects.length; var _sub=(_pn?(_pn+(_pn===1?" prospect":" prospects")):"")+((_pn&&_sp.length)?"  \u00b7  ":"")+(_sp.length?(_sp.length+" in sphere"):"")+(_ov?"  \u00b7  "+_ov+" to reach out":""); if(!_pn&&!_sp.length) _sub="add your sphere"; reNavCard(v,ICO.people,"Sphere & prospects",_sub,"sphere"); }
+  reNavCard(v,ICO.tools,"Tools","Goals, contacts, scripts, notes","tools");  /* build 225: no longer advertises the removed timer and activity counts */
   sect(v,"Your pipeline data","import");
   { const ic=card(); const ib=el("button","btn ghost block","Import my pipeline"); ib.style.marginTop="0"; ib.onclick=()=>{ const pf=document.getElementById("pipelineFile"); if(pf)pf.click(); }; const ih=el("div","small dim"); ih.style.marginTop="9px"; ih.textContent="Load real_estate_pipeline.json to replace your pipeline with your deals and follow ups. Your other data stays."; ic._body.appendChild(ib); ic._body.appendChild(ih); v.appendChild(ic); }
 }
@@ -6720,7 +6793,7 @@ function buildPickle(v){ var pb=state.pickleball||(state.pickleball={});
        was dropped and nothing needed moving. pkInsights and pkRecord are kept in place per the
        BRAIN convention and are now uncalled. */
     
-  },"\uD83C\uDFAF","green");
+  },ICO.target,"green");
   /* =====================================================================================
      v21 build 212: LEARNING MODE. RULES.md P3. Pickleball is the deliberate exception to
      short daily use, so this section is allowed to be long, and it is CLOSED BY DEFAULT so
@@ -6772,17 +6845,17 @@ function buildPickle(v){ var pb=state.pickleball||(state.pickleball={});
       c.appendChild(rc);
     }
     if(!_vs.length&&!(_se&&_se.doubles)){ var ec=card(); ec._body.appendChild(el("div","empty","No film studies yet. Run the video coach on a session and the conclusions land here.")); c.appendChild(ec); }
-  },"\uD83C\uDFAC","green");
+  },ICO.video,"green");
   pkCollapse(v,"pk_active","Work on and cues","what to drill and remember while playing",false,function(ap){
     safe(ap,function(){ var wo=(pb.workOn&&pb.workOn.length)?pb.workOn.slice(0,4):[]; sect(ap,"Work on","top 4"); var cc=card(); if(!wo.length){ cc._body.appendChild(el("div","empty","Your coach will fill this in from your sessions.")); } else { wo.forEach(function(line,i){ var r=el("div","small"); r.style.cssText="line-height:1.5;color:var(--white);font-weight:600"+(i>0?";margin-top:9px":""); var dot=el("span"); dot.style.cssText="color:var(--pk1);font-weight:800;margin-right:8px"; dot.textContent="\u2022"; r.appendChild(dot); r.appendChild(document.createTextNode(line)); cc._body.appendChild(r); }); } ap.appendChild(cc); },"Active workon");
     
     safe(ap,function(){ var cu=(pb.cues&&pb.cues.length)?pb.cues.slice(0,6):[]; sect(ap,"While playing","6 cues"); var cc=card(); if(!cu.length){ cc._body.appendChild(el("div","empty","Your coach will fill this in from your game plan.")); } else { cu.forEach(function(line,i){ var r=el("div","small"); r.style.cssText="line-height:1.52;color:var(--gray)"+(i>0?";margin-top:9px":""); var dot=el("span"); dot.style.cssText="color:var(--pk2);font-weight:800;margin-right:8px"; dot.textContent="\u203a"; r.appendChild(dot); r.appendChild(document.createTextNode(line)); cc._body.appendChild(r); }); } ap.appendChild(cc); },"Active cues");
   
-  },PICKLE_SVG,"orange");
+  },null,"orange")   /* build 237: icon DROPPED. The paddle already means Pickleball on the tab bar and on the Coach launcher, so a third use INSIDE the pickleball tab says nothing that being on the page has not already said. Fewer icons is the actual Apple discipline. */;
   pkCollapse(v,"pk_drills","Drills","one capped list, machine and partner",false,function(ap){
     safe(ap,function(){ if(!Array.isArray(pb.drills)) pb.drills=[]; function pkGrp(host,label,sub,key){ var list=pb.drills.filter(function(d){return d&&d.group===key;}).slice(0,4); if(!list.length) return; sect(host,label,sub); var gc=card(); list.forEach(function(d){ var r=el("div","small"); r.style.cssText="line-height:1.5;color:var(--gray)"; if(gc._body.childElementCount) r.style.marginTop="9px"; var dot=el("span"); dot.style.cssText="color:var(--sec,var(--accent));font-weight:800;margin-right:8px"; dot.textContent="\u2022"; r.appendChild(dot); r.appendChild(document.createTextNode(d.text||"")); gc._body.appendChild(r); }); host.appendChild(gc); } pkGrp(ap,"Machine drills","club ball machine, 3 to 4 max","machine"); pkGrp(ap,"With a partner","live reps, 3 to 4 max","partner"); },"Pickle drills capped");
 
-  },"\uD83D\uDD01","teal");
+  },ICO.repeat,"teal");
   pkCollapse(v,"pk_sessions","Sessions","log, this week, and history",false,function(c){
     (function(){ var rc=card(); var t=el("div","small"); t.style.cssText="line-height:1.55;color:var(--gray)"; t.textContent="Rating status. Self estimate about DUPR 3.5, unrated so far, and your first real DUPR gets set at the Aug 23 tournament."; rc._body.appendChild(t); c.appendChild(rc); })();
 
@@ -6807,7 +6880,7 @@ function buildPickle(v){ var pb=state.pickleball||(state.pickleball={});
     })();
 
     
-  },"\uD83D\uDCC5","blue");
+  },null,"blue")   /* build 237: icon DROPPED. A calendar glyph on a session LOG is the wrong idea, and this section's own two children, Log a session and History, already carry no icon. The label is clearer than any drawing here. */;
   pkCollapse(v,"pk_goals","Goals and events","tap to expand",false,function(gv){
       (function(){ if(!Array.isArray(pb.goals)) pb.goals=[]; var gc=card(); var gb=gc._body; if(!pb.goals.length){ gb.appendChild(el("div","empty","No goals yet.")); } pb.goals.forEach(function(g,i){ var row=el("div"); row.style.cssText="padding:10px 0"+(i>0?";border-top:1px solid var(--line)":""); var head=el("div","between"); head.style.cursor="pointer"; var lt=el("div"); lt.style.cssText="display:flex;gap:9px;align-items:center;min-width:0"; var cb=el("input","cbx"); cb.type="checkbox"; cb.checked=!!g.done; cb.onclick=function(ev){ ev.stopPropagation(); g.done=cb.checked; save(); }; var lab=el("div"); lab.style.cssText="font-weight:700;font-size:14px;letter-spacing:-.01em"+(g.done?";text-decoration:line-through;opacity:.6":""); lab.textContent=g.short||String(g.text||"").split(/(?<=[.!?])\s/)[0]; lt.appendChild(cb); lt.appendChild(lab); head.appendChild(lt); var chev=el("div","chev","\u203a"); head.appendChild(chev); row.appendChild(head); var body=el("div"); body.style.cssText="display:none;margin-top:8px;line-height:1.55;color:var(--gray);font-size:13px"; body.textContent=g.text||""; row.appendChild(body); head.onclick=function(){ var on=body.style.display==="none"; body.style.display=on?"block":"none"; chev.style.transform=on?"rotate(90deg)":""; }; gb.appendChild(row); }); gv.appendChild(gc); })();
       var PREP={
@@ -6845,7 +6918,7 @@ function buildPickle(v){ var pb=state.pickleball||(state.pickleball={});
       if(!evs.length){ b.appendChild(el("div","empty","No upcoming events.")); }
       gv.appendChild(cc);
       
-    },"\uD83C\uDFC6","purple");
+    },ICO.trophy,"purple");
   safe(v,function(){
     sect(v,"Deep Dive","your full study guide");
     (function(){ var dc=card(); var b=dc._body; b.appendChild(el("span","pill g","Study")); var tx=el("div","small"); tx.style.cssText="margin-top:9px;line-height:1.55;color:var(--gray)"; tx.textContent="All the heavy teaching lives here now, footwork, shot form vs the pros, drops and dinks, hands battles, patterns, your paddle, stacking, weights, and the six answers. Open it when you want to study."; b.appendChild(tx); var btn=el("button","btn block","Open Deep Dive"+String.fromCharCode(160)+String.fromCharCode(8250)); btn.style.marginTop="12px"; btn.onclick=function(){ try{ window.open("deep-dive.html","_blank","noopener"); }catch(e){ location.href="deep-dive.html"; } }; b.appendChild(btn); v.appendChild(dc); })();
@@ -7310,14 +7383,14 @@ function autoLogCard(area){
 <style id="rr-b69">
 /* 1. Tab bar: monochrome SF-style line icons (emoji swapped by rr script below) */
 .tabbar label .ti{font-size:0;line-height:0}
-.tabbar label .ti svg{width:25px;height:25px;display:block;color:var(--gray2);transition:color .15s,transform .15s}
+.tabbar label .ti svg{width:24px;height:24px;display:block;color:var(--gray2);transition:color .15s,transform .15s}
 .tabbar label{color:var(--gray2)}
 #t-home:checked~#t-home:checked~.tabbar label[for=t-home],#t-stats:checked~.tabbar label[for=t-stats],#t-re:checked~.tabbar label[for=t-re],#t-gym:checked~.tabbar label[for=t-gym]{color:var(--accent)}
 #t-home:checked~#t-home:checked~.tabbar label[for=t-home] .ti svg,#t-stats:checked~.tabbar label[for=t-stats] .ti svg,#t-re:checked~.tabbar label[for=t-re] .ti svg,#t-gym:checked~.tabbar label[for=t-gym] .ti svg .ti svg{color:var(--accent)}
 
 /* 2. Launcher / nav-card icons: line glyphs tinted to the section color; tile neutralized to section (was hardcoded blue) */
 .launch .li{font-size:0;background:color-mix(in srgb,var(--sec,var(--accent)) 14%, #0b0b0f);border-color:color-mix(in srgb,var(--sec,var(--accent)) 34%, transparent)}
-.launch .li svg{width:23px;height:23px;display:block;color:var(--sec,var(--accent))}
+.launch .li svg{width:24px;height:24px;display:block;color:var(--sec,var(--accent))}
 
 /* 3. Per-section color: rep schemes follow the section color, not global blue (fixes blue in amber Gym) */
 .ex .scheme{color:var(--sec2,var(--accent2))}
@@ -7333,22 +7406,14 @@ function autoLogCard(area){
 </style>
 <script id="rr-b69-js">
 (function(){
-  var I={
-    home:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V20a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1V9.5"/></svg>',
-    building:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21V8l7-4 7 4v13"/><path d="M4 21h16"/><path d="M9.5 21v-4h5v4"/><path d="M8.5 11h1.5M14 11h1.5M8.5 14h1.5M14 14h1.5"/></svg>',
-    dumbbell:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 8v8M4 9.5v5M17.5 8v8M20 9.5v5"/><path d="M6.5 12h11"/></svg>',
-    chart:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M5 20V11M12 20V4M19 20v-6"/></svg>',
-    more:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="12" r="1.2"/><circle cx="12" cy="12" r="1.2"/><circle cx="19" cy="12" r="1.2"/></svg>',
-    sprout:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20v-7"/><path d="M12 13c0-3 2.5-5 6-5 0 3-2.5 5-6 5z"/><path d="M12 14c0-3-2.5-5-6-5 0 3 2.5 5 6 5z"/></svg>',
-    check:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7l2 2 3-3M4 15l2 2 3-3"/><path d="M13 7h7M13 16h7"/></svg>',
-    tools:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14.6 6.4a3.5 3.5 0 0 1-4.6 4.6L5 16l3 3 5-4.9a3.5 3.5 0 0 0 4.6-4.6l-2 2-2-2z"/></svg>',
-    ball:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M5 9.5c4 .5 9 .5 14 0M5 14.5c5-.5 10-.5 14 0"/></svg>',
-    target:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="1"/></svg>',
-    people:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="8.5" cy="9" r="3"/><circle cx="16.5" cy="9.5" r="2.4"/><path d="M3.5 19a5 5 0 0 1 10 0"/><path d="M14.5 19a4.2 4.2 0 0 1 6-3.8"/></svg>',
-    bolt:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 4.5 13.5H11l-1 8.5L19.5 10H13z"/></svg>',
-    sun:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4.1"/><path d="M12 2v2.6M12 19.4V22M4.2 4.2l1.85 1.85M17.95 17.95 19.8 19.8M2 12h2.6M19.4 12H22M4.2 19.8l1.85-1.85M17.95 6.05 19.8 4.2"/></svg>',
-    pickle:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14.6 3.2c3 1.25 4.35 4.7 3.05 7.65s-4.7 4.35-7.65 3.05-4.35-4.7-3.05-7.65S11.65 1.95 14.6 3.2Z"/><path d="M8.5 13 4.2 19.8"/><circle cx="17.4" cy="17.4" r="3.2"/><circle cx="16.5" cy="16.6" r=".5" fill="currentColor" stroke="none"/><circle cx="18.4" cy="16.7" r=".5" fill="currentColor" stroke="none"/><circle cx="17.4" cy="18.3" r=".5" fill="currentColor" stroke="none"/></svg>'
-  };
+  /* build 237: this local 14 glyph library is GONE. Every glyph now lives in ICO, defined once
+     in the main script, and both the markup and the call sites reference it directly, so nothing
+     depends on recognising an emoji character at runtime any more. That runtime dependency is what
+     silently failed on 08.06: the encoding hop mangled the emoji AND the lookup key, so every swap
+     missed and the app rendered garbled text where icons should be. The swap below is KEPT, because
+     it costs nothing and it still catches any emoji a future edit reintroduces, but on a correct
+     build it now finds nothing to do, which is exactly the intent. */
+  var I=(window.ICO||{});
   var EM={'\uD83C\uDFE0':'home','\uD83C\uDFE1':'building','\uD83C\uDFCB':'dumbbell','\uD83D\uDCCA':'chart','\uD83E\uDDED':'more','\uD83C\uDF31':'sprout','\u2705':'check','\uD83E\uDDF0':'tools','\uD83C\uDFBE':'pickle','\uD83C\uDFAF':'target','\uD83E\uDD1D':'people','\uD83D\uDC65':'people','\u26A1':'bolt','\u2600':'sun'};
   function baseEmoji(t){ if(!t) return ''; t=t.replace(/[\uFE0F\u200D]/g,'').trim(); // strip VS16/ZWJ
     for(var k in EM){ if(t.indexOf(k)===0) return k; } return ''; }
