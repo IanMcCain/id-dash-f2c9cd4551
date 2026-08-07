@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 237 (2026-08-06)">
+<meta name="build" content="v21 build 238 (2026-08-07)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -4631,6 +4631,115 @@ function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]
         state.meta.mig233_actuals=true; save(true);
       }
   } }catch(e){ try{ console.warn("mig233 did not apply:",e&&e.message); }catch(_){} }
+
+  /* ===== v21 build 238: THE 08.07 DAILY BRIEF ==================================================
+     Written by the 6am ian-daily-brief run, 08.07.2026. Date keyed content deep merges through the
+     if(!x[T238]) guards, every load, idempotent. The workOn and cues WHOLE ARRAY writes sit here
+     DELIBERATELY, after the build 227 assignments at the top of this file, per the last writer wins
+     rule in 02_DAILY_BRIEF_STANDING_CONTEXT.md section C. Do not move this block above them.
+     Guard flag mig238_daily lives in SAVED STATE ONLY, never in seedIan().meta.
+     Ian's 08.06 entry said, of the skipped walk and one exercise, "do not remove them". Nothing is
+     removed or moved here, and the standing machine curl question is closed rather than re asked. */
+  try{ if(profile==="ian"){
+      var T238="2026-08-07";
+      if(!state.briefing) state.briefing={forIan:{},done:{}};
+      if(!state.briefing.forIan) state.briefing.forIan={};
+      if(!state.briefing.forIan[T238]) state.briefing.forIan[T238]=[
+        {"id":"brief-20260807-1","type":"Real estate","title":"Willis has no traffic booked and Sunday's open house is not on Realtor.com","note":"Day 1 closed with zero showings and zero offers, your words at 11:30pm. The Sunday 12 to 2 open house is the only traffic on the calendar and Realtor.com still shows none, plus it drops your name. Source: your 08.06 entry and the 08.06 five portal check.","why":"Because day 10 is Aug 16 and the open house is the only booked traffic","url":"","done":false},
+        {"id":"brief-20260807-2","type":"Pickleball","title":"Stack call locks Sunday and you still have zero data on it","note":"Two days left on the Aug 9 deadline you set, and stacking has never been run live. Get a Dylan window today or tomorrow and play games both ways, or lock natural sides Sunday and stop spending attention on it. Source: pk-goal-stack and ev-20260809-stack-decision.","why":"Because Aug 9 is the deadline you set and Aug 23 is 16 days out","url":"","done":false},
+        {"id":"brief-20260807-3","type":"Real estate","title":"Walk Sugar Creek this weekend, Troester makes it two just solds Monday","note":"The Spicer flyer is print ready and the walk has sat since July 26. Troester closes Monday, which turns Walnut Creek Hills into a second real just sold. Top of funnel is your actual constraint, not conversion. Source: app todos and pipeline, 08.06 export.","why":"Because Troester closes Aug 10 and the Sugar Creek flyer is already printed","url":"","done":false}];
+      if(!state.futureIdeas) state.futureIdeas={};
+      if(!state.futureIdeas[T238]) state.futureIdeas[T238]=[
+        {"id":"fi-20260807-1","text":"Get the Sunday open house in front of the Tiburon neighborhood group and the HOA page. Free reach into the exact buyer pool, and right now nothing else is booked.","url":""},
+        {"id":"fi-20260807-2","text":"Turn the Willis five portal audit into a one page launch day checklist. Same 30 minute pass on every future listing instead of a one off, and it already caught three real errors.","url":""},
+        {"id":"fi-20260807-3","text":"Book the club ball machine for a drill hour this weekend and film it from behind your own baseline. One booking closes two open items, the drop direction count and a film record that ends 07.25.","url":""},
+        {"id":"fi-20260807-4","text":"Draft the Drop 001 launch copy now while you are still waiting on the press, so the only thing left when the garments land is the shoot.","url":""}];
+      if(!state.quickWin) state.quickWin={items:[],done:{},picks:{}};
+      if(!state.quickWin.picks) state.quickWin.picks={};
+      if(!state.quickWin.picks[T238]) state.quickWin.picks[T238]=[
+        "Post or prep the just listed piece for 10218 Spyglass. It is your standing content task and the listing closed day one with nothing booked, so the post is the cheapest traffic you can create before Sunday.",
+        "Get the session in and open it with 30 counted drops. Three sessions this week against a 5 to 6 target, and the grip decision is waiting on a direction count you have not produced since 08.05."];
+      if(state.pickleball){
+        var _p238=state.pickleball;
+        if(!_p238.coachBullets||typeof _p238.coachBullets!=="object"||Array.isArray(_p238.coachBullets)) _p238.coachBullets={};
+        if(!_p238.coachBullets[T238]) _p238.coachBullets[T238]=[
+          "Get on court today and open with the counted drop block, 30 balls, tally each one long, high or landed. The calibration has now been stalled two days with no new data, so the grip call cannot move until you produce a direction count. Feel is not evidence here.",
+          "While you count them, check your own shoulder height, not the ball. Two of the three film studies on 07.22 named the same root fault, you rise through contact, and standing up is exactly what lifts a drop into the high miss you reported on 08.05.",
+          "New grading rule, and it is better than the landing zone. A drop is good because it forced a LOW CONTACT POINT, not because it landed in the kitchen. Judge it by where their paddle was, not by where the ball bounced.",
+          "Yesterday off after six straight days was the right call, but the week sits at 3 sessions against your 5 to 6 target with three days left. Two more before Sunday keeps the volume honest 16 days out.",
+          "The stack call locks Sunday. No Dylan window has landed and it has still never been run live, so either get games both ways today or tomorrow, or lock natural sides and take the attention back for drops."];
+        if(!_p238.videoRec) _p238.videoRec={};
+        if(!_p238.videoRec[T238]) _p238.videoRec[T238]={"title":"If You're MISSING Your 3rd Shot Drop, DO THIS (Briones Pickleball)","url":"https://www.youtube.com/watch?v=LIYVO4CPMeE","note":"The practice method rather than another mechanics lecture. The drop is a scaled up dink, so train it by scaling from the dink. Both at the kitchen, two dinks, one small step back, two more, out to the baseline, then reverse and step in two balls at a time. Grip pressure stays 3 to 4 out of 10 the whole way, contact stays out front, only the lift and the follow through grow."};
+        if(!_p238.research) _p238.research={};
+        if(!_p238.research[T238]) _p238.research[T238]={"title":"A drop is good because it forced a low contact point, not because it landed in","text":"Success on a drop is not the landing zone. It is whether the opponent had to reach DOWN. A ball can land in the kitchen and still be a bad drop if they take it comfortably at chest height, and a ball taken out of the air can be a great drop if they had to dig for it. Judge your drops by where their paddle was at contact. It is a better feedback loop than anything else on file, and it grades the long miss and the high miss with one rule instead of two.","url":"https://www.youtube.com/watch?v=0ZeXylxA7aI","source":"Complete Doubles Strategy, Briones Pickleball, in the knowledge base since 07.19.2026"};
+        if(!_p238.coachRec) _p238.coachRec={};
+        if(!_p238.coachRec[T238]) _p238.coachRec[T238]={"title":"Count it, then judge it by their paddle","note":"Thirty fed drops. Call long, high or good out loud before it lands, then add the second grade, did it make them reach down. Two grades on the same ball, and the second one is the one that actually decides whether the drop worked."};
+        if(Array.isArray(_p238.drills) && !_p238.drills.some(function(d){ return d && d.id==="pbk-lowcontact-0807"; })){
+          _p238.drills.push({id:"pbk-lowcontact-0807",text:"Grade the drop by THEIR contact, not the bounce. Twenty drops with a partner or the machine. After each one call where their contact would have been, above the net, waist high, or below the knee. A drop that lands in but gets taken at chest height is a miss. This is the pro success criterion and it grades a long miss and a high miss with the same rule.",done:false});
+        }
+        _p238.workOn=[
+          "Drop apex, you are missing BOTH ways, long on 08.01 and 08.03, high on 08.05. Name the miss before you fix it",
+          "Grade the drop by their contact height, not by where it bounced. Landed in and taken at chest height is still a miss",
+          "Take pace off without lifting the arc. Softer hands, same low to high path, not a scooped face",
+          "Dinks off for the second time since the grip change, first was 08.01. Watch them, do not assume they are fine",
+          "Drill day, not open play. Depth calibration needs a feeder and a count, your own 08.04 conclusion",
+          "Stack untested, Dylan window by Aug 9 or lock natural sides",
+          "Slam panic is anticipation, train block only exposure, not more hand speed"];
+        _p238.cues=[
+          "Which way did I miss, long or high",
+          "Judge it by their paddle, not the bounce",
+          "Soft hands, same path, do not scoop",
+          "Clear by 2 to 3 feet, land it short",
+          "Feet set, same spot, out front",
+          "Locked wrist, no flick",
+          "Take dinks out of the air, do not back up",
+          "Above the net, pull the trigger",
+          "Wide base, lunge, recover to middle",
+          "Calm and relaxed, still aggressive"];
+      }
+      /* TODOS. Retire the two Ian has checked off into the archive with a reason, then add the one
+         new grounded item. The Realtor.com fix already exists as ret-20260806-realtor-fix from
+         build 233, so it is NOT recreated here. Ten is a ceiling, not a target. */
+      if(!state.realEstate) state.realEstate={};
+      if(!Array.isArray(state.realEstate.todos)) state.realEstate.todos=[];
+      if(!state.archive) state.archive={};
+      if(!Array.isArray(state.archive.todosDone)) state.archive.todosDone=[];
+      var _RET238=[
+        {id:"ret-20260803-willis-live",reason:"Checked off by Ian and its exp date of 2026-08-06 has passed. Willis went live as planned."},
+        {id:"ret-20260803-sphere",reason:"Checked off by Ian. Mason contacted 08.06 and Evan 08.05, both cadence clocks reset in build 233."}];
+      _RET238.forEach(function(r){
+        var hit=state.realEstate.todos.filter(function(t){ return t && t.id===r.id && t.done; });
+        if(hit.length){
+          hit.forEach(function(t){
+            if(!state.archive.todosDone.some(function(a){ return a && a.id===t.id; })){
+              var cp={}; for(var k in t){ if(Object.prototype.hasOwnProperty.call(t,k)) cp[k]=t[k]; }
+              cp.retiredOn="2026-08-07"; cp.retiredBy="ian-daily-brief"; cp.retiredReason=r.reason;
+              state.archive.todosDone.push(cp);
+            }
+          });
+          state.realEstate.todos=state.realEstate.todos.filter(function(t){ return !(t && t.id===r.id && t.done); });
+        }
+      });
+      var _addT238=function(item){
+        var ex=state.realEstate.todos.filter(function(t){ return t && t.key===item.key; });
+        if(ex.length){ ex[0].text=item.text; ex[0].exp=item.exp; ex[0].src=item.src; }
+        else if(!state.archive.todosDone.some(function(a){ return a && a.key===item.key; })){ state.realEstate.todos.push(item); }
+      };
+      _addT238({id:"ret-20260807-willis-openhouse",key:"willis-openhouse-0809",done:false,exp:"2026-08-09",
+        text:"OPEN HOUSE SUNDAY, 10218 Spyglass Dr, 12 to 2. It is the only traffic on the calendar, day 1 closed with zero showings booked. Confirm it is live on Zillow and Realtor.com, get it in front of the Tiburon neighborhood group, and have sign in sheets and the day 10 talking points ready. Every sign in is a sphere add in the one neighborhood already watching.",
+        src:"Ian's 08.06 entry, no offers or showings as of 11:30pm, plus ev-20260809-willis-openhouse"});
+      /* DAILY LOG. Archive what his 08.06 entry said and what was done with it, then mark it
+         processed. The flag goes on ONLY because the work is genuinely finished this run. */
+      if(!state.context) state.context={};
+      if(!state.context.dailyLog) state.context.dailyLog={};
+      if(!state.context.dailyLog["2026-08-06"]) state.context.dailyLog["2026-08-06"]={};
+      var _dl238=state.context.dailyLog["2026-08-06"];
+      if(!_dl238.dailyAgentActed){
+        _dl238.claudeAction="Read 08.07. GYM, skipped the walk and one exercise, do not remove them: honored, nothing removed or moved, and the standing machine curl question is CLOSED and kept in the Tuesday split rather than asked a third time. PB, no pickleball, too busy: recorded as a rest day after six straight court days, and it is why the drop calibration has no new data. RE, Cynthia live with no offers or showings as of 11:30pm: acted on, it drives today's first card and the new Sunday open house todo.";
+        _dl238.dailyAgentActed="2026-08-07";
+      }
+      if(state.meta && !state.meta.mig238_daily){ state.meta.mig238_daily=true; save(true); }
+  } }catch(e){ try{ console.warn("mig238 did not apply:",e&&e.message); }catch(_){} }
 
   /* build 225: focus timer removed, nothing to clear here anymore. */
   applyAccent(); dailyReset(); save(true);
