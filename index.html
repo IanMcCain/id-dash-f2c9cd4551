@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 244 (2026-08-08)">
+<meta name="build" content="v21 build 245 (2026-08-08)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -4989,6 +4989,177 @@ function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]
       }
       state.meta.mig244_sattrim=true; save(true);
   } }catch(e){ try{ console.warn("mig244 did not apply:",e&&e.message); }catch(_){} }
+
+  /* ===== v21 build 245: THE WEEK, SHIPPED. SWAP, MEDIUM RULE, THURSDAY, TAPER ================
+     Ian, 08.08.2026: "do everything". That is approval of
+     WORK/Personal/Output/08.08.2026 - Weekly Split Proposal.md including section 2a.
+
+     (1) MONDAY AND TUESDAY SWAP. Monday becomes the hard PULL, Tuesday becomes the hard PUSH.
+         Heavy pulling is the most grip and forearm intensive training there is and his named
+         weakness is hands. The mixed doubles league is Tuesday 7pm from 11 August and DUPR is set
+         23 August. Lifting heavy pull hours before the match taxed the exact quality being
+         measured. Push barely touches grip and does not touch legs, so it is the least
+         compromising thing to lift before an evening match. Adherence is identical on the two days,
+         3 of 4 each, so the harder session does not land on a day he skips.
+         EVERY EXERCISE KEEPS ITS ID. A tick is stored as logs[date].done[id], so moving a movement
+         between days cannot orphan history. The day objects keep their own play field, only focus,
+         note and exercises move.
+
+     (2) TUESDAY GAINS ITS TRICEPS MOVEMENT by MOVING trlite15 off Friday rather than inventing a
+         new id. A hard push day had no direct triceps work at all. Same id, so its ticks carry, and
+         it stops being a token light set at the end of Friday and becomes a working one.
+
+     (3) MEDIUM MEANS DESIGNED SHORTER, from section 2a, which came out of him cutting Saturday at
+         the rack this morning. Friday goes 6 to 5 (the trlite15 move does it, nothing is deleted).
+         Saturday is already 4 from build 244. The standard now: a MEDIUM day with evening play is
+         FOUR, a MEDIUM day without is FIVE, and it is written that way up front instead of being
+         negotiated mid session. Saturday 1 of 3 against Wednesday to Friday 4 of 4 is the evidence.
+
+     (4) THURSDAY 6 TO 4, his own light day and a six exercise abs day is not light. Machine crunches
+         and ab rollouts come off. The CABLE CHOP and the treadmill finisher stay because he pinned
+         them on 08.06 with "do not remove them", and they are also the two most useful things on the
+         day. REMOVED, NOT DELETED: both are parked on state.gym.archivedExercises with their day and
+         the date, so nothing is lost and either can be put back by name.
+
+     (5) NOTES CUT TO ONE LINE on every day this build touches. Sunday's had reached 90 words and
+         Thursday's 85. THE PIN IS NOT IN THE NOTE. It lives on the exercise objects as
+         pinned/pinnedBy/pinnedOn/pinNote, which this build does not touch, so shortening the prose
+         cannot unpin anything. The word PINNED stays in Sunday's one line anyway.
+
+     (6) SUNDAY IS OTHERWISE UNTOUCHED. The three hand speed moves stay exactly where Ian put them
+         on 08.06. Nothing is added to Sunday. The failure mode already hit is a light day quietly
+         growing until it becomes the day he skips.
+
+     THE CAP HOLDS. Mon 5, Tue 5, Wed 5, Thu 4, Fri 5, Sat 4, Sun 5. Nothing over 6.
+     Idempotent, guard in saved state only. */
+  try{ if(state.gym && Array.isArray(state.gym.split) && state.meta && !state.meta.mig245_theweek){
+      var _D245={};
+      state.gym.split.forEach(function(d){ if(d&&d.day) _D245[d.day]=d; });
+      var _mon=_D245.Mon,_tue=_D245.Tue,_wed=_D245.Wed,_thu=_D245.Thu,_fri=_D245.Fri,_sun=_D245.Sun;
+      var _moved245=[];
+
+      /* -- 2. pull the triceps movement off Friday BEFORE the swap, so it lands on the new push day */
+      var _tri245=null;
+      if(_fri && Array.isArray(_fri.exercises)){
+        _fri.exercises.forEach(function(e){ if(e&&e.id==="trlite15") _tri245=e; });
+        _fri.exercises=_fri.exercises.filter(function(e){ return e && e.id!=="trlite15"; });
+      }
+      if(_tri245){ _tri245.name="Rope pushdown"; _tri245.scheme="3\u00d712/10/10";
+                   _tri245.movedFrom="Fri"; _tri245.movedOn="2026-08-08"; }
+
+      /* -- 1. the swap. focus, note and exercises only. play stays with the calendar day. */
+      if(_mon && _tue){
+        var _pullEx=_tue.exercises, _pushEx=_mon.exercises;
+        _mon.exercises=_pullEx;
+        _tue.exercises=_pushEx;
+        _mon.focus="Pull (back, biceps, rear delts), hard";
+        _tue.focus="Push (chest, shoulders, tris), hard";
+        _mon.note="Hard pull. Moved off Tuesday so heavy grip work is not sitting hours before league night.";
+        _tue.note="Hard push. League 7pm, so lift first and auto regulate, drop one accessory set if the match ran long.";
+        if(_tri245 && !_tue.exercises.some(function(e){ return e&&e.id==="trlite15"; })){
+          _tue.exercises.push(_tri245);
+        }
+        _moved245.push("Mon<->Tue");
+      }
+
+      /* -- 4. Thursday to four. archived, not deleted. */
+      if(_thu && Array.isArray(_thu.exercises)){
+        var _off245=["abc-crunch","abc-rollout"];
+        state.gym.archivedExercises=state.gym.archivedExercises||[];
+        _thu.exercises.forEach(function(e){
+          if(e && _off245.indexOf(e.id)>=0 &&
+             !state.gym.archivedExercises.some(function(a){ return a&&a.id===e.id; })){
+            state.gym.archivedExercises.push({id:e.id,name:e.name,scheme:e.scheme,
+              fromDay:"Thu",archivedOn:"2026-08-08",
+              why:"Thursday is his light day and six abs exercises is not light. Build 245."});
+          }
+        });
+        _thu.exercises=_thu.exercises.filter(function(e){ return e && _off245.indexOf(e.id)<0; });
+        _thu.focus="Abs and cardio, light";
+        _thu.note="Light. Four items. Cable chop and the treadmill finisher are PINNED, they stay.";
+      }
+
+      /* -- 3. Friday, medium without evening play, so five. */
+      if(_fri){
+        _fri.focus="Push (round 2), medium";
+        _fri.note="Medium, five items by design. Second chest and shoulder hit, plus external rotation.";
+      }
+
+      /* -- 5/6. Sunday note to one line. The pin lives on the exercises, not here. */
+      if(_sun){
+        _sun.note="Light. Walk, stretch, and the three hand speed moves, PINNED here by Ian 08.06, not to be moved.";
+      }
+      if(_wed){ _wed.focus="Legs, hard"; }
+
+      _autoLog({id:"auto-20260808-theweek",date:"2026-08-08",area:"Gym",
+        what:"Shipped the weekly split: Monday and Tuesday swapped so hard pull is off league night, Friday and Thursday cut, medium days now designed short",
+        why:"You said do everything, which is your yes on the 08.08 split proposal including section 2a.",
+        evidence:"Heavy pull is the most grip intensive training there is, hands is your lowest rated skill at 22 of 60, league is Tuesday 7pm and DUPR is 23 August. Monday and Tuesday are both 3 of 4 adherence so nothing harder landed on a day you skip. Every exercise kept its id so no logged tick moved.",
+        undo:"Gym tab, or tell Claude to put Monday and Tuesday back."});
+
+      state.meta.mig245_theweek=true; save(true);
+  } }catch(e){ try{ console.warn("mig245 did not apply:",e&&e.message); }catch(_){} }
+
+  /* ===== v21 build 245b: THE DUPR TAPER, 17 TO 23 AUGUST =====================================
+     From the proposal section 5. DUPR is set Sunday 23 August and there is a league match Tuesday
+     18 August. That week gets TWO hard lifting days instead of three, and Saturday 22 goes light.
+
+     Delivered as DATED CALENDAR ENTRIES, not as a change to the recurring split, which is the
+     standing rule in the fitness context: one off day changes never shift the recurring week. Each
+     entry names the exact change so it needs no interpretation on the day. They expire by being in
+     the past, so nothing has to be undone afterwards.
+
+     Mon 17 hard pull, KEPT hard. Tue 18 push drops to MEDIUM, it is league night. Wed 19 legs,
+     KEPT hard. Sat 22 goes LIGHT. Two hard days, and the two dropped are the ones sitting closest
+     to a match and to the rating. Idempotent by id. */
+  try{ if(state.events && Array.isArray(state.events) && state.meta && !state.meta.mig245_taper){
+      var _T245=[
+       {id:"ev-20260817-taper-start",date:"2026-08-17",kind:"Gym",
+        title:"TAPER WEEK starts. Two hard days this week, not three. DUPR is Sunday",
+        note:"Mon hard pull as normal. Tue push drops to medium, league night. Wed legs stays hard. Sat 22 goes light. Rating is set Sun 23."},
+       {id:"ev-20260818-taper-tue",date:"2026-08-18",kind:"Gym",
+        title:"Tue push MEDIUM today, not hard. League 7pm, last match before DUPR",
+        note:"Drop to four items and cut the top set on the press. This is one of the two hard days being given up this week."},
+       {id:"ev-20260822-taper-sat",date:"2026-08-22",kind:"Gym",
+        title:"Sat LIGHT today, not medium. DUPR tomorrow",
+        note:"Two or three items only, lat pulldown and the fast cable row. No hard pulling the day before a rating is set."},
+       {id:"ev-20260823-dupr",date:"2026-08-23",kind:"Pickleball",
+        title:"DUPR rating set today. No lifting beforehand"}];
+      _T245.forEach(function(n){
+        if(!state.events.some(function(e){ return e&&e.id===n.id; })) state.events.push(n);
+      });
+      state.meta.mig245_taper=true; save(true);
+  } }catch(e){ try{ console.warn("mig245b did not apply:",e&&e.message); }catch(_){} }
+
+  /* ===== v21 build 245c: SOLARA DROP DATE, AUGUST 15 TO AUGUST 17 =============================
+     Ian settled this on 08.07: "17th is fine but it's pushing us on time but 17 is fine for now".
+     BRAIN/Solara/Context/01_SOLARA_CONTEXT.md section 7 records it as MONDAY AUGUST 17 2026 and
+     says it supersedes every August 10 and August 15 reference anywhere. The app never got the
+     change, so this morning's 6am brief told him Aug 15, and the storefront theme he is about to
+     publish counts to Aug 17. A decision that is right in BRAIN and absent from the app is half
+     done. This closes it. Idempotent. */
+  try{ if(state.meta && !state.meta.mig245_solara17){
+      if(Array.isArray(state.events)){
+        state.events.forEach(function(e){
+          if(e && e.id==="ev-20260810-solara-drop"){
+            e.date="2026-08-17";
+            e.title="Solara Drop 001 (target Aug 17)";
+            e.note="Moved from Aug 15 to Mon Aug 17 by Ian on 08.07.2026. The storefront countdown theme is built to this date and is waiting on his publish click.";
+          }
+        });
+      }
+      if(state.solara && Array.isArray(state.solara.milestones)){
+        state.solara.milestones.forEach(function(m){
+          if(m && m.id==="tcld10i" && m.date==="2026-08-15") m.date="2026-08-17";
+        });
+      }
+      _autoLog({id:"auto-20260808-solara17",date:"2026-08-08",area:"Solara",
+        what:"Corrected the Drop 001 date in the app from Aug 15 to Mon Aug 17",
+        why:"You set the 17th on 08.07 and only the BRAIN context got it. The app still said Aug 15, so this morning's brief gave you the wrong date.",
+        evidence:"The draft storefront theme waiting on your publish counts down to 2026-08-17T18:00. The app event and the Drop 001 milestone both still read Aug 15 until now.",
+        undo:"Home calendar, edit the date, or tell Claude to put it back to Aug 15."});
+      state.meta.mig245_solara17=true; save(true);
+  } }catch(e){ try{ console.warn("mig245c did not apply:",e&&e.message); }catch(_){} }
 
   /* build 225: focus timer removed, nothing to clear here anymore. */
   applyAccent(); dailyReset(); save(true);
