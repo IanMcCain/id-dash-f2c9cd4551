@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 245 (2026-08-08)">
+<meta name="build" content="v21 build 246 (2026-08-08)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -5160,6 +5160,30 @@ function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]
         undo:"Home calendar, edit the date, or tell Claude to put it back to Aug 15."});
       state.meta.mig245_solara17=true; save(true);
   } }catch(e){ try{ console.warn("mig245c did not apply:",e&&e.message); }catch(_){} }
+
+  /* ===== v21 build 246: SECOND SHOWING ON THE WILLIS LISTING, 08.08.2026 =====================
+     Sat 8/8 2:15pm, Richard Begley, Better Homes, 402-216-4109. Source is Ian's "Spyglass Showings"
+     Apple Note, read directly after the 08.08 restart rebuilt the tccd attribution chain.
+
+     WRITTEN THE SAME WAY BUILD 239 WROTE FRIDAY'S, deliberately, so the two are comparable:
+     unguarded by a meta flag and presence checked on the event id instead, gated on profile "ian",
+     and the TIME LIVES IN THE TITLE because state.events has no time field. Build 239 chose that
+     convention over adding a field only one record would use, and one record has now become two,
+     which is the point at which a convention either holds or gets abandoned. It holds.
+
+     WHY IT MATTERS: showing traffic is the only input to the DAY 10 price decision on Aug 16, hold
+     $619,900 or drop to $609,900. Two showings in the first three days on market is the evidence
+     that decision runs on, so both have to be countable in the same place. Add only, idempotent. */
+  try{ if(profile==="ian"){
+    if(!Array.isArray(state.events)) state.events=[];
+    var _sh246={id:"ev-20260808-willis-showing-2",
+      title:"SHOWING, 10218 Spyglass Dr, 2:15pm, Richard Begley Better Homes",
+      date:"2026-08-08", kind:"Real estate",
+      note:"SECOND showing on the listing, day 2 on market. Richard Begley, Better Homes, 402-216-4109. One hour block, 2:15 to 3:15pm. Source is the Spyglass Showings note. Showing traffic is the input to the DAY 10 decision on Aug 16, so count it there alongside Friday's."};
+    if(!state.events.some(function(x){ return x&&x.id===_sh246.id; })){
+      state.events.push(_sh246); save(true);
+    }
+  } }catch(e){}
 
   /* build 225: focus timer removed, nothing to clear here anymore. */
   applyAccent(); dailyReset(); save(true);
