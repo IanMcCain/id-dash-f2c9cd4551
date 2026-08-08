@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 239 (2026-08-07)">
+<meta name="build" content="v21 build 240 (2026-08-08)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -4767,6 +4767,57 @@ function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]
       }
       if(state.meta && !state.meta.mig238_daily){ state.meta.mig238_daily=true; save(true); }
   } }catch(e){ try{ console.warn("mig238 did not apply:",e&&e.message); }catch(_){} }
+
+  /* v21 build 240, 08.08.2026, ian-daily-brief daily inject. Date keyed content for TODAY plus
+     two grounded todos and the 08.07 daily entry archive. Runs on every load, outside the
+     SEED_VERSION gate. Guard flag mig240_daily lives in SAVED STATE ONLY, never in seedIan().meta.
+     Ian's 08.07 entry asked that the water target NOT be moved down. It is unchanged. */
+  try{ if(profile==="ian"){
+      var T240="2026-08-08";
+      if(!state.briefing) state.briefing={forIan:{},done:{}};
+      if(!state.briefing.forIan) state.briefing.forIan={};
+      if(!state.briefing.forIan[T240]) state.briefing.forIan[T240]=[{"id": "brief-20260808-1", "type": "Real estate", "title": "Troester closes Monday, and it turns the Walnut Creek Hills flyer real", "note": "1709 Diane records Aug 10 at $435,000, seller side at 3.7 percent, about $2,736 to you. The moment it records you have a genuine just sold to walk that neighborhood with. Source: app pipeline, 08.07 export.", "why": "Because it closes in two days and Sugar Creek is still the only flyer walk on your list", "url": "", "done": false}, {"id": "brief-20260808-2", "type": "Real estate", "title": "This weekend is the traffic that decides the Willis day 10 call", "note": "One showing Thursday with no response, one booked today, open house Sunday 12 to 2. Day 10 is Aug 16, so the next 48 hours is most of the evidence you will have. Source: your 08.07 entry.", "why": "Because you logged the showing yourself last night and the price rule fires Aug 16", "url": "", "done": false}, {"id": "brief-20260808-3", "type": "Pickleball", "title": "Today is the drop decision session, count them do not feel them", "note": "Grade every drop on depth, peaked on your side and landing in the front two feet. You set the three session rule on 08.01 and this is session three. Still long tonight and the thin grip goes back on. Source: research pointer run 6, 08.04.", "why": "Because you said you are playing Saturday and the grip call has a date on it", "url": "", "done": false}];
+      if(!state.futureIdeas) state.futureIdeas={};
+      if(!state.futureIdeas[T240]) state.futureIdeas[T240]=[{"id": "fi-20260808-1", "text": "Ask every Sunday open house sign in one extra question, who else do you know looking in Tiburon. Two people on the sphere is the actual constraint, and a sign in sheet is the cheapest place to fix it.", "url": ""}, {"id": "fi-20260808-2", "text": "Enter the Lincoln DUPR qualifier Aug 14 to 16 so Aug 23 is not your first ever tournament. A rating already on the board takes the nerves problem out of the day that matters.", "url": ""}, {"id": "fi-20260808-3", "text": "Track Bruce O'Neil down for a phone number this week. He is a $1.2M to $1.6M prospect with no recorded way to reach him, which is the single largest unforced gap in the pipeline.", "url": ""}, {"id": "fi-20260808-4", "text": "Block the Drop 001 shoot dates on the calendar now, before the garments land. Aug 15 is seven days out and the shoot is the only step that cannot be compressed.", "url": ""}];
+      if(!state.quickWin) state.quickWin={items:[],done:{},picks:{}};
+      if(!state.quickWin.picks) state.quickWin.picks={};
+      if(!state.quickWin.picks[T240]) state.quickWin.picks[T240]=["Confirm tomorrow's open house is live on Zillow and Realtor.com and get it into the Tiburon neighborhood group today. It is the only booked traffic and it needs eyes on it before tonight.", "Do the Saturday light day before you play. Four exercises, lat pulldown plus the three hand and grip drills. You have not started a Saturday session in two tries, 07.25 and 08.01."];
+      if(state.pickleball){
+        var _p240=state.pickleball;
+        if(!_p240.coachBullets||typeof _p240.coachBullets!=="object"||Array.isArray(_p240.coachBullets)) _p240.coachBullets={};
+        if(!_p240.coachBullets[T240]) _p240.coachBullets[T240]=["Today is session three of the bare paddle count. Grade every drop on depth, did it peak on your side and land in the front two feet, and make the grip call tonight instead of carrying it another week.", "The trigger gap is the one thing your film keeps agreeing on. Both 07.22 studies say it and your hands score of 22 is built on zero speed ups across a full day. Above net height, pull the trigger, every time.", "Stacking runs out of road tomorrow. No Dylan window is on file and Aug 9 is the date you set, so test a half stack on the return today if he is on court, otherwise lock natural sides and take the attention back.", "Fifteen days to Aug 23. You are at four sessions in the last seven against a five to six target, which leaves roughly eleven to thirteen sessions to build the level the rating gets taken from.", "Two days off court Thursday and Friday, but over an hour of competitive sand volleyball is real lateral and reactive load. Treat today as fresh rather than as a session you owe."];
+        if(!_p240.videoRec) _p240.videoRec={};
+        if(!_p240.videoRec[T240]) _p240.videoRec[T240]={"title": "Forehand 3rd Shot Drop Technique, key mechanics (Prime Time Pickleball)", "url": "https://www.youtube.com/watch?v=pD6eN7-lQKE", "note": "Watch this before the decision session. It is the exact checklist for a drop that is running long. Feet set so you meet the ball in the same spot out front every time, locked laid back wrist, low to high from the legs, stay low, and clear the net by 2 to 3 feet so it lands short. Aim the arc, not the push."};
+        if(!_p240.research) _p240.research={};
+        if(!_p240.research[T240]) _p240.research[T240]={"title": "The kitchen has zones, and above the net is a green light you keep ignoring", "text": "Below the knee, never accelerate. Knee to hip, be careful. Any ball you contact ABOVE NET HEIGHT gets accelerated every single time or you handed the point chance back. Aggressive dinks aim at the pressurized back band toward their sides, defensive dinks land shorter and low, and a dead dink is the one that sits up. Their short dink is your cue to press. At your zero speed up rate that last rule is not advice, it is your flaw with a trigger attached.", "url": "https://www.youtube.com/watch?v=nRo0mvVA-DM", "source": "Enhance Pickleball, pulled 07.26.2026, extracted 08.04.2026"};
+        if(!_p240.coachRec) _p240.coachRec={};
+        if(!_p240.coachRec[T240]) _p240.coachRec[T240]={"title": "The decision session. Count, do not feel.", "note": "Grade every drop today on depth, did it peak on your side and land in the front two feet. You set the rule yourself on 08.01, two to three sessions to calibrate the bare paddle, and this is session three. If the drops still run long, the thin grip goes back on tonight and you take the slightly slower hands."};
+        if(Array.isArray(_p240.drills) && !_p240.drills.some(function(d){ return d && d.id==="pbk-trigger-0808"; })){
+          _p240.drills.push({id:"pbk-trigger-0808",text:"Green zone trigger reps. Dink cross court with a partner or the machine and commit in advance: the FIRST ball that comes back above net height gets accelerated, no reading, no waiting for a better one. Twenty rallies. Count how many you let go by. The number is the flaw, not the technique.",done:false});
+        }
+        _p240.workOn=["Drop apex, you are missing BOTH ways, long on 08.01 and 08.03, high on 08.05. Grade it by their contact height, not by where it bounced, and name the miss before you fix it", "Above net height gets accelerated, every time. Three separate film reads say you do not, and hands at 22 rests on zero speed ups in a full day", "Take pace off without lifting the arc. Softer hands, same low to high path, not a scooped face", "Dinks off for the second time since the grip change, first was 08.01. Watch them, do not assume they are fine", "Drill day, not open play. Depth calibration needs a feeder and a count, your own 08.04 conclusion", "Stack untested, Dylan window by Aug 9 or lock natural sides", "Slam panic is anticipation, train block only exposure, not more hand speed"];
+      }
+      if(!state.realEstate) state.realEstate={};
+      if(!Array.isArray(state.realEstate.todos)) state.realEstate.todos=[];
+      if(!state.archive) state.archive={};
+      if(!Array.isArray(state.archive.todosDone)) state.archive.todosDone=[];
+      var _addT240=function(item){
+        var ex=state.realEstate.todos.filter(function(t){ return t && t.key===item.key; });
+        if(ex.length){ ex[0].text=item.text; ex[0].exp=item.exp; ex[0].src=item.src; }
+        else if(!state.archive.todosDone.some(function(z){ return z && z.key===item.key; })){ state.realEstate.todos.push(item); }
+      };
+      _addT240({"id": "ret-20260808-flyer-wch", "key": "flyer-walnutcreekhills", "done": false, "exp": "2026-08-31", "text": "Walk Walnut Creek Hills with a just sold flyer once Troester records Monday Aug 10, 1709 Diane at $435,000. Sugar Creek is already unblocked and printed, so this makes two real just solds to walk in the same week.", "src": "re-chad-troester closes 2026-08-10, ev-20260810-troester-close"});
+      _addT240({"id": "ret-20260808-bruce-contact", "key": "bruce-contact", "done": false, "exp": "", "text": "Get a phone number or an email for Bruce O'Neil and put it in LEAD_CONTACTS.md. He is the largest prospect in the pipeline, a $1.1M to $1.5M build plus a $350k to $450k lot, and there is currently no recorded way to reach him anywhere.", "src": "pp-bruce-oneil people record, no phone and no email on file"});
+      if(!state.context) state.context={};
+      if(!state.context.dailyLog) state.context.dailyLog={};
+      if(!state.context.dailyLog["2026-08-07"]) state.context.dailyLog["2026-08-07"]={};
+      var _dl240=state.context.dailyLog["2026-08-07"];
+      if(!_dl240.dailyAgentActed){
+        _dl240.claudeAction="Read 08.08. GYM, gym day was good plus over an hour of competitive sand volleyball, no pickleball, doing it Saturday: logged as cross training context rather than a pickleball session so the session count stays honest at 4 in 7, and today is written as the session in the coach bullets and card 3. Nothing in the split was changed. RE, showing Thursday with no response and one more booked today, both Cynthia: acted on, it drives card 2 and the weekend is framed as the evidence the Aug 16 day 10 call gets made on. FOOD, did not have a lot of water, do not move it down: honored, the 10 cup target is unchanged and the 7 day average gets one line and then drops out.";
+        _dl240.dailyAgentActed="2026-08-08";
+      }
+      if(state.meta && !state.meta.mig240_daily){ state.meta.mig240_daily=true; save(true); }
+  } }catch(e){ try{ console.warn("mig240 did not apply:",e&&e.message); }catch(_){} }
 
   /* build 225: focus timer removed, nothing to clear here anymore. */
   applyAccent(); dailyReset(); save(true);
