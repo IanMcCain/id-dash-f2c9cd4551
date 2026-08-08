@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 242 (2026-08-08)">
+<meta name="build" content="v21 build 243 (2026-08-08)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -4918,6 +4918,33 @@ function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]
       }
       state.meta.mig242_sattoday=true; save(true);
   } }catch(e){ try{ console.warn("mig242 did not apply:",e&&e.message); }catch(_){} }
+
+  /* ===== v21 build 243: THE TUESDAY MIXED DOUBLES LEAGUE, ADDITIVE ONLY ========================
+     Ian, 08.08.2026: mixed doubles beginner plus league, Tuesdays 7pm, starting Tuesday 11 August,
+     four weeks, five if they reach finals.
+     WHY IT MATTERS BEYOND THE CALENDAR. It is weekly COMPETITIVE play, which is better evidence
+     than open play and lands two matches before DUPR is set on 23 August. It is also the
+     environment he said he was missing: at lower level open play there is no reason to dink and
+     the soft game cannot develop where the hard game goes unpunished. Whether beginner plus is
+     enough opposition is an OPEN QUESTION, not an assumption, and should be judged after week 1.
+     PROGRAMME COLLISION, RECORDED HERE AND ANSWERED IN THE PENDING WEEK PROPOSAL. Tuesday is
+     currently the hard pull day. Heavy pulling is the most grip and forearm intensive training
+     there is, and hands and paddle control are his named weakness, so lifting it hours before a
+     league match taxes the exact quality he is trying to raise, with a rating being set on the
+     23rd. This build does NOT change the split, it only records the fixture. Additive only, no
+     event is modified or removed. Idempotent by id. */
+  try{ if(state.events && Array.isArray(state.events) && state.meta && !state.meta.mig243_league){
+      var _L243=[{"id": "ev-20260811-league-w1", "date": "2026-08-11", "kind": "Pickleball", "title": "Mixed doubles beginner plus league, week 1, 7pm"}, {"id": "ev-20260818-league-w2", "date": "2026-08-18", "kind": "Pickleball", "title": "Mixed doubles league, week 2, 7pm. Last competitive match before DUPR"}, {"id": "ev-20260825-league-w3", "date": "2026-08-25", "kind": "Pickleball", "title": "Mixed doubles league, week 3, 7pm"}, {"id": "ev-20260901-league-w4", "date": "2026-09-01", "kind": "Pickleball", "title": "Mixed doubles league, week 4, 7pm"}, {"id": "ev-20260908-league-finals", "date": "2026-09-08", "kind": "Pickleball", "conditional": true, "title": "Mixed doubles league FINALS, 7pm (only if they reach finals)", "note": "CONDITIONAL. Week 5 only happens if they make finals. Four weeks are certain, the fifth is not."}];
+      _L243.forEach(function(ev){
+        if(!state.events.some(function(x){ return x && x.id===ev.id; })) state.events.push(ev);
+      });
+      _autoLog({id:"auto-20260808-league",date:"2026-08-08",area:"Pickleball",
+        what:"Added the Tuesday mixed doubles league to your calendar, four dates plus a conditional finals",
+        why:"You told me it starts 11 August, Tuesdays at 7pm, four weeks and a fifth if you reach finals.",
+        evidence:"It is weekly competitive play, which is better evidence than open play, and weeks 1 and 2 fall before DUPR is set on 23 August. It also collides with your hard pull day, which is answered in the week proposal rather than changed here.",
+        undo:"Home calendar, delete any of the five, or tell Claude to remove them."});
+      state.meta.mig243_league=true; save(true);
+  } }catch(e){ try{ console.warn("mig243 did not apply:",e&&e.message); }catch(_){} }
 
   /* build 225: focus timer removed, nothing to clear here anymore. */
   applyAccent(); dailyReset(); save(true);
