@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 250 (2026-08-09)">
+<meta name="build" content="v21 build 251 (2026-08-09)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -5319,6 +5319,86 @@ function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]
       if(state.meta && !state.meta.mig250_midonly){ state.meta.mig250_midonly=true; }
       save(true);
   } }catch(e){}
+
+  /* ===== v21 build 251: BRUCE MERGED TO ONE RECORD, HERNANDEZ ADDED, 08.09.2026 ==============
+     Ian's instruction, both changes in one build because they are one pipeline pass.
+
+     A. BRUCE O'NEIL, TWO RECORDS BECOME ONE. He appeared twice: s0wqsf9, which Ian entered
+     himself, and re-bruce-oneil, created by the build 211 migration. NOTE THE CORRECTION, because
+     the brief said one was buy side and one was sell side and that is not what the data held.
+     s0wqsf9 carried side "Both", re-bruce-oneil carried side "Buyer" and an EMPTY source. So there
+     was never a sell side only record, and the fuller claim on the business was already sitting on
+     s0wqsf9. That is why s0wqsf9 SURVIVES and re-bruce-oneil is the one removed.
+
+     THE SURVIVOR IS CHOSEN ON THE COMMISSION FIELDS, NOT ON WHICH LOOKS TIDIER. Ian's 20 percent
+     share is derived from source "Chris's client" WITH side "Both", and BRAIN records that Bruce is
+     the ONLY deal in the file carrying that combination. re-bruce-oneil has source "" and side
+     "Buyer". Keeping the wrong one would have silently re-derived his split as 50/50 dual agency
+     and roughly doubled his modelled value. Both sides of the business survive because side stays
+     "Both", which is exactly what Ian asked for.
+
+     NO PRICE IS CHANGED. Ian asked to combine records, not to reprice. The app keeps its own
+     "1.2-1.6 million" even though he said 1.2 to 1.5 on 08.02.2026, because price is Class A and
+     his thumb owns it. The discrepancy is written into the note instead so he can settle it.
+     History from BOTH notes is concatenated, nothing is dropped, and the removed id goes into
+     state.meta.removedDealIds so build 211 can never resurrect it.
+
+     B. MEGAN AND RICKY HERNANDEZ, NEW PROSPECT, SELL SIDE. ONE record, not two, deliberately, and
+     the reasoning is the same instruction that merged Bruce. Megan's possible townhome purchase is
+     CONTINGENT on a sale that is itself a year-hesitant maybe, so giving it its own record would
+     put a second deal into every count on the strength of a maybe stacked on a maybe. It lives in
+     the note and becomes a record if and when the sale is real.
+
+     THE TIMELINE IS THE WHOLE POINT. They say two months. They have been saying some version of
+     this for about a year. Ian's explicit instruction is that the year of hesitation is the more
+     reliable signal and that two months must not drive nudges or forecasts. flag "iffy" plus an
+     empty close is what keeps that honest in the data rather than only in prose.
+
+     NOTHING HERE TOUCHES ANY GOAL NUMBER, and that is verified rather than assumed. reGoalsCard
+     counts stage "Closed" and "Under Contract" only. Both records sit at Prospecting, so neither
+     the $10M production bar nor the 20 deal count moves by one dollar or one deal. The merge does
+     not reduce a goal number either, for the same reason. Add and amend only, idempotent. */
+  try{ if(profile==="ian" && state.realEstate && Array.isArray(state.realEstate.deals)
+          && state.meta && !state.meta.mig251_pipeline){
+      var _D=state.realEstate.deals;
+      var _find=function(id){ for(var i=0;i<_D.length;i++){ if(_D[i]&&_D[i].id===id) return _D[i]; } return null; };
+      var _keep=_find("s0wqsf9"), _dup=_find("re-bruce-oneil");
+
+      if(_keep){
+        _keep.title="Bruce O'Neil, lake lot plus build";
+        _keep.side="Both";
+        _keep.source="Chris's client";
+        _keep.flag="iffy";
+        _keep.stage="Prospecting";
+        _keep.close="NO TIMELINE. He has not given one and none is assumed. Nothing is scheduled.";
+        _keep.note="MERGED 08.09.2026 ON IAN'S INSTRUCTION. This deal previously existed twice, as s0wqsf9 (this record, entered by Ian) and re-bruce-oneil (created by the build 211 migration). This is now the single record. Both sides of the business are preserved: side stays Both, covering the lot purchase and the build. The removed record carried side Buyer and an empty source, which would have lost the commission basis, so this one survived. NO PRICE WAS CHANGED IN THE MERGE. PRICE DISCREPANCY FOR IAN TO SETTLE: this field reads 1.2-1.6 million, and on 08.02.2026 Ian said 1.2 to 1.5. Price is his to set, so the app value was left alone. "
+          +"--- HISTORY FROM THIS RECORD --- "+String(_keep.note||"")+" "
+          +"--- HISTORY FROM THE MERGED RECORD (re-bruce-oneil, build 211) --- "+(_dup?String(_dup.note||""):"NEW PROSPECT 08.02.2026, and by size the largest thing in the pipeline. Build 1.1 to 1.5 million, lake lots 350 to 450k as of 07.31.2026. TREAT THIS AS TWO TRANSACTIONS, a LOT PURCHASE and then a BUILD, which can settle at different times and carry separate commission events. Combined exposure roughly 1.45M to 1.95M. Lot price range and the two transaction structure preserved here from the removed record.")
+          +" --- LOT RANGE, PRESERVED SO THE MERGE DOES NOT LOSE IT --- Lot $350,000 to $450,000 as of 07.31.2026. COMMISSION, ANSWERED BY IAN 08.02.2026: buyer side 2.4 percent no matter what, less the 15 percent brokerage, then Ian's 20 percent source share. If Scenic Group finds the open lot it is both sides at 5 to 6 percent, which is roughly double. dualRate is still null and only Ian can set it. Full reasoning in BRAIN, Real_Estate/Context/01_MASTER_CONTEXT.md.";
+      }
+      if(_dup){
+        for(var j=_D.length-1;j>=0;j--){ if(_D[j]&&_D[j].id==="re-bruce-oneil") _D.splice(j,1); }
+      }
+      if(!Array.isArray(state.meta.removedDealIds)) state.meta.removedDealIds=[];
+      if(state.meta.removedDealIds.indexOf("re-bruce-oneil")<0) state.meta.removedDealIds.push("re-bruce-oneil");
+
+      var _HID="re-hernandez-sell";
+      var _hGone=state.meta.removedDealIds.indexOf(_HID)>-1;
+      if(!_hGone && !_find(_HID)){
+        _D.push({
+          id:_HID,
+          title:"Megan & Ricky Hernandez, sell",
+          stage:"Prospecting",
+          price:"",
+          close:"",
+          source:"",
+          side:"Seller",
+          flag:"iffy",
+          note:"NEW PROSPECT 08.09.2026, from Ian. Megan and Ricky Hernandez want to sell their home. BOTH NAMES ARE ON IT, so both are decision makers and neither can be treated as the sole contact. THE TIMELINE IS THE MOST IMPORTANT FACT ON THIS RECORD AND IT IS NOT THE ONE THEY GIVE. They now say two months. They have been iffy for ABOUT A YEAR. Ian's instruction is explicit: weight the year of hesitation over the two months, and do NOT let two months drive nudges, reminders or forecast dates. A year of saying soon is a stronger predictor than the latest soon. It could be two months and it could be next year. NO ADDRESS, NO VALUATION, NO LIST PRICE. Price is deliberately left EMPTY rather than estimated, per the labeling rule, this is Missing and not Uncertain. Nothing has been valued because nothing has been seen. AFTER THE SALE, TWO DIFFERENT PATHS AND THEY DO NOT MOVE TOGETHER. Megan would buy a townhome, or possibly rent. Ricky would rent. So the only possible second transaction is Megan's purchase, and it is conditional twice over, on the sale happening at all and then on her buying rather than renting. IAN CAPPED THIS AT TWO DEALS MAXIMUM, the sale plus her purchase. Treat two as the ceiling, never the expectation. RECORDED AS ONE RECORD ON PURPOSE, in the same pass that merged Bruce's two records into one. The possible purchase has no record of its own because it would then be counted as a deal on the strength of a maybe stacked on a maybe. Create it when the sale is real. STAGE IS PROSPECTING, NOT LEAD, per Ian's own definitions in BRAIN: they have explicit interest and a stated goal. That is a prospect. It is NOT a commitment, and the iffy flag carries the doubt. DO NOT COUNT THIS ANYWHERE IT WOULD INFLATE. Not in the $10M production pace, not in the 20 deal count, not in any dated forecast. reGoalsCard counts Closed and Under Contract only, so Prospecting is already outside both bars and that is the correct treatment, not an oversight. WHAT IS NOT KNOWN AND MUST NOT BE INFERRED: the address, the likely value, the condition, whether either has spoken to another agent, whose client they are (source is empty on purpose, so no commission split can be derived yet), and any contact details. Contact details, when they arrive, go in BRAIN Real_Estate/Context/LEAD_CONTACTS.md and never in a derived file."
+        });
+      }
+      state.meta.mig251_pipeline=true; save(true);
+  } }catch(e){ try{ console.warn("mig251 did not apply:",e&&e.message); }catch(_){} }
 
   /* build 225: focus timer removed, nothing to clear here anymore. */
   applyAccent(); dailyReset(); save(true);
