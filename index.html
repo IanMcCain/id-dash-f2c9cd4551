@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 249 (2026-08-09)">
+<meta name="build" content="v21 build 250 (2026-08-09)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -5299,6 +5299,27 @@ function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]
       save(true);
   } }catch(e){}
 
+  /* ===== v21 build 250: COACH MIDPOINT ONLY. THE BAND COMES OFF THE CHART ====================
+     Ian's call: show one coach number, not a range. THIS IS A DISPLAY CHANGE, NOT A DATA CHANGE.
+     ratingLo and ratingHi STAY on every skill, gradeHistory, gradeNotes, both caveats and the
+     needsSplit flag on hands are all untouched. Rendering is gated on pb.showBand, which this sets
+     to false, so putting the range back is ONE FLAG rather than a rebuild. Deleting the bands would
+     have thrown away the evidence width that justified them, and the reason hands is uncertain does
+     not stop being true because the chart stopped drawing it.
+     rating is rounded to 2dp to match the numbers Ian gave. The anchored current values do not move
+     at all, 3.625 and 3.63 both round to 49, so the plotted shape is identical to build 249. */
+  try{ if(profile==="ian" && state.pickleball && Array.isArray(state.pickleball.skills)){
+      var _p=state.pickleball;
+      var _M={serve:3.63,drops:3.38,resets:3.5,dinks:3.38,drives:3.5,hands:3.15,footwork:3.5};
+      _p.skills.forEach(function(k){
+        if(!k||!k.id) return;
+        if(_M[k.id]!=null && !k.unrated){ k.rating=_M[k.id]; k.current=Math.round((k.rating-3)*30+30); }
+      });
+      _p.showBand=false;
+      if(state.meta && !state.meta.mig250_midonly){ state.meta.mig250_midonly=true; }
+      save(true);
+  } }catch(e){}
+
   /* build 225: focus timer removed, nothing to clear here anymore. */
   applyAccent(); dailyReset(); save(true);
 }
@@ -7120,10 +7141,33 @@ const PK_SELF_ASSESS={
    resetting on a real page reload is the correct behaviour, not a bug. */
 var PK_RADAR_SEEN=false; /* build 202: no longer read. The radar's own reveal driver was folded into the shared chart engine, which tracks seen state in CH_SEEN. Kept as a harmless declaration rather than deleted so nothing that may still reference it throws. */
 function pkAnchor(rating){ return (Number(rating)-3.0)*30+30; }
+/* build 250, AND THIS IS A BUG FIX, NOT A TIDY UP. pkSelf used to read the hardcoded
+   PK_SELF_ASSESS constant, which is DATED 2026-07-30 and frozen. So every self assessment Ian
+   has given since, the 08.05 set at build 228 and the 08.08 set at build 247, was being STORED
+   correctly at state.pickleball.selfAssessment and then IGNORED by the chart. His "your call"
+   line on the radar has been drawing his 07.30 numbers this whole time while the app held two
+   newer sets. Storing a value and rendering it are different jobs and only one of them was done.
+   It now reads the NEWEST dated entry from saved state and falls back to the constant only if
+   there is none. Points and ranges are both handled, so 08.08 footwork stays 3.5 to 3.6 while
+   the other six render as single numbers. */
+function pkSelfLatest(){
+  try{
+    var SA=(state.pickleball||{}).selfAssessment||{};
+    var ds=Object.keys(SA).filter(function(d){ return SA[d]&&SA[d].skills; }).sort();
+    if(ds.length){ var d=ds[ds.length-1]; return {date:d, skills:SA[d].skills}; }
+  }catch(e){}
+  return {date:PK_SELF_ASSESS.date, skills:null};
+}
 function pkSelf(id){
-  var r=PK_SELF_ASSESS.ranges[id]; if(!r) return null;
-  var lo=r[0], hi=r[1], mid=(lo+hi)/2;
-  return { lo:lo, hi:hi, mid:mid, value:pkAnchor(mid),
+  var lo=null,hi=null,L=pkSelfLatest();
+  if(L.skills && L.skills[id]!=null){
+    var v=L.skills[id];
+    if(typeof v==="number"){ lo=v; hi=v; }
+    else if(typeof v==="object" && typeof v.lo==="number" && typeof v.hi==="number"){ lo=v.lo; hi=v.hi; }
+  }
+  if(lo==null){ var r=PK_SELF_ASSESS.ranges[id]; if(!r) return null; lo=r[0]; hi=r[1]; }
+  var mid=(lo+hi)/2;
+  return { lo:lo, hi:hi, mid:mid, value:pkAnchor(mid), date:L.date,
            label:(lo===hi)?String(lo):(lo+" to "+hi) };
 }
 
@@ -7146,8 +7190,10 @@ function skillDetailPanel(host,id){
   try{
     var _ks=((state.pickleball||{}).skills||[]).filter(function(z){ return z&&z.id===id; })[0];
     var _sf=(typeof pkSelf==="function")?pkSelf(id):null; var _bits=[];
-    if(_ks&&typeof _ks.ratingLo==="number"&&typeof _ks.ratingHi==="number"){
-      _bits.push("Coach "+((_ks.ratingLo===_ks.ratingHi)?(_ks.ratingLo+" flat"):(_ks.ratingLo+" to "+_ks.ratingHi))+(_ks.n?" (n="+_ks.n+")":""));
+    /* build 250: ONE coach number. The lo and hi are still on the record and deliberately not shown. */
+    var _num=function(v){ return String(Math.round(v*100)/100); };
+    if(_ks&&!_ks.unrated&&typeof _ks.rating==="number"){
+      _bits.push("Coach "+_num(_ks.rating)+(_ks.n?" (n="+_ks.n+")":""));
     } else if(_ks&&_ks.unrated){ _bits.push("Coach unrated"+(_ks.n?" (n="+_ks.n+")":"")); }
     if(_sf) _bits.push("You "+_sf.label);
     if(_bits.length){
@@ -7290,7 +7336,7 @@ function buildSkillsRadar(parent){
   if(!sk.length) sk=DEF;
   var c=card("a-blue"); var b=c._body;
   b.appendChild(el("h3",null,"Skills radar"));
-  var sub=el("div","small dim"); sub.style.marginTop="3px"; sub.textContent="Two reads overlaid: the coach range from the film, and your own call. The shaded band is where the footage puts you, wide where the evidence is thin. Rings are real levels, 3.0 to 5.0. Not a measured DUPR, your first is Aug 23."; b.appendChild(sub);
+  var sub=el("div","small dim"); sub.style.marginTop="3px"; sub.textContent="Two reads overlaid: your coach read from the film, and your own call. Rings are real levels, 3.0 to 5.0. Not a measured DUPR, your first is Aug 23."; b.appendChild(sub);
   var n=sk.length, cx=150, cy=140, R=92;
   function ang(i){ return (-90 + i*360/n)*Math.PI/180; }
   function pt(i,val){ var a=ang(i); var r=R*Math.max(0,Math.min(100,val))/100; return [cx+r*Math.cos(a), cy+r*Math.sin(a)]; }
@@ -7339,7 +7385,9 @@ function buildSkillsRadar(parent){
   g+='<polygon points="'+poly(function(s){return s.target;})+'" style="fill:none;stroke:var(--green);opacity:0.92" stroke-width="1.6" stroke-dasharray="4 3"/>';
   /* the band goes UNDER his line and under the midpoint polygon, so it reads as the terrain the
      two point readings sit on rather than as a third competing line. */
-  var _bp=bandPath();
+  /* build 250: the band is BEHIND A FLAG and off by Ian's call. bandPath() is kept intact so this
+     is one flag to reverse, not a rebuild. Default is off, so a profile with no flag draws no band. */
+  var _bp=(pb.showBand===true)?bandPath():null;
   if(_bp){ g+='<path d="'+_bp+'" fill-rule="evenodd" style="fill:var(--accent);fill-opacity:0.16;stroke:var(--accent);stroke-opacity:0.5" stroke-width="1"/>'; }
   /* Ian's own read, plotted UNDER nothing and OVER the target so it stays legible, but deliberately
      subordinate to the evidence line: no fill, no dots, one thin stroke. The purple filled polygon
@@ -7397,7 +7445,7 @@ function buildSkillsRadar(parent){
   paint(openId);
   var leg=el("div"); leg.style.cssText="display:flex;gap:18px;justify-content:center;margin-top:6px;flex-wrap:wrap";
   function key(varc,txt,dash){ var d=el("div"); d.style.cssText="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--gray);font-weight:600"; var sw=el("span"); sw.style.cssText="width:15px;height:0;border-top:3px "+(dash?"dashed":"solid")+" "+varc+";display:inline-block"; d.appendChild(sw); d.appendChild(document.createTextNode(txt)); return d; }
-  leg.appendChild(key("var(--accent)",_bp?"Coach midpoint":"Film, about 3.25",false));
+  leg.appendChild(key("var(--accent)","Coach read",false));
   if(_bp) leg.appendChild(key("var(--accent)","Coach range",false));
   if(haveSelf) leg.appendChild(key("#ffab3d","Your call",false));
   leg.appendChild(key("var(--green)","Target 4.0",true));
