@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 248 (2026-08-09)">
+<meta name="build" content="v21 build 249 (2026-08-09)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -5252,6 +5252,53 @@ function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]
       }
   } }catch(e){}
 
+  /* ===== v21 build 249: THE COACH GRADE BECOMES A RANGE, 08.09.2026 =========================
+     From the 08.08 film study plus Ian's adjudicated pushback. The flat 07.29 numbers are RETIRED
+     as the current read and PRESERVED as history at pb.gradeHistory["2026-07-29"], same convention
+     as selfAssessment: nothing is ever overwritten, the movement between reads is the finding.
+     WHY RANGES AT ALL. A flat number claims a precision the footage does not have. Where the
+     evidence is thin the band is wide, and the WIDTH is itself information. Footwork is the only
+     skill graded outright, n=4 and earned, so it is stored lo===hi and pinches the band shut there
+     on purpose. rating stays the midpoint so everything that already reads .rating keeps working.
+     Flag is mig249_bands, not mig248, because build 248 was the daily brief's own inject and its
+     mig248 flags are unrelated. */
+  try{ if(profile==="ian" && state.pickleball && Array.isArray(state.pickleball.skills)){
+      var _p249=state.pickleball;
+      if(!_p249.gradeHistory || typeof _p249.gradeHistory!=="object") _p249.gradeHistory={};
+      if(!_p249.gradeHistory["2026-07-29"]){
+        var _hist={};
+        _p249.skills.forEach(function(k){ if(k&&k.id) _hist[k.id]=k.unrated?{unrated:true}:{rating:k.rating,current:k.current}; });
+        _p249.gradeHistory["2026-07-29"]={label:"07.29.2026 regrade", form:"flat points", source:"film 07.18 to 07.25", skills:_hist,
+          note:"The first film based grade, flat numbers. Superseded as the CURRENT read by the 08.09 bands, kept because it is the baseline every later movement is measured from."};
+      }
+      var _B249={serve:[3.5,3.75],drops:[3.25,3.5],resets:[3.4,3.6],dinks:[3.25,3.5],drives:[3.4,3.6],hands:[2.9,3.4],footwork:[3.5,3.5]};
+      var _N249={serve:34,footwork:4,"return":1,overheads:3};
+      _p249.skills.forEach(function(k){
+        if(!k||!k.id) return;
+        var bd=_B249[k.id];
+        if(bd){
+          k.ratingLo=bd[0]; k.ratingHi=bd[1];
+          k.rating=Math.round(((bd[0]+bd[1])/2)*1000)/1000;
+          k.current=Math.round((k.rating-3)*30+30);
+          k.unrated=false;
+        }
+        k.gradeVersion="2026-08-09-bands";
+        if(_N249[k.id]!=null) k.n=_N249[k.id];
+      });
+      var _h249=_p249.skills.filter(function(k){ return k&&k.id==="hands"; })[0];
+      if(_h249){ _h249.needsSplit=true;
+        _h249.splitNote="LABEL NEEDS SPLITTING INTO TWO SKILLS. Ian is right that hands means handling incoming speed ups and fast balls at the net, which is reaction and block quality. Initiating speed ups is SHOT SELECTION and belongs to construct and finish. Grading them as one number is what produced the 2.75."; }
+      _p249.gradeNotes={
+        date:"2026-08-09", source:"08.08 film study plus Ian's adjudicated pushback",
+        hands:"WIDEST BAND ON THE BOARD, 2.9 to 3.4, AND THE WIDTH IS THE POINT. The old 2.75 was built substantially on ZERO SPEED UPS INITIATED, which measures shot selection, not reaction speed. Ian's objection that hands means handling incoming speed ups and fast balls at the net is CORRECT AS A DEFINITION, and the grade leaned on the wrong evidence. The footage also contains very little of him in fast kitchen exchanges, so NEITHER the 2.75 NOR his own 3.35 to 3.5 is supported by what was filmed. The band is wide because the evidence is genuinely CONTESTED, not because we are splitting the difference between two opinions. Closing it needs footage of fast hands exchanges, not another opinion.",
+        serve:"MOVED ON REAL EVIDENCE AND THE OLD CLAIM IS RETIRED, NOT SOFTENED. 34 serves, 30 in, measured landings 4.7 to 9.7 feet inside the baseline, mean 6.8. THE DEPTH RUNS SHALLOW CLAIM IS DISPROVEN and must not be repeated anywhere. The top of the band, 3.75, reflects Ian's fair point that he has played with 4.0s whose serve is not better than his. It does not go higher because NOTHING IN THE FOOTAGE TESTS HIS SERVE AGAINST PLAYERS WHO HANDLE DEPTH, so the ceiling is unmeasured rather than reached.",
+        footwork:"The ONLY skill graded outright, flat 3.5, n=4. Stored lo equal to hi so the band pinches shut there and the chart shows that it is the one number actually earned.",
+        caveat_dylan:"THE DYLAN ANALYSIS RESTS ON ONE OF TWO FILES. The second never downloaded, so anything drawn from that match is half the intended evidence. Do not cite it as if both were reviewed.",
+        caveat_drops:"THIRD SHOT DROPS COULD NOT BE GRADED FROM THIS FOOTAGE. The far kitchen sits hidden behind the net band from that camera position, so the landing zone is literally not visible. THIS IS A CAMERA LIMITATION, NOT AN OPPONENT QUALITY ONE, and it must never be written up as the drops being untested because the level was low. The 3.25 to 3.5 band on drops carries this caveat with it."};
+      if(state.meta && !state.meta.mig249_bands){ state.meta.mig249_bands=true; }
+      save(true);
+  } }catch(e){}
+
   /* build 225: focus timer removed, nothing to clear here anymore. */
   applyAccent(); dailyReset(); save(true);
 }
@@ -7093,6 +7140,25 @@ function skillDetailPanel(host,id){
   var x=el("button","bx","\u00D7"); x.style.cssText="background:none;border:0;color:var(--gray);font-size:20px;line-height:1;cursor:pointer";
   x.onclick=function(ev){ ev.stopPropagation(); try{ if(!state.meta) state.meta={}; state.meta.skOpen=null; }catch(e){} try{ render(); }catch(e){} };
   head.appendChild(x); b.appendChild(head);
+  /* build 249: BOTH READS, side by side, at the top of the panel. This is where a RANGE is legible
+     in a way a polygon never is, and it is the answer to "draw the midpoint and show the range on
+     tap". Coach first because it is the evidence line, his own read beside it, never merged. */
+  try{
+    var _ks=((state.pickleball||{}).skills||[]).filter(function(z){ return z&&z.id===id; })[0];
+    var _sf=(typeof pkSelf==="function")?pkSelf(id):null; var _bits=[];
+    if(_ks&&typeof _ks.ratingLo==="number"&&typeof _ks.ratingHi==="number"){
+      _bits.push("Coach "+((_ks.ratingLo===_ks.ratingHi)?(_ks.ratingLo+" flat"):(_ks.ratingLo+" to "+_ks.ratingHi))+(_ks.n?" (n="+_ks.n+")":""));
+    } else if(_ks&&_ks.unrated){ _bits.push("Coach unrated"+(_ks.n?" (n="+_ks.n+")":"")); }
+    if(_sf) _bits.push("You "+_sf.label);
+    if(_bits.length){
+      var _rl=el("div","small"); _rl.style.cssText="margin-top:6px;font-weight:700;color:var(--gray);letter-spacing:-.01em";
+      _rl.textContent=_bits.join("     "); b.appendChild(_rl);
+    }
+    if(_ks&&_ks.needsSplit){
+      var _ns=el("div","small dim"); _ns.style.cssText="margin-top:4px;line-height:1.45";
+      _ns.textContent="This label covers two different skills and is being split."; b.appendChild(_ns);
+    }
+  }catch(e){}
 
   var para=function(txt,cls){ var d=el("div","small"); d.style.cssText="line-height:1.6;color:var(--gray);margin-top:8px"; d.textContent=txt; if(cls) d.className="small "+cls; b.appendChild(d); return d; };
   var heading=function(t,color){ var d=el("div","small"); d.style.cssText="margin-top:15px;margin-bottom:2px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;font-size:11px;color:"+(color||"var(--gray)"); d.textContent=t; b.appendChild(d); };
@@ -7224,11 +7290,26 @@ function buildSkillsRadar(parent){
   if(!sk.length) sk=DEF;
   var c=card("a-blue"); var b=c._body;
   b.appendChild(el("h3",null,"Skills radar"));
-  var sub=el("div","small dim"); sub.style.marginTop="3px"; sub.textContent="Coach estimate, regraded 07.29 and revised down. Rings are real levels, 3.0 to 5.0. Not a measured DUPR, your first is Aug 23."; b.appendChild(sub);
+  var sub=el("div","small dim"); sub.style.marginTop="3px"; sub.textContent="Two reads overlaid: the coach range from the film, and your own call. The shaded band is where the footage puts you, wide where the evidence is thin. Rings are real levels, 3.0 to 5.0. Not a measured DUPR, your first is Aug 23."; b.appendChild(sub);
   var n=sk.length, cx=150, cy=140, R=92;
   function ang(i){ return (-90 + i*360/n)*Math.PI/180; }
   function pt(i,val){ var a=ang(i); var r=R*Math.max(0,Math.min(100,val))/100; return [cx+r*Math.cos(a), cy+r*Math.sin(a)]; }
   function poly(getter){ return sk.map(function(s,i){ var q=pt(i,getter(s,i)); return q[0].toFixed(1)+","+q[1].toFixed(1); }).join(" "); }
+  /* build 249: THE COACH BAND. Two rings in ONE path with fill-rule evenodd, outer at ratingHi and
+     inner at ratingLo walked backwards, so the fill lands in the gap between them and nowhere else.
+     A skill graded outright has lo===hi and the band simply pinches shut on that spoke, which is the
+     honest picture rather than a defect. Returns null if any spoke lacks a band, in which case the
+     radar falls back to exactly what it drew before and nothing is lost. */
+  function bandPath(){
+    var hi=[], lo=[], ok=true;
+    sk.forEach(function(s,i){
+      if(typeof s.ratingLo!=="number"||typeof s.ratingHi!=="number"){ ok=false; return; }
+      hi.push(pt(i,pkAnchor(s.ratingHi))); lo.push(pt(i,pkAnchor(s.ratingLo)));
+    });
+    if(!ok||hi.length!==sk.length) return null;
+    var f=function(q){ return q[0].toFixed(1)+","+q[1].toFixed(1); };
+    return "M"+hi.map(f).join("L")+"Z M"+lo.slice().reverse().map(f).join("L")+"Z";
+  }
   var g='<svg viewBox="0 0 300 300" width="100%" style="display:block;margin:12px auto 0;max-width:330px;overflow:visible" xmlns="http://www.w3.org/2000/svg">';
   /* v21 build 193: the rings used to sit at 25/50/75/100, which meant nothing. Under the scale
      anchor (value = (rating-3)*30+30) they now sit on REAL levels, so the distance between two
@@ -7256,6 +7337,10 @@ function buildSkillsRadar(parent){
      no origin property at all, which works everywhere. */
   g+='<g transform="translate('+cx+','+cy+')"><g class="skgrow"><g transform="translate('+(-cx)+','+(-cy)+')">';
   g+='<polygon points="'+poly(function(s){return s.target;})+'" style="fill:none;stroke:var(--green);opacity:0.92" stroke-width="1.6" stroke-dasharray="4 3"/>';
+  /* the band goes UNDER his line and under the midpoint polygon, so it reads as the terrain the
+     two point readings sit on rather than as a third competing line. */
+  var _bp=bandPath();
+  if(_bp){ g+='<path d="'+_bp+'" fill-rule="evenodd" style="fill:var(--accent);fill-opacity:0.16;stroke:var(--accent);stroke-opacity:0.5" stroke-width="1"/>'; }
   /* Ian's own read, plotted UNDER nothing and OVER the target so it stays legible, but deliberately
      subordinate to the evidence line: no fill, no dots, one thin stroke. The purple filled polygon
      is the one grounded in footage and it should still be what the eye lands on first. */
@@ -7312,7 +7397,8 @@ function buildSkillsRadar(parent){
   paint(openId);
   var leg=el("div"); leg.style.cssText="display:flex;gap:18px;justify-content:center;margin-top:6px;flex-wrap:wrap";
   function key(varc,txt,dash){ var d=el("div"); d.style.cssText="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--gray);font-weight:600"; var sw=el("span"); sw.style.cssText="width:15px;height:0;border-top:3px "+(dash?"dashed":"solid")+" "+varc+";display:inline-block"; d.appendChild(sw); d.appendChild(document.createTextNode(txt)); return d; }
-  leg.appendChild(key("var(--accent)","Film, about 3.25",false));
+  leg.appendChild(key("var(--accent)",_bp?"Coach midpoint":"Film, about 3.25",false));
+  if(_bp) leg.appendChild(key("var(--accent)","Coach range",false));
   if(haveSelf) leg.appendChild(key("#ffab3d","Your call",false));
   leg.appendChild(key("var(--green)","Target 4.0",true));
   leg.appendChild(key("var(--gray)","5.0 ceiling",false));
