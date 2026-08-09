@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 251 (2026-08-09)">
+<meta name="build" content="v21 build 252 (2026-08-09)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -5399,6 +5399,82 @@ function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]
       }
       state.meta.mig251_pipeline=true; save(true);
   } }catch(e){ try{ console.warn("mig251 did not apply:",e&&e.message); }catch(_){} }
+
+  /* ===== v21 build 252: WILLIS IS UNDER CONTRACT AT $610,000, CLOSING 18 SEPT 2026 ===========
+     Listed 06 Aug at $619,900, under contract 09 Aug. Day 3 on market against a 14 day target.
+
+     STAGE IS "Under Contract", NOT "Closed" and NOT "Just Sold". Two reasons and both are load
+     bearing. It has not closed, and reGoalsCard counts stage "Closed" and "Under Contract" ONLY,
+     so "Just Sold" would silently drop $610,000 and a deal off both 2026 goal bars. Verified by
+     reading reGoalsCard rather than assumed.
+
+     THE COMMISSION FIELDS ARE CARRIED FORWARD UNCHANGED AND THAT IS THE CAREFUL PART.
+     side "Seller", source "Chris's client", sellerRate 0.037. NOTE THE SOURCE, because it is the
+     one an optimistic reading gets wrong: this is CHRIS'S client, so Ian's share is 20 percent,
+     NOT the 90 percent that applies to his own. Take home is
+     610000 x 0.037 = $22,570 gross, less the 15 percent brokerage = $19,184.50, x 0.20 = $3,836.90.
+     At the old $619,900 the same model gave $3,899.17, so the $9,900 price concession costs Ian
+     $62.27. NO actualNet IS SET. dealIanNet returns actualNet when present and would then freeze
+     a hand typed number; Ian confirmed on 08.08 that the Ashley Gilliam figures the base model
+     produced were correct, which disproved both fee hypotheses, so the model is the right source
+     here and the override is deliberately not used. A real paid figure replaces it at closing.
+
+     THE PRICE FIELD STAYS A STRING IN THE EXISTING "$610,000" SHAPE because priceNum regexes it.
+
+     CLOSEOUT. The day 10 price decision is DEAD, it was contingent on no offer by 16 August and an
+     offer arrived on the 9th. The event is retitled rather than deleted so the decision history
+     survives, and its todo is marked done. The open house todo is marked done, it happened today
+     and it is what produced this. The showing events from 07 and 08 August are LEFT EXACTLY AS
+     THEY ARE: they are the evidence trail for how fast this sold and deleting them would erase the
+     only record of what the traffic actually was. A close date event is added for 18 September.
+
+     WHAT IS NOT CLOSED, AND IT MUST NOT READ AS DONE: the appraisal. Above grade is 1,846 of 3,424
+     finished, the smallest in the peer set, and that was always the biggest vulnerability on this
+     file. $610,000 sits inside the expected range so the risk is lower than it was at $619,900, but
+     under contract is not closed and the appraisal has not happened. */
+  try{ if(profile==="ian" && state.realEstate && Array.isArray(state.realEstate.deals)
+          && state.meta && !state.meta.mig252_willis_uc){
+      var _W=null, _WD=state.realEstate.deals;
+      for(var wi=0; wi<_WD.length; wi++){
+        var _wd=_WD[wi];
+        if(_wd && (_wd.id==="re-cynthia-willis" || /willis/i.test(String(_wd.title||"")))){ _W=_wd; break; }
+      }
+      if(_W){
+        _W.stage="Under Contract";
+        _W.price="$610,000";
+        _W.close="2026-09-18. Under contract 09 Aug 2026 at $610,000, closing Friday 18 September 2026.";
+        _W.side="Seller"; _W.source="Chris's client"; _W.sellerRate=0.037;
+        _W.priceVersion="2026-08-09-under-contract-610000";
+        _W.note="UNDER CONTRACT 09 AUGUST 2026 AT $610,000, CLOSING 18 SEPTEMBER 2026. Listed 06 Aug at $619,900, so it sold at 98.4 percent of list, a $9,900 concession, on DAY 3 of a 14 day target. THE PRICING WORK WAS RIGHT AND HERE IS THE TEST IT PASSED: the seven pass CMA put supported value at about $605,000 and the most likely appraisal band at $605,000 to $616,000. $610,000 came in $5,000 ABOVE supported value and near the middle of that band, inside the wider $598,000 to $622,000 range too. It also landed $100 ABOVE the $609,900 day 10 contingent reduction, seven days before that trigger was due, so the price cut was never needed. THE DAY 10 TRIGGER IS DEAD, not deferred. TWO THINGS THIS DISPROVES, recorded because both were written down as facts. First, the standing risk note said nothing in Tiburon had demonstrated absorption above $575,000, based on 9901 S 176th sitting unsold at $574,900. That ceiling is now disproven at $610,000. Second, Ian's own day 2 read was 'fine but not promising at all' and BRAIN had elevated his qualitative read ABOVE the raw showing count as the better predictor. It went under contract the next day. His read was pessimistic here, and the raw count of two showings in two days was the better signal. TAKE HOME $3,836.90, from the model, not an override: 610000 x 0.037 seller rate = $22,570 gross, less 15 percent brokerage = $19,184.50, x 0.20 because this is CHRIS'S client, not Ian's own. The $9,900 concession costs Ian $62.27. STILL OPEN AND NOT TO BE READ AS DONE: the appraisal. Above grade 1,846 of 3,424 is the smallest in the peer set and remains the real risk, lower at $610,000 than at $619,900 but not resolved. Under contract is not closed. Full pricing record in BRAIN Real_Estate/Context/01_MASTER_CONTEXT.md.";
+      }
+      var _rt=(state.realEstate&&state.realEstate.todos)||[];
+      _rt.forEach(function(t){
+        if(!t) return;
+        if(t.id==="ret-20260816-willis-day10"){ t.done=true;
+          t.text="DONE, THE DECISION IS DEAD. Willis went under contract 09 Aug at $610,000, seven days before day 10, so the hold or drop to $609,900 call never had to be made. It sold $100 above the price the trigger would have cut to."; }
+        if(t.id==="ret-20260807-willis-openhouse"){ t.done=true;
+          t.text="DONE. The Sunday 09 Aug open house ran 12 to 2 and the listing went under contract the same day at $610,000."; }
+      });
+      if(!Array.isArray(state.events)) state.events=[];
+      state.events.forEach(function(e){
+        if(e && e.id==="ev-20260816-willis-day10"){
+          e.title="Willis day 10 price decision, CANCELLED, under contract 09 Aug at $610,000";
+          e.note="Kept rather than deleted so the decision history survives. The contingent drop to $609,900 was never needed: an offer arrived on day 3 and the home sold $100 above that trigger price.";
+        }
+      });
+      var _cl={id:"ev-20260918-willis-close",title:"CLOSING, 10218 Spyglass Dr, Willis, $610,000",
+        date:"2026-09-18", kind:"Real estate",
+        note:"Closing on the Willis listing. Under contract 09 Aug at $610,000 against a $619,900 list. Estimated Ian take home $3,836.90 from the model, seller side 3.7 percent, Chris's client so a 20 percent share. Replace with the actual paid figure at closing rather than reconciling the model to it. Appraisal still outstanding and above grade area is the known risk."};
+      if(!state.events.some(function(x){ return x&&x.id===_cl.id; })) state.events.push(_cl);
+      if(typeof _autoLog==="function"){
+        _autoLog({id:"auto-20260809-willis-uc",date:"2026-08-09",area:"Real estate",
+          what:"Moved Willis to Under Contract at $610,000, closing 18 Sept, and closed out the day 10 decision and the open house",
+          why:"It went under contract on day 3 at 98.4 percent of list, so the day 10 price cut is dead and both goal bars should now count it.",
+          evidence:"Listed 06 Aug at $619,900, under contract 09 Aug at $610,000. Supported value was about $605,000 and the most likely appraisal band $605,000 to $616,000, so this landed above supported value and inside the band.",
+          undo:"Real estate, open the Willis deal, set the stage and price back."});
+      }
+      state.meta.mig252_willis_uc=true; save(true);
+  } }catch(e){ try{ console.warn("mig252 did not apply:",e&&e.message); }catch(_){} }
 
   /* build 225: focus timer removed, nothing to clear here anymore. */
   applyAccent(); dailyReset(); save(true);
