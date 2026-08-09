@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 246 (2026-08-08)">
+<meta name="build" content="v21 build 247 (2026-08-08)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -5183,6 +5183,28 @@ function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]
     if(!state.events.some(function(x){ return x&&x.id===_sh246.id; })){
       state.events.push(_sh246); save(true);
     }
+  } }catch(e){}
+
+  /* ===== v21 build 247: IAN'S THIRD SELF ASSESSMENT, 08.08.2026 ==============================
+     Third dated entry in the same date keyed map, given the night of the 08.08 session. The
+     07.29 and 08.05 sets are UNTOUCHED, per the convention set at build 228: the MOVEMENT
+     between reads is the finding, so nothing is ever overwritten.
+     FOOTWORK IS STORED AS A RANGE because he gave it as one, 3.5 to 3.6. The 07.29 set is all
+     ranges and 08.05 is all points, so this is the first MIXED entry. Do not flatten it,
+     selfAssessCard() already takes midpoints for arithmetic and says so.
+     THE COACH GRADE DOES NOT MOVE. state.pickleball.skills stays at the 2026-07-29 regrade
+     until the 08.08 videos are reviewed. A self report is tracked and never moves a rating.
+     No render change was needed: build 236 built that card to read any dated entry generically. */
+  try{ if(profile==="ian" && state.pickleball){
+      var _p247=state.pickleball;
+      if(!_p247.selfAssessment || typeof _p247.selfAssessment!=="object") _p247.selfAssessment={};
+      if(!_p247.selfAssessment["2026-08-08"]) _p247.selfAssessment["2026-08-08"]={
+        label:"08.08.2026", source:"Ian self assessed", form:"points, footwork as a range",
+        skills:{serve:3.65,drops:3.4,resets:3.5,dinks:3.5,drives:3.8,hands:3.5,footwork:{lo:3.5,hi:3.6}},
+        note:"Given the night of the 08.08 session, the first on the new thin overgrip, which he described as playing really well. EVERY SKILL MOVED UP OR HELD AND NOTHING FELL: serve +0.15, drops +0.20, resets +0.10, dinks 0.00, drives +0.10, hands +0.20, footwork 0 to +0.10. RECORD THAT AS A RECENCY RISK ON THIS ENTRY SPECIFICALLY, not as a claim the numbers are wrong. The 08.05 set earned its credibility from being MIXED, it moved where his own session reports moved and drops FELL on the shot he had been failing at all week. Uniform upward movement after one strong unfilmed night is a weaker signal than that was, and it is weaker precisely on the two skills the session evidence supports least: drops, which he did not drill and only saw in live points, and hands, in a session where he took no speed ups. DINKS HAVE NOW HELD AT EXACTLY 3.5 ACROSS ALL THREE READS, 07.29, 08.05 and 08.08, while every other skill has moved at least once. The 08.05 note already flagged dinks as the single skill not tracking his own reports, mid on 08.01 and off on 08.05, and tonight the number ignored good news too. A number that moves for neither bad news nor good news is not measuring anything. Two readings, BOTH RECORDED AND NEITHER RESOLVED: either he is genuinely uncertain about dinks and defaulting to a remembered number, or 3.5 has become an anchor. They have different fixes and nothing on disk separates them. The film settles it. Self average is now 3.56 against a film based 3.25, a spread of 0.31, wider than the 0.19 on 08.05. THE WIDENING IS AT LEAST AS LIKELY TO BE STALENESS AS INFLATION: the film grade is footage from 07.18 to 07.25, which predates the pre play serve routine AND both grip changes, the bare paddle on 08.01 and the thin overgrip on 08.08. Three changes to the thing being measured since the measurement was taken, and a measurement cannot go stale in the direction of the person being wrong. Hands is the widest gap on the board at 0.75, up from 0.55. ONE FILMED SESSION CLOSES IT and the videos are due tonight."};
+      if(state.meta && !state.meta.mig247_selfassess0808){
+        state.meta.mig247_selfassess0808=true; save(true);
+      }
   } }catch(e){}
 
   /* build 225: focus timer removed, nothing to clear here anymore. */
