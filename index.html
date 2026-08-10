@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 255 (2026-08-09)">
+<meta name="build" content="v21 build 256 (2026-08-09)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -5647,6 +5647,64 @@ function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]
       });
       state.meta.mig254_troester_bruce=true; save(true);
   } }catch(e){ try{ console.warn("mig254 did not apply:",e&&e.message); }catch(_){} }
+
+  /* ===== v21 build 256: RESTORE BRUCE O'NEIL. MY BUILD 251 MERGE DELETED HIM. ===============
+     THIS IS A DATA LOSS FIX AND THE CAUSE WAS MY OWN MIGRATION. Recorded plainly so it is not
+     rediscovered as a mystery.
+
+     WHAT HAPPENED. Build 251 merged Bruce's two records. It read s0wqsf9 as the survivor and
+     re-bruce-oneil as the duplicate to remove, which was correct against the 08.08 export. But
+     between that export and the migration running, Ian deleted s0wqsf9 HIMSELF, which is exactly
+     what he would do when a record is duplicated. The app's own Remove deal button does NOT write
+     to state.meta.removedDealIds, so a hand deletion leaves no trace anywhere. My migration then
+     found no survivor, found the duplicate, and spliced it out. Net effect: the largest prospect
+     in the pipeline, a $1.2M to $1.5M build plus a $350k to $450k lot, silently vanished.
+
+     THE DEFECT IN THE MIGRATION, STATED EXACTLY. It removed the duplicate UNCONDITIONALLY instead
+     of only when the survivor was actually present. A merge must never delete its second input
+     until it has confirmed the first one exists. Written into RULES so no future merge repeats it.
+
+     WHY THE TOMBSTONE IS BEING LIFTED. re-bruce-oneil sits in removedDealIds because build 251 put
+     it there. Ian never removed that record, I did, so honouring it would be honouring my own bug.
+     It is removed from the list and the record is restored under its original id. s0wqsf9 is NOT
+     restored: Ian deleted that one deliberately and that deletion is respected, which is the whole
+     point of the merge he asked for.
+
+     THE RESTORED RECORD IS THE MERGED ONE, not either original. Side Both and source Chris's
+     client, which together drive his 20 percent share and were the reason s0wqsf9 was chosen as
+     survivor in the first place. Price is 1.2-1.5 million per Ian 08.09.2026. Both note histories
+     are carried. Prospecting and iffy, so it touches no goal bar and no ceiling. */
+  try{ if(profile==="ian" && state.realEstate && Array.isArray(state.realEstate.deals)
+          && state.meta && !state.meta.mig256_bruce_restore){
+      var _BR="re-bruce-oneil";
+      if(Array.isArray(state.meta.removedDealIds)){
+        state.meta.removedDealIds=state.meta.removedDealIds.filter(function(x){ return x!==_BR; });
+      }
+      var _bruceThere=state.realEstate.deals.some(function(d){
+        return d && (d.id===_BR || d.id==="s0wqsf9" || /o.?neil/i.test(String(d.title||"")));
+      });
+      if(!_bruceThere){
+        state.realEstate.deals.push({
+          id:_BR,
+          title:"Bruce O'Neil, lake lot plus build",
+          stage:"Prospecting",
+          price:"1.2-1.5 million",
+          close:"NO TIMELINE. He has not given one and none is assumed. Nothing is scheduled.",
+          source:"Chris's client",
+          side:"Both",
+          flag:"iffy",
+          note:"RESTORED 08.09.2026 AFTER A MIGRATION DELETED HIM. The build 251 merge removed this record while its intended survivor s0wqsf9 had already been deleted by hand, so Bruce disappeared from the app entirely for a few hours. Nothing here is new information, it is the merged record rebuilt from the 08.08 export plus Ian's later answers. THE LARGEST ITEM IN THE PIPELINE BY A WIDE MARGIN. Build $1,200,000 to $1,500,000, confirmed by Ian 08.09.2026, which replaces the 1.2-1.6 the app carried from 08.02. Lake lots $350,000 to $450,000 as of Friday 07.31.2026. TREAT THIS AS TWO TRANSACTIONS, a LOT PURCHASE and then a BUILD. They can settle at different times, involve different counterparties, and carry separate commission events. Combined exposure roughly $1.55M to $1.95M. COMMISSION, ANSWERED BY IAN 08.02.2026: buyer side 2.4 percent no matter what, less the 15 percent brokerage, then Ian's 20 percent source share, which is why source is Chris's client and side is Both. Buyer side only pays him about $4,896 to $6,120. If Scenic Group finds the open lot it is both sides at 5 to 6 percent, about $9,840 to $15,300, roughly double. dualRate is still null and only Ian can set it. LOT SOURCING IS THE SINGLE HIGHEST VALUE ACTIVITY ATTACHED TO HIM, because it roughly doubles what the same client is worth for the same work on the build. STILL IFFY, confirmed 08.06 and again 08.07.2026, and NOT to be upgraded. They are actively looking and he is PICKY, which Ian says is for good reason. Read pickiness as a timeline fact, not a doubt about whether he is real. He has NO timeline, NO lot chosen, NO builder named and NOTHING scheduled, so he must never be counted in a forecast as a probable and never as near term. He is deliberately OUTSIDE the in flight ceiling and outside the 20 deal count. DO NOT RAISE HIM AS AN OPEN QUESTION WITH IAN, he has answered twice. None of the seven Blondo Point lots fit, that is an inland platted subdivision with no water. Full reasoning in BRAIN, Real_Estate/Context/01_MASTER_CONTEXT.md."
+        });
+      }
+      if(typeof _autoLog==="function"){
+        _autoLog({id:"auto-20260809-bruce-restore",date:"2026-08-09",area:"Real estate",
+          what:"Restored Bruce O'Neil, who disappeared from your pipeline earlier today",
+          why:"A migration I shipped to merge his two duplicate records deleted both, because you had already removed one of them by hand and the merge did not check for that.",
+          evidence:"Your profile held 24 deals and none of them was Bruce, while the 08.08 export had him twice. He is your largest prospect at $1.2M to $1.5M plus a lot.",
+          undo:"Real estate, open the deal and remove it if you want it gone."});
+      }
+      state.meta.mig256_bruce_restore=true; save(true);
+  } }catch(e){ try{ console.warn("mig256 did not apply:",e&&e.message); }catch(_){} }
 
   /* build 225: focus timer removed, nothing to clear here anymore. */
   applyAccent(); dailyReset(); save(true);
