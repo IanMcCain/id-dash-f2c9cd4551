@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 261 (2026-08-09)">
+<meta name="build" content="v21 build 262 (2026-08-09)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -5902,6 +5902,55 @@ function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]
       }
       state.meta.mig261_miller_closed=true; save(true);
   } }catch(e){ try{ console.warn("mig261 did not apply:",e&&e.message); }catch(_){} }
+
+  /* ===== v21 build 262: THE TWO BLANK SOURCES, ANSWERED BY IAN 08.09.2026 ====================
+     Megan and Ricky Hernandez are HIS clients. Sydney Spicer is his DAD'S client.
+
+     THE EXACT STRINGS ARE COPIED FROM THE COMPARISONS THEMSELVES, NOT RETYPED FROM MEMORY, because
+     a near miss is precisely how these two ended up at 90 percent. dealSource() returns "Ian's own"
+     for ANYTHING it does not recognise, so "Chris' client" or a curly apostrophe would silently pay
+     out at 90 percent and look fine. Verified byte by byte against index.html: both apostrophes are
+     ASCII 0x27, and the three accepted values are exactly "Ian's own", "Chris's client" and
+     "Dual agency".
+
+     WHAT EACH ONE NOW COMPUTES TO:
+       Sydney Spicer, $392,000, side Both but NOT dual agency, so the seller path at the 3.6 default:
+         gross $14,112.00, less 15 percent brokerage = $11,995.20
+         BEFORE, defaulting to Ian's own at 90 percent  -> $10,795.68
+         AFTER,  Chris's client at 20 percent            ->  $2,399.04   a $8,396.64 correction
+       Hernandez, price is empty so it computes to $0 either way. The VALUE does not change. What
+         changes is that the field is now explicitly his rather than arriving at 90 percent by
+         falling through a default, which is the actual defect.
+
+     NO PACING MOVES TODAY, and that is checked rather than assumed. Take home only sums Closed and
+     Under Contract; Sydney is Coming Soon and Hernandez is Prospecting, so neither figure is in a
+     bar yet. This is a LATENT correction: it stops a 4.5x overstatement the moment Sydney moves to
+     Under Contract, which on a 20 August style timeline could have been within days.
+
+     Matched on id OR title, per today's lesson that a deal id is not a stable key across devices. */
+  try{ if(profile==="ian" && state.realEstate && Array.isArray(state.realEstate.deals)
+          && state.meta && !state.meta.mig262_sources){
+      state.realEstate.deals.forEach(function(d){
+        if(!d) return;
+        var t=String(d.title||"");
+        if(d.id==="re-hernandez-sell" || /hernandez/i.test(t)){
+          d.source="Ian's own";
+          d.note=String(d.note||"")+" SOURCE CONFIRMED BY IAN 08.09.2026: THEY ARE HIS OWN CLIENTS, so his share is 90 percent. This field was previously EMPTY. It happened to compute at 90 percent anyway, because dealSource treats anything unrecognised as Ian's own, but arriving at the right number by falling through a default is not the same as the field being right. It is now explicit.";
+        }
+        if(d.id==="re-sydney-spicer-sell" || /sydney/i.test(t)){
+          d.source="Chris's client";
+          d.note=String(d.note||"")+" SOURCE CONFIRMED BY IAN 08.09.2026: SHE IS HIS DAD'S CLIENT, so Chris's client and a 20 percent share. THIS WAS A REAL MONEY BUG, not a tidy up. The field was empty, and dealSource defaults anything unrecognised to Ian's own at 90 percent, so this deal was computing at $10,795.68 when the correct figure is $2,399.04, a $8,396.64 overstatement. It was not visible in any total yet because take home only sums Closed and Under Contract and she sits at Coming Soon, so it would have appeared the moment she went under contract. Consistent with her parents' file, which is also Chris's client.";
+        }
+      });
+      if(typeof _autoLog==="function"){
+        _autoLog({id:"auto-20260809-sources",date:"2026-08-09",area:"Real estate",
+          what:"Set the client source on the Hernandez and Sydney Spicer deals",
+          why:"Both were blank, and a blank source quietly computes at your 90 percent rate instead of the 20 percent that applies to your dad's clients.",
+          evidence:"Sydney was going to show $10,795.68 of take home instead of $2,399.04 once she went under contract. Hernandez was already right at 90 percent but only by accident.",
+          undo:"Real estate, open either deal and change the commission source chip."});
+      }
+      state.meta.mig262_sources=true; save(true);
+  } }catch(e){ try{ console.warn("mig262 did not apply:",e&&e.message); }catch(_){} }
 
   /* build 225: focus timer removed, nothing to clear here anymore. */
   applyAccent(); dailyReset(); save(true);
