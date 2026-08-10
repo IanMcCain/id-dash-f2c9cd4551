@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 264 (2026-08-10)">
+<meta name="build" content="v21 build 265 (2026-08-10)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -6057,6 +6057,54 @@ function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]
       }
       state.meta.mig264_belknap=true; save(true);
   } }catch(e){ try{ console.warn("mig264 did not apply:",e&&e.message); }catch(_){} }
+
+  /* ===== v21 build 265: THE BELKNAPS, PROSPECTING -> COMING SOON ===========================
+     Ian, 08.10.2026. His instruction, and it matches how Sydney Spicer is recorded: a sell plus
+     buy client sitting at Coming Soon rather than Prospecting.
+
+     WRITTEN AS A SEPARATE MIGRATION RATHER THAN BY EDITING build 264's push, which is the same
+     shape Sydney took. mig254 created her at Prospecting and mig258 moved her, and 264 has already
+     run on Ian's profile with its flag set, so editing its literal would change nothing on his
+     device and would only make the build history unreadable. A fresh profile runs 264 then 265 and
+     lands in the identical place.
+
+     STILL ONE DEAL, NOT TWO, AND THE STAGE HAS NOTHING TO DO WITH IT. dealCountWeight keys off
+     source "Dual agency", never off side. side "Both" here is buy and sell INTENT by one client,
+     which is two future transactions rather than one transaction with two sides, same as Bruce
+     O'Neil and Sydney. It becomes two when the purchase is real, with a property and a price, at
+     which point it gets its own record.
+
+     NO PACING CHANGE, CHECKED RATHER THAN ASSUMED. reGoalsCard computes production and dealsDone
+     from Closed plus Under Contract only, so neither the $10M bar nor the 20 deal bar moves.
+     COMING SOON DOES ENTER THE IN FLIGHT CEILING, and that is stated rather than buried: the
+     ceiling line reads Active plus Coming Soon, so this adds $250,000 and one deal to it, exactly
+     as Sydney added $392,000. The Overview tiles also move one deal from Prospects to Coming soon.
+     The Coming up card is unaffected because it needs a close date and this deal has none.
+
+     THE PRICE IS NOT TOUCHED AND STAYS LABELLED. It is still "$250,000 to $300,000 (Chris's guess,
+     Inferred)" and a stage move must not launder that into a valuation. priceNum takes the FIRST
+     number, so the ceiling picks up $250,000, which is Chris's guess and NOT the supported value.
+     The 08.10.2026 comp run supports about $245,000 with a likely appraisal band of $230,000 to
+     $258,000, and that lives in the note where it cannot be mistaken for a list price. Price is
+     Class A and belongs to Ian's thumb, so the quirk is reported to him rather than silently
+     rewritten, which is the same restraint the Bruce O'Neil price took in build 254.
+
+     SOURCE IS UNTOUCHED at "Chris's client", 20 percent, per his instruction to leave it alone.
+
+     GUARDED IN SAVED STATE ONLY, never in seedIan().meta, and it only moves a deal still sitting
+     at a prospect stage, so a stage Ian sets himself with his thumb is never overridden. */
+  try{ if(profile==="ian" && state.realEstate && Array.isArray(state.realEstate.deals)
+          && state.meta && !state.meta.mig265_belknap_soon){
+      state.realEstate.deals.forEach(function(d){
+        if(!d || d.id!=="re-belknap-sell") return;
+        if(d.stage!=="Prospecting" && d.stage!=="Buyer") return;
+        d.stage="Coming Soon";
+        if(String(d.note||"").indexOf("STAGE CHANGE 08.10.2026")<0){
+          d.note=String(d.note||"")+" STAGE CHANGE 08.10.2026 ON IAN'S INSTRUCTION: Prospecting to COMING SOON, matching how Sydney Spicer is recorded. STILL COUNTS AS ONE DEAL, NOT TWO. side Both is buy and sell INTENT by one client and the deal count keys off source Dual agency, which this is not; the purchase gets its own record when it is real, with a property and a price. NO PACING CHANGE: the $10M production bar and the 20 deal bar count Closed plus Under Contract only. Coming Soon DOES enter the in flight ceiling on the goals card, which picks up $250,000, the first number in Chris's guess, exactly as Sydney's $392,000 does. THE PRICE IS UNCHANGED AND STILL LABELLED CHRIS'S GUESS, INFERRED. A stage move does not turn it into a valuation. Supported value from the 08.10.2026 comp run is about $245,000, likely appraisal band $230,000 to $258,000, and their price is NOT confirmed. SOURCE UNCHANGED at Chris's client, 20 percent.";
+        }
+      });
+      state.meta.mig265_belknap_soon=true; save(true);
+  } }catch(e){ try{ console.warn("mig265 did not apply:",e&&e.message); }catch(_){} }
 
   /* build 225: focus timer removed, nothing to clear here anymore. */
   applyAccent(); dailyReset(); save(true);
