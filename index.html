@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 266 (2026-08-10)">
+<meta name="build" content="v21 build 267 (2026-08-10)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -709,8 +709,13 @@ header{ background:rgba(0,0,0,.82); border-bottom:1px solid rgba(255,255,255,.07
 .dl{ min-width:0; flex:1; }
 .dn{ font-size:15px; font-weight:700; letter-spacing:-.01em; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 .dsub{ font-size:12px; color:var(--gray2); font-weight:600; margin-top:2px; }
-.dr{ display:flex; flex-direction:column; align-items:flex-end; gap:5px; flex:0 0 auto; }
-.dp{ font-size:14.5px; font-weight:800; color:var(--white); font-variant-numeric:tabular-nums; }
+/* build 267: the right column may NO LONGER STARVE THE LEFT ONE. flex:0 0 auto meant a long price
+   string demanded its full natural width and never shrank, so .dl (min-width:0) collapsed and the
+   client name ellipsed down to a single letter. Measured at 390px on Ian's real profile: the
+   Belknap row gave the name column ONE pixel and the right column 313. Capping .dr and letting it
+   shrink means a long value truncates itself instead of eating the name. Guard only, no redesign. */
+.dr{ display:flex; flex-direction:column; align-items:flex-end; gap:5px; flex:0 1 auto; max-width:48%; min-width:0; }
+.dp{ font-size:14.5px; font-weight:800; color:var(--white); font-variant-numeric:tabular-nums; max-width:100%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 .stpill{ font-size:10px; font-weight:800; letter-spacing:.03em; text-transform:uppercase; padding:3px 8px; border-radius:7px; white-space:nowrap; background:var(--card2); }
 .stpill.c-red{color:var(--red)} .stpill.c-orange{color:var(--orange)} .stpill.c-green{color:var(--green)}
 .stpill.c-blue{color:var(--blue)} .stpill.c-purple{color:var(--purple)} .stpill.c-cyan{color:var(--cyan)}
@@ -6167,6 +6172,78 @@ function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]
       if(state.meta && !state.meta.mig266_restdays){ state.meta.mig266_restdays=true; save(true); }
   } }catch(e){ try{ console.warn("mig266 did not apply:",e&&e.message); }catch(_){} }
 
+  /* ===== v21 build 267: THE DEAL ROW TITLE IS THE CLIENT'S NAME AND NOTHING ELSE ==============
+     Ian, 08.10.2026, from a screenshot: "It should only be their name in that white title. All of
+     the other information will be below it or the right like the numbers are."
+
+     WHAT ACTUALLY BROKE THE BELKNAP ROW, because the visible symptom was not the cause. The title
+     rendered as one letter and an ellipsis, and "Est. take home $1,530" shattered over four lines.
+     Neither is a title bug. `.dr`, the right hand column, was `flex:0 0 auto`, so it demanded the
+     full natural width of its price string and refused to shrink, while `.dl` is `flex:1` with
+     `min-width:0` and therefore gave up everything it had. MEASURED at 390px on Ian's real profile:
+     that row gave the name column ONE pixel and the right column 313, and the take home line ran
+     56px tall against 14px everywhere else. The trigger was PROSE IN A NUMERIC FIELD, price read
+     "$250,000 to $300,000 (Chris's guess, Inferred)". Two fixes, one for the cause and one so it
+     cannot recur: the qualifier moves out of price into a marker, and the CSS caps the right column
+     so a long value truncates itself instead of eating the name.
+
+     THREE RECORDS CARRIED PROSE IN price AND ONLY TWO ARE FIXED HERE.
+       re-belknap-sell       "$250,000 to $300,000 (Chris's guess, Inferred)" -> "$250,000 to $300,000"
+       re-brandon-winchester "$1,300,000 (est)"                              -> "$1,300,000"
+       s0wqsf9 Bruce O'Neil  "1.2-1.5 million "                              -> LEFT ALONE, REPORTED
+     NEITHER FIX MOVES A NUMBER, and that is the point of doing it this way. priceNum() takes the
+     first number in the string, so it already read 250000 and 1300000 before the qualifiers came
+     off and it reads the identical values after. Bruce is different in kind and is NOT touched: his
+     string carries no dollar sign and no thousands, so priceNum reads it as ONE DOLLAR TWENTY, and
+     correcting it would move his displayed volume by $1.2M. Price is Class A and belongs to Ian's
+     thumb, so that one is reported rather than silently rewritten, exactly as build 254 did.
+
+     THE NEW FIELDS. `d.sub` is the short descriptor line under the name, `d.priceNote` is the small
+     marker under the figure. Both are optional, so every row whose title was already just a name
+     renders exactly as it did before. Barkers was already correct and is the reference.
+
+     RENAMES ARE EXACT MATCH ONLY. Each entry fires only if the CURRENT title is character for
+     character the old one, so a title Ian has edited himself is never overwritten, and nothing is
+     lost: every fragment taken out of a title is put back on the sub line. */
+  try{ if(profile==="ian" && state.realEstate && Array.isArray(state.realEstate.deals)
+          && state.meta && !state.meta.mig267_deal_titles){
+      var _TT=[
+        ["Matt Snyder (dual agency, both sides)","Matt Snyder","Dual agency, both sides"],
+        ["Chris and Allison Spicer, selling current home","Chris and Allison Spicer","Selling current home"],
+        ["Spicer new construction","Chris and Allison Spicer","New construction"],
+        ["Bonks, selling","Bonks","Selling"],
+        ["Bonks, buying","Bonks","Buying"],
+        ["Cynthia Willis, 10218 Spyglass Dr","Cynthia Willis","10218 Spyglass Dr"],
+        ["Brandon Winchester (dual agency, both sides)","Brandon Winchester","Dual agency, both sides"],
+        ["Winchester lot purchase","Brandon Winchester","Lot purchase"],
+        ["Austin Thacker, selling","Austin Thacker","Selling"],
+        ["Austin Thacker, buying (possible)","Austin Thacker","Buying, possible"],
+        ["Bruce O'Neil, lake lot plus build","Bruce O'Neil","Lake lot plus build"],
+        ["Megan & Ricky Hernandez, sell","Megan and Ricky Hernandez","Selling"],
+        ["Chad Troester, purchase, 10021 Alice Dr","Chad Troester","Purchase, 10021 Alice Dr"],
+        ["Sydney Spicer, 20535 Howe St, sell plus buy","Sydney Spicer","Sell plus buy, 20535 Howe St"],
+        ["Belknap, 4946 Pratt St, sell plus buy","Belknaps","Sell plus buy, 4946 Pratt St"],
+        ["Evan (buyer)","Evan","Buyer"],
+        ["Rose Creek 2 story","Rose Creek","2 story"],
+        ["Rose Creek 2-story walk-through couple","Rose Creek couple","2 story walk through"]
+      ];
+      var _PP=[
+        ["re-belknap-sell","$250,000 to $300,000 (Chris's guess, Inferred)","$250,000 to $300,000","Chris's guess, inferred"],
+        ["re-brandon-winchester","$1,300,000 (est)","$1,300,000","Estimate"]
+      ];
+      state.realEstate.deals.forEach(function(d){
+        if(!d) return;
+        var _t=String(d.title||"");
+        for(var i=0;i<_TT.length;i++){
+          if(_t===_TT[i][0]){ d.title=_TT[i][1]; if(!d.sub) d.sub=_TT[i][2]; break; }
+        }
+        for(var j=0;j<_PP.length;j++){
+          if(d.id===_PP[j][0] && String(d.price||"")===_PP[j][1]){ d.price=_PP[j][2]; if(!d.priceNote) d.priceNote=_PP[j][3]; break; }
+        }
+      });
+      state.meta.mig267_deal_titles=true; save(true);
+  } }catch(e){ try{ console.warn("mig267 did not apply:",e&&e.message); }catch(_){} }
+
   /* build 225: focus timer removed, nothing to clear here anymore. */
   applyAccent(); dailyReset(); save(true);
 }
@@ -6709,8 +6786,15 @@ function dealEditors(parent,d){
 function dealRow(parent,d){
   const wrap=el("div","dealwrap");
   const row=el("button","deal-row");
-  const left=el("div","dl"); left.appendChild(el("div","dn",d.title)); if(d.close)left.appendChild(el("div","dsub",d.close)); var _tn=dealIanNet(d); if(_tn>0){ var _th=el("div","dsub"); _th.textContent="Est. take home "+fmtMoney(_tn); _th.style.color="var(--sec2,var(--accent2))"; _th.style.fontWeight="700"; left.appendChild(_th); } var _urg=(d.stage==="Closed"||d.stage==="Just Sold")?"":closeUrgency(d.close); if(_urg){ var _u=el("div","dsub"); _u.textContent=_urg; _u.style.color=(_urg==="overdue"||_urg==="due today")?"var(--danger,#ff6363)":"var(--gray2,#8a8a99)"; _u.style.fontWeight="700"; left.appendChild(_u); } row.appendChild(left);
-  const right=el("div","dr"); if(d.price)right.appendChild(el("div","dp",d.price)); right.appendChild(stagePill(d.stage)); row.appendChild(right);
+  /* build 267: THE WHITE TITLE CARRIES THE CLIENT'S NAME AND NOTHING ELSE (Ian, 08.10.2026).
+     Everything that used to be crammed into it, the address, the side, the qualifier, now renders
+     on d.sub, which is the SAME .dsub line the close date and the take home already use. This is a
+     data placement change, not a new layout: the Barkers row was already correct and is the model. */
+  const left=el("div","dl"); left.appendChild(el("div","dn",d.title)); if(d.sub)left.appendChild(el("div","dsub",d.sub)); if(d.close)left.appendChild(el("div","dsub",d.close)); var _tn=dealIanNet(d); if(_tn>0){ var _th=el("div","dsub"); _th.textContent="Est. take home "+fmtMoney(_tn); _th.style.color="var(--sec2,var(--accent2))"; _th.style.fontWeight="700"; left.appendChild(_th); } var _urg=(d.stage==="Closed"||d.stage==="Just Sold")?"":closeUrgency(d.close); if(_urg){ var _u=el("div","dsub"); _u.textContent=_urg; _u.style.color=(_urg==="overdue"||_urg==="due today")?"var(--danger,#ff6363)":"var(--gray2,#8a8a99)"; _u.style.fontWeight="700"; left.appendChild(_u); } row.appendChild(left);
+  /* build 267: a qualifier on a price is a MARKER, not part of the number. It renders under the
+     figure on the right, in the same .dsub style as the rest of the detail text, so the price cell
+     holds a price and nothing else. A row with no qualifier renders exactly as it did before. */
+  const right=el("div","dr"); if(d.price){ right.appendChild(el("div","dp",d.price)); if(d.priceNote) right.appendChild(el("div","dsub",d.priceNote)); } right.appendChild(stagePill(d.stage)); row.appendChild(right);
   row.onclick=()=>{ reDealOpen[d.id]=!reDealOpen[d.id]; render(); };
   wrap.appendChild(row);
   if(reDealOpen[d.id]){ const det=el("div","deal-detail"); dealEditors(det,d); wrap.appendChild(det); }
