@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 258 (2026-08-09)">
+<meta name="build" content="v21 build 259 (2026-08-09)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -6268,7 +6268,36 @@ function sumIanNet(arr){ return (arr||[]).reduce(function(a,d){ return a+dealIan
    v21 build 45: briefly changed the deal COUNT to 1 for dual deals.
    v21 build 46: reverted per Ian. Dual deals again count TWO toward the 20-deal goal (Snyder + Brandon each
    contribute 2). VOLUME still counts double (2x price), see dealVolume. Only the count weight was reverted. */
-function dealVolume(d){ return priceNum(d&&d.price) * (dealSource(d)==="Dual agency"?2:1); }
+/* ===== v21 build 259: DUAL AGENCY VOLUME COUNTS ONCE. IAN SETTLED IT 08.09.2026 ==============
+   His words: "Instead of counting it twice our dual agency in as 6% total unless I've already told
+   you otherwise, and in which Snyder I have told you in the past was not 6%".
+
+   THE SETTLED MODEL, and the three metrics now use units that do not contradict each other:
+     COUNT  measures SIDES.        A dual deal is 2 toward the 20 deal goal. UNCHANGED.
+     VOLUME measures TRANSACTIONS. One house sold once, so price counts ONCE. CHANGED HERE.
+     RATE   captures BOTH SIDES.   Dual runs at 6 percent total by default, which is how a dual
+                                   deal earns more, rather than through a doubled volume figure.
+
+   THIS REVERSES BUILD 43 AND IT LOWERS HIS HEADLINE NUMBER BY $797,850, from 76.5 percent of the
+   $10M goal to 68.5. That drop is correct and is not to be softened anywhere it is displayed.
+   Nothing was earned or lost, the same money was always the same money; only the ruler changed.
+
+   TAKE HOME IS COMPLETELY UNAFFECTED, which is worth stating because it looks like a commission
+   change and is not. dealGrossCommission already reads dualRate per deal and dealBrokerage already
+   uses the fixed 6 percent basis, so every dual take home figure is identical before and after.
+   The 6 percent is confirmed as the DEFAULT in dualRate(), which already behaved this way; a rate
+   Ian has stated on a deal always wins over it.
+
+   THE TWO DUAL DEALS ON FILE BOTH CARRY STATED RATES AND NEITHER USES THE DEFAULT:
+     Matt Snyder        4.5 percent, take home $14,361.30, volume 1,595,700 -> 797,850
+     Brandon Winchester 5 percent,   take home $26,650.00, volume 2,600,000 -> 1,300,000
+   Snyder's 4.5 was found rather than assumed: set by the build 179 migration, present on Ian's
+   live profile as dualRate 0.045, and stated in BRAIN as "a one time 4.5 percent exception".
+
+   side "Both" is NOT the test and never was. Bruce O'Neil and Sydney Spicer carry it as buy and
+   sell INTENT by one client, which is two future transactions, and they are untouched by all of
+   this because dealSource is not "Dual agency" on either. */
+function dealVolume(d){ return priceNum(d&&d.price); }
 function dealCountWeight(d){ return dealSource(d)==="Dual agency"?2:1; }
 function dealCard(parent,d){ const c=card(); const b=c._body; const head=el("div"); head.appendChild(el("h3",null,d.title)); if(d.price){ const p=el("div"); p.style.color="var(--sec2,var(--accent2))"; p.style.fontWeight="800"; p.style.marginTop="4px"; p.style.fontSize="16px"; p.textContent=d.price; head.appendChild(p);} if(d.close){ const cd=el("div","small dim"); cd.style.marginTop="3px"; cd.textContent="Close: "+d.close; head.appendChild(cd);} b.appendChild(head); const cs=el("div"); cs.style.marginTop="11px"; cs.appendChild(chipRow(RESTAGES,d.stage,s=>{d.stage=s;save();render();})); b.appendChild(cs); const pr=el("input","in"); pr.placeholder="Price"; pr.value=d.price||""; pr.style.marginTop="10px"; pr.oninput=()=>{d.price=pr.value;save();}; b.appendChild(pr); const cl=el("input","in"); cl.placeholder="Close date"; cl.value=d.close||""; cl.style.marginTop="9px"; cl.oninput=()=>{ d.close=cl.value; save(); }; b.appendChild(cl); const ta=el("textarea","in"); ta.style.minHeight="52px"; ta.style.marginTop="9px"; ta.value=d.note||""; ta.placeholder="Notes, next step..."; ta.oninput=()=>{d.note=ta.value;save();}; b.appendChild(ta); const del=el("button","del","Remove"); del.style.fontSize="13px"; del.style.marginTop="8px"; del.onclick=()=>{ if(confirm("Remove this deal?")){ state.realEstate.deals=state.realEstate.deals.filter(x=>x.id!==d.id); save(); render(); } }; b.appendChild(del); parent.appendChild(c); }
 function rePipeline(parent){ state.realEstate.deals.forEach(d=>{ const c=card(d.stage==="Just Sold"?"a-blue":"a-gold"); const b=c._body; const head=el("div"); head.appendChild(el("h3",null,d.title)); if(d.price){ const p=el("div","small"); p.style.color="var(--accent2)"; p.style.fontWeight="700"; p.textContent=d.price; head.appendChild(p);} b.appendChild(head); const cs=el("div"); cs.style.marginTop="10px"; cs.appendChild(chipRow(RESTAGES,d.stage,s=>{d.stage=s;save();render();})); b.appendChild(cs); const pr=el("input","in"); pr.placeholder="Price (optional)"; pr.value=d.price||""; pr.style.marginTop="10px"; pr.oninput=()=>{d.price=pr.value;save();}; b.appendChild(pr); const ta=el("textarea","in"); ta.style.minHeight="52px"; ta.style.marginTop="10px"; ta.value=d.note||""; ta.placeholder="Notes, next step..."; ta.oninput=()=>{d.note=ta.value;save();}; b.appendChild(ta); const del=el("button","del","Remove"); del.style.fontSize="13px"; del.style.marginTop="8px"; del.onclick=()=>{ if(confirm("Remove this deal?")){ state.realEstate.deals=state.realEstate.deals.filter(x=>x.id!==d.id); save(); render(); } }; b.appendChild(del); parent.appendChild(c); }); const add=card(); add._body.appendChild(adder("New deal or prospect...",t=>{state.realEstate.deals.push({id:uid(),title:t,stage:"Prospecting",price:"",note:""});save();render();})); parent.appendChild(add); }
