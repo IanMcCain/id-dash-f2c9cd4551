@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 253 (2026-08-09)">
+<meta name="build" content="v21 build 255 (2026-08-09)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -5539,6 +5539,114 @@ function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]
       }
       state.meta.mig253_troester_buy=true; save(true);
   } }catch(e){ try{ console.warn("mig253 did not apply:",e&&e.message); }catch(_){} }
+
+
+  /* ===== v21 build 254: SYDNEY SPICER, NEW SELL SIDE PROSPECT, 20535 HOWE ST ================
+     Added 08.09.2026 on Ian's instruction alongside the CMA on the property.
+
+     SHE IS NOT THE SPICER FILE WE ALREADY CLOSED. Sydney is the DAUGHTER of that family.
+     re-spicer-sell (18734 Olive) and re-allison-spicer-buy are a different client. BRAIN already
+     carried this as an UNRESOLVED CONFLICT in GLOBAL/CALENDAR_PEOPLE.md, where a calendar entry
+     gave a Spicer's home as 20535 Howe while BRAIN had the sell side at 18734 Olive. Ian resolved
+     it on 08.09: two families, two files, do not merge.
+
+     STAGE IS PROSPECTING AND THAT IS THE WHOLE POINT. She has committed to selling, nothing is
+     listed. reGoalsCard() counts stage==="Closed" and stage==="Under Contract" ONLY, for both the
+     deal count and the production total, so a Prospecting deal contributes zero to the $10M bar
+     and zero to the 20 deal bar. Ian asked explicitly that this not inflate the pacing and this is
+     the mechanism that guarantees it.
+
+     PRICE IS THE CMA SUPPORTED VALUE, NOT A LIST PRICE, and it is written that way in the note.
+     The Willis file is the reason this matters: three different prices for one house lived in
+     three places for weeks. $392,000 is what the comps support, the appraisal band is $380,000 to
+     $402,000, and no list price exists.
+
+     NO BUY SIDE RECORD YET, DELIBERATELY. Ian flagged the purchase as a likely second deal. There
+     is no property, no budget and no timeline, so creating a record now would only invent
+     provenance. The Spicer lesson cuts both ways: one client with two transactions must be TWO
+     records, but a record with nothing in it is not a record.
+
+     SOURCE LEFT EMPTY ON PURPOSE. Whose client she is has not been stated. dealSource() normalises
+     anything that is not "Chris's client" or "Dual agency" to "Ian's own", so guessing would set
+     the 90 percent share by accident. At Prospecting no commission is computed, so an empty source
+     is safe now and must be filled before the stage moves. */
+  try{ if(profile==="ian" && state.realEstate && Array.isArray(state.realEstate.deals)
+          && state.meta && !state.meta.mig254_sydney_spicer_sell){
+      var _SID="re-sydney-spicer-sell";
+      if(!Array.isArray(state.meta.removedDealIds)) state.meta.removedDealIds=[];
+      var _sGone=state.meta.removedDealIds.indexOf(_SID)>-1;
+      var _sHave=state.realEstate.deals.some(function(d){ return d && d.id===_SID; });
+      if(!_sGone && !_sHave){
+        state.realEstate.deals.push({
+          id:_SID,
+          title:"Sydney Spicer, 20535 Howe St",
+          stage:"Prospecting",
+          price:"$392,000",
+          close:"",
+          source:"",
+          side:"Seller",
+          note:"NEW CLIENT, ADDED 08.09.2026 ON IAN'S INSTRUCTION, AND SHE IS NOT THE SPICER FILE WE ALREADY CLOSED. Sydney Spicer is the DAUGHTER of that family. The two existing records, re-spicer-sell at 18734 Olive and re-allison-spicer-buy, are a different client and a different transaction pair. DO NOT MERGE THEM and do not carry the builder representation commission structure across from the parent deal, that arrangement belongs to the new construction purchase and has nothing to do with this house. THE HOME. 20535 Howe St, Elkhorn NE 68022, parcel 1214740260. Ranch, 1,544 sq ft ABOVE GRADE, full 1,539 sq ft nine foot concrete basement that is UNFINISHED, 3 bed, 2 bath, 3 car garage, built 2019, 0.23 acre, legal subdivision GRANDVIEW RIDGE ESTATES verified on the Douglas County parcel layer. She bought it 9 August 2021 for $335,000 at full list in 1 day. THE $392,000 IS THE CMA SUPPORTED VALUE, NOT A LIST PRICE. Nothing is listed and no price has been agreed. The likely appraisal band is $380,000 to $402,000. Full working in the 08.09.2026 CMA. Do not quote $392,000 to anyone as a list price and do not let a second number for this house appear anywhere else. STAGE IS PROSPECTING ON PURPOSE. She has committed to selling but the home is not listed, so it must not touch the $10M or the 20 deal bars. reGoalsCard counts Closed and Under Contract only, so Prospecting contributes zero to both, which is the intended behaviour here. THIS IS TWO DEALS, NOT ONE. She is selling this home and buying her next one, so a buy side deal follows. It is deliberately NOT created yet because there is no property, no budget and no timeline, and an empty record would only repeat the Spicer mistake in reverse. Create it the moment any of those three exist. SOURCE IS DELIBERATELY EMPTY AND MUST BE SET BEFORE THIS LEAVES PROSPECTING. Nobody has said whether she is Ian's own or Chris's client, and dealSource() normalises an empty string to Ian's own, which would overstate the take home by roughly 4.5x if it were ever computed. At Prospecting no commission maths runs, so the blank is safe today and dangerous the day the stage moves. Ask Ian one word. TITLE IS AN OPEN ITEM AND IT GATES THE LISTING AGREEMENT. Douglas County shows the owner of record as CHRISTIANSEN ERICH ETAL with no Spicer named, and one recorded conveyance since the 2019 build. The likely reading is that Sydney sits inside the ETAL or carries that surname, but that is INFERRED and unverified. Confirm who has to sign before anything goes to signature. THE ONE FACT THAT MOVES THE PRICE. The basement is recorded unfinished at the 2021 sale and the 2026 assessor record still shows no basement finish. Every closed comp in the subdivision has 930 to 1,080 sq ft of finished basement. If it has been finished since 2021 the supported value moves up roughly $60,000, which is wider than the entire comp spread. Ask her before pricing."
+        });
+      }
+      state.meta.mig254_sydney_spicer_sell=true; save(true);
+  } }catch(e){ try{ console.warn("mig254 did not apply:",e&&e.message); }catch(_){} }
+
+  /* ===== v21 build 255: TROESTER ADDRESS AND SOURCE CONFIRMED, BRUCE PRICE CORRECTED =========
+     All three from Ian directly, 08.09.2026.
+
+     NUMBERED 255 RATHER THAN 254 BECAUSE ANOTHER LANE GOT HERE FIRST. This block was authored as
+     254 while a second session was independently writing the Sydney Spicer migration above, also
+     as 254, into the same local file with the deploy lock FREE. Nothing was clobbered, both blocks
+     survive and carry different meta flags, but two blocks claiming one build number is how a
+     future trace of "what shipped in 254" becomes unreadable. Renumbered mine rather than theirs
+     because theirs was written first, and the stamp goes to 255 so ONE deploy carries both.
+
+     A. THE TROESTER PURCHASE ADDRESS IS 10021 ALICE DR, OMAHA NE. This was the one genuine gap on
+     that record. 1709 Diane St stays attached to the SELL side and must never migrate onto this one.
+
+     B. SOURCE CONFIRMED, NO NUMBER CHANGES. Ian: "both Chad buying and Chad selling was my dads
+     client so I just get the 20%." The inference in build 253 was right, so take home stays
+     $2,121.60 and nothing is recalculated. What changes is the CONFIDENCE LABEL: the note said
+     inferred and needing confirmation, and leaving that in place would make a settled fact read as
+     an open question forever. Downgrading a label after confirmation is part of the correction.
+
+     C. BRUCE O'NEIL PRICE 1.2-1.6 -> 1.2-1.5 MILLION. This had been a known BRAIN to app divergence
+     since 08.02.2026, deliberately left alone because price is Class A and belongs to Ian's thumb.
+     He has now said it, so it is his change rather than ours.
+
+     THE STRING FORMAT IS MATCHED EXACTLY, only the 6 becomes a 5, and that restraint is deliberate.
+     priceNum() takes the FIRST number in the string, so "1.2-1.5 million" parses as 1.2, not
+     1,200,000. Rewriting it to "$1,200,000 to $1,500,000" would have quietly changed what the
+     Prospects group volume displays, which is a behaviour change Ian did not ask for on a deal that
+     feeds no goal bar. The quirk is reported to him instead of silently fixed.
+
+     NO PACING IMPACT FROM ANY OF THIS, and that is checked rather than assumed. reGoalsCard counts
+     Closed plus Under Contract; Bruce is Prospecting, so he is outside both bars and outside the
+     in flight ceiling, which reads Active and Coming Soon only. An address is display only. */
+  try{ if(profile==="ian" && state.realEstate && Array.isArray(state.realEstate.deals)
+          && state.meta && !state.meta.mig254_troester_bruce){
+      state.realEstate.deals.forEach(function(d){
+        if(!d) return;
+        if(d.id==="re-chad-troester-buy"){
+          d.title="Chad Troester, purchase, 10021 Alice Dr";
+          d.address="10021 Alice Dr, Omaha, NE";
+          d.note=String(d.note||"")
+            .replace("THE ADDRESS IS MISSING AND IS THE ONLY REAL GAP. Nothing on file names the home they bought.",
+                     "ADDRESS CONFIRMED BY IAN 08.09.2026: 10021 ALICE DR, OMAHA NE.")
+            .replace("SOURCE IS INFERRED FROM THE SELL SIDE, NOT CONFIRMED.",
+                     "SOURCE CONFIRMED BY IAN 08.09.2026, the inference was correct.")
+            .replace("Ian should confirm. The inference deliberately errs low:",
+                     "His words: both Chad buying and Chad selling was my dads client so I just get the 20 percent. Take home is UNCHANGED at $2,121.60. For the record the inference had deliberately erred low:");
+        }
+        if(d.id==="s0wqsf9" || /o.?neil/i.test(String(d.title||""))){
+          if(typeof d.price==="string" && d.price.indexOf("1.6")>-1){ d.price=d.price.replace("1.6","1.5"); }
+          d.note=String(d.note||"").replace(
+            "PRICE DISCREPANCY FOR IAN TO SETTLE: this field reads 1.2-1.6 million, and on 08.02.2026 Ian said 1.2 to 1.5. Price is his to set, so the app value was left alone.",
+            "PRICE SETTLED BY IAN 08.09.2026 at 1.2 to 1.5 million. The app had read 1.2-1.6 since 08.02 and was deliberately left alone because price is Class A. He has now said it, so it is corrected here and BRAIN and the app agree.");
+        }
+      });
+      state.meta.mig254_troester_bruce=true; save(true);
+  } }catch(e){ try{ console.warn("mig254 did not apply:",e&&e.message); }catch(_){} }
 
   /* build 225: focus timer removed, nothing to clear here anymore. */
   applyAccent(); dailyReset(); save(true);
