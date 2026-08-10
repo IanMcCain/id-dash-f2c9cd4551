@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 259 (2026-08-09)">
+<meta name="build" content="v21 build 260 (2026-08-09)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -5805,6 +5805,64 @@ function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]
       }
       save(true);
   } }catch(e){ try{ console.warn("mig258 did not apply:",e&&e.message); }catch(_){} }
+
+  /* ===== v21 build 260: THE WINCHESTER LOT PURCHASE. IAN EARNED NOTHING ON IT ================
+     Ian, 08.09.2026: "I did not get payed that was all my dad but I guess it counts towards the
+     closed goal, and I think the lot was like 200k or something but that does not affect me at all."
+
+     A SEPARATE TRANSACTION, NOT ANOTHER SIDE OF THE EXISTING WINCHESTER DEAL. re-brandon-winchester
+     is the dual agency BUILD at $1,300,000, finishing 2027. This is the LOT they bought to build on.
+     Different transaction, different id, and it is deliberately NOT dual agency, so dualRate never
+     applies to it and dealCountWeight returns 1 rather than 2. Nothing about the existing record is
+     touched. Merging these would double count a build that has not even started.
+
+     TAKE HOME IS ZERO AND IT IS ZERO STRUCTURALLY, NOT BY AN OVERRIDE. ianSplit is set to 0, which
+     sourceShare reads ahead of any source tag, so the commission model runs normally and multiplies
+     out to nothing. No actualNet is used: that field is reserved for a real paid figure and would
+     freeze the number against future model changes. source stays "Chris's client" because that is
+     the truth of it, entirely his dad's deal, and ianSplit 0 says Ian's share of this one is none
+     rather than the usual 20 percent. dealRow only prints a take home line when the figure is above
+     zero, so nothing misleading renders.
+
+     PRICE IS INFERRED, NOT VERIFIED. Ian said "like 200k or something". Labelled on the record.
+
+     THE VOLUME CALL, WHICH IS THE JUDGEMENT AND IS MINE TO DEFEND. IT COUNTS, at $200,000.
+     He said the price "does not affect me at all", which is a statement about his PAY, and his pay
+     is honoured exactly, at zero. It is not an instruction about the production bar, so it is not
+     read as one.
+     Two reasons it belongs in the $10M.
+     1. PRODUCTION HAS NEVER BEEN WEIGHTED BY IAN'S SHARE. Most of the pipeline is Chris's clients
+        where Ian takes 20 percent, and every one of those counts its FULL price. The $10M is team
+        sales volume; income is the separate metric and is where his share already lives. Excluding
+        this one deal for having a zero share would be a new and inconsistent rule.
+     2. UNIT CONSISTENCY, which build 259 just settled. Ian asked for this to count toward the
+        closed deal goal. A deal that counts 1 toward the 20 but $0 toward the $10M reintroduces
+        exactly the mismatch we removed a build ago, where one metric counted transactions and the
+        other counted something else.
+     The honest counter argument, so he can overrule in one word: if he reads the $10M as HIS OWN
+     production rather than the team's, a deal he had no part in should not be in it. But then it
+     should not be in the 20 either, and he explicitly said it should. Both in, or both out. */
+  try{ if(profile==="ian" && state.realEstate && Array.isArray(state.realEstate.deals)
+          && state.meta && !state.meta.mig260_winchester_lot){
+      var _LID="re-winchester-lot";
+      if(!Array.isArray(state.meta.removedDealIds)) state.meta.removedDealIds=[];
+      var _lGone=state.meta.removedDealIds.indexOf(_LID)>-1;
+      var _lHave=state.realEstate.deals.some(function(d){ return d && d.id===_LID; });
+      if(!_lGone && !_lHave){
+        state.realEstate.deals.push({
+          id:_LID,
+          title:"Winchester lot purchase",
+          stage:"Closed",
+          price:"$200,000",
+          close:"2026. Closed, exact date not given.",
+          source:"Chris's client",
+          side:"Buyer",
+          ianSplit:0,
+          note:"THE LOT THE WINCHESTERS BOUGHT TO BUILD ON, added 08.09.2026 on Ian's instruction. IAN EARNED NOTHING ON THIS. His words: \"I did not get payed that was all my dad but I guess it counts towards the closed goal, and I think the lot was like 200k or something but that does not affect me at all.\" TAKE HOME IS $0 BY DESIGN. ianSplit is 0, so the commission model runs and multiplies out to nothing. It adds not one cent to realised or pending take home. Do not compute a commission on this deal and do not \"fix\" the zero. PRICE $200,000 IS INFERRED, NOT VERIFIED. Ian said \"like 200k or something\", so treat it as approximate and confirm before it is used in any report. It is the only unverified figure on this record. THIS IS A SEPARATE TRANSACTION FROM THE EXISTING WINCHESTER DEAL. re-brandon-winchester is the dual agency BUILD at $1,300,000 finishing 2027. This is the lot underneath it. Two transactions, two records, and this one is deliberately NOT dual agency, so the 5 percent dual rate does not apply and it counts as ONE deal rather than two. Never merge them. IT COUNTS TOWARD BOTH 2026 BARS, one deal and $200,000 of production. The volume call is a judgement: his \"does not affect me\" was about his pay, not about the production bar, and production has never been weighted by his share, since every Chris's client deal already counts its full price while paying him 20 percent. If Ian reads the $10M as his OWN production rather than the team's, then this should come out of both bars together, not just one. LIKELY IMPLIES A FUTURE CONSTRUCTION DEAL on this lot, which is NOT counted anywhere and is noted only so nobody is surprised by it later. Building has not started."
+        });
+      }
+      state.meta.mig260_winchester_lot=true; save(true);
+  } }catch(e){ try{ console.warn("mig260 did not apply:",e&&e.message); }catch(_){} }
 
   /* build 225: focus timer removed, nothing to clear here anymore. */
   applyAccent(); dailyReset(); save(true);
