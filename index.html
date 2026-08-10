@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 265 (2026-08-10)">
+<meta name="build" content="v21 build 266 (2026-08-10)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -6106,6 +6106,67 @@ function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]
       state.meta.mig265_belknap_soon=true; save(true);
   } }catch(e){ try{ console.warn("mig265 did not apply:",e&&e.message); }catch(_){} }
 
+  /* ===== v21 build 266: PLANNED REST, TUE 11 AND WED 12 AUGUST ==============================
+     Ian said these two directly: Tuesday is the Sydney Spicer meeting plus league at 6:30,
+     Wednesday he moves into the new apartment. They are DELIBERATELY TAKEN, not missed.
+
+     WHY THIS IS SAVED STATE AND NOT JUST A GYM_DATE_OVERRIDE, which is the whole point of the
+     build. GYM_DATE_OVERRIDE is a code const in the render layer. It is never written to state,
+     so it NEVER REACHES THE EXPORT, and BRAIN/GLOBAL/history_build.py derives gym.planned from
+     the WEEKDAY split with no date awareness at all. An override day therefore still resolves to
+     that weekday's five exercises with zero done, and detectors.py scores it "none", which is a
+     dead day. Two dead days inside two weeks is exactly the "workout skipped twice" finding.
+     The card on his phone would have read Planned rest while the detector nagged him anyway.
+     So the fact lives HERE, in state.gym.restDays, where the export carries it.
+
+     A CORRECTION IS RECORDED HERE RATHER THAN QUIETLY APPLIED. An earlier plan (the 08.09 move
+     week doc) had MONDAY 10 AUGUST as the first of three no lift days. Ian TRAINED Monday, 9 to
+     11am, confirmed by the "Gym session - Ian" event on Home. No build ever carried Monday as
+     rest, so there is nothing to unwind, but the autoLog entry says so in his language because
+     the wrong version exists on paper and he should be able to see which one won.
+
+     KNOCK ON, AND IT IS THE REASON SATURDAY IS UNTOUCHED. The live split since build 245 is
+     MONDAY pull hard and TUESDAY push hard. Monday's hard pull HAPPENED. So the only hard day
+     genuinely lost this week is Tuesday's PUSH, which belongs on Friday, and Saturday needs no
+     load bump and no row swap. The staged handoff that added both to Saturday was written
+     against the pre 245 day names and is retired, not shipped.
+
+     Idempotent, set unconditionally by date key, guard flag in SAVED STATE ONLY, never in
+     seedIan().meta. SEED_VERSION untouched. Touches no logged set. */
+  try{ if(state.gym){
+      state.gym.restDays=state.gym.restDays||{};
+      state.gym.restDays["2026-08-11"]={date:"2026-08-11",planned:true,
+        reason:"Sydney Spicer build vs buy at 3:45 and the mixed doubles league at 6:30.",
+        cut:"Push (chest, shoulders, tris), hard",
+        makeup:"Friday 14 August takes the pressing work.",
+        setBy:"Ian, 08.10.2026"};
+      state.gym.restDays["2026-08-12"]={date:"2026-08-12",planned:true,
+        reason:"Moving into the new apartment. The move is the leg day.",
+        cut:"Legs, hard",
+        makeup:"None. Legs resume Wednesday 19 August.",
+        setBy:"Ian, 08.10.2026"};
+      /* Monday is explicitly NOT a rest day. Written as a deletion so that if any later copy of
+         this app ever picked it up from the superseded plan, this build removes it. */
+      if(state.gym.restDays["2026-08-10"]) delete state.gym.restDays["2026-08-10"];
+
+      if(!Array.isArray(state.autoLog)) state.autoLog=[];
+      if(!state.autoLog.some(function(x){return x&&x.id==="auto-20260810-restdays";})){
+        state.autoLog.unshift({id:"auto-20260810-restdays",date:"2026-08-10",area:"Gym",
+          what:"Marked Tuesday 11 and Wednesday 12 August as planned rest, and moved the rope pushdown onto Friday",
+          why:"You told me both days directly, so they are rest you chose rather than sessions you missed. Nothing will count them as skipped or ask you about them.",
+          evidence:"Tuesday is the Spicer meeting at 3:45 and league at 6:30. Wednesday you move. Tuesday was your hard push day, so its only triceps movement, the rope pushdown, goes to Friday, which is your one push session this week.",
+          undo:"Gym, uncheck the rest day on either date and the normal session comes back."});
+      }
+      if(!state.autoLog.some(function(x){return x&&x.id==="auto-20260810-monday-correction";})){
+        state.autoLog.unshift({id:"auto-20260810-monday-correction",date:"2026-08-10",area:"Gym",
+          what:"Correction. An earlier plan had Monday 10 August as a rest day. You trained it, and the record now says so",
+          why:"The move week plan written on 09 August assumed you would not lift Monday. You did, 9 to 11. A plan is not evidence about a day that has already happened.",
+          evidence:"Your Monday gym session is on the calendar and Monday is your hard pull day. That is why Saturday keeps its normal four exercises instead of absorbing a pull day that was never actually lost.",
+          undo:"Nothing to undo. No build ever recorded Monday as rest."});
+      }
+      if(state.meta && !state.meta.mig266_restdays){ state.meta.mig266_restdays=true; save(true); }
+  } }catch(e){ try{ console.warn("mig266 did not apply:",e&&e.message); }catch(_){} }
+
   /* build 225: focus timer removed, nothing to clear here anymore. */
   applyAccent(); dailyReset(); save(true);
 }
@@ -6216,7 +6277,17 @@ var GYM_TODAY_OVERRIDE={"2026-07-12":"Sat","2026-08-02":"Sat"};
    it is pure render logic keyed to this single date, it does NOT shift the recurring split, it
    self expires tomorrow, and it touches no saved state and no logged sets. */
 /* v21 build 88: travel-day bodyweight gym overrides (Jul 17 to 20, hotel, no equipment). Date-keyed full day objects returned by daySplit on those dates only, normal split resumes Jul 21. Non-destructive. */
+/* v21 build 266: MOVE WEEK. Tue 11 and Wed 12 August are PLANNED REST, and Friday 14 takes the
+   rope pushdown back for one week. rest:true is read by gymToday, which then shows a rest card
+   instead of an unfinished checklist, and skips the synthetic warm up item so the day cannot
+   render as "0 of 1 logged". The durable half of this lives in state.gym.restDays (build 266
+   migration), because this const never reaches the export and the detector reads the export.
+   MONDAY 10 AUGUST IS DELIBERATELY ABSENT. He trained it. The 08.09 plan doc said otherwise and
+   the plan doc is wrong. Every entry self expires. */
 var GYM_DATE_OVERRIDE={
+ "2026-08-11":{day:"Tue",focus:"Planned rest",play:"League 6:30pm",rest:true,note:"Rest you chose, not a session you missed. Spicer at 3:45, league at 6:30. Serve block if you get 15 minutes on court, 40 counted at the slower pace.",exercises:[]},
+ "2026-08-12":{day:"Wed",focus:"Planned rest, moving day",play:"Off",rest:true,note:"The move is the leg day, and legs are cut this week with no makeup. Eat every 3 to 4 hours and salt your water. Legs are back Wednesday 19 August.",exercises:[]},
+ "2026-08-14":{day:"Fri",focus:"Push (round 2), the week's only push",play:"Play",note:"Six this week because Tuesday's push was cut, back to five on 21 August. Rope pushdown is on loan from Tuesday.",exercises:[{id:"0x81lyf",name:"Incline DB or machine press",scheme:"4\u00d712/10/8/8"},{id:"cea7roe",name:"Pec deck or cable fly",scheme:"3\u00d715/12/12"},{id:"30p1894",name:"Machine shoulder press",scheme:"3\u00d712/10/8"},{id:"ui81mo6",name:"Cable lateral raise",scheme:"3\u00d715/12/12"},{id:"pkl-extrot",name:"Cable external rotation",scheme:"3\u00d715 per side"},{id:"trlite15",name:"Rope pushdown",scheme:"3\u00d712/10/10"}]},
  "2026-07-26":{day:"Sun",focus:"Push, make up (one time)",play:"Play",note:"One time make up. You missed 2 to 3 gym days this week with pickleball, so today runs your Friday PUSH session, the pressing work that pickleball never trains. This is for TODAY ONLY, your recurring Sunday stays a rest day and the normal split resumes Monday unchanged. Monday is also push, so go a touch lighter Monday or swap it if you feel it.",exercises:[{id:"0x81lyf",name:"Incline DB or machine press",scheme:"4\u00d712/10/8/8"},{id:"cea7roe",name:"Pec deck or cable fly",scheme:"3\u00d715/12/12"},{id:"30p1894",name:"Machine shoulder press",scheme:"3\u00d712/10/8"},{id:"ui81mo6",name:"Cable lateral raise",scheme:"3\u00d715/12/12"},{id:"trlite15",name:"Rope pushdown (light)",scheme:"3\u00d715"},{id:"pkl-extrot",name:"Cable external rotation",scheme:"3\u00d715 per side"}]},
  "2026-07-17":{day:"Fri",focus:"Travel bodyweight, push and core",play:"Off",note:"Out of town, hotel workout, no equipment. Short and crisp, rest 45 to 60s, slow tempo for muscle.",exercises:[{id:"bw-0717-1",name:"Pushups",scheme:"3x12-15"},{id:"bw-0717-2",name:"Pike pushups (shoulders)",scheme:"3x8-12"},{id:"bw-0717-3",name:"Diamond pushups (triceps)",scheme:"3x8-12"},{id:"bw-0717-4",name:"Plank",scheme:"3x30-45s"}]},
  "2026-07-18":{day:"Sat",focus:"Travel bodyweight, posterior and core",play:"Off",note:"No pull bar, so posterior chain and rear delts fill in for a pull day. Squeeze at the top.",exercises:[{id:"bw-0718-1",name:"Glute bridges",scheme:"3x15-20"},{id:"bw-0718-2",name:"Superman holds (upper back)",scheme:"3x20-30s"},{id:"bw-0718-3",name:"Reverse snow angels (rear delts)",scheme:"3x12-15"},{id:"bw-0718-4",name:"Reverse plank",scheme:"3x20-30s"},{id:"bw-0718-5",name:"Bicycle crunches",scheme:"3x15-20/side"}]},
@@ -7784,7 +7855,20 @@ function habitConsistencyCard(parent){
   const c=card("a-green"); c._body.appendChild(el("div","small muted","Habit consistency, last 7 days"));
   c._body.firstChild.style.marginBottom="6px";
   c._body.appendChild(barChart(items,"g",120)); parent.appendChild(c); }
-function gymToday(parent){ const day=daySplit(DOW); const log=state.gym.logs[TODAY]||(state.gym.logs[TODAY]={done:{},note:""}); var items=[{id:"stretch5",name:"5 to 10 minute stretch",scheme:"warm up"}].concat(day.exercises); const total=items.length, dc=items.filter(e=>log.done[e.id]).length;
+function gymToday(parent){ const day=daySplit(DOW); const log=state.gym.logs[TODAY]||(state.gym.logs[TODAY]={done:{},note:""});
+  /* build 266: a PLANNED REST day renders as rest, with nothing to tick. Without this the day
+     still gets the synthetic warm up prepended and reads "0 of 1 logged", which is an unfinished
+     checklist, which is the exact thing a rest day is not. Ian chose these days. */
+  var _rest=!!(day&&day.rest); if(!_rest){ try{ var _rd=(state.gym&&state.gym.restDays)||{}; _rest=!!(_rd[TODAY]&&_rd[TODAY].planned); }catch(e){} }
+  if(_rest){ const rc=card("a-blue"); const rb=rc._body;
+    const rtop=el("div","between"); const rleft=el("div"); rleft.appendChild(el("h3",null,"Planned rest"));
+    const rsub=el("div","small muted"); rsub.textContent="Today, "+DAYFULL[DOW]+". Pickleball: "+(day.play||"Off"); rleft.appendChild(rsub);
+    rtop.appendChild(rleft); rtop.appendChild(el("span","pill b","Rest")); rb.appendChild(rtop);
+    if(day.note){ const rn=el("div","small muted"); rn.style.marginTop="6px"; rn.textContent=day.note; rb.appendChild(rn); }
+    var _why=""; try{ var _r2=((state.gym&&state.gym.restDays)||{})[TODAY]; if(_r2){ _why=_r2.cut?("Cut this week: "+_r2.cut+". "+(_r2.makeup||"")):(_r2.reason||""); } }catch(e){}
+    const rf=el("div","small dim"); rf.style.marginTop="7px"; rf.textContent=_why?_why:"Nothing to log today."; rb.appendChild(rf);
+    parent.appendChild(rc); return; }
+  var items=[{id:"stretch5",name:"5 to 10 minute stretch",scheme:"warm up"}].concat(day.exercises); const total=items.length, dc=items.filter(e=>log.done[e.id]).length;
   summaryGrid(parent,[ fracTile({label:"Today's session",color:"orange",done:dc,goal:total||1,unit:"sets"}), statTile({label:"This week",color:"orange",value:workoutsThisWeek(),unit:"days",sub:"Workouts logged",spark:weekWorkoutSpark(),sparkH:34}) ]);
   (function(){ var hn=(state.gym&&state.gym.handSpeedNote)||""; if(!hn) return;
     var hc=card("a-blue"); var hb=hc._body; hb.appendChild(el("span","pill b","Hand speed, honest read"));
