@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 252 (2026-08-09)">
+<meta name="build" content="v21 build 253 (2026-08-09)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -675,7 +675,19 @@ input.in,textarea.in,select.in{ background:var(--card2); border-color:rgba(255,2
 .empty{ border-radius:14px; border-color:rgba(255,255,255,.1); }
 
 /* bottom tab bar, Apple dark */
-.tabbar{ background:rgba(10,10,12,.86); backdrop-filter:saturate(1.4) blur(18px); border-top:1px solid rgba(255,255,255,.08); }
+.tabbar{ background:rgba(10,10,12,.86); backdrop-filter:saturate(1.4) blur(18px); border-top:1px solid rgba(255,255,255,.08);
+  /* build 253: LAYER PROMOTION FOR THE iOS PWA. Ian sees the fixed tab bar paint in the middle of
+     the page after expanding Closed sales and scrolling. It does NOT reproduce in desktop Chrome:
+     measured at every scroll position with the section expanded, getBoundingClientRect().bottom
+     equals innerHeight exactly, position computes to fixed, and an ancestor audit found ZERO
+     elements creating a containing block. Layout is correct, so what he is seeing is a PAINT
+     fault, not a layout fault, and the known trigger is backdrop-filter on a position:fixed
+     element over a long scroll container in WebKit. Promoting it to its own compositing layer is
+     the standard remedy. translateZ(0) on the fixed element itself is safe: it creates a
+     containing block only for its own descendants, and the bar has none that are positioned.
+     THIS IS UNVERIFIED ON HIS DEVICE. It cannot be confirmed from here and must not be reported
+     as fixed until he looks at his phone. */
+  transform:translateZ(0); -webkit-transform:translateZ(0); will-change:transform; }
 header{ background:rgba(0,0,0,.82); border-bottom:1px solid rgba(255,255,255,.07); }
 
 /* ================= v20 real estate: collapsible stages + simplified deal rows ================= */
@@ -5476,6 +5488,58 @@ function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]
       state.meta.mig252_willis_uc=true; save(true);
   } }catch(e){ try{ console.warn("mig252 did not apply:",e&&e.message); }catch(_){} }
 
+  /* ===== v21 build 253: THE CHAD TROESTER PURCHASE, MISSING FROM THE CLOSED SIDE ============
+     Ian says a Troester purchase is missing. It was already in the record, inside the note on the
+     SELL side deal: "They closed on a home they bought July 1 for $520,000." So price and close
+     date came from the file, not from asking him.
+
+     WHAT IS GENUINELY MISSING IS THE ADDRESS, and it is nowhere. The only Troester address on
+     file is 1709 Diane St, which is the home they SOLD, not the one they bought.
+
+     SOURCE IS INFERRED, NOT CONFIRMED, AND IT IS FLAGGED RATHER THAN QUIETLY ASSUMED. The sell
+     side deal carries source "Chris's client", so the same client relationship is carried across
+     to the purchase, giving Ian a 20 percent share. This is the field the Willis work proved is
+     dangerous to get wrong: at "Ian's own" the same deal reads $9,547.20 instead of $2,121.60,
+     4.5x too high. The inference errs toward the LOWER number on purpose. If Ian says this one
+     was his, the figure goes up and nothing else changes.
+
+     RATE IS NOT AMBIGUOUS HERE. Buyer side is a flat 2.4 percent in dealGrossCommission. The 3.7
+     percent Troester override lives in sellerRate and is not read on a Buyer side deal, so it is
+     deliberately not set. 520000 x 0.024 = $12,480, less 15 percent brokerage = $10,608,
+     x 0.20 = $2,121.60.
+
+     THE FLYER CAMPAIGN IS NOT CREDITED AS THE SOURCE, AND THAT IS A DELIBERATE NO. Two reasons.
+     The app's source field means the COMMISSION source, the three way Ian's own / Chris's client /
+     Dual agency that drives his split. Putting a marketing channel in it would corrupt the money.
+     And the causation runs the other way: the Troester flyers were just sold flyers FOR his own
+     1709 Diane listing, made because he was already a client. That campaign produced exactly one
+     lead, Nick Colabello, who went dead. It did not produce Troester. Channel attribution lives
+     in BRAIN where it belongs, and the honest record for the flyer channel is still one lead,
+     zero conversions.
+
+     Stage is "Closed" because it closed on 1 July. reGoalsCard counts Closed, so this lands in
+     both 2026 bars. No actualNet is set, per the validated model. */
+  try{ if(profile==="ian" && state.realEstate && Array.isArray(state.realEstate.deals)
+          && state.meta && !state.meta.mig253_troester_buy){
+      var _TID="re-chad-troester-buy";
+      if(!Array.isArray(state.meta.removedDealIds)) state.meta.removedDealIds=[];
+      var _tGone=state.meta.removedDealIds.indexOf(_TID)>-1;
+      var _tHave=state.realEstate.deals.some(function(d){ return d && d.id===_TID; });
+      if(!_tGone && !_tHave){
+        state.realEstate.deals.push({
+          id:_TID,
+          title:"Chad Troester, purchase",
+          stage:"Closed",
+          price:"$520,000",
+          close:"July 1, 2026",
+          source:"Chris's client",
+          side:"Buyer",
+          note:"THE PURCHASE SIDE OF THE TROESTER CLIENT, added 08.09.2026 on Ian's instruction. Closed 1 July 2026 at $520,000. BOTH FIGURES CAME FROM THE RECORD, NOT FROM ASKING: they were already written inside the note on the sell side deal re-chad-troester, which reads 'They closed on a home they bought July 1 for $520,000.' TWO TRANSACTIONS, ONE CLIENT, and they are separate deals: this purchase closed 1 July, and the 1709 Diane sale is under contract at $435,000 closing 10 August. Both count toward the 20 deal goal. THE ADDRESS IS MISSING AND IS THE ONLY REAL GAP. Nothing on file names the home they bought. 1709 Diane St is the home they SOLD, do not attach it to this record. SOURCE IS INFERRED FROM THE SELL SIDE, NOT CONFIRMED. That deal is tagged Chris's client, so this one is too, giving Ian a 20 percent share. Ian should confirm. The inference deliberately errs low: at Ian's own 90 percent the same deal would read $9,547.20 rather than $2,121.60. TAKE HOME $2,121.60 from the validated model, no override: 520000 x 0.024 buyer side = $12,480 gross, less 15 percent brokerage = $10,608, x 0.20. The 3.7 percent Troester exception is a SELLER rate and is correctly not applied to a buyer side deal. THE FLYER CAMPAIGN IS NOT THE SOURCE OF THIS DEAL. The flyers were just sold pieces for his own 1709 Diane listing, produced because he was already a client, so they cannot have originated him. That channel's record is unchanged at one lead, Nick Colabello, and zero conversions."
+        });
+      }
+      state.meta.mig253_troester_buy=true; save(true);
+  } }catch(e){ try{ console.warn("mig253 did not apply:",e&&e.message); }catch(_){} }
+
   /* build 225: focus timer removed, nothing to clear here anymore. */
   applyAccent(); dailyReset(); save(true);
 }
@@ -5979,7 +6043,7 @@ function dealEditors(parent,d){
 function dealRow(parent,d){
   const wrap=el("div","dealwrap");
   const row=el("button","deal-row");
-  const left=el("div","dl"); left.appendChild(el("div","dn",d.title)); if(d.close)left.appendChild(el("div","dsub",d.close)); var _tn=dealIanNet(d); if(_tn>0){ var _th=el("div","dsub"); _th.textContent="Est. take home "+fmtMoney(_tn); _th.style.color="var(--sec2,var(--accent2))"; _th.style.fontWeight="700"; left.appendChild(_th); } var _urg=closeUrgency(d.close); if(_urg){ var _u=el("div","dsub"); _u.textContent=_urg; _u.style.color=(_urg==="overdue"||_urg==="due today")?"var(--danger,#ff6363)":"var(--gray2,#8a8a99)"; _u.style.fontWeight="700"; left.appendChild(_u); } row.appendChild(left);
+  const left=el("div","dl"); left.appendChild(el("div","dn",d.title)); if(d.close)left.appendChild(el("div","dsub",d.close)); var _tn=dealIanNet(d); if(_tn>0){ var _th=el("div","dsub"); _th.textContent="Est. take home "+fmtMoney(_tn); _th.style.color="var(--sec2,var(--accent2))"; _th.style.fontWeight="700"; left.appendChild(_th); } var _urg=(d.stage==="Closed"||d.stage==="Just Sold")?"":closeUrgency(d.close); if(_urg){ var _u=el("div","dsub"); _u.textContent=_urg; _u.style.color=(_urg==="overdue"||_urg==="due today")?"var(--danger,#ff6363)":"var(--gray2,#8a8a99)"; _u.style.fontWeight="700"; left.appendChild(_u); } row.appendChild(left);
   const right=el("div","dr"); if(d.price)right.appendChild(el("div","dp",d.price)); right.appendChild(stagePill(d.stage)); row.appendChild(right);
   row.onclick=()=>{ reDealOpen[d.id]=!reDealOpen[d.id]; render(); };
   wrap.appendChild(row);
