@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 257 (2026-08-09)">
+<meta name="build" content="v21 build 258 (2026-08-09)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -3387,6 +3387,18 @@ function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]
       state.realEstate.deals.forEach(function(d){
         if(!d || d.id!=="re-cynthia-willis") return;
         if(d.priceVersion===_WPV) return;
+        /* build 258 GUARD, AND THIS BLOCK WAS ACTIVELY CORRUPTING DATA UNTIL NOW.
+           This migration has no meta flag, so it runs on EVERY load. Build 252 moved Willis to
+           Under Contract at $610,000 and stamped a new priceVersion, which made the test above
+           false, so this block re-asserted the $619,900 LIST price on every single load after.
+           Build 252 won once and lost every time thereafter. A flag guarded migration cannot beat
+           an unguarded one, no matter how far below it sits in the file.
+           Two guards, either one sufficient. Stage: this only ever meant to set the price of a
+           LIVE LISTING, and a deal under contract or closed has a real transaction price that no
+           list price migration may overwrite. Version: priceVersion is date prefixed, so a
+           lexically later stamp is a newer decision and wins. */
+        if(d.stage==="Under Contract" || d.stage==="Closed" || d.stage==="Just Sold") return;
+        if(typeof d.priceVersion==="string" && d.priceVersion>_WPV) return;
         d.price="$619,900"; d.priceVersion=_WPV; _wpChanged=true;
         if(typeof d.note==="string" && d.note.indexOf("LIST PRICE DECIDED 07.28.2026")<0){
           d.note=d.note+" LIST PRICE DECIDED 07.28.2026: $619,900, after a seven pass comp analysis. This supersedes $629,900 and $624,900, which were earlier passes and are not live figures. Supported value about $605,000. Expected appraisal $598,000 to $622,000, most likely $605,000 to $616,000, so $619,900 sits inside the plausible appraisal range and $624,900 does not. Appraisal gap risk about 25 to 30 percent. Confidence moderate to high. DAY 10 TRIGGER: no strong offer or heavy showing traffic by day 10, move to $609,900 immediately.";
@@ -5735,6 +5747,65 @@ function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]
       save(true);
   } }catch(e){}
 
+  /* ===== v21 build 258: WILLIS PRICE REGRESSION, AND SYDNEY SPICER TO COMING SOON ============
+
+     A. THE WILLIS PRICE HAD SILENTLY REVERTED TO $619,900 AND THAT IS THE URGENT HALF.
+     Build 252 set $610,000 with a new priceVersion. The build 204 block has NO meta flag, so it
+     runs on every load, and its test was "priceVersion is not the 07-28 stamp, therefore reset to
+     $619,900". Stamping a newer version made that test true forever. So 252 won on the first load
+     and was overwritten on every load after. Ian's app has been showing the LIST price on a deal
+     that is under contract $9,900 lower, and production was overstated by that amount. Guarded at
+     source in build 258, and re-asserted here UNCONDITIONALLY so it self heals rather than relying
+     on a flag that has already proven it can be outlived.
+
+     B. SYDNEY SPICER TO COMING SOON, BUY AND SELL, per Ian: "add spicers daughter as a buy and
+     sell coming soon". Coming Soon is HIS stage choice and is used as given.
+
+     COMING SOON DOES MOVE A NUMBER, unlike Prospecting, and that is stated rather than buried:
+     reGoalsCard's in flight ceiling counts Active plus Coming Soon, so she adds $392,000 to the
+     ceiling. She still adds NOTHING to committed production or to the 20 deal bar, which count
+     Closed plus Under Contract only.
+
+     C. SHE COUNTS AS ONE, NOT TWO, AND THE RULE IS APPLIED WITHOUT AN EXCEPTION FOR HIS WORDING.
+     dealCountWeight keys off source "Dual agency", a single transaction with both sides
+     represented. Sydney is a SELL plus a possible future BUY: two intents, two eventual
+     transactions, not one transaction with two sides. Identical treatment to Bruce O'Neil, who is
+     also side Both with a non dual source and also counts one. She becomes two when the purchase
+     is a real transaction with a property and a price, at which point it gets its own record,
+     exactly as the Spicer parents have two. Counting intent as two closed deals is how a 20 deal
+     goal gets quietly met on paper.
+
+     D. THE CMA NUMBERS ARE ATTACHED SO THEY STOP LIVING ONLY IN A DOC, and they are labelled PRE
+     WALK THROUGH because one unresolved fact moves them $60,000, which is wider than the entire
+     comp spread. Price is set to the supported value with that caveat in the note, never to a list
+     price, because no list price exists yet. */
+  try{ if(profile==="ian" && state.realEstate && Array.isArray(state.realEstate.deals) && state.meta){
+      state.realEstate.deals.forEach(function(d){
+        if(!d) return;
+        if(d.id==="re-cynthia-willis" && (d.stage==="Under Contract"||d.stage==="Closed")){
+          if(d.price!=="$610,000"){ d.price="$610,000"; }
+          d.priceVersion="2026-08-09-under-contract-610000";
+        }
+        if(d.id==="re-sydney-spicer-sell" && !state.meta.mig258_sydney){
+          d.stage="Coming Soon";
+          d.side="Both";
+          d.title="Sydney Spicer, 20535 Howe St, sell plus buy";
+          d.note=String(d.note||"")+" UPDATED 08.09.2026 ON IAN'S INSTRUCTION: \"add spicers daughter as a buy and sell coming soon\". STAGE IS COMING SOON, his call, used as given. SHE IS A SELL PLUS A BUY, side Both. COUNTS AS ONE DEAL, NOT TWO, and this is the rule applied rather than an exception. Two sides counts as two ONLY for a single transaction where Scenic Group represents both sides, which the app tracks as source \"Dual agency\". Sydney is a sale of 20535 Howe plus a SEPARATE future purchase: two intents that become two transactions later, not one transaction with two sides. Same treatment as Bruce O'Neil. The purchase gets its own record, and the second deal, when it is real, with a property and a price. NO BUY SIDE RECORD YET on purpose: no property, no budget, no timeline. CMA NUMBERS, PRE WALK THROUGH, from the 08.09.2026 CMA: supported value $392,000, likely appraisal band $380,000 to $402,000, suggested opening list $394,900 to $399,900. The price field carries the SUPPORTED VALUE, not a list price, because no list price has been decided. THE ONE QUESTION THAT MOVES EVERYTHING, ASK SYDNEY BEFORE PRICING: is the basement finished today? Verified UNFINISHED at the 2021 sale and the 2026 assessor record still shows no finish. If it has been finished since, supported value goes to $445,000 to $460,000. That is a $60,000 swing, wider than the entire comp spread, so every number above is provisional until answered. TITLE QUESTION, ALSO UNRESOLVED: the county shows CHRISTIANSEN ERICH ETAL on this parcel with no Spicer named, so who actually signs is unconfirmed. Do not prepare listing paperwork until ownership is established. SHE IS NOT THE SPICER FILE ALREADY CLOSED. Sydney is the DAUGHTER; re-spicer-sell (18734 Olive) and re-allison-spicer-buy are her parents and a separate client. Full CMA: https://docs.google.com/document/d/15w1nsUd43crTrgtLfkxjJJi89HZGA_EBy45-WRcs74Y/edit";
+        }
+      });
+      if(!state.meta.mig258_sydney){
+        if(typeof _autoLog==="function"){
+          _autoLog({id:"auto-20260809-willis-price-fix",date:"2026-08-09",area:"Real estate",
+            what:"Put the Willis price back to $610,000 and moved Sydney Spicer to Coming Soon",
+            why:"An old migration with no guard was resetting Willis to the $619,900 list price on every single app load, so your contract price kept disappearing and production read $9,900 high.",
+            evidence:"Your saved deal showed $619,900 with the July priceVersion stamp, while the stage and close date from the same later build were intact at Under Contract, 18 Sept.",
+            undo:"Real estate, open the Willis deal and set the price back."});
+        }
+        state.meta.mig258_sydney=true;
+      }
+      save(true);
+  } }catch(e){ try{ console.warn("mig258 did not apply:",e&&e.message); }catch(_){} }
+
   /* build 225: focus timer removed, nothing to clear here anymore. */
   applyAccent(); dailyReset(); save(true);
 }
@@ -6250,7 +6321,13 @@ function collapseGroup(parent,stage,label,gd,vol){
   const c=card(); c._body.style.padding="0";
   const head=el("button","collapse-head");
   const lft=el("div","ch-left"); lft.appendChild(el("span","ch-dot c-"+(STAGE_COL[stage]||"blue")));
-  const tt=el("div"); tt.appendChild(el("div","ch-title",label)); tt.appendChild(el("div","ch-sub",gd.length+(gd.length===1?" deal":" deals")+(vol?"  \u00B7  "+fmtMoney(vol):""))); lft.appendChild(tt);
+  /* build 258: SHOW SIDES WHEN THEY DIFFER FROM RECORDS. This header printed gd.length, the number
+     of RECORDS, while the 2026 goal bar counts SIDES. Matt Snyder is one record and two sides, so
+     Closed read "6 deals" while the goal bar counted 7, and Ian reasonably concluded the goal was
+     undercounting him. It was not. The count was right and the label was wrong. Only appended when
+     the two differ, so nothing changes on groups with no dual deal in them. */
+  var _sides=gd.reduce(function(a,d){ return a+dealCountWeight(d); },0);
+  const tt=el("div"); tt.appendChild(el("div","ch-title",label)); tt.appendChild(el("div","ch-sub",gd.length+(gd.length===1?" deal":" deals")+(_sides!==gd.length?("  \u00B7  "+_sides+" sides"):"")+(vol?"  \u00B7  "+fmtMoney(vol):""))); lft.appendChild(tt);
   head.appendChild(lft); head.appendChild(el("span","ch-chev"+(open?" open":""),"\u203A"));
   head.onclick=()=>{ reStageOpen[stage]=!open; render(); };
   c._body.appendChild(head);
