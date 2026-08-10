@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 267 (2026-08-10)">
+<meta name="build" content="v21 build 268 (2026-08-10)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -6243,6 +6243,69 @@ function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]
       });
       state.meta.mig267_deal_titles=true; save(true);
   } }catch(e){ try{ console.warn("mig267 did not apply:",e&&e.message); }catch(_){} }
+
+  /* ===== v21 build 268: SYDNEY SPICER, CMA REVISION 3 FINAL. BRUCE PRICE FORMAT ==============
+     CMA Revision 3 FINAL, 10 August 2026, for the meeting Tuesday 11 August at 3:45 PM.
+
+     WHAT CHANGED ON SYDNEY AND WHY THE NUMBER MOVES $80,000. Revision 2 priced 20535 Howe with an
+     UNFINISHED basement at $392,000 in the app and $399,000 in the document. Sydney has since
+     confirmed in her own words that the basement is being finished and will add a bedroom and a
+     bathroom, that it is mostly complete with trim and the bathroom outstanding, and that the
+     finished area is 1,000 to 1,200 sq ft. That makes her a 4 bed 3 bath house on completion,
+     which is bed for bed and bath for bath identical to C1 at 20529 D St, the binding comp, which
+     sold for $464,000 in 9 days. Bridged off C1 and C3 rather than added to a base, the supported
+     value is $472,000 in a band of $467,000 to $477,000.
+
+     THE PRICE FIELD CARRIES THE SUPPORTED VALUE, NOT THE LIST PRICE, because no list price exists
+     yet and inventing one here would put a decision Ian has not made into a Class A field. The
+     recommended list of $469,900 lives in the note where it cannot be mistaken for a decision.
+
+     THIS DOES MOVE ONE NUMBER AND IT IS STATED RATHER THAN BURIED. She is Coming Soon, so she sits
+     in the in flight ceiling on the goals card, which reads Active plus Coming Soon. Her price
+     rising from $392,000 to $472,000 adds $80,000 to that ceiling. NOTHING ELSE MOVES: the $10M
+     production bar and the 20 deal bar count Closed plus Under Contract only, and the Est. take
+     home line on the goals card sums Closed and Under Contract only, so neither changes. Her own
+     row take home does change, $2,399.04 to $2,888.64, because it is computed from price.
+
+     BRUCE O'NEIL, THE $1.20 BUG, FIXED. His price was stored as the text "1.2-1.5 million " with
+     no dollar sign and no thousands separators, so priceNum, which takes the FIRST number in the
+     string, read it as ONE DOLLAR TWENTY. His volume displayed as $1.20 and his take home as less
+     than a cent. Build 254 deliberately left the string alone because rewriting it changes a
+     displayed figure on a Class A field, and build 267 reported it rather than fixing it. Ian has
+     now named the consequence himself and asked for it resolved, so it is resolved.
+
+     WHAT THE BRUCE FIX VISIBLY CHANGES, so nobody reads it as a bug tomorrow. He is PROSPECTING,
+     which touches no goal bar and is outside the in flight ceiling, so pacing is untouched. What
+     DOES change is the Prospects group volume header, which rises by $1,199,998.80, and his own
+     row, which will show $1,200,000 instead of $1.20 and a take home of $7,344.00 instead of
+     $0.007344, exactly a million times larger because the price is. Every one of those figures was
+     wrong before and is right after. The string is set
+     to a range in the same shape the app already parses correctly elsewhere.
+
+     BOTH EDITS ARE EXACT MATCH GUARDED on the current stored value, so a price Ian has changed
+     himself since is never overwritten. Flags live in saved state only, never in seedIan().meta. */
+  try{ if(profile==="ian" && state.realEstate && Array.isArray(state.realEstate.deals)
+          && state.meta && !state.meta.mig268_sydney_rev3){
+      state.realEstate.deals.forEach(function(d){
+        if(!d) return;
+        if(d.id==="re-sydney-spicer-sell"){
+          if(String(d.price||"")==="$392,000"){ d.price="$472,000"; }
+          if(!d.priceNote) d.priceNote="Supported, CMA Rev 3";
+          d.sub="Sell plus buy, 20535 Howe St";
+          if(String(d.note||"").indexOf("CMA REVISION 3 FINAL")<0){
+            d.note=String(d.note||"")+" CMA REVISION 3 FINAL, 08.10.2026, FOR THE 11 AUG 3:45 PM MEETING. THE BASEMENT IS BEING FINISHED AND THAT REWRITES THE FILE. Sydney's own words via Chris: the basement is in the process of being finished, it will add another bedroom and a bathroom, it is mostly finished, the trim to the main areas and the bathroom remain, and they plan to complete it before selling. FINISHED AREA 1,000 to 1,200 SQ FT, which sits directly on the comp cluster of 927, 990, 995 and about 1,010, so her estimate and the MLS read comp measurements now agree. ON COMPLETION SHE IS 4 BED 3 BATH, identical to C1 at 20529 D St which sold $464,000 in 9 days with 1,577 above and 927 below, 4 bed 3 bath, 3 car, built 2020. She is 1,544 above, about 1,100 below, 3 car, 2019, county condition Very Good, with a BRAND NEW finish against C1's six year old one and a larger lot. SUPPORTED VALUE $472,000, band $467,000 to $477,000. THREE TIERS: fast sale $459,900 expect 2 to 7 days; RECOMMENDED $469,900 expect 10 to 21 days and a sale of $464,000 to $469,900; higher $479,900 which is NOT advised because it is within $900 of the exact price C1 failed at four times before selling $15,000 lower. THE SINGLE MOST VALUABLE RECOMMENDATION IS TO FINISH THE BASEMENT BEFORE LISTING. An appraiser cannot credit a bathroom that does not exist, so mid finish she is a 3 bed 2 bath house, worth about $455,000. Completing gains $25,000 to $29,000 against $10,000 to $18,000 of cost, a net $12,000 to $16,000, and if the timeline slips she should delay the listing rather than list half done. TOP OPEN ITEM IS PERMITS, worth $15,000 to $30,000 of appraisal gap risk, because the whole revision rests on a below grade bedroom and bathroom that an appraiser may not credit if the work was not permitted. Chris is checking. ALSO OPEN: egress window on the new bedroom, finish quality, wet or dry bar, whether the third garage bay is a true stall. SETTLED AND CLOSED: she is NOT a walkout and earns the $48 per foot below grade rate, the homes BEHIND her are walkouts sitting lower which is a mild sightline positive, she HAS backyard neighbours so there is NO privacy premium, her lot is flat with no slope toward the house which is a drainage selling point next to a new basement, and the rear parcels are verified on the county layer as 20616, 20612 and 20620 E St in the same subdivision, not green space. Fence, sprinklers and water treatment stay, appliances 50/50 with no price impact, not contingent on the next purchase. STILL ONE DEAL, NOT TWO: side Both is buy and sell intent by one client. Full document: 08.11.2026 CMA REVISION 3 FINAL in Claude Outputs Real Estate Output.";
+          }
+        }
+        if(String(d.price||"")==="1.2-1.5 million "){
+          d.price="$1,200,000 to $1,500,000";
+          if(!d.priceNote) d.priceNote="Range, build plus lot";
+          if(String(d.note||"").indexOf("PRICE FORMAT CORRECTED 08.10.2026")<0){
+            d.note=String(d.note||"")+" PRICE FORMAT CORRECTED 08.10.2026, build 268, on Ian's instruction. The price was stored as the text \"1.2-1.5 million \" with no dollar sign and no thousands separators. priceNum takes the FIRST number in the string, so the app read this deal as ONE DOLLAR TWENTY: volume $1.20, take home under a cent. THE FIGURE IS UNCHANGED IN MEANING, only its written form. He is Prospecting so no goal bar and no in flight ceiling was ever affected, which is why this sat undetected. What visibly changes is the Prospects group volume header, up $1,199,998.80, and his own row, now $1,200,000 volume and $7,344.00 take home instead of $0.007344, exactly a million times larger because the price is. Every one of those numbers was wrong before and is right now. Build 254 left the string alone deliberately because price is Class A; Ian named the consequence himself and asked for it fixed.";
+          }
+        }
+      });
+      state.meta.mig268_sydney_rev3=true; save(true);
+  } }catch(e){ try{ console.warn("mig268 did not apply:",e&&e.message); }catch(_){} }
 
   /* build 225: focus timer removed, nothing to clear here anymore. */
   applyAccent(); dailyReset(); save(true);
