@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 263 (2026-08-10)">
+<meta name="build" content="v21 build 264 (2026-08-10)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -6008,6 +6008,55 @@ function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]
       }
       state.meta.mig262_sources=true; save(true);
   } }catch(e){ try{ console.warn("mig262 did not apply:",e&&e.message); }catch(_){} }
+
+  /* ===== v21 build 264: THE BELKNAPS, 4946 PRATT ST. NEW PROSPECT ===========================
+     From a text Chris sent Ian, 08.10.2026. Selling 4946 Pratt and then buying, so the same shape
+     as Sydney Spicer and the Hernandezes.
+
+     COUNTY VERIFIED, NOT ASSUMED. Douglas County parcel layer, PIN 2233350000: owner BELKNAP
+     BRYANT JAMES, property address 4946 Pratt St, OMAHA NE 68104, subdivision SOLOMONS ADD block 8
+     lot 11, RANCH, one story, built 1949, 1,073 sq ft, quality Average, condition Good, 0.21 acre.
+     City, zip, subdivision and style all come from the parcel record rather than from the street
+     name or a portal, per the standing rule that cost us twice in Sarpy.
+
+     STAGE IS PROSPECTING. They have not listed and there is no date. Per Ian's own definitions a
+     prospect has explicit interest and a goal and has taken a step forward, which a scheduled call
+     is. Coming Soon would imply a listing with a date, which does not exist. Prospecting touches
+     NO goal bar, so this adds nothing to the $10M or the 20.
+
+     COUNTS AS ONE DEAL, NOT TWO. side is Both, but that is buy and sell INTENT by one client, which
+     is two future transactions rather than one transaction with two sides. Same treatment as Bruce
+     and Sydney. The purchase gets its own record when it is real, with a property and a price.
+
+     PRICE IS CHRIS'S GUESS AND IS LABELLED INFERRED. $250,000 to $300,000 is what his dad texted,
+     not a valuation. A comp was run the same day and lands BELOW the middle of that guess, see the
+     note. The price field carries the guess because it is what the client conversation is anchored
+     on; the supported value lives in the note so the two can never be confused.
+
+     SOURCE IS "Chris's client" PENDING IAN'S CONFIRMATION. The lead came through Chris, so 20
+     percent. Flagged rather than assumed silently, because this exact field was wrong on two deals
+     tonight and cost a 4.5x overstatement on one of them. */
+  try{ if(profile==="ian" && state.realEstate && Array.isArray(state.realEstate.deals)
+          && state.meta && !state.meta.mig264_belknap){
+      var _BKID="re-belknap-sell";
+      if(!Array.isArray(state.meta.removedDealIds)) state.meta.removedDealIds=[];
+      var _bkGone=state.meta.removedDealIds.indexOf(_BKID)>-1;
+      var _bkHave=state.realEstate.deals.some(function(d){ return d && (d.id===_BKID || /belknap/i.test(String(d.title||""))); });
+      if(!_bkGone && !_bkHave){
+        state.realEstate.deals.push({
+          id:_BKID,
+          title:"Belknap, 4946 Pratt St, sell plus buy",
+          stage:"Prospecting",
+          price:"$250,000 to $300,000 (Chris's guess, Inferred)",
+          close:"",
+          source:"Chris's client",
+          side:"Both",
+          address:"4946 Pratt St, Omaha, NE 68104",
+          note:"NEW PROSPECT 08.10.2026, from a text Chris sent Ian. They are SELLING 4946 Pratt St and then BUYING, so two potential transactions. A call with them is happening shortly. COUNTY VERIFIED, Douglas County parcel layer, PIN 2233350000: owner BELKNAP BRYANT JAMES, 4946 Pratt St OMAHA NE 68104, subdivision SOLOMONS ADD block 8 lot 11, RANCH, one story, BUILT 1949, county building area 1,073 SQ FT, quality Average, condition Good, lot 0.21 acre / 9,384 sq ft (68 x 138). City, zip, subdivision and style all taken from the parcel record, never from the street name or a portal. PRICE IS CHRIS'S GUESS AND IS INFERRED, NOT A VALUATION: $250,000 to $300,000 is what he texted. Do not let it masquerade as supported. SUPPORTED VALUE FROM THE 08.10.2026 COMP RUN IS ABOUT $245,000, likely appraisal band $230,000 to $258,000, so the guess is reasonable at its LOW end and NOT supported at its top without a second bathroom or significant updates. THE SQUARE FOOTAGE IS THE WHOLE BALLGAME AND THE TWO SOURCES DISAGREE. County says 1,073, which is ABOVE GRADE. Portals say 1,904 TOTAL with 4 or 5 bedrooms, which implies roughly 830 sq ft of FINISHED BASEMENT. Basement finish is worth materially less per foot than above grade and appraisers weight above grade, so quoting 1,904 as if it were all equal overstates the home. ONE BATHROOM on a 4 to 5 bedroom house is the single biggest drag on value and the first thing to verify. Last sold $157,500 on 10 August 2018; time adjusted for Omaha appreciation that is roughly $244,000 to $268,000 today, which brackets the supported value. Market: 68104 median sale $220,000 for the three months to May 2026, median $147 per sq ft; Benson twelve month median $210,000. COUNTS AS ONE DEAL, not two, per the settled rule: side Both here means buy and sell INTENT, not one transaction with two sides. The purchase gets its own record when it is real. SOURCE IS Chris's client PENDING IAN'S CONFIRMATION, giving the 20 percent share. Full reasoning in BRAIN Real_Estate/Context/01_MASTER_CONTEXT.md."
+        });
+      }
+      state.meta.mig264_belknap=true; save(true);
+  } }catch(e){ try{ console.warn("mig264 did not apply:",e&&e.message); }catch(_){} }
 
   /* build 225: focus timer removed, nothing to clear here anymore. */
   applyAccent(); dailyReset(); save(true);
