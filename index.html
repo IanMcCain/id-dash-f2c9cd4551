@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 260 (2026-08-09)">
+<meta name="build" content="v21 build 261 (2026-08-09)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -5863,6 +5863,45 @@ function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]
       }
       state.meta.mig260_winchester_lot=true; save(true);
   } }catch(e){ try{ console.warn("mig260 did not apply:",e&&e.message); }catch(_){} }
+
+  /* ===== v21 build 261: MICHELLE MILLER CLOSED 07 AUGUST 2026, PAYMENT OUTSTANDING ==========
+     Ian only found out today. She closed FOUR DAYS EARLY: the record said August 11.
+
+     NO NEW STATE WAS INVENTED, BECAUSE THE APP HAS NONE TO INVENT AGAINST, AND THAT IS ITSELF THE
+     FINDING. There is no paid/unpaid field anywhere. The Spicer record's "CLOSED and PAID" is FREE
+     TEXT inside its close string, not a state, so this follows that same existing convention and
+     writes "(CLOSED, payment outstanding)" into the close string. The only machine readable marker
+     of real payment is actualNet, which is set on Spicer alone.
+
+     NO actualNet IS SET HERE, DELIBERATELY. He has not been paid, so there is no actual figure. The
+     $1,682.39 is the model estimate, which is correct for an earned but unreceived commission.
+
+     WHAT "closed" MEANS IN THE GOAL CARD, CHECKED IN THE CODE RATHER THAN ASSUMED. reGoalsCard does
+     incClosed = sumIanNet(deals where stage === "Closed"). It is driven PURELY BY STAGE. The label
+     it renders is the word "closed", not "paid" and not "realised". So moving her to Closed DOES
+     move $1,682.39 out of pending and into that figure even though no money has arrived. That is
+     faithful to the label the app actually shows, and it is misleading to anyone reading it as cash
+     in hand. Flagged to Ian rather than silently worked around, because changing what that figure
+     means is his call and not a thing to slip into a stage move. */
+  try{ if(profile==="ian" && state.realEstate && Array.isArray(state.realEstate.deals)
+          && state.meta && !state.meta.mig261_miller_closed){
+      state.realEstate.deals.forEach(function(d){
+        if(!d) return;
+        if(d.id==="re-michelle-miller" || (/michelle\s*miller/i.test(String(d.title||"")) && !/comp/i.test(String(d.title||"")))){
+          d.stage="Closed";
+          d.close="August 7, 2026 (CLOSED, payment outstanding)";
+          d.note=String(d.note||"")+" CLOSED FRIDAY 07 AUGUST 2026, confirmed by Ian 08.09.2026, who only found out today. FOUR DAYS EARLIER THAN THE RECORD, which had her at August 11. PAYMENT IS OUTSTANDING. The commission is earned and not received, so NO actualNet is set and the $1,682.39 shown is the model estimate, not a paid figure. Replace it with the real number when he is paid, per the standing rule that an actual always beats a computed one. TAKE HOME $1,682.39: $274,900 x 3.6 percent default seller rate = $9,896.40 gross, less the 15 percent brokerage = $8,411.94, x 0.20 because this is Chris's client. Sold at FULL LIST. BE AWARE WHAT THE GOAL CARD NOW SHOWS: its take home figure splits on STAGE, so this amount has moved into the closed number despite no money having arrived. The app has no paid versus unpaid state, only this note and the actualNet field.";
+        }
+      });
+      if(typeof _autoLog==="function"){
+        _autoLog({id:"auto-20260809-miller-closed",date:"2026-08-09",area:"Real estate",
+          what:"Moved Michelle Miller to Closed, 7 August, with payment marked outstanding",
+          why:"She closed four days earlier than the record said, and you have not been paid yet, so the commission is earned but not received.",
+          evidence:"The deal was Under Contract with a close date of August 11. You confirmed it closed Friday 7 August at full list, $274,900.",
+          undo:"Real estate, open the Miller deal and set the stage back to Under Contract."});
+      }
+      state.meta.mig261_miller_closed=true; save(true);
+  } }catch(e){ try{ console.warn("mig261 did not apply:",e&&e.message); }catch(_){} }
 
   /* build 225: focus timer removed, nothing to clear here anymore. */
   applyAccent(); dailyReset(); save(true);
