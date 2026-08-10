@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 256 (2026-08-09)">
+<meta name="build" content="v21 build 257 (2026-08-09)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -5705,6 +5705,35 @@ function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]
       }
       state.meta.mig256_bruce_restore=true; save(true);
   } }catch(e){ try{ console.warn("mig256 did not apply:",e&&e.message); }catch(_){} }
+
+  /* ===== v21 build 257: THE 08.08 AND 08.09 SESSIONS, PUSHED IN FROM BRAIN ====================
+     Ian reported his last logged session showing as 08.05 while he had played on the 8th and the 9th
+     and both were written to BRAIN. Sessions are CLASS A, app owned, so a session that exists only
+     in BRAIN is a divergence in the direction the ownership model says should not happen.
+     ROOT CAUSE, recorded here because the records matter less than the pipeline: there is NO
+     automated carrier from a BRAIN session log into pickleball.sessions. The daily brief writes a
+     session only when Ian puts a pickleball request in Today's entry, and nothing reconciles the
+     two. The 08.03 to 08.05 records reached the app because the interactive session that logged
+     them also happened to write them in. That is a convention, not a step, so it broke the first
+     time a logging session was busy doing something else. MISSING STEP, not a silent failure.
+     Both records are SELF REPORT and neither moves a rating. The coach grades stay at the
+     2026-08-09 midpoints shipped in build 250. Idempotent, merged by id, nothing else touched. */
+  try{ if(profile==="ian" && state.pickleball){
+      if(!Array.isArray(state.pickleball.sessions)) state.pickleball.sessions=[];
+      var _S=[
+        {id:"pk-20260808-drills-doubles", date:"2026-08-08", kind:"Drills and doubles", venue:"Omaha",
+         duration:"2h 34m 26s", calories:1739, activeCalories:1497, avgHr:130, maxHr:166, minHr:84, effort:8,
+         note:"Drills then doubles, Omaha, 5:29 to 8:04 PM, 2:34:26. Effort 8 of 10, Hard. From Apple Watch. Avg HR 130, peak 166, low 84, active 1,497, total 1,739. First roughly 40 minutes drilling, warm up drills and dinks only, remainder doubles with Bianca and Dylan. FIRST SESSION ON THE NEW THIN WHITE OVERGRIP, his words felt amazing and definitely helped a lot. That is the third grip state: bulky overgrip to 07.31, bare paddle 08.01 to 08.07, thin overgrip from today. No footage, so this is a session log and it carries NO RATING CHANGE. Evidence class SELF REPORT: recorded and tracked, weighed against footage, and it does not move a rating on its own. HIS REPORT: played really well in his opinion, a few random dumb errors he attributes to taking his eye off the ball, serves really good once he got them down despite not warming them up and he could choose between power and pushing it deep, drops good, dinks good, hands at the net really good and fast, and he did not really do any speed ups. READ. 1. He reports fast hands AND good drops in the same session, which is the combination neither previous grip state produced, and it is exactly what the 08.02 hypothesis predicted. That is why it is held loosely rather than banked: one unfilmed session on the day he got the thing he hoped would work. Depth is the check and it is the footage, not the feeling. 2. He drilled DINKS, not drops, so the good drop report comes entirely from live points, which is the weakest place to read a drop from and the exact reason the drop apex drill exists. 3. NO SPEED UPS AGAIN, alongside fast hands. Fast hands you never use are blocks, not hands, and that distinction matters at 3.5 where the player who initiates first wins most kitchen exchanges. 4. His eye off the ball diagnosis is the most common self diagnosis in the sport and frequently masks contact point or footwork. Check the feet before adopting it."},
+        {id:"pk-20260809-openplay", date:"2026-08-09", kind:"Open play", venue:"Omaha",
+         duration:"2h 26m 20s", calories:1795, activeCalories:1566, avgHr:134, maxHr:174, minHr:68, effort:9,
+         note:"Open play doubles, Omaha, 3:05 to 5:32 PM, 2:26:20. Effort 9 of 10, All Out, UP from 8 yesterday on a SHORTER session. From Apple Watch. Avg HR 134, peak 174, low 68, active 1,566, total 1,795. FIELD: the strongest he has reported. Everyone about 3.0 or above, most 3.3 to 3.9, one around 4.0. Recorded because opposition level goes with every skill observation: he cannot develop the soft game where the hard game goes unpunished. Second session on the thin overgrip. No footage, so this is a session log and it carries NO RATING CHANGE. Evidence class SELF REPORT: recorded and tracked, weighed against footage, and it does not move a rating on its own. HIS REPORT: felt great and everything was quite good. Serves roughly 95 of 100 in, a few long. Resets good, drops really good, dinks on point, hands pretty good. SPEED UPS, AND THIS IS THE ONE THAT MATTERS: the first time he felt he actually got a bunch in, he went for a lot more and says it showed, he won the exchange 80 to 85 percent of the time, and he attacked high dinks especially ones he had to step back for. He rates his own speed ups 3.5 to 3.6 and says he could have more pace and better placement. DROPS: missed about one of thirty to forty, though he did not go for many, and his reason is tactical rather than avoidance, at 3.0 to 3.5 players are not ready for drives even from the kitchen so he drives more, against 4.0s he drops more. DRIVES: good power and accuracy but he wants CONTROL OF DISTANCE, deeper or shorter on demand. That independently matches the 07.29 film finding of no depth or speed variation, reached unprompted and from feel, which raises confidence in the drives record and makes the three speeds drill the obvious next thing. KITCHEN POSITION, his estimate: up before the point ended roughly 85 percent on return, 40 to 50 percent on his own team's serve, both partners up near 50 percent overall. THE FILM MEASURED 13 PERCENT for both partners up, so this is a LIVE CONFLICT and one of the sharpest open disagreements between his perception and the film. A frame count normally beats a recalled estimate, but that count came from one file, with Dylan, the day only one of two Dylan videos downloaded, and his estimate covers a different session with different partners. Resolution is a re measurement SPLIT BY SERVE VERSUS RETURN POINTS, which the film has never separated. WHY THIS SESSION MATTERS MOST: never initiates has been the spine of the film read since July, zero speed ups across the 07.25 tournament day and zero across the whole 08.08 Dylan file, verified twice not sampled, and the lowest rated skill on the board rests on that absence. Today he reports the opposite, unprompted, the day after being told the finding. Two readings and NEITHER IS RESOLVED: he was told and changed his behaviour, which is the system working, or he was told and his perception shifted to match a metric he now knows he is measured on. A count from footage separates them in minutes and nothing else does. FILM THIS NEXT, ahead of depth and ahead of the dink question, and split the count by serve versus return points so it answers the kitchen conflict at the same time."}
+      ];
+      var _ex=state.pickleball.sessions, _add=0;
+      _S.forEach(function(r){ if(!_ex.some(function(x){ return x&&x.id===r.id; })){ _ex.push(r); _add++; } });
+      if(_add){ _ex.sort(function(a,b){ return String(a.date||"").localeCompare(String(b.date||"")); }); }
+      if(state.meta && !state.meta.mig257_sessions){ state.meta.mig257_sessions=true; }
+      save(true);
+  } }catch(e){}
 
   /* build 225: focus timer removed, nothing to clear here anymore. */
   applyAccent(); dailyReset(); save(true);
