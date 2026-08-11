@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 269 (2026-08-10)">
+<meta name="build" content="v21 build 270 (2026-08-10)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -6395,6 +6395,76 @@ function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]
       }
       if(state.meta && !state.meta.mig269_pk0810){ state.meta.mig269_pk0810=true; save(true); }
   } }catch(e){ try{ console.warn("mig269 did not apply:",e&&e.message); }catch(_){} }
+
+  /* ===== v21 build 270: THE 08.10 SESSION REFRAMED. PLACEMENT WAS THE POINT ==================
+     CORRECTS BUILD 269, SHIPPED TWENTY MINUTES EARLIER, AND SAYS SO RATHER THAN QUIETLY
+     REWRITING. Ian gave the rest of the session afterwards: he spent the whole night deliberately
+     playing for PLACEMENT on every shot type. Build 269's note is not wrong in its facts, it is
+     wrong in its weighting, and weighting is the whole value of a session note.
+
+     WHAT CHANGED IN THE READ, and it is a real reversal not a softening:
+     Build 269 called the drives dissociation, height inconsistent while placement improves, his
+     STRONGEST EVIDENCE for the worn grip. IT IS NOT, ANY MORE. Deliberate corner aiming explains
+     the same observation better and more simply: a smaller target has less margin, and pushing to
+     the edges of your control is exactly what degrades height while improving placement. The
+     observation is unchanged. Its best explanation is not. Equipment is DOWNGRADED here on
+     Ian's explicit instruction and because the evidence moved, and both reasons are real.
+
+     A FIFTH CANDIDATE, AND IT IS NOW THE LEADING ONE: deliberate practice of a harder skill
+     reliably degrades short term performance. It is the only candidate that predicts BETTER
+     placement and WORSE consistency in the same session, which is precisely what he reports.
+
+     Note replacement is GUARDED on the build 269 signature so that if Ian has edited the note
+     himself in the meantime, his version wins and this leaves it alone. */
+  try{ if(profile==="ian" && state.pickleball && Array.isArray(state.pickleball.sessions)){
+      var _N270="Open play doubles, Omaha, 5:59 to 7:27 PM, 1:28:00. Effort 7 of 10, Hard. From Apple Watch. Avg HR 134, peak 158, low 98, active 959, total 1,096. INTENDED AS A DRILL SESSION, became open play because a lot of people showed up. Third session in three days and the shortest and easiest of the three: 08.08 effort 8 at 2h34, 08.09 effort 9 at 2h26, tonight effort 7 at 1h28. Third session on the thin overgrip, first on the new shoes. No footage, so this carries NO RATING CHANGE. Evidence class SELF REPORT. "
+        +"PLACEMENT WAS THE POINT OF TONIGHT, AND IT IS THE HEADLINE. He deliberately played for placement on every shot type, his words, aiming and targeting rather than just trying to get it over. OVERHEADS to the corners and the off side instead of straight back at them where they are easy to retrieve. SPEED UPS at the body, at the back hip, or into open space. DRIVES to the corners instead of to the forehand or down the middle. DINKS crosscourt as the intent, not every time. And he deliberately worked at GETTING UP TO THE KITCHEN more, playing less aggressively in order to advance. "
+        +"HIS REPORT: went decent, not great. Inconsistency was the worst thing, his own summary. Best thing was the volume of speed ups and playing more aggressively. Drops 50-50, a few good ones, not great overall. Drives really inconsistent on HEIGHT but placement getting even better. Serves decent. He thinks the overgrip is worn out and believes it affected play. HIS OWN REFRAME, and he is right: it wasn't such a negative day, it was more of a different day. "
+        +"READ. 1. THIS IS CONVERGENCE WITH THE FILM, NOT COMPLIANCE, WHICH IS WHY IT IS WORTH MORE. He was not told to do any of this tonight. The 07.29 film study found his dink placement safe rather than constructive, no wide then behind, no at the feet, no middle seam. It found he DECLINES FREE OFFENCE, resetting attackable balls instead of finishing. The 08.08 study measured him and his partner both at the kitchen only 13 percent of live ball time. Tonight he independently attempted all three: constructive dink and drive placement, targeted speed ups instead of declining them, and deliberately advancing to the kitchen. A player arriving at the film's prescription on his own is a different and better signal than one following an instruction. "
+        +"2. HE HIT THE EXACT WALL THE RECORD PREDICTS, AND IT RELOCATES THE PROBLEM. His account: he would give a soft drop to advance, they would power it back at his feet, he could not handle it, and they put it away. That is a precise restatement of the standing hands finding, that he cannot absorb pace at close range and hard balls at the kitchen get popped up and slammed. THE KITCHEN APPROACH IS NOT FAILING BECAUSE HIS DROPS ARE BAD. IT IS FAILING ON THE SHOT AFTER THE DROP. Hands is the rate limiter on the single thing he is now trying to add to his game, which is the strongest argument yet for making hands the filming and drilling priority rather than depth. "
+        +"3. CORRECTION TO WHAT THIS NOTE SAID IN BUILD 269, twenty minutes ago. That version called the drives dissociation his strongest evidence for the worn grip. IT IS NOT ANY MORE. Deliberate corner aiming explains height inconsistent alongside placement improving better and more simply, because a smaller target carries less margin and pushing to the edge of your control is what breaks height first. The observation stands, its best explanation has changed. DEPTH OF DROPS IS THE SAME STORY: aiming a drop is a harder task than landing one, so 50-50 under placement intent is not the same regression as drops going long under a grip change. Equipment is downgraded to a minor candidate. "
+        +"4. SERVES DECENT IS QUIET COUNTER EVIDENCE ON THE GRIP AND NOBODY HAD WEIGHED IT. The serve is his most self paced, most repeatable stroke and the one where a slipping grip would show most cleanly, with no opponent variability in the way. He reports it decent. That cuts against a grip degrading his play and nothing in the record had picked it up. "
+        +"5. FIVE CANDIDATES NOW, AND DELIBERATE PRACTICE LEADS. New shoes, a worn grip, third consecutive playing day, a drill session that became open play, and deliberate practice of a harder skill. The last is the only one that predicts BETTER placement with WORSE consistency in the same session, and that is exactly the pattern he reports. "
+        +"6. SPEED UPS, SECOND SESSION RUNNING, and tonight he says where he aimed them, at the body, the back hip and into space. Hands is the widest and lowest band on the board, 2.9 to 3.4, resting substantially on ZERO initiations across two verified films. Two consecutive self reports of the opposite, now with tactical detail, is the top thing to point a camera at. A count from footage separates real change from perception shifting to match a metric he knows he is measured on. Nothing else does. "
+        +"7. HR SHAPE PARTLY DISAGREES WITH EFFORT 7. Avg 134 is identical to last night's effort 9. Peak 158 is the lowest of the three days and low 98 is the highest floor on record, a 60 bpm band against 106 last night. Flat and steady rather than genuinely light. "
+        +"WHAT THE NEXT SESSION TESTS: whether the placement intent SURVIVES. One night of trying is not a change. If he keeps doing it and consistency recovers as the skill beds in, that is real improvement and the equipment question mostly dissolves.";
+      state.pickleball.sessions.forEach(function(s){
+        if(!s || s.id!=="pk-20260810-openplay") return;
+        var n=String(s.note||"");
+        /* only replace OUR build 269 text. If Ian rewrote it, his version wins. */
+        if(n.indexOf("PLACEMENT WAS THE POINT")>=0) return;
+        if(n.indexOf("FOUR CANDIDATE EXPLANATIONS")<0) return;
+        s.note=_N270;
+      });
+
+      /* The grip test is now BADLY confounded and saying so is the honest move. */
+      var _g270=(state.pickleball.gear||{}).grip;
+      if(_g270 && _g270.test){
+        _g270.test.status="open, DEMOTED 08.10.2026";
+        _g270.test.demoted="Equipment dropped to a minor candidate once the placement intent came to light. A fresh grip on 08.11 can no longer be read cleanly, because if the placement practice continues then recovery could be the skill bedding in rather than the grip.";
+        _g270.test.readIt="SUPERSEDED. The earlier day four fatigue logic assumed equipment was the leading candidate and it is not. Recovery on 08.11 is now AMBIGUOUS between a fresh grip and placement practice bedding in. The informative question moved to the placement test below.";
+      }
+      if(state.pickleball.gear){
+        state.pickleball.gear.placementTest={
+          id:"placement-persistence-0811", opened:"2026-08-10", status:"open",
+          question:"Does the deliberate placement intent SURVIVE into the next sessions, or was it one night?",
+          why:"One night of trying is not a change. If he keeps aiming and consistency recovers as the skill beds in, that is real improvement and it is worth more than anything the equipment question can settle.",
+          watch:"Ask whether he was still aiming, per shot type, BEFORE asking how he played. If you ask how it went first you get a performance answer and lose the intent signal.",
+          rateLimiter:"HANDS. He can reach the kitchen and cannot yet hold it, because the ball after the drop gets driven at his feet. Expect the approach to keep failing there until hands improves, and do not read that as the placement plan not working.",
+          promotedOver:"grip-wear-0811, which is now confounded."
+        };
+      }
+
+      if(!Array.isArray(state.autoLog)) state.autoLog=[];
+      if(!state.autoLog.some(function(x){return x&&x.id==="auto-20260810-placement";})){
+        state.autoLog.unshift({id:"auto-20260810-placement",date:"2026-08-10",area:"Pickleball",
+          what:"Rewrote tonight's session note. Placement was the story, and I had the wrong headline an hour ago",
+          why:"You spent the night aiming everything rather than just getting it in, and that is almost exactly what the film study told you to do, except you did it without being told. That is worth more than the equipment question I led with.",
+          evidence:"Corners on overheads and drives, body and back hip on speed ups, crosscourt dinks, and deliberately getting to the kitchen. Aiming at smaller targets explains inconsistent height with better placement better than a worn grip does. Your serves being decent points the same way, since the serve is where a bad grip would show first.",
+          undo:"Pickleball, open the 10 August session and edit the note."});
+      }
+      if(state.meta && !state.meta.mig270_placement){ state.meta.mig270_placement=true; save(true); }
+  } }catch(e){ try{ console.warn("mig270 did not apply:",e&&e.message); }catch(_){} }
 
   /* build 225: focus timer removed, nothing to clear here anymore. */
   applyAccent(); dailyReset(); save(true);
