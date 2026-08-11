@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 268 (2026-08-10)">
+<meta name="build" content="v21 build 269 (2026-08-10)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -6306,6 +6306,95 @@ function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]
       });
       state.meta.mig268_sydney_rev3=true; save(true);
   } }catch(e){ try{ console.warn("mig268 did not apply:",e&&e.message); }catch(_){} }
+
+  /* ===== v21 build 269: THE 08.10 SESSION, PLUS GEAR AS A STRUCTURED VARIABLE ================
+     Pushed in from BRAIN the same night rather than two days later. Build 257 recorded the root
+     cause of the 08.08 and 08.09 gap: there is no automated carrier from a BRAIN session log into
+     pickleball.sessions, so a session reaches the app only when the logging session also writes
+     it. That is still true and still the fix worth building. Until it exists, the mitigation is
+     to write the session in the same run that logs it, which is what this is.
+
+     SELF REPORT. NO RATING MOVES. The 2026-08-09-bands grades are untouched by this build.
+
+     GEAR BECOMES STRUCTURED, and this is the part that is not just a session log. Grip state was
+     already tracked in the knowledge base as three states, but only as prose, and the app carried
+     it as a sentence buried in pickleball.paddle, which is a free text blob. Two things happened
+     tonight that a sentence cannot carry: the thin grip is DEGRADING, which is a wear dimension on
+     an existing state rather than a fourth state, and NEW SHOES went on for the first time.
+
+     THE SHOES ATTACH TO FOOTWORK, DELIBERATELY. Footwork is one of only two skills carrying a film
+     derived grade (footwork n=4, serve n=34), so a change to what is on his feet is a genuine
+     confound on every future footwork read and has to travel WITH that grade, not sit in a note
+     nobody joins up. state.pickleball.skills[footwork].confounds is read as "anything after this
+     date is not comparable to the film baseline without saying so".
+
+     THE CONFOUND IS RECORDED HONESTLY AND NOT RESOLVED. Tonight he changed shoes AND had a
+     degrading grip AND it was his third consecutive playing day AND the session switched from the
+     drilling he intended to open play. Four candidate explanations, one reported observation.
+     He attributes it to the grip. That is recorded as HIS claim, with the one piece of evidence
+     that genuinely favours it, and it is not adopted.
+
+     Idempotent, merged by id, guard flag in saved state only, SEED_VERSION untouched. */
+  try{ if(profile==="ian" && state.pickleball){
+      if(!Array.isArray(state.pickleball.sessions)) state.pickleball.sessions=[];
+      var _S269=[
+        {id:"pk-20260810-openplay", date:"2026-08-10", kind:"Open play", venue:"Omaha",
+         duration:"1h 28m 00s", calories:1096, activeCalories:959, avgHr:134, maxHr:158, minHr:98, effort:7,
+         note:"Open play doubles, Omaha, 5:59 to 7:27 PM, 1:28:00. Effort 7 of 10, Hard. From Apple Watch. Avg HR 134, peak 158, low 98, active 959, total 1,096. INTENDED AS A DRILL SESSION, became open play because a lot of people showed up. Third session in three days and the shortest and easiest of the three: 08.08 effort 8 at 2h34, 08.09 effort 9 at 2h26, tonight effort 7 at 1h28. Third session on the thin overgrip, and the first on the new shoes. No footage, so this is a session log and it carries NO RATING CHANGE. Evidence class SELF REPORT: recorded and tracked, weighed against footage, and it does not move a rating on its own. HIS REPORT, his words kept as claims: went decent, not great; INCONSISTENCY WAS THE WORST THING by his own summary; the best thing was the VOLUME OF SPEED UPS and playing more aggressively; drops went a little long; drives really inconsistent on HEIGHT but PLACEMENT is getting even better; serves decent; and he thinks his OVERGRIP IS WORN OUT, not as grippy or tacky, and believes it affected play. READ. 1. FOUR CANDIDATE EXPLANATIONS FOR ONE OBSERVATION, AND IT IS NOT SETTLED. He changed shoes tonight, the grip is degrading, it was his third consecutive playing day, and the session he planned was a drill and became open play. He attributes the inconsistency to the grip. Do not adopt that just because he said it. The fourth one is close to definitional: drilling is repetition and open play is variable by construction, so a format switch will feel less consistent whatever the equipment is doing. 2. HIS STRONGEST EVIDENCE, AND IT IS GENUINELY GOOD, IS THE DRIVES DISSOCIATION. Height inconsistent while placement improves is specific and mechanically coherent. Face angle at impact sets height, aim sets placement, and a grip that slips at contact degrades the first and not the second. Fatigue, a shoe change or a plain bad day would move both together. That is the best single argument for the grip and it is still one unfilmed self report, so it is his best claim rather than a finding. 3. THE THREE SESSION DEPTH TEST IS INVALID AS RUN. The knowledge base set the condition on 08.08: reinstate the thin overgrip recommendation only if depth holds across three sessions. It held on 08.08 and 08.09 and broke tonight, but the variable itself changed condition mid test, so the test returns no result. The clock restarts on the fresh grip. 4. SPEED UPS, SECOND SESSION RUNNING. He reports more speed ups and feeling decent about them, after reporting the same on 08.09. Hands is the lowest band on the board at 2.9 to 3.4 and it rests substantially on ZERO initiations across two verified films. Two consecutive self reports of the opposite is now the single most valuable thing to point a camera at. It is still self report, and the 08.09 note already named the two readings that a count separates and an opinion cannot. 5. HR SHAPE DISAGREES SLIGHTLY WITH EFFORT 7. Avg 134 is identical to last night's effort 9. Peak 158 is the lowest of the three days and low 98 is the highest floor on record, a 60 bpm band against 106 last night. Flat and steady rather than genuinely light: he never spiked and never came down."}
+      ];
+      var _ex269=state.pickleball.sessions, _add269=0;
+      _S269.forEach(function(r){ if(!_ex269.some(function(x){ return x&&x.id===r.id; })){ _ex269.push(r); _add269++; } });
+      _ex269.sort(function(a,b){ return String(a&&a.date).localeCompare(String(b&&b.date)); });
+
+      /* GEAR. Structured, additive, and it does not replace pickleball.paddle, which stays as his
+         own free text. Grip carries a WEAR field because tonight is the same grip in a worse
+         condition, which is not a new state. */
+      var _g=state.pickleball.gear=state.pickleball.gear||{};
+      _g.grip=_g.grip||{};
+      _g.grip.states=[
+        {n:1, from:null,          to:"2026-07-31", what:"Bulky overgrip",     wear:"n/a",  read:"Depth calibrated, drops decent. Hands slow, could not absorb pace at the kitchen."},
+        {n:2, from:"2026-08-01",  to:"2026-08-07", what:"Bare paddle",        wear:"n/a",  read:"Faster hands, and depth went long. Faster hands and longer balls are one fact seen from two ends."},
+        {n:3, from:"2026-08-08",  to:null,         what:"Thin white overgrip",wear:"DEGRADING, reported losing tack on 08.10 at three sessions old", read:"Held depth for two sessions, then depth broke on the session he reports the grip going off. Test invalid as run."}
+      ];
+      _g.grip.current={state:3, since:"2026-08-08", wear:"worn, being replaced before the 08.11 league", note:"Same grip TYPE, fresh unit. That is the point of the test."};
+      _g.grip.test={
+        id:"grip-wear-0811", opened:"2026-08-10", status:"open",
+        question:"Does his consistency return on a FRESH unit of the same thin overgrip?",
+        why:"It holds grip TYPE constant and varies only WEAR, which is cleaner than anything the record has had. Every previous comparison changed the type as well.",
+        watch:"Drive HEIGHT first, because that is the specific thing he reported breaking. Then drop depth.",
+        confounds:"08.11 is his FOURTH consecutive playing day and it is a competitive league rather than open play, and the new shoes will be on their second wear.",
+        readIt:"If fatigue were driving this, day four should be WORSE than day three. So consistency RECOVERING on 08.11 argues for the grip more strongly than tonight argues for anything. Consistency staying poor does NOT clear the grip, because the format and the fatigue both moved too."
+      };
+      _g.shoes={
+        current:{what:"Selkirk SLK Court Strike 3", firstWorn:"2026-08-10",
+                 replaced:"about $80 Asics, general trainers rather than court shoes",
+                 hisWords:"They feel great and are a big improvement on the Asics."},
+        why:"Tracked as a VARIABLE from 08.10, not filed as a note, because it is the second thing that changed on the same night and it bears on footwork."
+      };
+
+      /* The shoe change travels WITH the footwork grade, because that is the grade it can distort. */
+      if(Array.isArray(state.pickleball.skills)){
+        state.pickleball.skills.forEach(function(s){
+          if(!s || s.id!=="footwork") return;
+          s.confounds=s.confounds||[];
+          if(!s.confounds.some(function(c){ return c&&c.id==="shoes-20260810"; })){
+            s.confounds.push({id:"shoes-20260810", from:"2026-08-10", what:"New shoes, Selkirk SLK Court Strike 3, first worn 08.10.2026, replacing general trainers",
+              why:"This grade is one of only two on the board derived from film (n=4). The film baseline was shot in the old shoes, so any footwork read from 08.10 onward is not directly comparable to it and must say so.",
+              action:"State the shoe change alongside any future footwork movement. Do not credit or blame the shoes without footage from both."});
+          }
+        });
+      }
+
+      if(!Array.isArray(state.autoLog)) state.autoLog=[];
+      if(!state.autoLog.some(function(x){return x&&x.id==="auto-20260810-pk-session";})){
+        state.autoLog.unshift({id:"auto-20260810-pk-session",date:"2026-08-10",area:"Pickleball",
+          what:"Logged tonight's session and started tracking your grip wear and your new shoes as proper variables",
+          why:"Your last two sessions only reached the app two days late, so this one went in the same night. Nothing here changes any of your ratings.",
+          evidence:"1h 28m, effort 7, avg HR 134, third session in three days. You said the inconsistency was the worst part and that the overgrip felt worn out. Your drives being inconsistent on height while placement improves is the best argument for the grip, because a slipping grip moves height and not aim.",
+          undo:"Pickleball, open the session and edit or remove it."});
+      }
+      if(state.meta && !state.meta.mig269_pk0810){ state.meta.mig269_pk0810=true; save(true); }
+  } }catch(e){ try{ console.warn("mig269 did not apply:",e&&e.message); }catch(_){} }
 
   /* build 225: focus timer removed, nothing to clear here anymore. */
   applyAccent(); dailyReset(); save(true);
