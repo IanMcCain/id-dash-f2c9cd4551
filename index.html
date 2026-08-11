@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 270 (2026-08-10)">
+<meta name="build" content="v21 build 271 (2026-08-10)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -6466,6 +6466,30 @@ function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]
       if(state.meta && !state.meta.mig270_placement){ state.meta.mig270_placement=true; save(true); }
   } }catch(e){ try{ console.warn("mig270 did not apply:",e&&e.message); }catch(_){} }
 
+  /* ===== v21 build 271: CLEAR THE "COUNTS AS ONE" TEXT OFF THE THREE RECORDS ==================
+     The counting change itself is in dealCountWeight and needs no migration, because that is a
+     function and it re-evaluates on every render. This block exists for a different reason.
+
+     THREE RECORDS CARRY NOTES ASSERTING "COUNTS AS ONE DEAL, NOT TWO", written last night under
+     the old rule. Ian has now reversed that rule. A note on a record that contradicts how the app
+     counts it is worse than no note: it is the thing a future session reads and trusts, and it is
+     exactly the failure this override was raised to prevent. So the correction is appended to the
+     records rather than left to be discovered.
+
+     Nothing else is touched. No price, no stage, no source, no side. Guarded in saved state only. */
+  try{ if(profile==="ian" && state.realEstate && Array.isArray(state.realEstate.deals)
+          && state.meta && !state.meta.mig271_two_sides){
+      var _TWO=" COUNTING CORRECTED 08.10.2026, build 271, ON IAN'S DIRECT INSTRUCTION, AND THIS SUPERSEDES THE \"COUNTS AS ONE\" TEXT EARLIER IN THIS NOTE. THIS RECORD NOW COUNTS AS TWO DEALS, a sell and a buy. The rule written on 08.09.2026, that side Both as buy and sell INTENT counts one until the second side is real with a property and a price, is DEAD. The new rule: a client transacting BOTH SIDES counts TWO, whether that is one transaction with dual agency or a sell followed by a buy. It is implemented in dealCountWeight as a change to the function rather than to individual records, so every deal carrying side Both moves together. VOLUME IS UNCHANGED AND DOES NOT DOUBLE: dealVolume reads the price and has never consulted the count, so this record still contributes ONE property at ONE price. The buy side gets its own price when it gets its own record. The $10M production bar and the 20 deal goal count Closed plus Under Contract only, so neither moved.";
+      state.realEstate.deals.forEach(function(d){
+        if(!d) return;
+        if(dealSide(d)!=="Both") return;
+        if(dealSource(d)==="Dual agency") return;
+        if(String(d.note||"").indexOf("COUNTING CORRECTED 08.10.2026")>-1) return;
+        d.note=String(d.note||"")+_TWO;
+      });
+      state.meta.mig271_two_sides=true; save(true);
+  } }catch(e){ try{ console.warn("mig271 did not apply:",e&&e.message); }catch(_){} }
+
   /* build 225: focus timer removed, nothing to clear here anymore. */
   applyAccent(); dailyReset(); save(true);
 }
@@ -6968,7 +6992,32 @@ function sumIanNet(arr){ return (arr||[]).reduce(function(a,d){ return a+dealIan
    sell INTENT by one client, which is two future transactions, and they are untouched by all of
    this because dealSource is not "Dual agency" on either. */
 function dealVolume(d){ return priceNum(d&&d.price); }
-function dealCountWeight(d){ return dealSource(d)==="Dual agency"?2:1; }
+/* ===== v21 build 271: A CLIENT ON BOTH SIDES COUNTS TWO. IAN OVERRODE THE 08.09 RULE ==========
+   Ian, 08.10.2026, directly: Sydney Spicer counts as TWO deals, buy and sell, and the Belknaps
+   count as TWO deals, buy and sell.
+
+   THIS REVERSES THE RULE WRITTEN ON 08.09.2026, which said side "Both" as buy and sell INTENT
+   counts ONE until the second side is real with a property and a price, and that only source
+   "Dual agency" counts two. That rule is now dead. It is not softened or qualified, it is replaced,
+   and RULES.md has been rewritten to match rather than left contradicting the records.
+
+   THE NEW RULE, one line: a client transacting BOTH SIDES counts TWO, whether that is one
+   transaction with dual agency or a sell followed by a buy. The test is the SIDE field, and
+   "Dual agency" stays a sufficient condition so nothing about Snyder or Winchester changes.
+
+   SWEPT FOR CONSISTENCY RATHER THAN SPECIAL CASED. This is a change to the function, not to two
+   records, so every deal carrying side "Both" moves together and no future record can be added
+   under the old counting by accident. Five records carry it: Matt Snyder and Brandon Winchester,
+   both already two through Dual agency and unchanged, plus Sydney Spicer, the Belknaps and Bruce
+   O'Neil, who all go one to two. Bruce was not named by Ian; he carries the identical attribute
+   and leaving him at one would have left three records with the same shape counted differently,
+   which is the exact defect this change exists to remove.
+
+   VOLUME DOES NOT DOUBLE, AND THAT SEPARATION IS THE WHOLE POINT. dealVolume reads priceNum(price)
+   and has never consulted this function. Two deals, one property, one sale price on the sell side,
+   and a separate price on the buy side if and when that record exists. This preserves the build 259
+   settlement exactly: COUNT measures sides, VOLUME measures transactions. Only the count moved. */
+function dealCountWeight(d){ return (dealSource(d)==="Dual agency" || dealSide(d)==="Both")?2:1; }
 function dealCard(parent,d){ const c=card(); const b=c._body; const head=el("div"); head.appendChild(el("h3",null,d.title)); if(d.price){ const p=el("div"); p.style.color="var(--sec2,var(--accent2))"; p.style.fontWeight="800"; p.style.marginTop="4px"; p.style.fontSize="16px"; p.textContent=d.price; head.appendChild(p);} if(d.close){ const cd=el("div","small dim"); cd.style.marginTop="3px"; cd.textContent="Close: "+d.close; head.appendChild(cd);} b.appendChild(head); const cs=el("div"); cs.style.marginTop="11px"; cs.appendChild(chipRow(RESTAGES,d.stage,s=>{d.stage=s;save();render();})); b.appendChild(cs); const pr=el("input","in"); pr.placeholder="Price"; pr.value=d.price||""; pr.style.marginTop="10px"; pr.oninput=()=>{d.price=pr.value;save();}; b.appendChild(pr); const cl=el("input","in"); cl.placeholder="Close date"; cl.value=d.close||""; cl.style.marginTop="9px"; cl.oninput=()=>{ d.close=cl.value; save(); }; b.appendChild(cl); const ta=el("textarea","in"); ta.style.minHeight="52px"; ta.style.marginTop="9px"; ta.value=d.note||""; ta.placeholder="Notes, next step..."; ta.oninput=()=>{d.note=ta.value;save();}; b.appendChild(ta); const del=el("button","del","Remove"); del.style.fontSize="13px"; del.style.marginTop="8px"; del.onclick=()=>{ if(confirm("Remove this deal?")){ state.realEstate.deals=state.realEstate.deals.filter(x=>x.id!==d.id); save(); render(); } }; b.appendChild(del); parent.appendChild(c); }
 function rePipeline(parent){ state.realEstate.deals.forEach(d=>{ const c=card(d.stage==="Just Sold"?"a-blue":"a-gold"); const b=c._body; const head=el("div"); head.appendChild(el("h3",null,d.title)); if(d.price){ const p=el("div","small"); p.style.color="var(--accent2)"; p.style.fontWeight="700"; p.textContent=d.price; head.appendChild(p);} b.appendChild(head); const cs=el("div"); cs.style.marginTop="10px"; cs.appendChild(chipRow(RESTAGES,d.stage,s=>{d.stage=s;save();render();})); b.appendChild(cs); const pr=el("input","in"); pr.placeholder="Price (optional)"; pr.value=d.price||""; pr.style.marginTop="10px"; pr.oninput=()=>{d.price=pr.value;save();}; b.appendChild(pr); const ta=el("textarea","in"); ta.style.minHeight="52px"; ta.style.marginTop="10px"; ta.value=d.note||""; ta.placeholder="Notes, next step..."; ta.oninput=()=>{d.note=ta.value;save();}; b.appendChild(ta); const del=el("button","del","Remove"); del.style.fontSize="13px"; del.style.marginTop="8px"; del.onclick=()=>{ if(confirm("Remove this deal?")){ state.realEstate.deals=state.realEstate.deals.filter(x=>x.id!==d.id); save(); render(); } }; b.appendChild(del); parent.appendChild(c); }); const add=card(); add._body.appendChild(adder("New deal or prospect...",t=>{state.realEstate.deals.push({id:uid(),title:t,stage:"Prospecting",price:"",note:""});save();render();})); parent.appendChild(add); }
 function leadsModule(parent){ const c=card(); const b=c._body; const ls=state.realEstate.leads||(state.realEstate.leads=[]); if(!ls.length)b.appendChild(el("div","empty","No leads yet.")); ls.forEach(l=>{ const row=el("div","chk"); const t=el("div","ctext"); t.textContent=l.name; const m=el("span","meta"); m.textContent=(l.source?l.source+" \u00B7 ":"")+(l.status||"New")+(l.note?" \u00B7 "+l.note:""); t.appendChild(m); row.appendChild(t); const d=el("button","del","\u00D7"); d.onclick=()=>{ state.realEstate.leads=ls.filter(x=>x.id!==l.id); save(); render(); }; row.appendChild(d); b.appendChild(row); }); b.appendChild(adder("Add a lead...",n=>{ ls.push({id:uid(),name:n,source:"",status:"New",note:""}); save(); render(); })); parent.appendChild(c); }
