@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 272 (2026-08-10)">
+<meta name="build" content="v21 build 273 (2026-08-11)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -6526,6 +6526,47 @@ function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]
       });
       state.meta.mig272_belknap_cash=true; save(true);
   } }catch(e){ try{ console.warn("mig272 did not apply:",e&&e.message); }catch(_){} }
+
+
+  /* mig273, 2026-08-11 daily content, coach items and one to do. Every-load, guard flag NOT in the seed. */
+  try{ if(profile==="ian"){
+      var T273="2026-08-11";
+      if(!state.briefing) state.briefing={forIan:{},done:{}};
+      if(!state.briefing.forIan) state.briefing.forIan={};
+      if(!state.briefing.forIan[T273]) state.briefing.forIan[T273]=[{"id": "brief-20260811-1", "type": "Real estate", "title": "Sydney Spicer at 3:45, and her price moved to $472,000", "note": "Build vs buy plus home valuation, 20535 Howe St Elkhorn, with Chris. The app now carries $472,000, not the $392,000 the snapshot still holds. Only prep window is before your 10am dentist.", "url": "", "why": "Because it is your only dated appointment today and the prep todo expires tonight", "done": false}, {"id": "brief-20260811-2", "type": "Pickleball", "title": "Film one game at league tonight, 12 days to DUPR", "note": "League at 6:15. Your last footage is 07.22, twenty days back, and every session since 08.02 logged none. Phone on a fence, one game is enough to test it.", "url": "https://www.youtube.com/watch?v=B2JYosKGZfs", "why": "Because two film studies flagged the same trigger fault and nothing has tested it since", "done": false}, {"id": "brief-20260811-3", "type": "Real estate", "title": "Four closings between yesterday and Aug 20", "note": "Troester $435,000 closed Aug 10, Crystal Johnson $577,861 Aug 14, Bonks $625,000 Aug 19 and $420,000 Aug 20. Troester still reads Under Contract in the app.", "url": "", "why": "Because that run takes you from $4.29M to $6.34M against the $10M goal", "done": false}];
+      if(!state.futureIdeas) state.futureIdeas={};
+      if(!state.futureIdeas[T273]) state.futureIdeas[T273]=[{"id": "fi-20260811-1", "text": "Pull the last 90 days of solds for Sugar Creek and Walnut Creek Hills and build ONE combined just sold mailer instead of two separate walks. Two neighborhoods, one print run, one afternoon.", "url": ""}, {"id": "fi-20260811-2", "text": "Ask Ryan at Rose Creek Homes for a weekday twilight slot at the two story. Weekend model duty has produced nothing since Aug 8 and an evening window is traffic you have never tested.", "url": ""}, {"id": "fi-20260811-3", "text": "Put a QR code to a home valuation page on the just sold flyers, so a walk produces a lead list instead of only impressions. It is the cheapest way to make the Cinnamon Creek farm measurable.", "url": ""}, {"id": "fi-20260811-4", "text": "Log the drop height count into your phone DURING league, not after. Every count you have promised since 08.02 has died at the moment the session ends and you go home.", "url": ""}];
+      if(!state.quickWin) state.quickWin={picks:{},done:{}};
+      if(!state.quickWin.picks) state.quickWin.picks={};
+      if(!state.quickWin.picks[T273]) state.quickWin.picks[T273]=["Move Chad Troester to Closed in the app. Its close date was yesterday, 1709 Diane at $435,000, and the record still reads Under Contract, which holds $435,000 and one deal out of your production number.", "Before league tonight, hit 30 drops and count them by HEIGHT, not by whether they landed in. Two columns, stayed down or sat up. That is exactly what today's research pull asks for."];
+      if(state.pickleball){
+        var _pb=state.pickleball;
+        if(!_pb.videoRec) _pb.videoRec={};
+        if(!_pb.videoRec[T273]) _pb.videoRec[T273]={"title": "How to Master The Reset in Pickleball (Enhance Pickleball)", "url": "https://www.youtube.com/watch?v=B2JYosKGZfs", "note": "Three concrete positions off any drop: good drop go to the kitchen, bad drop stay back and defend, okay drop hold in the transition zone and reset. It also carries your grip answer, noticeably looser than a drive, about 2 to 3 out of 10 against 5, so the paddle absorbs pace instead of firing it back at their feet."};
+        if(!_pb.research) _pb.research={};
+        if(!_pb.research[T273]) _pb.research[T273]={"title": "Grade the drop by height, not length", "text": "Stop judging a drop by whether it stayed inside the kitchen line. A drop that carries a little past the line is fine as long as it stays down, because they still have to hit up on it either way. The shot that actually costs you the point is one that sits up, at any depth. Keep counting your drops, but count the height it sat at, not how far it traveled.", "url": "https://www.youtube.com/watch?v=TV5EW2WkQL4", "source": "Enhance Pickleball, Connor Hance, pulled and extracted 08.11.2026"};
+        if(!_pb.coachRec) _pb.coachRec={};
+        if(!_pb.coachRec[T273]) _pb.coachRec[T273]={"title": "Off every drop, move your feet to match its quality, not to a fixed spot.", "note": "Good drop, straight to the kitchen. Bad drop, stay back and defend. Okay drop, hold in the transition zone and reset the next ball in. Your 08.10 session showed the drop is fine, it is the shot right after it that is losing you the point."};
+        if(!_pb.coachBullets || Array.isArray(_pb.coachBullets)) _pb.coachBullets={};
+        if(!_pb.coachBullets[T273]) _pb.coachBullets[T273]=["Next session focus, one thing, and it is derived from your own 08.10 session rather than invented. Off every drop, move your feet to match the quality of that drop: good drop go straight to the kitchen, bad drop stay back and defend, okay drop hold in the transition zone and reset the next ball in.", "Your drop is not the leak any more, the shot after it is. Grip on the reset should be noticeably looser than a drive, roughly 2 or 3 out of 10, so the paddle absorbs pace instead of firing it back at their feet.", "Grade a drop by height, not by length. A drop that carries a foot past the kitchen line is fine as long as it stays down. The one that costs you the point is the one that sits up, at any depth.", "Your volume is fine and your mix is not. Four sessions in the last seven days and only 08.08 had drilling in it. Twelve days to Aug 23 and those are the only sessions that set your first real rating.", "The overgrip is settled. Three sessions on the thin white one and you have called it good every time, so stop re evaluating it and spend the attention on the reset instead."];
+        if(Array.isArray(_pb.workOn)){
+          var _nw="Match your feet to the drop, kitchen, transition or back, decide off your own shot", _ow="Read the third off the paddle, lead in or hold";
+          _pb.workOn=_pb.workOn.filter(function(x){ return x!==_ow; });
+          if(_pb.workOn.indexOf(_nw)<0) _pb.workOn.push(_nw);
+        }
+        if(Array.isArray(_pb.cues)){
+          var _nc="Down beats short, height not length", _oc="Aim the arc, not the push";
+          _pb.cues=_pb.cues.filter(function(x){ return x!==_oc; });
+          if(_pb.cues.indexOf(_nc)<0) _pb.cues.push(_nc);
+        }
+      }
+      if(state.realEstate){
+        if(!Array.isArray(state.realEstate.todos)) state.realEstate.todos=[];
+        var _t273={"id": "ret-20260811-miller-pay", "key": "miller-commission", "done": false, "exp": "", "due": "", "src": "Deal re-michelle-miller, closed 07 Aug 2026, note says payment is outstanding", "text": "Chase the Michelle Miller commission. She closed Friday 07 August at $274,900, seller side, and the deal record says the payment is outstanding. The money is earned and not received and nothing in the system was tracking it."};
+        if(!state.realEstate.todos.some(function(x){ return x && (x.id===_t273.id || x.key===_t273.key); })) state.realEstate.todos.push(_t273);
+      }
+      if(state.meta && !state.meta.mig273_daily0811){ state.meta.mig273_daily0811=true; save(true); }
+  } }catch(e){ try{ console.warn("mig273 did not apply:",e&&e.message); }catch(_){} }
 
   /* build 225: focus timer removed, nothing to clear here anymore. */
   applyAccent(); dailyReset(); save(true);
