@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 271 (2026-08-10)">
+<meta name="build" content="v21 build 272 (2026-08-10)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -6489,6 +6489,43 @@ function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]
       });
       state.meta.mig271_two_sides=true; save(true);
   } }catch(e){ try{ console.warn("mig271 did not apply:",e&&e.message); }catch(_){} }
+
+  /* ===== v21 build 272: THE BELKNAPS ARE CASH BUYERS, AND THEY BUY BEFORE THEY SELL ===========
+     From a text Chris sent Ian, 08.10.2026: "they will move quickly. i set them up with a search.
+     they will look at houses this weekend. they will buy new house in cash and sell their existing
+     when it is ready to sell." Plus "they home school for now while the kids are young, so start of
+     school is non factor" and "so I see us getting both the buy and sell of Belknaps this year."
+
+     CASH GOES ON THE SUB LINE, NOT IN THE NOTE. Ian asked for it visible on the record rather than
+     buried, and the sub line added in build 267 is the one piece of text that renders on the row
+     itself without a tap. A cash buyer with no financing contingency and no lender appraisal is a
+     materially different counterparty from a typical buyer, and it belongs where it can be read at
+     a glance.
+
+     THE ORDER MATTERS AND IT IS THE OPPOSITE OF SYDNEY. They buy FIRST, in cash, and sell when the
+     house is ready. So the sale carries no contingency, no bridge financing and no timing pressure,
+     which is exactly the pressure Sydney's file is exposed to. Recorded because it changes how the
+     sell side gets priced and marketed later.
+
+     DO NOT CREATE A SECOND RECORD FOR THE PURCHASE YET, AND THIS IS NOW A COUNTING TRAP. They are
+     viewing houses on 15 and 16 August, so a real property with a real price is days away. Under
+     the rule Ian set in build 271, side "Both" ALREADY counts this record as TWO. The moment the
+     purchase gets its own record, THIS record must drop from side "Both" to side "Seller" in the
+     same edit, or the Belknaps count THREE. The same trap applies to Sydney Spicer and Bruce
+     O'Neil. Written into GLOBAL/RULES.md as well, because this fires within days.
+
+     NOTHING ELSE IS TOUCHED. No price, no stage, no source, no side. */
+  try{ if(profile==="ian" && state.realEstate && Array.isArray(state.realEstate.deals)
+          && state.meta && !state.meta.mig272_belknap_cash){
+      state.realEstate.deals.forEach(function(d){
+        if(!d || d.id!=="re-belknap-sell") return;
+        d.sub="Cash buyer. Sell plus buy, 4946 Pratt St";
+        if(String(d.note||"").indexOf("BUYER PROFILE 08.10.2026")<0){
+          d.note=String(d.note||"")+" BUYER PROFILE 08.10.2026, FROM A TEXT CHRIS SENT IAN, AND IT CHANGES THEIR POSITION MATERIALLY. THEY WILL BUY THE NEW HOUSE IN CASH. No financing contingency, no lender appraisal requirement, and a close as fast as title and inspection allow. On the buy side that makes them one of the strongest counterparties in any multiple offer this autumn, and it is worth leading with in an offer. THEY BUY FIRST AND SELL AFTER, when the existing house is ready, so the SALE carries no contingency on finding a home and no bridge financing pressure. That is the opposite exposure to Sydney Spicer, who is selling into the same market with timing pressure. CHRIS HAS ALREADY SET UP A SEARCH AND THEY VIEW HOUSES THIS WEEKEND, Saturday 15 and Sunday 16 August 2026. Move fast on showing feedback. THEY HOMESCHOOL while the kids are young, so the start of the school year is a NON FACTOR for them. That matters more than it sounds this year: the school calendar is the main thing pulling family buyers out of the market from late August, and it does not apply to the Belknaps, which is why they are largely insulated from the off season that Sydney is fully exposed to. CHRIS EXPECTS BOTH SIDES TO CLOSE THIS YEAR. COUNTING, READ THIS BEFORE ADDING THE PURCHASE RECORD: side Both already counts this record as TWO under the build 271 rule. When the purchase becomes real and gets its own record, THIS record must change to side Seller in the same edit or the Belknaps will count three.";
+        }
+      });
+      state.meta.mig272_belknap_cash=true; save(true);
+  } }catch(e){ try{ console.warn("mig272 did not apply:",e&&e.message); }catch(_){} }
 
   /* build 225: focus timer removed, nothing to clear here anymore. */
   applyAccent(); dailyReset(); save(true);
