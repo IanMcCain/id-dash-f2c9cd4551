@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 273 (2026-08-11)">
+<meta name="build" content="v21 build 274 (2026-08-11)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -6140,11 +6140,12 @@ function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]
      seedIan().meta. SEED_VERSION untouched. Touches no logged set. */
   try{ if(state.gym){
       state.gym.restDays=state.gym.restDays||{};
-      state.gym.restDays["2026-08-11"]={date:"2026-08-11",planned:true,
-        reason:"Sydney Spicer build vs buy at 3:45 and the mixed doubles league at 6:30.",
-        cut:"Push (chest, shoulders, tris), hard",
-        makeup:"Friday 14 August takes the pressing work.",
-        setBy:"Ian, 08.10.2026"};
+      /* THE 2026-08-11 REST ENTRY WAS REMOVED HERE ON 08.11.2026, build 274, AT SOURCE.
+         Ian decided that morning to train after all. This write was UNGUARDED and ran on every
+         load, so deleting the entry in a later block would have been undone on the next load and
+         then re-added forever: the exact "an unguarded every load block always beats a flag
+         guarded one" failure in RULES.md. Deleted here rather than out ordered downstream.
+         Build 274 also removes it from already saved profiles. Wednesday 12 is untouched. */
       state.gym.restDays["2026-08-12"]={date:"2026-08-12",planned:true,
         reason:"Moving into the new apartment. The move is the leg day.",
         cut:"Legs, hard",
@@ -6568,6 +6569,39 @@ function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]
       if(state.meta && !state.meta.mig273_daily0811){ state.meta.mig273_daily0811=true; save(true); }
   } }catch(e){ try{ console.warn("mig273 did not apply:",e&&e.message); }catch(_){} }
 
+  /* ===== v21 build 274: TUESDAY 11 AUGUST IS A TRAINING DAY AFTER ALL ========================
+     Ian decided the morning of 08.11 to go to the gym. Tuesday comes OFF the rest days.
+     WEDNESDAY 12 STAYS, that one is the move.
+
+     WHY THIS IS URGENT RATHER THAN COSMETIC: a day flagged as planned rest is EXCLUDED from the
+     skipped workout detector AND from the adherence denominator. Leaving it flagged would have
+     made the session he is about to do vanish from the numbers and flattered his adherence,
+     which is the precise opposite of the problem build 266 existed to fix.
+
+     THE DELETE IS BELT AND BRACES, AND THE BRACES ARE THE IMPORTANT HALF. Build 266's write of
+     this key was UNGUARDED and ran on every load, so a delete here alone would be re-added on the
+     next load, forever. The write has been removed at source up in the 266 block. This runs too,
+     because an already saved profile still carries the key and only a delete clears it.
+
+     FRIDAY 14 also loses its override, up in GYM_DATE_OVERRIDE, and reverts to the recurring
+     five. It existed only to carry the rope pushdown across from a cut Tuesday. Tuesday is not
+     cut, and he is doing the pushdown today, so Friday has nothing to absorb. */
+  try{ if(state.gym && state.gym.restDays && state.gym.restDays["2026-08-11"]){
+      delete state.gym.restDays["2026-08-11"];
+      save(true);
+  } }catch(e){ try{ console.warn("mig274 delete did not apply:",e&&e.message); }catch(_){} }
+  try{ if(profile==="ian"){
+      if(!Array.isArray(state.autoLog)) state.autoLog=[];
+      if(!state.autoLog.some(function(x){return x&&x.id==="auto-20260811-tue-trains";})){
+        state.autoLog.unshift({id:"auto-20260811-tue-trains",date:"2026-08-11",area:"Gym",
+          what:"Today is a light push day, not rest, and Friday goes back to five",
+          why:"You decided to train, so the rest flag had to come off or today's session would not have counted and your adherence would have read better than it was.",
+          evidence:"Three days of pickleball at effort 8, 9 and 7, hard pull yesterday, and league at 6:30 tonight. So chest carries the work and nothing touches your shoulders, hands or legs. Friday was only at six to cover a Tuesday push that is now happening.",
+          undo:"Gym, the normal Tuesday push is unchanged underneath, this is a one day view."});
+      }
+      if(state.meta && !state.meta.mig274_tue_trains){ state.meta.mig274_tue_trains=true; save(true); }
+  } }catch(e){ try{ console.warn("mig274 did not apply:",e&&e.message); }catch(_){} }
+
   /* build 225: focus timer removed, nothing to clear here anymore. */
   applyAccent(); dailyReset(); save(true);
 }
@@ -6686,9 +6720,12 @@ var GYM_TODAY_OVERRIDE={"2026-07-12":"Sat","2026-08-02":"Sat"};
    MONDAY 10 AUGUST IS DELIBERATELY ABSENT. He trained it. The 08.09 plan doc said otherwise and
    the plan doc is wrong. Every entry self expires. */
 var GYM_DATE_OVERRIDE={
- "2026-08-11":{day:"Tue",focus:"Planned rest",play:"League 6:30pm",rest:true,note:"Rest you chose, not a session you missed. Spicer at 3:45, league at 6:30. Serve block if you get 15 minutes on court, 40 counted at the slower pace.",exercises:[]},
+ "2026-08-11":{day:"Tue",focus:"Push, LIGHT. League tonight",play:"League 6:30pm",note:"Chest only, and nothing that costs you shoulders, hands or legs before 6:30. Leave two reps in the tank on every set.",exercises:[{id:"5igu8kh",name:"Machine chest press (machine, not DB)",scheme:"3\u00d710, moderate, 2 in reserve"},{id:"35qmmjc",name:"Lateral raise, LIGHT",scheme:"2\u00d715"},{id:"trlite15",name:"Rope pushdown, light",scheme:"2\u00d715"}]},
  "2026-08-12":{day:"Wed",focus:"Planned rest, moving day",play:"Off",rest:true,note:"The move is the leg day, and legs are cut this week with no makeup. Eat every 3 to 4 hours and salt your water. Legs are back Wednesday 19 August.",exercises:[]},
- "2026-08-14":{day:"Fri",focus:"Push (round 2), the week's only push",play:"Play",note:"Six this week because Tuesday's push was cut, back to five on 21 August. Rope pushdown is on loan from Tuesday.",exercises:[{id:"0x81lyf",name:"Incline DB or machine press",scheme:"4\u00d712/10/8/8"},{id:"cea7roe",name:"Pec deck or cable fly",scheme:"3\u00d715/12/12"},{id:"30p1894",name:"Machine shoulder press",scheme:"3\u00d712/10/8"},{id:"ui81mo6",name:"Cable lateral raise",scheme:"3\u00d715/12/12"},{id:"pkl-extrot",name:"Cable external rotation",scheme:"3\u00d715 per side"},{id:"trlite15",name:"Rope pushdown",scheme:"3\u00d712/10/10"}]},
+ /* FRIDAY 14 AUGUST IS BACK TO ITS NORMAL FIVE, so it has NO entry here any more. Removed
+    08.11.2026, build 274. It only existed to carry the rope pushdown across from a Tuesday
+    that was going to be cut. He is doing the pushdown on Tuesday after all, so Friday needs
+    nothing, and leaving it at six would be a doubled up session with no session to double. */
  "2026-07-26":{day:"Sun",focus:"Push, make up (one time)",play:"Play",note:"One time make up. You missed 2 to 3 gym days this week with pickleball, so today runs your Friday PUSH session, the pressing work that pickleball never trains. This is for TODAY ONLY, your recurring Sunday stays a rest day and the normal split resumes Monday unchanged. Monday is also push, so go a touch lighter Monday or swap it if you feel it.",exercises:[{id:"0x81lyf",name:"Incline DB or machine press",scheme:"4\u00d712/10/8/8"},{id:"cea7roe",name:"Pec deck or cable fly",scheme:"3\u00d715/12/12"},{id:"30p1894",name:"Machine shoulder press",scheme:"3\u00d712/10/8"},{id:"ui81mo6",name:"Cable lateral raise",scheme:"3\u00d715/12/12"},{id:"trlite15",name:"Rope pushdown (light)",scheme:"3\u00d715"},{id:"pkl-extrot",name:"Cable external rotation",scheme:"3\u00d715 per side"}]},
  "2026-07-17":{day:"Fri",focus:"Travel bodyweight, push and core",play:"Off",note:"Out of town, hotel workout, no equipment. Short and crisp, rest 45 to 60s, slow tempo for muscle.",exercises:[{id:"bw-0717-1",name:"Pushups",scheme:"3x12-15"},{id:"bw-0717-2",name:"Pike pushups (shoulders)",scheme:"3x8-12"},{id:"bw-0717-3",name:"Diamond pushups (triceps)",scheme:"3x8-12"},{id:"bw-0717-4",name:"Plank",scheme:"3x30-45s"}]},
  "2026-07-18":{day:"Sat",focus:"Travel bodyweight, posterior and core",play:"Off",note:"No pull bar, so posterior chain and rear delts fill in for a pull day. Squeeze at the top.",exercises:[{id:"bw-0718-1",name:"Glute bridges",scheme:"3x15-20"},{id:"bw-0718-2",name:"Superman holds (upper back)",scheme:"3x20-30s"},{id:"bw-0718-3",name:"Reverse snow angels (rear delts)",scheme:"3x12-15"},{id:"bw-0718-4",name:"Reverse plank",scheme:"3x20-30s"},{id:"bw-0718-5",name:"Bicycle crunches",scheme:"3x15-20/side"}]},
