@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 275 (2026-08-11)">
+<meta name="build" content="v21 build 276 (2026-08-11)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -6662,6 +6662,71 @@ function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]
       }
       state.meta.mig275_troester_paid=true; save(true);
   } }catch(e){ try{ console.warn("mig275 did not apply:",e&&e.message); }catch(_){} }
+
+
+  /* ===== v21 build 276: SYDNEY SPICER, CMA REVISION 4 AND THE BUY SIDE CRITERIA ==========
+     From the 08.11.2026 meeting, written the same evening. Three things land here.
+
+     A. THE VALUATION CAME DOWN AND IT IS NOW TWO NUMBERS, NOT ONE. The finished basement is
+     800 to 900 sq ft at the lowest, or 1,000 to 1,150 if they finish the storage area as a gym,
+     against the 1,000 to 1,200 Revision 3 assumed. Comps in her tier carry 927 to 995, so the low
+     case sits BELOW all three and the basement adjustment reverses direction. The basement bath is
+     a 3/4 and not a full, minus $2,500 per comp. At the Willis validated $48 per finished below
+     grade foot that gives supported $458,000 without the gym and $468,500 with it, against the
+     $472,000 Revision 3 carried. The price string is set to the RANGE rather than one figure
+     because the gym is an open client decision and both ends are real. priceNum takes the FIRST
+     number in the string, so the in flight ceiling picks up $458,000, which is the conservative
+     end and the correct behaviour here.
+
+     B. SHE IS A SPRING 2027 LISTING, NOT A 2026 ONE, AND THIS IS THE PART THAT MATTERS MOST.
+     Basement finished fall 2026, start looking spring 2027, ideally break ground January 2027, in
+     the new house spring 2028 at the latest. Revision 3's whole urgency section was built on a
+     rule of thumb that Sydney never gave and is now disproven. The sub line carries "spring 2027"
+     so the timing is visible on the row itself.
+
+     STAGE IS DELIBERATELY NOT TOUCHED AND THAT IS A FLAG FOR IAN, NOT AN OVERSIGHT. She reads
+     Coming Soon, which is app owned and his thumb. Coming Soon feeds the in flight ceiling, so a
+     spring 2027 listing sitting there carries $458,000 in the near term pipeline for about eight
+     months. Moving her to Prospecting would take it out. That is his call and his instruction,
+     exactly as the Belknap move was in build 265, so it is raised rather than done.
+
+     C. THE BUY SIDE IS REAL AND SPECIFIC, AND THERE IS A THIRD LEG NOBODY HAD ON FILE. Budget
+     $500,000 to $650,000 per their lender. The criteria go in the note because they are what a
+     search actually runs against. The third leg is a LOT PURCHASE in early 2027 if they build,
+     which their January groundbreak target makes live rather than hypothetical.
+
+     NO SECOND DEAL RECORD WAS CREATED, ON PURPOSE. She already counts TWO through side "Both"
+     under the 08.10 rule. Adding a buy record without dropping this one to side "Seller" in the
+     same edit would count her THREE, which is the split trap written into RULES. There is no
+     property and no price on the buy side yet, so there is nothing for a record to hold. It gets
+     its own record, and this one drops to Seller in the SAME edit, the day she is under contract
+     on something.
+
+     EXACT MATCH GUARDED on the stored $472,000, confirmed against the 08.11 export, so a price Ian
+     has changed himself is never overwritten. Flag lives in saved state only, never in
+     seedIan().meta. Idempotent, additive, non destructive. No SEED_VERSION bump. */
+  try{ if(profile==="ian" && state.realEstate && Array.isArray(state.realEstate.deals)
+          && state.meta && !state.meta.mig276_sydney_rev4){
+      state.realEstate.deals.forEach(function(d){
+        if(!d) return;
+        if(d.id==="re-sydney-spicer-sell"){
+          if(String(d.price||"")==="$472,000"){ d.price="$458,000 to $468,500"; }
+          d.priceNote="Supported, CMA Rev 4, spring 2027 planning figure";
+          d.sub="Sell plus buy, spring 2027, 20535 Howe St";
+          if(String(d.note||"").indexOf("CMA REVISION 4")<0){
+            d.note=String(d.note||"")+" CMA REVISION 4, 08.11.2026, WRITTEN AFTER THE MEETING AND IT LOWERS THE NUMBER. SUPPORTED $458,000 WITHOUT THE GYM FINISH AND $468,500 WITH IT, against $472,000 in Revision 3, so down $14,000 or down $3,500 depending on one decision they have not made yet. WHY IT MOVED. Finished basement is 800 to 900 sq ft at the lowest, or 1,000 to 1,150 only if they finish the storage area as a gym, against the 1,000 to 1,200 Revision 3 assumed. Comps in her tier carry 927 to 995 finished below grade, so at the low figure she sits BELOW every one of them and that adjustment now runs against her instead of for her. The basement bath is a 3/4 and not a full, minus $2,500 per comp. Rate is $48 per finished below grade foot, carried from the Willis file and tested twice on this property from opposite directions. LANDSCAPING IS NOT DONE but it is committed and the landscapers are already engaged, so it does NOT move the number: Revision 3 never carried a landscaping credit either, so removing it changes nothing. It is a new pre listing task. As is today it would be roughly $5,000 to $8,000 lower. THE GYM DECISION IS ROUGHLY A WASH ON MONEY. 225 more finished feet at $48 is about $10,800 of value against roughly $7,000 to $11,000 of cost, because a gym is the cheapest finished space there is, no plumbing, no egress requirement, minimal electrical. The argument FOR it is position, it moves her from the smallest finished basement in the comp set to the largest. The argument AGAINST it is the ceiling, $468,500 is $4,500 above the $464,000 tier record while $458,000 is $6,000 below it. Take it to them as a trade, not a recommendation. NEITHER FIGURE IS A LIST PRICE. She lists SPRING 2027, so these three comps will be twelve to twenty four months old by then and outside the window an appraiser wants. These are planning figures in today's dollars and the list price gets set from a FRESH CMA in January or February 2027. No appreciation has been added and none should be. THE TIMELINE, from them: basement finished fall 2026, start looking spring 2027, ideally break ground January 2027, in the new house spring 2028 at the very latest, and they will start building earlier if the right lot appears. The critical path item is the LANDSCAPING, the only task weather can move, so contract it over the winter. The real timing question is no longer seasonal, it is the gap between a spring 2027 sale and a build not finished until late 2027 or spring 2028: rent back, list later, or rent between. Raise it at the turn of the year when the build has a real completion date. ALSO NEW: drywall fireplace upstairs with stone a 50/50 decision, blue paint gone and now grey with forest green on the fireplace, possible basement bar depending on price. STILL OPEN: permits on the basement bedroom and bathroom worth $15,000 to $30,000, Chris is checking and there is no time pressure now. Whether the comps carry a full bath or a 3/4 below grade, worth $2,500 and checkable in Paragon. Measure the finished basement properly once it is done, it is currently their estimate and it drives the whole $10,500 spread.";
+          }
+          if(String(d.note||"").indexOf("BUY SIDE CRITERIA")<0){
+            d.note=String(d.note||"")+" BUY SIDE CRITERIA, FROM THE 08.11.2026 MEETING, AND SHE IS A THREE DEAL CLIENT NOT TWO. The three legs are the SALE of 20535 Howe St in spring 2027, their PURCHASE at $500,000 to $650,000, and a LOT PURCHASE in early 2027 if they build, which their January 2027 groundbreak target makes a live prospect rather than a hypothetical. BUDGET $500,000 to $650,000 per their lender, so treat the ceiling as hard. New build or existing, both fine if it fits. THE HOUSE: two storey, 4 bedroom PLUS an office with the bedrooms upstairs ideally, office enclosed rather than open, two storey entryway ideally, 3.5 car garage for his extra space, laundry room WITH a sink, more windows than the current home, and no island sink unless the island is large enough to carry it. Possible basement bar depending on price. THE LOT AND LOCATION: minimum 10,000 sq ft or 0.25 acre and nothing smaller, Sarpy County in a perfect world with Elkhorn fine, wants to be WEST, NOT the Lincoln Ridge area, he works in Papillion which is what pulls Sarpy up the list, no preference between walkout and flat though they like the light a walkout brings, and a small neighbourhood is acceptable only if it CONNECTS to another one because she wants to walk different routes rather than loop one block. THE TWO CRITERIA THAT WILL DO THE FILTERING are the 3.5 car garage and the 10,000 sq ft minimum lot together, inside $500,000 to $650,000, west. Everything else on the list is common at this price point. Search those two first, the field gets small fast, and that is also the argument for the build route and therefore for the lot. NO SECOND DEAL RECORD YET ON PURPOSE: she already counts two through side Both, and adding a buy record without dropping this one to Seller in the same edit would count her three. It gets its own record, and this one drops to Seller in the SAME edit, the day she is under contract on something.";
+          }
+        }
+      });
+      if(!Array.isArray(state.events)) state.events=[];
+      if(!state.events.some(function(e){ return e && e.id==="ev-20270115-spicer-cma-refresh"; })){
+        state.events.push({id:"ev-20270115-spicer-cma-refresh",date:"2027-01-15",kind:"Real estate",title:"Sydney Spicer, fresh CMA before the spring listing"});
+      }
+      state.meta.mig276_sydney_rev4=true; save(true);
+  } }catch(e){ try{ console.warn("mig276 did not apply:",e&&e.message); }catch(_){} }
 
   /* build 225: focus timer removed, nothing to clear here anymore. */
   applyAccent(); dailyReset(); save(true);
