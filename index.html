@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 278 (2026-08-11)">
+<meta name="build" content="v21 build 279 (2026-08-11)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -6846,6 +6846,90 @@ function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]
       }
       if(state.meta && !state.meta.mig278_league_correction){ state.meta.mig278_league_correction=true; save(true); }
   } }catch(e){ try{ console.warn("mig278 did not apply:",e&&e.message); }catch(_){} }
+
+  /* ===== v21 build 279: GRIP MOISTURE IS A NEW VARIABLE. WEAR STAYS CLOSED ===================
+     A THIRD CORRECTION TO THIS ONE SESSION, AND THIS ONE IS A SCOPING ERROR RATHER THAN A
+     WEIGHTING ONE. Build 277 closed "the grip" as an explanation. It was entitled to close the
+     WEAR question and it overreached by closing EQUIPMENT. Ian's added detail: his hands were
+     super sweaty and the grip felt "a little weird", and he puts hitting a lot of drives into the
+     top of the net down to that.
+
+     MOISTURE IS NOT WEAR AND THE EVIDENCE RUNS THE OTHER WAY. A brand new tacky overgrip works by
+     SURFACE TACK, and surface tack is the exact property sweat defeats, so a fresh tacky grip on
+     wet hands can be WORSE than a broken in one. That means the observation I used to close the
+     question, fresh grip plus worst session, is PREDICTED by the moisture hypothesis rather than
+     evidence against it. Same fact, opposite conclusion, because the variable changed.
+
+     THE SERVE ARGUMENT ALSO DOES NOT TRANSFER, and that was the other half of the overreach.
+     I argued that the serve holding up cut against equipment. It cuts against WEAR. It does not
+     cut against moisture: a serve is one self paced ball he can dry his hand before, with the
+     lowest grip force and the lowest head speed of any shot he hits. Dinks the same. DRIVES are
+     his highest grip force and highest head speed shot, which is exactly where a slipping hand
+     shows, and drives are what failed. The shot by shot split FITS moisture rather than refuting
+     it.
+
+     WHAT IS NOT YET SEPARABLE: deliberate corner aiming (08.10) and grip moisture both predict
+     height and depth errors with DIRECTION intact. The moisture fix separates them cheaply.
+
+     PROPORTION. THEY WON TWO MATCHES and he has said so twice. This build does not record the
+     night as a failure and neither should anything downstream. */
+  try{ if(profile==="ian" && state.pickleball){
+      var _C279=" ===== SECOND CORRECTION APPENDED 08.11.2026, build 279. THE GRIP CLOSURE ABOVE WAS SCOPED TOO WIDE. "
+        +"NEW DETAIL FROM IAN: he felt good PHYSICALLY, but his HANDS WERE SUPER SWEATY and the grip felt \"a little weird\". He attributes hitting a lot of drives into the TOP OF THE NET to that, and says his biggest error of the night by far was dumb shots going either slightly long or into the net, REPEATEDLY, not once. "
+        +"THE VARIABLE IS MOISTURE, NOT WEAR, AND THAT IS A DIFFERENT HYPOTHESIS. The wear question IS closed: a fresh unit did not restore consistency. Moisture is untouched by that test and is NEWLY OPEN. A brand new tacky overgrip works by SURFACE TACK and sweat is the one thing that defeats surface tack, so a fresh tacky grip on wet hands can be WORSE than a broken in one. The fresh grip plus worst session observation is therefore PREDICTED by this hypothesis, not evidence against it. "
+        +"AND MY SERVE ARGUMENT DOES NOT TRANSFER. Above I used the serve holding up as evidence against equipment generally. That is valid against WEAR and INVALID against MOISTURE: a serve is one self paced ball he can dry his hand before, lowest grip force and lowest head speed of anything he hits, and dinks are the same. DRIVES are his highest grip force and highest head speed shot, which is precisely where a wet hand shows, and drives are what failed. The shot by shot split FITS moisture. "
+        +"THE TWO NIGHT DRIVE PATTERN IS THE STRONGEST THREAD AND IT IS ONE FINDING, NOT TWO NOTES. 08.10: drives inconsistent on HEIGHT while placement improved. 08.11: drives into the top of the net, shots slightly long or into the net, repeatedly. SAME SPECIFIC FAULT TWICE: HEIGHT AND DEPTH CONTROL ON DRIVES, WITH DIRECTION INTACT. A repeated specific error is worth far more than a general bad night, and this is the most concrete thing on his drives since the film study. "
+        +"NOT YET SEPARABLE, and say so rather than picking: deliberate corner aiming and grip moisture BOTH predict height and depth errors with direction intact. One cheap change separates them. "
+        +"HIS READ OF THE FIELD, recorded as his assessment: he does not think the opposition explains tonight. He believes he and Bianca could beat everyone in the league fairly comfortably when playing well, with Dylan and Megan the exception, hard but beatable. That is consistent with his claim that his own inconsistency decided the night, not in tension with it. "
+        +"KEEP IT IN PROPORTION. THEY WON TWO MATCHES, and he has now said so twice. Recording this night as a failure would be as wrong as softening it was. Flaw first is not pessimism first.";
+      if(Array.isArray(state.pickleball.sessions)){
+        state.pickleball.sessions.forEach(function(s){
+          if(!s || s.id!=="pk-20260811-league") return;
+          var n=String(s.note||"");
+          if(n.indexOf("SECOND CORRECTION APPENDED 08.11.2026, build 279")>=0) return;
+          if(n.indexOf("MIXED DOUBLES LEAGUE WITH BIANCA")<0) return;
+          s.note=n+_C279;
+        });
+      }
+
+      var _g279=(state.pickleball.gear||{});
+      if(_g279.grip){
+        if(_g279.grip.test){
+          _g279.grip.test.status="CLOSED 08.11.2026 on WEAR ONLY";
+          _g279.grip.test.scope="This test answered WEAR and nothing else. It did not test moisture, and build 277 wrongly generalised it to equipment as a whole.";
+          _g279.grip.test.doNotReopen="Do not revive GRIP WEAR as the explanation for 08.10 without new evidence. This says nothing about moisture, which is open below.";
+        }
+        _g279.grip.moistureTest={
+          id:"grip-moisture-0812", opened:"2026-08-11", status:"OPEN, and it is the live grip question",
+          claim:"Ian: hands super sweaty, grip felt a little weird, and he puts a lot of drives into the top of the net down to it.",
+          why:"A fresh tacky overgrip works by SURFACE TACK and sweat defeats surface tack, so fresh plus wet can be worse than broken in. This is why the wear result does not close it, and why fresh grip plus worst session is PREDICTED here rather than contradicted.",
+          whyItFitsTheSplit:"Serve and dinks held, drives failed. Serve is one self paced ball with the lowest grip force and head speed and he can dry his hand first. Drives are the highest of both. A wet hand shows on drives and hides on serves.",
+          test:"ONE change, next session. A perforated or towel style overgrip, or a rosin bag, or simply a towel between points. Change one thing only so the result means something.",
+          resolvesFast:"He plays about four times a week, so this returns an answer inside days rather than weeks.",
+          confound:"Deliberate corner aiming from 08.10 predicts the SAME height and depth errors with direction intact. Fixing moisture is what separates them: if the height errors persist while he is still aiming, it is the aiming."
+        };
+      }
+      _g279.driveErrorPattern={
+        id:"drive-height-depth-0810", opened:"2026-08-11", status:"open, TWO SESSIONS",
+        finding:"HEIGHT AND DEPTH CONTROL ON DRIVES, WITH DIRECTION INTACT. Two nights running.",
+        n:[{date:"2026-08-10", said:"Drives really inconsistent on HEIGHT, but placement is getting even better."},
+           {date:"2026-08-11", said:"A lot of drives into the TOP OF THE NET. Biggest error by far was dumb shots slightly long or into the net, repeatedly."}],
+        whyItMatters:"A repeated SPECIFIC error is worth far more than a general bad night, and this is the most concrete thing on his drives since the film study. It also matches the 07.29 film finding of no depth or speed variation on drives, and his own 08.09 wish for control of distance, deeper or shorter on demand.",
+        candidates:"Grip moisture, deliberate corner aiming, or genuine depth calibration. All three predict height and depth errors with direction intact, so none is separable from the report alone.",
+        next:"Film it, or fix moisture first because that is the cheap one."
+      };
+      if(state.pickleball.gear) state.pickleball.gear=_g279;
+
+      if(!Array.isArray(state.autoLog)) state.autoLog=[];
+      if(!state.autoLog.some(function(x){return x&&x.id==="auto-20260811-grip-moisture";})){
+        state.autoLog.unshift({id:"auto-20260811-grip-moisture",date:"2026-08-11",area:"Pickleball",
+          what:"Reopened the grip question as MOISTURE, and logged your drive error as a two night pattern",
+          why:"I closed the grip too widely. A fresh grip ruled out WEAR, it did not rule out sweat, and sweat is the one thing a tacky overgrip cannot handle.",
+          evidence:"Sweaty hands beat surface tack, so a fresh tacky grip can be worse than a worn one, which means your worst session on a new grip actually FITS this rather than ruling it out. It also explains why serve and dinks held and drives did not: drives are your highest grip force shot. And twice now your drives have missed on HEIGHT and DEPTH while direction stayed good.",
+          undo:"Pickleball, gear, clear the moisture test if you disagree."});
+      }
+      if(state.meta && !state.meta.mig279_grip_moisture){ state.meta.mig279_grip_moisture=true; save(true); }
+  } }catch(e){ try{ console.warn("mig279 did not apply:",e&&e.message); }catch(_){} }
 
   /* build 225: focus timer removed, nothing to clear here anymore. */
   applyAccent(); dailyReset(); save(true);
