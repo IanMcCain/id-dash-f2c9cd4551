@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 276 (2026-08-11)">
+<meta name="build" content="v21 build 277 (2026-08-11)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -6727,6 +6727,74 @@ function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]
       }
       state.meta.mig276_sydney_rev4=true; save(true);
   } }catch(e){ try{ console.warn("mig276 did not apply:",e&&e.message); }catch(_){} }
+
+  /* ===== v21 build 277: LEAGUE NIGHT ONE, 11 AUGUST. AND IT LOOKS LIKE A TOURNAMENT ==========
+     Self report, NO RATING MOVES. Pushed the same night.
+
+     THE FINDING IS IN THE HEART RATE AND IT IS THE ONLY OBJECTIVE EVIDENCE TONIGHT PRODUCED.
+     Everything else is self report. Tonight: avg 118, max 162, effort 9, 3h07.
+     His 07.25 TOURNAMENT:  avg 119, max 162, effort 9, 3h36.
+     His two LEAGUE nights: avg 139 max 181, and avg 140 max 179, the two highest averages in his
+     whole record. So tonight is NOT what league play looks like for him. It is a near exact
+     physiological twin of his tournament day, down to an identical max HR, and it is nothing like
+     either previous league. Competitive scored play with real waiting between matches has its own
+     signature and this is it.
+
+     TWO PREMISES CORRECTED ON HIS OWN DATA rather than written in:
+     1. Not his longest session. THIRD longest, behind 07.25 tournament 3:36:33 and 07.13 league
+        3:24:22.
+     2. The low average is not "what league play looks like". Both his prior leagues are the
+        HIGHEST averages he has. The differentiator is the FLOOR: min 65 tonight against 84 and 91
+        in July, so he was genuinely coming all the way down between matches.
+
+     THE GRIP TEST HAS RUN AND IT WENT AGAINST THE GRIP. He fitted a fresh overgrip before
+     tonight, which was the whole test, and produced his worst session by his own account. Closed
+     accordingly. Yesterday's note already had to be corrected once for over weighting equipment;
+     this closes it out rather than leaving it open to be re-argued. */
+  try{ if(profile==="ian" && state.pickleball){
+      if(!Array.isArray(state.pickleball.sessions)) state.pickleball.sessions=[];
+      var _S277=[
+        {id:"pk-20260811-league", date:"2026-08-11", kind:"League", venue:"Omaha",
+         duration:"3h 07m 19s", calories:1772, activeCalories:1479, avgHr:118, maxHr:162, minHr:65, effort:9,
+         note:"MIXED DOUBLES LEAGUE WITH BIANCA, NIGHT ONE. Omaha, 5:46 to 8:53 PM, 3:07:19. Effort 9 of 10, All Out. From Apple Watch. Avg HR 118, peak 162, low 65, active 1,479, total 1,772. FOURTH CONSECUTIVE PLAYING DAY, 08.08 to 08.11 at efforts 8, 9, 7 and 9, plus a light push lift this morning. First session on the FRESH overgrip he fitted before tonight. No footage, so NO RATING CHANGE. Evidence class SELF REPORT. RESULTS: lost 0-2 to Dylan and his girlfriend, who he says are likely the best pair in the league, won the second set 2-0, and he describes all the matches as close. HIS REPORT, his words: \"I played terrible today, everything except my serve was super inconsistent.\" On reflection dinks were good too. Drives, drops and returns all super inconsistent, missed a lot of easy shots, \"just a bad day\". "
+             +"READ. 1. THE HEART RATE IS THE ONLY OBJECTIVE EVIDENCE TONIGHT AND IT SAYS TOURNAMENT, NOT LEAGUE. Tonight avg 118, max 162, effort 9. His 07.25 TOURNAMENT: avg 119, max 162, effort 9. Identical max, one bpm apart on average, same effort. His two actual LEAGUE nights ran avg 139 max 181 and avg 140 max 179, which are the two HIGHEST averages in his entire record. So the low average is emphatically not what league play looks like for him, and the floor is the giveaway: min 65 tonight against 84 and 91 in July, meaning he came all the way down between matches. Competitive scored play with waiting between matches has a signature and this is it. That is INDEPENDENT support for the first competitive night explanation, arrived at from the watch rather than from his account. "
+             +"2. HIS SUMMARY IS WRONG AND THE PATTERN IS COHERENT. He calls it a bad day. What actually happened is that his SELF PACED and SOFT game held, serve good and dinks good, while his PRESSURED, OPPONENT DRIVEN shots fell apart, drives drops and returns. Those three are precisely where his record has always shown the practice to match gap, drops that hold in drills and collapse under pressure. A bad day degrades everything. This degraded one category and left the other intact. Name it as a pattern, not a bad day. "
+             +"3. THE GRIP TEST RAN AND THE RESULT IS AGAINST THE GRIP. He fitted a fresh overgrip before tonight, which was the entire test set up on 08.10, and it produced his worst self rated session. Combined with SERVE HOLDING UP FOR THE SECOND NIGHT RUNNING, which is his most self paced stroke and where a bad grip shows first, equipment is now the weakest explanation on the board rather than a live one. Yesterday's note had to be corrected once for over weighting equipment. This closes it. "
+             +"4. FOURTH CONSECUTIVE DAY PLUS A LIFT, and it is the simplest explanation still standing. Efforts 8, 9, 7, 9 with a push session this morning. Note the effort and HR move in OPPOSITE directions against yesterday, effort up 7 to 9 while average HR fell 134 to 118. Some of that is the format, per point 1, but a blunted HR response at maximum perceived effort is also what accumulated fatigue looks like, and both readings can be true at once. "
+             +"5. DO NOT TREAT THIS AS A SKILL REGRESSION. Nothing moves. It is the first competitive data in weeks and the hardest possible combination: a first scored night, against the best pair in the league, on day four, the day after he started deliberately practising placement. Expect a dip and read the NEXT competitive night, not this one. "
+             +"6. THE QUESTION TO ASK NEXT TIME, and it is already standing from 08.10: was he still AIMING, per shot type, and ask that BEFORE asking how he played. Ask how it went first and you get a performance answer and lose the intent signal entirely, which on a night he rates himself terrible is exactly when it would be lost."}
+      ];
+      var _ex277=state.pickleball.sessions, _add277=0;
+      _S277.forEach(function(r){ if(!_ex277.some(function(x){ return x&&x.id===r.id; })){ _ex277.push(r); _add277++; } });
+      _ex277.sort(function(a,b){ return String(a&&a.date).localeCompare(String(b&&b.date)); });
+
+      var _g277=(state.pickleball.gear||{});
+      if(_g277.grip){
+        _g277.grip.current={state:3, since:"2026-08-08", wear:"FRESH unit fitted before the 08.11 league", note:"Same grip type. The wear question has been answered."};
+        if(_g277.grip.test){
+          _g277.grip.test.status="CLOSED 08.11.2026, result AGAINST the grip";
+          _g277.grip.test.result="It ran. He fitted a fresh unit of the same thin overgrip before the 08.11 league and produced his WORST self rated session. Consistency did not return. Combined with the serve holding up two nights running, which is the stroke where a bad grip shows first, equipment is now the weakest explanation rather than a live one.";
+          _g277.grip.test.doNotReopen="Do not revive the worn grip as the explanation for 08.10 without new evidence. It was tested directly and the test went the other way.";
+        }
+        if(Array.isArray(_g277.grip.states) && _g277.grip.states[2]){
+          _g277.grip.states[2].wear="Ran worn to 08.10, REPLACED with a fresh unit before the 08.11 league.";
+          _g277.grip.states[2].read="Depth held two sessions, broke on the worn third, and did NOT return on a fresh unit. The wear hypothesis is not supported.";
+        }
+      }
+      if(_g277.placementTest){
+        _g277.placementTest.firstCompetitiveNight="2026-08-11 was a first competitive night and NOT a fair read on the placement question. Ask whether he was still aiming, per shot type, before asking how he played.";
+      }
+
+      if(!Array.isArray(state.autoLog)) state.autoLog=[];
+      if(!state.autoLog.some(function(x){return x&&x.id==="auto-20260811-league";})){
+        state.autoLog.unshift({id:"auto-20260811-league",date:"2026-08-11",area:"Pickleball",
+          what:"Logged league night one, and closed the grip question",
+          why:"You called it a bad day. Your watch says something more specific, and your soft game actually held.",
+          evidence:"Avg HR 118, peak 162, effort 9 is almost exactly your 07.25 tournament (119, 162, 9) and nothing like your two old league nights, which both ran about 140. Serve and dinks held while drives, drops and returns did not, and those three are where the practice to match gap has always shown. The fresh grip did not fix anything, so equipment is off the table.",
+          undo:"Pickleball, open the 11 August session to edit or remove it."});
+      }
+      if(state.meta && !state.meta.mig277_league0811){ state.meta.mig277_league0811=true; save(true); }
+  } }catch(e){ try{ console.warn("mig277 did not apply:",e&&e.message); }catch(_){} }
 
   /* build 225: focus timer removed, nothing to clear here anymore. */
   applyAccent(); dailyReset(); save(true);
