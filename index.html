@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 280 (2026-08-12)">
+<meta name="build" content="v21 build 281 (2026-08-12)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -6965,6 +6965,69 @@ function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]
       }
       if(!state.meta) state.meta={}; state.meta.mig280_supp0811=true; save(true);
   } }catch(e){ try{ console.warn("mig280 did not apply:",e&&e.message); }catch(_){} }
+
+
+  /* ===== v21 build 281: THE 08.12 BRIEF, AND THE DRIVE IS THE ITEM =====================
+     Daily content for 2026-08-12, written by ian-daily-brief. Date keyed and deep merged,
+     so no SEED_VERSION bump. Nothing here replaces anything Ian logged.
+
+     THE FINDING THIS BUILD CARRIES: his drives failed the SAME SPECIFIC WAY on 08.10 and
+     08.11. Inconsistent on height while placement improved, then into the top of the net
+     and slightly long, repeatedly, with DIRECTION INTACT both nights. A repeated specific
+     error outranks a general bad night, and it is the most concrete thing on his drives
+     since the 07.22 film study.
+
+     workOn and cues are WHOLE ARRAY assigned, so per build 127 this block sits AFTER every
+     other assignment to those keys and wins on file order. One in and one out on each,
+     sizes held at 7 and 10. The retired pair, "Drop depth, same side paddle path, open face
+     through contact" and "Same side, out front, open face", are superseded by grade the drop
+     by height not length, and by the 08.10 finding that the drop is no longer the leak. */
+  try{ if(profile==="ian" && state.pickleball){
+      var T281="2026-08-12", _p281=state.pickleball;
+      if(!state.briefing) state.briefing={}; if(!state.briefing.forIan) state.briefing.forIan={};
+      if(!state.briefing.forIan[T281]) state.briefing.forIan[T281]=[{"id": "brief-20260812-1", "type": "Real estate", "title": "Thacker lists tomorrow and nothing on your calendar touches it", "note": "Aug 13 is the list target for 4911 S 131st at $250,000 and the prep todo expires tonight. Thursday holds a Belknap showing, gym and Barker comps. No photos, no copy.", "url": "", "why": "Because it is the only listing in the pipeline that is your own client", "done": false}, {"id": "brief-20260812-2", "type": "Pickleball", "title": "Your drives failed the same way two nights running", "note": "08.10 inconsistent on height while placement improved. 08.11 into the top of the net and slightly long, repeatedly. Direction stayed intact both nights. One specific fault, not a bad day.", "url": "https://www.youtube.com/watch?v=Qsbsuw2rYMk", "why": "Because a repeated specific error is worth more than a general one, 11 days to your rating", "done": false}, {"id": "brief-20260812-3", "type": "Real estate", "title": "Crystal Johnson closes Friday at $577,861", "note": "Second of four closings inside eleven days. Signed business is about $7.85M against the $10M goal, closed plus under contract, and 15 deals against 20.", "url": "", "why": "Because it closes in two days and a real estate year is front loaded, not linear", "done": false}];
+      if(!state.futureIdeas) state.futureIdeas={};
+      if(!state.futureIdeas[T281]) state.futureIdeas[T281]=[{"id": "fi-20260812-1", "text": "Shoot the Thacker listing photos on your phone the morning it goes live. It is a $250,000 house and you own the client, so a same day listing beats a perfect one that waits on a photographer.", "url": ""}, {"id": "fi-20260812-2", "text": "Ask Ryan Beachler to let you film the Rose Creek two storey while it is still empty. You staff it every Sunday anyway, and an empty walkthrough is the one asset you cannot make after it sells.", "url": ""}, {"id": "fi-20260812-3", "text": "Register for the Fall Cup now rather than in September. Sept 12 to 13, mens doubles with Dylan, DUPR rated, and event volume is the only thing that moves a rating.", "url": ""}, {"id": "fi-20260812-4", "text": "Put your DUPR in your Instagram bio the week after Aug 23. It is the number other Omaha players search for, and it makes every pickleball post you make legible to the local scene.", "url": ""}];
+      if(!state.quickWin) state.quickWin={}; if(!state.quickWin.picks) state.quickWin.picks={};
+      if(!state.quickWin.picks[T281]) state.quickWin.picks[T281]=["Text Austin Thacker one line today asking whether tomorrow still works to list. The Aug 13 target has been on the record since 07.28, the prep todo expires tonight, and nothing on Thursday touches it. One text settles it either way and it fits around a moving day.", "Drink water while you move. You logged 3 cups Tuesday against a goal of 9, your lowest in the last ten days by half, and today is the most physical day of your week."];
+      if(!_p281.coachBullets||Array.isArray(_p281.coachBullets)||typeof _p281.coachBullets!=="object") _p281.coachBullets={};
+      if(!_p281.coachBullets[T281]) _p281.coachBullets[T281]=["Next session, one thing, and it is derived from your own last two sessions rather than invented. Control the HEIGHT on your drives. On 08.10 you were inconsistent on height while your placement improved. On 08.11 you put a lot of them into the top of the net and pushed others slightly long, repeatedly, your words. Same specific fault twice, direction intact both times.", "Test the sweat, it costs you nothing. A brand new tacky overgrip is the one that fails wettest, because tack is a surface property and sweat kills it. Take a towel Thursday and dry your hand every changeover. If the drives clean up it was moisture. If they do not it was the corner aiming.", "Your own read on Tuesday beats mine and it is more useful than bad day. Serve held, dinks held. Drives, drops and returns fell apart. Self paced shots survived, opponent driven shots did not. That is the practice to match gap, and it is now the leading open item on your game.", "Eleven days to your rating and Tuesday was your first competitive data in weeks. One league night on the fourth straight playing day is not a verdict. Read Aug 18 instead, and answer whether you were still AIMING per shot type before you answer how it felt.", "Today is a rest day and you should actually take it. Four playing days 08.08 to 08.11 at efforts 8, 9, 7 and 9, a push lift Tuesday morning, and you are moving apartments."];
+      if(!_p281.coachRec||typeof _p281.coachRec!=="object") _p281.coachRec={};
+      if(!_p281.coachRec[T281]) _p281.coachRec[T281]={"title": "Three speeds on the drive, and count the height not the winner.", "note": "Ten drives at 70 percent, ten at 85, ten at full. Log only whether each one cleared the tape clean or clipped it. Height and depth failed two nights running with direction intact, and your 08.09 entry asked for control of distance unprompted."};
+      if(!_p281.videoRec||typeof _p281.videoRec!=="object") _p281.videoRec={};
+      if(!_p281.videoRec[T281]) _p281.videoRec[T281]={"title": "#1 Reason Why Players Hit Drives Into The Net: How To Fix", "url": "https://www.youtube.com/watch?v=Qsbsuw2rYMk", "note": "Straight at the 08.11 fault. You put a lot of drives into the top of the net on league night and pushed the rest slightly long, with direction intact both times, so this is the exact shot and the exact failure."};
+      if(!_p281.research||typeof _p281.research!=="object") _p281.research={};
+      if(!_p281.research[T281]) _p281.research[T281]={"title": "Grade the drop by height, not length", "text": "Stop judging a drop by whether it stayed inside the kitchen line. A drop that carries a little past the line is fine as long as it stays down, because they still have to hit up on it either way. The shot that costs you the point is one that sits up, at any depth.", "url": "https://www.youtube.com/watch?v=TV5EW2WkQL4", "source": "Enhance Pickleball, Connor Hance, pulled 08.11.2026"};
+      /* whole array, last writer, see build 127 */
+      _p281.workOn=["Throw the first punch, weight forward before the swing, never off the back foot", "Speed ups down the line or at the body, not crosscourt by default", "Stay ready after you attack, the ball is coming back", "Drive height first, target second, if it clips the tape or runs long you were aiming before you were controlling", "Green zone, above net height gets accelerated every time", "Natural sides locked, own the middle, hold your width, do not both drift one way", "Match your feet to the drop, kitchen, transition or back, decide off your own shot"];
+      _p281.cues=["Weight back, then forward, before the swing", "Paddle tip down, short and compact", "Down the line or the body, not crosscourt", "Speed it up, then clean it up", "Height first, corner second", "Above the net, pull the trigger", "Slice to defend, topspin to press", "Wide base, lunge, recover to middle", "Crosscourt to the deeper player", "Down beats short, height not length"];
+      /* TO DO MAINTENANCE. Retire the Sydney Spicer valuation prep: its exp was 2026-08-11
+         and the 3:45 Tuesday meeting with Chris happened, so its grounding is gone. Moved to
+         state.archive.todosDone with the reason, never deleted. Nothing created, because
+         nothing new is grounded in a date, a detector or something he wrote. Nine is the
+         honest count and ten is a ceiling, not a target. */
+      if(state.realEstate && Array.isArray(state.realEstate.todos)){
+        if(!state.archive) state.archive={};
+        if(!Array.isArray(state.archive.todosDone)) state.archive.todosDone=[];
+        var _keep281=[];
+        state.realEstate.todos.forEach(function(t){
+          if(t && t.id==="ret-20260810-spicer-syd-val"){
+            t.retiredOn="2026-08-12";
+            t.retiredWhy="exp 2026-08-11 passed and the 3:45 Tuesday valuation meeting with Chris happened";
+            state.archive.todosDone.push(t);
+          } else { _keep281.push(t); }
+        });
+        state.realEstate.todos=_keep281;
+      }
+      /* The 07.23 gym note has been resurfacing as unprocessed on every run since. It reads
+         "Felt really good, good workout " and carries no instruction, so it is marked read
+         rather than left to resurface forever. */
+      if(state.context && state.context.dailyLog && state.context.dailyLog["2026-07-23"]
+         && !state.context.dailyLog["2026-07-23"].gymNoteAgentActed){
+        state.context.dailyLog["2026-07-23"].gymNoteAgentActed="2026-08-12";
+      }
+      save(true);
+  } }catch(e){ try{ console.warn("mig281 did not apply:",e&&e.message); }catch(_){} }
 
   /* build 225: focus timer removed, nothing to clear here anymore. */
   applyAccent(); dailyReset(); save(true);
