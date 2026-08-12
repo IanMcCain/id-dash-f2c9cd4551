@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 277 (2026-08-11)">
+<meta name="build" content="v21 build 278 (2026-08-11)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -6795,6 +6795,57 @@ function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]
       }
       if(state.meta && !state.meta.mig277_league0811){ state.meta.mig277_league0811=true; save(true); }
   } }catch(e){ try{ console.warn("mig277 did not apply:",e&&e.message); }catch(_){} }
+
+  /* ===== v21 build 278: THE 08.11 OUTCOME, RECORDED HARD. CORRECTS 277's FRAMING =============
+     APPENDED, NOT REWRITTEN. Build 277 framed the night as close matches against the best pair
+     in the league, which reads as encouraging, and Ian rejected it. His standing coaching
+     preference is short on strengths, deep on faults, no sugarcoating, and 277 did the opposite.
+     The correction stays VISIBLE inside the note rather than being edited out of it, because a
+     record that quietly repairs itself teaches nobody anything and this is the second softening
+     correction in two days.
+
+     HIS ASSESSMENT IS HARDER THAN MINE AND MORE FALSIFIABLE, WHICH IS WHY IT GETS RECORDED AS A
+     CLAIM RATHER THAN AS MOOD. He says the opponents did not play horribly but his inconsistency
+     was EXTREME and was the limiting factor on the whole night: if he had played better the last
+     two matches would not have been close, they would have won comfortably, and the first two
+     might have gone the other way or at least been close. He attributes the results to his own
+     execution rather than to the opponents' level or to Bianca. That is a testable statement, and
+     his self assessment has already proved reliable once, on 08.05, when his own ratings tracked
+     his observations instead of drifting upward.
+
+     AND IT SHARPENS THE REAL FINDING. The practice to match gap showed up in RESULTS tonight, not
+     just in feel. A scored match makes the cost measurable rather than impressionistic, and this
+     is the first competitive test in weeks. It is another data point on the 07.30 unresolved
+     question, drops that hold in drills and collapse under match pressure, and it lands on the
+     collapse side. Log it as part of that series, not as a one off bad night.
+
+     NO RATINGS MOVE. Guarded so it cannot double append, and it leaves his own edits alone. */
+  try{ if(profile==="ian" && state.pickleball && Array.isArray(state.pickleball.sessions)){
+      var _C278=" ===== CORRECTION APPENDED 08.11.2026, build 278. THE FRAMING ABOVE WAS TOO SOFT AND IAN REJECTED IT. "
+        +"Ignore \"he describes all the matches as close\" as the read on the night. It is factually what was said and it is the wrong emphasis, and his standing preference is short on strengths and deep on faults. "
+        +"HIS ACTUAL ASSESSMENT, and it is harder than the one above: the opponents did not play horribly, but HIS INCONSISTENCY WAS EXTREME AND IT WAS THE LIMITING FACTOR ON THE WHOLE NIGHT. In his own terms, if he had played better the last two matches would not have been close, they would have won comfortably, and the first two might have gone the other way or at least been close. "
+        +"RECORD THAT AS A CLAIM, NOT AS MOOD, BECAUSE IT IS FALSIFIABLE AND IT COSTS HIM SOMETHING. He is attributing the results to his OWN EXECUTION rather than to the opponents' level or to Bianca, which is a harder statement than \"bad day\" and a harder one than the version I wrote. His self assessment has already proved reliable once: on 08.05 his own ratings tracked his observations instead of drifting upward, and drops was the only skill he marked DOWN. "
+        +"WHAT THIS DOES TO THE FINDING, and it strengthens it. The self paced game held, serve and dinks, while the pressured opponent driven shots failed, drives drops and returns. Tonight that gap showed up IN RESULTS rather than in feel. A scored match makes the cost measurable, and this is the first competitive data in weeks. "
+        +"FILE IT AGAINST THE 07.30 UNRESOLVED QUESTION, drops that hold in drills and collapse under match pressure. Tonight is another data point ON THE COLLAPSE SIDE, and it belongs in that series rather than being written off as one bad night. The practice to match gap is now the leading open item on his game, ahead of equipment, which was closed tonight, and ahead of depth. "
+        +"STILL NO RATING CHANGE. A self report never moves a rating, and one competitive night on day four is not a regrade. It is a reason to FILM the next competitive night.";
+      state.pickleball.sessions.forEach(function(s){
+        if(!s || s.id!=="pk-20260811-league") return;
+        var n=String(s.note||"");
+        if(n.indexOf("CORRECTION APPENDED 08.11.2026, build 278")>=0) return;  /* idempotent */
+        if(n.indexOf("MIXED DOUBLES LEAGUE WITH BIANCA")<0) return;            /* his edit wins */
+        s.note=n+_C278;
+      });
+
+      if(!Array.isArray(state.autoLog)) state.autoLog=[];
+      if(!state.autoLog.some(function(x){return x&&x.id==="auto-20260811-league-correction";})){
+        state.autoLog.unshift({id:"auto-20260811-league-correction",date:"2026-08-11",area:"Pickleball",
+          what:"Corrected tonight's entry. I framed it as close matches and that was too soft",
+          why:"You said your inconsistency was extreme and that it decided the night, and that is a harder and more useful claim than the one I wrote. Your read is on the record, mine is marked as the wrong emphasis rather than deleted.",
+          evidence:"You put the results on your own execution rather than on the opponents or on Bianca: the last two would not have been close, and the first two might have gone the other way. Serve and dinks held, drives drops and returns did not. That is the practice to match gap showing up in the score instead of in feel, and it is the same collapse the 07.30 question was about.",
+          undo:"Pickleball, open the 11 August session and edit the note."});
+      }
+      if(state.meta && !state.meta.mig278_league_correction){ state.meta.mig278_league_correction=true; save(true); }
+  } }catch(e){ try{ console.warn("mig278 did not apply:",e&&e.message); }catch(_){} }
 
   /* build 225: focus timer removed, nothing to clear here anymore. */
   applyAccent(); dailyReset(); save(true);
