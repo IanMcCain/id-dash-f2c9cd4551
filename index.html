@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 279 (2026-08-11)">
+<meta name="build" content="v21 build 280 (2026-08-12)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -6930,6 +6930,41 @@ function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]
       }
       if(state.meta && !state.meta.mig279_grip_moisture){ state.meta.mig279_grip_moisture=true; save(true); }
   } }catch(e){ try{ console.warn("mig279 did not apply:",e&&e.message); }catch(_){} }
+
+  /* ===== v21 build 280: THE 08.11 SUPPLEMENTS HE TOOK AND DID NOT TICK =====================
+     Ian, 08.11.2026, directly: he did his habits, supplements and vitamins on Tuesday 11 August
+     and forgot to tick them before exporting. The export was saved at 12:19 AM on the 12th,
+     AFTER the day had already rolled over, so there was no chance to catch it on the way past.
+
+     WHAT WAS ACTUALLY MISSING, read off the export rather than assumed. All four HABITS were
+     already ticked for 08-11 and are deliberately untouched here. Four of the eight supplements
+     were blank: Magnesium, Multivitamin, Vitamin D and the Zer-Tec allergy pill. Those four are
+     set and nothing else is. Correcting more than was actually missing would be inventing data.
+
+     Set UNCONDITIONALLY by id, add only, guard in SAVED STATE ONLY, never in seedIan().meta.
+     Same shape as mig74_supp0717, which fixed the identical after midnight miss on 07.17, so
+     this is the second occurrence of one failure mode rather than a one off.
+
+     It goes in the Changes I made card because an untouched box and a genuine miss are
+     indistinguishable downstream, and a correction he cannot trace is worse than no correction. */
+  try{ if(profile==="ian" && !((state.meta||{}).mig280_supp0811)
+          && state.nutrition && Array.isArray(state.nutrition.supplements)){
+      var _D280="2026-08-11";
+      var _S280={"tetfxky":1,"47wn4cg":1,"e4anjmr":1,"nuroov3":1};
+      state.nutrition.supplements.forEach(function(sp){
+        if(!sp || !_S280[sp.id]) return;
+        if(!sp.log || typeof sp.log!=="object") sp.log={};
+        sp.log[_D280]=true;
+      });
+      if(typeof _autoLog==="function"){
+        _autoLog({id:"auto-20260811-supps",date:"2026-08-11",area:"Health",
+          what:"Ticked Magnesium, Multivitamin, Vitamin D and Zer-Tec for Tuesday 11 August",
+          why:"You said you took them and forgot to check them off before exporting. A blank box reads as a miss to everything downstream, so it gets corrected rather than left looking like a skipped day.",
+          evidence:"Your export saved at 12:19 AM on the 12th, after the day rolled over. All four habits and the other four supplements were already ticked for the 11th. Only these four were blank.",
+          undo:"Tell me and I will reverse it. The daily checklist only shows today, so a rolled over day cannot be unticked from the app."});
+      }
+      if(!state.meta) state.meta={}; state.meta.mig280_supp0811=true; save(true);
+  } }catch(e){ try{ console.warn("mig280 did not apply:",e&&e.message); }catch(_){} }
 
   /* build 225: focus timer removed, nothing to clear here anymore. */
   applyAccent(); dailyReset(); save(true);
