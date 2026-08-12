@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 281 (2026-08-12)">
+<meta name="build" content="v21 build 282 (2026-08-12)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -7012,9 +7012,16 @@ function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]
         var _keep281=[];
         state.realEstate.todos.forEach(function(t){
           if(t && t.id==="ret-20260810-spicer-syd-val"){
-            t.retiredOn="2026-08-12";
-            t.retiredWhy="exp 2026-08-11 passed and the 3:45 Tuesday valuation meeting with Chris happened";
-            state.archive.todosDone.push(t);
+            /* build 282: DEDUPE. A copy of this id was already in todosDone before this run,
+               so an unguarded push wrote a second one. Verified on a simulated installed
+               profile. Same guard the build 263 era retirement used, and it should have been
+               here from the start. */
+            if(!state.archive.todosDone.some(function(x){ return x && x.id===t.id; })){
+              t.retiredOn="2026-08-12";
+              t.retiredBy="ian-daily-brief";
+              t.retiredWhy="exp 2026-08-11 passed and the 3:45 Tuesday valuation meeting with Chris happened";
+              state.archive.todosDone.push(t);
+            }
           } else { _keep281.push(t); }
         });
         state.realEstate.todos=_keep281;
