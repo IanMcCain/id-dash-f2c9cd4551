@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 285 (2026-08-13)">
+<meta name="build" content="v21 build 286 (2026-08-13)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -7280,6 +7280,89 @@ function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]
 
       state.meta.mig285_prospects=true; save(true);
   } }catch(e){ try{ console.warn("mig285 did not apply:",e&&e.message); }catch(_){} }
+
+  /* ===== v21 build 286: TWO STAGE MOVES, BOTH PULLING SPECULATIVE WORK OUT OF THE PIPELINE ====
+     Ian, 08.13.2026. Runs AFTER the build 285 block on purpose, so on a fresh device 285 does
+     its work first and this corrects on top rather than fighting it.
+
+     1. SYDNEY SPICER, Coming Soon -> Prospecting. Ian: she may not list this year at all and
+        late fall is the earliest realistic date. THE POINT OF THE MOVE IS THE CEILING. The in
+        flight ceiling counts Active plus Coming Soon, so at Coming Soon her $458,000 was sitting
+        in the 2026 ceiling against a listing that may be eighteen months away. Prospecting takes
+        it out. Her close field is EMPTY, so the is27 filter never excluded her and the money was
+        genuinely in there; this was checked rather than assumed.
+        EVERY FIELD IS KEPT. price, priceNote, sub, source, side, and the entire note with the
+        Revision 4 CMA figures, the basement finish detail, the buy side criteria and the
+        timeline. Only d.stage is written. A stage change must not cost him the file.
+
+     2. EVAN, out of deals and into the sphere. Ian overrode the build 285 decision.
+        READING TAKEN, AND IT IS THE BIGGER OF THE TWO: he is moved OUT of the prospect ring
+        entirely and lives in the sphere as a nurture contact, rather than being restored to
+        both rings. That reading is taken because it arrived in the same breath as moving Sydney
+        off Coming Soon, and both moves pull speculative work out of the active pipeline. The
+        other reading, restore the sphere record and leave the deal in place, is one word away
+        and NOTHING IS DESTROYED: the full deal record is archived verbatim to
+        archive.dealsMovedToSphere, so putting him back is a copy, not a rebuild.
+
+        THE SPHERE RECORD IS BUILT PROPERLY THIS TIME. The 08.06 record was thin, it existed
+        only to hold a contact date, and its Iffy quality was the standing default for a missing
+        value rather than a judgement about Evan. If he is sphere ONLY, that thinness is now the
+        whole record, so it is fixed rather than justified: the budget, the target and the side
+        come across from the deal, and quality is Good with a 30 day cadence rather than Iffy at
+        90, because a buyer with a stated budget and an end of 2026 target should not be on a
+        quarterly clock when his own timeline is about four months out. Type is Friend/Family,
+        which the deal note supports directly, it read "Friend, buyer."
+
+     Guard flag mig286_stages lives in SAVED STATE ONLY, never in seedIan().meta. */
+  try{ if(profile==="ian" && state.realEstate && Array.isArray(state.realEstate.deals)
+          && state.meta && !state.meta.mig286_stages){
+      var _D286=state.realEstate.deals;
+
+      /* ---- 1. SYDNEY. Stage only. Nothing else is touched. -------------------------------- */
+      _D286.forEach(function(d){
+        if(d && d.id==="re-sydney-spicer-sell"){
+          if(d.stage!=="Prospecting"){ d.stage="Prospecting"; }
+          if(String(d.note||"").indexOf("STAGE MOVED TO PROSPECTING 08.13.2026")<0){
+            d.note=String(d.note||"").trim()+" STAGE MOVED TO PROSPECTING 08.13.2026 ON IAN'S INSTRUCTION, AND THIS SUPERSEDES THE COMING SOON TEXT EARLIER IN THIS NOTE. His reasoning: she may not list this year at all and late fall is the earliest realistic date. THE POINT IS THE CEILING. At Coming Soon her $458,000 counted in the in flight ceiling for 2026, against a listing that may be eighteen months away, and her empty close date meant the 2027 filter never caught it. At Prospecting she contributes zero to the ceiling, zero to the $10M bar and zero to the 20 deal bar. NOTHING ELSE ON THIS RECORD CHANGED: the Revision 4 supported values of $458,000 without the gym and $468,500 with it, the basement finish detail, the permits question, the buy side criteria, the budget of $500,000 to $650,000, the three leg structure and the whole spring 2027 timeline all stand exactly as written above. She still counts TWO via side Both if and when she reaches Closed or Under Contract; Prospecting simply means neither side is counted yet.";
+          }
+        }
+      });
+
+      /* ---- 2. EVAN. Deal archived verbatim, then removed, then rebuilt in the sphere. ------ */
+      var _ev286=null;
+      _D286.forEach(function(d){ if(d && d.id==="re-evan") _ev286=d; });
+      if(_ev286){
+        if(!state.archive) state.archive={};
+        if(!Array.isArray(state.archive.dealsMovedToSphere)) state.archive.dealsMovedToSphere=[];
+        var _already=false;
+        state.archive.dealsMovedToSphere.forEach(function(a){ if(a && a.record && a.record.id==="re-evan") _already=true; });
+        if(!_already){
+          state.archive.dealsMovedToSphere.push({
+            movedOn:"2026-08-13",
+            reason:"Ian 08.13.2026, 'move Evan to sphere'. Read as OUT of the prospect ring entirely rather than as restoring him to both rings, because it came with moving Sydney Spicer off Coming Soon and both pull speculative work out of the active pipeline. Archived VERBATIM so the other reading is a copy back, not a rebuild. If Ian meant the other thing, restore this record to state.realEstate.deals and decide whether the sphere entry stays alongside it.",
+            record:JSON.parse(JSON.stringify(_ev286))
+          });
+        }
+        state.realEstate.deals=_D286.filter(function(d){ return !(d && d.id==="re-evan"); });
+        _D286=state.realEstate.deals;
+      }
+
+      if(!Array.isArray(state.realEstate.sphere)) state.realEstate.sphere=[];
+      var _sph286=null;
+      state.realEstate.sphere.forEach(function(k){ if(k && k.id==="sph-evan") _sph286=k; });
+      var _evNote="MOVED OUT OF THE PIPELINE INTO THE SPHERE 08.13.2026 on Ian's instruction. He is no longer counted as an active prospect. THE DEAL DATA IS NOT LOST, it is archived verbatim at archive.dealsMovedToSphere and can be restored as a copy: BUDGET $250,000 to $300,000, TARGET end of 2026, BUYER side, source Ian's own at the 90 percent share, original note 'Friend, buyer.' Last contacted 2026-08-05. WHY THIS RECORD IS FULLER THAN THE ONE IT REPLACES: the 08.06.2026 sphere entry existed only because a contact touch had nowhere to live, and its Iffy quality was the standing default for a missing value, not an assessment of Evan. With the deal gone this is the only record of him, so the budget, target and side are carried across rather than left in an archive nobody reads. QUALITY IS GOOD, CADENCE 30 DAYS, which is a judgement and not a given value: a buyer with a stated budget and an end of 2026 target should not sit on a quarterly clock when his own timeline is about four months out. Set him back to Iffy in one tap if that is wrong.";
+      if(_sph286){
+        _sph286.name="Evan"; _sph286.type="Friend/Family";
+        if(!_sph286.lastContacted || _sph286.lastContacted<"2026-08-05") _sph286.lastContacted="2026-08-05";
+        _sph286.quality="Good"; _sph286.cadence=30;
+        if(String(_sph286.note||"").indexOf("MOVED OUT OF THE PIPELINE INTO THE SPHERE")<0) _sph286.note=_evNote;
+      } else {
+        state.realEstate.sphere.push({ id:"sph-evan", name:"Evan", type:"Friend/Family",
+          phone:"", lastContacted:"2026-08-05", quality:"Good", cadence:30, note:_evNote });
+      }
+
+      state.meta.mig286_stages=true; save(true);
+  } }catch(e){ try{ console.warn("mig286 did not apply:",e&&e.message); }catch(_){} }
 
   /* build 225: focus timer removed, nothing to clear here anymore. */
   applyAccent(); dailyReset(); save(true);
