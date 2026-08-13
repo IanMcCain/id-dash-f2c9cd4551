@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 283 (2026-08-12)">
+<meta name="build" content="v21 build 284 (2026-08-13)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -7090,6 +7090,81 @@ function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]
       }
       save(true);
   } }catch(e){ try{ console.warn("mig281 did not apply:",e&&e.message); }catch(_){} }
+
+  /* ===== v21 build 284: THE 08.13 BRIEF, AND ONE DECISION MADE FOR HIM ================
+     Daily content for 2026-08-13, written by ian-daily-brief. Date keyed and deep merged,
+     so no SEED_VERSION bump. Nothing here replaces anything Ian logged.
+
+     THIS RUN HAD NO INPUT FROM IAN, AND THAT IS RECORDED RATHER THAN GLOSSED. Today's
+     entry is blank for 08.10, 08.11 and 08.12, the gym session note is blank for all
+     three, context.forClaude and the retired dayNote are both empty, and every archived
+     value in context.dailyLog is already flagged processed. Nothing is stranded. The
+     newest export is ian-dashboard-2026-08-12.json, saved 00:18 on 12 August, so the
+     whole of Monday 12 August is invisible to this run and nothing below claims it.
+
+     THE DECISION THIS BUILD CARRIES: the Nebraska State Qualifier in Lincoln, 14 to 16
+     August, is DECLINED. It is DUPR rated, it would set his first ever rating cold on
+     48 hours notice, and it eats the taper week that starts Monday and exists for Aug 23.
+     The event is RETITLED to record the call, not deleted, so the history survives. He
+     cannot be asked at 6am, so per the 08.06 rule the call gets made and written down.
+
+     workOn and cues are WHOLE ARRAY assigned, so per build 127 this block sits AFTER the
+     build 281 assignment and wins on file order. Sizes held at 7 and 10. One in and one
+     out on each. Retired, "Natural sides locked, own the middle, hold your width", which
+     is a settled decision rather than something to work on, and the cue "Slice to defend,
+     topspin to press", which is general. Both replaced by the reset grip pressure item,
+     which is this week's live coaching finding. */
+  try{ if(profile==="ian" && state.pickleball){
+      var T284="2026-08-13", _p284=state.pickleball;
+      if(!state.briefing) state.briefing={}; if(!state.briefing.forIan) state.briefing.forIan={};
+      if(!state.briefing.forIan[T284]) state.briefing.forIan[T284]=[{"id": "brief-20260813-1", "type": "Real estate", "title": "Barker comps with Chris at 1pm, use it to pin the meeting date", "note": "Comps for Barker sits at 1pm today on your calendar, read 08.13. The renovation meeting has read tentative since 08.10 and the list timeline gets set at it.", "url": "", "why": "Because it is your only dated real estate slot today and it closes an open todo", "done": false}, {"id": "brief-20260813-2", "type": "Real estate", "title": "Today is the Thacker list target and nothing is booked", "note": "4911 S 131st at $250,000, your own client, 3.6 percent seller side, $6,120 take home. The app carries today as most likely and Aug 20 as worst case. The prep todo expires tonight.", "url": "", "why": "Because he is your own client and the only listing you fully control", "done": false}, {"id": "brief-20260813-3", "type": "Pickleball", "title": "Ten days to DUPR, 22 days since any footage", "note": "Last film is 07.22. Three of your seven studies said the same thing, film your own end and stop filming comfortable open play. Six sessions in eight days, none recorded.", "url": "https://www.youtube.com/watch?v=B2JYosKGZfs", "why": "Because Aug 23 sets your first real rating and the film gap is the one fault that repeats", "done": false}];
+      if(!state.futureIdeas) state.futureIdeas={};
+      if(!state.futureIdeas[T284]) state.futureIdeas[T284]=[{"id": "fi-20260813-1", "text": "While you are already in the county data for the Barker comps, pull the same sheet for Sugar Creek and Walnut Creek Hills. You have a just sold in each now, Spicer and Troester, and the flyer todo has been open since 08.08.", "url": ""}, {"id": "fi-20260813-2", "text": "Ask Ryan Beachler for a weekday evening slot at the Rose Creek two storey and film it in twilight. Nobody walked the Saturday open house, and an evening reel costs an hour and travels further than a Saturday sign does.", "url": ""}, {"id": "fi-20260813-3", "text": "Do not register for the Dec 4 to 5 Omaha qualifier until after Aug 23. DUPR locks at registration, so waiting applies your real rating instead of nothing. Early November is when the price steps up.", "url": ""}, {"id": "fi-20260813-4", "text": "Ask Chris for the Cinnamon Creek closed sales this year. Build Cinnamon Creek into a reliable farm is one of your three real estate goals and there is not a single number under it yet.", "url": ""}];
+      if(!state.quickWin) state.quickWin={}; if(!state.quickWin.picks) state.quickWin.picks={};
+      if(!state.quickWin.picks[T284]) state.quickWin.picks[T284]=["Chase both outstanding commissions in one message today. Michelle Miller closed 07 August at $274,900 and Chad Troester closed 10 August at $435,000, and both records still read payment outstanding. That is $709,900 of closed volume with the money not in, and the Miller one is six days old.", "Do all four items at the 11am session. Thursday is the light abs and cardio day and the cable chop and treadmill finisher are pinned, so they stay. Legs got cut Monday for the move with no makeup until 19 August, your own call, so today is the wrong day to let it shrink further."];
+      if(!_p284.coachBullets||Array.isArray(_p284.coachBullets)||typeof _p284.coachBullets!=="object") _p284.coachBullets={};
+      if(!_p284.coachBullets[T284]) _p284.coachBullets[T284]=["Next session, one thing. Off every drop, judge it the instant you hit it and move your feet to match. Good drop, go to the kitchen. Bad drop, stay back and defend. Okay drop, hold in the transition zone and reset. Derived from your 08.10 and 08.11 logs, not invented.", "When you reset, your grip should feel noticeably looser than a drive, about 2 to 3 out of 10 against 5. Loose hands absorb pace. Tight hands fire it straight back at their feet, which is the exact ball that has been ending your points.", "The Lincoln qualifier is decided, you are not playing it. Aug 14 to 16, DUPR rated. Entering sets your first rating cold on 48 hours notice and eats the taper week that starts Monday. Aug 23 stays the baseline, 10 days out.", "League week one reads better than it felt. 3h 07m, effort 9, average HR 118, peak 162. That average is your lowest of any long session this month against 130 on 08.08 and 134 on 08.09 and 08.10. Three hours at a lower average is constructing rather than scrambling.", "The initiation gap still sits underneath all of it. Weight back then forward before the swing, never off the back foot, down the line or at the body before crosscourt. Serve stays maintenance, money serve default."];
+      if(!_p284.coachRec||typeof _p284.coachRec!=="object") _p284.coachRec={};
+      if(!_p284.coachRec[T284]) _p284.coachRec[T284]={"title": "Off every drop, move your feet to match its quality, not to a fixed spot.", "note": "Good drop, straight to the kitchen. Bad drop, stay back and defend. Okay drop, hold in the transition zone and reset the next ball in. Your drop is doing its job. The shot right after it is where the point is going."};
+      if(!_p284.videoRec||typeof _p284.videoRec!=="object") _p284.videoRec={};
+      if(!_p284.videoRec[T284]) _p284.videoRec[T284]={"title": "How to Master The Reset in Pickleball (Enhance Pickleball)", "url": "https://www.youtube.com/watch?v=B2JYosKGZfs", "note": "Three concrete positions off any drop, good drop go to the kitchen, bad drop stay back and defend, okay drop hold in the transition zone and reset. It also carries the grip answer, noticeably looser than a drive, about 2 to 3 out of 10 against 5."};
+      if(!_p284.research||typeof _p284.research!=="object") _p284.research={};
+      if(!_p284.research[T284]) _p284.research[T284]={"title": "Grade the drop by height, not length", "text": "Stop judging a drop by whether it stayed inside the kitchen line. A drop that carries a little past the line is fine as long as it stays down, because they still have to hit up on it either way. The shot that costs you the point is one that sits up, at any depth.", "url": "https://www.youtube.com/watch?v=TV5EW2WkQL4", "source": "Enhance Pickleball, Connor Hance, pulled 08.11.2026"};
+      /* whole array, last writer, see build 127 */
+      _p284.workOn=["Throw the first punch, weight forward before the swing, never off the back foot", "Speed ups down the line or at the body, not crosscourt by default", "Stay ready after you attack, the ball is coming back", "Drive height first, target second, if it clips the tape or runs long you were aiming before you were controlling", "Green zone, above net height gets accelerated every time", "Reset grip noticeably looser than a drive, 2 to 3 out of 10 against 5", "Match your feet to the drop, kitchen, transition or back, decide off your own shot"];
+      _p284.cues=["Weight back, then forward, before the swing", "Paddle tip down, short and compact", "Down the line or the body, not crosscourt", "Speed it up, then clean it up", "Height first, corner second", "Above the net, pull the trigger", "Loose hands, 2 to 3 out of 10 on a reset", "Wide base, lunge, recover to middle", "Crosscourt to the deeper player", "Down beats short, height not length"];
+      /* NEW DRILL, add only, guarded by id so a second load is a no op. */
+      if(!Array.isArray(_p284.drills)) _p284.drills=[];
+      if(!_p284.drills.some(function(d){ return d && d.id==="pbk-resetladder-0813"; })){
+        _p284.drills.push({"id": "pbk-resetladder-0813", "text": "Drop and read ladder. Hit a drop, then call it out loud, good, okay or bad, the instant it leaves your paddle, and move to the position that call demands. Good, go to the kitchen. Bad, stay back. Okay, hold in the transition zone and reset. Play the point out. Twenty reps. Score it on whether your feet matched your own call, not on whether the drop was good. It trains the judgement, which is the gap, not the shot, which is already fine.", "done": false});
+      }
+      /* TO DO MAINTENANCE. One created, nothing retired. The Sydney Spicer valuation prep
+         was already retired by build 281, so the copy still visible in the 08.12 export is
+         stale rather than live and is NOT retired twice. ret-20260803-thacker-prep expires
+         tonight on its own exp date and the app sweeps it. Guarded on both id and key so a
+         reload cannot duplicate it, and capped at 10, which is a ceiling not a target. */
+      if(state.realEstate && Array.isArray(state.realEstate.todos)){
+        var _has284=state.realEstate.todos.some(function(t){
+          return t && (t.id==="ret-20260813-troester-pay" || t.key==="troester-commission"); });
+        var _arch284=(state.archive&&Array.isArray(state.archive.todosDone))?state.archive.todosDone:[];
+        var _wasArch=_arch284.some(function(t){ return t && t.key==="troester-commission"; });
+        if(!_has284 && !_wasArch && state.realEstate.todos.length<10){
+          state.realEstate.todos.push({"id": "ret-20260813-troester-pay", "key": "troester-commission", "done": false, "due": "", "exp": "", "src": "Deal re-chad-troester, closed 10 Aug 2026 at $435,000, note reads payment outstanding", "text": "Chase the Chad Troester commission. 1709 Diane closed Monday 10 August at $435,000, seller side at 3.7 percent, and the record still reads payment outstanding. Michelle Miller from 07 August is on the list already, so it is two chases in one message."});
+        }
+      }
+      /* LINCOLN QUALIFIER, DECISION RECORDED ON THE EVENT. Retitled, never deleted, and
+         guarded on the old title so it applies exactly once. */
+      if(Array.isArray(state.events)){
+        state.events.forEach(function(ev){
+          if(ev && ev.id==="ev-20260814-nsq-lincoln" && !ev.decidedOn){
+            ev.title="Nebraska State Qualifier, Lincoln, Aug 14 to 16. NOT ENTERING, decided 08.13.2026";
+            ev.note="DECLINED by ian-daily-brief 08.13.2026 rather than left open on the morning it starts. It is DUPR rated, so entering sets your first ever rating cold on 48 hours notice, and it eats the taper week that starts Monday 17 August and exists for Aug 23. APC on Sunday 23 August stays the baseline. Kept rather than deleted so the decision history survives.";
+            ev.decidedOn="2026-08-13";
+          }
+        });
+      }
+      save(true);
+  } }catch(e){ try{ console.warn("mig284 did not apply:",e&&e.message); }catch(_){} }
 
   /* build 225: focus timer removed, nothing to clear here anymore. */
   applyAccent(); dailyReset(); save(true);
