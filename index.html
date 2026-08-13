@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 286 (2026-08-13)">
+<meta name="build" content="v21 build 287 (2026-08-13)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -1046,7 +1046,27 @@ function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]
       var _MNOTE="Long-term, not buying until next year";
       var _me=_mSph[0];
       if(!_me){ state.realEstate.sphere.push({ id:uid(), name:"Mason Langfelt", type:"Sphere", phone:"", lastContacted:"", quality:"Iffy", cadence:90, note:_MNOTE }); _pkChg=true; }
-      else if(_me.name!=="Mason Langfelt"||_me.type!=="Sphere"||_me.quality!=="Iffy"||_me.cadence!==90||_me.note!==_MNOTE){ _me.name="Mason Langfelt"; _me.type="Sphere"; _me.quality="Iffy"; _me.cadence=90; _me.note=_MNOTE; _pkChg=true; }
+      /* v21 build 287: THIS BLOCK WAS CLOBBERING EVERY LATER EDIT TO MASON, ON EVERY LOAD.
+         It is FLAG-LESS and runs on every boot, and it used to force name, type, quality,
+         cadence AND note back to the build 76 defaults whenever any one of them differed.
+         So a correct update won once and lost on the very next load. Caught 08.13.2026 by
+         diffing load one against load two: the 287b note read 1,556 characters after the
+         first load and 37 after the second, silently back to "Long-term, not buying until
+         next year", with cadence forced back to 90. That is the same defect shape as the
+         build 252 Willis price reverting to $619,900, and RULES.md is explicit that the fix
+         belongs AT THE WRITER rather than in a later block trying to out order it.
+         The block keeps the two jobs it was actually written for, removing stray Mason DEALS
+         and guaranteeing exactly ONE correctly spelled sphere contact. It no longer asserts
+         the soft fields. quality, cadence and note are now filled only when MISSING, so a
+         deliberate later value survives. cadence is tested against undefined, not falsiness,
+         so a deliberate null for a one time contact is not read as absent and reset to 90. */
+      else {
+        if(_me.name!=="Mason Langfelt"){ _me.name="Mason Langfelt"; _pkChg=true; }
+        if(_me.type!=="Sphere"){ _me.type="Sphere"; _pkChg=true; }
+        if(!_me.quality){ _me.quality="Iffy"; _pkChg=true; }
+        if(_me.cadence===undefined){ _me.cadence=90; _pkChg=true; }
+        if(!String(_me.note||"").trim()){ _me.note=_MNOTE; _pkChg=true; }
+      }
       if(_pkChg) save(true);
     }
   }catch(e){}
@@ -7364,6 +7384,347 @@ function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]
       state.meta.mig286_stages=true; save(true);
   } }catch(e){ try{ console.warn("mig286 did not apply:",e&&e.message); }catch(_){} }
 
+  /* ===== v21 build 287: FOUR PIPELINE MOVES FROM IAN, 08.13.2026 =========================
+     Runs AFTER the build 286 block on purpose, so on a fresh device 285 and 286 do their work
+     first and this corrects on top rather than fighting them. Guard flag mig287_pipeline lives
+     in SAVED STATE ONLY, never in seedIan().meta.
+
+     1. CRYSTAL JOHNSON CLOSING MOVED TO NEXT WEEK. NO DATE IS SET AND NONE IS INVENTED.
+        It was Friday 14 August at 9:00. Ian said only that it moved to next week. The close
+        field therefore reads next week, date not set, rather than a guessed day, because a
+        wrong specific date drives wrong brief cards and wrong flyer timing within hours and a
+        Missing label is the standing treatment for an unknown. Stage stays Under Contract, the
+        $577,861 price, the source and the seller side are untouched: the money did not move,
+        the day did. The app event keeps its 08-14 id and date and is retitled MOVED, which is
+        exactly how ev-20260816-willis-day10 was handled when it was cancelled, so the trace
+        stays visible instead of a record quietly disappearing.
+        THIS ALSO CLEARS A REAL CLASH. His Home calendar carries Gym session Ian 9:00 to 11:00
+        on Friday 14 August against the 9:00 closing, recorded in the mig283 daily note. With
+        the closing off that slot the gym block is free and needs no move.
+
+     2. ROSE CREEK COUPLE OFF THE PIPELINE AND INTO THE SPHERE AS A ONE TIME TOUCH.
+        Ian: they are ghosting him, he wants one last check in one to two months, NOT an
+        ongoing nurture cadence. The deal record is archived VERBATIM to
+        archive.dealsMovedToSphere, the same array and the same shape used for Evan on build
+        286, so restoring them is a copy back and not a rebuild.
+        THE SPHERE MODEL COULD NOT EXPRESS THIS AND IT WAS NOT FORCED INTO A CADENCE NUMBER.
+        Every sphere record was a repeating clock. See the contactOverdue rewrite for the
+        oneTime mode added to carry it. Setting cadence to 45 would have produced exactly the
+        outcome Ian ruled out: a touch, then another one 45 days later, forever.
+
+     3. BRANDON WINCHESTER BUILD PRICE, $1,300,000 DOWN TO $1,100,000 TO $1,200,000.
+        THIS UPDATES THE EXISTING BUILD RECORD. IT IS NOT A NEW DEAL. Adjudicated rather than
+        assumed: re-brandon-winchester is the dual agency BUILD with Ryan at Rose Creek Homes,
+        its note already says price and finish are estimates and not locked yet, and Ian said
+        the figure is still being worked on. Same transaction, same client, moving number.
+        THE LOT IS NOT DOUBLE COUNTED AND WAS CHECKED, NOT ASSUMED. The $200,000 lot lives on
+        its own record re-winchester-lot, Closed, ianSplit 0, and the build record has never
+        carried it. Ian said the new figure excludes the lot, which is now the same basis the
+        build record was already on, so nothing needs subtracting anywhere.
+        ONE THING FLAGGED RATHER THAN RESOLVED: $1,300,000 minus the $200,000 lot is exactly
+        $1,100,000, the bottom of the new range. That may be arithmetic or it may mean the old
+        $1.3M silently included the lot. It is not treated as a finding either way, because
+        both readings end at the same recorded number and guessing which one is true would put
+        an unverified claim on the record.
+        WHAT MOVES: volume and take home. priceNum reads the FIRST number in a range, the same
+        way it reads the Belknap range, so the app values this at $1,100,000, the conservative
+        end. Dual take home is (rate minus 0.009) x price x 0.50, which at the stated 5 percent
+        is price x 0.0205, so $26,650 becomes $22,550, down $4,100. At the top of the range it
+        would be $24,600. dualRate 0.05, side Both, source Dual agency and the two deal count
+        are all UNCHANGED, so this is a price move and not a commission change.
+        WHAT DOES NOT MOVE, AND THIS IS THE PART THAT LOOKS WRONG UNTIL YOU CHECK IT: the 2026
+        IN FLIGHT CEILING DOES NOT CHANGE AT ALL. The ceiling counts production plus Active and
+        Coming Soon deals that are not 2027. Winchester is stage Building with a close of Late
+        May 2027, so is27 catches it and it has only ever sat in the parked in 2027 line. That
+        line falls by $200,000. The 2026 ceiling is untouched by this change.
+
+     4. AUSTIN THACKER, COMING SOON TO PROSPECTING, AND THE STALE LIST DATE CLEARED.
+        Ian: Thacker had a baby a few days ago and still has not found a cosigner, and he wants
+        to give him time. THE COSIGNER IS THE BLOCKER, the newborn is why it will not move
+        quickly, and the two are recorded separately because they resolve on different clocks.
+        EVERY FIELD IS KEPT, the same treatment Sydney Spicer got on build 286: the $250,000
+        agreed list, the whole valuation history, sellerRate 0.036, ianSplit 0.8, the iffy flag,
+        source, side and sub all stand. Only stage and close are written.
+        THE CLOSE FIELD IS CLEARED because its contents are now actively wrong. It read list
+        Aug 13 most likely, Aug 6 ideal, Aug 20 worst case, close before Sep 25, under contract
+        before Aug 28. Aug 6 has passed, Aug 13 is today, and a passed date does not go quiet,
+        it keeps surfacing as overdue. The full old string is preserved verbatim in the note as
+        SUPERSEDED so nothing is lost.
+        A TRAP INHERITED FROM SYDNEY, WRITTEN DOWN SO IT IS NOT REDISCOVERED: an empty close is
+        only safe at Prospecting. is27 cannot exclude an empty string, so if this record is ever
+        moved back to Coming Soon or Active with close still empty, its $250,000 walks straight
+        into the 2026 ceiling with nothing to stop it. That is the exact defect build 286 fixed
+        on Sydney. Put a real date on it before changing the stage back.
+        THE CEILING MOVEMENT WAS MEASURED, NOT ASSUMED: Prospecting removes $250,000 and one
+        deal from the in flight ceiling. Verified by computing the ceiling before and after.
+        FOLLOW UP SET RATHER THAN ASKED ABOUT: a dated todo for 10 September, about four weeks.
+        A newborn is a few days old, so a fortnight is intruding and ninety days lets a cosigner
+        that resolves suddenly sit unnoticed for a quarter. Four weeks is the honest middle.
+  */
+  try{ if(profile==="ian" && state.realEstate && Array.isArray(state.realEstate.deals)
+          && state.meta && !state.meta.mig287_pipeline){
+      var _D287=state.realEstate.deals;
+
+      /* ---- 1. CRYSTAL JOHNSON. Close date only, plus the app event title. --------------- */
+      _D287.forEach(function(d){
+        if(d && d.id==="re-crystal-johnson"){
+          d.close="Next week, date not set (week of 17 to 21 August 2026)";
+          if(String(d.note||"").indexOf("CLOSING MOVED 08.13.2026")<0){
+            d.note=String(d.note||"").trim()+" CLOSING MOVED 08.13.2026 ON IAN'S INSTRUCTION. It was Friday 14 August 2026 at 9:00. He said only that it moved to NEXT WEEK and gave no new date, so none is recorded and none is guessed. Put the real day on this field the moment the title company confirms it. NOTHING ELSE CHANGED: still Under Contract, still $577,861, still Chris's client on the seller side, so the take home and the production figure are exactly what they were. The Friday 9:00 slot on the NP Dodge calendar was amended the same day so he does not turn up, and that also clears the Gym session Ian 9:00 to 11:00 clash on the Home calendar that the 08.12 note flagged.";
+          }
+        }
+      });
+      if(Array.isArray(state.events)){
+        state.events.forEach(function(e){
+          if(e && e.id==="ev-20260814-johnson-close" && String(e.title||"").indexOf("MOVED")<0){
+            e.title="Crystal Johnson closing MOVED to next week, date not set (was Fri 14 Aug 9:00)";
+          }
+        });
+      }
+
+      /* ---- 2. ROSE CREEK COUPLE. Archive verbatim, remove, rebuild as a one time sphere
+               touch. Deal id re-rosecreek-couple. NOT re-rose-creek, which is the $685,000
+               active two storey listing and is a different record entirely. ---------------- */
+      var _rc287=null;
+      _D287.forEach(function(d){ if(d && d.id==="re-rosecreek-couple") _rc287=d; });
+      if(_rc287){
+        if(!state.archive) state.archive={};
+        if(!Array.isArray(state.archive.dealsMovedToSphere)) state.archive.dealsMovedToSphere=[];
+        var _rcAlready=false;
+        state.archive.dealsMovedToSphere.forEach(function(a){ if(a && a.record && a.record.id==="re-rosecreek-couple") _rcAlready=true; });
+        if(!_rcAlready){
+          state.archive.dealsMovedToSphere.push({
+            movedOn:"2026-08-13",
+            reason:"Ian 08.13.2026: the Rose Creek couple are ghosting him, so they come off the pipeline and into the sphere as a ONE TIME reach out in one to two months for a last check, explicitly not an ongoing nurture cadence. Archived VERBATIM rather than deleted, the same handling Evan got on build 286, so if they resurface this record goes back into state.realEstate.deals as a copy and not a rebuild.",
+            record:JSON.parse(JSON.stringify(_rc287))
+          });
+        }
+        state.realEstate.deals=_D287.filter(function(d){ return !(d && d.id==="re-rosecreek-couple"); });
+        _D287=state.realEstate.deals;
+      }
+
+      if(!Array.isArray(state.realEstate.sphere)) state.realEstate.sphere=[];
+      var _rcSph=null;
+      state.realEstate.sphere.forEach(function(k){ if(k && k.id==="sph-rosecreek-couple") _rcSph=k; });
+      var _rcNote="ONE TIME LAST CHECK, NOT A NURTURE CADENCE. Ian's instruction 08.13.2026, and the wording matters: they are GHOSTING him, so this is a single reach out in one to two months to find out if there is anything there, and then it ends. DO NOT PUT THEM ON A 30 OR 90 DAY CLOCK. The record carries oneTime true, cadence null and dueFrom 2026-09-13, so it stays silent until the window opens on 13 September 2026, surfaces once, and goes permanently quiet the moment a contact is logged. The window Ian gave is one to two months, meaning 13 September to 13 October 2026; dueFrom is the near edge so it surfaces at the start of his window rather than the end of it. IF THE TOUCH LANDS NOTHING, THEY ARE DONE, remove the record or leave it silent, do not reset it. THE DEAL DATA IS NOT LOST: the full prospect record is archived verbatim at archive.dealsMovedToSphere and reads BUYER side, source Ian's own at the 90 percent share, no price and no close date ever recorded, note 'Potential new build with Ryan (Rose Creek Homes). Toured the Rose Creek 2-story listing.' QUALITY IFFY is the standing default for a value nobody stated, not a judgement, though ghosting supports it. THIS IS NOT THE ROSE CREEK LISTING. re-rose-creek, the $685,000 two storey, is a separate live record and is untouched.";
+      if(_rcSph){
+        _rcSph.name="Rose Creek couple"; _rcSph.type="Sphere";
+        _rcSph.oneTime=true; _rcSph.cadence=null; _rcSph.dueFrom="2026-09-13"; _rcSph.dueBy="2026-10-13";
+        if(!_rcSph.quality) _rcSph.quality="Iffy";
+        if(String(_rcSph.note||"").indexOf("ONE TIME LAST CHECK")<0) _rcSph.note=_rcNote;
+      } else {
+        state.realEstate.sphere.push({ id:"sph-rosecreek-couple", name:"Rose Creek couple",
+          type:"Sphere", phone:"", lastContacted:"", quality:"Iffy",
+          cadence:null, oneTime:true, dueFrom:"2026-09-13", dueBy:"2026-10-13", note:_rcNote });
+      }
+
+      /* Close the plat map todo. It told him to call them tomorrow with build sites, which is
+         the opposite of what Ian just decided, and an open todo that contradicts the record is
+         how a stale instruction gets actioned. Silent action, so it is logged and traceable. */
+      if(!Array.isArray(state.realEstate.todos)) state.realEstate.todos=[];
+      state.realEstate.todos.forEach(function(t){
+        if(t && t.id==="ret-rosecreek-couple" && String(t.text||"").indexOf("CLOSED 08.13.2026")<0){
+          t.text="CLOSED 08.13.2026, the Rose Creek couple moved to the sphere as a one time last check in one to two months. Original todo was: reach out tomorrow with a plat map of potential build sites, goal get them to sit down with Ryan. Reopen it only if they answer.";
+          t.done=true;
+        }
+      });
+
+      /* ---- 3. BRANDON WINCHESTER. Price only. Rate, side, source, split, stage, close all
+               stay exactly as they were. -------------------------------------------------- */
+      _D287.forEach(function(d){
+        if(d && d.id==="re-brandon-winchester"){
+          d.price="$1,100,000 to $1,200,000";
+          d.priceNote="Estimate, working figure 08.13.2026, excludes the lot";
+          if(String(d.note||"").indexOf("PRICE 08.13.2026")<0){
+            d.note=String(d.note||"").trim()+" PRICE 08.13.2026, IAN: the build is $1.1 to $1.2 million and that figure EXCLUDES THE LOT THEY ALREADY PAID FOR. Supersedes the $1,300,000 estimate above. STILL BEING WORKED ON, so treat it as current but NOT final. THE LOT IS NOT IN THIS NUMBER AND IS NOT DOUBLE COUNTED: the $200,000 lot is its own Closed record, re-winchester-lot, with ianSplit 0, and this build record has never carried it, so the new basis matches the old one and nothing needs subtracting. NOTED, NOT CONCLUDED: $1,300,000 minus $200,000 is exactly $1,100,000, which may be coincidence or may mean the old estimate quietly included the lot. Both readings end at the same recorded figure, so neither is asserted. WHAT THIS MOVES: priceNum reads the first number in a range, so the app values this at $1,100,000, down $200,000 of volume, and dual take home at 5 percent is price x 0.0205, so $26,650 becomes $22,550, down $4,100. At the $1,200,000 top it would be $24,600. WHAT IT DOES NOT MOVE: dualRate 0.05, side Both, source Dual agency, the two deal count and the Late May 2027 finish are all unchanged, and the 2026 IN FLIGHT CEILING IS UNAFFECTED because a Late May 2027 close has always parked this in the 2027 line rather than the 2026 ceiling. The parked in 2027 figure drops by $200,000.";
+          }
+        }
+      });
+
+      /* ---- 4. AUSTIN THACKER. Stage and close. Everything else is kept. ----------------- */
+      _D287.forEach(function(d){
+        if(d && d.id==="re-austin-thacker"){
+          var _oldClose=String(d.close||"");
+          if(d.stage!=="Prospecting"){ d.stage="Prospecting"; }
+          d.close="";
+          if(String(d.note||"").indexOf("STAGE MOVED TO PROSPECTING 08.13.2026")<0){
+            d.note=String(d.note||"").trim()+" STAGE MOVED TO PROSPECTING 08.13.2026 ON IAN'S INSTRUCTION, AND THIS SUPERSEDES EVERY LIST DATE AND TIMELINE ABOVE. Two reasons, both from Ian: Austin HAD A BABY A FEW DAYS AGO, and he STILL HAS NOT FOUND A COSIGNER. Ian wants to give him time to sort things out. THE COSIGNER IS THE ACTUAL BLOCKER, it is the single thing standing between him and a transaction, and it is the sort of thing that resolves suddenly. THE NEWBORN IS WHY IT WILL NOT MOVE QUICKLY, which is a different fact on a different clock, so the two are recorded separately rather than as one excuse. CLOSE FIELD CLEARED, and the old value is preserved here verbatim: \"" + _oldClose + "\". It was cleared because Aug 6 had already passed and Aug 13 is today, and a passed date does not go quiet, it keeps reading as overdue in the brief. NOTHING ELSE ON THIS RECORD CHANGED: the agreed $250,000 list, the full valuation history, the confirmed 3 bedroom and finished basement with its own kitchen and 3/4 bath, sellerRate 3.6 percent, ianSplit 0.8, the iffy flag, source and side all stand exactly as written. At Prospecting he contributes zero to the $10M bar, zero to the 20 deal bar and zero to the in flight ceiling, which takes $250,000 and one deal out of the 2026 ceiling. WARNING FOR WHOEVER MOVES HIM BACK: an empty close is only safe at Prospecting. The is27 filter cannot exclude an empty string, so returning this record to Coming Soon or Active while close is still blank walks its $250,000 straight into the 2026 ceiling. That is the exact defect build 286 had to fix on Sydney Spicer. Put a real date on the close field BEFORE changing the stage back. FOLLOW UP IS SET, not left to drift: todo ret-20260910-thacker-cosigner, due 10 September 2026, about four weeks out.";
+          }
+        }
+      });
+
+      /* The cosigner is a live item, not a note. Four weeks: a fortnight intrudes on a newborn
+         and ninety days lets a cosigner that resolves suddenly sit unnoticed for a quarter. */
+      if(!state.realEstate.todos.some(function(t){ return t && t.id==="ret-20260910-thacker-cosigner"; })){
+        state.realEstate.todos.push({ id:"ret-20260910-thacker-cosigner",
+          text:"Austin Thacker, check whether he has found a cosigner yet. It is the one thing blocking the listing at 4911 S 131st, the $250,000 list price and the whole plan are still agreed and waiting on it. Newborn arrived around 10 August so keep it light. If he has a cosigner, the record goes back to Coming Soon WITH a real list date on the close field.",
+          done:false, due:"2026-09-10" });
+      }
+
+      /* The Aug 13 prep todo is now wrong. It expires tonight anyway, but it is showing today. */
+      state.realEstate.todos.forEach(function(t){
+        if(t && t.id==="ret-20260803-thacker-prep" && String(t.text||"").indexOf("CLOSED 08.13.2026")<0){
+          t.text="CLOSED 08.13.2026, Thacker moved to Prospecting, newborn plus no cosigner, so there is no Aug 13 list to prep for. Original todo was: Thacker listing prep for the Aug 13 target at 4911 S 131st, photos and copy this week.";
+          t.done=true;
+        }
+      });
+
+      /* Today's brief card 2 says the Thacker list target is today and nothing is booked. That
+         is now wrong and he reads it this morning. SAME STABLE ID, so state.briefing.done is
+         untouched and a card he has already ticked stays ticked. */
+      try{
+        var _BD287="2026-08-13";
+        if(state.briefing && state.briefing.forIan && Array.isArray(state.briefing.forIan[_BD287])){
+          state.briefing.forIan[_BD287].forEach(function(c){
+            if(c && c.id==="brief-20260813-2"){
+              c.title="Thacker is off the list target, moved to Prospecting";
+              c.note="Ian said today: newborn a few days ago and still no cosigner, so he gets time. The $250,000 list, the 3.6 percent seller side and the $6,120 take home are all kept on the record, the stale Aug 13 timing is cleared, and $250,000 comes out of the 2026 ceiling. Cosigner check is booked for 10 September.";
+              c.why="Because the cosigner is the only thing blocking it and it can resolve overnight";
+            }
+          });
+        }
+      }catch(_e287){}
+
+      if(typeof _autoLog==="function"){
+        _autoLog({id:"auto-20260813-rosecreek-todo",date:"2026-08-13",area:"Real estate",
+          what:"Closed the Rose Creek plat map todo when the couple moved to the sphere",
+          why:"You moved them off the pipeline because they are ghosting you, and the todo still told you to call them tomorrow with build sites. An open todo that contradicts the record is how a dead instruction gets actioned.",
+          evidence:"Todo ret-rosecreek-couple read 'reach out to the Rose Creek couple tomorrow with plat map of potential build sites'. Your instruction today was a single last check in one to two months, not tomorrow.",
+          undo:"Real estate, to dos, untick it and put the original text back."});
+        _autoLog({id:"auto-20260813-thacker-prep",date:"2026-08-13",area:"Real estate",
+          what:"Closed the Thacker Aug 13 listing prep todo and cleared the stale list date",
+          why:"There is no Aug 13 listing any more. Aug 6 had already passed and Aug 13 is today, and a date that has passed keeps surfacing as overdue instead of going quiet.",
+          evidence:"You said Austin had a baby a few days ago and still has no cosigner. The close field read 'List Aug 13 most likely (Aug 6 ideal but unlikely, Aug 20 worst case)'. It is preserved verbatim in the deal note.",
+          undo:"Real estate, open the Thacker deal and paste the old close text back from the note."});
+      }
+
+      state.meta.mig287_pipeline=true; save(true);
+  } }catch(e){ try{ console.warn("mig287 did not apply:",e&&e.message); }catch(_){} }
+
+  /* ===== v21 build 287b: TWO UNDATED NEXT WEEK ITEMS, THE FIRST TIME BUYER SEGMENT ========
+     Ian, 08.13.2026, same deploy as the 287 block above. Guard mig287b_triggers, saved state only.
+
+     WHY NOTHING HERE GETS A CALENDAR DATE. Both the Horizon closing and the Barker meeting land
+     next week and neither has a date. Ian's instruction was explicit: record them as PENDING
+     TRIGGERS, not events, because inventing a date is worse than none. The real trigger text
+     lives in GLOBAL/PENDING_TRIGGERS.md, which every run loads. What lives here is the part the
+     app has to show him, so the brief ASKS him for the two dates rather than waiting to be told.
+
+     HORIZON HAS NO DEAL RECORD ANYWHERE AND THAT IS REPORTED, NOT PAPERED OVER. Searched the
+     live deals, the sphere, leads, people, the 08-12 export and all of BRAIN. The only trace of
+     Horizon in the entire system is the calendar event Horizon Pre-Close Walk Through, Thursday
+     13 August at 12:00 on NP Dodge, and the 08.12 daily note quoting that same calendar line.
+     There is no client name, no price, no side, no source and no id. A closing next week with
+     nothing in the pipeline behind it is a real gap, so a todo asks BOTH questions at once and
+     no record is invented to fill the hole.
+
+     THE BARKER NUMBER IS ATTACHED BUT THE DEAL PRICE IS DELIBERATELY NOT MOVED. The current
+     recommendation is $284,900 in a $282,900 to $287,900 band, and the deal still reads
+     $270,000 to $280,000. That gap is REPORTED rather than closed, for one reason: the
+     recommendation rests on 1605 N 106th St sitting unsold at $285,000, another lane is
+     verifying right now whether that listing has closed, been cut again or expired, and if it
+     moves the Barker number moves. Writing $284,900 into the price field today would raise the
+     2026 in flight ceiling by $14,900 on the strength of a comp under active verification.
+     The recommendation and its dependency go on the record where the meeting will find them.
+  */
+  try{ if(profile==="ian" && state.realEstate && state.meta && !state.meta.mig287b_triggers){
+      if(!Array.isArray(state.realEstate.todos)) state.realEstate.todos=[];
+      var _T287=state.realEstate.todos;
+      var _has287=function(id){ return _T287.some(function(t){ return t && t.id===id; }); };
+
+      /* ---- A. BARKER. Meeting is next week and follows the renovation finishing. --------- */
+      if(Array.isArray(state.events)){
+        state.events.forEach(function(e){
+          if(e && e.id==="ev-20260815-barker-meeting" && String(e.title||"").indexOf("NEXT WEEK")<0){
+            e.title="Barker renovation meeting, NEXT WEEK, date not set, follows the renovation finishing";
+            e.note="RETITLED 08.13.2026. The 15 August on this record was always a placeholder and it is now wrong: Ian said the renovation is supposed to finish sometime NEXT WEEK and the meeting follows completion. NO NEW DATE IS SET AND NONE IS GUESSED. Kept on 15 August with its original id so the history survives and so it still surfaces, exactly how ev-20260816-willis-day10 was handled when it was cancelled. This is the LISTING CONVERSATION, so the CMA has to be current when it happens. Tracked as a pending trigger in GLOBAL/PENDING_TRIGGERS.md, firing on the renovation completing.";
+            e.decidedOn="2026-08-13";
+          }
+        });
+      }
+      state.realEstate.deals.forEach(function(d){
+        if(d && d.id==="re-barkers" && String(d.note||"").indexOf("MEETING 08.13.2026")<0){
+          d.note=String(d.note||"").trim()+" MEETING 08.13.2026, IAN: the renovation is supposed to be finished SOMETIME NEXT WEEK and the meeting follows completion. NO DATE IS SET and none is invented. This is the LISTING CONVERSATION, so the CMA must be current on the day. CURRENT RECOMMENDATION $284,900, range $282,900 to $287,900, from the 08.11.2026 CMA at 10611 Parker St. THE PRICE FIELD IS DELIBERATELY LEFT AT $270,000 TO $280,000 AND THE GAP IS FLAGGED RATHER THAN CLOSED. The recommendation RESTS ON 1605 N 106TH ST SITTING UNSOLD AT $285,000, a near twin at 47 days on market, and another lane is verifying whether that listing has closed, been cut again or expired. IF 1605 N 106TH MOVES, THE BARKER NUMBER MOVES, so whatever the verification finds has to reach this meeting. Writing $284,900 in today would raise the 2026 in flight ceiling by $14,900 on a comp that is under active check. TWO ANSWERS ARE STILL OUTSTANDING AND BOTH ARE WORTH REAL MONEY: (1) TOTAL RENOVATION SPEND WITH RECEIPTS, needed for the pricing conversation and for the appraiser, and (2) IAN'S OWN MEASURED BASEMENT FIGURE from his last visit, which he took and has never handed over. Both belong in front of him BEFORE the meeting, not raised during it. Todos ret-20260813-barker-receipts and ret-20260813-barker-basement.";
+        }
+      });
+      _T287.forEach(function(t){
+        if(t && t.id==="ret-20260810-barker-date" && String(t.text||"").indexOf("TRIGGER 08.13.2026")<0){
+          t.text="TRIGGER 08.13.2026: the Barker meeting is NEXT WEEK and follows the renovation finishing, so the date arrives when the renovation does. Ask Ian for the date rather than waiting to be told it. The whole list timeline for the $270k to $280k listing gets set at that meeting, and the current recommendation is $284,900 pending the 1605 N 106th St check. Renovations have been underway since 07.23.";
+        }
+      });
+      if(!_has287("ret-20260813-barker-receipts")){
+        _T287.push({ id:"ret-20260813-barker-receipts", done:false, due:"2026-08-17",
+          text:"Get the Barkers' TOTAL RENOVATION SPEND WITH RECEIPTS before the listing meeting. It is needed twice over, once to defend the price in the conversation and once for the appraiser, and asking for it during the meeting is too late to use it. Due Monday because the meeting is next week and the date is not set yet." });
+      }
+      if(!_has287("ret-20260813-barker-basement")){
+        _T287.push({ id:"ret-20260813-barker-basement", done:false, due:"2026-08-17",
+          text:"Ian, send the BASEMENT MEASUREMENT you took at 10611 Parker St on your last visit. You measured it and it has never reached the file. It feeds the square footage the $284,900 recommendation is built on, so it needs to be in before the listing meeting next week rather than raised at it." });
+      }
+
+      /* ---- B. HORIZON. Closing next week, no date, and no deal record to attach it to. ---- */
+      if(!_has287("ret-20260813-horizon-date")){
+        _T287.push({ id:"ret-20260813-horizon-date", done:false, due:"",
+          text:"HORIZON CLOSING, NEXT WEEK, NO DATE OR TIME KNOWN. Ask Ian for it, do not wait to be told. The pre close walk through was Thursday 13 August at 12:00 on NP Dodge, so the closing follows it, and the closing goes on NP DODGE when the date lands. SECOND QUESTION, ASK IT AT THE SAME TIME: there is NO HORIZON DEAL RECORD ANYWHERE. The live deals, the sphere, leads, people, the 08-12 export and all of BRAIN were searched, and the only trace in the whole system is that one calendar line. Which deal is Horizon, and does it need a record? Nothing was invented to fill the gap." });
+      }
+
+      /* ---- C. THE THREE FIRST TIME BUYERS. Sunday 16 August touches, and the segment. -----
+         Evan, Luis Monarrez and Mason Langfelt. Two NP Dodge blocks are already on Ian's
+         calendar for Sunday 16 August, verified by reading the calendar rather than taking it
+         on trust: 10:30 to 11:00 send the first time buyer flyer, 11:00 to 11:30 check in text.
+         lastContacted is NOT set on any of them. The touch is SCHEDULED, not done, and marking
+         a contact that has not happened is how a nurture clock starts lying. */
+      var _SUN="The first time buyer flyer from Stephanie goes to him on SUNDAY 16 AUGUST 2026, 10:30, followed by a check in text at 11:00, both blocked on NP Dodge. SCHEDULED, NOT SENT: lastContacted stays where it is until the touch actually happens. Sunday rather than Saturday because Saturday is gone to the gym, the Urban Adventure event and Ian's own open house, while Chris covers Sunday's open house, and late Sunday morning is when buyers browse listings anyway. THIS IS A SEGMENT TOUCH, NOT THREE FAVOURS: Evan, Luis and Mason are all first time buyers, all pre transaction, all warm rather than active.";
+      if(!Array.isArray(state.realEstate.sphere)) state.realEstate.sphere=[];
+      state.realEstate.sphere.forEach(function(k){
+        if(!k) return;
+        if(k.id==="sph-evan" || k.id==="ym5z08j" || k.id==="gqneiel"){
+          k.firstTimeBuyer=true;
+          k.nextTouchScheduled="2026-08-16";
+          if(String(k.note||"").indexOf("SUNDAY 16 AUGUST 2026")<0) k.note=String(k.note||"").trim()+" "+_SUN;
+        }
+        /* MASON LANGFELT. He was ALREADY ON FILE and this UPDATES him, it does not create him.
+           Checked before writing anything, because Evan turned out to be on two rings at once:
+           sphere id gqneiel, name Mason Langfelt, note "Long-term, not buying until next year",
+           and he also surfaces in realEstate.people under the SAME id, which is one record shown
+           twice by design rather than a second ring. The old duplicate deal, id 2d5n1hj, titled
+           with the typo "Mason Langdfelt", is already retired: it sits in meta.removedDealIds.
+           So unlike Evan he is on ONE ring and there is nothing to merge. */
+        if(k.id==="gqneiel"){
+          k.horizon="2027, next year";
+          k.firstTimeBuyer=true;
+          /* SOURCE IS LEFT EXPLICITLY UNSET AND FLAGGED, NOT DEFAULTED. Ian does not know where
+             Mason came from. dealSource() normalises anything unrecognised to "Ian's own" and
+             sourceShare() pays that at 90 percent, which is exactly how one record was
+             overstated by $8,396.64 on 08.09. An empty string plus this flag means the next
+             session sees an open question instead of a confident wrong number. */
+          k.source=""; k.sourceUnknown=true;
+          if(String(k.note||"").indexOf("HORIZON IS NEXT YEAR")<0){
+            k.note=String(k.note||"").trim()+" HORIZON IS NEXT YEAR (2027) AND HIS URGENCY IS NOT EVAN'S OR LUIS'S. Ian 08.13.2026: Mason is looking at doing something next year, so this is EARLY GROUNDWORK, not a live lead, and he must not inflate any near term expectation. Evan is targeting end of 2026 and Luis was thinking about fall, so all three get the same flyer and only two of them are this year. SOURCE IS DELIBERATELY UNSET AND NEEDS IAN: nobody knows where Mason came from, and a blank source is not the same as a known one. It is left empty ON PURPOSE rather than defaulted, because dealSource treats anything unrecognised as Ian's own at the 90 percent share and that default overstated a deal by $8,396.64 on 08.09.2026. Answer it before he ever becomes a deal record. ALREADY ON FILE, NOT NEW: this record is the update, the old duplicate deal 2d5n1hj (typo 'Mason Langdfelt') is already retired in meta.removedDealIds, and he is on one ring only.";
+          }
+        }
+      });
+
+      /* Stephanie is now a named channel and was nowhere in the system. Added with the role
+         UNSET rather than guessed, same discipline as Mason's source. */
+      if(!Array.isArray(state.realEstate.contacts)) state.realEstate.contacts=[];
+      if(!state.realEstate.contacts.some(function(c){ return c && c.id==="ct-stephanie"; })){
+        state.realEstate.contacts.push({ id:"ct-stephanie", name:"Stephanie",
+          role:"UNSET, confirm with Ian",
+          detail:"Produces the first time buyer flyer going to Evan, Luis and Mason on Sunday 16 August 2026. Added 08.13.2026 because she is now a named channel into the first time buyer segment and she was nowhere in the system, not in contacts, leads, people or BRAIN. SURNAME, ROLE AND COMPANY ARE ALL UNKNOWN and are left blank rather than guessed. Most likely a lender, NOT asserted. If she produces material like this regularly this is a cheap recurring channel and she is worth a real contact record." });
+      }
+
+      /* THE SEGMENT. Recorded as a channel worth repeating rather than as a one off task,
+         because that is what makes it survive past Sunday. */
+      if(!state.futureIdeas) state.futureIdeas={};
+      if(!Array.isArray(state.futureIdeas["2026-08-13"])) state.futureIdeas["2026-08-13"]=[];
+      if(!state.futureIdeas["2026-08-13"].some(function(f){ return f && f.id==="fi-20260813-4"; })){
+        state.futureIdeas["2026-08-13"].push({ id:"fi-20260813-4", url:"",
+          text:"Ask Stephanie to send first time buyer material on a standing cadence rather than one off. You now have THREE first time buyers on file, Evan, Luis and Mason, all pre transaction and all warm rather than active, and that is a segment, not three individual favours. Sunday's flyer is a segment level touch that costs one send. You expect the market to go quiet September to December and you have said you want to be building through that window, and this group is exactly next year's business: Mason is 2027, Luis was thinking fall, Evan is targeting end of 2026. A recurring flyer into that segment is the cheapest top of funnel channel you have, and it needs one conversation with her, not a campaign." });
+      }
+
+      state.meta.mig287b_triggers=true; save(true);
+  } }catch(e){ try{ console.warn("mig287b did not apply:",e&&e.message); }catch(_){} }
+
   /* build 225: focus timer removed, nothing to clear here anymore. */
   applyAccent(); dailyReset(); save(true);
 }
@@ -8854,7 +9215,24 @@ const SPHERE_TYPES=["Past client","Referral source","Friend/Family","Sphere"];
 let sphereOpen={};
 function sphereList(){ if(!state.realEstate) state.realEstate={}; if(!Array.isArray(state.realEstate.sphere)) state.realEstate.sphere=[]; return state.realEstate.sphere; }
 function daysSinceDate(s){ if(!s) return null; try{ const a=String(s).split("-"); const d=new Date(+a[0],(+a[1])-1,+a[2]); const p=TODAY.split("-"); const n=new Date(+p[0],(+p[1])-1,+p[2]); return Math.round((n-d)/86400000); }catch(e){ return null; } }
-function contactOverdue(k){ const cad=(k&&k.cadence)||90; const ds=daysSinceDate(k&&k.lastContacted); if(ds==null) return true; return ds>=cad; }
+/* v21 build 287: THE SPHERE MODEL HAD NO WAY TO EXPRESS A ONE TIME TOUCH, and Ian asked for
+   one on 08.13.2026 for the Rose Creek couple: a single last check in one to two months, then
+   it ends. Every sphere record was a repeating clock. cadence defaulted to 90, a null
+   lastContacted read as overdue immediately, and there was no way to say "not yet" and no way
+   to say "never again". Jamming that intent into a cadence number is what would put them back
+   on a 30 or 90 day clock the first time somebody tidied the record, so oneTime is a real mode:
+     oneTime, no lastContacted, before dueFrom      -> not due, stays silent
+     oneTime, no lastContacted, on or after dueFrom -> due, surfaces once
+     oneTime, lastContacted set                     -> DONE, never fires again
+   cadence is ignored entirely for a oneTime record. Records without the flag are untouched, so
+   Luis Monarrez, Mason Langfelt and Evan behave exactly as they did before. */
+function contactOverdue(k){
+  if(k && k.oneTime){
+    if(k.lastContacted) return false;
+    if(k.dueFrom && String(TODAY) < String(k.dueFrom)) return false;
+    return true;
+  }
+  const cad=(k&&k.cadence)||90; const ds=daysSinceDate(k&&k.lastContacted); if(ds==null) return true; return ds>=cad; }
 function sphereOverdue(){ return sphereList().filter(contactOverdue); }
 function markContacted(k){ k.lastContacted=TODAY; save(); render(); }
 function contactEditors(parent,k){
