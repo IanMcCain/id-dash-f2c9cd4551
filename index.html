@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 282 (2026-08-12)">
+<meta name="build" content="v21 build 283 (2026-08-12)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -6965,6 +6965,61 @@ function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]
       }
       if(!state.meta) state.meta={}; state.meta.mig280_supp0811=true; save(true);
   } }catch(e){ try{ console.warn("mig280 did not apply:",e&&e.message); }catch(_){} }
+
+  /* ===== v21 build 283: WEDNESDAY 12 AUGUST, THE MOVE DAY ==================================
+     Logged from Ian directly at about 10:30 PM on 08.12. He moved into the new apartment with
+     his girlfriend, 7:30 AM to 10:13 PM. Twelve hours plus of moving, grocery shopping,
+     organising and cleaning. Roughly 80 to 85 percent done, about half his clothes unpacked.
+
+     NO WORKOUT AND NO PICKLEBALL, AND BOTH ARE CORRECT. Wednesday was already planned rest at
+     gym.restDays, legs cut with no makeup, set by Ian on 08.10. Nothing here changes that and
+     nothing may score the day as a missed session.
+
+     THE ONLY THING TICKED IS CAFFEINE, because it is the only thing he said he had done. The
+     other seven supplements and all four habits stay BLANK ON PURPOSE. He is collecting things
+     from the old place, then showering, then a protein shake and all his vitamins before bed.
+     At the moment this was written the honest value is UNKNOWN, not zero, and ticking them in
+     advance would be inventing data the same way leaving them would be reading a miss.
+
+     THE APP CANNOT YET EXPRESS PENDING, which is why this goes in prose. The auto summary line
+     on this day will keep saying Habits 0 of 4 because updateDailySummary recomputes it on every
+     save. That is the unknown versus false gap, and it is the next piece of work rather than
+     something to paper over here. */
+  try{ if(profile==="ian" && !((state.meta||{}).mig283_move0812)){
+      var _D283="2026-08-12";
+      if(state.nutrition && Array.isArray(state.nutrition.supplements)){
+        state.nutrition.supplements.forEach(function(sp){
+          if(!sp || sp.id!=="msheb3x") return;
+          if(!sp.log || typeof sp.log!=="object") sp.log={};
+          sp.log[_D283]=true;
+        });
+      }
+      if(!state.context) state.context={};
+      if(!state.context.dailyLog || typeof state.context.dailyLog!=="object") state.context.dailyLog={};
+      if(!state.context.dailyLog[_D283]) state.context.dailyLog[_D283]={note:""};
+      var _prev283=String(state.context.dailyLog[_D283].claudeAction||"");
+      var _rec283="MOVE DAY, recorded from Ian 08.12.2026 about 10:30 PM. Moved into the new apartment with his girlfriend, 7:30 AM to 10:13 PM. Twelve hours plus of moving, groceries, organising and cleaning. About 80 to 85 percent done, roughly half his clothes unpacked. Exhausted. "
+        +"NO WORKOUT AND NO PICKLEBALL AND BOTH ARE CORRECT. Wednesday is planned rest at gym.restDays, legs cut, no makeup, set by Ian 08.10. His framing and it is fair: twelve hours of heavy furniture was the workout. Do not score a missed session and do not nudge him about it. "
+        +"FOOD AND SUPPLEMENTS. He ate poorly, whatever he could grab across a twelve hour day. CAFFEINE IS THE ONLY ITEM TICKED. The other seven supplements and all four habits are PENDING, NOT MISSED: he stated the intent, a protein shake and all his vitamins before bed. Treat the blanks for 08-12 as unknown rather than zero and do not write a card about them. The auto summary saying Habits 0 of 4 is the app being unable to express pending, not a fact about his day. "
+        +"THURSDAY 13 AUGUST. Busy with real estate, will train, pickleball only if there is time. CALENDAR CLASH, READ OFF THE CALENDAR NOT ASSUMED: Belknap showing 9:30 with Chris, Gym session Ian 11:00, Horizon pre close walk through 12:00, Barker comps with Chris 13:00. The 11:00 gym block runs straight through the last two, so the gym is the thing that moves. The session is Abs and cardio light, four items, two pinned, so it fits after 14:00 or in a short window between the showing and 12:00. "
+        +"FRIDAY 14 AUGUST HAS THE SAME SHAPE. Gym session Ian 9:00 against the Crystal Johnson closing at 9:00.";
+      if(_prev283.indexOf("MOVE DAY, recorded from Ian 08.12.2026")<0){
+        state.context.dailyLog[_D283].claudeAction=(_prev283?_prev283+" ":"")+_rec283;
+      }
+      if(typeof _autoLog==="function"){
+        _autoLog({id:"auto-20260812-moveday",date:"2026-08-12",area:"Health",
+          what:"Logged the move as the day's work, ticked caffeine, and left your vitamins open rather than marking them missed",
+          why:"You did twelve hours of moving on a day that was already planned rest, and your vitamins are still coming before bed. A blank box and a skipped day look identical to everything downstream, so this says which one tonight was.",
+          evidence:"7:30 AM to 10:13 PM, 80 to 85 percent unpacked. Wednesday was set as planned rest on 08.10 with legs cut and no makeup. Caffeine is the only item you said you had done.",
+          undo:"Daily checklist, tick or untick anything once you are back on the app."});
+        _autoLog({id:"auto-20260812-thu-clash",date:"2026-08-12",area:"Gym",
+          what:"Flagged tomorrow's gym block. It collides with two real estate commitments and needs to move",
+          why:"You said you are busy with real estate tomorrow, so the gym is the thing that moves rather than the meetings.",
+          evidence:"Belknap showing 9:30, Gym session Ian 11:00, Horizon pre close walk through 12:00, Barker comps 13:00. Thursday is Abs and cardio light, four items with two pinned, so it fits after 14:00. Friday is the same shape, gym 9:00 against the Crystal Johnson closing at 9:00.",
+          undo:"Home calendar, move or delete the gym block."});
+      }
+      if(!state.meta) state.meta={}; state.meta.mig283_move0812=true; save(true);
+  } }catch(e){ try{ console.warn("mig283 did not apply:",e&&e.message); }catch(_){} }
 
 
   /* ===== v21 build 281: THE 08.12 BRIEF, AND THE DRIVE IS THE ITEM =====================
