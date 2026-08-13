@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 284 (2026-08-13)">
+<meta name="build" content="v21 build 285 (2026-08-13)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -7166,6 +7166,121 @@ function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]
       save(true);
   } }catch(e){ try{ console.warn("mig284 did not apply:",e&&e.message); }catch(_){} }
 
+  /* ===== v21 build 285: FIVE PROSPECTS IN, EVAN RESOLVED TO ONE PLACE ==================
+     Ian, 08.13.2026. Three new prospects he named, plus Theobald carried in from the
+     _HANDOFF_theobald_frahm_prospects.md the real estate lane staged while this session held
+     the deploy lock. Runs LAST in the chain on purpose, after every other block.
+
+     SOURCE IS SET EXPLICITLY ON EVERY RECORD, AND THAT IS THE POINT.
+     dealSource() normalises anything unrecognised to "Ian's own", and sourceShare() pays
+     "Ian's own" at 0.90. A blank source therefore computes silently at the 90 percent share,
+     which is what overstated a record by $8,396 on 08.11. Every record below carries
+     source "Chris's client" AND an explicit ianSplit 0.20 so neither the default nor a later
+     change to the default can reach them. Confirmed by Ian 08.13.2026 for all five.
+
+     PRICE IS EMPTY ON ALL FIVE AND THAT IS DELIBERATE, NOT MISSING WORK.
+     Paragon had no session, so there is no supported value for Frahm or Theobald, and Hartley
+     and Douglas have no property yet at all. Empty reads as Missing, which is true. Paired with
+     the build 285 editor guard, an empty price now renders no take home figure at all rather
+     than a confident $0.
+
+     FRAHM IS TWO RECORDS, A SELL AND A BUILD, NOT A SELL AND A PURCHASE.
+     RULES.md, settled 08.10.2026: a client transacting both sides counts two, whether that is
+     one dual transaction or a sell followed by a buy. Frahm is selling 17577 Taylor St and
+     intends to build with Ryan Beachler of Rose Creek Homes, the standing Scenic Group builder
+     partner (BRAIN 01_MASTER_CONTEXT line 228, verified rather than assumed). The build is
+     recorded as its own record so the builder channel is visible, because Rose Creek is a
+     recurring channel and not a one off. Timing is next year and is marked INFERRED, because
+     Ian said "I believe" rather than giving a date.
+
+     THE ONE THING DELIBERATELY LEFT OPEN ON THE BUILD RECORD.
+     If Scenic Group brings the buyer to a Rose Creek build, Ian represents BOTH sides, which
+     would make it Dual agency at the 50 percent share rather than Chris's client at 20. That
+     is Brandon Winchester's shape. It is NOT assumed here: Ian confirmed Chris's client for
+     Frahm today, the build has no price, and guessing dual would double the share on a record
+     that cannot yet be checked. Flagged in the note for his thumb instead.
+
+     NOTHING HERE TOUCHES A GOAL BAR. All five are Prospecting. reGoalsCard counts Closed plus
+     Under Contract only, so the $10M bar and the 20 deal bar are untouched, and the in flight
+     ceiling counts Active plus Coming Soon, so that is untouched too.
+
+     Guard flag mig285_prospects lives in SAVED STATE ONLY, never in seedIan().meta, so
+     deepMergeDefaults cannot pre-set it and make this block self skip. That is the build 53
+     lesson and it is why the flag is not in the seed. */
+  try{ if(profile==="ian" && state.realEstate && Array.isArray(state.realEstate.deals)
+          && state.meta && !state.meta.mig285_prospects){
+      var _D285=state.realEstate.deals;
+      var _has285=function(id){ var r=false; _D285.forEach(function(d){ if(d&&d.id===id) r=true; }); return r; };
+      var _name285=function(frag){ var r=false; _D285.forEach(function(d){ if(d&&String(d.title||"").toLowerCase().indexOf(frag)>-1) r=true; }); return r; };
+      var _add285=function(o){ if(!_has285(o.id)) _D285.push(o); };
+
+      _add285({ id:"re-hartley-buy", title:"Rachel Hartley", stage:"Prospecting",
+        price:"", close:"", sub:"Buyer side",
+        source:"Chris's client", ianSplit:0.20, side:"Buyer",
+        note:"Prospect added 08.13.2026 on Ian's instruction. Chris's client, 20 percent share, set explicitly. Looking to buy soon; soon is Ian's word and no date was given, so no timeline is recorded. NO PROPERTY AND NO PRICE YET, left genuinely empty rather than estimated, so no take home is computed." });
+
+      _add285({ id:"re-douglas-buy", title:"Ronnie Douglas", stage:"Prospecting",
+        price:"", close:"", sub:"Buyer side",
+        source:"Chris's client", ianSplit:0.20, side:"Buyer",
+        note:"Prospect added 08.13.2026 on Ian's instruction. Chris's client, 20 percent share, set explicitly. Also looking to buy, no date given. NO PROPERTY AND NO PRICE YET, left genuinely empty rather than estimated, so no take home is computed." });
+
+      _add285({ id:"re-frahm-sell", title:"Brent Frahm", stage:"Prospecting",
+        price:"", close:"", sub:"Sell side, 17577 Taylor St, Omaha 68116",
+        source:"Chris's client", ianSplit:0.20, side:"Seller",
+        note:"Prospect added 08.13.2026. Chris's client, 20 percent share, set explicitly on Ian's direct confirmation. Wants help selling 17577 Taylor St. COUNTS TWO WITH re-frahm-build under the 08.10.2026 rule, sell plus build. Verified county record, carried from the 08.13 comps handoff: parcel 2324555452, owner FRAHM BRENT A, subdivision THOMSEN MILE WEST THE lot 77, Two Storey, built 2005, 2,081 sq ft above grade, quality and condition Average, 0.19 acre, 8,276 sq ft. Zip 68116 is northwest Omaha and is a DIFFERENT market from the Theobald file in 68135, carry nothing between them. NOT YET KNOWN, do not infer: beds, baths, garage, basement area and finish, updates, timeline. NO PRICE: Paragon had no session so there is no supported value, and the Taylor St lookalike check is still open." });
+
+      _add285({ id:"re-frahm-build", title:"Brent Frahm", stage:"Prospecting",
+        price:"", close:"Next year (2027), INFERRED", sub:"Build side, Rose Creek Homes",
+        source:"Chris's client", ianSplit:0.20, side:"Buyer",
+        note:"BUILD INTENT, recorded explicitly 08.13.2026. Frahm is going to build with Ryan, and Ryan is confirmed as Ryan Beachler of Rose Creek Homes, the standing Scenic Group builder partner, checked against BRAIN 01_MASTER_CONTEXT rather than assumed from the first name. Linked here as its own record so the builder channel stays visible, because Rose Creek is a recurring channel rather than a one off. TIMING IS INFERRED: Ian said he believes it is next year, he did not give a date, so treat 2027 as unconfirmed. This is the SECOND side of a sell plus build, not a conventional purchase, and it is why Frahm counts two under the 08.10.2026 rule. OPEN FOR IAN, NOT ASSUMED: if Scenic Group brings the buyer to a Rose Creek build then Ian represents BOTH sides, which would make this Dual agency at the 50 percent share rather than Chris's client at 20, the Brandon Winchester shape. Left at Chris's client 20 percent because that is what Ian confirmed today and because there is no price yet, so nothing is overstated either way. Set the source to Dual agency when he confirms." });
+
+      /* THEOBALD. Not Ian's ask this round. Carried in from _HANDOFF_theobald_frahm_prospects.md,
+         which the real estate lane wrote BECAUSE this session held the deploy lock, and which
+         asks the lock holder to apply it. Its Frahm block is intentionally dropped, exactly as
+         that handoff instructs, because Frahm is created above and must not exist twice. */
+      _add285({ id:"re-theobald-sell", title:"Scott and Nancy Theobald", stage:"Prospecting",
+        price:"", close:"", sub:"Sell side, 5014 S 163 St, Omaha 68135",
+        source:"Chris's client", ianSplit:0.20, side:"Seller",
+        note:"Prospect added 08.13.2026 from the Theobald comps handoff. Chris's client, 20 percent share, set explicitly. Verified county record: parcel 2027457696, owner THEOBALD SCOTT W ETAL, subdivision PRAIRIE POINTE lot 99, Tri Level, built 1986, 1,638 sq ft above grade, 3 bed 2.5 bath, single fireplace, central air, block foundation, 0.17 acre, 60 by 126. Garage is BUILT IN at 462 sq ft, a tuck under, which is garage and not finishable living area. Basement 552 sq ft block, no finished area on record. 2026 assessed $270,000, up 27.5 percent from $211,800 in 2022. Last sold 22 March 1999 for $128,500, so about 27 years of ownership and no MLS listing since. School value area Millard West. COMP TRAP, caught before any comp was picked: S 163 St in 68135 runs through four subdivisions with medians from 1,552 to 2,974 above grade, so a street name comp set would have been wrong by well over $100,000. Comp pool is the 185 Tri Levels inside Prairie Pointe, the 151 Split Entries are a different product and are excluded. NO PRICE: Paragon had no session, so there is no supported value yet." });
+
+      /* ---- EVAN. ONE PLACE, NOT TWO. Ian, 08.13.2026. -------------------------------------
+         He was on the prospect ring as deal re-evan AND on the sphere ring as sph-evan, so he
+         rendered twice in the same orbit. Decided from the records rather than by preference:
+
+         KEEPING THE DEAL. re-evan carries a budget of $250k to $300k, a target of end of 2026,
+         a side, and a source. It is a transaction record and it predates the other by two
+         months. sph-evan was created on 08.06.2026, and its own note says why: Ian contacted
+         him on 08.05 and "the touch had nowhere to live". Its Iffy quality was the standing
+         default for a missing value, not an assessment of Evan. A record created to hold a
+         timestamp is the weaker of the two, and an active buyer with a budget and a date is a
+         prospect, not someone to nurture.
+
+         The sphere record is ARCHIVED, not dropped, and the 08-05 touch is folded into the deal
+         note so removing the nurture clock does not destroy the only record of that contact.
+         The block that created sph-evan is guarded by mig233_actuals, which is already true on
+         Ian's profile, so it cannot re-add him on the next load. That was checked, not assumed,
+         because an unguarded every load block always beats a flag guarded one. */
+      if(Array.isArray(state.realEstate.sphere)){
+        var _ev285=null;
+        state.realEstate.sphere.forEach(function(k){ if(k&&k.id==="sph-evan") _ev285=k; });
+        if(_ev285){
+          if(!state.archive) state.archive={};
+          if(!Array.isArray(state.archive.sphereRemoved)) state.archive.sphereRemoved=[];
+          state.archive.sphereRemoved.push({ removed:"2026-08-13",
+            reason:"Ian 08.13.2026: Evan must not sit on both the sphere ring and the prospect ring. Kept deal re-evan, which carries the price range, the target close and the side. This record was created 08.06 only because a contact touch had nowhere to live.",
+            record:_ev285 });
+          state.realEstate.sphere=state.realEstate.sphere.filter(function(k){ return !(k&&k.id==="sph-evan"); });
+        }
+        _D285.forEach(function(d){
+          if(d && d.id==="re-evan" && String(d.note||"").indexOf("Last contacted 2026-08-05")<0){
+            d.note=String(d.note||"").trim()+" Last contacted 2026-08-05. Removed from the sphere ring on 08.13.2026 so he is counted once, as a prospect; the nurture record is kept in archive.sphereRemoved. Follow up belongs on a Real Estate to do rather than the 90 day sphere clock.";
+          }
+        });
+      }
+
+      state.meta.mig285_prospects=true; save(true);
+  } }catch(e){ try{ console.warn("mig285 did not apply:",e&&e.message); }catch(_){} }
+
   /* build 225: focus timer removed, nothing to clear here anymore. */
   applyAccent(); dailyReset(); save(true);
 }
@@ -7756,7 +7871,7 @@ function dealEditors(parent,d){
   const sideLab=el("div","small muted","Side Ian represents"); sideLab.style.marginTop="10px"; parent.appendChild(sideLab);
   parent.appendChild(chipRowKV([["Seller side","Seller"],["Buyer side","Buyer"],["Both sides","Both"]], dealSide(d), v=>{ d.side=v; save(); render(); }));
   if(dealSource(d)==="Dual agency"){ const rLab=el("div","small muted","Dual commission rate, aim 6%, as low as 5% to make a deal"); rLab.style.marginTop="10px"; parent.appendChild(rLab); parent.appendChild(chipRowKV([["5%",0.05],["6%",0.06]], dualRate(d), function(v){ d.dualRate=v; save(); render(); })); const rNote=el("div","small dim"); rNote.style.marginTop="4px"; rNote.textContent="Current rate "+(+(dualRate(d)*100).toFixed(2))+"%"+(dualRate(d)<0.05?" (locked one-time exception)":""); parent.appendChild(rNote); }
-  const inc=el("div","small dim"); inc.style.marginTop="9px"; inc.style.lineHeight="1.55"; if(dealSource(d)==="Dual agency"){ inc.innerHTML="Est. your take home <b>"+fmtMoney(dealIanNet(d))+"</b>. Dual agency at "+(+(dualRate(d)*100).toFixed(2))+"% on the property, charged once. Broker takes 15% of a 6% basis, then your 50/50 with Chris. Counts twice for volume and deal count."; } else { inc.innerHTML="Est. your take home <b>"+fmtMoney(dealIanNet(d))+"</b>. Gross commission this side "+fmtMoney(dealGrossCommission(d))+", after the 15% broker cut and your "+Math.round(sourceShare(dealSource(d),d)*100)+"% split."; } parent.appendChild(inc);
+  const inc=el("div","small dim"); inc.style.marginTop="9px"; inc.style.lineHeight="1.55"; /* v21 build 285: NO PRICE MEANS NO NUMBER. Ian, 08.13.2026. priceNum returns 0 for an empty price, so this line used to render a confident "Est. your take home $0" on every prospect with no price yet, which reads as a derived figure rather than a missing one. The deal ROW already guarded this with if(_tn>0); the editor did not. Say the price is missing, and name the split that WOULD apply so a wrong source is visible before a price is ever typed. */ if(priceNum(d&&d.price)<=0 && !dealNetIsActual(d)){ inc.innerHTML="No price yet, so no income estimate. Add a price and this fills in at your <b>"+Math.round(sourceShare(dealSource(d),d)*100)+"%</b> split ("+dealSource(d)+")."; } else if(dealSource(d)==="Dual agency"){ inc.innerHTML="Est. your take home <b>"+fmtMoney(dealIanNet(d))+"</b>. Dual agency at "+(+(dualRate(d)*100).toFixed(2))+"% on the property, charged once. Broker takes 15% of a 6% basis, then your 50/50 with Chris. Counts twice for volume and deal count."; } else { inc.innerHTML="Est. your take home <b>"+fmtMoney(dealIanNet(d))+"</b>. Gross commission this side "+fmtMoney(dealGrossCommission(d))+", after the 15% broker cut and your "+Math.round(sourceShare(dealSource(d),d)*100)+"% split."; } parent.appendChild(inc);
   const del=el("button","del","Remove deal"); del.style.fontSize="13px"; del.style.marginTop="12px"; del.onclick=()=>{ if(confirm("Remove this deal?")){ state.realEstate.deals=state.realEstate.deals.filter(x=>x.id!==d.id); delete reDealOpen[d.id]; save(); render(); } }; parent.appendChild(del);
 }
 function dealRow(parent,d){
