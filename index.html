@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 287 (2026-08-13)">
+<meta name="build" content="v21 build 288 (2026-08-13)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -7725,6 +7725,198 @@ function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]
       state.meta.mig287b_triggers=true; save(true);
   } }catch(e){ try{ console.warn("mig287b did not apply:",e&&e.message); }catch(_){} }
 
+  /* ===== v21 build 288: THE PROPERTY LINK SWEEP, AND THE ROSE CREEK TOUCH GOES CONDITIONAL ===
+     Ian, 08.13.2026, two corrections. Runs AFTER the 287 and 287b blocks on purpose, so on a
+     fresh device those do their work first and this corrects on top rather than fighting them.
+     Guard flag mig288_propertylink lives in SAVED STATE ONLY, never in seedIan().meta.
+
+     1. HORIZON IS CRYSTAL JOHNSON. IT WAS NEVER A MISSING DEAL.
+        Ian, 08.13.2026, in his own words: there is no missing Horizon deal, Horizon IS Crystal
+        Johnson, the same transaction under two names. The 287b block searched the live deals,
+        the sphere, leads, people, the 08-12 export and all of BRAIN, found no Horizon record,
+        and reported a gap with a closing a week away. The gap was never real. It cost a session
+        real time and produced a false alarm at the worst possible moment in a file, which is
+        the week of its closing.
+
+        WHY THE SEARCH FAILED, because the fix has to answer that and not just the symptom. The
+        CALENDAR carries the property, three NP Dodge events, "11911 Horizon Final Walk thru"
+        and "Horizon St Walk Through (Chris)" on 11 August and "Horizon Pre-Close Walk Through"
+        on 13 August. The PIPELINE carries the client, re-crystal-johnson, and its note was
+        EMPTY. There was no string anywhere that both names shared, so no search on either name
+        could ever reach the other. Two correct records, zero link.
+
+        THE FIX IS THE FIELD THE APP ALREADY HAS. d.sub is where build 267 put the address when
+        Ian said the white title carries the client's name and nothing else, and dealRow already
+        renders it. So the property goes on d.sub, which means it displays to Ian, exports with
+        the record, and is found by a plain text search on either name. No new field, no dead
+        weight, and the Barkers row was already the model for it.
+
+     2. THE SAME SHAPE WAS SWEPT FOR ACROSS EVERY DEAL, AND IT HAD HAPPENED TWICE MORE.
+        Every property token on the NP Dodge calendar in a 75 day window was checked against
+        every deal record. Three deals carried a property on the calendar and nothing in the
+        pipeline, and ALL THREE land next week, which is exactly the pattern Ian predicted:
+          Crystal Johnson  <- 11911 Horizon        closing next week, date not set
+          Bonks buy        <- 401 Fir St, Ashland  final walk through 18 Aug, closing 20 Aug
+          Barkers          <- 10611 Parker St      listing meeting next week, date not set
+        The rest were already linked and are untouched: Willis carries 10218 Spyglass, Thacker
+        4911 S 131st, Spicer sell 18734 Olive, Sydney Spicer 20535 Howe, Troester 1709 Diane,
+        Belknap 4946 Pratt, Frahm 17577 Taylor and Theobald 5014 S 163 both on d.sub already.
+
+     3. THE ROSE CREEK COUPLE. IAN CHANGED HIS MIND AND PART OF BUILD 287 IS REVERSED.
+        His words 08.13.2026: he has not heard from them in over a week, so he is following up
+        TOMORROW, Friday 14 August, then waiting for a response, and only if there is no
+        response do they fall back to the last chance contact in one to two months.
+
+        THE ONE TIME MODE COULD NOT EXPRESS THAT, AND IT IS REPORTED RATHER THAN FORCED. As
+        built yesterday, contactOverdue treats ANY lastContacted on a oneTime record as done
+        forever. That conflates "Ian reached out" with "the thread is closed", and under the new
+        two step plan those are different events. Left alone the mode would be actively WRONG,
+        not merely unable: Ian follows up tomorrow, taps Mark contacted, and the 13 September
+        touch is killed even though nobody ever replied, which is the opposite of what he asked
+        for. So the mode is EXTENDED, not replaced, and build 287's oneTime work stands.
+
+        WHAT WAS ADDED: repliedOn, a date, distinct from lastContacted. The gate is now a REPLY,
+        not a contact. Rules, and they are written at the writer in contactOverdue:
+          repliedOn set                              -> DONE, never fires again
+          before dueFrom                             -> silent, the window is not open
+          lastContacted on or after dueFrom          -> the last chance touch was made, done
+          lastContacted BEFORE dueFrom               -> IGNORED, that is tomorrow's follow up
+        Tomorrow's follow up therefore does not consume the September touch, and a reply does.
+
+        THE FRIDAY EVENT STAYS. NP Dodge, 14 August 11:00, "Ian - follow up with rose creek
+        couple". Build 287 flagged it as contradicting the plan and correctly left it alone.
+        Under Ian's revised plan it is the FIRST STEP and it is now correct, so it stays exactly
+        where it is and nothing amends it.
+  */
+  try{ if(profile==="ian" && state.realEstate && state.meta && !state.meta.mig288_propertylink){
+
+      /* ---- A. THE PROPERTY LINK SWEEP. d.sub only, plus a dated note. Nothing else moves. --- */
+      var _D288=Array.isArray(state.realEstate.deals)?state.realEstate.deals:[];
+      var _sub288=function(id,sub,noteMark,noteText){
+        _D288.forEach(function(d){
+          if(!d || d.id!==id) return;
+          /* A NULL sub MEANS NOTE ONLY, and it has to be tested before anything is concatenated.
+             Caught by the two load harness on 08.13.2026: without this guard the Bonks sell row
+             rendered "Selling  null", because String(d.sub).indexOf(null) coerces to the STRING
+             "null", misses, and appends it. The check that was supposed to catch it only asserted
+             that no address had been invented, which is the exact mistake the migration rules warn
+             about, a check aimed at what the migration wrote rather than at what the row now says. */
+          if(sub){
+            if(!d.sub) d.sub=sub;
+            else if(String(d.sub).indexOf(sub)<0) d.sub=String(d.sub)+"  "+sub;
+          }
+          if(noteText && String(d.note||"").indexOf(noteMark)<0){
+            d.note=(String(d.note||"").trim()+" "+noteText).trim();
+          }
+        });
+      };
+
+      /* CRYSTAL JOHNSON. VERIFIED, given by Ian directly on 08.13.2026, and corroborated by the
+         record rather than taken on trust alone: the deal is Under Contract, sell side, Chris's
+         client, and the Horizon pre close walk through on 13 August is the step that precedes a
+         closing, which is where Crystal Johnson's closing now sits. Both agree. */
+      _sub288("re-crystal-johnson","11911 Horizon","HORIZON IS THIS DEAL",
+        "HORIZON IS THIS DEAL. Ian, 08.13.2026, verbatim: there is no missing Horizon deal, Horizon IS Crystal Johnson, the same transaction under two names. The property is 11911 Horizon, also written Horizon St and Horizon on the NP Dodge calendar. THE THREE HORIZON CALENDAR EVENTS BELONG TO THIS RECORD: 11911 Horizon Final Walk thru and Horizon St Walk Through (Chris) on Tuesday 11 August 10:00, and Horizon Pre-Close Walk Through on Thursday 13 August 12:00. WHY THIS SENTENCE EXISTS: the calendar carried the property, this record carried the client, this note was EMPTY, and no string was shared between them, so a search on 08.13.2026 for a Horizon deal returned nothing and reported a missing deal a week before closing. It was never missing. Do not open that question again. ATTENDEE NOTE, and it is not a contradiction: the 11 August walk through lists Brandon Myers as organiser with Chris McCain, Jason Peter and Ryan Krejci, and no Ian, which is consistent with source Chris's client at the 20 percent share already on this record. THE CLOSING DATE IS STILL GENUINELY UNKNOWN and that is the only open question left on this deal.");
+
+      /* BONKS BUY. INFERRED, HIGH CONFIDENCE, and labelled as inference rather than stated as
+         fact. Two independent signals agree and neither was assumed: the 18 August event is a
+         FINAL WALK THROUGH, which is a buyer side step, and it carries location 401 Fir St
+         Ashland; and the 20 August event is titled "Bonk Fir St Closing", which matches the buy
+         side close date of 20 August rather than the sell side 19 August. */
+      _sub288("re-bonks-buy","401 Fir St, Ashland NE","FIR ST LINKED 08.13.2026",
+        "FIR ST LINKED 08.13.2026 by the same sweep that resolved Horizon, because this record had the identical shape: the property lived only on the calendar and the client only in the pipeline. 401 Fir St, Ashland NE is INFERRED HIGH CONFIDENCE, not given by Ian, on two independent signals that agree. First, NP Dodge 18 August 09:00 Bonk final walkthrough (Chris & Ian) carries location 401 Fir St Ashland, and a final walk through is a BUYER side step. Second, NP Dodge 20 August 09:00 Bonk Fir St Closing at Stewart Title matches THIS record's 20 August close rather than the sell side's 19 August. If Ian says otherwise his answer wins and this line gets corrected, it is not a fact he stated.");
+
+      _sub288("re-bonks-sell",null,"PAIRED PROPERTY 08.13.2026",
+        "PAIRED PROPERTY 08.13.2026. THE ADDRESS OF THE HOME BEING SOLD ON THIS RECORD IS MISSING, and it is recorded as Missing rather than guessed. The Fir St property on the calendar is the PURCHASE, re-bonks-buy, 401 Fir St Ashland NE, inferred high confidence. Nothing on the calendar names the property being sold here. Ask for it rather than infer it, because the sell side is the $625,000 half of this client and a wrong address on it is worse than a blank one.");
+
+      /* BARKERS. VERIFIED from BRAIN. The 08.11.2026 CMA that produced the $284,900
+         recommendation is at 10611 Parker St, PENDING_TRIGGERS 7 names that address against
+         this client outright, and the 24 July staging pickup event lists 10611 Parker. */
+      _sub288("re-barkers","10611 Parker St","PARKER ST LINKED 08.13.2026",
+        "PARKER ST LINKED 08.13.2026 by the Horizon sweep, third record with the same shape. 10611 Parker St is VERIFIED, not inferred: the 08.11.2026 CMA that produced the $284,900 recommendation and the $282,900 to $287,900 range is at 10611 Parker St, GLOBAL/PENDING_TRIGGERS.md trigger 7 names that address against this client, and NP Dodge 24 July Staging Pickup lists 10611 Parker alongside the Olive St and Diane St jobs. The price on this record deliberately still reads $270,000 to $280,000 and that gap is not an error, see trigger 7: the $284,900 rests on 1605 N 106th St sitting unsold at $285,000 and that comp is under active verification.");
+
+      /* ROSE CREEK LISTING WAS CONSIDERED AND DELIBERATELY LEFT ALONE. The weekend open house
+         events carry location "Rose Creek Homes two story" and the deal has no street address
+         anywhere, so it looked like a fourth case. It is not: the deal is TITLED "Rose Creek",
+         so a search on what the calendar says already reaches it, and its sub already reads
+         "2 story". Appending the calendar string would have produced "2 story  Rose Creek Homes
+         two storey model" on the row, which is uglier for zero lookup value. Not the shape. */
+
+      /* ---- B. THE APP EVENTS CARRY THE PROPERTY TOO, same reason. ---------------------- */
+      if(Array.isArray(state.events)){
+        state.events.forEach(function(e){
+          if(!e) return;
+          if(e.id==="ev-20260814-johnson-close" && String(e.title||"").indexOf("Horizon")<0){
+            e.title=String(e.title||"")+"  11911 Horizon";
+          }
+          if(e.id==="ev-20260820-bonks-buy-close" && String(e.title||"").indexOf("Fir St")<0){
+            e.title=String(e.title||"")+", 401 Fir St Ashland";
+          }
+        });
+      }
+
+      /* ---- C. THE HORIZON TODO. Its SECOND question is answered, so it loses it. The first
+               question, the closing date, is genuinely still open and stays exactly as it is. */
+      if(state.realEstate && Array.isArray(state.realEstate.todos)){
+        state.realEstate.todos.forEach(function(t){
+          if(t && t.id==="ret-20260813-horizon-date" && String(t.text||"").indexOf("ANSWERED 08.13.2026")<0){
+            t.text="HORIZON CLOSING, NEXT WEEK, NO DATE OR TIME KNOWN. Ask Ian for it, do not wait to be told. The pre close walk through was Thursday 13 August at 12:00 on NP Dodge, so the closing follows it, and the closing goes on NP DODGE when the date lands. THE SECOND QUESTION IS ANSWERED 08.13.2026 AND IS NOT TO BE ASKED AGAIN: Horizon IS Crystal Johnson, deal re-crystal-johnson, one transaction under two names. There was never a missing deal. The property 11911 Horizon now sits on that record's sub line so either name finds it. Only the date is still open.";
+          }
+        });
+      }
+
+      state.meta.mig288_propertylink=true; save(true);
+  } }catch(e){ try{ console.warn("mig288 did not apply:",e&&e.message); }catch(_){} }
+
+  /* ===== v21 build 288b: THE ROSE CREEK COUPLE TOUCH BECOMES CONDITIONAL =================
+     Guard mig288b_rosecreek, saved state only. Runs after the 287 block that created the record.
+     This is a REFINEMENT of build 287's oneTime mode, not a rejection of it. The mode stays.
+  */
+  try{ if(profile==="ian" && state.realEstate && state.meta && !state.meta.mig288b_rosecreek){
+      if(!Array.isArray(state.realEstate.sphere)) state.realEstate.sphere=[];
+
+      var _n288="ONE TIME LAST CHECK, NOW CONDITIONAL ON NO REPLY. REVISED BY IAN 08.13.2026 AND THIS SUPERSEDES THE BUILD 287 WORDING ON THIS RECORD. Read the sequence, it is two steps and not one. STEP ONE, FRIDAY 14 AUGUST 2026: Ian follows up with them himself. His reason in his own words, he has not heard from them in over a week. The touch is already on the calendar, NP Dodge, Friday 14 August 11:00, 'Ian - follow up with rose creek couple', and that event is CORRECT and stays. Build 287 flagged it as contradicting the plan and left it alone, which was the right call, and under the revised plan it is simply the first step. STEP TWO, CONDITIONAL, FROM 13 SEPTEMBER 2026: the last chance contact fires ONLY IF STEP ONE GOES UNANSWERED. Ian's window is one to two months, meaning 13 September to 13 October 2026, and dueFrom is the near edge so it surfaces at the start of his window rather than the end. IF THEY REPLY, THIS TOUCH MUST NEVER FIRE. That is enforced in code, not in prose: the record carries repliedOn, and contactOverdue returns false the moment repliedOn holds a date. SET repliedOn THE DAY A REPLY IS LOGGED. Any future session that learns they answered, from Ian, from a note, from anywhere, writes repliedOn and does nothing else. There is a one tap button for it on the contact card. WHY repliedOn EXISTS RATHER THAN REUSING lastContacted, and this is the trap it was built to close: as build 287 shipped it, ANY lastContacted killed the September touch. Tomorrow's follow up IS a contact, so marking it contacted would have killed the conditional touch even though nobody replied, which is the exact opposite of Ian's instruction. lastContacted BEFORE dueFrom is therefore ignored by design, and lastContacted ON OR AFTER dueFrom means the last chance touch itself has been made and the record goes quiet. IF THE SEPTEMBER TOUCH LANDS NOTHING, THEY ARE DONE, do not reset it and do not put them on a 30 or 90 day clock. THE DEAL DATA IS NOT LOST: the full prospect record is archived verbatim at archive.dealsMovedToSphere and reads BUYER side, source Ian's own at the 90 percent share, no price and no close date ever recorded, note 'Potential new build with Ryan (Rose Creek Homes). Toured the Rose Creek 2-story listing.' QUALITY IFFY is the standing default for a value nobody stated, not a judgement, though a week of silence supports it. THIS IS NOT THE ROSE CREEK LISTING. re-rose-creek, the $685,000 two storey model, is a separate live record and is untouched.";
+
+      var _found288=false;
+      state.realEstate.sphere.forEach(function(k){
+        if(!k || k.id!=="sph-rosecreek-couple") return;
+        _found288=true;
+        k.oneTime=true; k.cadence=null;
+        k.dueFrom="2026-09-13"; k.dueBy="2026-10-13";
+        k.conditional="no reply to the 14 August 2026 follow up";
+        if(typeof k.repliedOn!=="string") k.repliedOn="";
+        k.note=_n288;
+      });
+      if(!_found288){
+        state.realEstate.sphere.push({ id:"sph-rosecreek-couple", name:"Rose Creek couple",
+          type:"Sphere", phone:"", lastContacted:"", repliedOn:"", quality:"Iffy",
+          cadence:null, oneTime:true, dueFrom:"2026-09-13", dueBy:"2026-10-13",
+          conditional:"no reply to the 14 August 2026 follow up", note:_n288 });
+      }
+
+      /* NO TODO IS TOUCHED HERE, AND THE REASON IS A CORRECTION TO BUILD 287's OWN REPORT.
+         Build 287 says it "closed the plat map todo" that told Ian to call them tomorrow. It did
+         not, because there was nothing to close: ret-rosecreek-couple was retired to
+         archive.todosDone all the way back at build 220 with the reason "Checked. Outreach made."
+         and it is absent from Ian's live todos and from the 08-12 export alike. 287's forEach ran
+         over a list that never contained it and reported the result anyway. Verified here across
+         both the raw export and a full 287 replay before this comment was written. The dead loop
+         is deliberately NOT copied forward. The Friday follow up lives on the NP Dodge calendar,
+         which is where Ian will actually see it, and adding an app todo beside it would duplicate
+         a commitment rather than save him time. */
+
+      if(typeof _autoLog==="function"){
+        _autoLog({id:"auto-20260813-rosecreek-conditional",date:"2026-08-13",area:"Real estate",
+          what:"Made the Rose Creek couple's September touch conditional on them not replying, and kept your Friday follow up exactly where it is",
+          why:"You changed the plan: you are following up tomorrow because you have not heard from them in over a week, and only if that goes unanswered do they fall back to the last chance contact in one to two months.",
+          evidence:"Yesterday's build set them silent until 13 September as a single unconditional touch. As that shipped, marking tomorrow's follow up as contacted would have cancelled the September touch even if they never replied. The record now carries a separate repliedOn date, and the touch is cancelled by a REPLY rather than by you reaching out.",
+          undo:"Real estate, open the Rose Creek couple contact and clear the reply date, or say the word and the whole thing goes back to build 287 behaviour."});
+      }
+
+      state.meta.mig288b_rosecreek=true; save(true);
+  } }catch(e){ try{ console.warn("mig288b did not apply:",e&&e.message); }catch(_){} }
+
+
   /* build 225: focus timer removed, nothing to clear here anymore. */
   applyAccent(); dailyReset(); save(true);
 }
@@ -9226,10 +9418,25 @@ function daysSinceDate(s){ if(!s) return null; try{ const a=String(s).split("-")
      oneTime, lastContacted set                     -> DONE, never fires again
    cadence is ignored entirely for a oneTime record. Records without the flag are untouched, so
    Luis Monarrez, Mason Langfelt and Evan behave exactly as they did before. */
+/* build 288, 08.13.2026: THE GATE ON A CONDITIONAL ONE TIME TOUCH IS A REPLY, NOT A CONTACT.
+   Ian revised the Rose Creek plan the day after the oneTime mode shipped: he follows up himself
+   on 14 August, waits, and the last chance touch fires ONLY IF that goes unanswered. As build 287
+   shipped it, ANY lastContacted killed the touch, so tomorrow's follow up would have cancelled a
+   touch that is supposed to depend on the answer to it. That is not the mode being unable to
+   express the intent, it is the mode expressing the OPPOSITE of it, which is why this is fixed at
+   the writer rather than worked around on the record. repliedOn is a separate date and it is the
+   only thing that closes a conditional record out early.
+     repliedOn set                          -> DONE, never fires again, whatever else is set
+     before dueFrom                         -> silent, the window is not open yet
+     lastContacted on or after dueFrom      -> the last chance touch itself was made, done
+     lastContacted BEFORE dueFrom           -> IGNORED, that is the earlier follow up
+   A oneTime record with no dueFrom behaves exactly as build 287 shipped it, so nothing that does
+   not carry a window changes. Records without the oneTime flag are untouched entirely. */
 function contactOverdue(k){
   if(k && k.oneTime){
-    if(k.lastContacted) return false;
+    if(k.repliedOn) return false;
     if(k.dueFrom && String(TODAY) < String(k.dueFrom)) return false;
+    if(k.lastContacted && (!k.dueFrom || String(k.lastContacted) >= String(k.dueFrom))) return false;
     return true;
   }
   const cad=(k&&k.cadence)||90; const ds=daysSinceDate(k&&k.lastContacted); if(ds==null) return true; return ds>=cad; }
@@ -9242,10 +9449,30 @@ function contactEditors(parent,k){
   const ph=el("input","in"); ph.type="tel"; ph.placeholder="Phone (optional)"; ph.value=k.phone||""; ph.oninput=()=>{ k.phone=ph.value; save(); }; parent.appendChild(ph);
   const lcl=el("div","small muted"); lcl.textContent="Last contacted"; lcl.style.margin="10px 0 4px"; parent.appendChild(lcl);
   const lc=el("input","in"); lc.type="date"; lc.value=k.lastContacted||""; lc.oninput=()=>{ k.lastContacted=lc.value; save(); }; parent.appendChild(lc);
+  /* build 288: a CONDITIONAL one time record gets one extra control and one line of plain state.
+     It renders only for oneTime, so every other contact card is byte identical to build 287.
+     The control exists because the whole conditional hangs on a fact only Ian has, whether they
+     answered, and a gate nothing can set is not a gate. One tap, and it is one tap to undo. */
+  if(k && k.oneTime){
+    const rp=el("button","btn sm block", k.repliedOn?("They replied "+k.repliedOn+", tap to undo"):"They replied, close this out");
+    rp.style.marginTop="10px";
+    rp.onclick=()=>{ k.repliedOn = k.repliedOn ? "" : TODAY; save(); render(); };
+    parent.appendChild(rp);
+    const st=el("div","small dim"); st.style.marginTop="6px";
+    st.textContent = k.repliedOn
+      ? ("Closed out. They replied "+k.repliedOn+", so the "+(k.dueFrom||"later")+" check will not fire.")
+      : (k.conditional
+          ? ("One time check from "+(k.dueFrom||"?")+", and only if "+k.conditional+". Reaching out before then does not cancel it, a reply does.")
+          : ("One time check from "+(k.dueFrom||"?")+". Fires once, then goes quiet."));
+    parent.appendChild(st);
+  }
   const qll=el("div","small muted"); qll.textContent="Lead quality and reach out cadence"; qll.style.margin="10px 0 4px"; parent.appendChild(qll);
   const _qcur=(k.quality==="Good"||k.quality==="Iffy")?k.quality:((k.cadence&&k.cadence<=45)?"Good":"Iffy");
   parent.appendChild(chipRow(["Good","Iffy"],_qcur,function(q){ k.quality=q; k.cadence=(q==="Good")?30:90; save(); render(); }));
-  const qhint=el("div","small dim"); qhint.style.marginTop="6px"; qhint.textContent=(_qcur==="Good")?"Good lead, reach out monthly, about every 30 days.":"Iffy lead, reach out quarterly, about every 90 days."; parent.appendChild(qhint);
+  /* build 288: on a oneTime record the cadence sentence is a lie, because contactOverdue ignores
+     cadence entirely for those. The quality chip still works and still means something, the
+     clock it normally implies does not. Say that rather than print a 90 day promise nothing keeps. */
+  const qhint=el("div","small dim"); qhint.style.marginTop="6px"; qhint.textContent=(k&&k.oneTime)?((_qcur==="Good")?"Good lead. No recurring clock on this one, it is a single check.":"Iffy lead. No recurring clock on this one, it is a single check."):((_qcur==="Good")?"Good lead, reach out monthly, about every 30 days.":"Iffy lead, reach out quarterly, about every 90 days."); parent.appendChild(qhint);
   const ta=el("textarea","in"); ta.style.minHeight="52px"; ta.style.marginTop="10px"; ta.placeholder="Notes, how you know them, family, referrals given..."; ta.value=k.note||""; ta.oninput=()=>{ k.note=ta.value; save(); }; parent.appendChild(ta);
   const del=el("button","del","Remove contact"); del.style.fontSize="13px"; del.style.marginTop="10px"; del.onclick=()=>{ if(confirm("Remove this contact?")){ state.realEstate.sphere=sphereList().filter(x=>x.id!==k.id); delete sphereOpen[k.id]; save(); render(); } }; parent.appendChild(del);
 }
