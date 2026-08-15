@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 295 (2026-08-15)">
+<meta name="build" content="v21 build 296 (2026-08-15)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -6589,7 +6589,16 @@ function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]
       if(state.realEstate){
         if(!Array.isArray(state.realEstate.todos)) state.realEstate.todos=[];
         var _t273={"id": "ret-20260811-miller-pay", "key": "miller-commission", "done": false, "exp": "", "due": "", "src": "Deal re-michelle-miller, closed 07 Aug 2026, note says payment is outstanding", "text": "Chase the Michelle Miller commission. She closed Friday 07 August at $274,900, seller side, and the deal record says the payment is outstanding. The money is earned and not received and nothing in the system was tracking it."};
-        if(!state.realEstate.todos.some(function(x){ return x && (x.id===_t273.id || x.key===_t273.key); })) state.realEstate.todos.push(_t273);
+        /* v21 build 296: THE RESURRECTION HALF OF THE archive.todosDone LEAK. This block is
+           unguarded by design, it recreates the chase if it is missing. Build 292 then retires
+           the same todo as paid and archives it, so the two fought once per load: 273 added it
+           back, 292 removed and archived it again, and archive.todosDone grew forever. Fixed at
+           THIS writer per RULES rule 5 rather than by reordering the blocks. A todo that has
+           already been retired into the archive is DONE WITH and must not be recreated. Same
+           guard the build 220 and build 222 todo writers already use a few thousand lines up. */
+        var _arch273=((state.archive||{}).todosDone)||[];
+        var _retired273=_arch273.some(function(a){ return a && (a.id===_t273.id || (a.key&&a.key===_t273.key)); });
+        if(!_retired273 && !state.realEstate.todos.some(function(x){ return x && (x.id===_t273.id || x.key===_t273.key); })) state.realEstate.todos.push(_t273);
       }
       if(state.meta && !state.meta.mig273_daily0811){ state.meta.mig273_daily0811=true; save(true); }
   } }catch(e){ try{ console.warn("mig273 did not apply:",e&&e.message); }catch(_){} }
@@ -8161,7 +8170,13 @@ function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]
         var _kill292={"ret-20260811-miller-pay": "Paid. The app now reads Michelle Miller CLOSED and PAID, so the chase has no subject.", "ret-20260813-troester-pay": "Paid. The app now reads Chad Troester CLOSED and PAID, so the chase has no subject."};
         var _keep292=[];
         state.realEstate.todos.forEach(function(t){
-          if(t && _kill292[t.id]){ t.retiredReason=_kill292[t.id]; t.retiredAt="2026-08-15"; state.archive.todosDone.push(t); }
+          /* v21 build 296: the ARCHIVING half of the same leak. This push had no dedupe, so
+             every time build 273 recreated the todo above, this archived a second, third and
+             nth copy of it. Guarded by id the same way the build 220 retirement does it. Even
+             with 273 fixed this stays, because an unguarded append into a permanent list is a
+             latent leak whatever is upstream of it. */
+          if(t && _kill292[t.id]){ t.retiredReason=_kill292[t.id]; t.retiredAt="2026-08-15";
+            if(!state.archive.todosDone.some(function(x){ return x && x.id===t.id; })) state.archive.todosDone.push(t); }
           else _keep292.push(t);
         });
         state.realEstate.todos=_keep292;
@@ -8606,6 +8621,26 @@ function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]
       }
       save(true);
   } }catch(e){ try{ console.warn("mig295 did not apply:",e&&e.message); }catch(_){} }
+
+/* ===== v21 build 296: REPAIR THE DUPLICATES ALREADY IN HIS SAVED STATE =======================
+   The two writer fixes above stop the leak from here on. They do not clean up what it already
+   wrote. His live archive carries ret-20260811-miller-pay once per load since 08.15 and a
+   ret-20260810-spicer-syd-val pair from an older instance of the same class.
+   THIS IS DELIBERATELY NOT FLAG GUARDED, and that is the opposite of the usual rule for a
+   reason: it removes only entries whose ENTIRE JSON is byte identical to one already kept, so
+   it is provably lossless and a no op the moment the list is clean. Leaving it unguarded makes
+   it self healing, so if any future writer reintroduces the class it is repaired on the next
+   load instead of growing silently for three builds again. A todo legitimately retired twice
+   for two different reasons differs in retiredReason or retiredAt and is KEPT, both copies. */
+  try{ if(state.archive && Array.isArray(state.archive.todosDone)){
+      var _seen296={}, _keep296=[], _drop296=0;
+      state.archive.todosDone.forEach(function(x){
+        var k; try{ k=JSON.stringify(x); }catch(e){ k=String(x); }
+        if(_seen296[k]){ _drop296++; return; }
+        _seen296[k]=1; _keep296.push(x);
+      });
+      if(_drop296>0){ state.archive.todosDone=_keep296; save(true); }
+  } }catch(e){ try{ console.warn("mig296 archive dedupe did not apply:",e&&e.message); }catch(_){} }
 
 
 
