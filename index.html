@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 291 (2026-08-14)">
+<meta name="build" content="v21 build 292 (2026-08-15)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -8109,6 +8109,83 @@ function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]
       }
       state.meta.mig291_closed_all_received=true; save(true);
   } }catch(e){ try{ console.warn("mig291 did not apply:",e&&e.message); }catch(_){} }
+
+  /* ===== v21 build 292: 08.15.2026 DAILY RUN. Ian's 08-14 entry executed, not just recorded.
+     HIS WORDS: "Did not know what cable external rotations were so I skipped them, completed
+     everything else, I think 5 workouts on Friday would be good instead of 6" and "pickleball
+     was good".
+     1. CABLE EXTERNAL ROTATION IS REMOVED FROM FRIDAY. The detector found he skipped it on
+        BOTH Fridays it appeared, 08-07 and 08-14, two of two, which is independent of his note
+        and agrees with it. Friday was already FIVE items, not six, so this leaves FOUR. No
+        filler exercise is added to reach five, because inventing one to hit a number he
+        miscounted is worse than a short day. Logged sets are untouched, gym.logs is never read
+        or written here.
+     2. TWO COMMISSION CHASE TODOS ARE RETIRED. Both deals read CLOSED and PAID as of build 291,
+        so the grounding for chasing them is gone. Archived with the reason, never deleted.
+     Everything else is date keyed content for 2026-08-15. ============================== */
+  try{ if(profile==="ian"){
+      if(!state.meta) state.meta={};
+      var T292="2026-08-15";
+
+      /* -- 1. Friday loses pkl-extrot. Idempotent, acts only while it is still present. */
+      if(state.gym && Array.isArray(state.gym.split)){
+        state.gym.split.forEach(function(d){
+          if(!d || d.day!=="Fri" || !Array.isArray(d.exercises)) return;
+          var _before=d.exercises.length;
+          d.exercises=d.exercises.filter(function(e){ return !(e && e.id==="pkl-extrot"); });
+          if(d.exercises.length!==_before){
+            d.note="Medium, four items. Second chest and shoulder hit. External rotation removed 08.15 at Ian's request, he skipped it twice and did not know the movement.";
+          }
+        });
+      }
+
+      /* -- 2. Retire the two paid commission chases. Archive, never delete. */
+      if(state.realEstate && Array.isArray(state.realEstate.todos)){
+        if(!state.archive || typeof state.archive!=="object") state.archive={};
+        if(!Array.isArray(state.archive.todosDone)) state.archive.todosDone=[];
+        var _kill292={"ret-20260811-miller-pay": "Paid. The app now reads Michelle Miller CLOSED and PAID, so the chase has no subject.", "ret-20260813-troester-pay": "Paid. The app now reads Chad Troester CLOSED and PAID, so the chase has no subject."};
+        var _keep292=[];
+        state.realEstate.todos.forEach(function(t){
+          if(t && _kill292[t.id]){ t.retiredReason=_kill292[t.id]; t.retiredAt="2026-08-15"; state.archive.todosDone.push(t); }
+          else _keep292.push(t);
+        });
+        state.realEstate.todos=_keep292;
+      }
+
+      /* -- 3. Today's date keyed content. Guarded so a later edit on the device wins. */
+      if(!state.briefing) state.briefing={forIan:{},done:{}};
+      if(!state.briefing.forIan) state.briefing.forIan={};
+      if(!state.briefing.forIan[T292]) state.briefing.forIan[T292]=[{"id": "brief-20260815-1", "type": "Real estate", "title": "You have the open house at noon, not Chris", "note": "Calendar says Ian open house 12:00, then follow up with the Rose Creek couple at 1:00. Work it for names, not for the house. Your sphere is two people and that is the actual cap on 20 deals.", "url": "", "why": "Because you and Chris swapped this weekend and this is your only listing side lead gen event of the week", "done": false}, {"id": "brief-20260815-2", "type": "Pickleball", "title": "At the 9am session, let the drop pick your feet", "note": "Good drop, go to the kitchen. Bad drop, stay back. Okay drop, hold in transition and reset. Grip 2 or 3 out of 10, not 5. Your drop is not the leak, the ball right after it is.", "url": "https://www.youtube.com/watch?v=B2JYosKGZfs", "why": "Because Aug 23 sets your rating and this is the newest thing your own sessions showed", "done": false}, {"id": "brief-20260815-3", "type": "Real estate", "title": "Bonks closes twice next week, Aug 19 and Aug 20", "note": "Sell side $625,000 Wednesday, buy side $420,000 at 401 Fir St Ashland Thursday. Back to back, same client, so a gap on the sell side stalls the buy. Confirm both files this weekend.", "url": "", "why": "Because they are four and five days out and they are chained", "done": false}];
+
+      if(!state.futureIdeas || typeof state.futureIdeas!=="object") state.futureIdeas={};
+      if(!Array.isArray(state.futureIdeas[T292])) state.futureIdeas[T292]=[{"id": "fi-20260815-1", "url": "", "text": "Book the Sunday court with Dylan before you leave the 9am session. The drill block has been displaced twice by whoever turned up, and Sunday is the last clean window before the taper starts Monday."}, {"id": "fi-20260815-2", "url": "", "text": "Ask the noon open house visitors what they are seeing elsewhere, not what they think of this house. It is the question that turns a browser into a name worth keeping."}, {"id": "fi-20260815-3", "url": "", "text": "Set a phone reminder for Tuesday Aug 18 to check the APC start times the moment they drop. Your match slot decides what Saturday's light day looks like."}, {"id": "fi-20260815-4", "url": "", "text": "Chris has five showings today between 10:30 and 1:00. Ask him tonight which of those buyers has nothing under contract, because a live buyer with no house is the cheapest listing lead you will get this week."}];
+
+      if(!state.quickWin) state.quickWin={picks:{},done:{}};
+      if(!state.quickWin.picks) state.quickWin.picks={};
+      if(!state.quickWin.picks[T292]) state.quickWin.picks[T292]=["At the noon open house, get five names into your phone with a note on each. Not a sign in sheet you never touch, five contacts you could text in October. Your people list has eight entries and only two are sphere.", "Put the phone on the fence for two games at the 9am session. Your newest film read is 07.22 and everything I am coaching you on is three weeks old."];
+
+      if(state.pickleball){
+        var _p292=state.pickleball;
+        if(!_p292.coachBullets || typeof _p292.coachBullets!=="object") _p292.coachBullets={};
+        if(!_p292.coachBullets[T292]) _p292.coachBullets[T292]=["Next session focus, one thing, derived from your own 08.10 session rather than invented. Judge your drop the instant you hit it and move your feet to match. Good drop, straight to the kitchen. Bad drop, stay back and defend. Okay drop, hold in the transition zone and reset.", "Grade drops by HEIGHT, not length. A drop that carries a little past the kitchen line is fine as long as it stays down. The one that costs you the point is the one that sits up, at any depth.", "Underneath that, the older fault still stands. Two 07.22 studies both said you dink neutral until someone else decides the point. Once your feet are right, construct: move them side to side, then attack the first ball at or above net height.", "Eight days to your first rating, and stacking is closed. Natural sides for Aug 23. Do not debut a stack cold at your first tournament. Start times get announced Tuesday Aug 18.", "Cable external rotation, since you asked. Elbow at your side, forearm rotates outward against a low cable, rotator cuff work so the shoulder survives overheads. I took it off Friday for you. Reverse pec deck does a similar job if you want it back."];
+        if(!_p292.videoRec || typeof _p292.videoRec!=="object") _p292.videoRec={};
+        if(!_p292.videoRec[T292]) _p292.videoRec[T292]={"title": "How to Master The Reset in Pickleball (Enhance Pickleball)", "url": "https://www.youtube.com/watch?v=B2JYosKGZfs", "note": "Three concrete court positions off any drop, plus the grip answer. Your drop is doing its job. The shot right after it is where the point dies."};
+        if(!_p292.research || typeof _p292.research!=="object") _p292.research={};
+        if(!_p292.research[T292]) _p292.research[T292]={"title": "Grade the drop by height, not length", "text": "Stop judging a drop by whether it stayed inside the kitchen line. A drop that carries a little past the line is fine as long as it stays down, because they still have to hit up on it either way. The shot that costs you the point is one that sits up, at any depth. Keep counting your drops, but count the height it sat at, not how far it travelled.", "url": "https://www.youtube.com/watch?v=TV5EW2WkQL4", "source": "Enhance Pickleball, Connor Hance, pulled 08.11.2026"};
+        if(!_p292.coachRec || typeof _p292.coachRec!=="object") _p292.coachRec={};
+        if(!_p292.coachRec[T292]) _p292.coachRec[T292]={"title": "Off every drop, move your feet to match its quality, not to a fixed spot.", "note": "Good drop, straight to the kitchen. Bad drop, stay back and defend. Okay drop, hold in the transition zone and reset the next ball in. Your drop is fine. It is the shot right after it that is losing you the point."};
+
+        /* Additive push guards, safe per the last writer wins rule. */
+        if(!Array.isArray(_p292.drills)) _p292.drills=[];
+        var _d292={"id": "pbk-dropread-0815", "text": "Drop and read, twenty balls. Hit the drop, call good, okay or bad out loud before it lands, then move to the position that call demands. Scored on whether the call matched the ball, not on the drop itself.", "done": false};
+        if(!_p292.drills.some(function(x){ return x && x.id===_d292.id; })) _p292.drills.push(_d292);
+        if(!Array.isArray(_p292.cues)) _p292.cues=[];
+        var _c292="Call it, then move.";
+        if(_p292.cues.indexOf(_c292)<0) _p292.cues.push(_c292);
+      }
+      save(true);
+  } }catch(e){ try{ console.warn("mig292 did not apply:",e&&e.message); }catch(_){} }
+
   try{ rePayDefault(); }catch(e){}
 
 /* build 225: focus timer removed, nothing to clear here anymore. */
