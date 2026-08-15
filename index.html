@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 294 (2026-08-15)">
+<meta name="build" content="v21 build 295 (2026-08-15)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -8412,6 +8412,202 @@ function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]
       save(true);
   } }catch(e){ try{ console.warn("mig294 did not apply:",e&&e.message); }catch(_){} }
 
+/* ===== v21 build 295: 08.15.2026 TEAM MEETING NOTES, IAN AND CHRIS ===========================
+   Read in from the Apple Note "Team meeting notes 08.15.2026". Ten records touched, two
+   renderer changes, four events and seven todos.
+
+   THE HEADLINE, AND IT IS THE REASON FOR THE RENDERER CHANGE. Crystal Johnson, the Horizon
+   deal, is UNDER CONTRACT and therefore already counted in the $10M production bar and the 20
+   deal bar. It is waiting on an appraisal that may kill it. Ian, verbatim, called that a real
+   possibility rather than a formality. Every other risk on this board is a deal that has not
+   arrived yet; this is the only one that is counted and can still leave. A paragraph buried in
+   a two thousand character note does not carry that, so deals now take an OPTIONAL risk
+   field, it renders on the row in the warning colour, and the goals card computes what share
+   of production is sitting behind one, by reading the field rather than naming the deal.
+
+   THE SPICER COLLISION IS FLAGGED AND NOT RESOLVED. The note says "SPICERS. Not done until 13
+   November." re-allison-spicer-buy ALREADY carries close November 13, 2026, and Sydney Spicer
+   carries a fall 2026 basement finish with a spring 2027 listing. Ian's own framing says what
+   we held was the fall basement and the spring listing, which is Sydney. So it is written to
+   SYDNEY as the basement completion date and flagged on BOTH records, because the same date
+   now appears on two Spicer records and that is exactly the shape that produces a wrong merge
+   later. A todo asks him which one it was. Nothing was overwritten to make it fit.
+*/
+  try{ if(profile==="ian" && state.realEstate){
+      if(!state.meta) state.meta={};
+      if(!state.meta.mig295_mtg0815){
+        var _D295=state.realEstate.deals||[];
+        var _get295=function(id){ for(var i=0;i<_D295.length;i++){ if(_D295[i]&&_D295[i].id===id) return _D295[i]; } return null; };
+        var _MK295="08.15.2026 TEAM MEETING";
+        var _app295=function(id,txt){ var d=_get295(id); if(!d) return false;
+          var n=String(d.note||""); if(n.indexOf(_MK295)>=0) return false;
+          d.note=(n?n+" ":"")+txt; return true; };
+
+        var _cj=_get295("re-crystal-johnson");
+        if(_cj){
+          if(!_cj.risk) _cj.risk="APPRAISAL NOT BACK. Low by roughly $30,000 or more and the buyers lose their deposit, the house goes back on the market and this deal is LOST. Ian 08.15: a real possibility, not a formality.";
+          if(String(_cj.close||"").indexOf("BLOCKED ON THE APPRAISAL")<0)
+            _cj.close="Week of 17 to 21 August 2026, date still not set and now BLOCKED ON THE APPRAISAL (08.15.2026)";
+          _app295("re-crystal-johnson",
+            _MK295+". THE APPRAISAL IS NOW THE OPEN QUESTION AND IT IS BIGGER THAN THE DATE. This note previously ended "
+            +"\"THE CLOSING DATE IS STILL GENUINELY UNKNOWN and that is the only open question left on this deal\". THAT SENTENCE IS NOW WRONG "
+            +"and is superseded here rather than deleted, so the change is visible. THREE OUTCOMES, IAN'S OWN FRAMING: it appraises and everything "
+            +"proceeds; it comes in low and THE PARENTS COVER THE DIFFERENCE; it comes in BADLY low, roughly $30,000 or more, and they lose their "
+            +"deposit, the house goes back on the market and THE DEAL IS LOST. He called the third one a real possibility, not a formality. "
+            +"WHY THIS MATTERS MORE THAN ANY OTHER RISK ON THE BOARD: this deal is Under Contract, so its $577,861 is ALREADY inside the production "
+            +"figure and its 1 is already inside the deal count. Every other risk here is business that has not arrived. This is the only one that "
+            +"is counted and can still leave, and if it does, production drops $577,861 and the count drops one. "
+            +"THE BUYERS ARE IN PRE OCCUPANCY AT $80 A DAY while they wait, which is unusual and is money changing hands, so it is recorded on the "
+            +"record rather than left in a note file. It also means the wait has a running cost to the buyers and a growing incentive on their side "
+            +"to reach an answer. NOT KNOWN AND NOT GUESSED: the pre occupancy start date, who holds the money, and whether it is credited at closing.");
+        }
+
+        _app295("re-bonks-sell",
+          _MK295+". BOTH SIDES CLOSE THIS WEEK. This record, the EXISTING HOME: final walk through MONDAY 17 AUGUST, closing WEDNESDAY 19 AUGUST, "
+          +"and Ian said most of these are in the MORNING without giving times. The 19 August close on this record is CONFIRMED by the notes, it was "
+          +"already correct. THE ADDRESS OF THE HOME BEING SOLD IS STILL MISSING. The notes do not name it either, so it stays Missing rather than "
+          +"guessed, and the todo asking for it is now due before the walk through rather than open ended. "
+          +"CALENDAR GAP, REPORTED TO IAN RATHER THAN FIXED: neither the 17 August walk nor the 19 August closing is on the NP Dodge calendar as of "
+          +"08.15. He asked to handle calendar writes himself.");
+
+        _app295("re-bonks-buy",
+          _MK295+". BOTH SIDES CLOSE THIS WEEK. This record, the PURCHASE: final walk through TUESDAY 18 AUGUST, closing THURSDAY 20 AUGUST, "
+          +"mostly mornings. Both dates on this record were already correct. "
+          +"401 FIR ST IS NO LONGER AN INFERENCE. The 08.13 note carried it as INFERRED HIGH CONFIDENCE on the reasoning that a final walk through "
+          +"is a buyer side step and that the 20 August closing matched this record rather than the sell side's 19th. Ian's own notes now state "
+          +"exactly that split, purchase walk on the 18th and purchase closing on the 20th, and the NP Dodge 18 August 09:00 event carries location "
+          +"401 Fir St Ashland. The reasoning behind the inference is confirmed by the client's own account, so the address is upgraded from "
+          +"INFERRED to CONFIRMED. If he ever says otherwise his answer still wins.");
+
+        _app295("re-cynthia-willis",
+          _MK295+". THE SEQUENCE FROM HERE, WHICH THIS RECORD DID NOT CARRY: HOME INSPECTION FIRST and it is coming up soon, THEN the appraisal, "
+          +"THEN moving the utilities over. The record already flagged the appraisal as the open risk and was right to, but it read as the next step "
+          +"and it is not, the inspection comes before it. NO DATE was given for the inspection and none is invented. Nothing on the NP Dodge calendar "
+          +"between 15 and 23 August carries it. Closing is still 18 September 2026 and nothing about price, stage or take home changed.");
+
+        _app295("re-belknap-sell",
+          _MK295+". SHOWINGS WENT WELL TODAY AND THEY MAY WRITE ON ONE OR TWO. That is Saturday 15 August, the first of the two viewing days this "
+          +"record already predicted, and Chris's calendar carries seven showings between 10:30 and 13:30. BUYING BEFORE SELLING is confirmed and was "
+          +"already on this record, so this is corroboration and not new information. WHAT IS NEW: LISTING PREP IS NEEDED on the existing home at "
+          +"4946 Pratt St, and it is now a todo. Note the shape of this client, because it drives the order of work: they buy first in CASH with no "
+          +"financing contingency, so an accepted offer this week starts the clock on getting 4946 Pratt ready rather than ending it. The price on "
+          +"this record is still Chris's guess at $250,000 to $300,000 against a supported value of about $245,000, and a live offer on the purchase "
+          +"side does not change that.");
+
+        var _bk=_get295("re-barkers");
+        if(_bk){
+          if(String(_bk.price||"").indexOf("275")<0) _bk.price="$275,000 to $285,000";
+          _app295("re-barkers",
+            _MK295+". THREE NUMBERS ARE NOW IN PLAY ON THIS HOUSE AND THEY ARE COMPATIBLE, WHICH IS WORTH STATING BEFORE ANYONE IS SURPRISED BY IT. "
+            +"Ian and Chris are working to 275 to 285k. This record held $270,000 to $280,000. The 08.11.2026 CMA at 10611 Parker St says $284,900 "
+            +"with a range of $282,900 to $287,900. The CMA number sits at the TOP of their working range, $100 under it, so nothing here is in "
+            +"conflict, but the record was the odd one out and it has been corrected to $275,000 to $285,000 on Ian's stated range. "
+            +"WHAT THAT COSTS ON THE GOALS CARD, SAID PLAINLY: priceNum reads the FIRST number in a range, so this record contributed $270,000 to the "
+            +"2026 in flight ceiling and now contributes $275,000. The ceiling rises by exactly $5,000. It does not touch the $10M production bar or "
+            +"the 20 deal bar, which count Closed and Under Contract only, and Barkers is Coming Soon. "
+            +"THE $284,900 IS STILL NOT WRITTEN INTO THE PRICE FIELD and the reason has not changed: it rests on 1605 N 106th St sitting unsold at "
+            +"$285,000 and that comp is still under verification. Ian's range is his own figure and is used as given; the CMA number stays a "
+            +"recommendation until the comp check returns. THEY ARE GETTING IN TOUCH THIS WEEK TO SEE THE HOUSE, and the price lands once they have "
+            +"seen it. That is NOT the same as the renovation being finished, which is what pending trigger 7 waits on, so the trigger stays open.");
+        }
+
+        _app295("re-theobald-sell",
+          _MK295+". NO UPDATES. LISTING PREP IS NEEDED and it is now a todo. Chris already has a 16 August calendar item to reach out and schedule "
+          +"the home evaluation, so the prep work sits behind that walkthrough. Still no price, because Paragon comps have not been run on this one "
+          +"and a number is not invented to fill the field.");
+
+        _app295("re-sydney-spicer-sell",
+          _MK295+". NOT DONE UNTIL 13 NOVEMBER, Ian's words, recorded here as the BASEMENT COMPLETION date. It is more specific than what this record "
+          +"held, which was a fall 2026 basement finish, so it is a sharpening rather than a contradiction. THE SPRING 2027 LISTING IS UNCHANGED and "
+          +"13 November is NOT a listing date. The landscaping remains the weather exposed item on the critical path and a 13 November finish leaves "
+          +"very little of the season for it, which is the argument for contracting it now rather than in the new year. "
+          +"FLAGGED AND DELIBERATELY NOT RESOLVED: the note heading in the meeting was SPICERS, and re-allison-spicer-buy, her parents' new "
+          +"construction, ALREADY carries a close of November 13 2026. The same date now sits on two different Spicer records. This one was chosen "
+          +"because Ian's own framing said the thing being updated was the fall basement and the spring listing, which is this record and not theirs. "
+          +"If he meant the parents, nothing needs adding there because it is already right, and this line comes off. Asked as a todo rather than "
+          +"decided silently.");
+
+        _app295("re-allison-spicer-buy",
+          _MK295+". DATE COLLISION FLAG, NOTHING ON THIS RECORD CHANGED. The meeting note says SPICERS, not done until 13 November, and this "
+          +"record already carries close November 13 2026, so it may have been about this deal and if so it is already correct. It was written to "
+          +"SYDNEY instead, as her basement completion date, because Ian's framing named a fall basement and a spring listing, which is her record. "
+          +"THE POINT OF THIS LINE is that two Spicer records now carry 13 November for two different reasons, and that is the shape that produces a "
+          +"wrong merge six weeks from now. Do not merge these clients. Sydney is the DAUGHTER, this is her parents' new construction purchase.");
+
+        _app295("re-tysdal",
+          _MK295+". CHRIS IS FOLLOWING UP TODAY, 15 August, for an update. No answer yet, so timing is still unknown and the record still reads "
+          +"maybe fall. Nothing else changed.");
+
+        _app295("s0wqsf9",
+          _MK295+". FOLLOWED UP AND HE IS ON VACATION. That is the whole answer, and it is worth recording because it explains the silence rather "
+          +"than leaving it to read as cooling interest. NO TIMELINE STILL, nothing is scheduled, and the lot sourcing todo stands. Do not read a "
+          +"holiday as a stage change.");
+
+        if(!Array.isArray(state.events)) state.events=[];
+        var _ev295=function(o){ if(!state.events.some(function(x){ return x&&x.id===o.id; })) state.events.push(o); };
+        _ev295({id:"ev-20260817-bonks-sell-walk", date:"2026-08-17", kind:"Real estate",
+          title:"Bonks SELL final walk through, morning. NOT on the NP Dodge calendar as of 08.15"});
+        _ev295({id:"ev-20260818-bonks-buy-walk", date:"2026-08-18", kind:"Real estate",
+          title:"Bonks BUY final walk through, 401 Fir St Ashland, 9:00 with Chris"});
+        state.events.forEach(function(e){
+          if(!e) return;
+          if(e.id==="ev-20260814-johnson-close" && String(e.title||"").indexOf("appraisal")<0){
+            e.title="Crystal Johnson closing, date STILL not set and now waiting on the APPRAISAL (08.15)";
+          }
+          if(e.id==="ev-20260815-barker-meeting" && String(e.title||"").indexOf("08.15")<0){
+            e.title="Barker meeting, DATE STILL NOT SET. 08.15: they get in touch this week to see the house, price lands after that";
+          }
+        });
+
+        if(!Array.isArray(state.realEstate.todos)) state.realEstate.todos=[];
+        var _td295=function(o){ if(!state.realEstate.todos.some(function(t){ return t && (t.id===o.id || (o.key&&t.key===o.key)); })) state.realEstate.todos.push(o); };
+        _td295({id:"ret-20260815-horizon-appraisal", key:"horizon-appraisal", done:false, due:"2026-08-17",
+          src:"08.15.2026 team meeting notes, Ian and Chris",
+          text:"Watch the Horizon appraisal. It is the one deal on the board that is already counted and can still fall apart. Badly low, roughly 30k or more, and the buyers lose their deposit and the house goes back on the market. Chase the number the day it lands."});
+        _td295({id:"ret-20260815-bonks-cal", key:"bonks-calendar-gap", done:false, due:"2026-08-16",
+          src:"08.15.2026 team meeting notes checked against the NP Dodge calendar",
+          text:"TWO BONK EVENTS ARE MISSING FROM THE NP DODGE CALENDAR: the sell side final walk on Mon 17 Aug and the sell side closing on Wed 19 Aug. The 18 Aug walk and the 20 Aug closing are both there. Also check Wed 19 Aug, the 09:30 Jhaimi Andrick coffee sits on top of a morning closing."});
+        _td295({id:"ret-20260815-bonks-sell-addr", key:"bonks-sell-address", done:false, due:"2026-08-17",
+          src:"08.15.2026 team meeting notes, still not named",
+          text:"Get the address of the home the Bonks are SELLING. It is the $625,000 half of the client, it closes Wednesday 19 August, and the record has carried it as Missing since 08.13 rather than guessing. The meeting notes did not name it either."});
+        _td295({id:"ret-20260815-belknap-listprep", key:"belknap-listprep", done:false, due:"",
+          src:"08.15.2026 team meeting notes, Ian and Chris",
+          text:"Listing prep on the Belknaps' existing home, 4946 Pratt St. They buy first in cash, so an accepted offer this week starts this clock rather than ending it. Photos, copy, and the one bathroom question that is the biggest drag on the number."});
+        _td295({id:"ret-20260815-theobald-listprep", key:"theobald-listprep", done:false, due:"",
+          src:"08.15.2026 team meeting notes, Ian and Chris",
+          text:"Listing prep on the Theobalds, 5014 S 163 St. No updates from them. Chris reaches out Sunday 16 Aug to schedule the home evaluation, and the prep sits behind that walkthrough. No price yet, Paragon comps have not been run."});
+        _td295({id:"ret-20260815-spicer-13nov", key:"spicer-13nov-which", done:false, due:"2026-08-17",
+          src:"08.15.2026 team meeting notes, ambiguous heading",
+          text:"WHICH SPICER is not done until 13 November? It was written to Sydney as her basement completion date, because you described what we held as a fall basement and a spring listing. But her parents' new construction ALREADY closes November 13 2026, so the same date now sits on two Spicer records. One word settles it."});
+        _td295({id:"ret-20260815-horizon-preocc", key:"horizon-preoccupancy", done:false, due:"",
+          src:"08.15.2026 team meeting notes, $80 a day recorded, terms not",
+          text:"Horizon pre occupancy at $80 a day: get the START DATE, who holds the money, and whether it is credited at closing. It is recorded on the deal because it is money changing hands, but none of the terms are known and none were guessed."});
+
+        state.realEstate.todos.forEach(function(t){
+          if(!t) return;
+          if(t.id==="ret-20260813-horizon-date" && String(t.text||"").indexOf("appraisal")<0){
+            t.text="HORIZON CLOSING, STILL NO DATE, and as of 08.15 it is blocked on the APPRAISAL rather than on the title company. Ask for the appraisal result first, the date follows it. If it comes in badly low there may be no closing to schedule.";
+          }
+          if(t.key==="barker-meeting-date" && String(t.text||"").indexOf("UPDATE 08.15")<0){
+            t.text=String(t.text||"")+" UPDATE 08.15: they are getting in touch THIS WEEK to see the house and the price lands once they have. That is not the same as the renovation being finished, which is what this is waiting on.";
+          }
+        });
+
+        if(!Array.isArray(state.autoLog)) state.autoLog=[];
+        if(!state.autoLog.some(function(x){ return x&&x.id==="auto-20260815-mtgnotes"; })){
+          state.autoLog.unshift({id:"auto-20260815-mtgnotes", date:"2026-08-15", area:"Real estate",
+            what:"Read your 08.15 team meeting notes into ten deal records, added two walk through events and seven todos, and put the Horizon appraisal risk on the row and on the goals card",
+            why:"Horizon is Under Contract, so its $577,861 is already inside your production figure and its 1 is already inside your deal count. It is the only risk on the board that is counted and can still leave, and a paragraph in a note does not carry that.",
+            evidence:"Also corrected the Barker price to your 275 to 285 range, which lifts the in flight ceiling by $5,000, upgraded 401 Fir St from inferred to confirmed on your own account of the walk through split, and flagged that 13 November now sits on two different Spicer records.",
+            undo:"Real estate, open any deal, edit the note or clear the risk line. Todos delete individually."});
+        }
+
+        state.meta.mig295_mtg0815=true;
+      }
+      save(true);
+  } }catch(e){ try{ console.warn("mig295 did not apply:",e&&e.message); }catch(_){} }
+
+
 
 
   try{ rePayDefault(); }catch(e){}
@@ -9031,7 +9227,7 @@ function dealRow(parent,d){
      Everything that used to be crammed into it, the address, the side, the qualifier, now renders
      on d.sub, which is the SAME .dsub line the close date and the take home already use. This is a
      data placement change, not a new layout: the Barkers row was already correct and is the model. */
-  const left=el("div","dl"); left.appendChild(el("div","dn",d.title)); if(d.sub)left.appendChild(el("div","dsub",d.sub)); if(d.close)left.appendChild(el("div","dsub",d.close)); var _tn=dealIanNet(d); if(_tn>0){ var _th=el("div","dsub"); /* build 275: say UNPAID on the row itself. A closed deal showing a take home figure with no qualifier reads as money he has. */ _th.textContent="Est. take home "+fmtMoney(_tn)+(dealIsUnpaid(d)?"  UNPAID":(dealIsPaid(d)?"  received":"")); _th.style.color=dealIsUnpaid(d)?"var(--gray2,#8a8a99)":"var(--sec2,var(--accent2))"; _th.style.fontWeight="700"; left.appendChild(_th); } var _urg=(d.stage==="Closed"||d.stage==="Just Sold")?"":closeUrgency(d.close); if(_urg){ var _u=el("div","dsub"); _u.textContent=_urg; _u.style.color=(_urg==="overdue"||_urg==="due today")?"var(--danger,#ff6363)":"var(--gray2,#8a8a99)"; _u.style.fontWeight="700"; left.appendChild(_u); } row.appendChild(left);
+  const left=el("div","dl"); left.appendChild(el("div","dn",d.title)); if(d.sub)left.appendChild(el("div","dsub",d.sub)); if(d.close)left.appendChild(el("div","dsub",d.close)); var _tn=dealIanNet(d); if(_tn>0){ var _th=el("div","dsub"); /* build 275: say UNPAID on the row itself. A closed deal showing a take home figure with no qualifier reads as money he has. */ _th.textContent="Est. take home "+fmtMoney(_tn)+(dealIsUnpaid(d)?"  UNPAID":(dealIsPaid(d)?"  received":"")); _th.style.color=dealIsUnpaid(d)?"var(--gray2,#8a8a99)":"var(--sec2,var(--accent2))"; _th.style.fontWeight="700"; left.appendChild(_th); } var _urg=(d.stage==="Closed"||d.stage==="Just Sold")?"":closeUrgency(d.close); if(_urg){ var _u=el("div","dsub"); _u.textContent=_urg; _u.style.color=(_urg==="overdue"||_urg==="due today")?"var(--danger,#ff6363)":"var(--gray2,#8a8a99)"; _u.style.fontWeight="700"; left.appendChild(_u); } /* build 295: an OPTIONAL risk line. Only a deal carrying d.risk renders one, so every other row is byte identical. It sits under the detail lines in the warning colour because the one deal that has it is Under Contract and already counted, and a paragraph inside a two thousand character note does not carry that. */ if(d.risk){ var _rk=el("div","dsub"); _rk.textContent="AT RISK. "+d.risk; _rk.style.cssText="color:var(--danger,#ff6363);font-weight:800;white-space:normal;line-height:1.45;margin-top:4px"; left.appendChild(_rk); } row.appendChild(left);
   /* build 267: a qualifier on a price is a MARKER, not part of the number. It renders under the
      figure on the right, in the same .dsub style as the rest of the detail text, so the price cell
      holds a price and nothing else. A row with no qualifier renders exactly as it did before. */
@@ -9894,6 +10090,22 @@ function reGoalsCard(parent){
   note.innerHTML='<b>'+fmtMoneyShort(ceiling)+' and '+ceilDeals+' deals</b> is the ceiling if everything live also closes this year'
     +(parked27.length?('. <b>'+fmtMoneyShort(vol(parked27))+'</b> across '+parked27.length+' deal'+(parked27.length===1?"":"s")+' cannot land in 2026 at all, it finishes in 2027.'):'.');
   b.appendChild(note);
+  /* v21 build 295: WHAT IS COUNTED AND CAN STILL LEAVE. The two lines above answer what has not
+     arrived yet and what cannot arrive this year. Neither answers the harder question, which is
+     how much of the production figure ALREADY ON THE BAR is behind an unresolved risk. Crystal
+     Johnson is Under Contract and waiting on an appraisal that Ian called a real possibility of
+     failing, so $577,861 and one deal are inside the bar and can still walk out of it. Computed
+     from d.risk on Closed and Under Contract deals, nothing hardcoded, and the line disappears
+     entirely when no deal carries one. */
+  const atRisk=deals.filter(d=>d&&d.risk&&(d.stage==="Under Contract"||d.stage==="Closed"));
+  if(atRisk.length){
+    const ar=el("div","small"); ar.style.cssText="margin-top:7px;padding:9px 10px;border-radius:9px;background:rgba(255,99,99,.10);border:1px solid rgba(255,99,99,.35);line-height:1.5";
+    const arDeals=atRisk.reduce((a,d)=>a+dealCountWeight(d),0);
+    ar.innerHTML='<b style="color:var(--danger,#ff6363)">'+fmtMoneyShort(vol(atRisk))+' and '+arDeals+' deal'+(arDeals===1?"":"s")
+      +' of that is AT RISK</b>, already counted above and not yet safe: '
+      +atRisk.map(d=>d.title).join(", ")+'.';
+    b.appendChild(ar);
+  }
   if(ceiling<PROD_GOAL){ const warn=el("div","small"); warn.style.cssText="margin-top:7px;font-weight:700;color:var(--accent2)";
     warn.textContent="That ceiling is "+fmtMoneyShort(PROD_GOAL-ceiling)+" short of the goal, so closing it needs new business, not execution on what is already here."; b.appendChild(warn); }
   const nActual=countActualNets(closed);
