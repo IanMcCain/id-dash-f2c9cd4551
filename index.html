@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 290 (2026-08-14)">
+<meta name="build" content="v21 build 291 (2026-08-14)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -8036,11 +8036,101 @@ function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]
   } }catch(e){ try{ console.warn("mig290 did not apply:",e&&e.message); }catch(_){} }
 
 
+
+  /* ===== v21 build 291: EVERY CLOSED DEAL IS CONFIRMED RECEIVED, AND THE UNKNOWN STATE IS
+     GIVEN A DEFAULT SO IT CANNOT SILENTLY REFILL ==========================================
+     Ian, 08.14.2026: he has been paid on all of them. Miller and Troester, which build 275
+     recorded as closed and outstanding on his own word, and the older closings that carried
+     no payment status either way.
+
+     WHAT THE THREE STATES READ BEFORE THIS, MEASURED ON HIS REAL PROFILE RATHER THAN
+     ASSERTED: received $2,770.00, which was Spicer alone and the only deal carrying an
+     actualNet. Awaiting payment $4,418.54, being the Troester sell at $2,736.15 and Miller
+     at $1,682.39. And $27,652.51 with no status on record. Closed take home $34,841.05.
+     All three lines collapse into received here, so received becomes $34,841.05 and both
+     other lines go to zero.
+
+     THE UNKNOWN PILE WAS SIX RECORDS AND FIVE OF THEM CARRY MONEY. Matt Snyder, Lynn
+     Parsons, Ashley Gilliam, Matt Brandt, the Troester purchase, and the Winchester lot.
+     The Winchester lot is a buy side at a net of zero, so it never appeared in the figure
+     and got counted out of the sentence. Build 275 said five in one place and six in
+     another and both were true, which is exactly how a count stops being checkable. It is
+     written down here once: SIX RECORDS, FIVE WITH MONEY.
+
+     NO actualNet IS SET BY THIS BUILD, DELIBERATELY. He confirmed the money arrived, he did
+     not give amounts. actualNet is reserved for a figure he has actually stated, and filling
+     it from the model would freeze an estimate against later model changes while reading as
+     a fact. So eight of the nine received deals are still MODEL ESTIMATES. The one deal with
+     a real figure to check against came in 4.69 percent BELOW the model, so the honest
+     reading of the received total is confirmed arrived, not confirmed to the dollar.
+
+     THE SECOND HALF, AND IT IS THE PART THAT MATTERS IN A MONTH. A three state field with
+     two empty states decays into a field nobody maintains, and unknown as a resting default
+     is precisely how $27,652.51 sat unnoticed. So the DEFAULT changes in the same build: a
+     deal arriving at Closed with no payment status is set to OUTSTANDING, never to paid and
+     never left unknown. Unknown stops being where a record lands by accident and becomes
+     what it was meant to be, a state only a record older than the field can hold.
+
+     THE TWO WRITERS ARE BUILT TO CONVERGE IN EITHER ORDER, per the standing rule that an
+     unguarded every load block always beats a flag guarded one. This migration only ever
+     writes true, and only to Closed deals. rePayDefault is unguarded, runs on every load and
+     inside save, and only ever writes when the value is not already a boolean. Neither can
+     overwrite the other, so file order and flag state cannot produce a wrong answer.
+
+     CLOSE STRINGS ARE CORRECTED TOO, because two of them literally say "payment outstanding"
+     and that string renders on the deal card under Close. A number that moves while the
+     words next to it still say the opposite is the stale reference the cascade rule exists
+     to stop. Notes are APPENDED to, never rewritten, so the history of what was outstanding
+     and when stays readable. */
+  try{ if(profile==="ian" && state.realEstate && Array.isArray(state.realEstate.deals)
+          && state.meta && !state.meta.mig291_closed_all_received){
+      var _mv291=[], _wasUnknown291=[], _wasUnpaid291=[];
+      state.realEstate.deals.forEach(function(d){
+        if(!d || d.stage!=="Closed") return;
+        if(d.paid===false) _wasUnpaid291.push(d.id);
+        else if(typeof d.paid!=="boolean" && typeof d.actualNet!=="number") _wasUnknown291.push(d.id);
+        if(d.paid!==true) _mv291.push(d.id);
+        d.paid=true;
+        var _c=String(d.close||"");
+        if(_c.indexOf("payment outstanding")>-1){
+          d.close=_c.replace("(CLOSED, payment outstanding)","(CLOSED and PAID)")
+                    .replace("payment outstanding","PAID");
+        }
+        if(String(d.note||"").indexOf("PAYMENT CONFIRMED RECEIVED 08.14.2026")<0){
+          d.note=String(d.note||"")+" PAYMENT CONFIRMED RECEIVED 08.14.2026. Ian confirmed he has been paid on every closed deal, which clears the outstanding flag on this record. No actualNet is set because he confirmed receipt without stating an amount, so the take home shown here is still the model estimate.";
+        }
+      });
+      if(typeof _autoLog==="function"){
+        _autoLog({id:"auto-20260814-all-closed-received",date:"2026-08-14",area:"Real estate",
+          what:"Marked every closed deal as payment received, and made outstanding the default for the next one",
+          why:"You told me you have been paid on all of them, including the older closings that had never had a payment status recorded either way.",
+          evidence:"Received goes from $2,770.00 to $34,841.05. Awaiting payment $4,418.54, being Troester at $2,736.15 and Miller at $1,682.39, goes to zero, and so does the $27,652.51 that sat across six older closings with no status on file. Five of those six carry money, the Winchester lot is a buy side at a net of zero. Eight of the nine are still model estimates rather than stated amounts, and the one deal with a real figure came in 4.69 percent below the model.",
+          undo:"Real estate, open any closed deal and clear the paid flag."});
+      }
+      state.meta.mig291_closed_all_received=true; save(true);
+  } }catch(e){ try{ console.warn("mig291 did not apply:",e&&e.message); }catch(_){} }
+  try{ rePayDefault(); }catch(e){}
+
 /* build 225: focus timer removed, nothing to clear here anymore. */
   applyAccent(); dailyReset(); save(true);
 }
+/* v21 build 291: THE DEFAULT PAYMENT STATE FOR A NEWLY CLOSED DEAL IS OUTSTANDING.
+   Unguarded on purpose. It runs on every load and inside every save, so a stage moved by
+   hand on the phone is covered the moment it is saved rather than at the next load, and no
+   meta flag can switch it off. It only ever writes when paid is NOT already a boolean, so it
+   can never overwrite a received or an outstanding value that already exists, and it skips
+   any deal carrying an actualNet because a real figure already means received. This is the
+   half of build 291 that keeps the unknown bucket honest: unknown now means a record older
+   than the field, and nothing new can land there by default. */
+function rePayDefault(){ var n=0; try{
+    var ds=(state && state.realEstate && state.realEstate.deals) || [];
+    for(var i=0;i<ds.length;i++){ var d=ds[i];
+      if(d && d.stage==="Closed" && typeof d.paid!=="boolean" && typeof d.actualNet!=="number"){ d.paid=false; n++; }
+    }
+  }catch(e){} return n; }
 let saveT;
 function save(now){ try{ clearTimeout(saveT);}catch(e){}
+  try{ rePayDefault(); }catch(e){}
   const go=()=>{ try{ state.meta.lastSaved=new Date().toISOString(); updateDailySummary(); store.set(KEYS[profile],JSON.stringify(state)); }catch(e){} };
   if(now) go(); else saveT=setTimeout(go,250);
 }
@@ -9456,8 +9546,13 @@ function reGoalsCard(parent){
   /* v21 build 275: EARNED IS NOT RECEIVED. The line above is driven purely by stage and it says
      "closed", which reads as cash in hand and is not. This splits it into what he has actually
      been paid, what is closed and outstanding, and what has no payment status on record. The third
-     figure is not padding: six older closings are unverified either way, and showing them as their
-     own number is the only honest way to present a received figure this small. */
+     figure is not padding: six older closings were unverified either way, and showing them as
+     their own number was the only honest way to present a received figure that small.
+     v21 build 291: Ian confirmed on 08.14.2026 that he has been paid on all of them, so both
+     lower lines are now zero and hidden and received carries the whole closed figure. The
+     three way split STAYS, it is not collapsed back to one line, because the default for a
+     newly closed deal is now outstanding and that line will light up again the next time a
+     deal closes. Do not remove it on the grounds that it currently renders one row. */
   { var _pd=sumPaid(closed), _un=sumUnpaid(closed), _uk=sumUnknownPay(closed);
     var _pay=el("div"); _pay.style.cssText="margin-top:9px;padding:9px 10px;border-radius:9px;background:rgba(255,255,255,.04);line-height:1.6";
     var _r1=el("div","between"); _r1.appendChild(el("div","small dim","Received"));
@@ -9467,7 +9562,15 @@ function reGoalsCard(parent){
     if(_uk>0){ var _r3=el("div","between"); _r3.appendChild(el("div","small dim","Closed, payment not on record"));
       var _r3v=el("div","small"); _r3v.style.fontWeight="700"; _r3v.textContent=fmtMoney(_uk); _r3.appendChild(_r3v); _pay.appendChild(_r3); }
     var _r4=el("div","small dim"); _r4.style.marginTop="6px";
-    _r4.textContent="Received counts only what you have confirmed arriving. The rest is earned, not banked.";
+    /* v21 build 291: the old wording promised a remainder. With everything received there is
+       no remainder, and a footnote describing money that is not there reads as a bug. It now
+       says which of the two true things is true, and names how much of the received figure is
+       a model estimate rather than an amount Ian actually stated, since that is the only real
+       caveat left on it. Both branches are computed, nothing is hardcoded. */
+    var _est=closed.length-countActualNets(closed);
+    _r4.textContent=(_un>0||_uk>0)
+      ? "Received counts only what you have confirmed arriving. The rest is earned, not banked."
+      : "Every closed deal is confirmed received."+(_est>0?(" "+_est+" of "+closed.length+" are still model estimates, not amounts you have stated."):"");
     _pay.appendChild(_r4);
     b.appendChild(_pay); }
   /* v21 build 233: THE GOAL BAR WAS TELLING A TRUE NUMBER THAT IMPLIED A FALSE THING.
