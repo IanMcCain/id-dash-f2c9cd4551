@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 289 (2026-08-14)">
+<meta name="build" content="v21 build 290 (2026-08-14)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -7972,6 +7972,69 @@ function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]
       state.meta.mig289_0814=true; save(true);
     }
   }catch(e){ try{ console.warn("mig289 did not apply:",e&&e.message); }catch(_){} }
+
+/* ===== v21 build 290: 08.14.2026 SESSION, AND THE SECOND DRILL NIGHT IN A ROW THAT BECAME
+     OPEN PLAY ==========================================================================
+     Self report, NO RATING MOVES, no footage. Pushed the same night.
+
+     TWO THINGS ARE RECORDED HERE AND NEITHER IS ABOUT TONIGHT'S QUALITY.
+
+     1. THE DISPLACEMENT IS NOW A PATTERN, NOT AN INCIDENT. 08.10 he intended to drill and a
+        group turned up, so he played open play. 08.14 he intended to drill with Dylan and a
+        group asked to play, so he played open play. Nine days to the APC and the last genuine
+        drill block on record is 08.08, and even that was 40 minutes of warm ups and dinks.
+        pk-goal-drillday has been open since build 248 on 08.09 and has now been overtaken
+        twice, which is the evidence that the missing thing is not intent. It is a booked
+        court. The goal text is rewritten to the mechanism rather than the aspiration.
+
+     2. CONSISTENCY IS HIS OWN WORD FOR THE THIRD SESSION RUNNING and it is a symptom, not a
+        skill. 08.10, 08.11 and tonight. On the two nights he named a shot it was the SAME
+        fault both times, drive height and depth with direction and placement intact. A named
+        mechanical fault is trainable in the days that are left. Be more consistent is not.
+        The question for the next session is which shot missed and which way, asked before
+        he rates the night.
+
+     DO NOT OVER READ TONIGHT. Effort 8, avg 133, 1h50, the shortest of the recent band, and he
+     felt good. That is a normal solid night and it is evidence of nothing moving. */
+  try{ if(profile==="ian" && state.pickleball){
+      if(!state.meta) state.meta={};
+      if(!Array.isArray(state.pickleball.sessions)) state.pickleball.sessions=[];
+      var _S290={id:"pk-20260814-openplay", date:"2026-08-14", kind:"Open play", venue:"Omaha",
+        duration:"1h 50m 41s", calories:1319, activeCalories:1146, avgHr:133, maxHr:169, minHr:66, effort:8,
+        result:"", score:"", opponent:"",
+        note:"Open play doubles with Dylan, Omaha, 5:27 to 7:17 PM, 1:50:41. Effort 8 of 10, Hard. From Apple Watch. Avg HR 133, peak 169, low 66, active 1,146, total 1,319. INTENDED AS A DRILL SESSION WITH DYLAN, became open play because a group asked to play. No footage, so NO RATING CHANGE. Evidence class SELF REPORT. HIS REPORT: it went well, everything felt good, and the one thing he wants to work on is consistency. "
+            +"READ. 1. THIS IS THE SECOND DRILL SESSION IN A ROW THAT BECAME OPEN PLAY, so it is a pattern rather than an incident. 08.10, his words, he was going to drill but a bunch of people came so he did open play. Tonight, the same shape with Dylan. The consequence is not about effort or attitude: the APC is nine days out and everything recent is open play or league, so the tournament partner work, the counted drop reps and the hands drilling have all been deferred by whoever happened to show up. The goal to book one drill day has been open since 08.09 and has now been displaced twice, which means the gap is structural and not motivational. THE FIX IS A RESERVATION. Book a court with Dylan for Sunday 16 August and agree in advance that the first 45 minutes is drilling regardless of who else turns up. The taper starts 17 August, so Sunday is the last clean window. "
+            +"2. CONSISTENCY IS NOW HIS OWN STATED PRIORITY THREE SESSIONS RUNNING, 08.10, 08.11 and tonight, AND CONSISTENCY IS A SYMPTOM RATHER THAN A SKILL. The record already holds a far more specific version of it. On 08.10 he said drives were really inconsistent on HEIGHT while placement was getting better. On 08.11 he said a lot of drives into the top of the net, and that his biggest error by far was shots slightly long or into the net, repeatedly. Same fault twice: HEIGHT AND DEPTH CONTROL WITH DIRECTION INTACT. It also matches the 07.29 film finding of no depth or speed variation on drives and his own unprompted 08.09 request for control of distance. Tonight named no shot. So the thing to establish next time, before asking how he played, is whether tonight's inconsistency was that same fault or a different one, because a named mechanical fault can be drilled in the days that remain and a general wish to be more consistent cannot. "
+            +"3. DO NOT OVER READ A GOOD SESSION. Effort 8, avg HR 133, 1h50m, the shortest of his recent band, and he felt good throughout. That is a normal solid night. It is not evidence that anything has moved, in either direction, and nothing here changes a rating."};
+      if(!state.pickleball.sessions.some(function(x){ return x&&x.id===_S290.id; })){
+        state.pickleball.sessions.push(_S290);
+        state.pickleball.sessions.sort(function(a,b){ return String(a&&a.date).localeCompare(String(b&&b.date)); });
+      }
+
+      /* The goal is rewritten UNCONDITIONALLY by id, per the cascade rule, never guarded on the
+         old text. It was authored by build 248 and it is BRAIN owned coaching content. */
+      if(!state.meta.mig290_0814){
+        if(!Array.isArray(state.pickleball.goals)) state.pickleball.goals=[];
+        var _g290=null;
+        state.pickleball.goals.forEach(function(g){ if(g&&g.id==="pk-goal-drillday") _g290=g; });
+        if(!_g290){ _g290={id:"pk-goal-drillday", done:false}; state.pickleball.goals.push(_g290); }
+        _g290.short="Book the court, Sunday 16 Aug";
+        _g290.text="Open since 08.09 and displaced twice since, on 08.10 and again on 08.14, both times by a group turning up at a court nobody had booked. The gap is not intent, it is a reservation. Book a court with Dylan for Sunday 16 August and agree beforehand that the first 45 minutes is drilling regardless of who else shows up. The taper starts 17 August, so Sunday is the last clean window before the APC on the 23rd.";
+        if(state.pickleball.coachRec && typeof state.pickleball.coachRec==="object"){
+          /* This morning's card was a FORWARD note written before he played. Tonight's is the POST
+             session read for the same date, the same replacement shape used on 07.22. The morning
+             card is KEPT on a replaced field rather than dropped, per the preserve history rule. */
+          var _prev290=state.pickleball.coachRec["2026-08-14"]||null;
+          state.pickleball.coachRec["2026-08-14"]={"title":"Name the shot, not the night.","note":"Consistency is your own word three sessions running, 08.10, 08.11 and tonight. On the two nights you actually named a shot it was the same fault both times, drive height and depth with your direction and placement intact. That one is drillable in the days you have left. Be more consistent is not. Next session, before you rate the night, say which shot missed and which way it missed. And the drill block has now been taken by whoever turned up twice in a row, so book the court on Sunday rather than planning to drill at one."};
+          if(_prev290 && _prev290.title && _prev290.title!=="Name the shot, not the night."){
+            state.pickleball.coachRec["2026-08-14"].replaced={"title":String(_prev290.title||""),"note":String(_prev290.note||""),"from":"build 289, this morning's pre session card, kept because the session has now happened"};
+          }
+        }
+        state.meta.mig290_0814=true;
+      }
+      save(true);
+  } }catch(e){ try{ console.warn("mig290 did not apply:",e&&e.message); }catch(_){} }
+
 
 /* build 225: focus timer removed, nothing to clear here anymore. */
   applyAccent(); dailyReset(); save(true);
