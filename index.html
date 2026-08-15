@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 296 (2026-08-15)">
+<meta name="build" content="v21 build 297 (2026-08-15)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -8621,6 +8621,107 @@ function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]
       }
       save(true);
   } }catch(e){ try{ console.warn("mig295 did not apply:",e&&e.message); }catch(_){} }
+
+/* ===== v21 build 297: BELKNAP BUY SIDE, 08.15.2026 MESSAGE THREAD =============================
+   They have narrowed to TWO homes and both are live. NO BUY RECORD IS CREATED and the reasoning
+   for that is written onto the record itself, because "they picked two houses" reads like the
+   trigger for one and it is not: the standing rule needs A property and A price, and there are
+   two candidates, no offer, no accepted price, and proof of funds not yet produced.
+
+   THE COMMERCIALLY IMPORTANT FACT IS THE CONTINGENT ONE AND IT IS RECORDED AS AN OPPORTUNITY
+   RATHER THAN AS AN OBSTACLE. A future session reading "accepted offer" on that house will write
+   it off unless the record says otherwise in the same breath, so it does.
+*/
+  try{ if(profile==="ian" && state.realEstate){
+      if(!state.meta) state.meta={};
+      if(!state.meta.mig297_belknap_buy){
+        var _MK297="08.15.2026 BUY SIDE";
+        var _bk297=null, _D297=state.realEstate.deals||[];
+        for(var i=0;i<_D297.length;i++){ if(_D297[i]&&_D297[i].id==="re-belknap-sell"){ _bk297=_D297[i]; break; } }
+
+        if(_bk297 && String(_bk297.note||"").indexOf(_MK297)<0){
+          _bk297.note=String(_bk297.note||"")+" "+_MK297+", FROM THEIR MESSAGE THREAD. "
+            +"THEY HAVE NARROWED TO TWO HOMES AND THEY ARE THE FIRST TWO OFF SATURDAY'S TOUR: "
+            +"5122 N 141ST STREET and 2315 NELSON'S CREEK DRIVE. Corroborated on the NP Dodge calendar, those were the "
+            +"10:30 and 11:00 stops of a seven showing itinerary that ran to 13:30. Her words: those two have everything "
+            +"they like, they could do the basements how they need, and they are in the area they want. She called it "
+            +"surprising, which is worth keeping, a shortlist landing on the first two viewed is a signal about the search "
+            +"criteria rather than about those two houses. "
+            +"RE SHOWING BOTH SUNDAY 16 AUGUST AT 4:30 PM, about 45 minutes. Confirmation from the 141st agent was still "
+            +"outstanding when this was written. Small corroborating detail, not proof: 5122 N 141st was the ONE stop on "
+            +"Saturday's itinerary carrying no Confirmed note on the calendar while the others did. "
+            +"TWO FACTS FROM CHRIS, AND THE SECOND IS THE COMMERCIAL ONE. "
+            +"(1) ONE OF THE TWO HAS BEEN ON THE MARKET SINCE ROUGHLY JANUARY, which Chris called a really good "
+            +"opportunity. WHICH of the two is NOT recorded because it was not stated, and it is not guessed. Seven months "
+            +"of days on market is the negotiating room on that house and the number is worth having exactly. "
+            +"(2) THE OTHER HAS AN ACCEPTED HOME SALE CONTINGENT OFFER, ACCEPTED NINE DAYS AGO, AND THOSE BUYERS HAVE NOT "
+            +"EVEN LISTED THEIR OWN HOME YET. "
+            +"BOTH HOUSES ARE LIVE. READ THAT BEFORE WRITING THE CONTINGENT ONE OFF. An accepted offer normally means "
+            +"unavailable and that reading is wrong here. A contingent buyer who has not listed after nine days is in a weak "
+            +"position: nothing can happen on their side until their own home is listed, shown, under contract and closed, "
+            +"and the clock has not started. MOST home sale contingencies carry a KICK OUT or FIRST RIGHT OF REFUSAL clause, "
+            +"which lets the seller take a better offer and give the contingent buyer a short window to remove their "
+            +"contingency or release. THE BELKNAPS ARE THE EXACT BUYER THAT DISPLACES THEM: cash, no financing contingency, "
+            +"buying before selling, so no contingency of their own to remove. Whether that clause exists on this contract "
+            +"is UNVERIFIED and it is the single fact that decides whether this house is gettable. It is checkable and there "
+            +"is a todo for it. "
+            +"WHAT THE POSITION ACTUALLY IS: one house with long days on market and therefore negotiating room, and one "
+            +"house that may be takeable despite already being under contract. Two live routes, not one house and one dead "
+            +"end. "
+            +"PROOF OF FUNDS IS NOW THE GATE ON MAKING ANY OFFER. Chris told them a cash offer needs proof of funds, a "
+            +"document showing a cash balance covering the purchase, and a financed offer needs a preapproval letter. They "
+            +"are cash, so proof of funds is the one they owe and nothing can be submitted without it. Todo "
+            +"ret-20260815-belknap-pof, due before the Sunday re showing, because they could write immediately after it. "
+            +"THEIR QUESTION, ASKED AND ANSWERED BY CHRIS: can they offer lower, and is there back and forth after "
+            +"submitting. Yes to both. They said it was very helpful. Recorded because it tells us their experience level "
+            +"and therefore how much of the offer process to narrate rather than assume. "
+            +"TWO SMALLER THINGS. They doubted whether one home's kitchen area fits a table for the whole family, and it is "
+            +"not recorded which home, so ask at the re showing and measure it. And BRYANT'S PARENTS ATTENDED THE SHOWINGS, "
+            +"so the decision has more than two people in it. Treat the parents as part of the audience for the Sunday "
+            +"re showing and for the offer conversation. "
+            +"NO BUY SIDE RECORD CREATED, AND THIS IS DELIBERATE. The standing rule is that the purchase gets its own "
+            +"record when it is REAL, meaning A property and A price. There are TWO candidate properties, no offer, no "
+            +"agreed price, and proof of funds not yet produced. An empty priced record is the Sydney Spicer mistake and it "
+            +"is not repeated here. CREATE IT THE MOMENT AN OFFER IS ACCEPTED ON ONE OF THEM, not when an offer is made, "
+            +"because a rejected offer on the contingent house leaves them still choosing. AND CREATE IT IN THE SAME EDIT "
+            +"THAT DROPS THIS RECORD TO side Seller, or side Both here plus the new record counts the Belknaps THREE.";
+        }
+
+        /* The row should say the buy side is live. sub renders on the deal row. */
+        if(_bk297 && String(_bk297.sub||"").indexOf("buy side")<0){
+          _bk297.sub="Cash buyer. Sell 4946 Pratt St, buy side down to 2 homes";
+        }
+
+        /* App event only. Ian is handling the NP Dodge calendar for this himself. */
+        if(!Array.isArray(state.events)) state.events=[];
+        if(!state.events.some(function(x){ return x&&x.id==="ev-20260816-belknap-reshow"; })){
+          state.events.push({id:"ev-20260816-belknap-reshow", date:"2026-08-16", kind:"Real estate",
+            title:"Belknaps re show BOTH finalists, 4:30pm, about 45 min. 5122 N 141st St and 2315 Nelson's Creek Dr"});
+        }
+
+        if(!Array.isArray(state.realEstate.todos)) state.realEstate.todos=[];
+        var _td297=function(o){ if(!state.realEstate.todos.some(function(t){ return t && (t.id===o.id || (o.key&&t.key===o.key)); })) state.realEstate.todos.push(o); };
+        _td297({id:"ret-20260815-belknap-pof", key:"belknap-proof-of-funds", done:false, due:"2026-08-16",
+          src:"08.15.2026 Belknap message thread, Chris stated the requirement",
+          text:"BELKNAPS OWE PROOF OF FUNDS AND IT GATES THE OFFER. Cash offer needs a document showing a cash balance covering the purchase. They re show both finalists Sunday 4:30 and could write straight after, so this needs to exist before then, not after they choose."});
+        _td297({id:"ret-20260815-belknap-twohomes", key:"belknap-two-homes-check", done:false, due:"2026-08-16",
+          src:"08.15.2026 Belknap message thread, two facts from Chris that need the numbers behind them",
+          text:"PULL BOTH BELKNAP FINALISTS IN PARAGON, 5122 N 141st St and 2315 Nelson's Creek Dr, and answer two things. FIRST, WHICH ONE has been listed since roughly January and what is its exact list date, original price and every reduction, that is the negotiating room. SECOND, on the one with the accepted home sale contingent offer, nine days old with those buyers not yet listed, find out whether the contract carries a KICK OUT or FIRST RIGHT clause. That single answer decides whether a cash non contingent offer can displace them. Ask the listing agent if the MLS does not say."});
+
+        if(!Array.isArray(state.autoLog)) state.autoLog=[];
+        if(!state.autoLog.some(function(x){ return x&&x.id==="auto-20260815-belknap-buy"; })){
+          state.autoLog.unshift({id:"auto-20260815-belknap-buy", date:"2026-08-15", area:"Real estate",
+            what:"Recorded the Belknap buy side narrowing to two homes, and wrote the contingent one up as still gettable rather than as taken",
+            why:"A contingent buyer who has not listed their own home after nine days is weak, and most home sale contingencies carry a kick out clause. You are cash with no contingency of your own, which is exactly the offer that displaces one.",
+            evidence:"Both finalists were the first two stops on Saturday's seven showing itinerary, 10:30 and 11:00 on the NP Dodge calendar. No buy side deal record was created, because there are two candidate properties and no agreed price, and an empty priced record is the mistake that was made once already.",
+            undo:"Real estate, open the Belknaps deal and edit the note, or delete either new todo."});
+        }
+
+        state.meta.mig297_belknap_buy=true;
+      }
+      save(true);
+  } }catch(e){ try{ console.warn("mig297 did not apply:",e&&e.message); }catch(_){} }
+
 
 /* ===== v21 build 296: REPAIR THE DUPLICATES ALREADY IN HIS SAVED STATE =======================
    The two writer fixes above stop the leak from here on. They do not clean up what it already
