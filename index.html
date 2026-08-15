@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 293 (2026-08-15)">
+<meta name="build" content="v21 build 294 (2026-08-15)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -6372,13 +6372,18 @@ function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]
          condition, which is not a new state. */
       var _g=state.pickleball.gear=state.pickleball.gear||{};
       _g.grip=_g.grip||{};
-      _g.grip.states=[
+      /* build 294 FIX AT THE WRITER, same class as the 277 and 279 faults fixed in 293 and 294.
+         This whole gear block ran on EVERY load and rebuilt these four objects from scratch, so any
+         later correction to them reverted on the next load. Create if absent only. Field level
+         edits made by builds 277 and 279 are unaffected, they mutate named fields rather than
+         replacing the object. */
+      if(!Array.isArray(_g.grip.states)) _g.grip.states=[
         {n:1, from:null,          to:"2026-07-31", what:"Bulky overgrip",     wear:"n/a",  read:"Depth calibrated, drops decent. Hands slow, could not absorb pace at the kitchen."},
         {n:2, from:"2026-08-01",  to:"2026-08-07", what:"Bare paddle",        wear:"n/a",  read:"Faster hands, and depth went long. Faster hands and longer balls are one fact seen from two ends."},
         {n:3, from:"2026-08-08",  to:null,         what:"Thin white overgrip",wear:"DEGRADING, reported losing tack on 08.10 at three sessions old", read:"Held depth for two sessions, then depth broke on the session he reports the grip going off. Test invalid as run."}
       ];
-      _g.grip.current={state:3, since:"2026-08-08", wear:"worn, being replaced before the 08.11 league", note:"Same grip TYPE, fresh unit. That is the point of the test."};
-      _g.grip.test={
+      if(!_g.grip.current) _g.grip.current={state:3, since:"2026-08-08", wear:"worn, being replaced before the 08.11 league", note:"Same grip TYPE, fresh unit. That is the point of the test."};
+      if(!_g.grip.test) _g.grip.test={
         id:"grip-wear-0811", opened:"2026-08-10", status:"open",
         question:"Does his consistency return on a FRESH unit of the same thin overgrip?",
         why:"It holds grip TYPE constant and varies only WEAR, which is cleaner than anything the record has had. Every previous comparison changed the type as well.",
@@ -6386,7 +6391,7 @@ function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]
         confounds:"08.11 is his FOURTH consecutive playing day and it is a competitive league rather than open play, and the new shoes will be on their second wear.",
         readIt:"If fatigue were driving this, day four should be WORSE than day three. So consistency RECOVERING on 08.11 argues for the grip more strongly than tonight argues for anything. Consistency staying poor does NOT clear the grip, because the format and the fatigue both moved too."
       };
-      _g.shoes={
+      if(!_g.shoes) _g.shoes={
         current:{what:"Selkirk SLK Court Strike 3", firstWorn:"2026-08-10",
                  replaced:"about $80 Asics, general trainers rather than court shoes",
                  hisWords:"They feel great and are a big improvement on the Asics."},
@@ -6790,7 +6795,10 @@ function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]
 
       var _g277=(state.pickleball.gear||{});
       if(_g277.grip){
-        _g277.grip.current={state:3, since:"2026-08-08", wear:"FRESH unit fitted before the 08.11 league", note:"Same grip type. The wear question has been answered."};
+        /* build 294 FIX AT THE WRITER, third of this class. This was an UNCONDITIONAL every load
+           assignment, so build 294 marking the grip broken in survived one load and then reverted
+           to "FRESH unit fitted before the 08.11 league". Create if absent only. */
+        if(!_g277.grip.current) _g277.grip.current={state:3, since:"2026-08-08", wear:"FRESH unit fitted before the 08.11 league", note:"Same grip type. The wear question has been answered."};
         if(_g277.grip.test){
           _g277.grip.test.status="CLOSED 08.11.2026, result AGAINST the grip";
           _g277.grip.test.result="It ran. He fitted a fresh unit of the same thin overgrip before the 08.11 league and produced his WORST self rated session. Consistency did not return. Combined with the serve holding up two nights running, which is the stroke where a bad grip shows first, equipment is now the weakest explanation rather than a live one.";
@@ -8296,6 +8304,114 @@ function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]
       }
       save(true);
   } }catch(e){ try{ console.warn("mig293 did not apply:",e&&e.message); }catch(_){} }
+
+/* ===== v21 build 294: THE GRIP ANSWER, AND IT POINTS AT BREAK IN RATHER THAN MOISTURE =======
+     Asked directly on 08.15 rather than inferred from silence, which is the whole reason it
+     produced a usable answer.
+
+     HIS WORDS: when he first arrived the grip was a little wet from his initial sweat and the
+     rain, but as he kept playing it weirdly got better.
+
+     THAT IS CLOSE TO THE OPPOSITE OF A MOISTURE FAILURE. A grip defeated by water gets WORSE
+     as sweat accumulates through a session. His got worse at the start and then improved while
+     he kept using it, in the harshest conditions available: humid, rain an hour or two before,
+     wet slippery courts, shirt soaked through. If moisture were the mechanism, today is the day
+     it should have been most obvious, and it went the other way.
+
+     BREAK IN EXPLAINS BOTH OBSERVATIONS AT ONCE, WHICH IS WHY IT IS NOW THE LEADING ONE. A new
+     tacky overgrip has a slick factory surface and the tack comes up once it is worked. That
+     fits 08.11, the grip's first outing, feeling weird on his worst self rated session, and it
+     fits today starting poor and improving with use. The awkward fact for every earlier
+     hypothesis was fresh grip plus worst session. Break in predicts exactly that.
+
+     THE SEQUENCE, RECORDED AS INFERRED AND NOT AS FACT: bulky grip to 07.31, bare paddle 08.01
+     to 08.07, thin new grip from 08.08 which needed breaking in, and now broken in. Moisture is
+     DEMOTED, not eliminated, because one session cannot separate a mechanism this cleanly and
+     he was reporting feel rather than measuring anything.
+
+     HE IS WEIGHING TWO OPTIONS AND HAS NOT DECIDED, so BOTH are recorded and neither is picked.
+     A, fit the new grip Monday 17 so it gets a day of play before league. B, keep this one
+     through Tuesday league and replace it after. B is the lower risk one and this build says so
+     plainly: the current grip is demonstrably working, tested through a full session in the
+     worst conditions available, and replacing something that works immediately before the one
+     night that matters is a change with no upside he has named.
+
+     THE ACTUAL CONSTRAINT IS THE 23rd, NOT TUESDAY. He is reasoning forward from league. The
+     question that decides it is which grip is on the paddle at the APC and when it goes on, so
+     the record carries a sequence to follow rather than a decision to re reason: current grip
+     Sunday, Monday and Tuesday league, fresh one fitted Wednesday 19 or Thursday 20, played on
+     twice, broken in with margin by Sunday 23.
+
+     AND THE REUSABLE FINDING, which is the part worth more than this week: ONE FULL SESSION OF
+     PLAY APPEARS TO BE ROUGHLY ENOUGH to break in a thin tacky overgrip. n=1 and his account,
+     so roughly rather than exactly, but it answers this question every time it recurs. */
+  try{ if(profile==="ian" && state.pickleball){
+      if(!state.meta) state.meta={};
+      if(!state.meta.mig294_grip){
+        var _gr294=(state.pickleball.gear&&state.pickleball.gear.grip)?state.pickleball.gear.grip:null;
+        if(_gr294){
+          if(_gr294.moistureTest){
+            _gr294.moistureTest.status="DEMOTED 2026-08-15, not eliminated";
+            _gr294.moistureTest.answer="Asked directly on 08.15. Ian: the grip was a little wet from his initial sweat and the rain when he arrived, but as he kept playing it weirdly got better.";
+            _gr294.moistureTest.whyDemoted="A grip defeated by water gets WORSE as sweat accumulates, not better. It improved DURING the harshest conditions on record for it, humid with rain an hour or two before, wet courts and a soaked shirt. That is close to the opposite of the predicted failure.";
+            _gr294.moistureTest.notEliminated="One session of feel cannot separate a mechanism outright, and nothing was measured. Moisture stays on the board underneath break in rather than being closed, and this is NOT a second closure of the kind that had to be reversed on 08.11.";
+          }
+          _gr294.breakIn={
+            id:"grip-breakin-0815", opened:"2026-08-15", status:"LEADING EXPLANATION, label INFERRED",
+            claim:"A new tacky overgrip has a slick factory surface and the tack comes up once it is worked, so it starts worse than it finishes.",
+            fitsBoth:"It explains the two facts that no other hypothesis held together. 08.11, the grip's FIRST outing, felt weird on his worst self rated session. 08.15 started poor and IMPROVED with use. Fresh grip plus worst session was the awkward fact for wear and for moisture. Break in predicts it.",
+            sequence:"Bulky grip to 07.31. Bare paddle 08.01 to 08.07. Thin new grip from 08.08, needing break in. Broken in as of 08.15.",
+            demotes:"Moisture, which is now underneath this rather than closed.",
+            howItWouldBeTested:"The next fresh unit. If a new grip starts poor and improves again over one or two sessions, that is a second instance and it stops being inferred. His Tuesday replacement is that test whether or not it is run as one.",
+            howLongItTakes:"ONE FULL SESSION OF PLAY APPEARS TO BE ROUGHLY ENOUGH to break in a thin tacky overgrip. That is the reusable part of today and it answers this question every time it comes up, including for the 23rd. n=1, his account, so treat it as roughly rather than exactly.",
+            label:"INFERRED. Self report of feel across two sessions, no measurement, no footage."
+          };
+          _gr294.plan={
+            id:"grip-plan-0815", raisedBy:"Ian", on:"2026-08-15", status:"UNDECIDED, both options recorded, not picked for him",
+            optionA:"Fit the new grip MONDAY 17 AUGUST, so it gets one day of play before Tuesday league.",
+            optionB:"Keep the current grip through TUESDAY 18 AUGUST league and replace it after.",
+            theRead:"Today says a new grip starts poor and IMPROVES WITHIN A SINGLE SESSION. If one session is enough, option A arrives at Tuesday on a bedded grip. If it takes longer, option A puts him on a partly broken grip for the ONE competitive night of his week.",
+            lowerRisk:"OPTION B, and it is worth saying plainly rather than hiding behind balance. His current grip is now demonstrably working, tested through a full drill session in the worst conditions available, and it improved during it. Replacing something that is working immediately before the night that matters is a change with no upside he has named.",
+            butTheRealConstraint:"NEITHER OPTION IS THE ACTUAL QUESTION. The APC is Sunday 23 August, eight days out. The question is WHICH GRIP IS ON THE PADDLE ON THE 23rd AND WHEN IT GOES ON, and Monday versus Wednesday only matters as an answer to that. He is reasoning forward from Tuesday. The constraint is on the 23rd.",
+            sequence:["Sunday 16 and Monday 17: current grip. It is working and it is broken in.",
+                      "Tuesday 18, league: current grip. A known quantity on the one competitive night of the week.",
+                      "Wednesday 19 or Thursday 20: fit the new grip.",
+                      "Thursday through Saturday: play on it twice before the tournament.",
+                      "Sunday 23, APC: broken in, with margin."],
+            whyThatSequence:"It gives him league on a known grip AND still leaves time to bed a fresh one in before the 23rd, so it satisfies both constraints instead of trading one against the other. On his own evidence one full session is roughly enough, so two sessions is margin rather than a gamble.",
+            notARecommendation:"His call, and both options are recorded because he has not decided. The only thing being added is the tournament backward version, since that is the constraint the forward reasoning from Tuesday leaves out."
+          };
+          if(_gr294.current && typeof _gr294.current==="object"){
+            _gr294.current.wear="Fitted 08.08, and BROKEN IN as of 08.15 by his own account.";
+            _gr294.current.note="It started slick and improved with use, which is the observation the break in record is built on.";
+          }
+        }
+
+        /* The 08.15 session note ends by telling a future reader to ask him. It has been asked,
+           so the answer is appended rather than leaving an open instruction on the record. */
+        if(Array.isArray(state.pickleball.sessions)){
+          state.pickleball.sessions.forEach(function(x){
+            if(!x || x.id!=="pk-20260815-drills") return;
+            var n=String(x.note||"");
+            if(n.indexOf("ANSWERED 08.15")>=0) return;
+            x.note=n+" ANSWERED 08.15, asked directly: the grip was a little wet from his sweat and the rain when he arrived and then WEIRDLY GOT BETTER as he kept playing. That is the opposite of a moisture failure, which worsens as sweat accumulates, so moisture is DEMOTED rather than closed and BREAK IN becomes the leading explanation. It is the one reading that also explains 08.11, the grip's first outing, being his worst self rated session. Sequence, inferred: bulky to 07.31, bare 08.01 to 08.07, thin new grip from 08.08 needing break in, broken in now.";
+          });
+        }
+
+        if(!Array.isArray(state.autoLog)) state.autoLog=[];
+        if(!state.autoLog.some(function(x){ return x&&x.id==="auto-20260815-grip-breakin"; })){
+          state.autoLog.unshift({id:"auto-20260815-grip-breakin", date:"2026-08-15", area:"Pickleball",
+            what:"Recorded your grip answer, demoted the moisture question, and put a grip line in your tournament prep",
+            why:"You said it was wet at the start and then got better as you played. That is the opposite of a grip failing to sweat, so the likeliest explanation is that it just needed breaking in.",
+            evidence:"It also explains 08.11, your worst session, being the first outing on a brand new grip, which never fitted the wear or moisture readings. Both grip options are recorded and neither is picked for you. The thing that decides it is not Monday versus Wednesday, it is which grip is on the paddle on the 23rd. One full session looks like roughly enough to break one in, so league on the current grip and a fresh one fitted Wednesday or Thursday gives you two sessions of margin.",
+            undo:"Pickleball, Settings, paddle and grip, edit or clear the grip records."});
+        }
+
+        state.meta.mig294_grip=true;
+      }
+      save(true);
+  } }catch(e){ try{ console.warn("mig294 did not apply:",e&&e.message); }catch(_){} }
+
 
 
   try{ rePayDefault(); }catch(e){}
@@ -10834,7 +10950,7 @@ function buildPickle(v){ var pb=state.pickleball||(state.pickleball={});
   pkCollapse(v,"pk_goals","Goals and events","tap to expand",false,function(gv){
       (function(){ if(!Array.isArray(pb.goals)) pb.goals=[]; var gc=card(); var gb=gc._body; if(!pb.goals.length){ gb.appendChild(el("div","empty","No goals yet.")); } pb.goals.forEach(function(g,i){ var row=el("div"); row.style.cssText="padding:10px 0"+(i>0?";border-top:1px solid var(--line)":""); var head=el("div","between"); head.style.cursor="pointer"; var lt=el("div"); lt.style.cssText="display:flex;gap:9px;align-items:center;min-width:0"; var cb=el("input","cbx"); cb.type="checkbox"; cb.checked=!!g.done; cb.onclick=function(ev){ ev.stopPropagation(); g.done=cb.checked; save(); }; var lab=el("div"); lab.style.cssText="font-weight:700;font-size:14px;letter-spacing:-.01em"+(g.done?";text-decoration:line-through;opacity:.6":""); lab.textContent=g.short||String(g.text||"").split(/(?<=[.!?])\s/)[0]; lt.appendChild(cb); lt.appendChild(lab); head.appendChild(lt); var chev=el("div","chev","\u203a"); head.appendChild(chev); row.appendChild(head); var body=el("div"); body.style.cssText="display:none;margin-top:8px;line-height:1.55;color:var(--gray);font-size:13px"; body.textContent=g.text||""; row.appendChild(body); head.onclick=function(){ var on=body.style.display==="none"; body.style.display=on?"block":"none"; chev.style.transform=on?"rotate(90deg)":""; }; gb.appendChild(row); }); gv.appendChild(gc); })();
       var PREP={
-        "2026-08-23":["Your FIRST tournament, so the day itself is the skill.","Get there early and hit before match one, a cold start is how first timers lose winnable games.","Re warm up before EVERY match, dinks and drops especially.","Between matches keep moving, eat small and steady, drink through the day.","Start every match patient, lead with dinks and drops, expect nerves early and do not chase them with bigger swings.","Judge the day on execution and team play, not the bracket. Your DUPR baseline gets set here."],
+        "2026-08-23":["Your FIRST tournament, so the day itself is the skill.","PLAY ON A GRIP THAT IS ALREADY BROKEN IN. Not one fitted the day before or the morning of. On 08.15 you found a new grip starts slick and improves with use, and one full session looks like roughly enough, so fit any replacement by Wednesday 19 or Thursday 20 and play on it twice before the 23rd.","Get there early and hit before match one, a cold start is how first timers lose winnable games.","Re warm up before EVERY match, dinks and drops especially.","Between matches keep moving, eat small and steady, drink through the day.","Start every match patient, lead with dinks and drops, expect nerves early and do not chase them with bigger swings.","Judge the day on execution and team play, not the bracket. Your DUPR baseline gets set here."],
         "2027-04-01":["NPL tryouts, this is the real deadline, not the June season start.","Be peaked by end of March.","Be a known face at Midwest Pickleball Club by then.","Have your DUPR and results ready to point at."]
       };
       /* build 125 FIX: this used to be a flat slice(0,4), which silently hid the Aug 23 tournament because four
