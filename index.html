@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 292 (2026-08-15)">
+<meta name="build" content="v21 build 293 (2026-08-15)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -6919,7 +6919,9 @@ function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]
           _g279.grip.test.scope="This test answered WEAR and nothing else. It did not test moisture, and build 277 wrongly generalised it to equipment as a whole.";
           _g279.grip.test.doNotReopen="Do not revive GRIP WEAR as the explanation for 08.10 without new evidence. This says nothing about moisture, which is open below.";
         }
-        _g279.grip.moistureTest={
+        /* build 293 FIX AT THE WRITER: this was an UNCONDITIONAL every load assignment, so any
+           later update to moistureTest was reverted on the next load. Create if absent only. */
+        if(!_g279.grip.moistureTest) _g279.grip.moistureTest={
           id:"grip-moisture-0812", opened:"2026-08-11", status:"OPEN, and it is the live grip question",
           claim:"Ian: hands super sweaty, grip felt a little weird, and he puts a lot of drives into the top of the net down to it.",
           why:"A fresh tacky overgrip works by SURFACE TACK and sweat defeats surface tack, so fresh plus wet can be worse than broken in. This is why the wear result does not close it, and why fresh grip plus worst session is PREDICTED here rather than contradicted.",
@@ -6929,7 +6931,12 @@ function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]
           confound:"Deliberate corner aiming from 08.10 predicts the SAME height and depth errors with direction intact. Fixing moisture is what separates them: if the height errors persist while he is still aiming, it is the aiming."
         };
       }
-      _g279.driveErrorPattern={
+      /* build 293 FIX AT THE WRITER, same fault as above and it is the one that bit: this block
+         runs on EVERY load and rebuilt driveErrorPattern from scratch, so build 293 resolving it
+         survived exactly one load before reverting to "open, TWO SESSIONS". Per RULES, an
+         unguarded every load block beats a flag guarded one regardless of file order, so it is
+         fixed HERE rather than out ordered. Create if absent only. */
+      if(!_g279.driveErrorPattern) _g279.driveErrorPattern={
         id:"drive-height-depth-0810", opened:"2026-08-11", status:"open, TWO SESSIONS",
         finding:"HEIGHT AND DEPTH CONTROL ON DRIVES, WITH DIRECTION INTACT. Two nights running.",
         n:[{date:"2026-08-10", said:"Drives really inconsistent on HEIGHT, but placement is getting even better."},
@@ -8185,6 +8192,111 @@ function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]
       }
       save(true);
   } }catch(e){ try{ console.warn("mig292 did not apply:",e&&e.message); }catch(_){} }
+
+/* ===== v21 build 293: 08.15.2026, HE ACTUALLY DRILLED, AND THE DISPLACEMENT PATTERN BROKE ===
+     Saturday morning, 9:08 to 10:39 AM, outdoors, with Dylan. Self report, NO RATING MOVES.
+
+     THE HEADLINE IS THAT IT HAPPENED. Two intended drill sessions were taken by whoever turned
+     up, 08.10 and 08.14, and pk-goal-drillday had been open since build 248 on 08.09. Today it
+     held. The goal is marked DONE with the outcome written into it rather than quietly ticked.
+
+     THE EFFORT AND THE WATCH DISAGREE, AND THE DISAGREEMENT IS THE POINT. Effort 9 of 10 against
+     avg HR 122, peak 147 and 898 total calories, which are the LOWEST of his recent band. He
+     flagged it himself and said the number feels low. That is the drilling signature: repeating
+     a movement from a fixed position is high perceived effort and low cardiovascular load,
+     because he is not covering a court. So calories and heart rate are the WRONG INSTRUMENTS for
+     a drill day, and a future run must not read a low number here as a low effort session. This
+     is written into the session note so the next reader of the numbers hits the explanation.
+
+     THE DRIVE DIAGNOSIS IS RESOLVED AND HE RESOLVED IT. Four sessions of the same complaint,
+     08.10, 08.11, 08.14 as the general word consistency, and today. Today he named the cause
+     himself: over hitting, trying to smack everything as far as he could. That converges with
+     the 07.29 film finding of no depth or speed variation and with his own unprompted 08.09 ask
+     for control of distance. driveErrorPattern moves from open with three candidates to
+     RESOLVED, and the fix on file is his own.
+
+     THE MOISTURE QUESTION GOT ITS NATURAL EXPERIMENT AND IT IS NOT CLOSED. Extremely humid, rain
+     an hour or two before, wet slippery courts, shirt grey to black. Those are the exact
+     conditions the moisture hypothesis says should break the grip, and no grip problem was
+     reported. That is WEAK evidence against it and nothing more, because he was not asked. It is
+     recorded as an observation with the question to put to him directly, since inferring a
+     negative from silence is how the wear question got closed too early on 08.11. */
+  try{ if(profile==="ian" && state.pickleball){
+      if(!state.meta) state.meta={};
+      if(!Array.isArray(state.pickleball.sessions)) state.pickleball.sessions=[];
+      var _S293={id:"pk-20260815-drills", date:"2026-08-15", kind:"Drills", venue:"Omaha",
+        duration:"1h 30m 44s", calories:898, activeCalories:757, avgHr:122, maxHr:147, minHr:96, effort:9,
+        result:"", score:"", opponent:"",
+        note:"DRILL SESSION WITH DYLAN AND IT DID NOT GET DISPLACED. Omaha, OUTDOORS, 9:08 to 10:39 AM, 1:30:44. Effort 9 of 10, All Out. From Apple Watch. Avg HR 122, peak 147, low 96, active 757, total 898. No footage, so NO RATING CHANGE. Evidence class SELF REPORT. DRILLED: dinks, resets, aggressiveness, drops, drives, serves and speed up blocks, so essentially the whole board. CONDITIONS: extremely humid, rained an hour or two before, courts wet and slippery, shirt went from grey to black with sweat. HIS REPORT: started rough with drives very inconsistent, got better as it went, and it went really well overall. HIS OWN FIX, and it is the valuable part: relax and play more confidently instead of trying to smack everything as far as he could. "
+            +"READ. 1. THE PATTERN BROKE. Two intended drill sessions became open play, 08.10 and 08.14, and the goal to book one had been open since 08.09. This one held, with the partner he plays the APC with, eight days out. Credit it plainly and without a lecture attached. "
+            +"2. EFFORT 9 AGAINST HIS LOWEST NUMBERS OF THE BAND, AND THE MISMATCH IS EXPLAINED RATHER THAN SMOOTHED OVER. Avg 122, peak 147, 898 total are all the lowest of his recent sessions while the effort is his joint highest. He flagged it himself and said the number feels low. Drilling produces exactly this signature: repeating a movement from a fixed position is high perceived effort with low cardiovascular load, because you are not covering a court. THE CONSEQUENCE IS A MEASUREMENT RULE, NOT A COMPLIMENT: calories and heart rate are the wrong instruments for judging a drill session, and a low number on a drill day must never be read as a low effort day. "
+            +"3. THE DRIVE FAULT IS NOW DIAGNOSED, BY HIM, AND IT IS FOUR SESSIONS RUNNING. 08.10 inconsistent on HEIGHT with placement improving. 08.11 into the TOP OF THE NET, repeatedly long or netted. 08.14 the general word consistency with no shot named. Today, drives very inconsistent early AND the cause named: OVER HITTING, trying to smack everything as far as he could. That is a far more actionable diagnosis than inconsistency, and it is the fourth independent route to the same fault alongside the 07.29 film finding of no depth or speed variation and his own unprompted 08.09 request for control of distance. Treat it as resolved and drill the fix, which is his: relax, play confidently, stop hitting at maximum. The three speeds drill is the same instruction with a number on it. "
+            +"4. HE DRILLED SPEED UP BLOCKS. That is the DEFENSIVE half of the hands weakness, absorbing pace at the kitchen, which is the thing the whole record says he cannot do and the rate limiter on the kitchen approach he is trying to add. First time he has trained it deliberately. It is one session and it moves no rating, but it is the first rep of the right work. "
+            +"5. THE MOISTURE QUESTION GOT ITS CONDITIONS AND DID NOT GET ITS ANSWER. Humid, wet courts, drenched, and no grip problem reported. The moisture hypothesis predicted a fresh tacky grip failing in exactly this weather. Weak evidence against it, NOT proof, because he did not address it and a negative inferred from silence is what closed the wear question too early on 08.11. ASK HIM DIRECTLY whether the grip held in the wet."};
+      if(!state.pickleball.sessions.some(function(x){ return x&&x.id===_S293.id; })){
+        state.pickleball.sessions.push(_S293);
+        state.pickleball.sessions.sort(function(a,b){ return String(a&&a.date).localeCompare(String(b&&b.date)); });
+      }
+
+      if(!state.meta.mig293_0815){
+        /* The goal is CLOSED because the thing it asked for happened, not because a date passed. */
+        if(!Array.isArray(state.pickleball.goals)) state.pickleball.goals=[];
+        var _g293=null;
+        state.pickleball.goals.forEach(function(g){ if(g&&g.id==="pk-goal-drillday") _g293=g; });
+        if(_g293){
+          _g293.done=true;
+          _g293.short="Drill day, DONE 15 Aug";
+          _g293.text="DONE. You drilled with Dylan on Saturday 15 August, 1h30 outdoors, and it did not get taken by a group turning up. This had been open since 08.09 and displaced twice, on 08.10 and 08.14, so the run of it mattering more than the single session is the part worth keeping. Eight days to the APC. A second drill block before the 23rd is still worth having, but this goal asked for one and one happened.";
+        }
+
+        /* driveErrorPattern: open with three candidates since 08.11, resolved by his own account. */
+        if(state.pickleball.gear && state.pickleball.gear.driveErrorPattern){
+          var _d293=state.pickleball.gear.driveErrorPattern;
+          _d293.status="RESOLVED 2026-08-15, and he resolved it";
+          _d293.resolvedBy="Ian, unprompted, 08.15.2026: he was trying to smack everything as far as he could, and it improved when he relaxed and played more confidently.";
+          _d293.cause="OVER HITTING. Not grip moisture, not depth calibration as a separate skill. Hitting at maximum removes the margin, and height is the first thing that goes when a swing runs out of margin, which is why direction and placement stayed intact throughout.";
+          _d293.fix="His own: relax, play confidently, stop hitting everything at full. The THREE SPEEDS drill is that instruction with a number attached, same swing shape at 70, 85 and 100 percent called out before each rep.";
+          _d293.routes="FOUR independent routes now agree: the 07.29 film finding of no depth or speed variation on drives, his unprompted 08.09 request for control of distance, the 08.10 and 08.11 height and depth error pattern with direction intact, and his own 08.15 diagnosis of over hitting.";
+          if(!Array.isArray(_d293.n)) _d293.n=[];
+          _d293.n.push({date:"2026-08-14", said:"Consistency, no shot named. Not folded into this series on assumption."});
+          _d293.n.push({date:"2026-08-15", said:"Drives very inconsistent to start, better as it went. Cause named himself: over hitting, trying to smack everything as far as he could."});
+          _d293.stillUntested="Whether the fix HOLDS under match pressure. It was found in a drill, and the practice to match gap is the standing open item on his game.";
+          _d293.next="Drill three speeds, then check it in a scored game rather than another drill.";
+        }
+
+        /* Moisture stays OPEN. This is an observation, not a closure. */
+        if(state.pickleball.gear && state.pickleball.gear.grip && state.pickleball.gear.grip.moistureTest){
+          var _m293=state.pickleball.gear.grip.moistureTest;
+          _m293.naturalExperiment="2026-08-15, OUTDOORS: extremely humid, rain an hour or two before, courts wet and slippery, shirt soaked through. These are the exact conditions this hypothesis says should defeat surface tack on a fresh tacky overgrip. NO GRIP PROBLEM WAS REPORTED.";
+          _m293.weight="WEAK evidence against, and nothing more. He was not asked and did not raise it. A negative inferred from silence is how the WEAR question got closed too early on 08.11, and that error is not being repeated here.";
+          _m293.askHim="Did the grip hold in the wet on Saturday morning. Ask it directly, as its own question, and do not fold it into how the session went.";
+        }
+
+        /* Every silent change writes to autoLog and renders on the page it changed. */
+        if(!Array.isArray(state.autoLog)) state.autoLog=[];
+        if(!state.autoLog.some(function(x){ return x&&x.id==="auto-20260815-drill"; })){
+          state.autoLog.unshift({id:"auto-20260815-drill", date:"2026-08-15", area:"Pickleball",
+            what:"Logged Saturday's drill session, closed the drill day goal, and marked the drive fault diagnosed",
+            why:"You drilled with Dylan and it did not get taken by a group this time, and you named the cause of the drive misses yourself.",
+            evidence:"Two previous drill nights became open play, 08.10 and 08.14, and this goal had been open since 08.09. On the drives, four things now say the same thing: the 07.29 film, your own 08.09 ask for control of distance, the 08.10 and 08.11 height errors with direction intact, and your own words today about smacking everything as far as you could.",
+            undo:"Pickleball, open the 15 August session to edit or remove it, and reopen the drill day goal from the same page."});
+        }
+
+        if(state.pickleball.coachRec && typeof state.pickleball.coachRec==="object"){
+          /* Same replacement shape as 07.22 and build 290: a forward card written before he
+             played, replaced by the post session read for the same date, morning card KEPT. */
+          var _prev293=state.pickleball.coachRec["2026-08-15"]||null;
+          state.pickleball.coachRec["2026-08-15"]={"title":"You found the drive fault yourself. Now put a number on it.","note":"Four sessions of inconsistent drives and today you named the cause without being asked: you were trying to smack everything as far as you could. That is the diagnosis, and relaxing is the right fix. Give it a number so it survives a match. Three speeds, same swing shape at 70, 85 and full, called out before each rep. And do not read this morning's watch data as a soft session. Effort 9 on your lowest heart rate of the month is what drilling looks like, not what coasting looks like."};
+          if(_prev293 && _prev293.title && _prev293.title!=="You found the drive fault yourself. Now put a number on it."){
+            state.pickleball.coachRec["2026-08-15"].replaced={"title":String(_prev293.title||""),"note":String(_prev293.note||""),"from":"build 292, this morning's pre session card, kept because the session has now happened"};
+          }
+        }
+
+        state.meta.mig293_0815=true;
+      }
+      save(true);
+  } }catch(e){ try{ console.warn("mig293 did not apply:",e&&e.message); }catch(_){} }
+
 
   try{ rePayDefault(); }catch(e){}
 
