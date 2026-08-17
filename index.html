@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 303 (2026-08-17)">
+<meta name="build" content="v21 build 304 (2026-08-17)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -8961,6 +8961,99 @@ function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]
       }
       save(true);
   } }catch(e){ try{ console.warn("mig303 did not apply:",e&&e.message); }catch(_){} }
+
+/* ===== v21 build 304: SYDNEY SPICER, SIENA II RESOLVED, 08.17.2026 ===========================
+   The model question from this morning is answered. Brandon at Trademark says the Siena II can
+   be built right around $625,000, which matches her budget exactly.
+
+   THE ONE THING THAT MATTERS MORE THAN THE FIT: $625,000 IS A BUILD PRICE AND HER $625,000 IS A
+   TOTAL. There is strong evidence it excludes the lot, and it is arithmetic rather than opinion.
+   Trademark's own RECORDED DEED at 4403 N 189 St, a 2 storey with 2,485 above grade, was
+   $626,000 in March 2024. A recorded transfer is land plus improvements. The Siena II is 2,714
+   above grade, 229 feet LARGER, quoted 29 months LATER, at $1,000 LESS. Those two numbers do not
+   reconcile unless the quote excludes land.
+*/
+  try{ if(profile==="ian" && state.realEstate){
+      if(!state.meta) state.meta={};
+      if(!state.meta.mig304_siena){
+        var _MK="08.17.2026 SIENA II";
+        var _sy=null, _DD=state.realEstate.deals||[];
+        for(var i=0;i<_DD.length;i++){ if(_DD[i]&&_DD[i].id==="re-sydney-spicer-sell"){ _sy=_DD[i]; break; } }
+
+        if(_sy && String(_sy.note||"").indexOf(_MK)<0){
+          _sy.note=String(_sy.note||"")+" "+_MK+" RESOLVED. THEY LIKED THE SIENA II, the larger of the two, and BRANDON AT "
+            +"TRADEMARK SAYS IT CAN BE BUILT RIGHT AROUND $625,000, which matches their budget exactly. The model question from "
+            +"this morning is answered. "
+            +"SIENA II SPECIFICATIONS, from the Trademark Homes brochure, which is CO BRANDED NP DODGE PETER TEAM WITH CHRIS "
+            +"McCAIN LISTED AS A REALTOR CONTACT, so the Trademark relationship is real and already documented on paper. "
+            +"Two storey. First floor 1,194 sq ft, second floor 1,520 sq ft, TOTAL 2,714 SQ FT above grade. Garage quoted as "
+            +"33 ft 4 in by 37 ft 4 in and 996 SQ FT. Four bedrooms, walk in master closet, OFFICE WITH FRENCH DOORS, open "
+            +"kitchen with quartz, walk in pantry, open dinette, brick or tile fireplace face, 3/4 BATH ROUGH IN IN BASEMENT, "
+            +"Marvin windows. For contrast the standard Siena is 1,175 plus 1,202 for 2,377 total with a 621 sq ft garage, so "
+            +"the II is 337 sq ft larger with a garage 375 sq ft bigger. "
+            +"A SMALL BROCHURE INCONSISTENCY, FLAGGED NOT RESOLVED: 33 ft 4 in by 37 ft 4 in is 1,244 sq ft as a plain "
+            +"rectangle, not the 996 stated. Either the footprint is irregular, an L or a bump out, or one number is wrong. "
+            +"996 is the figure to trust for how many cars. Worth one question to Brandon rather than an assumption. "
+            +"HOW IT SCORES AGAINST HER OWN CRITERIA. "
+            +"MET AND VISIBLE ON THE BROCHURE: two storey; 4 bedrooms; an ENCLOSED office, and the French doors are an exact "
+            +"hit because she specified enclosed rather than open; and the garage, where 996 sq ft is genuinely 3 to 3.5 car "
+            +"territory against the standard Siena's 621. "
+            +"NOT VISIBLE ON THE BROCHURE, MEANING UNKNOWN RATHER THAN ABSENT, ALL NEEDING THE ACTUAL PLAN: whether all four "
+            +"bedrooms are upstairs, though a 1,520 sq ft second floor carrying the walk in master closet makes it likely; a "
+            +"two storey entry; a LAUNDRY ROOM WITH A SINK, and laundry is not mentioned at all so the sink is probably an "
+            +"upgrade; more windows than her current home, since Marvin is a brand and not a count; and the island sink "
+            +"question, since open kitchen with quartz does not say. "
+            +"NEEDS A PLAN CHANGE OR AN UPGRADE, WHICH IS WHERE $625,000 BECOMES $650,000: the basement carries only a 3/4 "
+            +"BATH ROUGH IN, so it is NOT a finished basement and a finished basement is an obvious upgrade cost. Her POSSIBLE "
+            +"BASEMENT BAR is then an upgrade on top of an upgrade. The laundry sink likely sits here too. "
+            +"CANNOT BE ANSWERED BY ANY PLAN, BECAUSE IT IS A LOT QUESTION: minimum 10,000 sq ft or 0.25 acre, Sarpy in a "
+            +"perfect world with Elkhorn fine, wants WEST, and he works in Papillion. "
+            +"AND THAT IS THE SHARP POINT ON THIS FILE. Her record already says the TWO criteria that would do the filtering "
+            +"are the 3.5 CAR GARAGE and the 10,000 SQ FT LOT TOGETHER. The Siena II answers the garage half decisively. So "
+            +"the search has collapsed from a house problem into a LOT problem, and the lot is also where the money question "
+            +"sits, which makes them the same question rather than two. "
+            +"THE CAVEAT THAT MATTERS MOST, AND IT IS ARITHMETIC RATHER THAN OPINION. $625,000 IS A BUILD PRICE AND HER "
+            +"$625,000 IS A TOTAL. It almost certainly EXCLUDES THE LOT, and finishes at that number are usually base level. "
+            +"THE EVIDENCE IS ALREADY IN BRAIN: Trademark's own recorded deed at 4403 N 189 St, a 2 storey with 2,485 above "
+            +"grade and 4 bed 3.5 bath, sold at $626,000 on 8 March 2024 with grantor Trademark Homes Inc. A RECORDED TRANSFER "
+            +"IS LAND PLUS IMPROVEMENTS. The Siena II is 2,714 above grade, 229 feet LARGER, quoted 29 months LATER, at $1,000 "
+            +"LESS. Those numbers do not reconcile unless the quote excludes land. Treat lot exclusion as the working "
+            +"assumption until Brandon says otherwise. "
+            +"SO THE SINGLE NEXT QUESTION, WORTH MORE THAN ANYTHING ELSE ON THIS FILE: DOES THE $625,000 INCLUDE A LOT, AND "
+            +"WHAT DO THE ALLOWANCES ACTUALLY COVER? If the lot is excluded she is over her total budget before choosing one "
+            +"upgrade, and the whole file changes shape. "
+            +"ONE SYMMETRY WORTH KEEPING FOR THE CONVERSATION. She is selling a house whose entire valuation swing was its "
+            +"finished basement, $458,000 without the gym finish against $468,500 with it, and roughly $455,000 if she listed "
+            +"mid finish as a 3 bed 2 bath. She of all clients understands what finishing a basement is worth, and she would "
+            +"be buying one that has a rough in and nothing else. That is a conversation she is unusually well equipped to "
+            +"have, not a problem to manage. "
+            +"SCALE, FOR CONTEXT: 2,714 above grade against her current 1,544 above grade is a 76 percent increase, and the "
+            +"Siena II's above grade area ALONE exceeds her current total finished area of about 2,644 including the basement.";
+        }
+
+        if(!Array.isArray(state.realEstate.todos)) state.realEstate.todos=[];
+        var _td=function(o){ if(!state.realEstate.todos.some(function(t){ return t && (t.id===o.id || (o.key&&t.key===o.key)); })) state.realEstate.todos.push(o); };
+        _td({id:"ret-20260817-siena-lot-allowances", key:"siena-lot-allowances", done:false, due:"2026-08-19",
+          src:"08.17.2026, Brandon at Trademark quoted the Siena II at about $625,000",
+          text:"ASK BRANDON THE ONE QUESTION THAT DECIDES THE SPICER BUILD: does the ~$625,000 Siena II figure INCLUDE A LOT, and what do the ALLOWANCES cover? Her $625,000 is a TOTAL. Evidence it excludes land: Trademark's own recorded deed at 4403 N 189 St, 2,485 above grade, was $626,000 in March 2024, and a recorded transfer is land plus improvements. The Siena II is 229 feet LARGER, 29 months LATER, at $1,000 LESS. If the lot is out, she is over budget before a single upgrade. Ask about the basement too, it is a 3/4 rough in only and a finished basement plus her possible bar are both upgrades."});
+        _td({id:"ret-20260817-siena-plan", key:"siena-plan-check", done:false, due:"2026-08-21",
+          src:"08.17.2026, five of her criteria are simply not visible on the brochure",
+          text:"GET THE ACTUAL SIENA II PLAN, not the brochure, and check the five criteria the brochure cannot answer: are all 4 bedrooms upstairs, is there a two storey entry, does the laundry room have A SINK, how does window count compare with 20535 Howe, and is the kitchen island large enough to carry a sink or is it better without one. Also reconcile the garage: 33ft4 by 37ft4 is 1,244 sq ft as a rectangle but the brochure says 996, so the footprint is irregular or one number is wrong."});
+
+        if(!Array.isArray(state.autoLog)) state.autoLog=[];
+        if(!state.autoLog.some(function(x){ return x&&x.id==="auto-20260817-siena"; })){
+          state.autoLog.unshift({id:"auto-20260817-siena", date:"2026-08-17", area:"Real estate",
+            what:"Recorded the Siena II specs and scored them against Sydney's stated criteria, met, unknown, and upgrade",
+            why:"The plan answers the 3.5 car garage half of the two criteria her record says will do the filtering, so her search has collapsed from a house problem into a lot problem.",
+            evidence:"Flagged that the ~$625,000 is a BUILD price against her TOTAL budget, with arithmetic: Trademark's recorded 2024 deed at 2,485 above grade was $626,000 including land, and the Siena II is 229 feet larger, 29 months later, at $1,000 less. Lot exclusion is the working assumption until Brandon confirms.",
+            undo:"Real estate, open the Sydney Spicer deal and edit the note, or delete either new todo."});
+        }
+
+        state.meta.mig304_siena=true;
+      }
+      save(true);
+  } }catch(e){ try{ console.warn("mig304 did not apply:",e&&e.message); }catch(_){} }
+
 
 
 
