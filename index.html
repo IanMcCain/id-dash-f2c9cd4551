@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 304 (2026-08-17)">
+<meta name="build" content="v21 build 305 (2026-08-17)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -9053,6 +9053,150 @@ function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]
       }
       save(true);
   } }catch(e){ try{ console.warn("mig304 did not apply:",e&&e.message); }catch(_){} }
+
+/* ===== v21 build 305: SIX UPDATES, 08.17.2026 ================================================
+   THE FINDING THAT MATTERS MOST IS THE LOT MONEY. Trademark's own site lists Avante custom lots
+   at $89,500 to $92,000 and estate lots reach about $143,500. McCardle Ridge sits next to
+   Avante. So a Siena II build at about $625,000 PLUS a lot in that pocket is roughly $714,500 to
+   $717,000, or up to $768,500 on an estate lot, against a TOTAL budget of $625,000. That is the
+   answer to this morning's open question and it is not a close call.
+
+   AND THE SECOND FINDING IS AN IN HOUSE MATCH NOBODY HAD CONNECTED. Trademark's own community
+   list includes BLONDO POINT at 209th and Blondo, which is exactly where SCENIC GROUP HOLDS
+   SEVEN LOTS. Her builder already builds on the team's own inventory.
+*/
+  try{ if(profile==="ian" && state.realEstate){
+      if(!state.meta) state.meta={};
+      if(!state.meta.mig305_week0817){
+        var _MK="08.17.2026 UPDATE";
+        var _DD=state.realEstate.deals||[];
+        var _g=function(id){ for(var i=0;i<_DD.length;i++){ if(_DD[i]&&_DD[i].id===id) return _DD[i]; } return null; };
+        var _app=function(id,txt){ var d=_g(id); if(!d) return; var n=String(d.note||"");
+          if(n.indexOf(_MK)>=0) return; d.note=(n?n+" ":"")+txt; };
+
+        /* -- 1. ROSE CREEK TWO STOREY. Staying Active is a decision, not a default. -- */
+        _app("re-rose-creek", _MK+". THE WEEKEND BUYERS ARE MOVING, AND THE LISTING DELIBERATELY STAYS ACTIVE BEHIND THEM. "
+          +"These are the two storey buyers Ian and Chris staff at weekends. They are talking to their lender about getting "
+          +"PRE APPROVED. THEIR OFFER WOULD BE CONTINGENT ON THEIR OWN HOME SELLING, and that home WILL NOT BE LIVE FOR 30 "
+          +"DAYS, so a 90 DAY CLOSE is expected. "
+          +"THE DECISION, AND IT IS A STRATEGY RATHER THAN A STATUS QUO: THE LISTING STAYS ACTIVE THROUGH THOSE 90 DAYS SO NO "
+          +"BETTER OFFER IS LOST WHILE THEY WAIT. Recorded as a deliberate choice so a later session does not read an active "
+          +"listing sitting behind an accepted contingency as an oversight and try to tidy it up. "
+          +"THE SYMMETRY WORTH KNOWING, AND IT IS USEFUL RATHER THAN IRONIC. This is EXACTLY the position the Belknaps are "
+          +"trying to exploit on 5122 N 141st: a seller keeping a listing active behind a weak home sale contingency, so a "
+          +"cleaner offer can still displace it. IAN IS NOW ON THE OTHER SIDE OF THE SAME STRUCTURE. That is the best possible "
+          +"illustration that the 141st play is realistic rather than opportunistic, because he is running the seller half of "
+          +"it himself this week, for the same reason. Use it in the Belknap conversation if it helps them commit. "
+          +"NOT KNOWN AND NOT GUESSED: whether pre approval has actually landed, the buyers' own home address or price, and "
+          +"whether any offer has been made. Nothing here is an offer yet.");
+
+        /* -- 2. BARKER. Thursday, and nothing before it. -- */
+        _app("re-barkers", _MK+". DO NOT FOLLOW UP BEFORE THURSDAY 20 AUGUST. Ian first said by Wednesday and then CORRECTED "
+          +"HIMSELF: they have something being fixed this week, so nothing until THURSDAY OR FRIDAY. The correction is the "
+          +"operative instruction and the Wednesday version is dead. Any earlier nudge lands while they are mid repair and "
+          +"makes the team look like it is not listening. Todo ret-20260817-barker-thursday is dated Thursday for that reason.");
+
+        /* -- 3. BONKS. The 19th time is missing and it collides with something real. -- */
+        _app("re-bonks-sell", _MK+". THE CLOSING TIME ON WEDNESDAY 19 AUGUST IS STILL UNKNOWN and their agent has not given "
+          +"it. THIS NEEDS CHASING AND IT IS NOT ADMIN: Ian has COFFEE WITH JHAIMI ANDRICK, CMG Home Loans, at 09:30 THAT "
+          +"MORNING, and the sell side closings on this file have run in the morning. A 09:00 or 09:30 closing collides "
+          +"directly. NOTE THIS SUPERSEDES PART OF THE 08.16 CORRECTION: that entry said the 19th clash concern was void "
+          +"because the closing had been removed from the calendar. The closing is still REAL and still on the 19th, it is "
+          +"just not a calendar entry, so the clash risk is BACK the moment the time lands and it is one of the two people at "
+          +"that coffee who would have to move. Todo ret-20260817-bonk-time.");
+
+        /* -- 4. WINCHESTER. This week, and the ambiguity is flagged rather than resolved. -- */
+        _app("re-brandon-winchester", _MK+". FOLLOW UP THIS WEEK. Ian's exact words were \"sometime this weekend with "
+          +"Winchesters this week\", which is ambiguous, and it is treated as THIS WEEK rather than the weekend. THE "
+          +"AMBIGUITY IS FLAGGED RATHER THAN GUESSED AWAY: if he meant the weekend of 22 to 23 August that is a different "
+          +"week and it also runs into the APC tournament on Sunday 23. No day is invented. Todo ret-20260817-winchester-fu "
+          +"carries it with the ambiguity written into the text so whoever picks it up asks rather than assumes.");
+
+        /* -- 5 and 6. SYDNEY SPICER. The lot money, the in house match, and the viewing. -- */
+        _app("re-sydney-spicer-sell", _MK+". McCARDLE RIDGE RESEARCH, AND IT ANSWERS THE LOT QUESTION WITH NUMBERS. "
+          +"Ian asked about McCARDLE RIDGE, a new neighbourhood right next to AVANTE, which Trademark helped develop so they "
+          +"will have lots there. FIRST PASS RESULT: McCardle Ridge ITSELF RETURNS NOTHING PUBLICLY. It is not on Trademark's "
+          +"own community list, which as of today reads Blondo Point, Avante, Calarosa and Calarosa North, and it does not "
+          +"appear in any subdivision directory searched. Treat it as TOO NEW TO BE INDEXED rather than as not existing, "
+          +"since Ian has it from the builder. NOT VERIFIED, and the honest position is that everything below is the AVANTE "
+          +"PROXY rather than McCardle Ridge itself. "
+          +"AVANTE IS THE ANCHOR AND IT IS WELL DOCUMENTED. 195TH AND FORT STREET, ELKHORN NORTH school district, DOUGLAS "
+          +"COUNTY, SID 620, close to a new elementary. TRADEMARK'S OWN SITE PRICES ITS CUSTOM LOTS AT $89,500 TO $92,000, "
+          +"with a wider range up to about $143,500 reported elsewhere which is most likely the ESTATE lots. "
+          +"SO HERE IS THE ARITHMETIC THAT DECIDES THIS FILE. Siena II build about $625,000 PLUS an Avante grade custom lot "
+          +"at $89,500 to $92,000 is $714,500 TO $717,000 ALL IN. On an estate lot it is about $768,500. HER TOTAL BUDGET IS "
+          +"$625,000. SHE IS THEREFORE ROUGHLY $90,000 TO $143,500 OVER BEFORE A SINGLE UPGRADE IS CHOSEN, and that is with "
+          +"an unfinished basement carrying only a 3/4 rough in. This confirms the morning's inference that the $625,000 is a "
+          +"BUILD price excluding land, and it converts it from an inference into a costed gap. CORROBORATION: Trademark's "
+          +"own published build range is $500k to $650k, which is a BUILD range, and $625,000 sits near the top of it. "
+          +"WHAT THIS MEANS PRACTICALLY, SAID PLAINLY: the Siena II at her budget only works if the lot is either much cheaper "
+          +"than Avante, already owned, or included in a package Brandon has not described. One of those has to be true. "
+          +"THE IN HOUSE MATCH NOBODY HAD CONNECTED, AND IT IS THE MOST USEFUL THING IN THIS ENTRY. TRADEMARK'S OWN COMMUNITY "
+          +"LIST INCLUDES BLONDO POINT AT 209TH AND BLONDO, ELKHORN SCHOOLS, WHICH IS EXACTLY WHERE SCENIC GROUP HOLDS SEVEN "
+          +"LOTS. Her chosen builder already builds on the team's own inventory. That also resolves a worry raised earlier "
+          +"today, that a Blondo Point lot might be tied to Landmark Performance Homes; BOTH builders work that subdivision. "
+          +"Trademark says Blondo Point lot prices are NOT YET RELEASED, but the team already holds a pricing PDF on disk at "
+          +"WORK/Real_Estate/Reference/Blondo Point - Lot Map with Pricing (Landmark, rev 06.08.26).pdf, which would answer "
+          +"the lot cost half of her budget question without asking anyone. "
+          +"HOW BLONDO POINT SCORES ON HER CRITERIA, HONESTLY. Elkhorn schools and Elkhorn is explicitly FINE by her, though "
+          +"SARPY was her perfect world, so this is acceptable and not ideal. It is WEST, which she wants. AGAINST IT: 209th "
+          +"and Blondo is far north west metro and HE WORKS IN PAPILLION, which is south east Sarpy, so the commute is the "
+          +"real objection and it is the same objection at Avante and McCardle Ridge, all three being in that same north west "
+          +"pocket. UNVERIFIED AND NEEDED: LOT SIZES against her 10,000 sq ft or 0.25 acre minimum. BRAIN's Blondo Point file "
+          +"records Ian's firsthand descriptions of the seven lots but NO dimensions, and it says explicitly that nothing in "
+          +"it has been independently verified. "
+          +"THE SIENA VIEWING IS PENDING AND IS DELIBERATELY NOT ON THE CALENDAR. Wednesday or Thursday, late afternoon or "
+          +"evening, NOT FIXED. IAN MAY NOT GO, depending on pickleball. Recorded as pending so it surfaces; it gets a "
+          +"calendar entry when there is a real time and not before.");
+
+        if(!Array.isArray(state.realEstate.todos)) state.realEstate.todos=[];
+        var _td=function(o){ if(!state.realEstate.todos.some(function(t){ return t && (t.id===o.id || (o.key&&t.key===o.key)); })) state.realEstate.todos.push(o); };
+        _td({id:"ret-20260817-barker-thursday", key:"barker-thursday-followup", done:false, due:"2026-08-20",
+          src:"08.17.2026, Ian said Wednesday then corrected himself to Thursday or Friday",
+          text:"FOLLOW UP WITH THE BARKERS, THURSDAY 20 AUGUST AT THE EARLIEST. Ian corrected himself from Wednesday: they have something being fixed this week, so nothing before Thursday. DO NOT NUDGE EARLIER, it lands mid repair. They are coming to see the house and the price lands after they have."});
+        _td({id:"ret-20260817-bonk-time", key:"bonk-19th-closing-time", done:false, due:"2026-08-18",
+          src:"08.17.2026, their agent has not given the time",
+          text:"GET THE TIME OF THE BONK SELL SIDE CLOSING ON WEDNESDAY 19 AUGUST. Their agent has not given it. THIS IS URGENT RATHER THAN ADMIN: Ian has coffee with Jhaimi Andrick at 09:30 that morning and the sell side closings on this file have run in the morning, so a 09:00 or 09:30 closing collides directly. Chase it today so whichever has to move can move with notice."});
+        _td({id:"ret-20260817-winchester-fu", key:"winchester-followup-week", done:false, due:"2026-08-21",
+          src:"08.17.2026, Ian said sometime this weekend with Winchesters this week, ambiguous",
+          text:"FOLLOW UP WITH THE WINCHESTERS THIS WEEK. AMBIGUITY FLAGGED RATHER THAN GUESSED: Ian's words were sometime this weekend with Winchesters this week. Treated as THIS WEEK. If he meant the weekend of 22 to 23 August, that is a different week and it collides with the APC tournament on Sunday 23. Ask him which he meant rather than picking a day."});
+        _td({id:"ret-20260817-blondo-lot-pricing", key:"blondo-pricing-for-spicer", done:false, due:"2026-08-19",
+          src:"08.17.2026, Trademark builds at Blondo Point and Scenic Group holds seven lots there",
+          text:"OPEN THE BLONDO POINT PRICING PDF AND PRICE THE SPICER LOT QUESTION IN HOUSE. File is at WORK/Real_Estate/Reference/Blondo Point - Lot Map with Pricing (Landmark, rev 06.08.26).pdf. TRADEMARK BUILDS AT BLONDO POINT, which is where Scenic Group holds seven lots, so her builder and the team's own inventory already overlap. Needed: lot PRICES and lot SIZES, because her minimum is 10,000 sq ft and BRAIN records no dimensions for any of the seven. Comparison point: Avante custom lots are $89,500 to $92,000, and at that level a Siena II plus a lot is about $715,000 against her $625,000 total budget."});
+
+        /* THE INSTRUCTION WAS "NO EARLIER NUDGE", AND ONE ALREADY EXISTED. ret-20260813-barker-receipts
+           was due TODAY and it asks the BARKERS for their renovation receipts, which is exactly the
+           contact Ian said must not happen before Thursday. Moved to Thursday 20 August.
+           ret-20260813-barker-basement stays due today ON PURPOSE: it asks IAN for a measurement he
+           already took, so it touches the clients not at all. The distinction is client contact, not
+           the word Barker. */
+        state.realEstate.todos.forEach(function(t){
+          if(!t || t.id!=="ret-20260813-barker-receipts") return;
+          if(String(t.text||"").indexOf("MOVED 08.17")>=0) return;
+          t.due="2026-08-20";
+          t.text=String(t.text||"")+" MOVED 08.17.2026 from 17 August to Thursday 20 August. Ian said no follow up with the Barkers before Thursday because they have something being fixed this week, and asking them for receipts is exactly that contact.";
+        });
+
+        if(!Array.isArray(state.events)) state.events=[];
+        if(!state.events.some(function(x){ return x&&x.id==="ev-20260819-siena-viewing"; })){
+          state.events.push({id:"ev-20260819-siena-viewing", date:"2026-08-19", kind:"Real estate",
+            title:"PENDING, NOT CONFIRMED. Siena II viewing, Wed 19 or Thu 20, late afternoon or evening, time not set. Ian may not go, depends on pickleball. No calendar entry until there is a real time"});
+        }
+
+        if(!Array.isArray(state.autoLog)) state.autoLog=[];
+        if(!state.autoLog.some(function(x){ return x&&x.id==="auto-20260817-week"; })){
+          state.autoLog.unshift({id:"auto-20260817-week", date:"2026-08-17", area:"Real estate",
+            what:"Recorded six updates and researched McCardle Ridge, which costed the Spicer lot gap and found an in house match",
+            why:"Trademark's own site prices Avante custom lots at $89,500 to $92,000, so a Siena II plus a lot in that pocket is about $715,000 against Sydney's $625,000 total budget. She is roughly $90,000 over before any upgrade.",
+            evidence:"Trademark also builds at BLONDO POINT, 209th and Blondo, where Scenic Group holds seven lots, so her builder and the team's own inventory overlap. A Blondo Point pricing PDF is already on disk. McCardle Ridge itself returns nothing publicly and is treated as too new to be indexed.",
+            undo:"Real estate, open any of the four deals and edit the note, or delete any of the four new todos."});
+        }
+
+        state.meta.mig305_week0817=true;
+      }
+      save(true);
+  } }catch(e){ try{ console.warn("mig305 did not apply:",e&&e.message); }catch(_){} }
+
 
 
 
