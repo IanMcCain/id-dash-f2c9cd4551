@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 305 (2026-08-17)">
+<meta name="build" content="v21 build 306 (2026-08-17)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -9196,6 +9196,107 @@ function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]
       }
       save(true);
   } }catch(e){ try{ console.warn("mig305 did not apply:",e&&e.message); }catch(_){} }
+
+/* ===== v21 build 306: 08.17.2026, A CORRECTION AND A THIRD MISSING LEAD =====================
+   1. THE LOT EXCLUSION INFERENCE WAS WRONG AND IS SUPERSEDED IN THE OPEN. Brandon says the
+      Siena II builds at $625,000 ALREADY COUNTING THE LOT, at an average lot price. My reasoning
+      was sound and the conclusion was not, so it is corrected in place with what it missed
+      written down, rather than quietly edited out.
+   2. NANCY AND PATRICK KIRK EXIST NOWHERE. Ian gave them Ryan Beachler's details on 15 August
+      and there is no trace of them in the app, BRAIN, the pipeline or any export. That is the
+      THIRD real lead this week that left no record, and the first one that is an OUTBOUND
+      REFERRAL, which is a channel nobody has been recording at all.
+*/
+  try{ if(profile==="ian" && state.realEstate){
+      if(!state.meta) state.meta={};
+      if(!state.meta.mig306_kirk_lotfix){
+        var _MK="08.17.2026 CORRECTION";
+        var _DD=state.realEstate.deals||[];
+        var _g=function(id){ for(var i=0;i<_DD.length;i++){ if(_DD[i]&&_DD[i].id===id) return _DD[i]; } return null; };
+
+        /* -- 1. THE CORRECTION. -- */
+        var _sy=_g("re-sydney-spicer-sell");
+        if(_sy && String(_sy.note||"").indexOf(_MK)<0){
+          _sy.note=String(_sy.note||"")+" "+_MK+". THE LOT IS INCLUDED. THE WORKING ASSUMPTION THAT $625,000 EXCLUDED LAND "
+            +"IS WRONG AND IS SUPERSEDED HERE RATHER THAN QUIETLY EDITED OUT. Brandon says he can build the SIENA II at "
+            +"$625,000 ALREADY COUNTING THE LOT, assuming an AVERAGE LOT PRICE. "
+            +"WHAT THE REASONING MISSED, BECAUSE IT WAS REASONED FROM REAL EVIDENCE AND STILL CAME OUT WRONG. The inference "
+            +"rested on Trademark's recorded deed at 4403 N 189 St, $626,000 in March 2024 for 2,485 above grade, against a "
+            +"larger 2,714 foot Siena II quoted 29 months later at $1,000 less. That arithmetic was correct. WHAT IT COULD "
+            +"NOT SEE IS THAT A BUILDER QUOTING TO A CLIENT'S BUDGET CAN BUNDLE AN ASSUMED LOT ALLOWANCE, and a recorded "
+            +"transfer of a COMPLETED home cannot be distinguished from that, because a deed shows one total for land plus "
+            +"improvements and never shows what the builder assumed when quoting. A closed sale and a forward quote are "
+            +"different kinds of number and I compared them as if they were the same kind. KEEP THIS: a recorded price tells "
+            +"you what a finished thing sold for, not how a builder is constructing an offer. "
+            +"WHAT THIS CLOSES. The roughly $90,000 to $143,500 gap raised this morning IS CLOSED. THE DEAL IS VIABLE AT HER "
+            +"STATED BUDGET of $625,000 total. That was the single biggest open risk on this file and it is gone. "
+            +"WHAT THIS DOES NOT CLOSE, AND THE QUESTION IS NOW SHARPER RATHER THAN ANSWERED. \"AVERAGE LOT PRICE\" IS AN "
+            +"ASSUMPTION, NOT A LOT. The question is no longer DOES IT INCLUDE THE LOT, it is WHAT LOT PRICE IS BAKED IN AND "
+            +"WHAT HAPPENS IF SHE WANTS A BETTER ONE. The Avante figures are the range that assumption has to survive: "
+            +"custom lots $89,500 to $92,000 and estate lots up to about $143,500. IF SHE PICKS A LOT ABOVE AVERAGE, THE "
+            +"$625,000 MOVES, and on that spread the movement could be $50,000 or more. Get the assumed figure in writing. "
+            +"AND IT RAISES THE FINISHES QUESTION HARDER, NOT SOFTER. A number that now covers LAND, BUILD AND FINISHES at "
+            +"$625,000 is doing a great deal of work. The basement is still only a 3/4 BATH ROUGH IN, so it is unfinished, "
+            +"and her possible basement bar is an upgrade on an upgrade. Every one of the five criteria the brochure could "
+            +"not answer, all four bedrooms upstairs, the two storey entry, the laundry SINK, the window count and the "
+            +"island, is a candidate for sitting outside the base spec. The allowances question is now the whole ballgame on "
+            +"this file. "
+            +"THE BLONDO POINT ANGLE SURVIVES THIS CORRECTION AND MATTERS MORE, NOT LESS. Trademark builds at Blondo Point, "
+            +"where Scenic Group holds seven lots. If a Scenic Group lot can be the lot inside that $625,000, the team is on "
+            +"both the build and the land. The pricing PDF on disk at WORK/Real_Estate/Reference answers whether those lots "
+            +"sit at, above or below Brandon's assumed average.";
+        }
+
+        /* -- 2. THE KIRK REFERRAL. Recorded as a LEAD, which is the pattern that already exists. -- */
+        if(!Array.isArray(state.realEstate.leads)) state.realEstate.leads=[];
+        if(!state.realEstate.leads.some(function(l){ return l&&l.id==="lead-kirk-ryan-referral"; })){
+          state.realEstate.leads.push({
+            id:"lead-kirk-ryan-referral",
+            name:"Nancy and Patrick Kirk",
+            source:"Ian referred out to Ryan Beachler, Rose Creek Homes",
+            status:"Referred 15 Aug 2026, outcome unknown",
+            note:"IAN GAVE THEM RYAN BEACHLER'S CONTACT DETAILS ON SATURDAY 15 AUGUST 2026 and wants to know whether they ever reached out to him. "
+              +"THEY EXISTED NOWHERE BEFORE THIS RECORD. Searched the app, BRAIN, the pipeline snapshot and every export: zero hits on Nancy Kirk, Patrick Kirk or the Kirks. Every match on the string kirk was Selkirk, the pickleball shoe. "
+              +"THIS IS THE THIRD REAL LEAD THIS WEEK THAT LEFT NO TRACE, after the 15 July and 29 July Free Home Value Report responses, and it is the first of a DIFFERENT KIND. The other two were inbound and at least generated an email. "
+              +"THIS ONE GENERATED NOTHING AT ALL, because a referral out happens in conversation and produces no artefact anywhere unless somebody writes it down. "
+              +"WHY THE CHANNEL IS WORTH NAMING: IAN REFERRING BUYERS OUT TO A BUILDER IS A REAL CHANNEL. He has done it here, the Rose Creek relationship exists and is documented, and a referral out is still a transaction he can be part of rather than a favour that disappears. Nobody has been tracking it, so its volume and its conversion rate are both unknown and currently unknowable. "
+              +"NO CONTACT DETAILS ARE RECORDED HERE and none were given. Per the standing rule, contact details go in LEAD_CONTACTS.md and never into a derived file. "
+              +"NAME COLLISION, FLAGGED EARLY: there is already a NANCY in the system, Nancy Theobald of Scott and Nancy Theobald at 5014 S 163 St. Qualify the surname. Same class as the three Brandons. "
+              +"NOT KNOWN AND NOT GUESSED: whether they contacted Ryan, what they are looking to build, any budget, any timeline, whether they are buying or building only, and what Ian's commission position is if it proceeds."
+          });
+        }
+
+        if(!Array.isArray(state.realEstate.todos)) state.realEstate.todos=[];
+        var _td=function(o){ if(!state.realEstate.todos.some(function(t){ return t && (t.id===o.id || (o.key&&t.key===o.key)); })) state.realEstate.todos.push(o); };
+        _td({id:"ret-20260817-ryan-kirk", key:"ryan-kirk-followup", done:false, due:"2026-08-19",
+          src:"08.17.2026, Ian passed Ryan's details to the Kirks on 15 August",
+          text:"FOLLOW UP WITH RYAN BEACHLER: did NANCY AND PATRICK KIRK ever reach out to him? Ian gave them Ryan's contact details on Saturday 15 August. ASK RYAN RATHER THAN THE KIRKS, it is one message and it does not chase the clients. IF THEY DID, establish what Ian's position is on it, because a referral out is still a transaction he can be part of. IF THEY DID NOT, that is worth knowing too and it is a two day old referral so it is not cold yet. Lead record lead-kirk-ryan-referral."});
+        _td({id:"ret-20260817-referral-channel", key:"referral-out-channel", done:false, due:"",
+          src:"08.17.2026, third untracked lead of the week and the first outbound referral",
+          text:"DECIDE HOW OUTBOUND BUILDER REFERRALS GET RECORDED, because this is now a named channel with a sample size of one and no history. Ian referring buyers to Ryan at Rose Creek, and potentially to Brandon at Trademark, produces NO artefact anywhere unless someone writes it down, unlike an inbound form which at least generates an email. THREE LEADS LEFT NO TRACE THIS WEEK: the 15 July and 29 July home value form responses and the Kirks. The pattern is not forgetfulness, it is that no capture step exists. This is a decision for Ian, not something to build unasked."});
+
+        /* The lot question changed shape, so the todo that asked the old question is rewritten. */
+        state.realEstate.todos.forEach(function(t){
+          if(!t || t.id!=="ret-20260817-siena-lot-allowances") return;
+          if(String(t.text||"").indexOf("ANSWERED 08.17")>=0) return;
+          t.text="ANSWERED 08.17 ON THE LOT, STILL OPEN ON EVERYTHING ELSE. Brandon says $625,000 INCLUDES the lot at an AVERAGE lot price, so the roughly $90,000 gap is closed and the deal is viable at her budget. THE QUESTION IS NOW SHARPER: (1) WHAT LOT PRICE IS BAKED IN? Average is an assumption, not a lot. Avante custom lots run $89,500 to $92,000 and estate lots reach about $143,500, so if she picks above average the $625,000 moves, possibly by $50,000 or more. Get the assumed figure in writing. (2) WHAT DO THE ALLOWANCES COVER? A number carrying land, build AND finishes at $625,000 is doing a lot of work, and the basement is still a 3/4 rough in. (3) Could a SCENIC GROUP BLONDO POINT LOT be the lot inside that number? Trademark builds there and the pricing PDF is already on disk.";
+          t.due="2026-08-19";
+        });
+
+        if(!Array.isArray(state.autoLog)) state.autoLog=[];
+        if(!state.autoLog.some(function(x){ return x&&x.id==="auto-20260817-kirk"; })){
+          state.autoLog.unshift({id:"auto-20260817-kirk", date:"2026-08-17", area:"Real estate",
+            what:"Corrected the Spicer lot assumption, which was wrong, and created the first record of Nancy and Patrick Kirk",
+            why:"Brandon says $625,000 already counts the lot at an average lot price, so the $90,000 gap I raised this morning is closed and the build is viable at her budget. The open question is now what lot price is baked in.",
+            evidence:"The Kirks existed nowhere in the app, BRAIN, the pipeline or any export. That is the third real lead this week to leave no trace and the first outbound referral, which is a channel producing no artefact at all unless somebody writes it down.",
+            undo:"Real estate, open the Sydney Spicer deal to edit the note, or remove the Kirk lead from the leads list."});
+        }
+
+        state.meta.mig306_kirk_lotfix=true;
+      }
+      save(true);
+  } }catch(e){ try{ console.warn("mig306 did not apply:",e&&e.message); }catch(_){} }
+
 
 
 
