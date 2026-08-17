@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 298 (2026-08-16)">
+<meta name="build" content="v21 build 299 (2026-08-16)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -8729,6 +8729,119 @@ function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]
       }
       save(true);
   } }catch(e){ try{ console.warn("mig297 did not apply:",e&&e.message); }catch(_){} }
+
+/* ===== v21 build 299: THE TAPER WEEK AS IAN HAS ACTUALLY SCHEDULED IT ======================
+     Set by Ian 08.16.2026 for Mon 17 through Sat 22, with the APC on Sunday 23.
+
+     HIS SHAPE: HARD MONDAY AND TUESDAY, then progressively lighter into the tournament.
+     Moderate Wednesday and Thursday, genuinely light Friday and Saturday.
+
+     THIS CONTRADICTS THE BUILD 245 TAPER THAT IS CURRENTLY ON HIS PHONE, AND HIS VERSION WINS.
+     Build 245 said Tuesday push drops to MEDIUM and Wednesday legs STAYS HARD. He has now said
+     the opposite: Tuesday is one of the two hard days and Wednesday steps down. The old events
+     are AMENDED IN PLACE rather than left sitting next to new ones, because two contradictory
+     taper plans on the same phone is worse than either of them.
+
+     SIX CONSECUTIVE GYM DAYS INTO A TOURNAMENT, AND HE HAS ANSWERED IT. The lack of a full
+     recovery day was put to him twice and dropping Friday was suggested. He has chosen to go
+     LIGHTER instead, which is a legitimate answer to the same problem. It is recorded as advice
+     given and not taken, Friday and Saturday are built light, and it is NOT raised again.
+
+     THE RECURRING SPLIT IS NOT TOUCHED. Every one of these days already matches the standing
+     split, so what changes is INTENSITY and it changes for dated days only. Same mechanism build
+     245 used, which is dated events that expire on their own rather than a shifted split. */
+  try{ if(profile==="ian" && Array.isArray(state.events)){
+      if(!state.meta) state.meta={};
+      if(!state.meta.mig299_taperweek){
+        var _amend299={
+          "ev-20260817-taper-start":{
+            title:"TAPER WEEK. HARD Mon and Tue, then lighter every day into Sunday",
+            note:"Gym 12 to 2 with Bianca, pickleball 6:30 to 8:30. Hard pull, the real work of the week is today and tomorrow. Wed and Thu moderate, Fri and Sat light. DUPR is set Sunday 23."},
+          "ev-20260818-taper-tue":{
+            title:"Tue push stays HARD today. League 6:30, last competitive night before DUPR",
+            note:"Gym 11 to 1 solo, league 6:30 to 8:30. Lift first and auto regulate. This is the SECOND and LAST hard day of the week, Ian's call on 08.16, and it reverses the earlier plan to drop it to medium."},
+          "ev-20260822-taper-sat":{
+            title:"Sat LIGHT. Tournament tomorrow",
+            note:"Gym 9 to 11 with Bianca, two or three items only, lat pulldown and the fast cable row. Pickleball 6 to 9, and treat it as touch and timing rather than a session to win. No hard pulling the day before a rating is set."}
+        };
+        state.events.forEach(function(e){
+          if(!e || !_amend299[e.id]) return;
+          e.title=_amend299[e.id].title;
+          e.note=_amend299[e.id].note;
+        });
+        /* The league event carried 7pm. His own schedule and BRAIN both say 6:30 to 8:30. */
+        state.events.forEach(function(e){
+          if(e && e.id==="ev-20260818-league-w2") e.title="Mixed doubles league, week 2, 6:30 to 8:30. Last competitive match before DUPR";
+        });
+
+        var _new299=[
+          {id:"ev-20260819-taper-wed", date:"2026-08-19", kind:"Gym",
+           title:"Wed legs MODERATE, not hard. Step down starts today",
+           note:"Gym 11 to 1 solo, pickleball 5:30 to 8:00. Keep leg press honest but stop a set short everywhere. Five days out, the legs have to be fresh on Sunday, not strong on Wednesday."},
+          {id:"ev-20260820-taper-thu", date:"2026-08-20", kind:"Gym",
+           title:"Thu abs and cardio MODERATE. Keep the cable chops, ease the finisher",
+           note:"Gym 11 to 1 with Bianca, pickleball 5:30 to 8:00. Your own canonical day and it holds. Cable chops stay, they are pickleball work. Shorten the treadmill finisher."},
+          {id:"ev-20260821-taper-fri", date:"2026-08-21", kind:"Gym",
+           title:"Fri push LIGHT. Sixth straight gym day, so treat light as the point",
+           note:"Gym 9 to 11 with Bianca, no pickleball. You chose lighter over a rest day, so make it genuinely light: three items, no top sets, nothing to failure. Weigh in this morning."},
+          {id:"ev-20260817-pk-mon", date:"2026-08-17", kind:"Pickleball",
+           title:"Pickleball 6:30 to 8:30", note:"Six days out. Hard gym day, so the court work is the priority in the evening, not the lift."},
+          {id:"ev-20260819-pk-wed", date:"2026-08-19", kind:"Pickleball",
+           title:"Pickleball 5:30 to 8:00", note:"Bianca works 4 to 8, which is what makes this window standing rather than lucky."},
+          {id:"ev-20260820-pk-thu", date:"2026-08-20", kind:"Pickleball",
+           title:"Pickleball 5:30 to 8:00", note:"Bianca works 4 to 8. Last full length court session before the taper bites."},
+          {id:"ev-20260822-pk-sat", date:"2026-08-22", kind:"Pickleball",
+           title:"Pickleball 6 to 9, LIGHT, day before the tournament",
+           note:"Three hours the night before a rating is set is a lot. Touch, timing and serves, not games you are trying to win."}
+        ];
+        _new299.forEach(function(n){
+          if(!state.events.some(function(e){ return e && e.id===n.id; })) state.events.push(n);
+        });
+
+        /* The week as a structured record, so the morning agent reads a plan rather than
+           re deriving one from seven events. Dated, so it ages out on its own. */
+        if(!state.gym || typeof state.gym!=="object") state.gym={};
+        state.gym.taperWeek={
+          id:"taper-0817-0823", setBy:"Ian", on:"2026-08-16",
+          intent:"HARD Monday and Tuesday, then progressively lighter into the tournament. Moderate Wednesday and Thursday, genuinely light Friday and Saturday.",
+          tournament:"APC mens doubles 3.5 with Dylan, Sunday 23 August. First DUPR gets set here.",
+          days:[
+            {date:"2026-08-17", day:"Mon", gym:"12 to 2, with Bianca", focus:"Pull", intensity:"HARD", court:"6:30 to 8:30"},
+            {date:"2026-08-18", day:"Tue", gym:"11 to 1, solo",        focus:"Push", intensity:"HARD", court:"League 6:30 to 8:30"},
+            {date:"2026-08-19", day:"Wed", gym:"11 to 1, solo",        focus:"Legs", intensity:"MODERATE", court:"5:30 to 8:00"},
+            {date:"2026-08-20", day:"Thu", gym:"11 to 1, with Bianca", focus:"Abs and cardio", intensity:"MODERATE", court:"5:30 to 8:00"},
+            {date:"2026-08-21", day:"Fri", gym:"9 to 11, with Bianca", focus:"Push round 2", intensity:"LIGHT", court:"none"},
+            {date:"2026-08-22", day:"Sat", gym:"9 to 11, with Bianca", focus:"Pull", intensity:"LIGHT", court:"6 to 9, light"},
+            {date:"2026-08-23", day:"Sun", gym:"none", focus:"TOURNAMENT", intensity:"APC", court:"APC mens doubles 3.5 with Dylan"}
+          ],
+          adviceGivenNotTaken:"Six consecutive gym days into the tournament leaves no full recovery day. Dropping Friday was suggested TWICE. He chose to go lighter instead, which answers the same problem, so Friday and Saturday are built light and this is NOT raised again.",
+          splitUntouched:"The recurring split is unchanged. Every day this week already matches it, so only INTENSITY moves, and only on dated days.",
+          supersedes:"The build 245 taper, which had Tuesday dropping to medium and Wednesday staying hard. Ian reversed both on 08.16."
+        };
+
+        /* STANDING scheduling facts, not this week's arrangement. They set the windows every week. */
+        state.gym.scheduling={
+          sharedWithBianca:"They go to the gym TOGETHER and prefer MORNINGS. Gym days are shared unless stated otherwise, and a morning slot is the default when both are free.",
+          herClasses:"Mon and Wed 11:00 to 12:20. Wed lab 12:30 to 2:20. Tue and Thu 9:30 to 10:50. Tue lab 12:30 to 2:20. Mon stats 4:00 to 5:20.",
+          herWork:"Tue 4 to 6. Wed and Thu 4 to 8.",
+          whatItMeans:"HER WEDNESDAY AND THURSDAY SHIFTS ARE HIS STANDING PICKLEBALL WINDOW, and FRIDAY MORNING is the cleanest shared gym slot of the week because she has no classes at all. Repeatable weekly shape, not a one off.",
+          asOf:"Semester schedule as given 08.16.2026. Recheck when the semester changes."
+        };
+
+        if(!Array.isArray(state.autoLog)) state.autoLog=[];
+        if(!state.autoLog.some(function(x){ return x&&x.id==="auto-20260816-taperweek"; })){
+          state.autoLog.unshift({id:"auto-20260816-taperweek", date:"2026-08-16", area:"Gym",
+            what:"Built your week to the shape you set and corrected the old taper that disagreed with it",
+            why:"You said hard Monday and Tuesday then progressively lighter. Your phone was still carrying the earlier plan, which had Tuesday medium and Wednesday hard.",
+            evidence:"Three taper events amended, three added for Wednesday to Friday, and your four court sessions plus the league added with their times. Friday and Saturday are built light rather than dropped, because you chose lighter over a rest day. The recurring split is untouched, only this week's intensity moved.",
+            undo:"Home, events, edit or delete any of the taper or pickleball events for 17 to 22 August."});
+        }
+
+        state.meta.mig299_taperweek=true;
+      }
+      save(true);
+  } }catch(e){ try{ console.warn("mig299 did not apply:",e&&e.message); }catch(_){} }
+
 
 
 /* ===== v21 build 296: REPAIR THE DUPLICATES ALREADY IN HIS SAVED STATE =======================
