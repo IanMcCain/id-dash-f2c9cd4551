@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 300 (2026-08-16)">
+<meta name="build" content="v21 build 301 (2026-08-16)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -8968,6 +8968,108 @@ function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]
       save(true);
   } }catch(e){ try{ console.warn("mig299 did not apply:",e&&e.message); }catch(_){} }
 
+/* ===== v21 build 301: A SOLO PLAN FOR EVERY SESSION, BECAUSE HE CANNOT CONTROL WHO TURNS UP ==
+     Ian, 08.16.2026, answering the partner question: Dylan's availability is UNKNOWN and will
+     stay unknown. He plays with Dylan as much and as long as he can whenever Dylan is there,
+     and when he is not, it is open play or SOLO DRILLING.
+
+     THAT ANSWER IS THE FIX FOR THE DISPLACEMENT PROBLEM, AND IT IS BETTER THAN THE SCHEDULING
+     ONE. Two drill sessions were lost this month, 08.10 and 08.14, because a group turned up at
+     an unbooked court. Booking a court only helps if the plan survives the partner not being
+     there. A solo plan for every session removes the dependency entirely, and several of the
+     highest value items in his record are solo trainable anyway: wall volleys for hands, serve
+     depth, and the compact drive take back that his own 08.15 over hitting diagnosis points at.
+
+     SO THE DRILL LIBRARY IS RE POINTED. The "Machine drills" group was four items that all
+     require a club ball machine, which is exactly the wrong fallback for a night when he turns
+     up alone. It becomes SOLO, no partner needed, and its four items are the solo trainable
+     priorities from his own record. The group KEY stays "machine" so the every load cap and
+     strip logic is untouched, only the heading and the contents change. Curated by swapping,
+     never appended, per the build 152 cap.
+
+     THE PARTNER GROUP IS UNCHANGED. It is what he does when Dylan is there, and nothing about
+     it was the problem. */
+  try{ if(profile==="ian" && state.pickleball){
+      if(!state.meta) state.meta={};
+      if(!state.meta.mig301_solo){
+        if(!Array.isArray(state.pickleball.drills)) state.pickleball.drills=[];
+        if(!state.archive || typeof state.archive!=="object") state.archive={};
+        if(!state.archive.pickleSoloPreB301){
+          state.archive.pickleSoloPreB301={drills:JSON.parse(JSON.stringify(state.pickleball.drills)), at:"2026-08-16",
+            why:"The machine group before build 301 re pointed it to solo work. Archived, never deleted."};
+        }
+        var _solo301=[
+          {id:"pkd-s-wall", group:"machine", text:"Wall volleys, rapid fire. 5 to 7 feet from a wall, 30 seconds on and 30 off, 5 rounds, paddle back to centre after every ball. Needs a wall and nothing else, and it is the highest transfer thing you can do alone for the lowest skill on your board."},
+          {id:"pkd-s-serve", group:"machine", text:"Ten serves in a row to the back third or restart the count. Miss one and it goes back to zero. Needs a basket of balls. This is your own number one goal and the one skill that moves fastest."},
+          {id:"pkd-s-drive", group:"machine", text:"Compact take back, three speeds. Self feed or off the wall, same swing shape at 70, 85 and full, called out before each rep. This is the fix for the over hitting you diagnosed yourself on 08.15, with a number on it."},
+          {id:"pkd-s-drop", group:"machine", text:"Drop volume to a kitchen target. Towel or cones in the kitchen, 50 to 100 reps, a rep counts only if it lands on or before the target. Self feed, or the club machine if it is free."}
+        ];
+        var _partner301=state.pickleball.drills.filter(function(d){ return d && d.group==="partner"; });
+        /* UNGROUPED LEGACY ENTRIES ARE PRESERVED, NOT SWEPT. Eight pbk-* drills are pushed back in
+           by older unguarded every load blocks and stripped again by the build 152 cap sweep on the
+           next load. They render nowhere, they are not mine to delete, and replacing the whole array
+           would have made this build fight them: load one would drop them and load two would restore
+           them, which reads as a non idempotent migration. Carried through untouched instead. */
+        var _other301=state.pickleball.drills.filter(function(d){ return d && d.group!=="partner" && d.group!=="machine"; });
+        state.pickleball.drills=_solo301.concat(_partner301.slice(0,4)).concat(_other301);
+
+        /* The standing structure, stated once so no future run has to re derive it. */
+        state.pickleball.soloPlan={
+          id:"solo-plan-0816", setBy:"Ian", on:"2026-08-16", status:"STANDING, not a taper week arrangement",
+          hisAnswer:"Dylan's availability is unknown and will stay unknown. Play with Dylan as much and as long as possible whenever he is available. When he is not, open play or SOLO DRILLING.",
+          theRule:"BUILD EVERY SESSION AROUND WHAT HE DOES, NOT AROUND WHO HE IS PLAYING WITH. Never plan a session that only exists if a partner shows up.",
+          tiers:["WITH DYLAN: partner drills first, hands and the shot after the drop, then games.",
+                 "OPEN PLAY: play, but keep one intent per night rather than just playing.",
+                 "ALONE: the solo group on this page. Wall volleys, ten serves in a row, three speeds, drop volume."],
+          whyItMatters:"Two drill sessions were displaced this month, 08.10 and 08.14, and both were lost because the plan depended on other people. A solo plan is the only version of the fix he controls.",
+          doNotAsk:"Do not ask him who he is playing with, and do not build a week around Dylan's availability. He has answered this."
+        };
+
+        /* Session level fallbacks on this week's rows, so the morning agent has one per day. */
+        if(state.gym && state.gym.taperWeek && Array.isArray(state.gym.taperWeek.days)){
+          var _fb={"2026-08-17":"Alone: wall volleys and ten serves in a row. Hands is the floor and it needs no partner.",
+                   "2026-08-19":"Alone: three speeds on the drive, then drop volume to a target.",
+                   "2026-08-20":"Alone: wall volleys, then serves at a raised heart rate.",
+                   "2026-08-22":"Alone: serves and light touch only. Nothing that leaves you sore for Sunday."};
+          state.gym.taperWeek.days.forEach(function(d){ if(d && _fb[d.date]) d.soloFallback=_fb[d.date]; });
+          state.gym.taperWeek.partnerNote="Dylan's availability is unknown and stays unknown. Every court session here has a solo version, so a missing partner is a different session and not a missed one.";
+          state.gym.taperWeek.days.forEach(function(d){
+            if(d && d.date==="2026-08-22"){ d.court="6 to 9, open ended, expect to leave early"; }
+            if(d && d.date==="2026-08-21"){ d.focus="Push round 2, standing Friday, cut back"; }
+          });
+          state.gym.taperWeek.saturdayNote="OPEN ENDED with an early finish expected, his words are to get enough in without overworking himself. NOT a three hour block and NOT a load risk to raise again. Answered 08.16.";
+          state.gym.taperWeek.fridayNote="Standing Friday push, cut back. He said to ignore what he had said about Friday, so nothing bespoke is built here.";
+        }
+
+        /* THE GRIP QUESTION IS CLOSED. He is fitting the new one on Wednesday 19 August. */
+        if(state.pickleball.gear && state.pickleball.gear.grip){
+          var _g301=state.pickleball.gear.grip;
+          if(_g301.plan){
+            _g301.plan.status="DECIDED 2026-08-16. Replacing it WEDNESDAY 19 AUGUST.";
+            _g301.plan.decision="New grip fitted Wednesday 19 August, played on Wednesday, Thursday and Saturday, broken in before the APC on Sunday 23.";
+            _g301.plan.outcome="This matches the sequence on file. League Tuesday on the known grip, fresh one fitted Wednesday with three sessions to bed in. The break in finding held and he acted on it.";
+            _g301.plan.closed="CLOSED. Do not re raise the grip question, and do not re open moisture, which stays demoted underneath break in.";
+          }
+          if(_g301.breakIn){
+            _g301.breakIn.actedOn="Ian fitted the decision to it on 08.16: replacing Wednesday 19 August so it has three sessions before the tournament. The next fresh unit is still the test that moves this off Inferred, and Wednesday IS that unit.";
+          }
+        }
+
+        if(!Array.isArray(state.autoLog)) state.autoLog=[];
+        if(!state.autoLog.some(function(x){ return x&&x.id==="auto-20260816-soloplan"; })){
+          state.autoLog.unshift({id:"auto-20260816-soloplan", date:"2026-08-16", area:"Pickleball",
+            what:"Turned the drill library into a solo plan and closed the grip question",
+            why:"You said Dylan's availability is unknown and that you will drill solo when he is out. So the fallback needs to be on the page, not in a note.",
+            evidence:"The Machine drills group needed a ball machine, which is the wrong fallback for a night you turn up alone. It is now SOLO, no partner needed: wall volleys, ten serves in a row, three speeds, drop volume. Two of those four are the lowest and fastest moving things on your board. The partner group is untouched. Grip closed, you are fitting the new one Wednesday.",
+            undo:"Pickleball, Drills, edit any drill. The previous list is archived at archive.pickleSoloPreB301."});
+        }
+
+        state.meta.mig301_solo=true;
+      }
+      save(true);
+  } }catch(e){ try{ console.warn("mig301 did not apply:",e&&e.message); }catch(_){} }
+
+
 
 
 /* ===== v21 build 296: REPAIR THE DUPLICATES ALREADY IN HIS SAVED STATE =======================
@@ -11514,7 +11616,7 @@ function buildPickle(v){ var pb=state.pickleball||(state.pickleball={});
   
   },null,"orange")   /* build 237: icon DROPPED. The paddle already means Pickleball on the tab bar and on the Coach launcher, so a third use INSIDE the pickleball tab says nothing that being on the page has not already said. Fewer icons is the actual Apple discipline. */;
   pkCollapse(v,"pk_drills","Drills","one capped list, machine and partner",false,function(ap){
-    safe(ap,function(){ if(!Array.isArray(pb.drills)) pb.drills=[]; function pkGrp(host,label,sub,key){ var list=pb.drills.filter(function(d){return d&&d.group===key;}).slice(0,4); if(!list.length) return; sect(host,label,sub); var gc=card(); list.forEach(function(d){ var r=el("div","small"); r.style.cssText="line-height:1.5;color:var(--gray)"; if(gc._body.childElementCount) r.style.marginTop="9px"; var dot=el("span"); dot.style.cssText="color:var(--sec,var(--accent));font-weight:800;margin-right:8px"; dot.textContent="\u2022"; r.appendChild(dot); r.appendChild(document.createTextNode(d.text||"")); gc._body.appendChild(r); }); host.appendChild(gc); } pkGrp(ap,"Machine drills","club ball machine, 3 to 4 max","machine"); pkGrp(ap,"With a partner","live reps, 3 to 4 max","partner"); },"Pickle drills capped");
+    safe(ap,function(){ if(!Array.isArray(pb.drills)) pb.drills=[]; function pkGrp(host,label,sub,key){ var list=pb.drills.filter(function(d){return d&&d.group===key;}).slice(0,4); if(!list.length) return; sect(host,label,sub); var gc=card(); list.forEach(function(d){ var r=el("div","small"); r.style.cssText="line-height:1.5;color:var(--gray)"; if(gc._body.childElementCount) r.style.marginTop="9px"; var dot=el("span"); dot.style.cssText="color:var(--sec,var(--accent));font-weight:800;margin-right:8px"; dot.textContent="\u2022"; r.appendChild(dot); r.appendChild(document.createTextNode(d.text||"")); gc._body.appendChild(r); }); host.appendChild(gc); } pkGrp(ap,"SOLO, no partner needed","your session when Dylan is out, 3 to 4 max","machine"); pkGrp(ap,"With a partner","live reps, 3 to 4 max","partner"); },"Pickle drills capped");
 
   },ICO.repeat,"teal");
   pkCollapse(v,"pk_sessions","Sessions","log, this week, and history",false,function(c){
