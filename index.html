@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 299 (2026-08-16)">
+<meta name="build" content="v21 build 300 (2026-08-16)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -8729,6 +8729,132 @@ function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]
       }
       save(true);
   } }catch(e){ try{ console.warn("mig297 did not apply:",e&&e.message); }catch(_){} }
+
+/* ===== v21 build 300: IAN'S WEEK, 08.16.2026 =================================================
+   Three things. The Belknap 141st read REVERSES on real subdivision comps, the two "missing"
+   Bonk calendar events turn out to have been removed deliberately and my 08.15 report of them
+   as a gap was wrong, and three Blondo Pointe lot videos go in as CONTENT rather than tasks.
+
+   THE POST SLOTS ARE NOT WORK BLOCKS. Ian was explicit: the Tue/Thu/Sat noon slots are when a
+   post goes LIVE, scheduled at edit time on the Monday. On the day they need a like, a repost
+   and a share. They are recorded as events and there is deliberately NO todo for any of them,
+   because a todo would put three phantom work blocks in his week.
+*/
+  try{ if(profile==="ian" && state.realEstate){
+      if(!state.meta) state.meta={};
+      if(!state.meta.mig300_week0816){
+        var _MK300="08.16.2026";
+        var _D300=state.realEstate.deals||[];
+        var _get300=function(id){ for(var i=0;i<_D300.length;i++){ if(_D300[i]&&_D300[i].id===id) return _D300[i]; } return null; };
+
+        /* -- 1. BELKNAP BUY SIDE. The read on 141st inverts. -- */
+        var _bk=_get300("re-belknap-sell");
+        if(_bk && String(_bk.note||"").indexOf(_MK300+" BUY SIDE REVERSED")<0){
+          _bk.note=String(_bk.note||"")+" "+_MK300+" BUY SIDE REVERSED ON REAL COMPS. "
+            +"They re showed BOTH finalists Sunday 16 August at 4:30 and BOTH REMAIN LIVE. "
+            +"5122 N 141ST IS NOW THE RECOMMENDED TARGET AND THE EARLIER READ ON IT WAS WRONG. An earlier pass called it "
+            +"OVERPRICED BY $20,000 TO $35,000. That was built on comps pulled from a PORTAL NEIGHBOURHOOD rather than the "
+            +"verified subdivision, which is the exact trap this system has been bitten by on Barker, Theobald and Frahm. "
+            +"Re run against real GPRMLS HILLSBOROUGH comps it inverts. THAT OVERPRICED FIGURE IS DEAD, DO NOT REPEAT IT. "
+            +"THE NUMBERS. 141st has NO FINISHED BASEMENT, MLS AGSQFT 2,857 equals TSqFt 2,857, so every foot is above grade. "
+            +"At $460,000 that is $161 PER ABOVE GRADE FOOT, THE CHEAPEST IN THE WHOLE COMP SET, where every sold comp runs "
+            +"$176 to $207. The closest analogue is 14004 CAMDEN AVE at 2,641 above grade, also no finished basement, which "
+            +"SOLD $465,000 IN 0 DAYS. SAY IT THIS WAY AND SKIP THE PER FOOT EXTRAPOLATION: 141st has 216 MORE above grade "
+            +"feet than Camden and is asking $5,000 LESS. That is the whole argument and it needs no rate applied across "
+            +"different sizes, which is the adjustment that over penalises. So 141st is FAIRLY PRICED TO SLIGHTLY UNDER. "
+            +"ONE NUMBER TO WATCH, NOT A PROBLEM: MLS says 2,857 above grade, the Douglas parcel layer says 2,792 for PIN "
+            +"1312955826. A 65 foot gap, both claiming above grade. It does not change anything, $460,000 over 2,792 is "
+            +"$164.76 and still the cheapest in the set. Recorded rather than silently picking one. "
+            +"WHICH HOUSE IS WHICH IS NOW RESOLVED, AND THE 08.15 RECORD HAD THEM THE OTHER WAY ROUND. 2315 NELSON'S CREEK "
+            +"at $429,500 is the 6 JANUARY listing, 222 days as of today, under THREE MLS numbers with SEVEN price changes, "
+            +"down $35,500 from a March peak of $465,000. Its 5 days on market is a RELISTING ARTEFACT, not real exposure. "
+            +"THERE IS NO CONTINGENT OFFER ON NELSON'S CREEK, it is simply available. "
+            +"5122 N 141ST is the one carrying the ACCEPTED HOME SALE CONTINGENT OFFER, accepted around 6 AUGUST, and as of "
+            +"15 August, nine days later, those buyers HAD NOT LISTED THEIR OWN HOME. It is STILL SHOWING ACTIVE, which "
+            +"normally means continue to show with a kick out. "
+            +"THE RECOMMENDATION ON RECORD: OFFER AT OR NEAR ASK ON 141ST, $455,000 TO $460,000, CASH WITH NO CONTINGENCY, "
+            +"COMPETING ON CERTAINTY RATHER THAN ON PRICE. Against a contingent buyer who cannot perform, certainty is the "
+            +"lever and a low offer wastes the only advantage they have. NELSON'S CREEK IS THE FALLBACK and it is the one "
+            +"where PRICE is the lever, given 222 days and seven cuts. "
+            +"STILL GATING EVERYTHING: proof of funds, not yet produced, and whether that 141st contract actually carries a "
+            +"KICK OUT clause. Both are live todos. "
+            +"AND ONE GAP THIS DOES NOT CLOSE, STATED SO NOBODY MISTAKES IT FOR SETTLED: the Hillsborough comps price 141st "
+            +"and say NOTHING about Nelson's Creek, which sits in the NELSONS CREEK subdivision. There is no verified fair "
+            +"value on Nelson's Creek yet, only its price history, so \"price is the lever\" there is a read on the seller's "
+            +"motivation and not a measurement of how far under supported value it sits.";
+        }
+
+        /* -- 2. BONKS. My 08.15 calendar gap report was wrong. -- */
+        var _bs=_get300("re-bonks-sell");
+        if(_bs && String(_bs.note||"").indexOf(_MK300+" CALENDAR CORRECTION")<0){
+          _bs.note=String(_bs.note||"")+" "+_MK300+" CALENDAR CORRECTION, AND MY 08.15 REPORT OF THIS WAS WRONG. "
+            +"I recorded the 17 August final walk and the 19 August closing as MISSING from the NP Dodge calendar and "
+            +"raised them as a gap for Ian to fix. THEY WERE REMOVED DELIBERATELY. NEITHER IAN NOR CHRIS NEEDS TO ATTEND "
+            +"EITHER ONE. Both dates STAY ON THIS RECORD so the timeline is complete and the closing on the 19th is still "
+            +"the 19th, but they are NOT CALENDAR ITEMS and must not be re added. The probable clash I flagged on the 19th "
+            +"against the 09:30 Jhaimi Andrick coffee is void, because there is no closing on his calendar for it to "
+            +"collide with. Todo ret-20260815-bonks-cal is retired as answered. "
+            +"THE LESSON, WORTH MORE THAN THE CORRECTION: AN ABSENCE FROM A CALENDAR IS NOT AUTOMATICALLY AN OMISSION. A "
+            +"two agent team does not attend everything, and missing was my inference rather than his statement.";
+        }
+
+        /* Retire the calendar gap todo. Archive, never delete. The build 296 dedupe keeps this safe. */
+        if(Array.isArray(state.realEstate.todos)){
+          if(!state.archive || typeof state.archive!=="object") state.archive={};
+          if(!Array.isArray(state.archive.todosDone)) state.archive.todosDone=[];
+          var _keep300=[];
+          state.realEstate.todos.forEach(function(t){
+            if(t && t.id==="ret-20260815-bonks-cal"){
+              t.retiredReason="Answered 08.16.2026. The two events were removed from the calendar DELIBERATELY, nobody needs to attend them, so there was never a gap to fix.";
+              t.retiredAt="2026-08-16";
+              if(!state.archive.todosDone.some(function(x){ return x && x.id===t.id; })) state.archive.todosDone.push(t);
+            } else _keep300.push(t);
+          });
+          state.realEstate.todos=_keep300;
+
+          /* The two homes todo is HALF answered. Rewrite it to carry only what is still open. */
+          state.realEstate.todos.forEach(function(t){
+            if(!t || t.id!=="ret-20260815-belknap-twohomes") return;
+            if(String(t.text||"").indexOf("HALF ANSWERED")>=0) return;
+            t.text="HALF ANSWERED 08.16, ONE QUESTION LEFT AND IT IS THE ONE THAT MATTERS. Answered: 2315 Nelson's Creek is the 6 January listing, 222 days, three MLS numbers, seven price changes, down $35,500 from a $465,000 March peak, and it has NO contingent offer. STILL OPEN: does the accepted home sale contingent contract on 5122 N 141ST carry a KICK OUT or FIRST RIGHT clause? It is still showing ACTIVE, which normally means continue to show with a kick out, but that is an inference and not the contract. Ask the listing agent. That single answer decides whether a cash non contingent offer can displace them, and 141st is now the recommended target.";
+            t.due="2026-08-17";
+          });
+        }
+
+        /* -- 3. BLONDO POINTE VIDEOS. Content, not tasks. -- */
+        if(!Array.isArray(state.events)) state.events=[];
+        var _ev300=function(o){ if(!state.events.some(function(x){ return x&&x.id===o.id; })) state.events.push(o); };
+        _ev300({id:"ev-20260817-blondo-edit", date:"2026-08-17", kind:"Real estate",
+          title:"EDIT the three Blondo Pointe lot videos, 3:00 to 5:30pm. Footage already shot, and the three posts get SCHEDULED during this block"});
+        _ev300({id:"ev-20260818-blondo-post1", date:"2026-08-18", kind:"Real estate",
+          title:"Blondo Pointe lot video 1 GOES LIVE, noon. Scheduled already, not a work block. Like, repost, share"});
+        _ev300({id:"ev-20260820-blondo-post2", date:"2026-08-20", kind:"Real estate",
+          title:"Blondo Pointe lot video 2 GOES LIVE, noon. Scheduled already, not a work block. Like, repost, share"});
+        _ev300({id:"ev-20260822-blondo-post3", date:"2026-08-22", kind:"Real estate",
+          title:"Blondo Pointe lot video 3 GOES LIVE, noon. Scheduled already, not a work block. Like, repost, share"});
+
+        /* The 08.15 Bonk walk event titles carry a claim that is now known to be wrong. */
+        state.events.forEach(function(e){
+          if(!e) return;
+          if(e.id==="ev-20260817-bonks-sell-walk" && String(e.title||"").indexOf("deliberately")<0){
+            e.title="Bonks SELL final walk through, morning. Deliberately NOT a calendar item, neither Ian nor Chris attends";
+          }
+        });
+
+        if(!Array.isArray(state.autoLog)) state.autoLog=[];
+        if(!state.autoLog.some(function(x){ return x&&x.id==="auto-20260816-week"; })){
+          state.autoLog.unshift({id:"auto-20260816-week", date:"2026-08-16", area:"Real estate",
+            what:"Reversed the read on 5122 N 141st to recommended target, corrected my wrong Bonk calendar gap report, and put the three Blondo Pointe videos in as content rather than tasks",
+            why:"Real Hillsborough comps show 141st at $161 an above grade foot against $176 to $207 for every sold comp, and the closest analogue sold for $5,000 more with 216 fewer feet. The earlier overpriced call came from portal neighbourhood comps.",
+            evidence:"Also corrected: the 17th and 19th Bonk events were removed on purpose, not missing, so that todo is retired. The three noon post slots are go live times, not work blocks, so they are events with no todo attached.",
+            undo:"Real estate, open the Belknaps or Bonks deal and edit the note, or delete any of the four new events."});
+        }
+
+        state.meta.mig300_week0816=true;
+      }
+      save(true);
+  } }catch(e){ try{ console.warn("mig300 did not apply:",e&&e.message); }catch(_){} }
+
 
 /* ===== v21 build 299: THE TAPER WEEK AS IAN HAS ACTUALLY SCHEDULED IT ======================
      Set by Ian 08.16.2026 for Mon 17 through Sat 22, with the APC on Sunday 23.
