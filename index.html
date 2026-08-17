@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 302 (2026-08-17)">
+<meta name="build" content="v21 build 303 (2026-08-17)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -8868,6 +8868,100 @@ function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]
       }
       save(true);
   } }catch(e){ try{ console.warn("mig300 did not apply:",e&&e.message); }catch(_){} }
+
+/* ===== v21 build 303: 08.17.2026 MEETING, IAN AND CHRIS ======================================
+   Two records. The Horizon appraisal has a named cause for the delay, and Sydney Spicer has
+   moved from "may build" to an active builder search with a named builder, a named contact and
+   two model names.
+
+   THE ONE PIECE OF ANALYSIS WORTH READING: TRADEMARK HOMES IS ALREADY IN BRAIN WITH PRICES.
+   The Bonk LPW file carries two verified Douglas County builder sales with grantor Trademark
+   Homes Inc, $626,000 and $648,209, both March 2024. Sydney's budget is $625,000. So her
+   number sits $1,000 BELOW the bottom of the only Trademark pricing we hold, and that data is
+   29 months old. The Sienna 2 question may already have an unwelcome answer.
+*/
+  try{ if(profile==="ian" && state.realEstate){
+      if(!state.meta) state.meta={};
+      if(!state.meta.mig303_mtg0817){
+        var _MK303="08.17.2026 MEETING";
+        var _D303=state.realEstate.deals||[];
+        var _g303=function(id){ for(var i=0;i<_D303.length;i++){ if(_D303[i]&&_D303[i].id===id) return _D303[i]; } return null; };
+
+        /* -- 1. HORIZON. The delay now has a cause, and the cause has a running cost. -- */
+        var _cj=_g303("re-crystal-johnson");
+        if(_cj && String(_cj.note||"").indexOf(_MK303)<0){
+          _cj.note=String(_cj.note||"")+" "+_MK303+". STILL WAITING ON THE APPRAISAL, AND THE DELAY NOW HAS A NAMED CAUSE. "
+            +"THE APPRAISER HAS A HOLDUP BUT IT WILL HAPPEN THIS WEEK. That is the whole update: no result yet, no closing date, "
+            +"and the three outcomes are unchanged. It appraises and everything proceeds; it comes in low and THE PARENTS COVER "
+            +"THE DIFFERENCE; it comes in BADLY low, roughly $30,000 or more, and the buyers lose their deposit, the house goes "
+            +"back on the market and THE DEAL IS LOST. "
+            +"THE DELAY ITSELF COSTS MONEY AND THAT IS NEW. The buyers are in PRE OCCUPANCY AT $80 A DAY and that meter runs "
+            +"every day the appraiser does not turn up. A week of holdup is $560 out of the buyers' pocket for nothing, on top "
+            +"of whatever they have already paid. So the delay is not neutral waiting, it is a cost accruing to the party who "
+            +"has least control over it, and it steadily raises their incentive to get to an answer. "
+            +"WHAT HAS NOT CHANGED AND SHOULD NOT BE RE READ AS PROGRESS: this deal is still Under Contract, so its $577,861 is "
+            +"still counted in production and its 1 is still counted in the deal count, and it is still the only thing on the "
+            +"board that is counted and can still leave. An appraiser promising this week is a schedule, not a result. "
+            +"STILL NOT KNOWN AND STILL NOT GUESSED: what the holdup actually is, the appraised value, the closing date, and the "
+            +"pre occupancy start date, who holds that money and whether it credits at closing.";
+        }
+
+        /* -- 2. SYDNEY SPICER. Building is now an active search, not a possibility. -- */
+        var _sy=_g303("re-sydney-spicer-sell");
+        if(_sy && String(_sy.note||"").indexOf(_MK303)<0){
+          _sy.note=String(_sy.note||"")+" "+_MK303+". SHE IS NOW SERIOUSLY CONSIDERING BUILDING, AND THIS HAS MOVED FROM A "
+            +"POSSIBILITY TO AN ACTIVE SEARCH. She went and looked at builders. "
+            +"BUILDER: TRADEMARK HOMES. CONTACT: BRANDON AT TRADEMARK. Scenic Group has a relationship there. CHRIS IS GOING "
+            +"BACK AND FORTH WITH BRANDON NOW, asking whether they have a SIENNA 2 that fits the $625,000 budget for the team "
+            +"to go and look at. "
+            +"MODELS OF INTEREST, RECORDED SO NOBODY RE DERIVES THEM: they are LEANING TOWARDS THE SIENNA and they LIKED THE "
+            +"FRANKLIN TWO. Those are Trademark model names. The open question is whether a SIENNA 2 EXISTS AT THEIR BUDGET. "
+            +"TRADEMARK IS ALREADY IN BRAIN AND IT CARRIES A PRICE SIGNAL THAT MATTERS HERE. The Bonk LPW file at 4407 N 189th "
+            +"holds two Douglas County verified sales with GRANTOR TRADEMARK HOMES INC: 4403 N 189 St, a 2 storey, 2,485 above "
+            +"grade, 4 bed 3.5 bath, $626,000 on 8 March 2024, and 4409 N 189 St, a ranch, 1,830 above grade plus 1,184 finished "
+            +"walkout, 3 bed 3.5 bath, $648,209 on 1 March 2024. SO HER $625,000 SITS $1,000 BELOW THE BOTTOM OF THE ONLY "
+            +"TRADEMARK PRICING WE HOLD, AND THAT DATA IS 29 MONTHS OLD. Read that as a warning flare rather than a verdict: it "
+            +"is two houses in a different subdivision from where she wants to be, no model names attached, and no allowance for "
+            +"whatever has happened to new construction pricing since March 2024. But it means the honest expectation for Chris's "
+            +"conversation with Brandon is that a Sienna 2 at $625,000 may need a smaller footprint, fewer finishes or a cheaper "
+            +"lot, and it is better to know that going in than to be surprised by it. "
+            +"THE BUDGET, STATED PRECISELY. $625,000. That is INSIDE the $500,000 to $650,000 lender band already on this record, "
+            +"near the top of it, $25,000 under the hard ceiling. It does not raise the ceiling and the ceiling is still hard. "
+            +"THE QUESTION NOBODY HAS ASKED YET, AND IT CHANGES WHAT BRANDON SHOULD BE SEARCHING FOR: DOES $625,000 INCLUDE THE "
+            +"LOT, OR IS THE LOT ON TOP? She is a THREE LEG client, the sale of 20535 Howe, the purchase, and a lot purchase if "
+            +"they build. If the lot is separate then Brandon is searching against a build only figure and $625,000 is the wrong "
+            +"number to give him. Not assumed either way. "
+            +"TIMELINE IS CONSISTENT, NOT CONTRADICTED, AND THAT IS THE POINT. This record already holds: basement finished fall "
+            +"2026, 13 November per the 08.15 note, start looking spring 2027, IDEALLY BREAK GROUND JANUARY 2027, in the new "
+            +"house spring 2028 at the latest, and they will start building earlier if the right lot appears. A builder search "
+            +"happening in August 2026 is exactly what a January 2027 groundbreak looks like from five months out. Nothing here "
+            +"moves the spring 2027 listing. "
+            +"THE LOT PURCHASE IS NOW MATERIALLY MORE LIKELY FOR EARLY 2027. It was already recorded as a live prospect and a "
+            +"potential third leg rather than a hypothetical. An active builder search with a named builder moves it further "
+            +"that way. It still gets its own record only when it is real, with a property and a price.";
+        }
+
+        /* Chris is mid conversation, so this is a live thread rather than a standing question. */
+        if(!Array.isArray(state.realEstate.todos)) state.realEstate.todos=[];
+        var _td303=function(o){ if(!state.realEstate.todos.some(function(t){ return t && (t.id===o.id || (o.key&&t.key===o.key)); })) state.realEstate.todos.push(o); };
+        _td303({id:"ret-20260817-spicer-sienna", key:"spicer-sienna-budget", done:false, due:"2026-08-21",
+          src:"08.17.2026 meeting, Chris is already going back and forth with Brandon at Trademark",
+          text:"SYDNEY SPICER, TRADEMARK. Does a SIENNA 2 exist at the $625,000 budget, and is there one the team can go and look at? Chris is already in the conversation with Brandon. TWO THINGS TO SETTLE IN THE SAME EXCHANGE: (1) the only Trademark pricing we hold is $626,000 and $648,209 from March 2024, 29 months old, so $625,000 may need a smaller footprint, fewer finishes or a cheaper lot. Ask what $625,000 actually buys today rather than whether it is possible. (2) DOES $625,000 INCLUDE THE LOT? If not, Brandon is searching against the wrong number, because she is a three leg client with a separate lot purchase."});
+
+        if(!Array.isArray(state.autoLog)) state.autoLog=[];
+        if(!state.autoLog.some(function(x){ return x&&x.id==="auto-20260817-mtg"; })){
+          state.autoLog.unshift({id:"auto-20260817-mtg", date:"2026-08-17", area:"Real estate",
+            what:"Recorded the Horizon appraisal holdup and Sydney Spicer moving to an active builder search with Trademark",
+            why:"Trademark is already in BRAIN with two verified 2024 builder sales at $626,000 and $648,209, so her $625,000 budget sits just below the bottom of the only Trademark pricing we hold, and that data is 29 months old.",
+            evidence:"Also flagged that nobody has established whether the $625,000 includes the lot, which changes what Chris should be asking Brandon for, and that the Horizon pre occupancy at $80 a day means the appraiser delay costs the buyers about $560 a week.",
+            undo:"Real estate, open the Crystal Johnson or Sydney Spicer deal and edit the note, or delete the new todo."});
+        }
+
+        state.meta.mig303_mtg0817=true;
+      }
+      save(true);
+  } }catch(e){ try{ console.warn("mig303 did not apply:",e&&e.message); }catch(_){} }
+
 
 
 /* ===== v21 build 299: THE TAPER WEEK AS IAN HAS ACTUALLY SCHEDULED IT ======================
