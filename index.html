@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 308 (2026-08-17)">
+<meta name="build" content="v21 build 309 (2026-08-17)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -9422,6 +9422,64 @@ function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]
       state.meta.mig308_belknap_price=true;
       save(true);
   } }catch(e){ try{ console.warn("mig308 did not apply:",e&&e.message); }catch(_){} }
+
+/* ===== v21 build 309: THE MISS DIRECTION IS ANSWERED, AND THE 08.14 ASK IS CLOSED ===========
+     Ian, later on the night of 08.17, unprompted: "drives were inconsistent today but getting
+     better placed, drops, resets, hands and serves were all good today, I miss into the net or
+     too long never really to the side".
+
+     TWO WRITES, BOTH APPENDS, NEITHER A REWRITE. The 08.17 record gets a clearly marked
+     AMENDMENT after the original note so the order he said things in survives. The 08.14 record
+     gets its standing ask marked ANSWERED so no future run carries it forward again.
+
+     WHAT IS DELIBERATELY NOT DONE HERE. No grade, no rating, no radar value, no skill band, no
+     Work on item and no drill. The statement settles a FACT about miss direction and it is a
+     self report, so it is recorded and it moves nothing. The inference is held to exactly what
+     the sentence carries: long and short while staying inside the sidelines is a DEPTH pattern,
+     and depth is contact point and swing path steepness rather than face angle at contact,
+     because face angle is what sends a ball wide. Nothing past that line is entered.
+
+     BLIND GRADING, AND THIS IS THE PART THAT MATTERS FOR WHERE IT LIVES. A named miss pattern
+     is exactly the kind of self report a blind grading session must never see. It is stored
+     HERE, on the session record in app state, and it is NOT written into
+     Personal/Learning/pickleball_knowledge_base.md, GLOBAL/RULES.md or
+     Personal/Learning/LEARNING_LOG.md, all three of which the video coach path reads before it
+     grades anything. */
+  try{ if(profile==="ian" && state.pickleball && Array.isArray(state.pickleball.sessions)){
+      if(!state.meta) state.meta={};
+      var _AM309="AMENDMENT ADDED 08.17.2026 LATER THE SAME NIGHT, build 309";
+      var _AN309="ANSWERED 08.17.2026, build 309";
+
+      state.pickleball.sessions.forEach(function(s){
+        if(!s) return;
+        var n=String(s.note||"");
+
+        if(s.id==="pk-20260817-openplay" && n.indexOf(_AM309)<0){
+          s.note=n+" "+_AM309+". Appended after the original entry above and NOT rewritten into it, so the order in which he said things is preserved. HIS WORDS, second report of the night: \"drives were inconsistent today but getting better placed, drops, resets, hands and serves were all good today, I miss into the net or too long never really to the side\". "
+            +"1. THE MISS DIRECTION IS SETTLED AND IT SUPERSEDES THE LINE ABOVE THAT RECORDS THE ASK AS STILL UNANSWERED. The standing ask from the 08.14 note was which shot missed and which way. He has answered both: the shot is the DRIVE, and the miss is INTO THE NET OR TOO LONG, NEVER REALLY TO THE SIDE. Recorded as the fact he stated. Still a self report, still moves no rating. "
+            +"2. IT IS A DEPTH PROBLEM AND NOT A DIRECTION PROBLEM, AND THAT IS WHERE THE INFERENCE STOPS. Missing long and short while staying inside the sidelines points at CONTACT POINT and SWING PATH STEEPNESS rather than face angle at contact, because face angle at contact is what sends a ball wide. That is the whole of what the sentence supports. No cause is chosen between the candidates here, no fix is prescribed off it, and none of it is a grade. "
+            +"3. HE CLAIMS PLACEMENT IS IMPROVING WHILE CONSISTENCY IS NOT, AND BOTH HALVES ARE LOGGED BECAUSE THAT IS HIS OWN FRAMING. Drives inconsistent BUT getting better placed. This is the same dissociation he described on 08.10, height inconsistent while placement improves, which makes it the second time he has separated the two unprompted. TESTABLE CLAIM FOR THE NEXT FILM STUDY, and it is testable precisely because he named it before anyone counted it: count drive misses split into net, long and wide, and count lateral placement against stated intent, then see whether the placement half is actually moving. "
+            +"4. THE REST OF THE BOARD, his words: drops, resets, hands and serves all good today. That is consistent with the original entry above, which named serves and all kitchen play. No number attached, none earned, none given.";
+        }
+
+        if(s.id==="pk-20260814-openplay" && n.indexOf(_AN309)<0){
+          s.note=n+" "+_AN309+", AND THIS OPEN ITEM IS NOW CLOSED. The ask set on this record was to establish which shot missed and which way before rating the next night. Ian answered it unprompted on the night of 08.17: the shot is the DRIVE and the miss is INTO THE NET OR TOO LONG, NEVER REALLY TO THE SIDE, so it is a DEPTH pattern rather than a direction one. Full wording and the reading sit on the pk-20260817-openplay record. DO NOT CARRY THIS ASK FORWARD AGAIN.";
+        }
+      });
+
+      if(!state.meta.mig309_missdir){
+        if(!Array.isArray(state.autoLog)) state.autoLog=[];
+        if(!state.autoLog.some(function(x){ return x&&x.id==="auto-20260817-missdir"; })){
+          state.autoLog.unshift({id:"auto-20260817-missdir", date:"2026-08-17", area:"Pickleball",
+            what:"Recorded your miss direction against tonight's session and closed the question that had been open since 08.14",
+            why:"You said you miss into the net or too long and never really to the side. That answers the standing ask, so it is written down and the old question stops being carried forward.",
+            evidence:"Long and short while staying inside the sidelines is a depth pattern, not a direction one. You also said drives are inconsistent but getting better placed, which is the same split you described on 08.10, so both halves are logged as a claim the next film study can count.",
+            undo:"Pickleball, Sessions, open the 17 August or 14 August record to edit the appended text."});
+        }
+        state.meta.mig309_missdir=true;
+      }
+      save(true);
+  } }catch(e){ try{ console.warn("mig309 did not apply:",e&&e.message); }catch(_){} }
 
 
 
