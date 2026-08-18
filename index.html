@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 306 (2026-08-17)">
+<meta name="build" content="v21 build 307 (2026-08-17)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -9296,6 +9296,56 @@ function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]
       }
       save(true);
   } }catch(e){ try{ console.warn("mig306 did not apply:",e&&e.message); }catch(_){} }
+
+/* ===== v21 build 307: THE 08.17 SESSION, LOGGED AS A SELF REPORT AND NOTHING MORE ===========
+     Monday 17 August, open play doubles with Bianca at Ace, 5:55 to 7:24 PM. Reported by Ian the
+     same night with the watch numbers.
+
+     THIS ENTRY IS DELIBERATELY UNGRADED AND THE CONSTRAINT IS PART OF THE RECORD. His standing
+     instruction: a coach grade comes only from footage read against written DUPR criteria, by a
+     session that has never seen his self ratings. This session read his self report, so it is
+     contaminated for grading and it grades nothing. His words are recorded as his words. No
+     skill number, no radar value and no band is touched here.
+
+     WHAT THE WATCH SUPPORTS ON ITS OWN TERMS, and it is less than it first looks. 890 active in
+     89 and a half minutes is 9.9 active calories a minute, MID BAND on his own record rather
+     than a standout. And the session has a near twin already on file: 08.10 ran 5:59 to 7:27 PM
+     for 1:28:00 at effort 7, avg 134, peak 158, low 98. Tonight is 5:55 to 7:24 PM for 1:29:29
+     at effort 7, avg 133, peak 162, low 95. The watch cannot tell those two nights apart. He
+     called 08.10 decent not great. He calls tonight amazing. Nothing in the heart rate sits
+     underneath that difference in either direction, and a wrist sensor does not measure quick. */
+  try{ if(profile==="ian" && state.pickleball){
+      if(!state.meta) state.meta={};
+      if(!Array.isArray(state.pickleball.sessions)) state.pickleball.sessions=[];
+      var _S307={id:"pk-20260817-openplay", date:"2026-08-17", kind:"Open play", venue:"Ace",
+        duration:"1h 29m 29s", calories:1030, activeCalories:890, avgHr:133, maxHr:162, minHr:95, effort:7,
+        result:"", score:"", opponent:"",
+        note:"Open play doubles with Bianca, Ace Pickleball Club, Omaha, 5:55 to 7:24 PM, 1:29:29. Effort 7 of 10, Hard. From Apple Watch. Avg HR 133, peak 162, low 95, active 890, total 1,030. No footage, so NO RATING CHANGE. Evidence class SELF REPORT: recorded and tracked, weighed against footage, and it does not move a rating on its own. THE GRADING RULE IS RESTATED HERE ON PURPOSE, because this was logged the same night he played it. A coach grade comes only from footage read against written DUPR criteria by a session that has never seen his self ratings. Nothing in this entry is a rating and nothing in it may be turned into one later. "
+            +"HIS REPORT, HIS WORDS, 08.17.2026: drives were iffy, everything else felt amazing and especially serves, all kitchen play felt great, he felt super quick, and his takeaway is that he just needs to work on consistency. "
+            +"WHAT THE WATCH SUPPORTS ON ITS OWN. 890 active calories in 89 and a half minutes is 9.9 active calories a minute, which is MID BAND on his own record and not an outlier. His recent rates: 08.10 was 10.9, 08.09 10.7, 08.14 10.4, 08.01 10.1, 08.08 9.7, 08.15 drills 8.3, the 08.12 league night 7.9. So it is real work at his ordinary open play rate, and it is not above it. "
+            +"THE HEART RATE PROFILE IS NOT DIFFERENT FROM HIS RECENT SESSIONS, AND THIS ONE HAS A NEAR TWIN. 08.10 ran 5:59 to 7:27 PM, 1:28:00, effort 7, avg 134, peak 158, low 98, 959 active. Tonight ran 5:55 to 7:24 PM, 1:29:29, effort 7, avg 133, peak 162, low 95, 890 active. Same clock, same length, same effort, same average. The watch cannot distinguish the two nights. "
+            +"SO FELT SUPER QUICK IS NEITHER CORROBORATED NOR CONTRADICTED. A wrist heart rate sensor does not measure quickness, and every number it does measure looks like his other open play nights this month. The honest version is that his own summary of 08.10, the closest physiological match on file, was decent not great with inconsistency the worst thing, and tonight off the same profile he reports feeling amazing. That difference is real to him and there is nothing in the watch data underneath it. Film is the only instrument that answers it. "
+            +"THE SHAPE, FOR THE RECORD: a 67 bpm band from 95 to 162, and 95 is the second highest floor on record behind 08.10 at 98. Flat and steady rather than spiky, the same reading the 08.10 note gave, so he never really spiked and never came down. Six days to the APC. "
+            +"CONSISTENCY IS HIS OWN WORD AGAIN AND THIS IS THE FIFTH TIME, 08.10, 08.11, 08.14, 08.15 and tonight. That is a count of what he has said, not a judgement of how he played. THE STANDING ASK FROM THE 08.14 NOTE IS STILL UNANSWERED: which shot missed and which way. Tonight he named the wing, drives were iffy, and did not say whether they went long, netted or wide. Put the question to him BEFORE the next session rather than after it. "
+            +"NOT KNOWN AND NOT GUESSED: who else was on court and at what level, whether Bianca partnered him throughout, any score, whether the iffy drives failed high, long or into the net, and whether the grip was a factor, since the replacement is not fitted until Wednesday 19 August."};
+      if(!state.pickleball.sessions.some(function(x){ return x&&x.id===_S307.id; })){
+        state.pickleball.sessions.push(_S307);
+        state.pickleball.sessions.sort(function(a,b){ return String(a&&a.date).localeCompare(String(b&&b.date)); });
+      }
+
+      if(!state.meta.mig307_0817){
+        if(!Array.isArray(state.autoLog)) state.autoLog=[];
+        if(!state.autoLog.some(function(x){ return x&&x.id==="auto-20260817-pksession"; })){
+          state.autoLog.unshift({id:"auto-20260817-pksession", date:"2026-08-17", area:"Pickleball",
+            what:"Logged Monday open play with Bianca at Ace, 1:29:29, and checked the watch data against your recent sessions",
+            why:"You reported it the same night, so it is recorded as a SELF REPORT in your own words. There is no footage, so it moves no rating and it is not a grade.",
+            evidence:"890 active calories in 89 and a half minutes is 9.9 a minute, mid band on your own record rather than a standout. The profile is almost a copy of 08.10: same start time, same length, same effort 7, avg 134 against 133 tonight. Nothing in the heart rate looks different from your recent sessions, which neither supports nor contradicts feeling quicker, because the watch does not measure that.",
+            undo:"Pickleball, Sessions, open the 17 August record to edit or remove it."});
+        }
+        state.meta.mig307_0817=true;
+      }
+      save(true);
+  } }catch(e){ try{ console.warn("mig307 did not apply:",e&&e.message); }catch(_){} }
 
 
 
