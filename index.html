@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 307 (2026-08-17)">
+<meta name="build" content="v21 build 308 (2026-08-17)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -9346,6 +9346,83 @@ function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]
       }
       save(true);
   } }catch(e){ try{ console.warn("mig307 did not apply:",e&&e.message); }catch(_){} }
+
+/* ===== v21 build 308: BELKNAP, 4946 PRATT ST. THE STALE GUESS BECOMES IAN'S LIST PRICE ======
+     08.17.2026. price has read "$250,000 to $300,000" with priceNote "Chris's guess, inferred"
+     since build 267, and priceNum has therefore been feeding $250,000 into the in flight
+     ceiling. That figure was never a valuation. It came from one text Chris sent Ian on
+     08.10.2026 at 16:07, "my guess is its going to be 250-300k".
+
+     IAN SET A REAL LIST PRICE TODAY: $249,900. That is a DECISION, not a derived value, and
+     the record says so. The re-verified CMA supports $234,000, range $226,000 to $242,000.
+     Ian priced $15,900 above it deliberately, because condition has not been seen in eight
+     years, it is worth about $15,000 either way, and $249,900 is the good condition price.
+     BOTH NUMBERS ARE ON THE RECORD ON PURPOSE. Do not quietly reconcile them.
+
+     PRICE IS CLASS A AND BELONGS TO IAN'S THUMB, so this only rewrites the two known stale
+     strings. If his device carries anything else, price is LEFT ALONE and the note says so,
+     which is the same discipline build 254 and build 267 used on Bruce O'Neil.
+
+     THE ONE NUMBER THAT MOVES, and it is small: priceNum takes the first number in the string,
+     so the in flight ceiling reads $250,000 today and $249,900 after this. Down $100. No goal
+     bar moves, because reGoalsCard counts Closed plus Under Contract only and this deal is
+     Coming Soon. Stage, source, side and close are all untouched. */
+  try{ if(profile==="ian" && state.realEstate && Array.isArray(state.realEstate.deals)
+          && state.meta && !state.meta.mig308_belknap_price){
+      var _MK308="08.17.2026 LIST PRICE SET";
+      var _OLD308A="$250,000 to $300,000";
+      var _OLD308B="$250,000 to $300,000 (Chris's guess, Inferred)";
+      var _bk308=null, _D308=state.realEstate.deals;
+      for(var i=0;i<_D308.length;i++){ if(_D308[i] && _D308[i].id==="re-belknap-sell"){ _bk308=_D308[i]; break; } }
+      if(_bk308){
+        var _cur308=String(_bk308.price||"");
+        var _matched308=(_cur308===_OLD308A || _cur308===_OLD308B);
+        if(_matched308){
+          _bk308.price="$249,900";
+          _bk308.priceNote="List price, Ian's call 08.17.2026";
+        }
+        if(String(_bk308.note||"").indexOf(_MK308)<0){
+          _bk308.note=String(_bk308.note||"")+" "+_MK308+", AND IT REPLACES A GUESS THAT HAD BEEN SITTING IN THE PRICE FIELD SINCE 08.10. "
+            +"IAN'S DECISION, 17 AUGUST 2026: LIST AT $249,900. Present to the clients as a $240,000 to $250,000 range, where $250,000 is "
+            +"the good condition case, $240,000 is the worst case if it shows badly, and the realistic expectation is $245,000 to $250,000. "
+            +"THE COMPS SUPPORT $234,000, range $226,000 to $242,000, so the list sits $15,900 ABOVE the supported value and that is "
+            +"DELIBERATE, not a defect. His reasoning, recorded rather than paraphrased: nobody has been inside the house in eight years, "
+            +"condition is worth about $15,000 in either direction, and $249,900 is the good condition price, so the upside case gets tested "
+            +"first. BOTH NUMBERS STAY ON THE RECORD. Do not reconcile them and do not overwrite the supported value with the list price. "
+            +"WHY $234,000 AND NOT THE OLD $240,000. A live Paragon re-pull on 08.17 fixed two defects in the 08.13 comp set. Removed 5024 "
+            +"Spaulding, which the county reads as SOLOMONS REPLAT III, a Split Entry built 1996, so it is not in the subdivision at all. "
+            +"Added 4824 PRATT ST, the closest analogue that exists, 1,014 above grade and 545 finished below against the subject's 1,073 "
+            +"and 800, ACTIVE at $225,000 and 18 days with NO CUT. It was invisible to the earlier search because its MLS subdivision text "
+            +"reads SOLOMON'S ADD with an apostrophe; contains SOLOMONS ADD returns 9 listings, contains SOLOMON returns 16. The bracket is "
+            +"now 4848 Pratt SOLD $225,000 in 2 days on the floor and 4939 Ruggles SOLD $240,000 in 5 days on the ceiling, and the subject "
+            +"sits between them rather than at the top. Across the street, 4949 Pratt SOLD $215,000 on 6 August after a cut from $225,000. "
+            +"THREE TIERS ARE IN THE CMA. LOW list $224,900 expect $218,000 to $222,000, 21 to 35 days. MEDIUM list $234,900 expect $232,000 "
+            +"to $234,900, 5 to 15 days. HIGH list $249,900 expect $240,000 to $246,000, 30 to 55 days, CHOSEN. "
+            +"PRICING REVIEW TRIGGERS, WRITTEN BEFORE THE LISTING GOES LIVE, WHICH IS WHAT MAKES THIS A STRATEGY AND NOT A HOPE. "
+            +"T1 day 10 live with fewer than 3 showings, reduce to $242,900. T2 day 21 with no offer, reduce to $239,900. T3 day 35 with no "
+            +"offer, reduce to $234,900. T4 if 4824 Pratt MLS 22621638 cuts below $225,000, immediate review that week. T5 if 4830 Spaulding "
+            +"MLS 22622496 cuts from $259,900, immediate review, because it is the only live test of the $250s in the plat. T6 4824 Pratt "
+            +"going pending near $225,000 is confirming and holds the floor. T7 4830 Spaulding going pending near $259,900 is confirming for "
+            +"this tier, hold and add 14 days. ANY T1 TO T3 REDUCTION MUST LAND BEFORE 30 SEPTEMBER, because Omaha traffic thins from late "
+            +"August and an October cut has to be bigger to do the same work. Check both actives weekly in Paragon and read the FULL LISTING "
+            +"HISTORY, never the DOM column, because a relisting resets DOM and hides a cut. "
+            +"THE CONDITION GATE COMES FIRST AND IT IS NOT OPTIONAL. The walkthrough has not happened, $249,900 is the good condition price, "
+            +"so the walkthrough either confirms this number or breaks it and it belongs BEFORE the listing goes live, not after. The only "
+            +"current condition datum is Chris on 08.17: they are going to replace the carpet. "
+            +"CURRENT CMA: 08.17.2026 PARAGON RE-VERIFIED, Drive 12-mROJ9wk5buHwWoSf5FXjBr_e_E53n38z040pnlf_k. The 08.13 document carrying "
+            +"$240,000 is SUPERSEDED and its Drive title still wrongly says USE THIS ONE. "
+            +"NO PRICE HAS EVER BEEN QUOTED TO THE BELKNAPS FOR THEIR OWN HOME BY ANYONE, verified across every message thread back to 2018, "
+            +"so nothing needs walking back with them.";
+        }
+        if(!_matched308){
+          _bk308.note=String(_bk308.note||"")+" PRICE FIELD LEFT UNTOUCHED BY BUILD 308: it did not read the expected stale guess, so Ian "
+            +"has set it himself since and his thumb wins. The $249,900 decision above still stands and the price field needs a look.";
+        }
+      }
+      state.meta.mig308_belknap_price=true;
+      save(true);
+  } }catch(e){ try{ console.warn("mig308 did not apply:",e&&e.message); }catch(_){} }
+
 
 
 
