@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 312 (2026-08-19)">
+<meta name="build" content="v21 build 313 (2026-08-19)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -10070,6 +10070,82 @@ try{ if(profile==="ian"){
       }
       save(true);
   } }catch(e){ try{ console.warn("mig312 did not apply:",e&&e.message); }catch(_){} }
+
+/* ===== v21 build 313: BONK SELL SIDE CLOSED. THE BUY SIDE IS NOT AND MUST NOT MOVE ==========
+     Ian, 19 August 2026: the Bonks' existing home at $625,000 is fully closed, payment not yet
+     received.
+
+     TWO BONK RECORDS EXIST AND THEY ARE ALREADY SEPARATE. Checked before writing rather than
+     assumed. re-bonks-sell is the existing home, $625,000, side Seller, closing 19 August.
+     re-bonks-buy is 401 Fir St Ashland, $420,000, side Buyer, closing 20 August. NOTHING in
+     this build touches the buy side. It stays Under Contract until its own closing lands.
+
+     PAYMENT STATE IS THE THREE STATE FIELD FROM BUILD 275, NOT A BOOLEAN GUESS. paid false is
+     CLOSED AND OUTSTANDING, which is what Ian said. It is written explicitly here rather than
+     left to rePayDefault, so the record says what it means instead of relying on an unguarded
+     writer to fill it in later. rePayDefault will not touch it once it is a boolean.
+
+     CLOSE STRING CARRIES THE STATE, following the build 291 convention. It becomes
+     "August 19, 2026 (CLOSED, payment outstanding)" and MUST be rewritten to "(CLOSED and PAID)"
+     the moment payment lands, per the cascade rule. A number that moves while the words next to
+     it say the opposite is exactly what build 291 existed to fix.
+
+     THE COMMISSION IS THE MODEL DEFAULT AND THAT IS STATED, NOT HIDDEN. This is NOT dual agency.
+     source is "Chris's client" and side is Seller, so dealGrossCommission takes the seller path:
+     $625,000 x sellerRate 3.6 percent = $22,500 gross, less 15 percent brokerage of $3,375,
+     leaves $19,125, times the Chris's client share of 20 percent = $3,825.00 to Ian.
+     THE RECORD CARRIES NO sellerRate OVERRIDE AND NO ianSplit OVERRIDE, so both figures are the
+     model's defaults rather than anything confirmed for this deal. NO actualNet is set, because
+     nothing has been received. When the real number arrives it goes on actualNet, which always
+     beats the model, exactly as the Spicer $2,770 against a modelled $2,906.39 taught us.
+
+     NEITHER GOAL BAR MOVES AND THAT IS NOT A BUG. reGoalsCard counts Closed PLUS Under Contract,
+     so a deal moving between those two buckets leaves production and the deal count untouched at
+     $7,050,357 and 15. What moves is the split between closed and pending. */
+  try{ if(profile==="ian" && state.realEstate && Array.isArray(state.realEstate.deals)
+          && state.meta && !state.meta.mig313_bonks_sell_closed){
+      var _MK313="08.19.2026 CLOSED";
+      var _sell313=null, _buy313=null, _D313=state.realEstate.deals;
+      for(var i=0;i<_D313.length;i++){
+        if(_D313[i] && _D313[i].id==="re-bonks-sell") _sell313=_D313[i];
+        if(_D313[i] && _D313[i].id==="re-bonks-buy")  _buy313=_D313[i];
+      }
+      if(_sell313){
+        if(_sell313.stage==="Under Contract"){ _sell313.stage="Closed"; }
+        if(typeof _sell313.paid!=="boolean" && typeof _sell313.actualNet!=="number"){ _sell313.paid=false; }
+        var _c313=String(_sell313.close||"");
+        if(_c313.indexOf("CLOSED")<0){ _sell313.close=(_c313||"August 19, 2026")+" (CLOSED, payment outstanding)"; }
+        if(String(_sell313.note||"").indexOf(_MK313)<0){
+          _sell313.note=String(_sell313.note||"")+" "+_MK313+" AND FULLY CLOSED, FROM IAN 19 AUGUST 2026. "
+            +"The existing home sold at $625,000 and the sale has completed. PAYMENT IS NOT YET RECEIVED, so paid is FALSE, which is the "
+            +"build 275 outstanding state, and NO actualNet is set. The moment the money lands, put the real figure on actualNet and rewrite "
+            +"the close string from (CLOSED, payment outstanding) to (CLOSED and PAID), because an actual always beats the model and a stale "
+            +"string next to a moved number is the exact failure the cascade rule exists to stop. "
+            +"COMMISSION, AND IT IS THE MODEL DEFAULT RATHER THAN A CONFIRMED SPLIT. This is NOT dual agency and the 6 percent dual rate does "
+            +"NOT apply. source is Chris's client and side is Seller, so: $625,000 x 3.6 percent seller rate = $22,500 gross, less 15 percent "
+            +"brokerage $3,375 = $19,125, x 20 percent Chris's client share = $3,825.00 to Ian. THIS RECORD CARRIES NO sellerRate OVERRIDE AND "
+            +"NO ianSplit OVERRIDE, so 3.6 percent and 20 percent are both defaults. If either is wrong for this deal the figure is wrong with "
+            +"it, and Ian is the authority on that, the way he was on Snyder. "
+            +"THE BUY SIDE IS A SEPARATE DEAL AND IS UNTOUCHED. re-bonks-buy, 401 Fir St Ashland, $420,000, closes 20 August, still Under "
+            +"Contract. Its final walk through moved to Wednesday 19 August at 7:00 PM after the seller's junk pickup slipped. IAN DOES NOT "
+            +"NEED TO ATTEND EITHER BONK CLOSING, already settled twice, do not raise it again. "
+            +"NEITHER GOAL BAR MOVED. Production and the deal count read Closed PLUS Under Contract, so this is a move between buckets and the "
+            +"bars hold at $7,050,357 and 15 of 20. Closed volume rises $3,923,050 to $4,548,050 and closed weights 10 to 11; pending falls to "
+            +"$2,502,307 across 4.";
+        }
+      }
+      /* The buy side is deliberately read and NOT written. Recording that here so a later
+         session does not read the omission as something forgotten. */
+      if(_buy313 && String(_buy313.note||"").indexOf("08.19.2026 SELL SIDE CLOSED, THIS ONE DID NOT")<0){
+        _buy313.note=String(_buy313.note||"")+" 08.19.2026 SELL SIDE CLOSED, THIS ONE DID NOT. The Bonks' existing home closed on 19 August at "
+          +"$625,000 and re-bonks-sell moved to Closed. THIS RECORD IS THE PURCHASE AT 401 FIR ST ASHLAND AND IT IS STILL UNDER CONTRACT, "
+          +"closing 20 August at 9:00 AM. Deliberately left at Under Contract. Do not merge these two records and do not read one closing as "
+          +"both.";
+      }
+      state.meta.mig313_bonks_sell_closed=true;
+      save(true);
+  } }catch(e){ try{ console.warn("mig313 did not apply:",e&&e.message); }catch(_){} }
+
 
 /* build 225: focus timer removed, nothing to clear here anymore. */
   applyAccent(); dailyReset(); save(true);
