@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 310 (2026-08-18)">
+<meta name="build" content="v21 build 311 (2026-08-18)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -9480,6 +9480,55 @@ function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]
       }
       save(true);
   } }catch(e){ try{ console.warn("mig309 did not apply:",e&&e.message); }catch(_){} }
+
+/* ===== v21 build 311: THE 08.18 SESSION, TWO BLOCKS IN ONE NIGHT ============================
+     Tuesday 18 August, 6:30 to 9:14 PM, 2:44:02. ONE watch workout covering TWO very different
+     things, so the note is split into PART 1 and PART 2 and the parts are never averaged
+     together. Part 1 is league night two with Bianca against opposition he himself calls
+     mediocre to bad. Part 2 is him and Dylan, his tournament partner, against a 3.4 to 3.6 pair,
+     which is the only part of the night that tested anything.
+
+     THE HEART RATE SHAPE HAS AN EXACT PRECEDENT AND IT IS HIS OWN OTHER LEAGUE NIGHT. 08.11 ran
+     3:07:19 at avg 118, and tonight ran 2:44:02 at avg 117. A low average on a league night is
+     the FORMAT, downtime between matches, and not a light session. Peak 177 ties the highest on
+     his record, and the 70 to 177 spread is the widest of the month.
+
+     UNGRADED, as every self reported session is. No rating, no radar value, no skill band. */
+  try{ if(profile==="ian" && state.pickleball){
+      if(!state.meta) state.meta={};
+      if(!Array.isArray(state.pickleball.sessions)) state.pickleball.sessions=[];
+      var _S311={id:"pk-20260818-league", date:"2026-08-18", kind:"League", venue:"",
+        duration:"2h 44m 02s", calories:1479, activeCalories:1223, avgHr:117, maxHr:177, minHr:70, effort:8,
+        result:"Won both league matches 2-0", score:"2-0, 2-0", opponent:"",
+        note:"LEAGUE NIGHT TWO PLUS A POST LEAGUE BLOCK WITH DYLAN. Omaha, 6:30 to 9:14 PM, 2:44:02. Effort 8 of 10, Hard. From Apple Watch. Avg HR 117, peak 177, low 70, active 1,223, total 1,479. ONE watch workout covering TWO different levels of play, recorded as two blocks and never averaged into one judgement. No footage, so NO RATING CHANGE. Evidence class SELF REPORT: recorded and tracked, weighed against footage, and it does not move a rating on its own. Logged the same night he played it, so this session is contaminated for grading and grades nothing. VENUE NOT STATED tonight and NOT ASSUMED, he said Omaha only. Ask him, do not default it to Ace. "
+            +"PART 1, LEAGUE WITH BIANCA. Showed up early to warm up, very light warm up. WON BOTH MATCHES 2-0, so FOUR CONSECUTIVE GAMES WON ON THE NIGHT. HIS OWN READ ON THE OPPOSITION, and it is the reason this block is not treated as evidence of anything: \"played some mediocre/bad teams, no one good.\" Recorded as a RESULT, not as a performance signal. He said it himself before anyone asked, which is worth noting on its own, because the standing risk with a winning night is reading the scoreline as progress. "
+            +"PART 2, IAN AND DYLAN AGAINST A 3.4 TO 3.6 PAIR, AND THIS IS THE BLOCK THAT MATTERS. His tournament partner against genuine competition, four days out from the APC. He rates both opponents fairly good and all around decent across drops, serves, drives and dinks. HIS WORDS ON HOW IT WAS PLAYED: \"we all played it like genuinely good players, not attacking every ball, getting to the kitchen line, avoiding MOST stupid mistakes.\" He says the main error on his and Dylan's side was occasional dumb mistakes and that overall they played pretty well. "
+            +"HIS SHOT BY SHOT, HIS WORDS. Serves amazing. Hands at the net amazing. Resets and dinks amazing. DRIVES: hit a few long or short, and his own qualifier is \"nothing that says there's a big issue.\" DROPS, AND BOTH HALVES ARE RECORDED BECAUSE HE SAID BOTH AND THEY SIT IN TENSION: solid with no major issues, AND they could have been better because they went long. Neither half is dropped in favour of the other and neither is resolved here. "
+            +"ON DYLAN, his observation of his partner: the one thing Dylan could have done better is aiming overheads toward the corners or strategically, rather than hitting them straight at the opponents. "
+            +"CHEMISTRY: great, and he is feeling good about the tournament. \"Maybe a little more chemistry at the kitchen line is necessary but it was solid overall.\" "
+            +"THE LONG SIDE IS NOW ON RECORD TWICE IN TWO DAYS, n=2, AND IT IS NOT INFLATED PAST THAT. 08.17, drives miss into the net or too long, never really to the side. 08.18, drops went long. Different shots, same side of the target, and both are self report on unfilmed sessions. What that supports is a THREAD worth counting on film, not a finding: two observations, two days, two shot types. It does NOT establish a rate, a trend or a cause, and it does not become a Work on item off two nights of feel. The film study already has the count specified on the 08.17 record. "
+            +"WHAT THE WATCH SAYS, AND THE LOW AVERAGE IS EXPECTED RATHER THAN NOTABLE. Avg 117 tonight against 133 last night looks like an easier session and is not. His other league night, 08.11, ran 3:07:19 at avg 118, so 117 is his league signature almost exactly, and the cause is format: league nights carry downtime between matches that open play does not. Active calories per minute tells the same story from the other side. Tonight is 7.5 a minute, 08.11 league was 7.9, and every open play night this month sits between 8.8 and 10.9. A league night reads LOW on rate and HIGH on total, which is what a long night with gaps in it looks like. "
+            +"WHAT IS GENUINELY NOTABLE IN THE SHAPE: PEAK 177 TIES THE HIGHEST ON HIS RECORD, level with 08.03, and the 70 to 177 spread of 107 bpm is the WIDEST of the month, just past 08.09 at 106. Lowest average rate of the month combined with the joint highest peak is a spiky night, which is consistent with league downtime followed by a hard block against the 3.4 to 3.6 pair. TOTAL LOAD: 1,223 active is fifth of his twelve August sessions, behind 08.09 at 1,566, 08.08 at 1,497, 08.11 at 1,479 and 08.03 at 1,469. A big night, not his biggest. "
+            +"FOUR DAYS TO THE APC, AND THE TAPER FACT STATED PLAINLY SO HE CAN DECIDE. His own taper plan, build 299, has TUESDAY AS ONE OF THE TWO HARD DAYS, so tonight being hard is ON the plan and not a departure from it. What is worth him seeing is the SIZE: 2:44:02 at effort 8 is the longest court session of taper week so far and it ran about 44 minutes past the scheduled 6:30 to 8:30 league window, with the extra coming from the Dylan block. The plan already steps down from here, Wednesday and Thursday moderate and Friday and Saturday light. HIS CALL, not a correction: whether Wednesday and Saturday get trimmed further given tonight ran long. Do not lecture him about it. "
+            +"NOT KNOWN AND NOT GUESSED: the venue, the league opponents by name, the score in the Part 2 games or whether score was kept at all, how long each block ran inside the 2:44, whether the new grip fitted today or tomorrow was in play tonight, and whether the drops that went long were on the third shot or in transition."};
+      if(!state.pickleball.sessions.some(function(x){ return x&&x.id===_S311.id; })){
+        state.pickleball.sessions.push(_S311);
+        state.pickleball.sessions.sort(function(a,b){ return String(a&&a.date).localeCompare(String(b&&b.date)); });
+      }
+
+      if(!state.meta.mig311_0818){
+        if(!Array.isArray(state.autoLog)) state.autoLog=[];
+        if(!state.autoLog.some(function(x){ return x&&x.id==="auto-20260818-pksession"; })){
+          state.autoLog.unshift({id:"auto-20260818-pksession", date:"2026-08-18", area:"Pickleball",
+            what:"Logged Tuesday as ONE session with TWO blocks, league night two and the post league games with Dylan",
+            why:"The competition level was completely different across the night, so the two parts are recorded separately and never averaged. You called the league teams mediocre to bad yourself, and the Dylan block against the 3.4 to 3.6 pair is the part that tested anything.",
+            evidence:"Avg HR 117 looks light against last night's 133 and is not: your other league night, 08.11, ran avg 118, so this is the league format showing up, downtime between matches. Peak 177 ties your highest on record and the 70 to 177 spread is the widest of the month. Also on record: the long side twice in two days, drives on 08.17 and drops tonight, n equals 2 and treated as a thread to count on film rather than a finding.",
+            undo:"Pickleball, Sessions, open the 18 August record to edit or remove it."});
+        }
+        state.meta.mig311_0818=true;
+      }
+      save(true);
+  } }catch(e){ try{ console.warn("mig311 did not apply:",e&&e.message); }catch(_){} }
 
 
 
