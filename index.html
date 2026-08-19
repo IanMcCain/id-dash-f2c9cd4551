@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 313 (2026-08-19)">
+<meta name="build" content="v21 build 314 (2026-08-19)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -10145,6 +10145,73 @@ try{ if(profile==="ian"){
       state.meta.mig313_bonks_sell_closed=true;
       save(true);
   } }catch(e){ try{ console.warn("mig313 did not apply:",e&&e.message); }catch(_){} }
+
+/* ===== v21 build 314: THE BONK SELL SIDE ADDRESS IS FOUND AND IS NO LONGER MISSING ==========
+     4407 N 189 St, Omaha NE 68022. Found 19 August 2026 by a live GPRMLS search on Chris
+     McCain as listing agent, not by inference from a calendar entry.
+
+     WHY THIS IS CONFIRMED RATHER THAN INFERRED, WHICH MATTERS BECAUSE BUILD 288 AND BUILD 295
+     BOTH REFUSED TO GUESS IT. Douglas County parcel 1401500696 returns OWNER_NAME "BONK ROBERT"
+     and ADDITION_N "INDIAN POINTE". The owner name on the county layer is the confirmation. The
+     MLS record is 22616352, listing agent Chris McCain with Ian McCain as agent 2, NP Dodge,
+     subdivision Indian Pointe, listed 11 June 2026 at $614,900, PENDING 15 June 2026, DOM 1.
+     1.0 Story/Ranch built 2020, 4 bed 3 bath, 4 garage spaces, 1,826 above grade plus 1,285
+     finished below grade for 3,111 total finished, walkout, HOA $1,050 annually, Elkhorn
+     schools. Full listing history checked by Property History rather than the DOM column: one
+     prior listing, MLS 22306329 from 30 March 2023, so the DOM of 1 carries no reset.
+
+     THE PRICE FIELD IS NOT TOUCHED AND HERE IS WHY. This record carries $625,000 from Ian and
+     that stays. The MLS still shows the listing as PENDING at the $614,900 list price because
+     the status has not been updated to SOLD yet, so the $625,000 sold figure is Ian's and is
+     NOT confirmed in GPRMLS as of 19 August 2026. Recording that here rather than silently
+     treating the list price as the sale price. Sold over asking by $10,100 on Ian's number.
+
+     STAGE, CLOSE AND PAYMENT STATE ARE NOT TOUCHED EITHER. Build 313 set this record to Closed
+     with paid false and the close string carrying "(CLOSED, payment outstanding)". None of that
+     changes here. This build adds an address and retires a todo. The buy side, re-bonks-buy at
+     401 Fir St Ashland, is not read and not written. */
+  try{ if(profile==="ian" && state.realEstate && Array.isArray(state.realEstate.deals)
+          && state.meta && !state.meta.mig314_bonks_sell_addr){
+      var _MK314="08.19.2026 ADDRESS FOUND";
+      var _sell314=null, _D314=state.realEstate.deals;
+      for(var _i314=0;_i314<_D314.length;_i314++){
+        if(_D314[_i314] && _D314[_i314].id==="re-bonks-sell") _sell314=_D314[_i314];
+      }
+      if(_sell314){
+        if(!_sell314.sub || String(_sell314.sub).indexOf("189")<0){
+          _sell314.sub="Sell side, 4407 N 189 St, Omaha 68022";
+        }
+        if(String(_sell314.note||"").indexOf(_MK314)<0){
+          _sell314.note=String(_sell314.note||"")+" "+_MK314+". THE ADDRESS OF THE HOME SOLD ON THIS RECORD IS 4407 N 189 ST, OMAHA NE 68022, "
+            +"and it is CONFIRMED, not inferred. Douglas County parcel 1401500696 reads OWNER_NAME BONK ROBERT and ADDITION_N INDIAN POINTE. "
+            +"GPRMLS 22616352, listing agent Chris McCain with Ian McCain as agent 2, NP Dodge. Listed 11 June 2026 at $614,900, PENDING 15 June, "
+            +"DOM 1, one prior listing in March 2023 so no DOM reset. Ranch built 2020, 4 bed 3 bath, 4 car, 1,826 above grade plus 1,285 finished "
+            +"below grade equals 3,111 total finished, walkout, Elkhorn schools, HOA $1,050 a year. "
+            +"THE $625,000 ON THIS RECORD IS IAN'S FIGURE AND IS NOT YET CONFIRMED IN THE MLS: the listing still shows PENDING at the $614,900 list "
+            +"price because it has not been flipped to SOLD. Price, stage, close and payment state are all deliberately untouched by this build. "
+            +"THIS CLOSES THE GAP BUILD 288 AND BUILD 295 BOTH REFUSED TO GUESS AT, and the reason it took until now is that nothing on the calendar "
+            +"ever named the sell side property. The thing that found it was an agent search on Chris in Paragon, which should have been the first "
+            +"move rather than the last.";
+        }
+      }
+      /* Retire the address todo. Archive, never delete, per the build 300 convention. */
+      if(Array.isArray(state.realEstate.todos)){
+        if(!state.archive || typeof state.archive!=="object") state.archive={};
+        if(!Array.isArray(state.archive.todosDone)) state.archive.todosDone=[];
+        var _keep314=[];
+        state.realEstate.todos.forEach(function(t){
+          if(t && t.id==="ret-20260815-bonks-sell-addr"){
+            t.retiredReason="Answered 08.19.2026. 4407 N 189 St, Omaha NE 68022, confirmed on Douglas County parcel 1401500696 (OWNER_NAME BONK ROBERT, ADDITION_N INDIAN POINTE) and on GPRMLS 22616352 listed by Chris McCain.";
+            t.done=true;
+            state.archive.todosDone.push(t);
+          } else { _keep314.push(t); }
+        });
+        state.realEstate.todos=_keep314;
+      }
+      state.meta.mig314_bonks_sell_addr=true;
+      save(true);
+  } }catch(e){ try{ console.warn("mig314 did not apply:",e&&e.message); }catch(_){} }
+
 
 
 /* build 225: focus timer removed, nothing to clear here anymore. */
