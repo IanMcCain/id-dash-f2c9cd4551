@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 311 (2026-08-18)">
+<meta name="build" content="v21 build 312 (2026-08-19)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -9859,6 +9859,217 @@ try{ if(profile==="ian"){
     }
     save(true);
 } }catch(e){ try{ console.warn("mig310 did not apply:", e && e.message); }catch(_){} }
+
+/* ===== v21 build 312: THE 6AM RUN FOR WEDNESDAY 19 AUGUST 2026 ==============================
+     Today's dated content, plus ONE real gym change driven by Ian's own 08.18 session note.
+
+     THE GYM CHANGE IS THE PART THAT IS NOT ROUTINE. detectors.py fired on Explosive cable
+     press, light and fast, skipped BOTH times he trained that day, 08.11 and 08.18. Both of
+     those dates are TUESDAYS and both are LEAGUE NIGHTS, and league weeks 3 and 4 are already
+     booked for 25 August and 1 September. His own note says why: "I have league tonight so I
+     don't want to press the pickleball workouts as hard today". So this is a SCHEDULING fault,
+     not a discipline one. A pickleball hand speed exercise is programmed on the one weekday he
+     plays competitive pickleball, and he deprioritises it correctly every single time.
+
+     MOVED TO FRIDAY, WHICH IS THE CATEGORY IAN APPROVED ON 08.02.2026: moving a block of work
+     to a day he actually trains is SILENT. Friday is push, same movement pattern, no pickleball
+     on it, and he trains it. The object is MOVED, not recreated, so its scheme string is carried
+     across byte for byte and no non ASCII literal is introduced by this block.
+
+     THE THREE SUNDAY HAND SPEED EXERCISES ALSO MISSED TWICE AND ARE DELIBERATELY NOT TOUCHED.
+     Ian PINNED them to Sunday on 08.06.2026 after overruling an automatic move. They are
+     reported in the brief and left exactly where they are.
+
+     Guard flag mig312_0819 is NOT in the seed, per the 07.09.2026 rule. */
+  try{ if(profile==="ian"){
+      if(!state.meta) state.meta={};
+      var _T312="2026-08-19";
+
+      /* --- Today's date keyed content. Written only when the key is ABSENT, so each of these
+             is idempotent on its own and does not depend on the guard flag below. --- */
+      if(!state.briefing) state.briefing={forIan:{},done:{}};
+      if(!state.briefing.forIan) state.briefing.forIan={};
+      if(!state.briefing.forIan[_T312]){
+        state.briefing.forIan[_T312]=[
+          {id:"brief-20260819-1", type:"Real estate", done:false, url:"",
+           title:"Bonks sell closes today and you still do not have a time",
+           note:"The $625,000 seller side closes today, their agent never gave a time, and it is not on NP Dodge. Coffee with Jhaimi Andrick is 09:30 and the Fir St walkthrough is 19:00.",
+           why:"Because it closes today with a blank time and one collision risk"},
+          {id:"brief-20260819-2", type:"Real estate", done:false, url:"",
+           title:"Horizon appraisal is still the gate and the week is nearly gone",
+           note:"Crystal Johnson, $577,861, is the only counted deal that can still leave the board. The closing was called week of 17 to 21 August and no date exists. Ask the appraisal result first.",
+           why:"Because it sits inside your $7,050,357 production figure and can still come out"},
+          {id:"brief-20260819-3", type:"Pickleball", done:false, url:"https://betterpickleball.com/tournament-tips/",
+           title:"Four days out. Settle the toss now, not at the net on Sunday",
+           note:"If you and Dylan win it, receive. Serving teams win about 42.5 percent of points. Court tonight is 17:30 to 20:00 but the walkthrough takes 19:00, so plan a 90 minute session.",
+           why:"Because Aug 23 sets your first DUPR and nothing new gets learned in four days"}
+        ];
+      }
+
+      if(!state.futureIdeas) state.futureIdeas={};
+      if(!state.futureIdeas[_T312]){
+        state.futureIdeas[_T312]=[
+          {id:"fi-20260819-1", url:"",
+           text:"Chris is in the Indian Pointe HOA meeting Thursday at 11:30 with seven neighbours on the invite list. That is a room full of Indian Pointe homeowners on a Zoom. Ask him to mention that you do free home value reports. It costs him one sentence."},
+          {id:"fi-20260819-2", url:"",
+           text:"Your people list holds nine records and exactly one carries a contact date. Spend fifteen minutes today filling last contacted in from memory. You cannot see who is slipping until the field exists, and your sphere cadence is currently running on one person."},
+          {id:"fi-20260819-3", url:"https://www.youtube.com/watch?v=r5chw-XMGWg",
+           text:"The haircut at 14:00 puts you in a chair for forty five minutes. Watch the Briones rating video there and do the 1 to 10 self check on your phone straight after, so Sunday's plan is written by Thursday instead of Saturday night."},
+          {id:"fi-20260819-4", url:"",
+           text:"The Solara storefront countdown was set to 17 August at 18:00 and it has now run out in public. Whatever the press does next, an expired timer on the homepage is worse than no timer. One theme edit buys the time back without touching the drop plan."}
+        ];
+      }
+
+      if(!state.quickWin) state.quickWin={items:[],done:{},picks:{}};
+      if(!state.quickWin.picks) state.quickWin.picks={};
+      if(!state.quickWin.picks[_T312]){
+        state.quickWin.picks[_T312]=[
+          "Send one message to the listing agent on 5122 N 141st: does the accepted home sale contingency carry a kick out or a first right of refusal clause. That single answer decides whether the Belknaps' cash offer can displace it, and an offer was being adjusted Monday night.",
+          "Legs today is MODERATE, and moderate is the whole instruction. Leg press stays honest, everything else stops a set short, nothing to failure. Four days out the legs have to be fresh on Sunday, not strong on Wednesday."
+        ];
+      }
+
+      if(!state.pickleball) state.pickleball={};
+      var _P312=state.pickleball;
+      if(!_P312.videoRec) _P312.videoRec={};
+      if(!_P312.videoRec[_T312]){
+        _P312.videoRec[_T312]={title:"Raise Your RATING by 1 Whole Point (3.5-4.5) In 3 EASY Steps",
+          url:"https://www.youtube.com/watch?v=r5chw-XMGWg",
+          note:"Not a technical video and deliberately so. Four pillars, fitness and footwork, fundamentals, shot selection and strategy, mindset, with a 1 to 10 self grade on each. Watch it once before Sunday as a gut check, not as a new drill list."};
+      }
+      if(!_P312.research) _P312.research={};
+      if(!_P312.research[_T312]){
+        _P312.research[_T312]={title:"If you win the toss, receive. The math already on your file backs it up.",
+          text:"The serving team wins only about 42.5 percent of points and the returning team about 57.5, because serving earns nothing for free while returning gives you one more look at the ball before you have to perform under pressure yourself. If you and Dylan win the toss Sunday, default to receiving unless something specific says otherwise. Decide it now so it is not a conversation happening in front of your first opponents.",
+          url:"https://betterpickleball.com/tournament-tips/",
+          source:"betterpickleball.com/tournament-tips, headline level only, plus the serve win rate already on file, 08.19.2026"};
+      }
+      if(!_P312.coachRec) _P312.coachRec={};
+      if(!_P312.coachRec[_T312]){
+        _P312.coachRec[_T312]={title:"Four days out. Nothing new to learn, confirm what already holds.",
+          note:"Run the honest 1 to 10 self check on fitness, fundamentals, shot selection and mindset before Sunday, not during it. Decide now that you receive if you win the toss. Everything else, hands, contact height, the drive fix and the tournament defaults, stays exactly as it stood on 08.16."};
+      }
+      if(!_P312.coachBullets) _P312.coachBullets={};
+      if(!_P312.coachBullets[_T312]){
+        _P312.coachBullets[_T312]=[
+          "One job tonight, Ian, and it is the same one all three 22 July film studies landed on. Any ball you meet above net height gets accelerated, no second look. Below the net band you reset.",
+          "Last night's best evidence was not the 2-0 2-0. It was the block with Dylan against the 3.4 to 3.6 pair, where in your own words you both got to the kitchen line and stopped attacking every ball. That is the game you need on Sunday.",
+          "Drops going long is now on record two days running next to drives missing long or netted. That is n equals 2 and both are self report, so it is a thread to count on film, not a fault to rebuild four days out. Do not touch your swing this week.",
+          "Court is 17:30 tonight and the Bonk walkthrough takes 19:00, so you have about 90 minutes, not the 150 on the plan. Touch, serves and the speed up blocks you first drilled on 08.15. Wednesday is MODERATE on your own taper.",
+          "Settle two things today rather than on Sunday. Receive if you win the toss, serving teams win about 42.5 percent of points. And run the honest 1 to 10 self check before the day, not in the parking lot."
+        ];
+      }
+
+      /* --- Guarded, one time only. --- */
+      if(!state.meta.mig312_0819){
+
+        /* ACTIVE PICKLEBALL, refreshed to the taper set. These are plain arrays, so
+           deepMergeDefaults will never update them from the seed and a migration is the
+           only route that reaches his phone. */
+        _P312.workOn=[
+          "Run the honest 1 to 10 self check before Sunday, fitness, fundamentals, shot selection, mindset",
+          "Decide now: receive if you win the toss",
+          "Speed up blocks, keep repeating the 08.15 drill rep on purpose",
+          "Above net height gets accelerated, below the net band you reset",
+          "Reset grip looser than a drive, 2 to 3 out of 10 against 5",
+          "Drive fault is resolved, relax and play in control, stop swinging for maximum",
+          "Serve to the backhand by default, drive crosscourt or middle, down the line only on a clear read"
+        ];
+        _P312.cues=[
+          "Above the net, pull the trigger, below the net you're forced up",
+          "Relax, play in control, don't smack it",
+          "Loose hands, 2 to 3 out of 10 on a reset",
+          "Good drop advance, bad drop stay back, okay drop hold and reset",
+          "Serve backhand by default",
+          "Crosscourt or middle, down the line only on a clear read",
+          "Set your feet before you swing on a ball that hasn't bounced",
+          "Down the line or the body on a speed up, not crosscourt",
+          "Split step lands before their contact, not after",
+          "If you get the choice, receive first"
+        ];
+
+        /* GYM. Move Explosive cable press, light and fast from Tuesday to Friday.
+           The OBJECT is moved, never rebuilt, so the scheme string survives untouched. */
+        try{
+          var _sp=(state.gym&&state.gym.split)||[], _tue=null, _fri=null, _i312;
+          for(_i312=0;_i312<_sp.length;_i312++){
+            if(_sp[_i312]&&_sp[_i312].day==="Tue") _tue=_sp[_i312];
+            if(_sp[_i312]&&_sp[_i312].day==="Fri") _fri=_sp[_i312];
+          }
+          if(_tue&&_fri&&Array.isArray(_tue.exercises)&&Array.isArray(_fri.exercises)){
+            var _onFri=_fri.exercises.some(function(x){ return x&&x.id==="hs-cablepress-fast"; });
+            var _at=-1;
+            for(_i312=0;_i312<_tue.exercises.length;_i312++){
+              if(_tue.exercises[_i312]&&_tue.exercises[_i312].id==="hs-cablepress-fast"){ _at=_i312; break; }
+            }
+            if(_at>-1){
+              var _mv=_tue.exercises.splice(_at,1)[0];
+              if(!_onFri&&_mv){
+                _mv.movedFrom="Tue"; _mv.movedOn="2026-08-19"; _mv.movedBy="agent";
+                _mv.moveNote="Tuesday is league night. Skipped 08.11 and 08.18, both Tuesdays, both league. Moved to Friday, which is push and has no pickleball on it.";
+                _fri.exercises.push(_mv);
+              }
+            }
+          }
+        }catch(_e312){}
+
+        if(!Array.isArray(state.autoLog)) state.autoLog=[];
+        if(!state.autoLog.some(function(x){ return x&&x.id==="auto-20260819-cablepress"; })){
+          state.autoLog.unshift({id:"auto-20260819-cablepress", date:"2026-08-19", area:"Gym",
+            what:"Moved Explosive cable press, light and fast from Tuesday to Friday",
+            why:"Tuesday is league night now, so a pickleball hand speed exercise sits on the one weekday you play competitive pickleball. You skipped it for exactly that reason and you were right to. Friday is push, same movement pattern, and it has no pickleball on it.",
+            evidence:"Skipped 2 of 2 times you trained that day, 08.11 and 08.18, both Tuesdays, both league nights. Your 08.18 note: I have league tonight so I don't want to press the pickleball workouts as hard today. League weeks 3 and 4 are booked for 25 August and 1 September, so the collision repeats. Your three Sunday hand speed exercises also missed twice and were deliberately left alone because you pinned them on 08.06.",
+            undo:"Gym, open Tuesday or Friday and move it back, or edit the exercise list on either day."});
+        }
+
+        /* TO DOS. Four items folded into another item's message. Nothing deleted: each one
+           lands in archive.todosDone with the id it merged into, and the build 220 tombstone
+           sweep keeps it out of the live list from here on. */
+        try{
+          if(!state.archive) state.archive={};
+          if(!Array.isArray(state.archive.todosDone)) state.archive.todosDone=[];
+          if(!Array.isArray(state.meta.retiredTodoIds)) state.meta.retiredTodoIds=[];
+          var _fold=[
+            {id:"ret-20260813-barker-receipts", into:"ret-20260817-barker-thursday", reason:"Folded into ret-20260817-barker-thursday. Same people, same Thursday 20 August message, and asking for the receipts IS the Thursday contact. The basement measurement went with it."},
+            {id:"ret-20260815-horizon-preocc", into:"ret-20260815-horizon-appraisal", reason:"Folded into ret-20260815-horizon-appraisal. The appraisal result, the closing date and the $80 a day pre occupancy terms all come out of the same conversation with Chris."},
+            {id:"ret-20260815-bonks-sell-addr", into:"ret-20260817-bonk-time", reason:"Folded into ret-20260817-bonk-time. One closing, today, two blanks on it, one message."},
+            {id:"ret-20260817-blondo-lot-pricing", into:"ret-20260817-siena-plan", reason:"Folded into ret-20260817-siena-plan. Both answer the same question, whether a Siena II plus a lot fits Sydney Spicer's $625,000 budget."}
+          ];
+          var _live=(state.realEstate&&Array.isArray(state.realEstate.todos))?state.realEstate.todos:null;
+          _fold.forEach(function(f){
+            var _old=null;
+            if(_live){ for(var k=0;k<_live.length;k++){ if(_live[k]&&_live[k].id===f.id){ _old=_live[k]; break; } } }
+            if(!state.archive.todosDone.some(function(a){ return a&&a.id===f.id; })){
+              state.archive.todosDone.push({id:f.id, text:(_old&&_old.text)||"", done:false,
+                retiredOn:"2026-08-19", reason:f.reason, mergedInto:f.into});
+            }
+            if(state.meta.retiredTodoIds.indexOf(f.id)<0) state.meta.retiredTodoIds.push(f.id);
+          });
+          if(_live){
+            state.realEstate.todos=_live.filter(function(t){
+              return !(t && state.meta.retiredTodoIds.indexOf(t.id)>=0); });
+          }
+        }catch(_e312b){}
+
+        /* CONTEXT ARCHIVE. Ian's two 08.18 inputs, plus one housekeeping flag on 08.13. */
+        try{
+          if(!state.context) state.context={};
+          if(!state.context.dailyLog) state.context.dailyLog={};
+          var _d18=state.context.dailyLog["2026-08-18"]||(state.context.dailyLog["2026-08-18"]={});
+          if(!_d18.gymNoteArchive){
+            _d18.gymNoteArchive="Skipped  the cable press because I went hard on all of the other ones and I have league tonight so I don't want to press the pickleball workouts as hard today ";
+          }
+          _d18.gymNoteAgentActed="2026-08-19";
+          _d18.dailyEntryAgentActed="2026-08-19";
+          _d18.claudeAction="GYM, cable press skipped for league night: EXECUTED as a real gym change, not just recorded. Explosive cable press moved from Tuesday to Friday, because both skips were Tuesdays and both were league nights, build 312. PB, still a little inconsistent but overall play improving: logged. That is consistency in your own words six sessions running, and the third time you have separated improving from consistent unprompted.";
+          var _d13=state.context.dailyLog["2026-08-13"];
+          if(_d13 && !_d13.gymNoteAgentActed){ _d13.gymNoteAgentActed="2026-08-19"; }
+        }catch(_e312c){}
+
+        state.meta.mig312_0819=true;
+      }
+      save(true);
+  } }catch(e){ try{ console.warn("mig312 did not apply:",e&&e.message); }catch(_){} }
 
 /* build 225: focus timer removed, nothing to clear here anymore. */
   applyAccent(); dailyReset(); save(true);
