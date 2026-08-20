@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 316 (2026-08-20)">
+<meta name="build" content="v21 build 317 (2026-08-20)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -10366,6 +10366,81 @@ try{ if(profile==="ian"){
       if(!state.meta.mig316_daily){ state.meta.mig316_daily=true; }
       save(true);
   } }catch(e){ try{ console.warn("mig316 did not apply:",e&&e.message); }catch(_){} }
+
+/* ===== v21 build 317: THE BONK BUY SIDE DID NOT CLOSE THIS MORNING. DELAYED, NOT CLOSED =====
+     Ian, 20 August 2026. The 401 Fir St Ashland closing did NOT happen at 9:00 AM as scheduled.
+     It is delayed to LATER THE SAME DAY, Thursday 20 August. Ian expects it to complete.
+
+     CAUSE, IN IAN'S WORDS, RECORDED AS FACT AND NOT DRESSED UP: the seller had not cleared his
+     belongings out of the house and was "kind of lazy". IAN AND CHRIS ARE PHYSICALLY CLEANING
+     THE HOUSE OUT THEMSELVES so the closing can still happen today.
+
+     STAGE DOES NOT MOVE. This stays UNDER CONTRACT. It has not closed. The temptation on a
+     record whose close date is today is to flip it to Closed and correct later, and that is
+     exactly what build 313 did NOT do to the buy side and what this build does not do either.
+     Price, side, source and the $420,000 are untouched.
+
+     THE NEW TIME IS NOT WRITTEN, BECAUSE IAN DID NOT GIVE ONE. "Tonight" is what he said. The
+     NP Dodge calendar currently carries "Bonk Fir St Closing (Chris & Ian)" at 16:00 at Stewart
+     Title, plus a "401 Fir Street - moving help" block 09:00 to 11:00 at 401 Fir St. 16:00 is
+     late afternoon and not obviously "tonight", so the two do not agree and NEITHER IS TREATED
+     AS THE ANSWER. The record says evening, time unconfirmed, and the discrepancy is named.
+
+     THIS IS THE BUY SIDE AND NOTHING HERE TOUCHES THE SELL SIDE. re-bonks-sell closed on 19
+     August at 4407 N 189 St and is a separate record with a separate problem. This is also NOT
+     the Willis situation, which is a different deal on the same day. Do not merge any of them.
+
+     ONE FACT LOGGED WITHOUT COMMENT: two agents doing a seller's cleanout by hand is unpaid
+     labour on a deal that is already under contract, and it is the SECOND last minute save on a
+     Bonk closing this week. The first was the title addendum on the sell side that still read
+     $614,900 and had not been updated to the escalated $625,000. */
+  try{ if(profile==="ian" && state.realEstate && Array.isArray(state.realEstate.deals)
+          && state.meta && !state.meta.mig317_bonks_buy_delay){
+      var _MK317="08.20.2026 DELAYED TO EVENING";
+      var _buy317=null, _D317=state.realEstate.deals;
+      for(var _i317=0;_i317<_D317.length;_i317++){
+        if(_D317[_i317] && _D317[_i317].id==="re-bonks-buy") _buy317=_D317[_i317];
+      }
+      if(_buy317){
+        /* Stage deliberately untouched. Assert it rather than assume it. */
+        if(_buy317.stage!=="Under Contract"){ _buy317.stage="Under Contract"; }
+        var _c317=String(_buy317.close||"");
+        if(_c317.indexOf("DELAYED")<0){
+          _buy317.close=(_c317||"August 20, 2026")+" (DELAYED from 9:00 AM to the evening, time unconfirmed)";
+        }
+        if(String(_buy317.note||"").indexOf(_MK317)<0){
+          _buy317.note=String(_buy317.note||"")+" "+_MK317+", FROM IAN 20 AUGUST 2026. THE 9:00 AM CLOSING ON 401 FIR ST ASHLAND DID NOT HAPPEN. "
+            +"It is delayed to later TODAY, still Thursday 20 August, and Ian expects it to complete. STAGE STAYS UNDER CONTRACT because it has NOT closed. "
+            +"CAUSE: the seller had not moved his belongings out and was, in Ian's words, kind of lazy. IAN AND CHRIS ARE CLEARING THE HOUSE OUT THEMSELVES "
+            +"so the closing can still happen today. NO NEW TIME IS RECORDED BECAUSE HE DID NOT GIVE ONE. He said tonight. The NP Dodge calendar carries the "
+            +"closing at 16:00 at Stewart Title and a moving help block 09:00 to 11:00 at the property. 16:00 and tonight do not agree and the difference is "
+            +"flagged rather than resolved. FACT LOGGED WITHOUT COMMENT: two agents doing the seller's cleanout by hand is unpaid labour on a deal already "
+            +"under contract, and it is the SECOND last minute save on a Bonk closing this week, the first being the sell side title addendum that still read "
+            +"$614,900 instead of the escalated $625,000. SEPARATE FROM THE WILLIS SITUATION AND SEPARATE FROM THE SELL SIDE. Three different problems, one day.";
+        }
+      }
+      /* The app event carries the delay too, so the row and the event do not disagree. */
+      if(Array.isArray(state.events)){
+        state.events.forEach(function(e){
+          if(e && e.id==="ev-20260820-bonks-buy-close" && String(e.title||"").indexOf("DELAYED")<0){
+            e.title=String(e.title||"")+" [DELAYED from 9:00 AM to the evening, exact time UNCONFIRMED]";
+          }
+        });
+      }
+      /* Ask for the time rather than flag it a third time. The 08.16 lesson: a flag is not a
+         question, and a gap only Ian or the title company can close never closes by flagging. */
+      if(!Array.isArray(state.realEstate.todos)) state.realEstate.todos=[];
+      if(!state.realEstate.todos.some(function(t){ return t && t.id==="ret-20260820-bonk-buy-time"; })){
+        state.realEstate.todos.push({
+          id:"ret-20260820-bonk-buy-time", key:"bonk-buy-close-time", done:false, due:"2026-08-20",
+          src:"Ian, 20 August 2026, the delayed 401 Fir St closing",
+          text:"WHAT TIME IS THE 401 FIR ST CLOSING TONIGHT? Ian said the 9:00 AM slot is dead and it moves to the evening but gave no time. The NP Dodge calendar says 16:00 at Stewart Title, which is not evening, so the two disagree. Get the real time from the title company. It matters today: the 17:30 Belknap earnest deposit pickup and Ian's 17:30 pickleball training both sit in the same window."
+        });
+      }
+      state.meta.mig317_bonks_buy_delay=true;
+      save(true);
+  } }catch(e){ try{ console.warn("mig317 did not apply:",e&&e.message); }catch(_){} }
+
 
 
 
