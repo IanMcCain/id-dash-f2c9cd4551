@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 317 (2026-08-20)">
+<meta name="build" content="v21 build 318 (2026-08-20)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -10440,6 +10440,91 @@ try{ if(profile==="ian"){
       state.meta.mig317_bonks_buy_delay=true;
       save(true);
   } }catch(e){ try{ console.warn("mig317 did not apply:",e&&e.message); }catch(_){} }
+
+/* ===== v21 build 318: THE WILLIS CONTRACT IS DEAD. 10218 SPYGLASS COMES OUT OF UNDER CONTRACT ==
+     Ian, 20 August 2026: issues came up at the Wednesday inspection, the buyers would not wait
+     for repairs and mitigation, and they withdrew. The plan is to fix the problems and relist at
+     a reduced price.
+
+     THE STAGE IS THE LEAST WRONG OPTION AND THE RECORD SAYS SO RATHER THAN PRETENDING OTHERWISE.
+     RESTAGES offers Prospecting, Buyer, Coming Soon, Active, Building, Under Contract, Just Sold,
+     Closed and Follow up. THERE IS NO STATE FOR "under contract fell through, off market while
+     repairs happen, relist later". Coming Soon is the closest, because it is what the app already
+     uses for a listing that will come to market, and it correctly drops the deal out of both goal
+     bars. It is NOT an accurate description and nobody should read it as one.
+
+     THE FINDINGS ARE NOT ON THIS RECORD BECAUSE THEY ARE NOT ANYWHERE WE CAN SEE. Searched every
+     message thread from Wednesday midday to now and the whole mailbox: the inspection findings,
+     the buyers' requests and the withdrawal itself appear NOWHERE. The only trace is Chris giving
+     the buyers' agent his NP Dodge email at 08:55 on 20 August. It was handled by phone or on an
+     email account we do not hold. NOTHING about the findings is invented here.
+
+     PRICE IS DELIBERATELY NOT TOUCHED AND THAT IS A FLAG, NOT AN OVERSIGHT. It still reads
+     $610,000, which was the CONTRACT price on a dead contract. It is now neither a contract price
+     nor a list price. The last real list price was $619,900 and the next one is going to be lower
+     and is not yet decided. Price is Class A and belongs to Ian's thumb, so it is reported rather
+     than rewritten, exactly as Bruce O'Neil was.
+
+     BOTH GOAL BARS FALL AND THE NUMBERS ARE NOT SOFTENED. reGoalsCard counts Closed plus Under
+     Contract, so removing $610,000 and one deal takes production from $7,050,357 to $6,440,357
+     against the $10M goal, and the deal count from 15 to 14 of 20. Pending take home falls by
+     $3,836.90. That is a real loss of pipeline, not a presentational change. */
+  try{ if(profile==="ian" && state.realEstate && Array.isArray(state.realEstate.deals)
+          && state.meta && !state.meta.mig318_willis_fellthrough){
+      var _MK318="08.20.2026 CONTRACT TERMINATED";
+      var _w318=null, _D318=state.realEstate.deals;
+      for(var i=0;i<_D318.length;i++){ if(_D318[i] && _D318[i].id==="re-cynthia-willis"){ _w318=_D318[i]; break; } }
+      if(_w318){
+        if(_w318.stage==="Under Contract"){ _w318.stage="Coming Soon"; }
+        _w318.close="NO CLOSE DATE. Contract terminated after the 19 Aug inspection. Repairs, then relist at a reduced price.";
+        if(String(_w318.note||"").indexOf(_MK318)<0){
+          _w318.note=String(_w318.note||"")+" "+_MK318+", FROM IAN 20 AUGUST 2026. THE BUYERS WITHDREW. Issues came up during the "
+            +"Wednesday 19 August inspection, they would not wait for the repairs and the mitigation, and they backed out. The 18 September "
+            +"closing is dead and the $610,000 contract is dead with it. PLAN: fix the problems, then go back on market at a REDUCED PRICE, "
+            +"figure not yet set. "
+            +"THE SPECIFIC FINDINGS ARE NOT RECORDED ANYWHERE WE CAN REACH AND ARE THEREFORE NOT WRITTEN HERE. Every message thread from "
+            +"Wednesday midday through Thursday morning was searched with attributedBody decoded, and so was the mailbox. The inspection "
+            +"findings, the buyers' repair requests, what was refused and the withdrawal itself appear in NONE of them. The Willis group chat "
+            +"went silent at 10:51 Wednesday, before the 2:00 inspection. The only trace is Chris sending the buyers' agent his NP Dodge email "
+            +"address at 08:55 on 20 August, which is consistent with it being handled by phone and about to move to paperwork. NO WRITTEN "
+            +"ESTIMATE OR CONTRACTOR OPINION EXISTS ON ANY CHANNEL WE HOLD. Get the inspection report and the resolution request from Chris "
+            +"before any repair scope or reduced price is derived. "
+            +"ONE FINDING WAS FORESEEABLE AND SHOULD BE CHECKED AGAINST THE REPORT FIRST. Open house feedback on 09 August flagged a DRIED "
+            +"STAIN NEAR THE BASEMENT UTILITY AREA. Cynthia's read was that it came from winterising the sprinklers and that a bucket was "
+            +"still in there. It was a known risk going in and it is the single most likely candidate for whatever the inspector found. "
+            +"UNCONFIRMED either way. "
+            +"THE BROKEN DOORBELL IS UNRELATED, CHECKED RATHER THAN ASSUMED. Cynthia reported at 10:51 on 19 August, BEFORE the inspection, "
+            +"that the Google doorbell had stopped working and A-1 Electrical could not come until Friday 7 to 9 AM. That is a seller side "
+            +"repair notified in advance, not an inspection finding, though an inspector could reasonably note a doorbell that does not work. "
+            +"THE MLS HAS NOT BEEN UPDATED. As of 10:15 on 20 August, GPRMLS 22622436 still reads PENDING. Changing the listing status is an "
+            +"open action for Chris and until it happens the market cannot see that this home is available again. "
+            +"THE PRICE FIELD IS STALE ON PURPOSE. $610,000 was the contract price on a terminated contract. The last true list price was "
+            +"$619,900. The next one is lower and undecided. Price is Class A, so it is raised rather than rewritten. "
+            +"THE 3.7 PERCENT SELLER RATE OVERRIDE ON THIS RECORD IS UNCHANGED and still applies whenever it does relist. "
+            +"TIMING IS THE REAL DECISION, NOT THE REPAIR LIST. Repairs plus a relist puts this back on market in September at the earliest, "
+            +"into Nebraska's thinning autumn pool, at a lower number, carrying a fall through the next buyer's agent will ask about. Spring "
+            +"is the alternative. Both are set out in the write up rather than assumed here.";
+        }
+      }
+      /* The 18 September closing event is RETITLED, not deleted, the same way the day 10 price
+         decision event was, so the history survives and no dead closing sits on the calendar
+         asserting something that is not going to happen. */
+      var _E318=state.events||[];
+      for(var j=0;j<_E318.length;j++){
+        if(_E318[j] && _E318[j].id==="ev-20260918-willis-close"){
+          if(String(_E318[j].title||"").indexOf("CANCELLED")<0){
+            _E318[j].title="CANCELLED, closing 10218 Spyglass Dr, Willis. Buyers withdrew after the 19 Aug inspection";
+            _E318[j].note=String(_E318[j].note||"")+" CANCELLED 08.20.2026. The buyers withdrew after the 19 August inspection over repairs "
+              +"and mitigation they would not wait for. Kept rather than deleted so the history survives. There is NO closing date now. The "
+              +"home goes back on market after repairs at a reduced price, timing undecided.";
+          }
+          break;
+        }
+      }
+      state.meta.mig318_willis_fellthrough=true;
+      save(true);
+  } }catch(e){ try{ console.warn("mig318 did not apply:",e&&e.message); }catch(_){} }
+
 
 
 
