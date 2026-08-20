@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 314 (2026-08-19)">
+<meta name="build" content="v21 build 315 (2026-08-19)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -10211,6 +10211,78 @@ try{ if(profile==="ian"){
       state.meta.mig314_bonks_sell_addr=true;
       save(true);
   } }catch(e){ try{ console.warn("mig314 did not apply:",e&&e.message); }catch(_){} }
+
+/* ===== v21 build 315: THE 08.19 SESSION, MANUAL, NO WATCH DATA, FOOTAGE PENDING =============
+     Wednesday 19 August, open play doubles with Dylan Headrick, 4:15 to 8:05 PM, 3h50m.
+
+     NO WATCH. He forgot it, so calories, heart rate and effort have NO VALUES and the fields are
+     left EMPTY rather than estimated. The card guards every stat on truthiness, so an absent
+     field simply does not render, and pkEffort() falls back to regexing the note for
+     "effort N of 10", so THIS NOTE DELIBERATELY NEVER WRITES THAT PATTERN. Tuesday's rating is
+     referred to in words so the card cannot pick it up and display it as tonight's.
+
+     THE ABSENCE IS A FORGOTTEN WATCH, NOT A LIGHT NIGHT, and the note says so, because a blank
+     row in a month of numbers reads as a soft session to anyone skimming later.
+
+     FOOTAGE EXISTS AND IS PENDING. He filmed it and processes it tomorrow. Registered as a goal
+     so the film study path has something to pick up, and the goal text is deliberately NEUTRAL:
+     his self estimate is NOT in it, because the video coach writes goals at the end of a run and
+     is therefore likely to read them. The self estimate lives on the session note only.
+
+     ALSO CORRECTED HERE: the 08.18 note said FOUR DAYS TO THE APC. Tuesday 18 August to Sunday
+     23 August is FIVE. Appended as a correction rather than edited out. */
+  try{ if(profile==="ian" && state.pickleball){
+      if(!state.meta) state.meta={};
+      if(!Array.isArray(state.pickleball.sessions)) state.pickleball.sessions=[];
+      var _S315={id:"pk-20260819-openplay", date:"2026-08-19", kind:"Open play", venue:"",
+        duration:"3h 50m 00s",
+        result:"", score:"", opponent:"",
+        note:"MANUAL LOG, NO WATCH DATA. Open play doubles with DYLAN HEADRICK, Omaha, 4:15 to 8:05 PM, 3 hours 50 minutes. HE DID NOT BRING HIS WATCH, so there is no heart rate, no calorie total and no effort rating for this session. Those fields are DELIBERATELY EMPTY and were NOT estimated, backfilled from a neighbouring session or inferred from how it sounds. THE ABSENCE IS A FORGOTTEN WATCH AND NOT A LIGHT SESSION. His words: they went hard. Any later reader skimming a month of numbers must not read the blank row as an easy night, and no monthly average may treat it as a zero. "
+            +"LONGEST COURT SESSION ON RECORD, and the margin is stated honestly rather than as by far. 3h50m beats the 07.25 tournament DAY at 3:36:33 by about 13 minutes, and it is his longest NON tournament session by a clearer margin, about 26 minutes ahead of the 07.13 league at 3:24:22. Third is the 08.11 league at 3:07:19. "
+            +"FOOTAGE EXISTS AND IS PENDING PROCESSING. He filmed today and will process it on 20 August. This is the FIRST FILMED SESSION SINCE 08.08 and it lands four days before the APC. Goal pk-goal-film-0819 tracks it. "
+            +"OPPOSITION, AND THE TWO RANGES HE GAVE DO NOT MATCH, SO BOTH ARE RECORDED AND NEITHER IS RESOLVED. He said the field ranged 3.5 to 4.5, and separately that he and Dylan kept up well against 4.25 to 5.5 players. Those top ends are a full rating point apart. Recorded as his read of the field, unverified, and it is worth one question rather than an assumption: was there a 5.0 plus player there, or is 4.5 the real ceiling of the night. Nobody should build anything on the higher number until he answers. "
+            +"HIS SELF ESTIMATE, HIS WORDS, AND IT IS AN ESTIMATE AND NOTHING ELSE: he and Dylan together are close to 3.8 to 3.9, and \"if we were both just a little more consistent we would be 4.0 together.\" IT IS NOT A RATING. It does not touch state.pickleball.skillEstimate, it does not move the radar, and no coach number is derived from it. BLIND GRADING WARNING, AND IT IS LIVE RIGHT NOW BECAUSE THE FOOTAGE IS PROCESSED TOMORROW: this paragraph is exactly the kind of thing a grading session must never see before it writes a grade. Whoever processes the 08.19 film must NOT open this record until the grade is written from the frames. "
+            +"HE SAYS THEY ARE NEARLY READY and want maybe one more day drilling or playing before Sunday. "
+            +"CONSISTENCY IS HIS STATED WEAK POINT ON THE SIXTH SESSION HE HAS NAMED IT: 08.10, 08.11, 08.14, 08.15, 08.17 and today. That is a COUNT of his own words across six sessions in ten days, not a judgement of his play and not a finding. HONEST QUALIFIER SO THE COUNT IS NOT INFLATED: it is six sessions on which he named it, not six consecutive sessions. On 08.18 the error he named was occasional dumb mistakes rather than the word consistency, and whether those are the same thing is not decided here. "
+            +"LOAD, STATED AS FACTS FOR HIM TO WEIGH AND NOTHING MORE. Tuesday 18 August ran 2:44:02 with an effort rating of eight. Today ran 3:50:00 and he says they went hard. That is 6 hours 34 minutes on court across two days, and they are the two longest sessions in his record sitting back to back, four days before the APC on Sunday 23 August. HIS OWN TAPER PLAN, build 299, has Wednesday MODERATE, Thursday MODERATE, Friday LIGHT and Saturday LIGHT. Today was not moderate. NO INSTRUCTION IS GIVEN HERE AND NONE IS IMPLIED. The numbers are on the record and Thursday, Friday and Saturday are his call. "
+            +"OPEN AND WORTH ASKING: THE GRIP WAS SCHEDULED FOR REPLACEMENT TODAY. Build 301 recorded his decision to fit the new grip on Wednesday 19 August and break it in across Wednesday, Thursday and Saturday before Sunday. Whether it was fitted before this session is UNKNOWN, and it matters twice over, once because a fresh grip in a 3h50m session is most of the break in in one go, and once because the footage from today will be read against whichever grip was on the paddle. "
+            +"NOT KNOWN AND NOT GUESSED: the venue, whether any of the 3h50m was drilling rather than games, who the higher rated players were, any score or win and loss record, and whether Bianca played at all."};
+      if(!state.pickleball.sessions.some(function(x){ return x&&x.id===_S315.id; })){
+        state.pickleball.sessions.push(_S315);
+        state.pickleball.sessions.sort(function(a,b){ return String(a&&a.date).localeCompare(String(b&&b.date)); });
+      }
+
+      /* The 08.18 day count correction, appended and not edited out. */
+      var _C315="CORRECTION APPENDED 08.19.2026, build 315";
+      state.pickleball.sessions.forEach(function(s){
+        if(!s || s.id!=="pk-20260818-league") return;
+        var n=String(s.note||"");
+        if(n.indexOf(_C315)>=0) return;
+        s.note=n+" "+_C315+": this record said FOUR DAYS TO THE APC. Tuesday 18 August to Sunday 23 August is FIVE days. The taper reading above is unaffected, only the day count was wrong. Corrected in the open rather than edited out.";
+      });
+
+      if(!state.meta.mig315_0819){
+        /* NEUTRAL GOAL TEXT ON PURPOSE. No self estimate, no shot claims, nothing a grading
+           session could absorb by reading the goals list, which the video coach does write to. */
+        if(!Array.isArray(state.pickleball.goals)) state.pickleball.goals=[];
+        if(!state.pickleball.goals.some(function(g){ return g&&g.id==="pk-goal-film-0819"; })){
+          state.pickleball.goals.push({id:"pk-goal-film-0819", done:false,
+            short:"Process the 19 Aug footage",
+            text:"Footage exists from Wednesday 19 August, open play with Dylan, 3h50m. It is the first filmed session since 08.08 and the last one before the APC on Sunday. Process it with the video coach skill. Grade it from the frames FIRST, against the written criteria, before opening the session record for that date."});
+        }
+
+        if(!Array.isArray(state.autoLog)) state.autoLog=[];
+        if(!state.autoLog.some(function(x){ return x&&x.id==="auto-20260819-pksession"; })){
+          state.autoLog.unshift({id:"auto-20260819-pksession", date:"2026-08-19", area:"Pickleball",
+            what:"Logged Wednesday manually, 4:15 to 8:05 PM with Dylan, and registered the footage as pending",
+            why:"No watch, so heart rate, calories and effort are blank on purpose rather than guessed. A forgotten watch is not a light session and the record says so.",
+            evidence:"3h50m is your longest session on record, about 13 minutes past the 07.25 tournament day and about 26 minutes past your longest non tournament session. With Tuesday's 2:44:02 that is 6 hours 34 minutes on court in two days, four days out, against a plan that has Wednesday moderate. The numbers are here, the taper call is yours.",
+            undo:"Pickleball, Sessions, open the 19 August record to edit or remove it."});
+        }
+        state.meta.mig315_0819=true;
+      }
+      save(true);
+  } }catch(e){ try{ console.warn("mig315 did not apply:",e&&e.message); }catch(_){} }
 
 
 
