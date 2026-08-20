@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 315 (2026-08-19)">
+<meta name="build" content="v21 build 316 (2026-08-20)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -10283,6 +10283,90 @@ try{ if(profile==="ian"){
       }
       save(true);
   } }catch(e){ try{ console.warn("mig315 did not apply:",e&&e.message); }catch(_){} }
+
+  /* v21 build 316, 08.20.2026, ian-daily-brief daily inject. Date keyed content for TODAY,
+     the 08.19 gym note archive, and to do list maintenance per Ian's cap of 10. Runs on every
+     load, outside the SEED_VERSION gate. Guard mig316_daily lives in SAVED STATE ONLY, never in
+     seedIan().meta. Ian's 08.19 note said do not cut any workouts, so NOTHING was cut anywhere. */
+  try{ if(profile==="ian"){
+      var T316="2026-08-20";
+      if(!state.briefing) state.briefing={forIan:{},done:{}};
+      if(!state.briefing.forIan) state.briefing.forIan={};
+      if(!state.briefing.forIan[T316]) state.briefing.forIan[T316]=[{"id": "brief-20260820-1", "type": "Real estate", "title": "Bonks buy side closes today, 401 Fir St in Ashland", "note": "$420,000, buyer side, Chris's client. The sell side closed yesterday at $625,000 with payment still outstanding. Both halves of this client land inside 48 hours.", "why": "Because it is the only thing on your board carrying today's date", "url": "", "done": false}, {"id": "brief-20260820-2", "type": "Real estate", "title": "The Horizon closing window runs out tomorrow and no date exists", "note": "Crystal Johnson, $577,861, blocked on the appraisal since 15 August. It is the only deal already counted in your production that can still leave. Get the appraisal result from Chris.", "why": "Because the week of 17 to 21 August ends tomorrow", "url": "", "done": false}, {"id": "brief-20260820-3", "type": "Pickleball", "title": "Wednesday was 3h50m, filmed, and it broke your own taper", "note": "Longest session on record with Dylan, against a plan you wrote that said MODERATE. The footage is unprocessed and it is the last that exists before Sunday. Run it through the video coach.", "why": "Because it is your last evidence before your first rating, and 6h34m in two days is not a taper", "url": "https://www.youtube.com/watch?v=uUny6iWNPwM", "done": false}];
+      if(!state.futureIdeas) state.futureIdeas={};
+      if(!state.futureIdeas[T316]) state.futureIdeas[T316]=[{"id": "fi-20260820-1", "text": "Ask the Bonks for a Google review at the closing table today. Two closings in two days for the same family is the highest goodwill moment you will get all year, and you have no review flow at all.", "url": ""}, {"id": "fi-20260820-2", "text": "Post a 30 second piece on what a double closing week looks like. Sell side Wednesday, buy side Thursday, same clients. It shows competence without selling anything.", "url": ""}, {"id": "fi-20260820-3", "text": "Run one tight prep cycle instead of more volume: study Wednesday's footage today, drill the single worst fault Saturday morning, play it Sunday. Three days, one fault.", "url": ""}, {"id": "fi-20260820-4", "text": "Add a five minute end of day prompt to log calls, appointments and doors. Your metrics log has one entry since 12 July, so you cannot tell whether prospecting is broken or just unmeasured.", "url": ""}];
+      if(!state.quickWin) state.quickWin={picks:{},done:{}};
+      if(!state.quickWin.picks) state.quickWin.picks={};
+      if(!state.quickWin.picks[T316]) state.quickWin.picks[T316]=["Text the Barkers today. You set this date yourself on 17 August when you corrected Wednesday to Thursday or Friday, and the renovation status plus a meeting date are the two things gating the listing.", "Start the video coach on Wednesday's footage. 3h50m with Dylan, filmed, still unprocessed, and it is the last footage that exists before Sunday sets your rating. Starting it is the win."];
+      if(state.pickleball){
+        if(!state.pickleball.videoRec) state.pickleball.videoRec={};
+        if(!state.pickleball.videoRec[T316]) state.pickleball.videoRec[T316]={"title": "The Perfect Strategy To WIN Your First Ever Pickleball Tournament", "url": "https://www.youtube.com/watch?v=uUny6iWNPwM", "note": "Yesterday's pick was a self grading framework and you have had it a day. This one is about the format itself, which is the part you have never done. Watch it once, not twice."};
+        if(!state.pickleball.research) state.pickleball.research={};
+        if(!state.pickleball.research[T316]) state.pickleball.research[T316]={"title": "Your whole game plan rests on four drills from one day in July", "text": "Every conclusion you carry into Sunday traces to four film studies dated 22 July, all of them drills, all from a single day. Since then you have played 17 sessions and filmed two, 08 August and 19 August, and neither has been processed into a study. Wednesday's 3h50m is live match play with your actual tournament partner and it is already on your phone. Processing it is worth more than any session you can add this week.", "url": "", "source": "App videoStats and sessions, build 315 autoLog, 08.20.2026"};
+        if(!state.pickleball.coachRec) state.pickleball.coachRec={};
+        if(!state.pickleball.coachRec[T316]) state.pickleball.coachRec[T316]={"title": "Process Wednesday before you play another point.", "note": "3h50m of filmed match play with your tournament partner is worth more than anything you can add this week, and your current fault list is four drills from 22 July."};
+        if(!state.pickleball.coachBullets || Array.isArray(state.pickleball.coachBullets)) state.pickleball.coachBullets={};
+        if(!state.pickleball.coachBullets[T316]) state.pickleball.coachBullets[T316]=["Correction first, Ian. Your export predates Wednesday, so it looks like you did not play. You did. 4:15 to 8:05 with Dylan, 3h50m, and it is filmed.", "That footage is the most valuable thing you own this week. Every line in your plan comes from 22 July drills. Run Wednesday through the video coach before Sunday.", "Now the part you will not want. 3h50m was your longest ever, on a day your own taper said MODERATE. With Tuesday that is 6h34m in two days, four days out. You have not tapered, you have added.", "I am not telling you to skip tonight. Go, hit for an hour, work the trigger, leave. Make it a decision rather than a default.", "The one job is unchanged. Any ball above the net band gets accelerated, no second look. Below it you reset."];
+        if(!Array.isArray(state.pickleball.workOn)) state.pickleball.workOn=[];
+        var W316="Process filmed sessions within 48 hours, footage you do not study is not evidence";
+        if(state.pickleball.workOn.indexOf(W316)===-1) state.pickleball.workOn.push(W316);
+        if(!Array.isArray(state.pickleball.cues)) state.pickleball.cues=[];
+        var C316="Same routine between every game, water, towel, one breath, then the serve or receive call";
+        if(state.pickleball.cues.indexOf(C316)===-1) state.pickleball.cues.push(C316);
+      }
+      /* 08.19 gym note, archived verbatim then marked acted. Archive first, always. */
+      if(!state.context) state.context={};
+      if(!state.context.dailyLog) state.context.dailyLog={};
+      if(!state.context.dailyLog["2026-08-19"]) state.context.dailyLog["2026-08-19"]={};
+      var _dl316=state.context.dailyLog["2026-08-19"];
+      if(!_dl316.gymNoteArchive) _dl316.gymNoteArchive="Left early had a lot going on during the day do not cut any workouts ";
+      if(!_dl316.gymNoteAgentActed){ _dl316.gymNoteAgentActed="2026-08-20"; _dl316.claudeAction="GYM note 19 Aug, do not cut any workouts: EXECUTED. Nothing was cut. Wednesday Legs keeps all five exercises despite 4 of 5 logged and no day was shortened. Written into 01_FITNESS_CONTEXT.md as a standing rule, a skip reports and never trims, only Ian cuts exercises. The build 312 Tuesday to Friday cable press MOVE was left in place because moving is not cutting and it rested on Ian's own league night reasoning, and the ambiguity was put to him in the brief rather than guessed. Today's entry for 19 Aug was blank and the 18 Aug inputs were already processed, so nothing was stranded."; }
+      /* TO DO MAINTENANCE. Ian 08.02.2026, cap of 10, retire before you create. Retiring moves the
+         item to state.archive.todosDone with its reason. Nothing is deleted. */
+      if(!state.meta) state.meta={};
+      if(!state.meta.mig316_todos && state.realEstate && Array.isArray(state.realEstate.todos)){
+        if(!state.archive) state.archive={};
+        if(!Array.isArray(state.archive.todosDone)) state.archive.todosDone=[];
+        var RET316={"ret-20260817-bonk-time":"Grounding died. The Bonk sell side closing happened Wednesday 19 August and the deal reads Closed, so the question is dead.","ret-20260815-belknap-listprep":"Not yet actionable. Its clock starts on an ACCEPTED offer and none has been accepted, so it returns automatically when PENDING_TRIGGERS Trigger 8 fires."};
+        var keep316=[];
+        for(var i316=0;i316<state.realEstate.todos.length;i316++){
+          var td=state.realEstate.todos[i316];
+          if(td && RET316[td.id]){
+            state.archive.todosDone.unshift({id:td.id,text:td.text,key:td.key||"",retired:"2026-08-20",by:"ian-daily-brief",reason:RET316[td.id]});
+          } else { keep316.push(td); }
+        }
+        state.realEstate.todos=keep316;
+        /* MERGE the two Belknap gate items into one. Both gated the same single offer. */
+        var pofI=-1, twoI=-1;
+        for(var j316=0;j316<state.realEstate.todos.length;j316++){
+          var q=state.realEstate.todos[j316];
+          if(q && q.id==="ret-20260815-belknap-pof") pofI=j316;
+          if(q && q.id==="ret-20260815-belknap-twohomes") twoI=j316;
+        }
+        if(pofI>-1 && twoI>-1){
+          var oldPof=state.realEstate.todos[pofI], oldTwo=state.realEstate.todos[twoI];
+          state.archive.todosDone.unshift({id:oldTwo.id,text:oldTwo.text,key:oldTwo.key||"",retired:"2026-08-20",by:"ian-daily-brief",reason:"Merged into ret-20260820-belknap-gate. Both items gated the same single Belknap offer, so they are one job. Nothing was dropped."});
+          state.realEstate.todos.splice(twoI,1);
+          if(twoI<pofI) pofI=pofI-1;
+          state.realEstate.todos[pofI]={id:"ret-20260820-belknap-gate",key:"belknap-offer-gate",done:false,due:"2026-08-21",
+            src:"Merged 08.20.2026 from ret-20260815-belknap-pof and ret-20260815-belknap-twohomes, both overdue, both gating the same offer",
+            exp:"",
+            text:"BELKNAP OFFER GATE, TWO ANSWERS AND THE OFFER CANNOT GO WITHOUT EITHER. One, proof of funds, a document showing a cash balance covering the purchase. Two, does the accepted home sale contingency on 5122 N 141st carry a kick out or first right of refusal clause. That second answer decides whether a cash non contingent offer can displace it, and an offer was being adjusted Monday night. Both have been open since 15 August."};
+        }
+        if(!Array.isArray(state.autoLog)) state.autoLog=[];
+        if(!state.autoLog.some(function(x){ return x&&x.id==="auto-20260820-todos"; })){
+          state.autoLog.unshift({id:"auto-20260820-todos",date:"2026-08-20",area:"Real estate",
+            what:"Retired 2 to do items and merged 2 into 1, taking the list from 15 to 12",
+            why:"Your cap is 10 and the list was at 15. The Bonk closing time question died when the closing happened Wednesday, and Belknap listing prep cannot start until an offer is accepted.",
+            evidence:"12 genuinely grounded items remain against a ceiling of 10. I did not delete live work to hit the number. The two lowest ranked are the Tysdal check in, which Chris took on 15 August, and Theobald listing prep, where Chris's 16 August outreach produced nothing.",
+            undo:"Real estate, To dos. Retired items are in state.archive.todosDone with their reason."});
+        }
+        state.meta.mig316_todos=true;
+      }
+      if(!state.meta.mig316_daily){ state.meta.mig316_daily=true; }
+      save(true);
+  } }catch(e){ try{ console.warn("mig316 did not apply:",e&&e.message); }catch(_){} }
+
 
 
 
