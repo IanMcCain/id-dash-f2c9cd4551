@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 322 (2026-08-21)">
+<meta name="build" content="v21 build 323 (2026-08-21)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -10886,6 +10886,125 @@ try{ if(profile==="ian"){
       if(!state.meta.mig322_daily){ state.meta.mig322_daily=true; }
       save(true);
   } }catch(e){ try{ console.warn("mig322 did not apply:",e&&e.message); }catch(_){} }
+
+/* ===== v21 build 323: BONK BUY SIDE CLOSED AND UNPAID. WILLIS RELIST DATE LANDS ==============
+     Ian, 21 August 2026.
+
+     1. re-bonks-buy, 401 FIR ST ASHLAND, CLOSED THURSDAY 20 AUGUST 2026 IN THE EVENING.
+     The delayed closing from build 317 completed. Payment NOT received, expected Monday or
+     Tuesday next week, which is 24 or 25 August. paid is set to FALSE, the build 275 outstanding
+     state, written explicitly rather than left to rePayDefault. No actualNet, because he stated
+     receipt timing and not an amount. Close string follows the build 291 convention and MUST be
+     rewritten to "(CLOSED and PAID)" the moment the money lands.
+
+     THE COMMISSION IS A MODEL DEFAULT AND THE RECORD SAYS SO. Checked before writing rather than
+     assumed: this deal carries NO ianSplit, NO sellerRate and NO actualNet. There is no
+     buyerRate override field in the app at all, buyer side is a hardcoded 2.4 percent inside
+     dealGrossCommission, and the 20 percent share comes from source "Chris's client" hitting the
+     sourceShare default. So $420,000 x 0.024 = $10,080 gross, less 15 percent brokerage = $8,568,
+     x 0.20 = $1,713.60. EVERY RATE IN THAT CHAIN IS A DEFAULT. The Spicer sell side is the
+     precedent for why that matters: model said $2,906.39, Ian was actually paid $2,770, a 4.69
+     percent gap that one closing could not explain.
+
+     mig291 ALREADY RAN AND IS FLAG GUARDED, so setting paid false here is safe. That block set
+     paid true on every Closed deal on 14 August and cannot run again, exactly as it could not
+     undo build 313 on the sell side.
+
+     NEITHER GOAL BAR MOVES. reGoalsCard counts Closed PLUS Under Contract and this deal was
+     already Under Contract, so production holds at $6,440,357 and the count at 14 of 20. What
+     moves is the split: closed volume $4,548,050 to $4,968,050, closed weights 11 to 12, pending
+     $1,892,307 to $1,472,307 across 2, closed take home $38,666.05 to $40,379.65 and pending
+     take home $10,724.12 to $9,010.52.
+
+     2. WILLIS RELIST DATE. THURSDAY 3 SEPTEMBER 2026, verified against the calendar rather than
+     counted in prose. Today is Friday 21 August 2026. Two weeks lands Friday 4 September, and
+     the Thursday of that week is 3 September, one day short of exactly two weeks. The competing
+     reading, 10 September, is 20 days out and would be three weeks on a Thursday, and it also
+     contradicts yesterday's independent statement of about two weeks. So 3 September is recorded
+     as the working date with the reasoning attached, not as a certainty.
+
+     PRICE STAYS OPEN. No number goes in the field. Ian leans $619,900, the analysis argued
+     $614,900, and the repair scope is still unknown and is still the blocker on both. */
+  try{ if(profile==="ian" && state.realEstate && Array.isArray(state.realEstate.deals)
+          && state.meta && !state.meta.mig323_bonkbuy_willis){
+      var _MK323A="08.21.2026 CLOSED, PAYMENT OUTSTANDING";
+      var _MK323B="08.21.2026 RELIST DATE";
+      var _buy323=null, _w323=null, _D323=state.realEstate.deals;
+      for(var _i323=0;_i323<_D323.length;_i323++){
+        var _d=_D323[_i323]; if(!_d) continue;
+        if(_d.id==="re-bonks-buy")     _buy323=_d;
+        if(_d.id==="re-cynthia-willis") _w323=_d;
+      }
+
+      /* ---- BONK BUY ---- */
+      if(_buy323){
+        if(_buy323.stage==="Under Contract"){ _buy323.stage="Closed"; }
+        if(typeof _buy323.paid!=="boolean" && typeof _buy323.actualNet!=="number"){ _buy323.paid=false; }
+        var _c323=String(_buy323.close||"");
+        if(_c323.indexOf("CLOSED")<0){
+          _buy323.close="August 20, 2026 (CLOSED, payment outstanding)";
+        } else {
+          _buy323.close=_c323.replace("(DELAYED from 9:00 AM to the evening, time unconfirmed)","(CLOSED, payment outstanding)");
+        }
+        if(String(_buy323.note||"").indexOf(_MK323A)<0){
+          _buy323.note=String(_buy323.note||"")+" "+_MK323A+", FROM IAN 21 AUGUST 2026. 401 FIR ST ASHLAND CLOSED ON THURSDAY 20 AUGUST IN THE EVENING. "
+            +"The morning slot was lost to the seller's cleanout, per build 317, and it completed the same day as Ian expected. PAYMENT NOT RECEIVED, expected "
+            +"MONDAY OR TUESDAY NEXT WEEK, 24 or 25 August. paid is FALSE, the build 275 outstanding state, and no actualNet is set because he gave timing and "
+            +"not an amount. Rewrite the close string to CLOSED and PAID the moment it lands. "
+            +"COMMISSION IS A MODEL DEFAULT, NOT A CONFIRMED FIGURE, and this was checked rather than assumed: NO ianSplit, NO sellerRate, NO actualNet on this "
+            +"record, and the app has no buyerRate override field at all. $420,000 x 0.024 buyer side = $10,080 gross, less 15 percent brokerage = $8,568, "
+            +"x 0.20 Chris's client share = $1,713.60. Both the 2.4 percent and the 20 percent are defaults. Spicer is the precedent: model $2,906.39 against "
+            +"an actual $2,770. "
+            +"NEITHER GOAL BAR MOVES because this was already Under Contract. Production holds $6,440,357, count holds 14 of 20. Closed volume $4,548,050 to "
+            +"$4,968,050, closed weights 11 to 12, pending $1,892,307 to $1,472,307 across 2, closed take home $38,666.05 to $40,379.65, pending $10,724.12 to "
+            +"$9,010.52. OUTSTANDING NOW TWO DEALS: this at $1,713.60 and the sell side at $3,825.00, $5,538.60 together, both model figures.";
+        }
+      }
+
+      /* ---- WILLIS ---- */
+      if(_w323){
+        if(_w323.stage!=="Coming Soon"){ _w323.stage="Coming Soon"; }
+        _w323.close="Relist THURSDAY 3 September 2026. Repairs first. PRICE NOT DECIDED.";
+        if(String(_w323.note||"").indexOf(_MK323B)<0){
+          _w323.note=String(_w323.note||"")+" "+_MK323B+", FROM IAN 21 AUGUST 2026. THE RELIST IS ON A THURSDAY, TWO WEEKS OUT, WHICH IS THURSDAY 3 SEPTEMBER 2026. "
+            +"DATE ARITHMETIC VERIFIED AGAINST THE CALENDAR RATHER THAN COUNTED IN PROSE: today is Friday 21 August 2026, two weeks lands Friday 4 September, and "
+            +"the Thursday of that week is 3 September. The competing reading of 10 September is 20 days out, which is three weeks on a Thursday, and it also "
+            +"contradicts his 20 August statement of about two weeks. 3 SEPTEMBER IS THE WORKING DATE, not a certainty, and if he meant the following Thursday "
+            +"the record moves on his word. PRICE STAYS OPEN AND NO NUMBER IS WRITTEN. He leans $619,900, the 20 August analysis argued $614,900 as a visible "
+            +"move off a failed list that still sits above the dead $610,000 contract, and THE REPAIR SCOPE IS STILL UNKNOWN AND IS STILL THE BLOCKER ON BOTH. "
+            +"Todo ret-20260820-willis-repair-scope stays open and is the gating item.";
+        }
+      }
+
+      /* ---- EVENTS AND TODOS ---- */
+      if(Array.isArray(state.events)){
+        state.events.forEach(function(e){
+          if(e && e.id==="ev-20260820-bonks-buy-close" && String(e.title||"").indexOf("CLOSED")<0){
+            e.title=String(e.title||"").replace(" [DELAYED from 9:00 AM to the evening, exact time UNCONFIRMED]","")+" [CLOSED evening of 20 Aug 2026, payment outstanding]";
+          }
+        });
+        if(!state.events.some(function(x){ return x && x.id==="ev-20260903-willis-relist"; })){
+          state.events.push({id:"ev-20260903-willis-relist",date:"2026-09-03",kind:"Real estate",
+            title:"Willis relist, 10218 Spyglass Dr, Thursday. Price not yet decided"});
+        }
+      }
+      if(Array.isArray(state.realEstate.todos)){
+        if(!state.archive || typeof state.archive!=="object") state.archive={};
+        if(!Array.isArray(state.archive.todosDone)) state.archive.todosDone=[];
+        var _keep323=[];
+        state.realEstate.todos.forEach(function(t){
+          if(t && (t.id==="ret-20260820-bonk-buy-time" || t.key==="bonk-buy-close-time")){
+            t.retiredReason="Moot 08.21.2026. The closing happened on the evening of 20 August, so the time question is answered by the event itself. What replaces it is payment, expected Monday or Tuesday, tracked by paid false on the record.";
+            t.done=true;
+            state.archive.todosDone.push(t);
+          } else { _keep323.push(t); }
+        });
+        state.realEstate.todos=_keep323;
+      }
+      state.meta.mig323_bonkbuy_willis=true;
+      save(true);
+  } }catch(e){ try{ console.warn("mig323 did not apply:",e&&e.message); }catch(_){} }
+
 
 
 
