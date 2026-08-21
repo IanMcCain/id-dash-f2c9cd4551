@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 324 (2026-08-21)">
+<meta name="build" content="v21 build 325 (2026-08-21)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -11110,6 +11110,101 @@ try{ if(profile==="ian"){
       state.meta.mig324_belknap_buy_uc=true;
       save(true);
   } }catch(e){ try{ console.warn("mig324 did not apply:",e&&e.message); }catch(_){} }
+
+  /* ==========================================================================
+     build 325, 08.21.2026. IAN CONFIRMED BOTH OPEN BELKNAP ITEMS.
+     Placed HERE, immediately after mig324, and inside the same profile load
+     scope, because that is where `state` is actually assigned. A first attempt
+     put this at the tail of the outer IIFE, where `state` is still undefined,
+     and it threw on every load. The jsdom harness caught it. MIGRATIONS BELONG
+     BESIDE THEIR SIBLINGS, never at the end of the file.
+     Also restores the Willis phone channel note and its todo, both written on
+     08.20 into "Ian Dashboard v21.html", which is NOT the deployed app. That
+     file was overwritten by the 6am run and the edit was lost with it.
+     THE DEPLOYED FILE IS index.html. It is the only one the lock guards.
+     ========================================================================== */
+  try{ if(profile==="ian" && state && state.meta && !state.meta.mig325_belknap_confirmed){
+      if(!state.realEstate) state.realEstate={};
+      if(!Array.isArray(state.realEstate.todos)) state.realEstate.todos=[];
+      if(!state.archive) state.archive={};
+      if(!Array.isArray(state.archive.todosDone)) state.archive.todosDone=[];
+
+      /* 1. RETIRE THE OFFER GATE. Archived with its text, never deleted. */
+      var _keep325=[];
+      for(var k325=0;k325<state.realEstate.todos.length;k325++){
+        var t325=state.realEstate.todos[k325];
+        if(t325 && (t325.id==="ret-20260820-belknap-gate" || t325.key==="belknap-offer-gate")){
+          state.archive.todosDone.unshift({
+            id:t325.id, text:t325.text, key:t325.key||"", retired:"2026-08-21", by:"session-belknap-close-0821",
+            reason:"SATISFIED. PROOF OF FUNDS IS DONE, CONFIRMED BY IAN 08.21.2026 IN HIS OWN WORDS. "
+                 + "It is NOT closed because the deal reached contract, which would have been an inference. "
+                 + "Open since 15 August. The second half of this todo, the kick out or first right of refusal "
+                 + "question, is now MOOT: the buy side is under contract at $452,000 cash, so whatever that "
+                 + "clause said, it did not stop this offer."
+          });
+        } else { _keep325.push(t325); }
+      }
+      state.realEstate.todos=_keep325;
+
+      /* 2. THE DEAL RECORD. Both satisfied, and the LIMITS of the confirmation written in. */
+      var _B325=" || 08.21.2026, BOTH OPEN ITEMS CONFIRMED BY IAN, AND THE LIMITS OF THAT CONFIRMATION. "
+        + "PROOF OF FUNDS IS DONE. Confirmed by Ian directly, not inferred from the deal reaching contract. "
+        + "THE $5,000 EARNEST WAS PICKED UP. Also confirmed by Ian. "
+        + "WHAT HE DID NOT SAY, AND IT IS NOT ASSUMED EITHER WAY: whether the earnest went by CHECK OR WIRE, and "
+        + "whether it has been DELIVERED to Ambassador Title Services as opposed to merely collected. "
+        + "PICKED UP IS NOT DELIVERED. Do not record delivery, do not report it as delivered, and if the "
+        + "distinction matters, ASK rather than close the gap by inference.";
+      (state.realEstate.deals||[]).forEach(function(d){
+        if(d && d.id==="re-belknap-buy" && String(d.note||"").indexOf("BOTH OPEN ITEMS CONFIRMED BY IAN")<0){
+          d.note=String(d.note||"")+_B325;
+        }
+      });
+
+      /* 3. RESTORE THE WILLIS PHONE CHANNEL NOTE AND TODO, lost with the 08.20 edit. */
+      var _W325=" || 08.20.2026, THE CHANNEL, AND IT CLOSES A QUESTION RATHER THAN OPENING ONE. "
+        + "THE INSPECTION AT 10218 SPYGLASS WAS HANDLED ENTIRELY BY PHONE. The message threads carry LOGISTICS "
+        + "ONLY. THIS IS AN EXPLANATION, NOT A GAP. Do not record the inspection as undocumented, do not re-run "
+        + "the search, do not raise it in an audit. The addendum is emailed TO CHRIS, not to Ian, so it will not "
+        + "reach us unless he forwards it. NO WATCH WAS SET, one would never fire.";
+      (state.realEstate.deals||[]).forEach(function(d){
+        if(d && d.id==="re-cynthia-willis" && String(d.note||"").indexOf("HANDLED ENTIRELY BY PHONE")<0){
+          d.note=String(d.note||"")+_W325;
+        }
+      });
+      if(!state.realEstate.todos.some(function(t){ return t && (t.id==="ret-20260820-willis-docs" || t.key==="willis-inspection-docs"); })){
+        state.realEstate.todos.push({
+          id:"ret-20260820-willis-docs", key:"willis-inspection-docs", done:false, due:"2026-08-24", exp:"",
+          src:"08.20.2026 Ian, restored in build 325 after the 08.20 edit went to the wrong file and was lost",
+          text:"GET THE WILLIS ADDENDUM AND THE INSPECTION REPORT FROM CHRIS, 10218 Spyglass. Both go to CHRIS by "
+             + "email, not to you, so neither lands in your inbox unless he forwards them. ASK HIM DIRECTLY. These "
+             + "two documents are the SCOPE: the repair list, what gets credited instead of fixed, and the relist "
+             + "timing all come off them. The inspection was by phone, so there is nothing written to go read."
+        });
+      }
+
+      /* 4. THE PATTERN, NOW CONFIRMED TWICE. The durable lesson of this build. */
+      if(!state.context) state.context={};
+      if(!Array.isArray(state.context.standingRules)) state.context.standingRules=[];
+      var _R325="ABSENCE FROM THE WRITTEN CHANNELS IS NOT EVIDENCE AN ITEM IS OUTSTANDING. Confirmed twice: the "
+        + "Willis inspection on 08.20, and the Belknap proof of funds and earnest on 08.21. In every case the work "
+        + "was DONE and only looked open because nothing about it appeared in any text thread. Ian has now been "
+        + "told twice that something was missing when it was not. FRAME EVERY CHASE AS A QUESTION TO IAN, never "
+        + "as an assertion that an item is outstanding.";
+      if(state.context.standingRules.indexOf(_R325)===-1) state.context.standingRules.push(_R325);
+
+      if(!Array.isArray(state.autoLog)) state.autoLog=[];
+      if(!state.autoLog.some(function(x){ return x && x.id==="auto-20260821-belknap-confirmed"; })){
+        state.autoLog.unshift({id:"auto-20260821-belknap-confirmed", date:"2026-08-21", area:"Real estate",
+          text:"Belknap proof of funds and the $5,000 earnest both CONFIRMED DONE by Ian. Todo "
+             + "ret-20260820-belknap-gate retired to archive with its text, not deleted. Earnest recorded as "
+             + "PICKED UP only: check versus wire and delivery to Ambassador Title are UNSTATED and not inferred. "
+             + "Also restored the Willis phone note and ret-20260820-willis-docs, lost on 08.20 when they were "
+             + "written to Ian Dashboard v21.html rather than index.html."});
+      }
+      state.meta.mig325_belknap_confirmed=true;
+      save(true);
+  } }catch(e){ try{ console.warn("mig325 did not apply:",e&&e.message); }catch(_){} }
+
 
 
 
