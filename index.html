@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 320 (2026-08-20)">
+<meta name="build" content="v21 build 321 (2026-08-20)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -10637,6 +10637,120 @@ try{ if(profile==="ian"){
       }
       save(true);
   } }catch(e){ try{ console.warn("mig320 did not apply:",e&&e.message); }catch(_){} }
+
+/* ===== v21 build 321: CRYSTAL JOHNSON APPRAISED. WILLIS IS RELISTING. TWO DEALS, ONE BUILD ===
+     Ian, 20 August 2026. Both are recorded here and NEITHER is merged into the other. Crystal
+     is the counted deal that just stopped being at risk. Willis is the fallen through listing
+     going back on market. Different clients, different problems, adjacent only in date.
+
+     1. CRYSTAL JOHNSON, 11911 HORIZON. THE APPRAISAL CLEARED.
+     This was named on the record and on the goals card as the single largest live risk in the
+     pipeline: the only counted deal that could still leave. It has cleared. Closing is TUESDAY
+     OR WEDNESDAY NEXT WEEK, which from Thursday 20 August is 25 or 26 August 2026. IAN DID NOT
+     PICK ONE AND NEITHER DOES THIS BUILD. The window is written, not a date.
+
+     STAGE STAYS UNDER CONTRACT. Appraising is not closing. The three outcome branch on this
+     record, appraises fine, comes in low with the parents covering, or comes in badly low and
+     the deal dies, resolves to the FIRST branch and the other two are dead.
+
+     NEITHER GOAL BAR MOVES AND THAT IS THE CORRECT BEHAVIOUR. reGoalsCard counts Closed PLUS
+     Under Contract, and this deal was already Under Contract, so production holds at $6,440,357
+     and the count at 14 of 20. WHAT ACTUALLY CHANGED IS THE RISK, NOT THE NUMBER: the at risk
+     figure carried since build 295 falls from $577,861 to $0, and the $6,440,357 stops being
+     contingent. That is the whole update and it is worth more than a bar movement would be.
+     The pre occupancy at $80 a day is still not resolved: start date, who holds it and whether
+     it credits at closing all remain unknown and are still not guessed.
+
+     2. CYNTHIA WILLIS, 10218 SPYGLASS DR. RELISTING IN TWO WEEKS, PRICE OPEN.
+     Ian met Cynthia. They relist in about two weeks, roughly 3 September 2026, AFTER fixing
+     everything the inspection required. PRICE IS NOT DECIDED and NO NUMBER GOES IN THE PRICE
+     FIELD. Ian is weighing the old list of $619,900 against the dead contract price of $610,000.
+     Price is Class A and belongs to his thumb, so the field carries the open question and not a
+     guess, exactly as build 318 left it.
+
+     THE PRICE FIELD IS DELIBERATELY NOT $619,900 EITHER. That figure is the LAST list price and
+     it is now history rather than a plan. Writing it back would resurrect the same fault the
+     build 258 guard was written to stop, where an unguarded migration kept re asserting a stale
+     list price over a newer decision.
+
+     STAGE STAYS COMING SOON, which build 318 already set, so this stays outside both goal bars.
+     It re enters them when it goes Active with a real number. */
+  try{ if(profile==="ian" && state.realEstate && Array.isArray(state.realEstate.deals)
+          && state.meta && !state.meta.mig321_crystal_willis){
+      var _MK321A="08.20.2026 APPRAISAL CLEARED";
+      var _MK321B="08.20.2026 RELIST DECIDED";
+      var _cj321=null, _w321=null, _D321=state.realEstate.deals;
+      for(var _i321=0;_i321<_D321.length;_i321++){
+        var _d321=_D321[_i321]; if(!_d321) continue;
+        if(_d321.id==="re-crystal-johnson") _cj321=_d321;
+        if(_d321.id==="re-cynthia-willis")  _w321=_d321;
+      }
+
+      /* ---- CRYSTAL ---- */
+      if(_cj321){
+        if(_cj321.stage!=="Under Contract"){ _cj321.stage="Under Contract"; }
+        var _c321=String(_cj321.close||"");
+        if(_c321.indexOf("APPRAISAL CLEARED")<0){
+          _cj321.close="Tuesday 25 or Wednesday 26 August 2026 (APPRAISAL CLEARED, exact day not fixed)";
+        }
+        if(String(_cj321.note||"").indexOf(_MK321A)<0){
+          _cj321.note=String(_cj321.note||"")+" "+_MK321A+", FROM IAN 20 AUGUST 2026. THE APPRAISAL CAME BACK AND THE DEAL IS CLEAR. "
+            +"This was the ONE counted deal on the board that could still fall out, flagged as the single largest live risk in the pipeline since 15 August, "
+            +"and it has cleared. CLOSING IS TUESDAY OR WEDNESDAY NEXT WEEK, which is 25 or 26 August 2026. IAN DID NOT NAME A DAY AND NONE IS INVENTED; the "
+            +"record carries the window. STAGE STAYS UNDER CONTRACT because appraising is not closing. "
+            +"OF IAN'S THREE OUTCOMES FROM 15 AUGUST, the first has happened: it appraised and everything proceeds. The low appraisal branch where the parents "
+            +"cover the difference, and the badly low branch where the buyers lose their deposit and the house goes back on the market, are both DEAD and must "
+            +"not be re raised. NEITHER GOAL BAR MOVES: the deal was already Under Contract, so production holds at $6,440,357 and the count at 14 of 20. What "
+            +"changes is that the AT RISK figure falls from $577,861 to ZERO and the $6,440,357 stops being contingent. STILL UNKNOWN AND STILL NOT GUESSED: the "
+            +"pre occupancy at $80 a day, its start date, who holds the money and whether it credits at closing.";
+        }
+      }
+
+      /* ---- WILLIS ---- */
+      if(_w321){
+        if(_w321.stage!=="Coming Soon"){ _w321.stage="Coming Soon"; }
+        _w321.close="Planned relist about 3 September 2026, roughly two weeks out. Repairs first. PRICE NOT DECIDED.";
+        if(String(_w321.note||"").indexOf(_MK321B)<0){
+          _w321.note=String(_w321.note||"")+" "+_MK321B+", FROM IAN 20 AUGUST 2026, AFTER MEETING CYNTHIA. THEY ARE RELISTING IN ABOUT TWO WEEKS, roughly "
+            +"3 SEPTEMBER 2026, and they will FIX EVERYTHING THE INSPECTION REQUIRED FIRST. That is a real change from build 318, which recorded only that they "
+            +"would repair and relist at a reduced price with no timeline. THE PRICE IS UNDECIDED AND NO NUMBER IS WRITTEN HERE. Ian is weighing the previous "
+            +"list of $619,900 against the dead contract price of $610,000. Price is Class A and his call, so the field carries the open question rather than a "
+            +"placeholder, and $619,900 is deliberately NOT written back because it is the last list price and not a plan. "
+            +"VERIFIED IN GPRMLS 20 AUGUST 2026 RATHER THAN RECALLED: MLS 22622436, list date 6 August 2026, listing price $619,900, DOM 3, status still PENDING "
+            +"and NOT yet returned to Active, listing agent Chris McCain with Ian as agent 2, expire date 31 December 2026. The address carries FOUR listings in "
+            +"total: 22622436 the current one, 22214343 SOLD, 21221399 CANCELLED, and 22514288 CANCELLED with a list date of 28 May 2025 and DOM 89, which is the "
+            +"failed listing with the previous agent. ANY AGENT PULLING THIS ADDRESS SEES ALL FOUR. "
+            +"STAGE STAYS COMING SOON so it sits outside both goal bars until it goes Active with a real number. "
+            +"THIS IS NOT THE BONK SITUATION AND NOT THE CRYSTAL ONE. Three separate deals moved this week and they do not share a cause.";
+        }
+      }
+
+      /* Retire the Horizon appraisal watch. Archive, never delete, per the build 300 convention. */
+      if(Array.isArray(state.realEstate.todos)){
+        if(!state.archive || typeof state.archive!=="object") state.archive={};
+        if(!Array.isArray(state.archive.todosDone)) state.archive.todosDone=[];
+        var _keep321=[];
+        state.realEstate.todos.forEach(function(t){
+          if(t && (t.id==="ret-20260815-horizon-appraisal" || t.key==="horizon-appraisal")){
+            t.retiredReason="Answered 08.20.2026. The appraisal cleared. Closing is Tuesday 25 or Wednesday 26 August 2026, day not fixed. The at risk figure on the goals card goes from $577,861 to zero.";
+            t.done=true;
+            state.archive.todosDone.push(t);
+          } else { _keep321.push(t); }
+        });
+        state.realEstate.todos=_keep321;
+        /* One question replaces it, and it is the one that actually blocks work. */
+        if(!state.realEstate.todos.some(function(t){ return t && t.id==="ret-20260820-willis-repair-scope"; })){
+          state.realEstate.todos.push({
+            id:"ret-20260820-willis-repair-scope", key:"willis-repair-scope", done:false, due:"2026-08-24",
+            src:"Ian, 20 August 2026, the Willis relist decision",
+            text:"WHAT DID THE 19 AUGUST INSPECTION ACTUALLY FIND, AND WHAT WILL THE REPAIRS COST? This is the blocking unknown on the relist price and it is recorded NOWHERE we can reach. Build 318 searched every message thread from Wednesday midday to Thursday morning with attributedBody decoded, and the mailbox, and found nothing. A $3,000 fix and a $25,000 fix support different list prices. Get the inspection report, the repair bids and the receipts. The receipts matter twice: once for the price and once because Nebraska requires a repaired material defect to be disclosed anyway, so documented remediation is the only version of that disclosure that helps."
+          });
+        }
+      }
+      state.meta.mig321_crystal_willis=true;
+      save(true);
+  } }catch(e){ try{ console.warn("mig321 did not apply:",e&&e.message); }catch(_){} }
+
 
 
 
