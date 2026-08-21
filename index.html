@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 319 (2026-08-20)">
+<meta name="build" content="v21 build 320 (2026-08-20)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -10585,6 +10585,58 @@ try{ if(profile==="ian"){
       }
       save(true);
   } }catch(e){ try{ console.warn("mig319 did not apply:",e&&e.message); }catch(_){} }
+
+/* ===== v21 build 320: IAN'S SELF ASSESSMENT, 08.20.2026, THE FOURTH SET ======================
+     Lands at state.pickleball.selfAssessment["2026-08-20"]. That store is a DATE KEYED map and
+     it ALREADY versions by design, per the build 228 convention: nothing is ever overwritten and
+     the MOVEMENT between reads is the finding. The 07.29, 08.05 and 08.08 entries are untouched.
+     pkSelfLatest() sorts the keys and takes the newest, so this entry becomes what the radar's
+     "your call" line draws, with no render change needed.
+
+     FIELD NAMES VERIFIED AGAINST THE STORE RATHER THAN ASSUMED: serve, drops, resets, dinks,
+     drives, hands, footwork. HANDS IS STORED AS "hands". There is no "speed up and hands" key
+     anywhere in this file and there never has been; the split naming lives only in the COACH
+     grade's needsSplit note, which is a different field and is not touched here.
+
+     ONE DELIBERATE DEVIATION FROM THE BUILD 228 CONVENTION, FLAGGED RATHER THAN DONE QUIETLY.
+     That convention says do not flatten ranges into points in the store. Ian gave six of these
+     as ranges and EXPLICITLY ASKED for the average of each with no ranges stored. His instruction
+     wins, so form is "points". Nothing is lost: every source range he gave is written verbatim
+     into sourceRanges on the entry and repeated in the note, so a future read can recover the
+     band and the width.
+
+     THE COACH GRADE IS NOT TOUCHED. state.pickleball.skills and gradeHistory are untouched, no
+     radar value moves, and nothing here is compared to any film finding. That comparison is a
+     separate step that happens only after coach numbers exist independently. This is his opinion
+     recorded as his opinion. */
+  try{ if(profile==="ian" && state.pickleball){
+      if(!state.meta) state.meta={};
+      var _p320=state.pickleball;
+      if(!_p320.selfAssessment || typeof _p320.selfAssessment!=="object") _p320.selfAssessment={};
+      if(!_p320.selfAssessment["2026-08-20"]) _p320.selfAssessment["2026-08-20"]={
+        label:"08.20.2026", source:"Ian self assessed", form:"points, averaged from his ranges at his request",
+        skills:{serve:3.8, drops:3.625, resets:3.8, dinks:3.65, drives:3.85, hands:3.6, footwork:3.5},
+        sourceRanges:{serve:"3.8 flat", drops:"3.6 to 3.65", resets:"3.7 to 3.9", dinks:"3.6 to 3.7",
+                      drives:"3.8 to 3.9", hands:"3.5 to 3.7", footwork:"3.4 to 3.6"},
+        note:"HIS OWN READ ON HIS GAME, GIVEN 08.20.2026, THREE DAYS BEFORE THE APC. Recorded as opinion and nothing else. It is NOT a rating, it does not move the coach grade, and it is not compared to any film finding on this record. "
+            +"HOW THE NUMBERS WERE PRODUCED: he gave six ranges and one flat value and asked for the average of each with no ranges stored. Drives 3.8 to 3.9 gives 3.85. Hands 3.5 to 3.7 gives 3.6. Footwork 3.4 to 3.6 gives 3.5. Serve 3.8 flat. Drops 3.6 to 3.65 gives 3.625. Resets 3.7 to 3.9 gives 3.8. Dinks 3.6 to 3.7 gives 3.65. Arithmetic checked before writing. The source ranges are kept on the entry at sourceRanges so the band and its width are recoverable, which is the thing flattening would otherwise throw away. "
+            +"MOVEMENT AGAINST HIS PREVIOUS SELF SET, 2026-08-08, SELF AGAINST SELF ONLY. Footwork on 08.08 was stored as a range 3.5 to 3.6, so its midpoint 3.55 is used for the comparison, exactly as selfAssessCard does. Resets +0.30. Drops +0.225. Serve +0.15. Dinks +0.15. Hands +0.10. Drives +0.05. FOOTWORK MINUS 0.05. Set average 3.557 to 3.689, up 0.132. "
+            +"FOOTWORK IS THE ONLY SKILL THAT WENT DOWN AND IT IS WORTH STATING PRECISELY RATHER THAN DRAMATICALLY. The new point 3.5 is exactly the BOTTOM of his previous 3.5 to 3.6 band, so against the midpoint it is minus 0.05 and against the low end it is flat. The sharper detail is in the range he gave rather than in the average: his new band is 3.4 to 3.6 against a previous 3.5 to 3.6, so the FLOOR dropped a tenth while the ceiling held. He is less certain about it than he was, not obviously worse at it. Recorded, not interpreted. "
+            +"CONTEXT ALREADY ON FILE AND NOT A CONCLUSION: footwork carries a known confound from 08.10.2026, the new shoes, which is recorded against the film side of the record. It is noted here only so nobody later reads this dip as clean evidence of anything. "
+            +"THE OTHER SIX ALL ROSE, AND RESETS AND DROPS MOVED MOST. No judgement is entered here on whether any of it is warranted. That question belongs to footage read independently, and two sets of footage are pending."};
+      if(!state.meta.mig320_self0820){
+        if(!Array.isArray(state.autoLog)) state.autoLog=[];
+        if(!state.autoLog.some(function(x){ return x&&x.id==="auto-20260820-selfassess"; })){
+          state.autoLog.unshift({id:"auto-20260820-selfassess", date:"2026-08-20", area:"Pickleball",
+            what:"Recorded your 20 August self assessment as the fourth dated set",
+            why:"You gave ranges and asked for the averages, so points are stored and the ranges you actually said are kept on the entry so nothing is lost. Your 07.29, 08.05 and 08.08 sets are untouched, the store versions by date.",
+            evidence:"Against your 08.08 set: resets +0.30, drops +0.225, serve +0.15, dinks +0.15, hands +0.10, drives +0.05, footwork minus 0.05. Footwork is the only one down, and its new 3.5 is the bottom of your old 3.5 to 3.6 band, with the range floor dropping from 3.5 to 3.4. Set average 3.56 to 3.69. This is your opinion recorded as your opinion and it moves no rating.",
+            undo:"Pickleball, the self assessment card under the radar. The 20 August entry can be removed without touching the earlier sets."});
+        }
+        state.meta.mig320_self0820=true;
+      }
+      save(true);
+  } }catch(e){ try{ console.warn("mig320 did not apply:",e&&e.message); }catch(_){} }
 
 
 
