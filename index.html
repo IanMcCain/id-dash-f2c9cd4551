@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 318 (2026-08-20)">
+<meta name="build" content="v21 build 319 (2026-08-20)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -10524,6 +10524,67 @@ try{ if(profile==="ian"){
       state.meta.mig318_willis_fellthrough=true;
       save(true);
   } }catch(e){ try{ console.warn("mig318 did not apply:",e&&e.message); }catch(_){} }
+
+/* ===== v21 build 319: THE 08.20 SESSION, AND THE FIRST TIME CONSISTENCY WAS A GOAL ==========
+     Thursday 20 August, open play at Ace, 5:41 to 7:31 PM, 1:49:39, effort 7.
+
+     THE ONE THING THAT IS NEW. Consistency has been his STATED WEAK POINT on six sessions. Today
+     is the first time he set it as the GOAL of the session and reported meeting it. That is a
+     change in FRAMING and it is recorded as one. Whether it is real is not decided here, it is a
+     self report on an unfilmed night, and the footage arriving tonight is the thing that could
+     test it.
+
+     THE WATCH CORROBORATES THE CONDITIONS HE DESCRIBED, which is unusual and worth having. He
+     says Ace was busy and he felt cold in every match. Tonight is 8.0 active calories a minute
+     and avg 120, and BOTH are the lowest of any open play session on his record. His open play
+     band is 8.8 to 10.9 a minute at avg 122 to 134. His two league nights, which carry real
+     downtime between matches, are 7.5 and 7.9. Tonight sits in league territory on an open play
+     night, which is exactly the signature long waits produce.
+
+     UNGRADED, as every self reported session is. No rating, no radar value, no skill band. */
+  try{ if(profile==="ian" && state.pickleball){
+      if(!state.meta) state.meta={};
+      if(!Array.isArray(state.pickleball.sessions)) state.pickleball.sessions=[];
+      var _S319={id:"pk-20260820-openplay", date:"2026-08-20", kind:"Open play", venue:"Ace",
+        duration:"1h 49m 39s", calories:1051, activeCalories:879, avgHr:120, maxHr:169, minHr:67, effort:7,
+        result:"", score:"", opponent:"",
+        note:"Open play, Ace Pickleball Club, Omaha, 5:41 to 7:31 PM, 1:49:39. Effort 7 of 10, Hard. From Apple Watch. Avg HR 120, peak 169, low 67, active 879, total 1,051. No footage from this session itself, so NO RATING CHANGE. Evidence class SELF REPORT: recorded and tracked, weighed against footage, and it does not move a rating on its own. "
+            +"HIS REPORT, HIS WORDS: a MEDIUM DAY. Ace was SUPER BUSY so he felt COLD IN EVERY MATCH, which reads as long waits between games. THE GOAL TODAY WAS JUST TO STAY CONSISTENT, AND HE SAYS HE DID. "
+            +"THE FRAMING CHANGED TODAY AND THAT IS THE ONE GENUINELY NEW THING ON THIS RECORD. Consistency has been his STATED WEAK POINT on six sessions, 08.10, 08.11, 08.14, 08.15, 08.17 and 08.19. Today is the FIRST TIME he set it as the GOAL of a session and the first time he reported MEETING it. Recorded as a change in how he is framing it. WHETHER IT IS REAL IS NOT DECIDED HERE and must not be treated as decided later: it is one self report, on an unfilmed night, on a medium day at Ace against whoever was there, and a night he chose to play conservatively would produce this report whether or not anything mechanical changed. The footage arriving tonight is the instrument that can test it. Do not convert this into a resolved weakness, a rating movement or a closed Work on item. "
+            +"WHAT THE WATCH SAYS, AND IT INDEPENDENTLY SUPPORTS HIS ACCOUNT OF THE CONDITIONS. Active calories per minute tonight is 8.0, the LOWEST of any open play session on his record. His open play band runs 8.8 to 10.9 a minute: 08.10 10.9, 08.09 10.7, 08.14 10.4, 08.01 10.1, 08.17 9.9, 08.08 9.7, 08.03 9.3, 08.04 8.8. His two LEAGUE nights, which carry real downtime between matches, are 08.18 at 7.5 and 08.11 at 7.9. Tonight sits between the league nights and the bottom of the open play band. Average heart rate says the same: 120 tonight against an open play band of 122 to 134, so it is the lowest open play average on record, and it is below Tuesday's LEAGUE average of 117 by only three. "
+            +"SO THE ANSWER TO WHETHER 120 IS EXPECTED IS BOTH HALVES. It is NOT typical for open play, it is his lowest, and it WOULD BE expected for an open play night with league style waiting in it, which is precisely what he described. That is the useful part: the watch was not told about the busy courts and it produced the shape busy courts predict. Comparing it to Monday's 133 open play or reading it as a soft effort would both be wrong. "
+            +"PEAK 169 SAYS THE POINTS THEMSELVES WERE NOT SOFT. The 67 to 169 spread is 102 bpm, so he reached near the top of his range while the average stayed low, which is the cold between matches pattern rather than a light night throughout. "
+            +"LOAD ACROSS THREE DAYS, STATED AS FACTS WITH NO INSTRUCTION ATTACHED. Tuesday 08.18 ran 2:44:02 with an effort rating of eight. Wednesday 08.19 ran 3:50:00 with no watch and his words were that they went hard. Today ran 1:49:39 at effort 7. Total 8 hours 23 minutes on court across three days, with the APC on Sunday 23 August, three days out. AND THE STEP DOWN BELONGS NEXT TO THE TOTAL RATHER THAN UNDER IT: today was MATERIALLY SMALLER than the two before it, about two thirds of Tuesday and under half of Wednesday, and he called it a medium day himself. His own plan, build 299, has Friday and Saturday LIGHT. The total is large and the direction is already downward. His call, not a correction. "
+            +"FOOTAGE: MORE IS COMING TONIGHT, sent to verify the rating, on top of the 08.19 footage already pending. Goal pk-goal-film-0819 tracks the queue and carries the camera requirement. "
+            +"NOT KNOWN AND NOT GUESSED: who he played with or against tonight, how many games, any result, how long the waits actually were, and whether the new grip was on the paddle."};
+      if(!state.pickleball.sessions.some(function(x){ return x&&x.id===_S319.id; })){
+        state.pickleball.sessions.push(_S319);
+        state.pickleball.sessions.sort(function(a,b){ return String(a&&a.date).localeCompare(String(b&&b.date)); });
+      }
+
+      /* The film goal is rewritten UNCONDITIONALLY by id per the cascade rule, never guarded on
+         its old text. Text stays NEUTRAL: no self estimate, no shot claims, nothing a grading
+         session could absorb from the goals list, which the video coach does write to. */
+      if(!Array.isArray(state.pickleball.goals)) state.pickleball.goals=[];
+      var _g319=null;
+      state.pickleball.goals.forEach(function(g){ if(g&&g.id==="pk-goal-film-0819") _g319=g; });
+      if(!_g319){ _g319={id:"pk-goal-film-0819", done:false}; state.pickleball.goals.push(_g319); }
+      _g319.short="Film queue, 19 and 20 Aug";
+      _g319.text="Two sets of footage are pending. Wednesday 19 August, open play with Dylan, 3h50m. Plus more sent Thursday 20 August to verify the rating. THE CAMERA REQUIREMENT, and it is the thing that decides whether any of it can be counted: ONE GAME MUST BE SHOT WITH IAN AND DYLAN ON THE FAR SIDE OF THE CAMERA. Near side footage puts their shots at 21 to 27 px per foot, which is not enough to count landings. Far side puts them at 37 to 61. That single change is what unlocks the miss pattern and the error counts, and it costs nothing but a court end. Grade from the frames first, against the written criteria, before opening any session record.";
+
+      if(!state.meta.mig319_0820){
+        if(!Array.isArray(state.autoLog)) state.autoLog=[];
+        if(!state.autoLog.some(function(x){ return x&&x.id==="auto-20260820-pksession"; })){
+          state.autoLog.unshift({id:"auto-20260820-pksession", date:"2026-08-20", area:"Pickleball",
+            what:"Logged Thursday at Ace, 1:49:39, and put the far side camera requirement on the film goal",
+            why:"You set consistency as the goal and said you met it. That is the first time it has been a goal rather than a complaint, so it is on the record as a change in framing. Whether it is real is for the footage to say, not this note.",
+            evidence:"The watch backs up your account of the conditions without being told: 8.0 active calories a minute and avg 120 are both the lowest of any open play session you have logged, and they sit down with your league nights, which is what long waits between games produce. Peak 169 says the points themselves were not soft. Across three days you are at 8 hours 23 minutes, and today was the smallest of the three.",
+            undo:"Pickleball, Sessions, open the 20 August record to edit or remove it."});
+        }
+        state.meta.mig319_0820=true;
+      }
+      save(true);
+  } }catch(e){ try{ console.warn("mig319 did not apply:",e&&e.message); }catch(_){} }
 
 
 
