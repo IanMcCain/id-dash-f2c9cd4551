@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 323 (2026-08-21)">
+<meta name="build" content="v21 build 324 (2026-08-21)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -11004,6 +11004,113 @@ try{ if(profile==="ian"){
       state.meta.mig323_bonkbuy_willis=true;
       save(true);
   } }catch(e){ try{ console.warn("mig323 did not apply:",e&&e.message); }catch(_){} }
+
+/* ===== v21 build 324: BELKNAP BUY SIDE IS REAL. 5122 N 141ST UNDER CONTRACT AT $452,000 ======
+     08.21.2026. The offer went in 17 August, the sellers countered 18 August, the buyers accepted
+     the counter at 11:56 that morning, and the deal became primary on 19 August when the existing
+     buyers could not release their home sale contingency inside a 24 hour First Right of Refusal.
+
+     THIS IS THE SPLIT TRAP EDIT AND BOTH HALVES HAPPEN HERE OR THE COUNT GOES WRONG. The standing
+     rule since build 271: a client transacting both sides counts TWO, and re-belknap-sell has been
+     carrying that on its own as side "Both", weight 2. Adding a buy record WITHOUT dropping the
+     sell record to side "Seller" in the SAME edit would count the Belknaps THREE. So:
+       re-belknap-buy   CREATED, side Buyer,  weight 1, Under Contract
+       re-belknap-sell  side "Both" -> "Seller", weight 2 -> 1, stage untouched at Coming Soon
+     Net effect on the deal count is +1, not +2, and the harness asserts exactly that.
+
+     THE TWO RECORDS STAY SEPARATE FOREVER. Buy is 5122 N 141st St. Sell is 4946 Pratt St. They are
+     different properties, different sides, different timelines. Do not merge them.
+
+     NO PRICE IS WRITTEN ON PRATT. The sell record already carries $249,900 from build 308, which
+     was Ian's own list decision on 08.17, and it is left exactly as it is. Nothing in this build
+     touches it.
+
+     CONTRACT TERMS ARE FROM THE SELLERS' WRITTEN COUNTER, quoted not paraphrased, which Chris sent
+     into the group chat at 10:20 on 18 August. */
+  try{ if(profile==="ian" && state.realEstate && Array.isArray(state.realEstate.deals)
+          && state.meta && !state.meta.mig324_belknap_buy_uc){
+      var _BUY324="re-belknap-buy", _SELL324="re-belknap-sell";
+      var _D324=state.realEstate.deals, _sell324=null, _have324=false;
+      if(!Array.isArray(state.meta.removedDealIds)) state.meta.removedDealIds=[];
+      var _gone324=state.meta.removedDealIds.indexOf(_BUY324)>-1;
+      for(var i=0;i<_D324.length;i++){
+        if(_D324[i] && _D324[i].id===_SELL324) _sell324=_D324[i];
+        if(_D324[i] && _D324[i].id===_BUY324) _have324=true;
+      }
+
+      if(!_gone324 && !_have324){
+        _D324.push({
+          id:_BUY324,
+          title:"Belknaps",
+          sub:"Buying, 5122 N 141st St, cash",
+          stage:"Under Contract",
+          price:"$452,000",
+          close:"September 4, 2026",
+          source:"Chris's client",
+          side:"Buyer",
+          address:"5122 N 141st St, Omaha, NE 68164",
+          note:"UNDER CONTRACT 18 AUGUST 2026 AT $452,000, CLOSING FRIDAY 4 SEPTEMBER 2026. Purchased in CASH by the Belknap trust, "
+            +"Bryant Belknap signing alone as Trustee. List price was $460,000. "
+            +"THE SELLERS' WRITTEN COUNTER, QUOTED NOT PARAPHRASED. One, accept purchase price to be $452,000 and closing date to be "
+            +"September 4, 2026. Two, this Purchase Agreement is accepted subject to the Seller's existing Purchase Agreement and the "
+            +"existing Buyer's 24 hour First Right of Refusal; it becomes the primary contract only upon expiration, waiver or termination "
+            +"of that First Right of Refusal and termination of the existing Purchase Agreement, and if the existing Buyer timely exercises "
+            +"it this agreement is null and void and the earnest deposit is promptly returned. Three, if buyer chooses to do a radon "
+            +"inspection it is FOR INFORMATIONAL PURPOSES ONLY, as the seller WILL NOT PAY for a radon mitigation system. Four, home "
+            +"inspection to be completed within 7 BUSINESS DAYS of acceptance with either an Inspection Notice Addendum or Rejection Notice "
+            +"sent to the sellers within 3 CALENDAR DAYS after the inspection is completed. Five, the counter expired at 8:00 PM on 18 "
+            +"August 2026. Buyer accepted at 11:56 AM that day, well inside it. "
+            +"IT WAS A FIRST RIGHT OF REFUSAL, NOT A KICK OUT CLAUSE, AND THE DISTINCTION MATTERS. The prior buyers held an accepted home "
+            +"sale contingent offer and had not listed their own home. The listing agent served the 24 hour notice around 13:00 on 18 "
+            +"August. On 19 August at 12:04 Chris reported they were UNABLE to release their contingency, so this contract became primary. "
+            +"Chris asked the listing agent on 19 August for a cancellation addendum clearing the first Purchase Agreement and the agent "
+            +"said yes; RECEIPT OF THAT DOCUMENT IS NOT CONFIRMED anywhere. "
+            +"DEADLINES NOW LIVE. Home inspection walk through booked TUESDAY 25 AUGUST 11:00 AM, inspector Andy, ordered 19 August as "
+            +"inspection plus RADON plus TERMITE. Inspection notice or rejection due within 3 calendar days of the inspection, so FRIDAY 28 "
+            +"AUGUST. Closing FRIDAY 4 SEPTEMBER. Title is AMBASSADOR TITLE SERVICES, Cjensen@ambassadortitle.com, and they opened the file "
+            +"on 21 August. NOTE AN AMBIGUITY, FLAGGED NOT RESOLVED: the 7 business day inspection window could run from acceptance on 18 "
+            +"August, giving 27 August, or from the contract becoming primary on 19 August, giving 28 August. The 25 August inspection sits "
+            +"inside both readings so nothing turns on it, but do not quote a deadline without settling which one applies. "
+            +"THE RADON TERM IS THE ONE TO WATCH. The seller has pre refused mitigation in writing, and a radon test is already ordered. "
+            +"That is exactly the shape that killed the Willis contract a week earlier, an inspection issue the seller would not resolve. "
+            +"OUTSTANDING FROM THE BUYERS: proof of funds. Chris asked on 17 August at 19:53, Emily routed it to Gary, and Chris said at "
+            +"19:57 that Gary was sending a screenshot of the trust funds shortly. NO CONFIRMATION IT ARRIVED exists in any thread. Chris "
+            +"also told the listing agent at 20:02 that he was still waiting on it. EARNEST MONEY $5,000 to Ambassador Title Services, check "
+            +"or wired, was a calendar item for Thursday 20 August 17:30 with a note to confirm with Bryant. NO CONFIRMATION OF COLLECTION "
+            +"OR DELIVERY exists anywhere. Both are clean searches rather than gaps, in the sense that the Willis file proved this team "
+            +"moves a great deal by phone, but both are unconfirmed and both are chaseable. "
+            +"THE BASEMENT EGRESS WINDOW WAS DROPPED, NOT RESOLVED. Four layout sketches were exchanged on 17 August, the last at 15:33, "
+            +"and Chris advised keeping the offer clean rather than writing in an out. It was never raised again and THERE IS NO EGRESS OR "
+            +"REPAIR PROVISION IN THE COUNTER. It is now an inspection question and a post closing project, not a contract term. "
+            +"THE FRONT PORCH PATIO SET is included, added to other provisions on 17 August with the listing agent's agreement. "
+            +"NEITHER THE 25 AUGUST INSPECTION NOR THE 4 SEPTEMBER CLOSING IS ON THE CALENDAR as at 21 August."
+        });
+      }
+
+      /* SECOND HALF OF THE SPLIT TRAP EDIT. Must happen in the same migration. */
+      if(_sell324 && _sell324.side==="Both"){
+        _sell324.side="Seller";
+      }
+      if(_sell324 && String(_sell324.note||"").indexOf("08.21.2026 BUY SIDE SPLIT OUT")<0){
+        _sell324.note=String(_sell324.note||"")+" 08.21.2026 BUY SIDE SPLIT OUT INTO ITS OWN RECORD, AND THIS RECORD DROPPED FROM side "
+          +"Both TO side Seller IN THE SAME EDIT. That is the split trap the note has warned about since build 271: side Both already weighs "
+          +"2, so creating re-belknap-buy without demoting this one would have counted the Belknaps three. Weight here goes 2 to 1, the new "
+          +"buy record carries 1, and the client still counts TWO in total. "
+          +"THE BUY SIDE IS UNDER CONTRACT: 5122 N 141st St, $452,000 cash, closing 4 September 2026. See re-belknap-buy for the terms. "
+          +"THIS RECORD IS THE SELL SIDE ONLY, 4946 Pratt St, and it stays at Coming Soon. LISTING PREP is the live work and THERE IS NO "
+          +"DATE. Nothing in the message threads since 17 August touches Pratt at all: no condition update, no repair, no carpet, no "
+          +"staging, no timing, no price. That is a CLEAN SEARCH, not a gap, and the Willis file is the reason to say so plainly, because "
+          +"everything that killed Willis moved by phone and left no trace in texts. "
+          +"NO PRICE HAS EVER BEEN QUOTED TO THE BELKNAPS FOR 4946 PRATT BY ANYONE. Verified again across every thread through 21 August. "
+          +"The $249,900 on this record is IAN'S INTERNAL LIST DECISION from 08.17, not something the clients have heard, and build 324 did "
+          +"not touch it. "
+          +"THE ORDER OF WORK IS NOW FIXED BY THE PURCHASE. They close on 141st on 4 September in cash, so Pratt listing prep is no longer "
+          +"contingent on anything. The walkthrough that gates the $249,900 has still not happened.";
+      }
+      state.meta.mig324_belknap_buy_uc=true;
+      save(true);
+  } }catch(e){ try{ console.warn("mig324 did not apply:",e&&e.message); }catch(_){} }
+
 
 
 
