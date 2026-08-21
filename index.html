@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 325 (2026-08-21)">
+<meta name="build" content="v21 build 326 (2026-08-21)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -11204,6 +11204,56 @@ try{ if(profile==="ian"){
       state.meta.mig325_belknap_confirmed=true;
       save(true);
   } }catch(e){ try{ console.warn("mig325 did not apply:",e&&e.message); }catch(_){} }
+
+/* ===== v21 build 326: THE 08.21 SESSION, AND A 6.3 OBSERVED FIRST HAND ======================
+     Friday 21 August, Ace, 1:45 to 3:46 PM, 2:01:16, effort 8. Open play with Bianca then
+     7-11 drilling to finish.
+
+     THE VALUABLE PART IS NOT THE SESSION, IT IS THAT HE PLAYED A DUPR 6.3 RETIRED PRO AND
+     WATCHED HOW HE PLAYED. That observation is written into the knowledge base under Per player
+     transferable factors, because it is PRO STUDY and it is first hand rather than broadcast,
+     which nothing else in that section is. It carries no self rating so it is safe there.
+     HIS OWN SELF REPORT STAYS HERE AND ONLY HERE, per the blind grading rule.
+
+     TWO CONNECTIONS STATED ONCE. The 6.3's stated priority, get to the kitchen rather than hit
+     winners from the back, is the 08.19 film finding arrived at independently and from Ian's own
+     eyes. And "still hittable" on the fastest serve he has ever seen is a counterweight to
+     chasing serve speed, which he asked about measuring this week.
+
+     DAY COUNT COMPUTED, NOT REPEATED. Friday 21 August to Sunday 23 August is TWO days.
+     Saturday is the day before. */
+  try{ if(profile==="ian" && state.pickleball){
+      if(!state.meta) state.meta={};
+      if(!Array.isArray(state.pickleball.sessions)) state.pickleball.sessions=[];
+      var _S326={id:"pk-20260821-openplay", date:"2026-08-21", kind:"Open play", venue:"Ace",
+        duration:"2h 01m 16s", calories:1309, activeCalories:1119, avgHr:130, maxHr:166, minHr:89, effort:8,
+        result:"", score:"", opponent:"",
+        note:"Open play with Bianca then 7-11 DRILLING to finish. Ace Pickleball Club, Omaha, 1:45 to 3:46 PM, 2:01:16. Effort 8 of 10, Hard. From Apple Watch. Avg HR 130, peak 166, low 89, active 1,119, total 1,309. No footage from this session, so NO RATING CHANGE. Evidence class SELF REPORT: recorded and tracked, weighed against footage, and it does not move a rating on its own. "
+            +"HIS REPORT, HIS WORDS: he FELT REALLY GOOD. Some inconsistency on drives and serve, but overall he played pretty well. "
+            +"HE PLAYED A DUPR 6.3 RETIRED PRO AND WATCHED HIM. That observation is the valuable thing to come out of today and it is written up in the knowledge base under Per player transferable factors, where the pro study lives, as the FIRST first hand entry in a section that is otherwise all broadcast. Summary only here: the pro barely missed, played aggressive, made it his GOAL TO GET TO THE KITCHEN rather than hit winners from the back and still hit winners, had the fastest serve Ian has ever seen when he actually tried and it was STILL HITTABLE, and his hands were nuts, reading where most of Ian's shots were going. Ian only scored when the pro's PARTNER made a mistake. "
+            +"CONNECTION ONE, AND IT IS REAL CORROBORATION. Getting to the kitchen instead of hitting winners from the back is exactly the 08.19 film finding, measured: Ian sat a median 12.2 ft behind his own kitchen line and Dylan 12.4 ft, against opponents at 3.5 ft and 2.1 ft. A 6.3 naming that as his own deliberate priority is the same conclusion reached independently, and Ian saw it himself rather than being told it. That is worth more than the finding alone and it is why it is recorded. It changes no rating. "
+            +"CONNECTION TWO, NEUTRAL. The fastest serve he has ever seen was still returnable. He rates his own serve highly on his 08.20 self set and he asked about measuring his serve mph earlier this week. Recorded as a data point about what serve speed buys at 6.3 level, not as advice and not as an argument against the question he asked. "
+            +"WHAT THE WATCH SAYS. Avg 130 sits squarely inside his open play band of 122 to 134, and 9.2 active calories a minute sits mid band against 8.8 to 10.9. This is an ordinary hard open play session on the numbers. It also explains the recent spread rather than contradicting it: 117 on 08.18 was a league night with downtime, 120 on 08.20 was open play on busy courts with long waits, 133 on 08.17 was continuous open play, and today at 130 is continuous open play again. The three low readings each had a format cause and none of them were effort. Low 89 is a high floor, so he did not come down much between points. "
+            +"LOAD, STATED AS FACT WITH NO INSTRUCTION ATTACHED, AND THE DAY COUNT IS COMPUTED. Tuesday 2:44:02, Wednesday 3:50:00, Thursday 1:49:39, Friday 2:01:16. That is 10 hours 24 minutes 57 seconds across four days. The APC is Sunday 23 August, so today is TWO days out and SATURDAY is the day before, not today. HIS OWN PLAN, build 299, HAS FRIDAY LIGHT. Effort 8 at 2:01:16 with an average of 130 is not light by any reading of his own record. Saturday is also planned light. The numbers are here and the call is his. "
+            +"NOT KNOWN AND NOT GUESSED: the pro's name, how many games Ian played against him, how much of the 2:01:16 was the 7-11 drilling, whether Bianca partnered him throughout, and whether the drive and serve inconsistency he mentions is the same long side pattern already on record from 08.17 and 08.18."};
+      if(!state.pickleball.sessions.some(function(x){ return x&&x.id===_S326.id; })){
+        state.pickleball.sessions.push(_S326);
+        state.pickleball.sessions.sort(function(a,b){ return String(a&&a.date).localeCompare(String(b&&b.date)); });
+      }
+
+      if(!state.meta.mig326_0821){
+        if(!Array.isArray(state.autoLog)) state.autoLog=[];
+        if(!state.autoLog.some(function(x){ return x&&x.id==="auto-20260821-pksession"; })){
+          state.autoLog.unshift({id:"auto-20260821-pksession", date:"2026-08-21", area:"Pickleball",
+            what:"Logged Friday at Ace, 2:01:16, and wrote your read on the 6.3 into the knowledge base as pro study",
+            why:"Playing a 6.3 and watching what he actually prioritised is the useful thing that happened today, and it is first hand rather than film, which nothing else in that section is.",
+            evidence:"He made getting to the kitchen his goal instead of hitting winners from the back. That is the 08.19 film finding independently, where you sat a median 12.2 ft behind your kitchen line and Dylan 12.4 ft against opponents at 3.5 and 2.1. You saw it yourself rather than being told. Also on record: the fastest serve you have seen was still hittable. Avg HR 130 is an ordinary hard open play number for you, mid band on rate too.",
+            undo:"Pickleball, Sessions, open the 21 August record to edit or remove it."});
+        }
+        state.meta.mig326_0821=true;
+      }
+      save(true);
+  } }catch(e){ try{ console.warn("mig326 did not apply:",e&&e.message); }catch(_){} }
 
 
 
