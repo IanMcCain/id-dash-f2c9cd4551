@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 321 (2026-08-20)">
+<meta name="build" content="v21 build 322 (2026-08-21)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -10750,6 +10750,143 @@ try{ if(profile==="ian"){
       state.meta.mig321_crystal_willis=true;
       save(true);
   } }catch(e){ try{ console.warn("mig321 did not apply:",e&&e.message); }catch(_){} }
+
+/* ===== v21 build 322: 08.21.2026 ian-daily-brief daily inject =====
+   Date keyed content for TODAY, the 08.20 Today's entry archive, one to do retired and
+   one created, the Friday taper event corrected against Ian's real calendar, and
+   Saturday's open house added because it exists on his calendar and not in the app.
+   Runs on EVERY load, OUTSIDE the SEED_VERSION gate. The guard mig322_daily lives in
+   SAVED STATE ONLY and is never written into seedIan().meta.
+   Ian's 08.20 entry swapped cable chops for rope crunches because he was sore. NOTHING
+   was cut. The chop stays pinned on Thursday per his own 08.06 instruction and the
+   08.20 standing rule that a skip does not trim the plan. */
+  try{ if(profile==="ian"){
+      var T322="2026-08-21";
+      if(!state.briefing) state.briefing={forIan:{},done:{}};
+      if(!state.briefing.forIan) state.briefing.forIan={};
+      if(!state.briefing.forIan[T322]) state.briefing.forIan[T322]=[
+        {id:"brief-20260821-1", type:"Real estate", done:false, url:"",
+         title:"Both Bonks halves are finished on your calendar and still Under Contract on your board",
+         note:"Buy side, 401 Fir St Ashland, $420,000, closed 4:00 PM Thursday with Chris. Sell side proceeds were picked up Thursday 1:00 PM. Confirm both and I move them to Closed.",
+         why:"Because your calendar shows both events happened and the pipeline has not caught up"},
+        {id:"brief-20260821-2", type:"Real estate", done:false, url:"",
+         title:"Crystal Johnson appraised. The day is still Tuesday or Wednesday, not a date",
+         note:"$577,861 seller side, appraisal cleared 08.20. It is the only deal already counted in your production that can still leave the board. One text to title fixes the day.",
+         why:"Because it is the last counted deal that can still move, and Tuesday is four days out"},
+        {id:"brief-20260821-3", type:"Pickleball", done:false, url:"https://www.youtube.com/watch?v=r5chw-XMGWg",
+         title:"Tomorrow at 6 PM you are booked twice, the night before your DUPR is set",
+         note:"Your calendar has Ian shot 6:00 to 7:00 and Pickleball training 6:00 to 9:00, both Saturday, both named you. Pick one this morning, not at 5:45 tomorrow.",
+         why:"Because Sunday sets your rating and Saturday evening is the last thing standing between you and it"}];
+      if(!state.futureIdeas) state.futureIdeas={};
+      if(!state.futureIdeas[T322]) state.futureIdeas[T322]=[
+        {id:"fi-20260821-1", url:"",
+         text:"You are at the Rose Creek two storey Saturday 12 to 4. Put one QR code on the sign in sheet pointing at a free home value report. You collect names at open houses and your people list has nine records with two contact dates on it, so the collecting is not the broken part, the follow up is."},
+        {id:"fi-20260821-2", url:"",
+         text:"Your metrics log has exactly one entry, 12 July, and it reads zero calls, zero appointments, zero doors. One of your three real estate goals is 10 prospecting calls a day. Log one honest number today so you can tell whether prospecting is failing or just unmeasured."},
+        {id:"fi-20260821-3", url:"",
+         text:"Ask the press for a date, not a status. Solara Drop 001 was settled for Monday 17 August and that passed four days ago with the clothes still out. A firm return date is the only thing that lets the shoot, the edit and the launch be rebuilt on a real runway."},
+        {id:"fi-20260821-4", url:"",
+         text:"Ask Dylan to prop a phone on the fence Sunday and film two full games. It is your first tournament and your DUPR baseline, and it is the only time you will ever be able to film it. Every coaching line you own still traces to four drills on 22 July."}];
+      if(!state.quickWin) state.quickWin={picks:{},done:{}};
+      if(!state.quickWin.picks) state.quickWin.picks={};
+      if(!state.quickWin.picks[T322]) state.quickWin.picks[T322]=[
+        "Text Luis Monarrez. His note says getting married, potentially buying in fall. Fall is here and you last touched him 7 July, 45 days ago. One line, no pitch.",
+        "Your push today is LIGHT and it is at 1:00 PM, not 9:00. CE class runs 8:30 to 12:00 in Elkhorn and the full duration is required for credit. Sixth straight gym day, two days out, so light is the point of the session."];
+      if(state.pickleball){
+        if(!state.pickleball.videoRec) state.pickleball.videoRec={};
+        if(!state.pickleball.videoRec[T322]) state.pickleball.videoRec[T322]={
+          title:"Raise Your RATING by 1 Whole Point (3.5-4.5) In 3 EASY Steps",
+          url:"https://www.youtube.com/watch?v=r5chw-XMGWg",
+          note:"Repeated from Wednesday on purpose. It is a 1 to 10 self grade across fitness and footwork, fundamentals, shot selection and mindset, not a drill list. Today is the day to actually sit down and do it, because Sunday morning is too late."};
+        if(!state.pickleball.research) state.pickleball.research={};
+        if(!state.pickleball.research[T322]) state.pickleball.research[T322]={
+          title:"The rest day is the training now, and today is the only one you have left",
+          text:"You played 17, 18, 19 and 20 August back to back, including 3 hours 50 minutes on Wednesday against a taper you wrote yourself that said moderate. That sits on top of eight straight logged gym days, and your own 20 August entry says whole body sore. Sleep and protein logged 4 of 4 every one of those days, so recovery inputs were not the variable, load was. Today has no pickleball on it and tomorrow is deliberately light. Two days of reduced load before a competition is when the work you already did shows up. Skipping the rest is how you arrive on Sunday with your best tennis in your legs and none of it available.",
+          url:"", source:"Reasoned 08.21.2026 from state.pickleball.sessions, gym.logs and routine.habits, export 08.20.2026"};
+        if(!state.pickleball.coachRec) state.pickleball.coachRec={};
+        if(!state.pickleball.coachRec[T322]) state.pickleball.coachRec[T322]={
+          title:"Two days out. Confirm what holds, add nothing.",
+          note:"Run the 1 to 10 self check today rather than Sunday morning, settle the toss decision now, and take today's rest day as written. Nothing you learn in two days beats what you already own."};
+        if(!state.pickleball.coachBullets || Array.isArray(state.pickleball.coachBullets)) state.pickleball.coachBullets={};
+        if(!state.pickleball.coachBullets[T322]) state.pickleball.coachBullets[T322]=[
+          "Two days out, Ian. Today has no pickleball on it and that is the plan working, not a wasted day. Take it.",
+          "One focus for Sunday and it comes from your own film. Construct, do not just rally. Move them with the dink, then take the first ball that sits above the net band.",
+          "Tomorrow at 6 you are double booked, Ian shot and Pickleball training. Decide it this morning, not at 5:45.",
+          "If you win the toss, receive. The serving team wins about 42.5 percent of points. Settle it with Dylan before you walk on.",
+          "Serve backhand, drive crosscourt or middle, set your feet before you swing at anything that has not bounced. Stacking is decided, natural sides."];
+        if(!Array.isArray(state.pickleball.workOn)) state.pickleball.workOn=[];
+        var W322="Take the rest day when the plan says rest. Four straight playing days into a taper is how you arrive tired.";
+        if(state.pickleball.workOn.indexOf(W322)===-1) state.pickleball.workOn.push(W322);
+        if(!Array.isArray(state.pickleball.cues)) state.pickleball.cues=[];
+        var C322="Nothing new on tournament day, run what you already own";
+        if(state.pickleball.cues.indexOf(C322)===-1) state.pickleball.cues.push(C322);
+      }
+      /* 08.20 Today's entry, GYM label. Archived verbatim, then marked acted. Archive first. */
+      if(!state.context) state.context={};
+      if(!state.context.dailyLog) state.context.dailyLog={};
+      if(!state.context.dailyLog["2026-08-20"]) state.context.dailyLog["2026-08-20"]={};
+      var _dl322=state.context.dailyLog["2026-08-20"];
+      if(!_dl322.gymNoteArchive) _dl322.gymNoteArchive="GYM: whole body sore so went kind of light, instead of cable chops I did crunches on a pulldown rope machine";
+      if(!_dl322.dailyEntryAgentActed){
+        _dl322.dailyEntryAgentActed="2026-08-21";
+        _dl322.claudeAction="GYM entry 20 Aug, rope crunches instead of cable chops: EXECUTED as a logged variation, deliberately NOT as a plan change. Cable chops low to high stay PINNED on Thursday, because Ian pinned them himself on 08.06 with do not remove them, and his 08.20 standing rule says a skip does not trim the plan. Kneeling rope crunches are now recorded in 01_FITNESS_CONTEXT.md as an accepted substitute for the Thursday chop on a sore day ONLY, never the default, because they do not carry the pickleball rotational crossover that is the whole reason the chop is pinned. The whole body soreness was read as the physical receipt on a taper that did not happen, four consecutive playing days 17 to 20 August on top of eight straight gym days, with sleep and protein logged 4 of 4 throughout.";
+      }
+      /* TO DO MAINTENANCE. Ian 08.02.2026, cap of 10, RETIRE BEFORE YOU CREATE. Retiring moves the
+         item to state.archive.todosDone with its reason. Nothing is ever deleted. */
+      if(!state.meta) state.meta={};
+      if(!state.meta.mig322_todos && state.realEstate && Array.isArray(state.realEstate.todos)){
+        if(!state.archive) state.archive={};
+        if(!Array.isArray(state.archive.todosDone)) state.archive.todosDone=[];
+        var RET322={"ret-20260820-bonk-buy-time":"Grounding died. Ian's calendar answers it, Bonk Fir St Closing with Chris at 4:00 PM Thursday 20 August. The question was what time, and the time happened."};
+        var keep322=[];
+        for(var i322=0;i322<state.realEstate.todos.length;i322++){
+          var td322=state.realEstate.todos[i322];
+          if(td322 && RET322[td322.id]){
+            state.archive.todosDone.unshift({id:td322.id,text:td322.text,key:td322.key||"",retired:"2026-08-21",by:"ian-daily-brief",reason:RET322[td322.id]});
+          } else { keep322.push(td322); }
+        }
+        state.realEstate.todos=keep322;
+        var haveConfirm=false;
+        for(var k322=0;k322<state.realEstate.todos.length;k322++){
+          if(state.realEstate.todos[k322] && state.realEstate.todos[k322].key==="bonks-close-confirm") haveConfirm=true;
+        }
+        if(!haveConfirm){
+          state.realEstate.todos.unshift({id:"ret-20260821-bonks-confirm", key:"bonks-close-confirm", done:false, due:"2026-08-21",
+            src:"Calendar 08.20.2026, Bonk Fir St Closing with Chris 4:00 PM and Pick Up Proceeds for Bonks 1:00 PM, against two deal records still reading Under Contract and payment outstanding",
+            exp:"2026-08-29",
+            text:"CONFIRM BOTH BONKS HALVES CLOSED AND PAID. Buy side, 401 Fir St Ashland, $420,000, was on your calendar at 4:00 PM Thursday with Chris and the record still reads Under Contract. Sell side, $625,000, reads Closed with payment outstanding and the proceeds pickup was on your calendar at 1:00 PM Thursday. That is $1,045,000 of your board sitting in the wrong state. Say the word and both move."});
+        }
+        if(!Array.isArray(state.autoLog)) state.autoLog=[];
+        if(!state.autoLog.some(function(x){ return x&&x.id==="auto-20260821-todos"; })){
+          state.autoLog.unshift({id:"auto-20260821-todos",date:"2026-08-21",area:"Real estate",
+            what:"Retired 1 to do and created 1, list stands at 13",
+            why:"The Bonk closing time question died when the closing happened Thursday at 4 PM. It was replaced with the question that is actually live, whether both halves closed and paid, because two records worth $1,045,000 are still in the wrong state.",
+            evidence:"13 grounded items against your ceiling of 10. Nothing is checked, nothing has an expired exp date, and nothing has lost its grounding, so I did not cut three real items to hit a number. Three are due today and two are already overdue.",
+            undo:"Real estate, To dos. The retired item is in state.archive.todosDone with its reason."});
+        }
+        state.meta.mig322_todos=true;
+      }
+      /* FRIDAY TAPER EVENT, CORRECTED AGAINST IAN'S REAL CALENDAR. The app said gym 9 to 11.
+         His calendar has a 3 hour CE class 8:30 to 12:00 in Elkhorn and the gym at 1:00 PM. */
+      if(!state.meta.mig322_fri && Array.isArray(state.events)){
+        for(var e322=0;e322<state.events.length;e322++){
+          var ev322=state.events[e322];
+          if(ev322 && ev322.id==="ev-20260821-taper-fri"){
+            ev322.note="CORRECTED 08.21.2026 against your calendar. Gym is 1:00 to 3:00 PM with Bianca, not 9 to 11, because CE class Fair Housing runs 8:30 to 12:00 at The Relevant Center in Elkhorn and the full duration is required for NREC credit. No pickleball today. You chose lighter over a rest day, so make it genuinely light: three items, no top sets, nothing to failure. Weigh in this morning.";
+          }
+        }
+        state.meta.mig322_fri=true;
+      }
+      /* SATURDAY OPEN HOUSE. On his calendar, was not in the app at all. */
+      if(Array.isArray(state.events) && !state.events.some(function(x){ return x&&x.id==="ev-20260822-openhouse"; })){
+        state.events.unshift({id:"ev-20260822-openhouse", date:"2026-08-22", kind:"Real estate",
+          title:"Open house, Rose Creek Homes two storey, 12:00 to 4:00",
+          note:"From your calendar, named you. Model duty at the two storey runs every Saturday and Sunday until it sells and you and Chris swap freely, so this is your Saturday. Sunday is the tournament."});
+      }
+      if(!state.meta.mig322_daily){ state.meta.mig322_daily=true; }
+      save(true);
+  } }catch(e){ try{ console.warn("mig322 did not apply:",e&&e.message); }catch(_){} }
+
 
 
 
