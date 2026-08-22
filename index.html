@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 327 (2026-08-21)">
+<meta name="build" content="v21 build 328 (2026-08-22)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -11329,6 +11329,141 @@ try{ if(profile==="ian"){
       }
       save(true);
   } }catch(e){ try{ console.warn("mig327 did not apply:",e&&e.message); }catch(_){} }
+
+/* ==========================================================================================
+   v21 build 328, 08.22.2026, ian-daily-brief 6am run. TOURNAMENT EVE.
+   Today's dated content, the 21 August entry marked acted, one to do retired, the Saturday
+   court event corrected against his own decision, and the positioning finding turned into a
+   courtside item. Additive and date keyed. SEED_VERSION untouched. */
+  try{ if(profile==="ian"){
+      var T328="2026-08-22";
+      if(!state.meta) state.meta={};
+      if(!state.briefing) state.briefing={forIan:{},done:{}};
+      if(!state.briefing.forIan) state.briefing.forIan={};
+      if(!state.briefing.forIan[T328]) state.briefing.forIan[T328]=[
+        {id:"brief-20260822-1", type:"Pickleball", done:false, url:"https://www.youtube.com/watch?v=zSHMdoOF6MI",
+         title:"First tournament is tomorrow at 10:15, and one instruction carries it",
+         note:"APC men's doubles 3.5 with Dylan, natural sides, top 2 of 8 advance. Construct, do not rally. Move them with the dink, then take the first ball above the net band.",
+         why:"Because three film studies in a row called you a wall rather than a finisher"},
+        {id:"brief-20260822-2", type:"Real estate", done:false, url:"",
+         title:"Crystal Johnson closes Tuesday or Wednesday and still is not a date",
+         note:"$577,861 seller side. The appraisal cleared 08.20, so the risk is gone and only the day is open. One text to title turns two candidate days into one.",
+         why:"Because it is the only counted deal that could still have left your board"},
+        {id:"brief-20260822-3", type:"Real estate", done:false, url:"",
+         title:"The Belknap buy side landed, $452,000, closing 4 September",
+         note:"5122 N 141st under contract in cash. In flight production moves to $6,892,357 and 15 of 20 deals. The sell side stayed Seller, so nobody counted three.",
+         why:"Because the offer you were adjusting Monday night went through"}];
+
+      if(!state.futureIdeas) state.futureIdeas={};
+      if(!state.futureIdeas[T328]) state.futureIdeas[T328]=[
+        {id:"fi-20260822-1", url:"",
+         text:"The Blondo Pointe lot video goes live at noon and you are stood at the Rose Creek two storey 12 to 4. Keep it open on your phone. Anyone who walks in and mentions land is a two minute conversation you would otherwise never have."},
+        {id:"fi-20260822-2", url:"",
+         text:"Ask Chris for a phone number or an email for Bruce O'Neil today. He is a $1.2M to $1.5M build plus a $350,000 to $450,000 lot, the only item on your board big enough to close the gap to $10M on its own, and there is no way to reach him recorded anywhere."},
+        {id:"fi-20260822-3", url:"",
+         text:"Film sixty seconds tomorrow between matches rather than during them. Your first tournament and your first rating only happen once, and it is also the fast hands footage the skills grade has been missing since 22 July."},
+        {id:"fi-20260822-4", url:"",
+         text:"Write the Scenic Group merch list before the 1:00 PM session instead of inside it. Shirts, hoodies, pickleball compression sleeves, stickers, hats. You are the test market for the sleeves, so start there."}];
+
+      if(!state.quickWin) state.quickWin={picks:{},done:{}};
+      if(!state.quickWin.picks) state.quickWin.picks={};
+      if(!state.quickWin.picks[T328]) state.quickWin.picks[T328]=[
+        "Text Chris for the Willis addendum and the inspection report. That scope is the only thing deciding whether the 3 September relist goes out at $619,900 or $614,900, and the to do is due Monday.",
+        "Gym is 9 to 11 and it is two or three items. Start with the explosive cable row. You skipped it both of the last two Saturdays, 08 and 15 August, and it is the only pickleball item on the day."];
+
+      if(state.pickleball){
+        if(!state.pickleball.videoRec) state.pickleball.videoRec={};
+        if(!state.pickleball.videoRec[T328]) state.pickleball.videoRec[T328]={
+          title:"My Best Advice If I Were Coaching You for a Pickleball Tournament",
+          url:"https://www.youtube.com/watch?v=zSHMdoOF6MI",
+          note:"Watch it tonight, not in the car tomorrow. It is about how a tournament day actually runs, warm up, waits, pacing and the between match reset, which is the part you have never done. Nothing in it is a new stroke."};
+        if(!state.pickleball.research) state.pickleball.research={};
+        if(!state.pickleball.research[T328]) state.pickleball.research[T328]={
+          title:"A first rating is a data point, not a verdict, and the pool is decided by the boring games",
+          text:"Top 2 of 8 advance and there are no quarterfinals, so the bar out of the pool is 5 and 2 or better and the tiebreak runs wins, then head to head, then average point differential. That last one matters more than it sounds: a game you have already lost is still worth points, so you never stop competing in a bad one. Your rating comes off a handful of games, is provisional, and swings hard on the draw, so Monday morning is a starting number and nothing more. The two things inside your control all day are the between match routine, water, towel, one breath, then the serve or receive call, and holding one intent per game. Dillon Johnson and Brandt Smith are in Pool B, so they are only reachable in the playoffs and there is no reason to plan a pool game around them.",
+          url:"", source:"Reasoned 08.22.2026 from the APC format confirmed with the directors 08.19, the 08.18 game plan and state.pickleball.sessions"};
+        if(!state.pickleball.coachRec) state.pickleball.coachRec={};
+        if(!state.pickleball.coachRec[T328]) state.pickleball.coachRec[T328]={
+          title:"Tournament eve. Rest, then construct.",
+          note:"Court is off today and that stays off. Tomorrow you carry one instruction, move them with the dink and take the first ball above the net band, and you hold the same routine between every game."};
+        if(!state.pickleball.coachBullets || Array.isArray(state.pickleball.coachBullets)) state.pickleball.coachBullets={};
+        if(!state.pickleball.coachBullets[T328]) state.pickleball.coachBullets[T328]=[
+          "Tomorrow is the rating, Ian, and you get one instruction. Construct, do not rally. Move them with the dink, then take the first ball that sits above the net band.",
+          "You are the anchor. Keep it low for Dylan to finish, cover behind him when he poaches, and call the middle out loud before the point starts, not during it.",
+          "Court is off tonight and that was the right call. A full rest day before a rating is the most valuable single thing on your schedule this week.",
+          "Set your feet before you swing at anything that has not bounced. Your errors are net errors on the first ball, the return and the third, and they come from arriving late.",
+          "Top 2 out of a pool of 8 advance, so 5 and 2 is the bar. Nothing new tomorrow, run only what you already own."];
+
+        /* PRUNE AS YOU ADD. One courtside item in, two served ones out. The new item is the
+           08.19 film finding, measured twice: Ian and Dylan sat 12.2 and 12.4 feet behind
+           their own kitchen line against opponents at 3.5 and 2.1. */
+        if(!state.meta.mig328_courtside){
+          if(!Array.isArray(state.pickleball.workOn)) state.pickleball.workOn=[];
+          var DROPW=["Take the rest day when the plan says rest. Four straight playing days into a taper is how you arrive tired.",
+                     "Process filmed sessions within 48 hours, footage you do not study is not evidence"];
+          state.pickleball.workOn=state.pickleball.workOn.filter(function(w){ return DROPW.indexOf(w)===-1; });
+          var W328="Get to your own kitchen line and stay there. Film measured you and Dylan 12 feet behind it while the other pair stood at 2 to 3.";
+          if(state.pickleball.workOn.indexOf(W328)===-1) state.pickleball.workOn.push(W328);
+          if(!Array.isArray(state.pickleball.cues)) state.pickleball.cues=[];
+          var DROPC=["Speed it up, then clean it up","Crosscourt to the deeper player"];
+          state.pickleball.cues=state.pickleball.cues.filter(function(c){ return DROPC.indexOf(c)===-1; });
+          var C328="Toes to the line after every dink, not one step back";
+          if(state.pickleball.cues.indexOf(C328)===-1) state.pickleball.cues.push(C328);
+          state.meta.mig328_courtside=true;
+        }
+      }
+
+      /* 21 AUGUST TODAY'S ENTRY, GYM label. Archived, then marked acted. The work itself
+         landed at build 326 and 327, this closes the input so it stops resurfacing. */
+      if(!state.context) state.context={};
+      if(!state.context.dailyLog) state.context.dailyLog={};
+      if(!state.context.dailyLog["2026-08-21"]) state.context.dailyLog["2026-08-21"]={};
+      var _dl328=state.context.dailyLog["2026-08-21"];
+      if(!_dl328.gymNoteArchive) _dl328.gymNoteArchive="GYM: skipped gym and did a pickleball session instead";
+      if(!_dl328.dailyEntryAgentActed){
+        _dl328.dailyEntryAgentActed="2026-08-22";
+        _dl328.claudeAction="GYM entry 21 Aug, skipped the gym and played instead: EXECUTED, not merely recorded. Friday is written into gym.restDays as a SUBSTITUTION rather than a miss, so nothing scores it as a missed session, the 21 August session record carries the swap on its own note, and the taper week row was amended in place instead of being left contradicting the decision. The Friday push returns on the normal split next week and no make up was scheduled. Nothing was cut from the plan, per your own 20 August standing rule.";
+      }
+
+      /* TO DO MAINTENANCE. Retire before you create. The Bonks question is answered by the
+         board itself: both halves now read Closed. Nothing was created today. */
+      if(!state.meta.mig328_todos && state.realEstate && Array.isArray(state.realEstate.todos)){
+        if(!state.archive) state.archive={};
+        if(!Array.isArray(state.archive.todosDone)) state.archive.todosDone=[];
+        var RET328={"ret-20260821-bonks-confirm":"Grounding died. Both Bonks records now read Closed in your own export, sell side $625,000 on 19 August and buy side $420,000 on 20 August. The question was whether they had closed, and the board answers it. Payment received is a separate field and is tracked there."};
+        var keep328=[];
+        for(var i328=0;i328<state.realEstate.todos.length;i328++){
+          var td328=state.realEstate.todos[i328];
+          if(td328 && RET328[td328.id]){
+            state.archive.todosDone.unshift({id:td328.id,text:td328.text,key:td328.key||"",retired:"2026-08-22",by:"ian-daily-brief",reason:RET328[td328.id]});
+          } else { keep328.push(td328); }
+        }
+        state.realEstate.todos=keep328;
+        if(!Array.isArray(state.autoLog)) state.autoLog=[];
+        if(!state.autoLog.some(function(x){ return x&&x.id==="auto-20260822-todos"; })){
+          state.autoLog.unshift({id:"auto-20260822-todos",date:"2026-08-22",area:"Real estate",
+            what:"Retired 1 to do and created none, list stands at 12",
+            why:"Both Bonks halves now read Closed on your own board, so the confirm question has been answered by the data and does not need to sit in front of you.",
+            evidence:"12 grounded items against your ceiling of 10. Nothing else is checked, nothing has an expired date and nothing has lost its grounding, so I did not invent two retirements to hit the number.",
+            undo:"Real estate, To dos. The retired item is in state.archive.todosDone with its reason."});
+        }
+        state.meta.mig328_todos=true;
+      }
+
+      /* SATURDAY COURT EVENT, CORRECTED. The app event still read Pickleball 6 to 9 LIGHT
+         while his calendar and gym.taperWeek both record it as dropped on 08.21. Cascade. */
+      if(!state.meta.mig328_satcourt && Array.isArray(state.events)){
+        for(var e328=0;e328<state.events.length;e328++){
+          var ev328=state.events[e328];
+          if(ev328 && ev328.id==="ev-20260822-pk-sat"){
+            ev328.title="Court DROPPED today. Full rest before the tournament";
+            ev328.note="SUPERSEDED 08.21.2026 by your own decision. The 6 to 9 PM session is off, your reason being that you have trained about five times this week and want to be solid for Sunday. That leaves a complete rest day between your last court session and the APC, which is the single most valuable thing on the schedule. Gym 9 to 11 stands, two or three items.";
+          }
+        }
+        state.meta.mig328_satcourt=true;
+      }
+      save(true);
+  } }catch(e){ try{ console.warn("mig328 did not apply:",e&&e.message); }catch(_){} }
 
 
 
