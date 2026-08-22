@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 329 (2026-08-22)">
+<meta name="build" content="v21 build 330 (2026-08-22)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -11329,6 +11329,61 @@ try{ if(profile==="ian"){
       }
       save(true);
   } }catch(e){ try{ console.warn("mig327 did not apply:",e&&e.message); }catch(_){} }
+
+/* ===== v21 build 330: SATURDAY AS PLANNED, AND THE GRIP IS UNCONFIRMED =====================
+     1. SATURDAY GYM CONFIRMED LIGHT AND DONE, 9 to 11. His plan already had it LIGHT, so this
+        is PLANNED AND EXECUTED and NOT a deviation. Recorded on the taper week row only.
+     2. NO PICKLEBALL TODAY IS NOT NEW INFORMATION. Build 327 already recorded the 6 to 9 block
+        as dropped, with his reason. He is confirming it. DELIBERATELY NOT RE RECORDED as a
+        second decision, the 327 entry is correct and stands. One confirmation stamp, nothing
+        more, because double logging a single decision makes the week look like two pull backs.
+     3. THE GRIP WAS NEVER CONFIRMED FITTED, and that is a live fact for tomorrow rather than a
+        reopening of the settled grip question. Build 301 recorded the DECISION to fit it
+        Wednesday 19 August. Nothing since confirms the action. The 08.19 and 08.20 session
+        records both carry it as UNKNOWN. So the status is UNCONFIRMED, not done and not
+        skipped, and the tournament prep line already on file answers what to do about it.
+
+     NO SESSION RECORD IS CREATED. There was no pickleball today and a zero session would
+     corrupt the session count and every rate that reads off it. */
+  try{ if(profile==="ian"){
+      if(!state.meta) state.meta={};
+
+      /* 1 and 2, both on the taper week row for Saturday. */
+      if(state.gym && state.gym.taperWeek && Array.isArray(state.gym.taperWeek.days)){
+        state.gym.taperWeek.days.forEach(function(d){
+          if(!d || d.date!=="2026-08-22") return;
+          d.actual="GYM DONE AND KEPT LIGHT, 9 to 11, exactly as this row planned. PLANNED AND EXECUTED, not a deviation, do not score it as one. COURT: none, and that is the build 327 decision CONFIRMED rather than a new one. He restated it today, he did not decide it again. The week therefore contains ONE pull back, made on 08.21, and not two.";
+        });
+      }
+
+      /* 3. Grip status. This does NOT reopen the grip question, which is closed. It records
+            that the planned ACTION has no confirmation, which is a different thing. */
+      if(state.pickleball && state.pickleball.gear && state.pickleball.gear.grip){
+        var _gr330=state.pickleball.gear.grip;
+        _gr330.replacementStatus={
+          asOf:"2026-08-22, evening, the night before the APC",
+          status:"UNCONFIRMED. Not confirmed done and not confirmed skipped.",
+          whatWasDecided:"Build 301, 08.16.2026: fit the new grip WEDNESDAY 19 AUGUST, play on it Wednesday, Thursday and Saturday, broken in with margin by Sunday 23.",
+          whatIsOnRecord:"Nothing in any session record, note or export confirms it was actually fitted. The 08.19 record says it was UNKNOWN whether it was fitted before that session. The 08.20 record says the same. 08.21 does not mention it. Saturday 22 has no court time at all, so the third planned break in session no longer exists either way.",
+          whyItMattersTonight:"If it is still unfitted, the answer is already on file and it is NOT to fit a fresh one in the morning. The 08.15 break in finding says a new grip starts slick and improves with use, and the tournament prep line says play on a grip that is ALREADY BROKEN IN, not one fitted the day before or the morning of. The current grip has been broken in since 08.15 and has been played on all week. If it is unfitted, PLAY THE CURRENT ONE.",
+          ifItWasFitted:"Then it has had Wednesday, Thursday and Friday on it, which meets the two session break in margin the plan asked for and there is nothing to do.",
+          doNotReadThisAs:"A reopening of the grip TYPE question, which was closed on 08.15 with break in as the explanation and moisture demoted underneath it. This is a completion check on one scheduled action, nothing else."
+        };
+      }
+
+      if(!state.meta.mig330_sat_grip){
+        if(!Array.isArray(state.autoLog)) state.autoLog=[];
+        if(!state.autoLog.some(function(x){ return x&&x.id==="auto-20260822-satgrip"; })){
+          state.autoLog.unshift({id:"auto-20260822-satgrip", date:"2026-08-22", area:"Pickleball",
+            what:"Confirmed Saturday as planned, light gym and no court, and flagged that the grip swap was never confirmed",
+            why:"Saturday light was already the plan so it is recorded as executed rather than as a change, and the dropped court block was already logged yesterday so it is confirmed rather than logged twice.",
+            evidence:"The week closes at 11 hours 54 minutes across five court sessions, all Monday to Friday, with 45 hours between your last ball on Friday afternoon and first ball tomorrow. On the grip: build 301 decided Wednesday 19 August, and nothing on record confirms it was fitted. If it is still on the old one, play the old one, it is broken in and it has held all week. Do not fit a fresh grip in the morning.",
+            undo:"Pickleball, Settings, paddle and grip, clear the replacement status block."});
+        }
+        state.meta.mig330_sat_grip=true;
+      }
+      save(true);
+  } }catch(e){ try{ console.warn("mig330 did not apply:",e&&e.message); }catch(_){} }
 
 /* ==========================================================================================
    v21 build 328, 08.22.2026, ian-daily-brief 6am run. TOURNAMENT EVE.
