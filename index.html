@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 326 (2026-08-21)">
+<meta name="build" content="v21 build 327 (2026-08-21)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -11254,6 +11254,81 @@ try{ if(profile==="ian"){
       }
       save(true);
   } }catch(e){ try{ console.warn("mig326 did not apply:",e&&e.message); }catch(_){} }
+
+/* ===== v21 build 327: FRIDAY WAS A SWAP, SATURDAY IS DROPPED, AND THE WEEK IS RECOUNTED ======
+     Two amendments from Ian on the night of 08.21.
+
+     1. HE SKIPPED THE GYM AND PLAYED INSTEAD. Recorded as a SUBSTITUTION and not a missed
+        session. state.gym.restDays is the right container and the precedent is exact: the
+        2026-08-12 entry records the apartment move as planned rest with a reason, which is the
+        same shape. The 2:01:16 court session already logged at build 326 is the replacement.
+        NOTHING IS WRITTEN TO state.daily. He says he noted it in today's entry himself, that
+        box is HIS input and never receives an agent write, and the newest export on disk is
+        08-20 so his 08-21 text could not be read to check. Not duplicated, not overwritten.
+
+     2. SATURDAY 22 AUGUST COURT IS DROPPED. His reason, his words: he has trained about five
+        times this week and wants to be solid for Sunday. Recorded as a DELIBERATE TAPER
+        DECISION. It is the first pull back he has made this week rather than an addition, and
+        it is the day before the tournament.
+
+     THE WEEK RECOUNTED, five sessions Monday to Friday, 11h 54m 26s, verified from the session
+     store rather than added up by hand. It is his THIRD heaviest week on record, behind the
+     07.20 week at 13h 29m over six sessions and the 08.03 week at 12h 15m over five, both of
+     which he came through. Front loaded, 68 percent of it Monday to Wednesday. The last 72
+     hours now descend properly and Saturday is empty. NO WARNING IS ATTACHED, the arithmetic
+     is on the record and the decision was already his. */
+  try{ if(profile==="ian"){
+      if(!state.meta) state.meta={};
+      if(!state.gym || typeof state.gym!=="object") state.gym={};
+
+      /* 1. THE FRIDAY SWAP. Set unconditionally by date key, per the restDays precedent. */
+      state.gym.restDays=state.gym.restDays||{};
+      state.gym.restDays["2026-08-21"]={date:"2026-08-21", planned:true,
+        reason:"SUBSTITUTION, NOT A MISS. He skipped the Friday push and played pickleball instead, 1:45 to 3:46 PM at Ace, 2:01:16 at effort 8, logged as pk-20260821-openplay at build 326. Two days before the APC he traded a light lift for court time on his tournament week. NOTHING MAY SCORE THIS AS A MISSED GYM SESSION, and the training heatmap should read it as a swap.",
+        cut:"Push round 2, the standing Friday, planned LIGHT",
+        makeup:"None needed and none scheduled. The court session is the replacement and the Friday push returns on the normal split next week.",
+        setBy:"Ian, 08.21.2026"};
+
+      /* 2. SATURDAY DROPPED, and the taper week row is amended in place rather than left
+            contradicting the decision. */
+      if(state.gym.taperWeek && Array.isArray(state.gym.taperWeek.days)){
+        state.gym.taperWeek.days.forEach(function(d){
+          if(!d) return;
+          if(d.date==="2026-08-21"){
+            d.actual="GYM SKIPPED, PICKLEBALL DONE INSTEAD. 2:01:16 at effort 8, which is not the LIGHT this row planned. Recorded as a swap, see gym.restDays 2026-08-21.";
+          }
+          if(d.date==="2026-08-22"){
+            d.court="NONE. Saturday pickleball 6 to 9 PM DROPPED by Ian on 08.21.";
+            d.actual="COURT DROPPED, his decision and his reason: he has trained about five times this week and wants to be solid for Sunday. This is a DELIBERATE TAPER DECISION and the first pull back he has made this week. Do not raise it as a missed session and do not suggest replacing it.";
+          }
+        });
+        state.gym.taperWeek.saturdayNote="SUPERSEDED 08.21.2026. The open ended 6 to 9 arrangement is off. Ian dropped Saturday pickleball entirely to be fresh for Sunday. The Saturday LIGHT pull session is untouched by this note, only the court time was dropped.";
+      }
+
+      /* The 08.21 session record gets one line so the swap is visible where the session lives. */
+      if(state.pickleball && Array.isArray(state.pickleball.sessions)){
+        var _A327="AMENDED 08.21.2026 LATER THE SAME DAY, build 327";
+        state.pickleball.sessions.forEach(function(s){
+          if(!s || s.id!=="pk-20260821-openplay") return;
+          var n=String(s.note||"");
+          if(n.indexOf(_A327)>=0) return;
+          s.note=n+" "+_A327+": THIS SESSION REPLACED THE GYM. He skipped the Friday push and played instead, so the week carries no training gap on Friday, it carries a swap. Recorded at gym.restDays 2026-08-21. AND SATURDAY IS NOW EMPTY: he dropped the 6 to 9 PM Saturday pickleball, his reason being that he has trained about five times this week and wants to be solid for Sunday. That makes this the LAST court session before the APC and puts a full rest day between it and the tournament.";
+        });
+      }
+
+      if(!state.meta.mig327_swap_drop){
+        if(!Array.isArray(state.autoLog)) state.autoLog=[];
+        if(!state.autoLog.some(function(x){ return x&&x.id==="auto-20260821-swapdrop"; })){
+          state.autoLog.unshift({id:"auto-20260821-swapdrop", date:"2026-08-21", area:"Pickleball",
+            what:"Recorded Friday as a gym swap rather than a miss, and Saturday court as dropped by you",
+            why:"You played instead of lifting, so Friday is a substitution and nothing should score it as a missed session. You dropped Saturday to be fresh for Sunday, which is a taper decision and the first pull back of the week.",
+            evidence:"The week lands at 11 hours 54 minutes across five sessions, your third heaviest on record behind 13h29 in the 07.20 week and 12h15 in the 08.03 week. It was front loaded, 68 percent of it Monday to Wednesday, with Wednesday the 3h50 peak four days out. From there it descends, 1h50, then 2h01, then a full day off. A complete rest day before a tournament is the most valuable single thing on the schedule and it is now in place.",
+            undo:"Gym, rest days, remove the 21 August entry. Pickleball, the taper week card for 22 August."});
+        }
+        state.meta.mig327_swap_drop=true;
+      }
+      save(true);
+  } }catch(e){ try{ console.warn("mig327 did not apply:",e&&e.message); }catch(_){} }
 
 
 
