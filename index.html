@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 330 (2026-08-22)">
+<meta name="build" content="v21 build 331 (2026-08-22)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -11384,6 +11384,148 @@ try{ if(profile==="ian"){
       }
       save(true);
   } }catch(e){ try{ console.warn("mig330 did not apply:",e&&e.message); }catch(_){} }
+
+/* ===== v21 build 331: THE OPEN HOUSE LEAD, 22 AUGUST 2026, AND WHAT IT IS WORTH ==============
+     Ian sat the Rose Creek two storey model 12:00 to 16:00 on Saturday 22 August. ONE party came
+     through. He got their contact details, sent them information, and they responded positively.
+     They showed interest in buying the two storey itself.
+
+     STRUCTURE FOLLOWS COLABELLO, NOT A NEW SHAPE. A lead in this app is a Prospecting stage DEAL
+     plus a people row, exactly as re-nick-colabello was built in July. Prospecting contributes
+     zero to production and zero to the 20 deal count, because reGoalsCard counts Closed plus
+     Under Contract only, so nothing miscounts while this is unqualified.
+
+     THIS IS NOT THE COLDEST BUCKET AND THE RECORD SAYS SO. He walked the property, gave a number,
+     received material and replied warmly, all inside one afternoon. Quality is set WARM rather
+     than the Iffy default, and Iffy is what an unstated value gets, per the Rose Creek couple
+     precedent. Warm here is evidence based, not optimism.
+
+     THE NAME AND NUMBER ARE NOT RECORDED AND THAT IS DELIBERATE. They are not in anything this
+     system can reach. The Messages database on this Mac was searched for the whole of 22 August
+     with attributedBody decoded, 60 messages, and the contact does not appear. What the search
+     DID find is Ian at 13:48 telling Chris "had a group somewhat interested in the 2 story, got
+     there info, do you have the finished basements floor plans of it? That was my kind of way of
+     getting them to put there info down". So the capture is corroborated and the details sit on
+     Ian's own phone. ASK HIM, do not invent a placeholder that later reads as data.
+
+     TWO SMALL DISCREPANCIES, FLAGGED NOT SMOOTHED. Ian told the agent "one person"; his own text
+     to Chris says "a group". And he owes them the FINISHED BASEMENT FLOOR PLANS, which is the
+     thing he traded for their details. That undelivered promise is the follow up, and it is a
+     better reason to make contact than a check in note.
+
+     COMMISSION POSITION, FORKED BECAUSE IT GENUINELY IS. re-rose-creek is source "Chris's client"
+     and side Seller, so Scenic Group is already the LISTING side on this model. If Ian also
+     writes this buyer, that is DUAL AGENCY: dualRate is 0.06 in code, charged ONCE on the
+     property at side Both, source Dual agency, 50 percent share, and per the settled rule the
+     VOLUME COUNTS ONCE while it counts TWO toward the 20. Snyder is the precedent for a
+     negotiated exception and NOTHING on this record shows one, so the 6 percent convention
+     stands until Ian says otherwise. If they buy anything else, it is his own buyer side at 2.4
+     percent and the 90 percent share. NO NUMBER IS COMPUTED, because there is no price and no
+     property yet. */
+  try{ if(profile==="ian" && state.realEstate && Array.isArray(state.realEstate.deals)
+          && state.meta && !state.meta.mig331_openhouse_lead){
+      var _MK331="08.22.2026 OPEN HOUSE LEAD";
+      var _LID="re-openhouse-lead-20260822";
+      if(!Array.isArray(state.meta.removedDealIds)) state.meta.removedDealIds=[];
+      var _gone331=state.meta.removedDealIds.indexOf(_LID)>-1;
+      var _have331=state.realEstate.deals.some(function(d){ return d && d.id===_LID; });
+      if(!_gone331 && !_have331){
+        state.realEstate.deals.push({
+          id:_LID,
+          title:"Open house lead, 22 Aug 2026, name not yet captured",
+          sub:"Buyer side, interested in the Rose Creek two storey, 20131 R St",
+          stage:"Prospecting",
+          price:"",
+          close:"No timeline. First contact 22 August 2026 at the open house.",
+          source:"Ian's own",
+          side:"Buyer",
+          quality:"Warm",
+          leadSource:"Open house, Rose Creek two storey model, 22 Aug 2026, Ian sitting",
+          note:_MK331+", FROM IAN 22 AUGUST 2026. Ian sat the Rose Creek two storey model 12:00 to 16:00. ONE party came through, it went decent, "
+            +"HE GOT THEIR CONTACT DETAILS, HE SENT THEM INFORMATION AND THEY RESPONDED POSITIVELY, and they showed interest in buying the two storey itself. "
+            +"NAME AND NUMBER ARE NOT RECORDED HERE BECAUSE THEY COULD NOT BE FOUND. The Messages database on this Mac was searched across the whole of "
+            +"22 August with attributedBody decoded, 60 messages, and the contact does not appear; the exchange is on Ian's own phone. ASK HIM. "
+            +"CORROBORATION THAT DOES EXIST: Ian to Chris at 13:48 on 22 August, \"had a group somewhat interested in the 2 story, got there info, do you have "
+            +"the finished basements floor plans of it? That was my kind of way of getting them to put there info down\". TWO FLAGS FROM THAT. He said one "
+            +"person to the agent and a GROUP to Chris, and HE OWES THEM THE FINISHED BASEMENT FLOOR PLANS, which is what he traded for their details. "
+            +"THE UNDELIVERED FLOOR PLANS ARE THE FOLLOW UP. Delivering a promised thing beats a check in note, and Chris told him to get them from Ryan. "
+            +"QUALITY WARM, ON EVIDENCE. Walked the property, gave a number, took material and replied warmly inside one afternoon. Iffy is the default for an "
+            +"unstated value, per the Rose Creek couple, and this is not that. "
+            +"COMMISSION FORK, NOT A FIGURE. If they buy the two storey, Scenic Group already holds the listing side (re-rose-creek, source Chris's client, side "
+            +"Seller), so Ian on the buy side makes it DUAL AGENCY: 6 percent total charged ONCE, side Both, source Dual agency, 50 percent share, volume counts "
+            +"ONCE and it counts TWO toward the 20. Snyder is the precedent for a negotiated exception and nothing here shows one. If they buy elsewhere it is his "
+            +"own buyer side, 2.4 percent, 90 percent share. No number is computed because there is no price and no property yet. "
+            +"SOURCE IS TRACEABLE TO THE CALENDAR: NP Dodge \"Ian open house\", 22 August 2026, 12:00 to 16:00, event id AB59FD6E-F306-4A5A-B967-DCCD84F70430. "
+            +"STAGE PROSPECTING keeps this out of production and out of the 20 deal count until it is real."
+        });
+      }
+
+      /* People row, following the Evan build 302 shape. Contact details live in LEAD_CONTACTS.md. */
+      if(Array.isArray(state.realEstate.people)){
+        var _PID331="p-openhouse-20260822";
+        if(!state.realEstate.people.some(function(x){ return x && x.id===_PID331; })){
+          state.realEstate.people.push({ id:_PID331,
+            name:"Open house lead, 22 Aug 2026, NAME NOT YET CAPTURED",
+            phone:"", last:"2026-08-22", kind:"Lead", quality:"Warm",
+            note:"Walked the Rose Creek two storey model at Ian's open house on 22 August 2026, gave contact details, received information and replied positively. Interested in buying the two storey. NAME AND NUMBER ARE ON IAN'S PHONE and are not in the Messages database on this Mac; both were searched. Once he supplies them they go in LEAD_CONTACTS.md and NOT in this record. Linked deal re-openhouse-lead-20260822."
+          });
+        }
+      }
+
+      /* THE LISTING. Everything Ian said on 22 August, and what it does to the lead. */
+      var _rc331=null;
+      for(var _i331=0;_i331<state.realEstate.deals.length;_i331++){
+        if(state.realEstate.deals[_i331] && state.realEstate.deals[_i331].id==="re-rose-creek") _rc331=state.realEstate.deals[_i331];
+      }
+      if(_rc331){
+        if(_rc331.price!=="$684,900"){ _rc331.price="$684,900"; }
+        if(!_rc331.sub){ _rc331.sub="Sell side, 20131 R St, South Streams, Rose Creek Homes two storey model"; }
+        if(String(_rc331.note||"").indexOf(_MK331)<0){
+          _rc331.note=String(_rc331.note||"")+" "+_MK331+" AND THE LISTING PICTURE FROM IAN, 22 AUGUST 2026. CURRENT LIST $684,900. NEARLY $45,000 OF REDUCTIONS "
+            +"ALREADY TAKEN. RYAN WANTS IT SOLD. MULTIPLE THOUSANDS ALREADY SPENT ON ADVERTISING AND NO MORE MONEY GOES IN. "
+            +"READ THAT LAST PART CORRECTLY: it is a SPEND decision, not a strategy decision. The listing is not being abandoned and must not be recorded as "
+            +"given up on. What it means is that PAID reach is switched off, so organic traffic, the open houses Ian and Chris staff every weekend, and agent "
+            +"relationships are the only channels left. "
+            +"VERIFIED IN GPRMLS ON 19 AUGUST 2026 rather than taken on recollection, via an agent search on Chris McCain: 20131 R STREET, South Streams, 2 Story, "
+            +"built 2025, 4 bed 4 bath, 2,862 above grade and 2,862 total finished so NO finished basement is counted in the MLS. "
+            +"THE LISTING HISTORY READ BY PRICE HISTORY AND NOT BY THE DOM COLUMN, WHICH IS THE WHOLE POINT: FOUR MLS numbers on this address. 22519098 "
+            +"CANCELLED at $730,000 after 49 days. 22524417 CANCELLED at $700,000 after 175 days. 22604595 CANCELLED at $700,000 after 96 days. 22614537 ACTIVE "
+            +"from 31 May 2026 at $684,900, 85 days as of 19 August. THE DOM COLUMN SAYS 85. THE TRUE FIGURE IS ABOUT 405 DAYS ON MARKET SINCE ROUGHLY 10 JULY "
+            +"2025, ACROSS FOUR LISTINGS. $730,000 down to $684,900 is $45,100, which matches Ian's nearly $45,000 exactly and is the corroboration that this is "
+            +"the right property. "
+            +"NO SUPPORTED VALUE IS STATED BECAUSE THERE IS NO CMA ON THIS PROPERTY. Checked: the CMA index covers Spicer, Barker, Theobald, Frahm and Belknap "
+            +"and nothing on 20131 R St exists on disk or in Drive. A price opinion without comp work is exactly what the standing rule forbids, so none is given. "
+            +"WHAT THIS DOES TO THE 22 AUGUST LEAD, AND IT IS THE HEADLINE: with paid marketing off, a year on market and $45,100 already conceded, TODAY'S ONE "
+            +"OPEN HOUSE PARTY IS THE PRIMARY REMAINING ROUTE TO A SALE, not one of several. Treat it that way. "
+            +"CONTEXT THAT STILL STANDS FROM 08.17: the weekend buyers pursuing pre approval with a contingent offer and a 90 day close are a SEPARATE party, and "
+            +"the listing deliberately stays Active behind them so no better offer is lost. Today's lead is the second live interest and a genuine backup route.";
+        }
+      }
+
+      /* Todos. The blocking one first. */
+      if(!Array.isArray(state.realEstate.todos)) state.realEstate.todos=[];
+      var _td331=function(o){ if(!state.realEstate.todos.some(function(t){ return t && (t.id===o.id || (o.key&&t.key===o.key)); })) state.realEstate.todos.push(o); };
+      _td331({id:"ret-20260822-openhouse-contact", key:"openhouse-lead-contact", done:false, due:"2026-08-23",
+        src:"Ian, 22 August 2026, the open house lead",
+        text:"NAME AND NUMBER FOR THE 22 AUGUST OPEN HOUSE LEAD. Not in the Messages database on this Mac, which was searched across the whole day with attributedBody decoded. They are on Ian's phone. The record is filed with the hole named rather than guessed. Once he supplies them, contact details go in LEAD_CONTACTS.md, never in a derived file."});
+      _td331({id:"ret-20260824-openhouse-floorplans", key:"openhouse-lead-floorplans", done:false, due:"2026-08-24",
+        src:"Ian to Chris, 22 August 2026, 13:48",
+        text:"SEND THE FINISHED BASEMENT FLOOR PLANS TO THE 22 AUGUST OPEN HOUSE LEAD. This is a PROMISE OUTSTANDING, not a nurture touch: the plans are what Ian traded for their contact details. Chris's advice was to get the blueprints from Ryan rather than photograph the countertop copy. Send Monday 24 August. This IS the follow up, and it beats any check in note."});
+      _td331({id:"ret-20260828-openhouse-checkin", key:"openhouse-lead-checkin", done:false, due:"2026-08-28",
+        src:"Ian's question, 22 August 2026, how long to wait before a check in",
+        text:"CHECK IN WITH THE 22 AUGUST OPEN HOUSE LEAD IF THE FLOOR PLANS DREW NO REPLY. Friday 28 August, four days after the plans go out. GROUNDING, AND IT IS THIN ON PURPOSE: the only comparable in the record is Nick Colabello, captured 28 July, CMA delivered 30 July, unresponsive, REMOVED 2 AUGUST. That is a write off after THREE DAYS of silence and it is the failure mode to avoid, not a benchmark to copy. The other datapoint is the Rose Creek couple, where a gone quiet buyer got a single conditional touch scheduled 30 days out. So his own history brackets the answer rather than settling it: 3 days is too fast, 30 days is the COLD setting and this lead is warm. If 28 August draws nothing, one more at about two weeks, then the Rose Creek couple treatment of a single last touch at 30 days. DO NOT WRITE THIS ONE OFF EARLY, the listing has no paid marketing behind it and this is the primary route to a sale."});
+
+      /* Event link so the source is traceable inside the app too. */
+      if(Array.isArray(state.events)){
+        if(!state.events.some(function(x){ return x && x.id==="ev-20260822-openhouse-rosecreek"; })){
+          state.events.push({id:"ev-20260822-openhouse-rosecreek",date:"2026-08-22",kind:"Real estate",
+            title:"Open house, Rose Creek two storey, 20131 R St, 12:00 to 16:00. One party, contact captured, lead re-openhouse-lead-20260822"});
+        }
+      }
+      state.meta.mig331_openhouse_lead=true;
+      save(true);
+  } }catch(e){ try{ console.warn("mig331 did not apply:",e&&e.message); }catch(_){} }
+
 
 /* ==========================================================================================
    v21 build 328, 08.22.2026, ian-daily-brief 6am run. TOURNAMENT EVE.
