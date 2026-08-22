@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 328 (2026-08-22)">
+<meta name="build" content="v21 build 329 (2026-08-22)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -11397,7 +11397,11 @@ try{ if(profile==="ian"){
         /* PRUNE AS YOU ADD. One courtside item in, two served ones out. The new item is the
            08.19 film finding, measured twice: Ian and Dylan sat 12.2 and 12.4 feet behind
            their own kitchen line against opponents at 3.5 and 2.1. */
-        if(!state.meta.mig328_courtside){
+        /* UNGUARDED ON PURPOSE, build 329. An earlier every load block reassigns workOn and
+           cues as whole fixed arrays, so a flag guarded version of this landed on the first
+           load and was clobbered on the second. Verified in jsdom across two loads. This runs
+           every load, is last in file order, and is idempotent by content check. */
+        {
           if(!Array.isArray(state.pickleball.workOn)) state.pickleball.workOn=[];
           var DROPW=["Take the rest day when the plan says rest. Four straight playing days into a taper is how you arrive tired.",
                      "Process filmed sessions within 48 hours, footage you do not study is not evidence"];
