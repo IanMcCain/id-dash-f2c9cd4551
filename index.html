@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 332 (2026-08-23)">
+<meta name="build" content="v21 build 333 (2026-08-23)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -11795,6 +11795,148 @@ try{ if(profile==="ian"){
       }
       save(true);
   } }catch(e){ try{ console.warn("mig332 did not apply:",e&&e.message); }catch(_){} }
+
+/* ===== v21 build 333: REAL ESTATE AUDIT, 22 AUGUST 2026. SEVEN CORRECTIONS PLUS A HANDOFF ====
+     Rebuilt on 23 August from _HANDOFF_re_audit_0822.md. That handoff was written for build 331,
+     331 was taken by mig331_openhouse_lead while it waited on the lock, and 332 was then taken by
+     the ian-daily-brief 6am run on the 23rd. Rebased onto live 332 and shipped as 333, so the
+     guard is mig333_audit0822. The original /tmp/pratt/mig331.js was cleared; this is a rewrite
+     from the eight numbered items in the handoff, which are complete.
+
+     Full audit against what Ian actually knows. Every record was checked rather than trusted.
+     What was already correct is NOT touched: Crystal Johnson, the three Spicer records, both Bonk
+     stages and payment states, the Belknap buy terms, and the Belknap sell side flag.
+
+     PRICEVERSION IS DELIBERATELY NOT TOUCHED ON WILLIS. The build 204 block higher up this file is
+     UNGUARDED and re-asserts $619,900 on every load unless the deal carries a lexically later
+     priceVersion stamp. Willis carries 2026-08-09-under-contract-610000, which is later, so that
+     block returns early and the cleared price survives. Clearing or lowering priceVersion here
+     would hand the price field straight back to build 204 on the very next load.
+
+     THE OUTSTANDING COMMISSION QUESTION IS DELIBERATELY NOT RESOLVED HERE. $5,538.60 on the
+     record across Bonk sell and Bonk buy, or $9,957.14 if Miller and Troester are actually
+     unpaid. Ian has not answered and nothing in this build guesses. */
+  try{ if(profile==="ian" && state.realEstate && Array.isArray(state.realEstate.deals)
+          && state.meta && !state.meta.mig333_audit0822){
+      var _D333=state.realEstate.deals, _g333=function(id){
+        for(var i=0;i<_D333.length;i++){ if(_D333[i] && _D333[i].id===id) return _D333[i]; } return null; };
+
+      /* 1. WILLIS. The MLS open item is CLOSED, and the price field asserts a dead number. */
+      var _w=_g333("re-cynthia-willis");
+      if(_w){
+        if(String(_w.price||"")==="$610,000"){ _w.price=""; }
+        _w.priceNote="OPEN, NOT DECIDED. Ian leaning $619,900, analysis argued $614,900";
+        if(String(_w.note||"").indexOf("08.22.2026 AUDIT")<0){
+          _w.note=String(_w.note||"")+" 08.22.2026 AUDIT, TWO CORRECTIONS. ONE, THE MLS STATUS OPEN ITEM IS CLOSED. Paragon was checked live "
+            +"on 22 August and GPRMLS 22622436 now reads FELL THROUGH, not PENDING. Chris actioned it since the 20 August check. Do not carry "
+            +"the PENDING open item forward and do not re-raise it. TWO, THE PRICE FIELD IS CLEARED. It read $610,000, which was the price of "
+            +"a terminated contract and is neither a list price nor a supported value. The relist price is genuinely OPEN: Ian is leaning "
+            +"$619,900, the analysis argued $614,900, and NEITHER IS WRITTEN INTO THE PRICE FIELD because he has not chosen. Both are on "
+            +"priceNote. THE REPAIR SCOPE IS STILL THE BLOCKER on choosing between them and ret-20260820-willis-repair-scope stays open. "
+            +"Relist target THURSDAY 3 SEPTEMBER 2026 is unchanged.";
+        }
+      }
+
+      /* 2. BELKNAP SELL. No price on the record, per Ian, and the sub line is stale. */
+      var _bs=_g333("re-belknap-sell");
+      if(_bs){
+        if(String(_bs.price||"")==="$249,900"){ _bs.price=""; }
+        if(_bs.priceNote){ delete _bs.priceNote; }
+        _bs.sub="Sell side, 4946 Pratt St. Listing prep, no date";
+        if(String(_bs.note||"").indexOf("08.22.2026 AUDIT")<0){
+          _bs.note=String(_bs.note||"")+" 08.22.2026 AUDIT. PRICE FIELD CLEARED ON IAN'S INSTRUCTION. It carried $249,900 from build 308, "
+            +"which was his own internal list decision on 17 August. He has now said the record should carry NO PRICE on Pratt, so the field "
+            +"and its priceNote are both cleared. THIS IS HIS CALL BEING FOLLOWED, not an override of it. The $249,900 reasoning survives in "
+            +"the note above and in the 08.17 CMA, Drive 12-mROJ9wk5buHwWoSf5FXjBr_e_E53n38z040pnlf_k. NO PRICE HAS EVER BEEN QUOTED TO THE "
+            +"BELKNAPS FOR 4946 PRATT BY ANYONE and that is re-verified as at 22 August. The sub line was also stale, it still said the buy "
+            +"side was down to two homes when the buy side has been under contract on 5122 N 141st since 18 August. LISTING PREP IS THE LIVE "
+            +"WORK AND THERE IS NO DATE. The walkthrough has still not happened.";
+        }
+      }
+
+      /* 3. THEOBALD. The note says no supported value exists. That is now stale. */
+      var _th=_g333("re-theobald-sell");
+      if(_th){
+        if(!String(_th.price||"").trim()){ _th.price="$324,900"; }
+        _th.priceNote="Recommended list. Supported $323,000. Supersedes the retired $315,000";
+        if(String(_th.note||"").indexOf("08.22.2026 AUDIT")<0){
+          _th.note=String(_th.note||"")+" 08.22.2026 AUDIT, THE PRICE EXISTS NOW AND THE OLD NOTE WAS STALE. This record said NO PRICE "
+            +"because Paragon had no session when it was written. There is now a SUPPORTED VALUE OF $323,000 and a RECOMMENDED LIST OF "
+            +"$324,900, and both SUPERSEDE THE RETIRED $315,000 that DISPATCH_INBOX carried on 08.13 and that no document was ever found to "
+            +"support. Do not quote $315,000 again. THE WALKTHROUGH IS STILL NOT BOOKED AND IT IS THE GATING ITEM: it has to happen THIS WEEK "
+            +"for a 15 SEPTEMBER LIST DATE to hold. Todo ret-20260815-theobald-listprep stays open and is now time critical rather than "
+            +"open ended.";
+        }
+      }
+
+      /* 4. FRAHM BUILD. The recorded dual agency question is dead. */
+      var _fb=_g333("re-frahm-build");
+      if(_fb && String(_fb.note||"").indexOf("08.22.2026 AUDIT")<0){
+        _fb.note=String(_fb.note||"")+" 08.22.2026 AUDIT, THE OPEN DUAL AGENCY QUESTION ON THIS RECORD IS ANSWERED AND THE ANSWER IS NO. "
+          +"The note above asked whether Scenic Group would bring the buyer to a Rose Creek build, which would have made this Dual agency at "
+          +"the 50 percent share. IT DID NOT HAPPEN. Frahm went DIRECT TO RYAN BEACHLER to save money, so Scenic Group did not bring the "
+          +"buyer and this is not dual agency. DO NOT SET source TO Dual agency. Ryan is giving Scenic Group SOMETHING ANYWAY as a courtesy, "
+          +"and THE AMOUNT IS UNKNOWN, so source stays Chris's client and ianSplit stays 0.20 rather than being modelled on a figure nobody "
+          +"has given. The SELL side at 17577 Taylor St is unaffected and is the real transaction here.";
+      }
+
+      /* 5 and 6. BONK. Addresses onto the address field, not just inside sub. */
+      var _bks=_g333("re-bonks-sell");
+      if(_bks){
+        if(!_bks.address){ _bks.address="4407 N 189 St, Omaha, NE 68022"; }
+        if(String(_bks.note||"").indexOf("08.22.2026 AUDIT")<0){
+          _bks.note=String(_bks.note||"")+" 08.22.2026 AUDIT. Address moved onto the address FIELD rather than living only inside the sub "
+            +"line, so it is searchable the way the Troester and Belknap records are. SUBDIVISION VERIFIED ON THE COUNTY LAYER rather than "
+            +"taken from the client: 4407 N 189 St is PIN 1401500696, ADDITION_N INDIAN POINTE, BLDG_SF 1,740. That confirms Ian's Indian "
+            +"Pointe, and it is the same subdivision as the Indian Pointe HOA that Chris sits on the board of. Payment still OUTSTANDING.";
+        }
+      }
+      var _bkb=_g333("re-bonks-buy");
+      if(_bkb){
+        if(!_bkb.address){ _bkb.address="401 Fir St, Ashland, NE"; }
+        if(String(_bkb.note||"").indexOf("08.22.2026 AUDIT")<0){
+          _bkb.note=String(_bkb.note||"")+" 08.22.2026 AUDIT. Address moved onto the address FIELD rather than living only inside the sub "
+            +"line. Payment still OUTSTANDING, and Ian expects it MONDAY OR TUESDAY. That expectation is recorded as an expectation and paid "
+            +"stays FALSE until the money actually lands.";
+        }
+      }
+
+      /* 7. BELKNAP BUY. The deadline ambiguity is settled by Ian. */
+      var _bb=_g333("re-belknap-buy");
+      if(_bb && String(_bb.note||"").indexOf("08.22.2026 AUDIT")<0){
+        _bb.note=String(_bb.note||"")+" 08.22.2026 AUDIT, THE INSPECTION NOTICE DEADLINE AMBIGUITY IS SETTLED. The note above flagged that "
+          +"the 7 business day window could run from acceptance on 18 August, giving 27 August, or from the contract becoming primary on 19 "
+          +"August, giving 28 August. IAN HAS CONFIRMED FRIDAY 28 AUGUST. Use that date. The inspection remains Tuesday 25 August at 11:00 "
+          +"and closing remains Friday 4 September with Ambassador Title. Proof of funds DONE and the $5,000 earnest PICKED UP, both "
+          +"confirmed by Ian; DELIVERY of the earnest to Ambassador is still not confirmed and picked up is not delivered.";
+      }
+
+      /* 8. THE STAGED HANDOFF. _HANDOFF_luis_outreach_0821.md, written 21 August when the lock was
+         held by session-pk-taper-0821. Checked before applying: no mig between 325 and 332 touches
+         Luis, ym5z08j still reads lastContacted 2026-07-07 with no check in note, so nothing has
+         superseded it and it is still valid. Applied EXACTLY as the handoff specifies. NO repliedOn,
+         NO chase todo, NO invented follow up date, nextTouchScheduled left alone. */
+      (((state.realEstate||{}).sphere)||[]).forEach(function(k){
+        if(k && k.id==="ym5z08j"){
+          k.lastContacted="2026-08-21";
+          if(String(k.note||"").indexOf("CHECK IN 21 AUGUST 2026")<0){
+            k.note=String(k.note||"").trim()
+              + " CHECK IN 21 AUGUST 2026, texted by Ian. NO RESPONSE AS AT THAT DATE."
+              + " Recorded as fact, not as a problem. No chase task and no follow up deadline"
+              + " were created, Ian gave neither. Email is Monarrezluis2@gmail.com, held in"
+              + " BRAIN LEAD_CONTACTS.md because the app has no email field. NOTE THE"
+              + " DISAGREEMENT: he has a LIVE Paragon collaboration site with a saved search"
+              + " firing listing matches almost daily through 21 August, which is far warmer"
+              + " than quality Iffy and a 90 day cadence suggest. APPLIED 08.23.2026 from"
+              + " _HANDOFF_luis_outreach_0821.md, two builds late because the lock was held.";
+          }
+        }
+      });
+
+      state.meta.mig333_audit0822=true;
+      save(true);
+  } }catch(e){ try{ console.warn("mig333 did not apply:",e&&e.message); }catch(_){} }
+
 
 
 
