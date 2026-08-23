@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 333 (2026-08-23)">
+<meta name="build" content="v21 build 334 (2026-08-23)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -11936,6 +11936,52 @@ try{ if(profile==="ian"){
       state.meta.mig333_audit0822=true;
       save(true);
   } }catch(e){ try{ console.warn("mig333 did not apply:",e&&e.message); }catch(_){} }
+
+/* ===== v21 build 334: THE 14 AUGUST CRYSTAL MARKER STOPS READING AS A PAST CLOSING ==========
+     ev-20260814-johnson-close is an all day marker still sitting on FRIDAY 14 AUGUST. Its title
+     has been rewritten three times by builds 287, 288 and 295 and it currently reads
+     "Crystal Johnson closing, date STILL not set and now waiting on the APPRAISAL (08.15)".
+     On a calendar that is nine days in the past that reads as a closing that already happened on
+     the 14th, and the appraisal clause is stale too because the appraisal CLEARED on 20 August.
+
+     RETITLE ONLY. NO NEW EVENT IS CREATED AND NO DATE IS INVENTED. There is no official Crystal
+     closing date, confirmed by Ian, so the marker keeps its 2026-08-14 date field rather than
+     being moved to a guessed day. The deal record already carries the two candidate days and the
+     fact that neither is fixed, and the title now says exactly that instead of implying the 14th.
+
+     THE NEW TITLE DELIBERATELY CONTAINS THE SUBSTRINGS "MOVED", "Horizon" AND "appraisal".
+     Builds 287, 288 and 295 each rewrite this title behind a presence check on one of those three
+     words. All three are meta flag guarded and all three flags are set, so they cannot re-fire,
+     but carrying the words means that even a flag reset leaves this title alone rather than
+     re-staling it. Belt and braces, and it costs nothing. */
+  try{ if(profile==="ian" && state.meta && !state.meta.mig334_crystal_marker
+          && Array.isArray(state.events)){
+      var _MK334="NOT A CLOSING DATE";
+      for(var _i334=0;_i334<state.events.length;_i334++){
+        var _e334=state.events[_i334];
+        if(!_e334 || _e334.id!=="ev-20260814-johnson-close") continue;
+        if(String(_e334.title||"").indexOf(_MK334)<0){
+          _e334.title="NOT A CLOSING DATE, placeholder only. Crystal Johnson, 11911 Horizon: "
+            +"the closing day is STILL NOT FIXED. MOVED off Friday 14 August long ago, the "
+            +"appraisal CLEARED on 20 August so the risk is gone, and the day is now one of two "
+            +"candidates, Tuesday 25 or Wednesday 26 August, NEITHER OF THEM CONFIRMED.";
+        }
+        if(String(_e334.note||"").indexOf("08.23.2026")<0){
+          _e334.note=String(_e334.note||"")
+            +"08.23.2026: RETITLED, NOT MOVED AND NOT REPLACED. This marker still carries the "
+            +"date 2026-08-14 on purpose. There is no official closing date for Crystal Johnson, "
+            +"Ian confirmed that directly, so moving this to the 25th or the 26th would be "
+            +"inventing one. It stays where it is as a placeholder with a title that can no "
+            +"longer be misread as a closing that happened on the 14th. The deal record "
+            +"re-crystal-johnson holds the detail: Under Contract, $577,861 seller side, "
+            +"appraisal cleared 08.20. WHEN TITLE GIVES A DAY, move this marker to it and drop "
+            +"the placeholder language. Until then, do not guess.";
+        }
+      }
+      state.meta.mig334_crystal_marker=true;
+      save(true);
+  } }catch(e){ try{ console.warn("mig334 did not apply:",e&&e.message); }catch(_){} }
+
 
 
 
