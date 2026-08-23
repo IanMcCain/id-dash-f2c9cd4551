@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 331 (2026-08-22)">
+<meta name="build" content="v21 build 332 (2026-08-23)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -11665,6 +11665,137 @@ try{ if(profile==="ian"){
       }
       save(true);
   } }catch(e){ try{ console.warn("mig328 did not apply:",e&&e.message); }catch(_){} }
+
+/* ==========================================================================================
+   v21 build 332, 08.23.2026, ian-daily-brief 6am run. TOURNAMENT DAY.
+   Today's dated content only. Two cues swapped, Work on deliberately untouched, four to dos
+   retired to the archive with their reasons. Additive and date keyed. SEED_VERSION untouched.
+   PLACED LAST IN FILE ORDER on purpose: an earlier every load block assigns cues as a whole
+   array, and file order decides the winner, not flags. */
+  try{ if(profile==="ian"){
+      var T332="2026-08-23";
+      if(!state.meta) state.meta={};
+      if(!state.briefing) state.briefing={forIan:{},done:{}};
+      if(!state.briefing.forIan) state.briefing.forIan={};
+      if(!state.briefing.forIan[T332]) state.briefing.forIan[T332]=[
+        {id:"brief-20260823-1", type:"Pickleball", done:false, url:"https://www.youtube.com/watch?v=IrnLS7MBRsM",
+         title:"Today is the rating. Arrive 10:15, first ball 1:00",
+         note:"APC men's doubles 3.5 with Dylan, natural sides, top 2 of 8 advance. Receive if you win the toss. Construct, do not rally.",
+         why:"Because this is your first tournament and it sets your DUPR"},
+        {id:"brief-20260823-2", type:"Real estate", done:false, url:"",
+         title:"Crystal Johnson closes in two or three days and still is not one date",
+         note:"$577,861 seller side, appraisal cleared 08.20, risk gone. Tuesday 25 or Wednesday 26 is still two candidate days. One text to title settles it.",
+         why:"Because it is the only counted deal that could still leave"},
+        {id:"brief-20260823-3", type:"Real estate", done:false, url:"",
+         title:"You owe the open house lead the finished basement floor plans",
+         note:"You traded those plans for their contact details on Saturday. Get them from Ryan and send them Monday. A delivered promise beats a check in note.",
+         why:"Because it is your own buyer lead and the only one you captured this month"}];
+
+      if(!state.futureIdeas) state.futureIdeas={};
+      if(!state.futureIdeas[T332]) state.futureIdeas[T332]=[
+        {id:"fi-20260823-1", url:"",
+         text:"Ask Ryan for a proper finished basement plan set for the Rose Creek two storey, as a file rather than a photo of the countertop copy. You owe it to Saturday's party by Monday, and once it exists you can send it to every future open house walk in without asking twice."},
+        {id:"fi-20260823-2", url:"",
+         text:"Saturday proved the trade works. Plans for contact details captured your only warm buyer this month, so make the sign in sheet say floor plans by email rather than name and number, and sit that model on every Sunday you are not playing."},
+        {id:"fi-20260823-3", url:"",
+         text:"Film thirty seconds today between matches and post it under Scenic Group, not just your own account. A local agent playing a local tournament is the cheapest name recognition available to you this month and it costs you nothing you are not already doing."},
+        {id:"fi-20260823-4", url:"",
+         text:"Once the rating lands, look at MiLP. Teams of four, divisions by combined DUPR, and the combined 14 bracket averages 3.5 a player. You can enter almost immediately once rated, and it is team format practice ahead of an NPL tryout that is also a team format."}];
+
+      if(!state.quickWin) state.quickWin={picks:{},done:{}};
+      if(!state.quickWin.picks) state.quickWin.picks={};
+      if(!state.quickWin.picks[T332]) state.quickWin.picks[T332]=[
+        "Before you leave, text Ryan for the finished basement floor plans of the Rose Creek two storey. Thirty seconds, and it is what turns Monday's promise to your open house lead into something you can actually send.",
+        "Log your DUPR the same day it lands. The moment a real rating exists every estimate on your chart stops being useful, and I will swap the source of truth over to it."];
+
+      if(state.pickleball){
+        if(!state.pickleball.videoRec) state.pickleball.videoRec={};
+        if(!state.pickleball.videoRec[T332]) state.pickleball.videoRec[T332]={
+          title:"Strategy to beat the nerves in your first tournament",
+          url:"https://www.youtube.com/watch?v=IrnLS7MBRsM",
+          note:"Under a minute, watch it in the car. Everyone in your bracket is nervous today, including the pair across the net, and that is not a problem to fix. Third shots at 60 percent power just to make them play a ball, a personal 10 dink minimum before you speed up, dink the middle not the lines. That is the patience already showing up as your best trait on film."};
+        if(!state.pickleball.research) state.pickleball.research={};
+        if(!state.pickleball.research[T332]) state.pickleball.research[T332]={
+          title:"Your real warm up starts with your hips, not with small talk and a few soft taps",
+          text:"Most warm ups on a tournament morning are two players saying hi and hitting a handful of easy dinks, which warms up nothing. Before each match: feet wider than your hips, unlock the glutes and sit your hips back while keeping your chest tall, so your reach comes forward from a loaded lower body instead of your back rounding to get there. It is the same cue as your logged leg sink fix, applied to the first minute on court instead of mid rally, so it doubles as a rehearsal for the fix itself. Do it before every match, not just the first one, because the waits between matches are long enough to undo it.",
+          url:"https://www.youtube.com/shorts/RrVMZGAM_WE",
+          source:"Selkirk TV, Best Pre-Match Pickleball Warmup for All Skill Levels, pulled 08.23.2026"};
+        if(!state.pickleball.coachRec) state.pickleball.coachRec={};
+        if(!state.pickleball.coachRec[T332]) state.pickleball.coachRec[T332]={
+          title:"Match day. Nothing to fix, just execute.",
+          note:"Receive if you win the toss, sides stay natural. Early points, 60 percent power thirds and a 10 dink minimum before you speed up. Warm up from the hips before every match, not just the first one."};
+        if(!state.pickleball.coachBullets || Array.isArray(state.pickleball.coachBullets)) state.pickleball.coachBullets={};
+        if(!state.pickleball.coachBullets[T332]) state.pickleball.coachBullets[T332]=[
+          "Match day, Ian. Nothing new goes in today. Your one instruction is the one you already have: construct, do not rally. Move them with the dink, then take the first ball that sits above the net band.",
+          "Get to your own kitchen line and stay there. The 19 August film measured you and Dylan 12.2 and 12.4 feet behind it while the other pair stood at 2.1 and 3.5, confirmed twice by different methods.",
+          "If you win the toss, receive. Serving teams win about 42.5 percent of points. Sides stay natural, no stacking, and neither of those gets re-litigated at the net.",
+          "Expect nerves and so does the other guy. Early thirds at about 60 percent power, just make them play a ball. Ten dinks minimum before you even consider a speed up.",
+          "Warm up from the hips before every match, not just the first one. Feet wider than hips, hips back, chest tall. Today is a starting line, not a verdict."];
+        state.pickleball.coachPlan={date:T332, paras:[
+          "Ian, this is going up hours before your first ever tournament match. First ball 1:00 PM, arrive 10:15. Nothing new to work on today, the work is done.",
+          "Two decisions are already made and neither gets reopened at the net. Receive if you win the toss, because serving teams win only about 42.5 percent of points. Sides stay natural, no stacking, because stacking was never tested and tournament day is the worst possible place to debut it.",
+          "Expect nerves, so does the opponent, and that is not a problem to solve. Early third shots at about 60 percent power to just put the ball in play. Prolong points, dink to the middle, ten dink minimum before a speed up. Your soft game and your reset held across three film studies, so patience is the thing you are actually good at.",
+          "Warm up with the whole body between matches: feet wider than hips, hips back, chest tall, so reach comes from a loaded lower body rather than a rounded back. Same cue as your leg sink fix, applied to the first minute on court.",
+          "Everything from 08.16 still holds and needs no new attention today. Hands drill rep locked in, contact above net height is a hit down, below it you are forced up, drive fault resolved by relaxing and playing in control, serve backhand, drive crosscourt or middle, set your feet before an unbounced ball. August 23 is a starting line, not a verdict. A first rating comes off a handful of games and swings hard on the draw."]};
+
+        /* PRUNE AS YOU ADD, cues only. WORK ON IS DELIBERATELY UNTOUCHED TODAY: run what you
+           already own is the whole taper instruction, and the 08.22 kitchen line item was
+           added yesterday, which the standing rule forbids removing in the run after.
+           UNGUARDED ON PURPOSE, same reasoning as build 329: an earlier every load block
+           reassigns cues as a whole fixed array, so this runs every load, sits last in file
+           order, and is idempotent by content check. */
+        {
+          if(!Array.isArray(state.pickleball.cues)) state.pickleball.cues=[];
+          var DROPC332=["Down beats short, height not length","Call it, then move."];
+          state.pickleball.cues=state.pickleball.cues.filter(function(c){ return DROPC332.indexOf(c)===-1; });
+          var ADDC332=["If you get the choice, receive first","60 percent power on the early thirds, just put it in play"];
+          for(var ci332=0;ci332<ADDC332.length;ci332++){
+            if(state.pickleball.cues.indexOf(ADDC332[ci332])===-1) state.pickleball.cues.push(ADDC332[ci332]);
+          }
+          state.meta.mig332_cues=true;
+        }
+      }
+
+      /* TO DO MAINTENANCE. Retire before you create, nothing created today. Four out, all four
+         to the archive with a reason, none deleted. List goes 15 to 11 against a ceiling of 10,
+         and no fifth retirement was invented to hit the number. */
+      if(!state.meta.mig332_todos && state.realEstate && Array.isArray(state.realEstate.todos)){
+        if(!state.archive) state.archive={};
+        if(!Array.isArray(state.archive.todosDone)) state.archive.todosDone=[];
+        var RET332={
+          "ret-20260828-openhouse-checkin":"Folded into ret-20260824-openhouse-floorplans. It was conditional on the floor plans drawing no reply, so it is a branch of that item rather than a separate task, and the waiting guidance now lives in that item's text.",
+          "ret-20260820-willis-docs":"Folded into ret-20260820-willis-repair-scope. Both are the same ask to the same person about the same document, and two entries for one text message is exactly the duplication the 08.22 deploy note flagged.",
+          "ret-20260707-tysdal":"Grounding moved. Chris took the Tysdal follow up on 15 August and it is recorded on the deal, so a separate touch from Ian double contacts the same client. Open since 7 July with no movement.",
+          "ret-20260817-siena-plan":"Not a to do. Its grounding is Sydney Spicer's SPRING 2027 listing, seven months out, so it belongs on the deal record and on the January 2027 CMA refresh rather than sitting in front of you every morning."};
+        var FOLD332={
+          "ret-20260824-openhouse-floorplans":" FOLDED IN 08.23.2026, the check in branch: if the plans draw no reply, one check in on Friday 28 August, four days out. If that draws nothing, one more at about two weeks, then a single last touch at 30 days. Do NOT write this lead off early, the listing has no paid marketing behind it.",
+          "ret-20260820-willis-repair-scope":" FOLDED IN 08.23.2026: this ask also covers the ADDENDUM and the INSPECTION REPORT themselves, both of which go to Chris by email rather than to Ian, which is why neither has surfaced. One message to Chris covers the documents and the scope."};
+        var keep332=[];
+        for(var i332=0;i332<state.realEstate.todos.length;i332++){
+          var td332=state.realEstate.todos[i332];
+          if(td332 && RET332[td332.id]){
+            state.archive.todosDone.unshift({id:td332.id,text:td332.text,key:td332.key||"",retired:"2026-08-23",by:"ian-daily-brief",reason:RET332[td332.id]});
+          } else {
+            if(td332 && FOLD332[td332.id] && String(td332.text||"").indexOf("FOLDED IN 08.23.2026")<0){
+              td332.text=String(td332.text||"")+FOLD332[td332.id];
+            }
+            keep332.push(td332);
+          }
+        }
+        state.realEstate.todos=keep332;
+        if(!Array.isArray(state.autoLog)) state.autoLog=[];
+        if(!state.autoLog.some(function(x){ return x&&x.id==="auto-20260823-todos"; })){
+          state.autoLog.unshift({id:"auto-20260823-todos",date:"2026-08-23",area:"Real estate",
+            what:"Retired 4 to dos and created none, list goes from 15 to 11",
+            why:"Two were duplicates of items you already have, one moved to Chris on 15 August, and one is grounded on a spring 2027 listing that does not need a daily prompt.",
+            evidence:"Eleven grounded items against your ceiling of ten. Nothing else is checked, expired or ungrounded, so I did not invent a fifth retirement to hit the number.",
+            undo:"Real estate, To dos. All four are in state.archive.todosDone with their reasons and their original text."});
+        }
+        state.meta.mig332_todos=true;
+      }
+      save(true);
+  } }catch(e){ try{ console.warn("mig332 did not apply:",e&&e.message); }catch(_){} }
+
 
 
 
