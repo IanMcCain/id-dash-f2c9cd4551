@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 337 (2026-08-24)">
+<meta name="build" content="v21 build 338 (2026-08-24)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -12198,6 +12198,300 @@ try{ if(profile==="ian"){
       state.meta.mig_apc_result_repair=true; save(true);
   } }catch(e){ try{ console.warn("apc result repair did not apply:",e&&e.message); }catch(_){} }
 
+/* ===== build 338: THE 24 AUGUST MEETING FOLLOW UPS AND IAN'S CORRECTIONS ===============
+     Source: _HANDOFF_meeting_0824_followups.md by session-ops-b, read together with its two
+     addenda, plus Ian's corrections relayed the same day. ADDENDUM 2 SUPERSEDES PARTS OF THE
+     BODY and addendum 3 moves most of section B onto the calendar, so the body was NOT applied
+     as written. Everything below was checked against the corrections before it went in.
+
+     THREE THINGS IN THE HANDOFF WERE NOT APPLIED BECAUSE THE APP DISAGREES WITH IT, and each
+     is reported rather than forced:
+     1. `ret-20260813-horizon-date` does not exist in this app. Nothing to mark done.
+     2. There is NO duplicate Kirk record. The handoff authorised removing a dead one and there
+        is only one, whose own note says "THEY EXISTED NOWHERE BEFORE THIS RECORD". Nothing is
+        deleted. The single record is REFRAMED instead, which is the real correction.
+     3. The Belknap commission linkage is NOT in this app. See item E.
+
+     NO STAGE MOVES, NO DEAL CREATED, NO DEAL REMOVED. SEED_VERSION untouched. */
+  try{ if(profile==="ian" && state.meta && !state.meta.mig_meeting0824_followups){
+      var _D8=(state.realEstate&&Array.isArray(state.realEstate.deals))?state.realEstate.deals:[];
+      var _g8=function(id){ for(var i=0;i<_D8.length;i++){ if(_D8[i]&&_D8[i].id===id) return _D8[i]; } return null; };
+      var _app8=function(o,k,marker,txt){ if(!o) return; if(String(o[k]||"").indexOf(marker)<0){ o[k]=String(o[k]||"")+txt; } };
+
+      /* A. CRYSTAL JOHNSON CLOSES THURSDAY 27 AUGUST. The last stale copy of this fact.
+            Price, stage, side and source are NOT touched, none of them moved. */
+      var _cj=_g8("re-crystal-johnson");
+      if(_cj){
+        _cj.close="Thursday 27 August 2026 (TIME NOT SET)";
+        _app8(_cj,"note","CLOSING DATE FIXED 08.24.2026",
+          " CLOSING DATE FIXED 08.24.2026. THURSDAY 27 AUGUST 2026. Given by Ian at the Monday team "
+          +"meeting with Chris texting to confirm during it. This replaces the two candidate days, "
+          +"Tuesday 25 or Wednesday 26, which are now dead and must not be quoted again. NO TIME WAS "
+          +"GIVEN and none is invented. Price $577,861, Under Contract, seller side, Chris's client, "
+          +"all unchanged and all still correct.");
+      }
+      /* The 14 August placeholder now has a real date. AMENDED IN PLACE, per build 334's
+         precedent and the handoff's explicit instruction not to create a second event. */
+      if(Array.isArray(state.events)){
+        state.events.forEach(function(e){
+          if(!e || e.id!=="ev-20260814-johnson-close") return;
+          e.date="2026-08-27";
+          e.title="Crystal Johnson closing, 11911 Horizon (TIME NOT SET)";
+          e.note="CONFIRMED 08.24.2026 at the Monday team meeting. This event was an all day "
+            +"placeholder sitting on 14 August reading NOT A CLOSING DATE. It now carries the real "
+            +"day. No time was given.";
+        });
+      }
+
+      /* B. BONK IS PAID, BOTH SIDES. Both records read payment outstanding until now. */
+      [["re-bonks-sell","August 19, 2026 (CLOSED and PAID)"],
+       ["re-bonks-buy","August 20, 2026 (CLOSED and PAID)"]].forEach(function(p){
+        var d=_g8(p[0]); if(!d) return;
+        d.paid=true; d.close=p[1];
+        _app8(d,"note","PAID, CONFIRMED 08.24.2026",
+          " PAID, CONFIRMED 08.24.2026 by Ian at the Monday team meeting. Both Bonk sides are now "
+          +"received. No actualNet is set because he gave the fact of payment and not the figure, so "
+          +"the modelled take home stands until a real number replaces it, per the standing rule that "
+          +"an actual always beats a computed one. This clears the last two outstanding commissions.");
+      });
+
+      /* C. WILLIS RELIST PRICE IS $619,900. Supersedes "OPEN, NOT DECIDED".
+            priceVersion is stamped LATER than the build 204 unguarded block's 2026-07-28 stamp on
+            purpose. That block re-asserts $619,900 on every load unless the record carries a
+            lexically later version, so a lower or cleared stamp would hand the field straight back
+            to it. Same trap build 333 documented. */
+      var _wl=_g8("re-cynthia-willis");
+      if(_wl){
+        _wl.price="$619,900";
+        _wl.priceVersion="2026-08-24-relist-619900";
+        _wl.priceNote="Relist price, Ian's working figure as at 08.24.2026. Not a final list price.";
+        _wl.close="Relist THURSDAY 3 September 2026. Repairs first. Price $619,900.";
+        _app8(_wl,"note","RELIST PRICE 08.24.2026",
+          " RELIST PRICE 08.24.2026: $619,900, given by Ian. This SUPERSEDES the cleared price field "
+          +"and the priceNote that read OPEN, NOT DECIDED with him leaning $619,900 against an analysis "
+          +"arguing $614,900. It is his working figure rather than a signed list price, and he is NOT "
+          +"to be asked to choose a price again. The $610,000 on the terminated contract stays dead.");
+      }
+
+      /* D. PATRICK AND NANCY KIRK. ONE RECORD, REFRAMED. NOTHING DELETED.
+            They are the 2 story couple and the Rose Creek couple, and they are IAN'S OWN LEAD off
+            the $684,900 two storey. Not a referral and not Chris's. The 08.17 framing was wrong at
+            the root. The id is kept because other records and todos reference it; changing an id to
+            match a corrected story breaks the links that make the correction findable. */
+      if(state.realEstate && Array.isArray(state.realEstate.leads)){
+        state.realEstate.leads.forEach(function(l){
+          if(!l || l.id!=="lead-kirk-ryan-referral") return;
+          l.name="Patrick and Nancy Kirk";
+          l.source="Ian's own lead, off the $684,900 Rose Creek two storey";
+          l.status="Live. Email outstanding, no contact details held";
+          _app8(l,"note","CORRECTED 08.24.2026",
+            " CORRECTED 08.24.2026 BY IAN, AND THE OLD FRAMING WAS WRONG AT THE ROOT. They are the "
+            +"2 STORY COUPLE and the ROSE CREEK COUPLE, one set of people, and they are IAN'S OWN "
+            +"LEAD off the $684,900 two storey. NOT a referral, NOT Chris's client. The id still "
+            +"reads lead-kirk-ryan-referral only because other records point at it; the id is a "
+            +"handle, not a claim. THE REFERRAL EVENT ITSELF STILL HAPPENED and is kept: Ian gave "
+            +"them Ryan Beachler's contact details on Saturday 15 August and Ryan has not heard from "
+            +"them. NO DUPLICATE RECORD EXISTS IN THIS APP. Ian approved removing a dead second Kirk "
+            +"record; there is only this one, so nothing was deleted and nothing was archived. If a "
+            +"second set of Kirks exists it is outside the app. THE REAL BLOCKER IS THAT WE HOLD NO "
+            +"PHONE AND NO EMAIL FOR THEM, so getting an address is the actual task.");
+        });
+      }
+
+      /* E. THE BELKNAP COMMISSION. THE LINKAGE IS NOT IN THIS APP, AND THAT IS THE FINDING.
+            Ian: "why would the other two have any impact on my belknap commission, that's my dads
+            client as only buy side for them." The handoff guessed the app was rendering it. Checked
+            three ways before writing this: no code path puts Miller or Troester into a Belknap
+            figure, the money split card sums CLOSED deals only and Belknap buy is Under Contract
+            with no paid flag so it is structurally excluded, and exactly one string in saved state
+            mentions Belknap alongside either name, inside an unrelated Bonk note. Miller and
+            Troester are both paid=true and sit in Received.
+
+            So no card is corrected here, because there is no card doing this. What goes on the
+            record is the RULE, where a future session will look for it. */
+      var _bb=_g8("re-belknap-buy");
+      _app8(_bb,"note","COMMISSION RULE 08.24.2026",
+        " COMMISSION RULE 08.24.2026, IAN'S WORDS, AND IT IS A GENERAL RULE NOT A NOTE ABOUT THIS "
+        +"DEAL. Belknap is CHRIS'S CLIENT, BUY SIDE ONLY. Take home is 2.4 percent x price x 0.85 x "
+        +"0.20 and NOTHING ELSE FEEDS IT. Michelle Miller and Chad Troester are settled payments on "
+        +"unrelated closed deals and have no bearing on this figure whatsoever. re-belknap-sell is a "
+        +"separate side of a separate transaction and does not feed it either. THE GENERAL RULE: a "
+        +"commission figure names exactly ONE deal and ONE side. If a number draws on more than one "
+        +"transaction the card must say which and why. A list of open money items is a LIST, never a "
+        +"calculation, and must never be presented as one.");
+
+      /* F. GARY BELKNAP IS NOT A NEAR TERM SELLER. Do not carry him in a 2026 in flight figure. */
+      _app8(_g8("re-belknap-sell"),"note","08.24.2026 TIMING",
+        " 08.24.2026 TIMING, FROM IAN. Gary Belknap is LIKELY NOT SELLING RIGHT NOW. He wants to at "
+        +"some point, possibly next year. DO NOT carry him as near term and do not put him in a 2026 "
+        +"in flight figure. The listing presentation did happen today, so the relationship is live "
+        +"and the transaction is not. Stage stays Coming Soon and no price is written, unchanged.");
+
+      /* G. THE PRE INSPECTION IS A STANDING GATE, NOT A ONE DEAL NOTE.
+            Ian, 24 August 2026, verbatim: "push pre inspections before going live no matter what on
+            all of our listings." It earned itself: Willis died at inspection on 20 August, and the
+            Michelle Miller pre inspection on 4 June found an AC fault, moved the live date six days
+            and the listing went live clean. Written onto every live listing file. */
+      ["re-cynthia-willis","re-belknap-sell","re-barkers-sell","re-theobald-sell"].forEach(function(id){
+        _app8(_g8(id),"note","PRE INSPECTION GATE 08.24.2026",
+          " PRE INSPECTION GATE 08.24.2026, STANDING POLICY ON EVERY LISTING. Ian's words: push pre "
+          +"inspections before going live no matter what on all of our listings. THIS IS A GATE "
+          +"BEFORE LIVE, NOT A TASK ALONGSIDE ONE. Willis is the reason: it died at inspection on 20 "
+          +"August at $610,000 because the buyers would not wait for repairs. Miller is the counter "
+          +"example: a pre inspection on 4 June 2026 found an AC fault, cost six days on the live "
+          +"date, and the listing went live clean.");
+      });
+
+      state.meta.mig_meeting0824_followups=true; save(true);
+  } }catch(e){ try{ console.warn("meeting0824 did not apply:",e&&e.message); }catch(_){} }
+
+/* ===== build 338: THE TODO LIST SORTED INTO ITS FOUR LISTS, AND THE GAME PLAN ==========
+     Second half of the 24 August meeting batch, kept on its own flag so a failure in one half
+     cannot silently take the other with it.
+
+     THE SPLIT. Every existing item is classified rather than moved or dropped. The renderer
+     added in this build groups on the `list` field and defaults anything without one to an
+     action, so a future agent that adds a todo the old way still lands somewhere sensible.
+
+     CALENDAR IS NOT WRITTEN HERE, DELIBERATELY. Addendum 3 of the handoff moved eight items
+     onto the calendar with real times, but that was session-ops-b writing the MACOS calendar,
+     which is a different surface from state.events. Writing them here would either duplicate
+     his work or invent a second source of truth for the same appointments. REPORTED, not
+     forced, and the app calendar is currently missing all eight. */
+  try{ if(profile==="ian" && state.meta && !state.meta.mig_todos0824_split
+          && state.realEstate && Array.isArray(state.realEstate.todos)){
+      var _T8=state.realEstate.todos;
+      var _f8=function(id){ for(var i=0;i<_T8.length;i++){ if(_T8[i]&&_T8[i].id===id) return _T8[i]; } return null; };
+
+      /* 1. CLASSIFY WHAT IS ALREADY THERE. Nothing is deleted and nothing changes text
+            except where a correction from today makes the old wording wrong. */
+      var _CLASS={
+        "ret-20260808-flyer-wch":"todo",
+        "ret-20260808-bruce-contact":"todo",
+        "ret-20260810-hernandez-timeline":"todo",
+        "ret-20260910-thacker-cosigner":"todo",
+        "ret-20260817-winchester-fu":"todo",
+        "ret-20260820-willis-repair-scope":"todo",
+        "ret-20260824-openhouse-floorplans":"todo",
+        /* BLOCKED ON SOMEONE ELSE. Chris owns the Theobald walkthrough scheduling, and the
+           Barkers have been asked and have not replied. Neither is work sitting on Ian. */
+        "ret-20260815-theobald-listprep":"waiting",
+        "ret-20260817-barker-thursday":"waiting",
+        /* ONLY IAN CAN ANSWER THIS. The open house lead's name and number are on his phone
+           and are not in the Messages database on this Mac. That is a question, not a task. */
+        "ret-20260822-openhouse-contact":"ask"
+      };
+      _T8.forEach(function(t){
+        if(!t) return;
+        if(_CLASS[t.id]) t.list=_CLASS[t.id];
+        else if(!t.list) t.list="todo";
+      });
+
+      /* 2. CLOSED BY TODAY'S ANSWERS. Reclassified off the active list, never dropped. */
+      var _rk=_f8("ret-20260817-ryan-kirk");
+      if(_rk && !_rk.done){
+        _rk.done=true;
+        _rk.text=String(_rk.text||"")+" ANSWERED 08.24.2026: they never got back to Ryan Beachler "
+          +"and never emailed him. The question is closed. What replaces it is emailing Patrick and "
+          +"Nancy Kirk directly, and the real blocker is that no phone or email is held for them.";
+      }
+
+      /* 3. THE WILLIS REPAIR SCOPE IS NO LONGER A PRICE BLOCKER, because the price is decided.
+            It stays open because the repair cost is still genuinely unknown. Reworded rather
+            than closed, and the overlap the handoff flagged could not be resolved because
+            ret-20260820-willis-docs DOES NOT EXIST in this app. */
+      var _wr=_f8("ret-20260820-willis-repair-scope");
+      if(_wr && String(_wr.text||"").indexOf("08.24.2026")<0){
+        _wr.text=String(_wr.text||"")+" REFRAMED 08.24.2026. THIS NO LONGER BLOCKS THE PRICE. Ian set "
+          +"the relist at $619,900 on 24 August, so what is still open is the repair COST and the "
+          +"scope of work before the 3 September relist, not the number. The overlapping todo the "
+          +"handoff named, ret-20260820-willis-docs, is not in this app, so nothing was merged.";
+      }
+
+      /* 4. NEW ITEMS, ALL FROM IAN ON 24 AUGUST. Suppressed where a correction killed them:
+            the Nancy collision question is ANSWERED and is not created, the Theobald walkthrough
+            is already covered by ret-20260815-theobald-listprep and is not duplicated, and the
+            Kirk email, the Spicer shoot and the merch session are appointments with real times
+            rather than todos. The Barker reply is folded into the existing Barker item instead
+            of becoming a second one. */
+      var _NEW=[
+        {id:"ret-20260824-rosecreek-2story", list:"todo", due:"",
+         text:"Rose Creek 2 story at $684,900 needs a real SELLING STRATEGY, not another price cut. "
+             +"Ian's own framing on 24 August and he pre emptively ruled out a further cut, nearly "
+             +"$45,000 has already come off. Do not surface a price cut recommendation against this."},
+        {id:"ret-20260824-preinspection", list:"todo", due:"",
+         text:"Apply the new PRE INSPECTION GATE to every live listing file: Willis, Gary Belknap, "
+             +"Barker, Theobald. Ian 24 August: push pre inspections before going live no matter what "
+             +"on all of our listings. It is a gate before live, not an item alongside one."},
+        {id:"ret-20260824-blog-login", list:"todo", due:"2026-08-24",
+         text:"LOG IN TO THE SCENIC BLOG. scenic-blog-weekly is blocked on this and it is NOT a system "
+             +"fault or a bug, it is a login only Ian can do. He said he would do it today and asked "
+             +"to be reminded, so it belongs here rather than in a status file. Not a calendar item, "
+             +"his words: that's just a self note not something for calendar."},
+        {id:"ret-20260824-pk-rankings", list:"todo", due:"2026-08-24",
+         text:"Update your own pickleball skill rankings. You said you would do it in a few minutes on "
+             +"24 August. Nothing here recomputes them for you and the 4.5 arc is left exactly as it "
+             +"is, per your instruction."},
+        {id:"ret-20260824-tourney-register", list:"todo", due:"2026-09-01",
+         text:"REGISTER FOR THE LABOR DAY DINK-OFF, Ankeny. DEADLINE 1 SEPTEMBER 8:00 AM, which is a "
+             +"boundary on this task and not an appointment. BLOCKED ON TALKING TO DYLAN FIRST. You "
+             +"said sometime this week. Deliberately not scheduled."}
+      ];
+      _NEW.forEach(function(n){
+        if(_f8(n.id)) return;
+        _T8.push({id:n.id, text:n.text, done:false, due:n.due, list:n.list,
+                  src:"Ian, 24 August 2026 team meeting and corrections"});
+      });
+
+      /* 5. THE BARKER ITEM ABSORBS THE 24 AUGUST OUTREACH rather than spawning a twin. */
+      var _bk=_f8("ret-20260817-barker-thursday");
+      if(_bk && String(_bk.text||"").indexOf("08.24.2026")<0){
+        _bk.text=String(_bk.text||"")+" UPDATE 08.24.2026: Chris texted them on 24 August asking if "
+          +"they are ready for a listing presentation and a walkthrough. STATUS IS OUTREACH SENT, "
+          +"AWAITING REPLY, and it moves no further until they answer. This is now a WAITING item "
+          +"rather than an action. Do not phrase it as chasing and do not assert they have gone quiet.";
+      }
+
+      state.meta.mig_todos0824_split=true; save(true);
+  } }catch(e){ try{ console.warn("todos0824 did not apply:",e&&e.message); }catch(_){} }
+
+/* ===== build 338: THE PICKLEBALL GAME PLAN STOPS PREPARING FOR A PLAYED TOURNAMENT =====
+     Ian, 24 August 2026: "fix the pickleball game plan."
+
+     pickleball.gamePlan was dated 2026-07-15 and read "Your target is the APC Championship
+     men's doubles 3.5 with Dylan on Sunday August 23", future tense, on a board where that
+     event has been played and lost. It rendered as a live plan.
+
+     NO TARGET NUMBER IS TOUCHED AND NO SKILL RATING IS TOUCHED. Ian: "my 4.5 arc stays as is,
+     I will update my personal rankings in a bit." So this rewrites the PLAN, which is prose
+     about what to work on, and nothing that carries a number he owns. The measured 3.115 is
+     stated as fact because it is a measurement, not a target. */
+  try{ if(profile==="ian" && state.pickleball && state.meta && !state.meta.mig_gameplan0824){
+      state.pickleball.gamePlan={
+        title:"After the APC. Consistency first, then hands",
+        date:"2026-08-24",
+        text:"THE APC IS PLAYED. 23 August 2026, men's doubles 3.5 under 50 at Ace with Dylan, 0 and "
+            +"7 in pool, scores 6-15, 1-15, 8-15, 4-15, 7-15, 5-15, 12-15, games to 15. First DUPR "
+            +"3.115, final. That is a measurement, not a verdict, and it is the first hard number you "
+            +"have ever had. WHAT THE DAY ACTUALLY SAID. The field averaged 3.615 in a 3.5 division "
+            +"and you and Dylan were the lowest combined team in the pool at 6.230, so the record is "
+            +"not the surprise. The shape of the margins is. Your best game, 12-15, came against the "
+            +"SECOND STRONGEST team, while a 4-15 came against a mid table one and the weakest team "
+            +"on the board still beat you by 10. Margins that do not track opponent strength are a "
+            +"CONSISTENCY signature, not a level one, which is exactly what you named yourself on "
+            +"27 July before any of this data existed. SO THE PLAN DOES NOT CHANGE DIRECTION, IT "
+            +"NARROWS. Consistency before technique stays first: serve in at nine of ten, every ball "
+            +"repeatable, unforced errors down. Second is HANDS, your lowest graded skill and the one "
+            +"you have never deliberately filmed, which is why Tuesday league is worth filming at the "
+            +"net rather than the rally. Third is construct and finish, taking the ball above the net "
+            +"band instead of resetting a point you have already won. WHAT MOVES THE NUMBER. Ratings "
+            +"only move at events, so volume is the lever, and the Labor Day Dink-Off is the next one "
+            +"if you and Dylan commit before the 1 September deadline. Your own targets and your 4.5 "
+            +"arc are untouched here and stay yours to set."
+      };
+      state.meta.mig_gameplan0824=true; save(true);
+  } }catch(e){ try{ console.warn("gameplan0824 did not apply:",e&&e.message); }catch(_){} }
+
   /* ===== v21 build 336: DAILY INJECT, MONDAY 24 AUGUST 2026 ==================================
      Written by ian-daily-brief off export ian-dashboard-2026-08-22.json plus the live build 335
      APC block. There is NO export for 23 August, so tournament day carried no logged input and
@@ -12891,7 +13185,64 @@ function dealCountWeight(d){ return (dealSource(d)==="Dual agency" || dealSide(d
 function dealCard(parent,d){ const c=card(); const b=c._body; const head=el("div"); head.appendChild(el("h3",null,d.title)); if(d.price){ const p=el("div"); p.style.color="var(--sec2,var(--accent2))"; p.style.fontWeight="800"; p.style.marginTop="4px"; p.style.fontSize="16px"; p.textContent=d.price; head.appendChild(p);} if(d.close){ const cd=el("div","small dim"); cd.style.marginTop="3px"; cd.textContent="Close: "+d.close; head.appendChild(cd);} b.appendChild(head); const cs=el("div"); cs.style.marginTop="11px"; cs.appendChild(chipRow(RESTAGES,d.stage,s=>{d.stage=s;save();render();})); b.appendChild(cs); const pr=el("input","in"); pr.placeholder="Price"; pr.value=d.price||""; pr.style.marginTop="10px"; pr.oninput=()=>{d.price=pr.value;save();}; b.appendChild(pr); const cl=el("input","in"); cl.placeholder="Close date"; cl.value=d.close||""; cl.style.marginTop="9px"; cl.oninput=()=>{ d.close=cl.value; save(); }; b.appendChild(cl); const ta=el("textarea","in"); ta.style.minHeight="52px"; ta.style.marginTop="9px"; ta.value=d.note||""; ta.placeholder="Notes, next step..."; ta.oninput=()=>{d.note=ta.value;save();}; b.appendChild(ta); const del=el("button","del","Remove"); del.style.fontSize="13px"; del.style.marginTop="8px"; del.onclick=()=>{ if(confirm("Remove this deal?")){ state.realEstate.deals=state.realEstate.deals.filter(x=>x.id!==d.id); save(); render(); } }; b.appendChild(del); parent.appendChild(c); }
 function rePipeline(parent){ state.realEstate.deals.forEach(d=>{ const c=card(d.stage==="Just Sold"?"a-blue":"a-gold"); const b=c._body; const head=el("div"); head.appendChild(el("h3",null,d.title)); if(d.price){ const p=el("div","small"); p.style.color="var(--accent2)"; p.style.fontWeight="700"; p.textContent=d.price; head.appendChild(p);} b.appendChild(head); const cs=el("div"); cs.style.marginTop="10px"; cs.appendChild(chipRow(RESTAGES,d.stage,s=>{d.stage=s;save();render();})); b.appendChild(cs); const pr=el("input","in"); pr.placeholder="Price (optional)"; pr.value=d.price||""; pr.style.marginTop="10px"; pr.oninput=()=>{d.price=pr.value;save();}; b.appendChild(pr); const ta=el("textarea","in"); ta.style.minHeight="52px"; ta.style.marginTop="10px"; ta.value=d.note||""; ta.placeholder="Notes, next step..."; ta.oninput=()=>{d.note=ta.value;save();}; b.appendChild(ta); const del=el("button","del","Remove"); del.style.fontSize="13px"; del.style.marginTop="8px"; del.onclick=()=>{ if(confirm("Remove this deal?")){ state.realEstate.deals=state.realEstate.deals.filter(x=>x.id!==d.id); save(); render(); } }; b.appendChild(del); parent.appendChild(c); }); const add=card(); add._body.appendChild(adder("New deal or prospect...",t=>{state.realEstate.deals.push({id:uid(),title:t,stage:"Prospecting",price:"",note:""});save();render();})); parent.appendChild(add); }
 function leadsModule(parent){ const c=card(); const b=c._body; const ls=state.realEstate.leads||(state.realEstate.leads=[]); if(!ls.length)b.appendChild(el("div","empty","No leads yet.")); ls.forEach(l=>{ const row=el("div","chk"); const t=el("div","ctext"); t.textContent=l.name; const m=el("span","meta"); m.textContent=(l.source?l.source+" \u00B7 ":"")+(l.status||"New")+(l.note?" \u00B7 "+l.note:""); t.appendChild(m); row.appendChild(t); const d=el("button","del","\u00D7"); d.onclick=()=>{ state.realEstate.leads=ls.filter(x=>x.id!==l.id); save(); render(); }; row.appendChild(d); b.appendChild(row); }); b.appendChild(adder("Add a lead...",n=>{ ls.push({id:uid(),name:n,source:"",status:"New",note:""}); save(); render(); })); parent.appendChild(c); }
-function reTodos(parent){ const c=card(); const b=c._body; const rt=state.realEstate.todos; if(!rt.length)b.appendChild(el("div","empty","Nothing yet.")); rt.forEach(t=>{ b.appendChild(checkItem(t.done,t.text,t.due?dueLabel(t.due):null,()=>{t.done=!t.done;save();render();},()=>{state.realEstate.todos=rt.filter(x=>x.id!==t.id);save();render();})); }); const inp=el("input","in"); inp.placeholder="Add a follow up..."; inp.setAttribute("data-add","Add a follow up..."); const dt=el("input","in"); dt.type="date"; dt.style.marginTop="9px"; const btn=el("button","btn block","Add task"); btn.onclick=()=>{ const v=inp.value.trim(); if(!v)return; pendingFocus="Add a follow up..."; rt.push({id:uid(),text:v,done:false,due:dt.value||""}); save(); render(); }; const wrap=el("div"); wrap.style.marginTop="12px"; wrap.appendChild(inp); wrap.appendChild(dt); wrap.appendChild(btn); b.appendChild(wrap); parent.appendChild(c); }
+/* ===== build 338: A TO DO LIST IS FOUR LISTS, NOT ONE ==============================
+   Ian, 24 August 2026: "for to do's I mean stuff I actually need to do, things that I have
+   to do and some of these are not that."
+
+   A TODO IS AN ACTION IAN PERSONALLY HAS TO TAKE. Everything else was being mixed into the
+   same flat list, so an item blocked on Chris and a question we needed him to answer both
+   read as work sitting on him. Three rendered groups here plus the calendar, which already
+   exists as state.events and is not duplicated into this list.
+
+   RECLASSIFY, NEVER DROP. Completed items come off the active groups and are counted at the
+   bottom rather than deleted, and the delete affordance on each row is unchanged.
+
+   todoList() defaults to "todo", so every existing item and anything an agent adds without
+   the field keeps working and lands in the actions group. */
+function todoList(t){ var k=t&&t.list; return (k==="waiting"||k==="ask")?k:"todo"; }
+function reTodoCounts(){
+  var rt=(state.realEstate&&state.realEstate.todos)||[];
+  var o={todo:0,waiting:0,ask:0,done:0};
+  rt.forEach(function(t){ if(!t) return; if(t.done){ o.done++; return; } o[todoList(t)]++; });
+  return o;
+}
+function reTodos(parent){
+  var rt=state.realEstate.todos;
+  var GROUPS=[
+    ["todo","Things I have to do","actions only, nothing that is waiting on someone else"],
+    ["waiting","Waiting on someone else","no action from you until they move"],
+    ["ask","Needs a decision from you","questions nobody else can answer"]
+  ];
+  GROUPS.forEach(function(g){
+    var list=rt.filter(function(t){ return t && !t.done && todoList(t)===g[0]; });
+    if(!list.length && g[0]!=="todo") return;
+    sect(parent,g[1],g[2]);
+    var c=card(); var b=c._body;
+    if(!list.length){ b.appendChild(el("div","empty","Nothing here.")); }
+    list.forEach(function(t){
+      b.appendChild(checkItem(t.done,t.text,t.due?dueLabel(t.due):null,
+        function(){ t.done=!t.done; save(); render(); },
+        function(){ state.realEstate.todos=state.realEstate.todos.filter(function(x){ return x!==t; }); save(); render(); }));
+    });
+    if(g[0]==="todo"){
+      var inp=el("input","in"); inp.placeholder="Add a follow up..."; inp.setAttribute("data-add","Add a follow up...");
+      var dt=el("input","in"); dt.type="date"; dt.style.marginTop="9px";
+      var btn=el("button","btn block","Add task");
+      btn.onclick=function(){ var v=inp.value.trim(); if(!v) return; pendingFocus="Add a follow up...";
+        rt.push({id:uid(),text:v,done:false,due:dt.value||"",list:"todo"}); save(); render(); };
+      var wrap=el("div"); wrap.style.marginTop="12px";
+      wrap.appendChild(inp); wrap.appendChild(dt); wrap.appendChild(btn); b.appendChild(wrap);
+    }
+    parent.appendChild(c);
+  });
+  var doneN=rt.filter(function(t){ return t&&t.done; }).length;
+  if(doneN){
+    sect(parent,"Done","reclassified, never dropped");
+    var dc=card(); dc._body.appendChild(el("div","small dim",
+      doneN+" completed item"+(doneN===1?"":"s")+", kept on the record and off the active lists."));
+    parent.appendChild(dc);
+  }
+}
 function reContacts(parent){ const c=card(); const b=c._body; state.realEstate.contacts.forEach(k=>{ const row=el("div","chk"); const t=el("div","ctext"); t.textContent=k.name; const m=el("span","meta"); m.textContent=(k.role?k.role+". ":"")+(k.detail||""); t.appendChild(m); row.appendChild(t); const d=el("button","del","\u00D7"); d.onclick=()=>{state.realEstate.contacts=state.realEstate.contacts.filter(x=>x.id!==k.id);save();render();}; row.appendChild(d); b.appendChild(row); }); b.appendChild(adder("Add a contact...",n=>{state.realEstate.contacts.push({id:uid(),name:n,role:"",detail:""});save();render();})); parent.appendChild(c); }
 function reNeigh(parent){ const c=card(); const b=c._body; state.realEstate.neighborhoods.forEach(n=>{ const row=el("div","chk"); const t=el("div","ctext"); t.textContent=n.name; const m=el("span","meta"); m.textContent=n.note||""; t.appendChild(m); row.appendChild(t); const d=el("button","del","\u00D7"); d.onclick=()=>{state.realEstate.neighborhoods=state.realEstate.neighborhoods.filter(x=>x.id!==n.id);save();render();}; row.appendChild(d); b.appendChild(row); }); b.appendChild(adder("Add a neighborhood...",n=>{state.realEstate.neighborhoods.push({id:uid(),name:n,note:""});save();render();})); parent.appendChild(c); }
 function scriptsModule(parent){ (state.realEstate.scripts||[]).forEach(s=>{ const c=card(); const b=c._body; const head=el("div","between"); head.appendChild(el("h3",null,s.title)); const del=el("button","del","\u00D7"); del.onclick=()=>{ state.realEstate.scripts=state.realEstate.scripts.filter(x=>x.id!==s.id); save(); render(); }; head.appendChild(del); b.appendChild(head); const ta=el("textarea","in"); ta.style.minHeight="90px"; ta.style.marginTop="9px"; ta.value=s.body||""; ta.oninput=()=>{ s.body=ta.value; save(); }; b.appendChild(ta); parent.appendChild(c); }); const add=card(); add._body.appendChild(adder("New script title...",t=>{ state.realEstate.scripts.push({id:uid(),title:t,body:"Write your script here."}); save(); render(); })); parent.appendChild(add); }
@@ -13105,7 +13456,7 @@ function buildFutureIdeasHome(parent){
   },ICO.idea,"green");
   }catch(e){ try{console.error("[dash] futureIdeas",e);}catch(_){} }
 }
-function buildIanHome(v){ const workout=daySplit(DOW); const reTop=firstUndone(state.realEstate.todos); const nm=(state.settings&&state.settings.name)||"Ian";
+function buildIanHome(v){ const workout=daySplit(DOW); const reTop=firstUndone((state.realEstate.todos||[]).filter(t=>todoList(t)==="todo")); const nm=(state.settings&&state.settings.name)||"Ian";
   const hero=card("a-blue"); const b=hero._body; b.classList.add("hero"); const hi=el("div","hi"); hi.innerHTML=GREET+', <span class="name">'+nm.replace(/</g,"")+'</span>'; b.appendChild(hi); b.appendChild(el("div","date",LONGDATE+"  \u00B7  your daily brief")); /* build 191: the old focus line opened with "Priority one, real estate, <whole to-do text>" and
      ran four lines. Ian says he does not look at real estate first thing, and a four line paragraph
      at the top of a 844px screen is expensive. It now states the day in one line. Real estate still
@@ -13434,7 +13785,7 @@ function buildIanHome(v){ const workout=daySplit(DOW); const reTop=firstUndone(s
     var out=[];
     var pd=function(k){ try{ return daysUntil(k); }catch(e){ return 999; } };
     ((state.realEstate&&state.realEstate.todos)||[]).forEach(function(t){
-      if(!t||t.done||!t.due) return; var d=pd(t.due);
+      if(!t||t.done||!t.due) return; if(todoList(t)!=="todo") return; var d=pd(t.due);
       if(d<=0) out.push({label:t.text, meta:(d<0?"overdue":"due today"), sk:d});
     });
     (Array.isArray(state.events)?state.events:[]).forEach(function(e){
@@ -14095,14 +14446,14 @@ function reViewLanding(v){
   const pipe=deals.filter(d=>!reIsProspect(d));
   const prospects=deals.filter(reIsProspect);
   const vol=pipe.reduce((a,d)=>a+dealVolume(d),0);
-  const openTodos=(state.realEstate.todos||[]).filter(t=>!t.done).length;
+  const openTodos=(state.realEstate.todos||[]).filter(t=>!t.done&&todoList(t)==="todo").length;
   sect(v,"Real Estate","tap a section");
   reNavCard(v,ICO.chart,"Pipeline",pipe.length+(pipe.length===1?" deal":" deals")+"  \u00b7  "+fmtMoney(vol)+" volume","pipeline");
   /* build 225: PLACED FROM THE RETIRED STATS TAB. "Follow ups due soon" was the only follow up
      number with no other home, so it joins the card that owns follow ups instead of being dropped. */
   { var _dueSoon=(state.realEstate.todos||[]).filter(function(t){ return t&&!t.done&&t.due&&daysUntil(t.due)<=7; }).length;
-    var _tsub=openTodos+(openTodos===1?" open task":" open tasks")+(_dueSoon?"  \u00b7  "+_dueSoon+" due in 7 days":"");
-    reNavCard(v,ICO.check,"Things I need to do",_tsub,"todo"); }
+    var _tc=reTodoCounts(); var _tsub=openTodos+(openTodos===1?" action":" actions")+(_dueSoon?"  \u00b7  "+_dueSoon+" due in 7 days":"")+(_tc.waiting?"  \u00b7  "+_tc.waiting+" waiting":"")+(_tc.ask?"  \u00b7  "+_tc.ask+" to answer":"");
+    reNavCard(v,ICO.check,"Things I have to do",_tsub,"todo"); }
   /* v21 build 49: standalone Prospects card removed. Prospects now live inside the Sphere Orbit (inner ring),
      so this card carries the prospect count too and opens the orbit. */
   { const _sp=sphereList(); const _ov=sphereOverdue().length; var _pn=prospects.length; var _sub=(_pn?(_pn+(_pn===1?" prospect":" prospects")):"")+((_pn&&_sp.length)?"  \u00b7  ":"")+(_sp.length?(_sp.length+" in sphere"):"")+(_ov?"  \u00b7  "+_ov+" to reach out":""); if(!_pn&&!_sp.length) _sub="add your sphere"; reNavCard(v,ICO.people,"Sphere & prospects",_sub,"sphere"); }
@@ -14930,7 +15281,7 @@ function buildStats(v){ safe(v,()=>{ const wk=workoutsThisWeek(); const hs=habit
   sect(v,"Next actions","what needs doing");
   const _over=(typeof sphereOverdue==="function")?sphereOverdue().length:0;
   const _dueSoon=(state.realEstate.todos||[]).filter(t=>!t.done && t.due && daysUntil(t.due)<=7).length;
-  const _openFollow=(state.realEstate.todos||[]).filter(t=>!t.done).length;
+  const _openFollow=(state.realEstate.todos||[]).filter(t=>!t.done&&todoList(t)==="todo").length;
   const nc=card("a-blue"); const nb=nc._body;
   const _actRow=function(label,val,hint){ const r=el("div","mrow"); const l=el("div","ml"); l.appendChild(document.createTextNode(label)); if(hint){ l.appendChild(el("small",null,hint)); } r.appendChild(l); const vv=el("div"); vv.style.cssText="font-weight:800;font-size:18px;font-variant-numeric:tabular-nums"; vv.textContent=String(val); r.appendChild(vv); nb.appendChild(r); };
   _actRow("Sphere reach outs due",_over,"overdue contacts");
