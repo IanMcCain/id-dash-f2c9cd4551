@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 336 (2026-08-24)">
+<meta name="build" content="v21 build 337 (2026-08-24)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -1195,7 +1195,7 @@ function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]
   /* v21 build 105: Ian answers 07.20.2026. FIRST EVER tournament (registered, no DUPR yet), stacking untested so it must
      not be assumed, and outstanding real estate items. All idempotent and non destructive, agent generated copy only. */
   /* (a) tournament goal: reflect registered + first ever tournament. Updates only while the old text is present. */
-  try{ if(state.pickleball&&Array.isArray(state.pickleball.goals)){ var _gt=false; state.pickleball.goals.forEach(function(g){ if(g&&g.id==="pk-goal-tourney"&&typeof g.text==="string"&&g.text.indexOf("first ever tournament")<0){ g.text="APC Championship, mens doubles 3.5 with Dylan, Sunday Aug 23. REGISTERED, and it is your first ever tournament with no DUPR yet, so this sets your baseline. Peak the soft game, play as a team, and treat the day itself as a skill."; _gt=true; } }); if(_gt) save(true); } }catch(e){}
+  try{ if(state.pickleball&&Array.isArray(state.pickleball.goals)&&state.meta&&!state.meta.mig_b105a_tourney_frozen){ /* FROZEN 08.24.2026. This block had NO meta flag, so it ran on EVERY load, and its only guard was the presence of the words "first ever tournament" in the goal text. The tournament was PLAYED on 23 August and build 335 wrote the result onto this goal, which does not contain that phrase, so this block re-asserted the stale REGISTERED copy on the very next load and the result vanished. Same defect class as the Willis price writer. Two guards now: a meta flag so it fires at most once ever, and a second value test so even a flag reset cannot re-stale a played tournament. */ state.pickleball.goals.forEach(function(g){ if(g&&g.id==="pk-goal-tourney"&&typeof g.text==="string"&&g.text.indexOf("first ever tournament")<0&&g.text.indexOf("PLAYED 23 AUGUST")<0){ g.text="APC Championship, mens doubles 3.5 with Dylan, Sunday Aug 23. REGISTERED, and it is your first ever tournament with no DUPR yet, so this sets your baseline. Peak the soft game, play as a team, and treat the day itself as a skill."; } }); state.meta.mig_b105a_tourney_frozen=true; save(true); } }catch(e){}
   /* (b) stacking decision goal, add only. They have talked about stacking but never tried it. */
   try{ if(state.pickleball){ if(!Array.isArray(state.pickleball.goals)) state.pickleball.goals=[]; if(!state.pickleball.goals.some(function(g){return g&&g.id==="pk-goal-stack";})){ state.pickleball.goals.push({id:"pk-goal-stack",text:"Test stacking with Dylan in practice and decide by Aug 9. Play games both ways, keep it only if it clearly wins more points than it costs",done:false}); save(true); } } }catch(e){}
   /* (c) Work on list: the agent wrote a stacking item that ASSUMES they stack. They have never tried it, so correct that
@@ -12167,6 +12167,36 @@ try{ if(profile==="ian"){
 
       state.meta.mig335_apc_dupr=true; save(true);
   } }catch(e){ try{ console.warn("mig335 did not apply:",e&&e.message); }catch(_){} }
+
+/* ===== v21 build 337: REPAIR. THE APC RESULT WAS BEING WIPED ON EVERY SECOND LOAD =======
+     Build 335 wrote the 23 August APC result onto pk-goal-tourney and it did not survive a
+     reload. The build 105 block (a), roughly 11,000 lines above this one, carries NO meta flag
+     and re-asserted the pre tournament "REGISTERED ... your first ever tournament with no DUPR
+     yet" copy on every single load. Ian would have seen the result once and then watched it
+     revert to a goal describing an event he had already played and lost.
+
+     That block is now flagged and frozen at its own site, which is the real fix. This block is
+     the repair for profiles that already took the revert, including Ian's, because mig335 has
+     its flag set and will never run again to put the text back.
+
+     UNCONDITIONAL BY ID, and appended after every existing writer so last writer wins. Same
+     shape as build 193, which is the precedent for exactly this failure: a value chain above,
+     an unconditional stamped write below. Guarded on its own flag so it runs once. */
+  try{ if(profile==="ian" && state.pickleball && state.meta && !state.meta.mig_apc_result_repair
+          && Array.isArray(state.pickleball.goals)){
+      state.pickleball.goals.forEach(function(g){
+        if(!g || g.id!=="pk-goal-tourney") return;
+        g.done=true;
+        g.text="PLAYED 23 AUGUST 2026 AND THE RESULT IS IN. APC Championship Series, men's "
+          +"doubles 3.5 under 50, Ace Pickleball Club Omaha, with Dylan Headrick. 0 AND 7 in "
+          +"pool, did not advance. Scores 6-15, 1-15, 8-15, 4-15, 7-15, 5-15, 12-15, games to "
+          +"15 win by 1. 43 points for, 105 against, differential -62. FIRST DUPR 3.115, FINAL. "
+          +"Kept as a record so the day survives, same as the stacking decision. The field "
+          +"averaged 3.615 in a 3.5 division and he and Dylan were the lowest combined team in "
+          +"the pool at 6.230.";
+      });
+      state.meta.mig_apc_result_repair=true; save(true);
+  } }catch(e){ try{ console.warn("apc result repair did not apply:",e&&e.message); }catch(_){} }
 
   /* ===== v21 build 336: DAILY INJECT, MONDAY 24 AUGUST 2026 ==================================
      Written by ian-daily-brief off export ian-dashboard-2026-08-22.json plus the live build 335
