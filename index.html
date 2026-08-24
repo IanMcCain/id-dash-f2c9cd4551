@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 338 (2026-08-24)">
+<meta name="build" content="v21 build 339 (2026-08-24)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -4108,7 +4108,7 @@ function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]
           state.realEstate.todos=state.realEstate.todos.filter(function(t){
             if(t&&_ret220[t.id]&&t.done){ if(!state.archive.todosDone.some(function(x){return x&&x.id===t.id;})){ state.archive.todosDone.push({id:t.id,text:t.text,done:true,retiredOn:T220,reason:_ret220[t.id]}); } return false; }
             return true; });
-          var _up220=function(item){ var ex=state.realEstate.todos.filter(function(t){return t&&t.key===item.key;}); if(ex.length){ ex[0].text=item.text; ex[0].exp=item.exp; ex[0].src=item.src; } else { state.realEstate.todos.push(item); } };
+          var _up220=function(item){ var ex=state.realEstate.todos.filter(function(t){return t&&t.key===item.key;}); if(ex.length){ /* build 339: DO NOT CLOBBER OWNED COPY. This helper set text on every load, so any later rewrite of a todo was undone on the next reload. An add-if-missing helper has no business overwriting the display string of an item that already exists. */ if(!ex[0].copyOwned) ex[0].text=item.text; ex[0].exp=item.exp; ex[0].src=item.src; } else { state.realEstate.todos.push(item); } };
           _up220({id:"ret-20260803-willis-live",key:"willis-golive-day",text:"Willis goes live Thursday morning. Wednesday final check, MLS entry, photos, syndication, just listed push queued.",done:false,exp:"2026-08-06",src:"Willis go live locked Aug 6"});
           _up220({id:"ret-20260803-thacker-prep",key:"thacker-list-prep",text:"Thacker listing prep for the Aug 13 target at 4911 S 131st, photos and copy this week.",done:false,exp:"2026-08-13",src:"Thacker list target Aug 13"});
           _up220({id:"ret-20260803-sphere",key:"sphere-reachout",text:"Text Mason, and work one open lead, the Zillow 132nd St ranch inquiry or the Trails open house sign in.",done:false,exp:"",src:"people.last, Mason never contacted, 2 leads unworked"});
@@ -4634,7 +4634,7 @@ function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]
         });
         var _add232=function(item){
           var ex=_T232.filter(function(t){return t&&t.key===item.key;});
-          if(ex.length){ ex[0].text=item.text; ex[0].exp=item.exp; ex[0].src=item.src; }
+          if(ex.length){ /* build 339: DO NOT CLOBBER OWNED COPY. This helper set text on every load, so any later rewrite of a todo was undone on the next reload. An add-if-missing helper has no business overwriting the display string of an item that already exists. */ if(!ex[0].copyOwned) ex[0].text=item.text; ex[0].exp=item.exp; ex[0].src=item.src; }
           else { _T232.push(item); }
         };
         _add232({id:"ret-20260806-willis-portalfix",key:"willis-portal-fix",done:false,exp:"2026-08-09",
@@ -4721,7 +4721,7 @@ function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]
           }
         });
         var _add233=function(item){ var ex=_T233.filter(function(t){return t&&t.key===item.key;});
-          if(ex.length){ ex[0].text=item.text; ex[0].exp=item.exp; ex[0].src=item.src; } else { _T233.push(item); } };
+          if(ex.length){ /* build 339: DO NOT CLOBBER OWNED COPY. This helper set text on every load, so any later rewrite of a todo was undone on the next reload. An add-if-missing helper has no business overwriting the display string of an item that already exists. */ if(!ex[0].copyOwned) ex[0].text=item.text; ex[0].exp=item.exp; ex[0].src=item.src; } else { _T233.push(item); } };
         _add233({id:"ret-20260806-realtor-fix",key:"willis-portal-fix",done:false,exp:"2026-08-09",
           text:"REALTOR.COM FIX, 10218 Spyglass, MLS 22622436. Three lines. ONE, in Paragon open the listing and in the VIEW field uncheck Water so only Golf Course remains, and while in there confirm Ian is in the Co List Agent field, then save. The false water view is a standard RESO View value that Realtor.com renders as a big feature chip while Zillow and Redfin bury it, which is why it only shows there. TWO, in Paragon go to Listings, Maintain Listings, Select an Action, Add Edit Open House, and confirm the Sunday Aug 9 12 to 2 record exists with type PUBLIC not Broker or Office, then resave to push a fresh timestamp. THREE, call Realtor.com Customer Care on 800 878 4166 today or email dl-mlssupport@move.com copying mlssupport@realtor.com with the MLS number, ask for a forced re pull, and claim Ian's agent profile at realtor.com/realestateagents using his GPRMLS id, because Realtor.com does NOT pull agent identity from the MLS and there must be a profile for the feed to attach him to. Re syndication runs 24 to 72 hours, and the open house is Sunday, so do not wait on the feed.",
           src:"Portal verification plus MLS and RESO research, 08.06.2026"});
@@ -4820,7 +4820,7 @@ function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]
       });
       var _addT238=function(item){
         var ex=state.realEstate.todos.filter(function(t){ return t && t.key===item.key; });
-        if(ex.length){ ex[0].text=item.text; ex[0].exp=item.exp; ex[0].src=item.src; }
+        if(ex.length){ /* build 339: DO NOT CLOBBER OWNED COPY. This helper set text on every load, so any later rewrite of a todo was undone on the next reload. An add-if-missing helper has no business overwriting the display string of an item that already exists. */ if(!ex[0].copyOwned) ex[0].text=item.text; ex[0].exp=item.exp; ex[0].src=item.src; }
         else if(!state.archive.todosDone.some(function(a){ return a && a.key===item.key; })){ state.realEstate.todos.push(item); }
       };
       _addT238({id:"ret-20260807-willis-openhouse",key:"willis-openhouse-0809",done:false,exp:"2026-08-09",
@@ -4874,7 +4874,7 @@ function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]
       if(!Array.isArray(state.archive.todosDone)) state.archive.todosDone=[];
       var _addT240=function(item){
         var ex=state.realEstate.todos.filter(function(t){ return t && t.key===item.key; });
-        if(ex.length){ ex[0].text=item.text; ex[0].exp=item.exp; ex[0].src=item.src; }
+        if(ex.length){ /* build 339: DO NOT CLOBBER OWNED COPY. This helper set text on every load, so any later rewrite of a todo was undone on the next reload. An add-if-missing helper has no business overwriting the display string of an item that already exists. */ if(!ex[0].copyOwned) ex[0].text=item.text; ex[0].exp=item.exp; ex[0].src=item.src; }
         else if(!state.archive.todosDone.some(function(z){ return z && z.key===item.key; })){ state.realEstate.todos.push(item); }
       };
       _addT240({"id": "ret-20260808-flyer-wch", "key": "flyer-walnutcreekhills", "done": false, "exp": "2026-08-31", "text": "Walk Walnut Creek Hills with a just sold flyer once Troester records Monday Aug 10, 1709 Diane at $435,000. Sugar Creek is already unblocked and printed, so this makes two real just solds to walk in the same week.", "src": "re-chad-troester closes 2026-08-10, ev-20260810-troester-close"});
@@ -4977,7 +4977,7 @@ function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]
           } else { _keep.push(t); }
         });
         _rt.todos=_keep;
-        _rt.todos.forEach(function(t){ if(t && t.key==="flyer-walnutcreekhills"){ t.text="Walk Walnut Creek Hills AND Sugar Creek with just sold flyers. Troester records today, 1709 Diane at $435,000, so Walnut Creek Hills is now a real just sold and the Spicer flyer for Sugar Creek has been print ready since July. Two neighborhoods, two real results, one walk week. Absorbed the old Sugar Creek item, which was a duplicate of this."; t.src="Troester records 08.10.2026, Spicer Sugar Creek flyer print ready since July"; } });
+        _rt.todos.forEach(function(t){ if(t && t.key==="flyer-walnutcreekhills" && !t.copyOwned){ t.text="Walk Walnut Creek Hills AND Sugar Creek with just sold flyers. Troester records today, 1709 Diane at $435,000, so Walnut Creek Hills is now a real just sold and the Spicer flyer for Sugar Creek has been print ready since July. Two neighborhoods, two real results, one walk week. Absorbed the old Sugar Creek item, which was a duplicate of this."; t.src="Troester records 08.10.2026, Spicer Sugar Creek flyer print ready since July"; } });
         [{"id": "ret-20260810-spicer-syd-val", "key": "spicer-syd-valuation", "done": false, "exp": "2026-08-11", "due": "2026-08-11", "src": "Calendar 08.11.2026 15:45, Sydney Spicer build vs buy plus home valuation with Chris", "text": "Build the valuation for Sydney Spicer at 20535 Howe St, Elkhorn 68022, before Tuesday 3:45pm. Coming Soon at $392,000, both sides. Today is the only open prep window, tomorrow holds a 10am dentist and league at 6:30, and Wednesday is the move."}, {"id": "ret-20260810-barker-date", "key": "barker-meeting-date", "done": false, "exp": "2026-08-31", "due": "", "src": "Event ev-20260815-barker-meeting still tentative, deal note says the list timeline is set at that meeting", "text": "Pin an actual date on the Barker renovation meeting. It reads tentative for Aug 15 and the whole list timeline for the $270k to $280k listing gets set there. Renovations have been underway since 07.23."}, {"id": "ret-20260810-hernandez-timeline", "key": "hernandez-timeline", "done": false, "exp": "2026-08-31", "due": "", "src": "Deal re-hernandez-sell note, 08.09.2026, timeline is the least reliable fact on the record", "text": "Get a real timeline out of Megan and Ricky Hernandez. They say two months and the record already flags that as the softest fact on it. Both names are on the deal, so both are decision makers and neither can be treated as the sole contact."}].forEach(function(n){ if(!_rt.todos.some(function(t){ return t && (t.id===n.id || t.key===n.key); })){ _rt.todos.push(n); } });
       }
       if(!state.context) state.context={};
@@ -9818,6 +9818,10 @@ try{ if(profile==="ian"){
         /* the two survivors that absorbed work say so, so nothing reads as lost */
         state.realEstate.todos.forEach(function(t){
           if(!t) return;
+          /* build 339: owned copy is off limits. These appends are value guarded on
+             phrases the rewritten text no longer contains, so each fired again on every
+             load and pushed folded-in provenance back onto a user facing string. */
+          if(t.copyOwned) return;
           if(t.id==="ret-20260813-barker-receipts" && String(t.text||"").indexOf("BASEMENT")<0){
             t.text=String(t.text||"")+" ALSO SEND THE BASEMENT MEASUREMENT you took at 10611 Parker St, folded in 08.18. Both feed the same pre meeting number.";
           }
@@ -12492,6 +12496,37 @@ try{ if(profile==="ian"){
       state.meta.mig_gameplan0824=true; save(true);
   } }catch(e){ try{ console.warn("gameplan0824 did not apply:",e&&e.message); }catch(_){} }
 
+/* ===== build 339: THE COPY SPLIT APPLIED TO EVERY TODO AND THE KIRK LEAD ===============
+     Companion to the field convention above. Every user facing string here was REWRITTEN to
+     be read by Ian, and everything that was actually a note to the next agent was MOVED to
+     t.agent, which nothing renders. Nothing is discarded: every directive, every folded in
+     branch and every piece of provenance survives verbatim in the agent field.
+
+     Guarded on its own flag and keyed by id, so an item Ian has edited himself by the time
+     this runs is still overwritten ONCE, deliberately, because the current text is ours and
+     not his. After this build the rule holds going forward. */
+  try{ if(profile==="ian" && state.meta && !state.meta.mig_agentcopy_split
+          && state.realEstate && Array.isArray(state.realEstate.todos)){
+      var _CP={"ret-20260808-flyer-wch": ["Walk two neighbourhoods with just sold flyers", "Walk Walnut Creek Hills and Sugar Creek with just sold flyers. Troester at 1709 Diane gives you a real just sold in Walnut Creek Hills, and the Sugar Creek flyer has been print ready since July.", "Two neighborhoods, two real results, one walk week. Absorbed the old Sugar Creek item, which was a duplicate of this."], "ret-20260808-bruce-contact": ["Get contact details for Bruce O'Neil", "Get a phone number or an email for Bruce O'Neil. He is the biggest prospect in the pipeline and there is no recorded way to reach him.", "A $1.1M to $1.5M build plus a $350k to $450k lot. Details go in LEAD_CONTACTS.md, never in a derived file. The lot sourcing item was folded in here 08.18 and is blocked on this."], "ret-20260810-hernandez-timeline": ["Pin down the Hernandez timeline", "Get a real timeline from Megan and Ricky Hernandez. They say two months and that is the softest fact on the deal.", "Both names are on the deal, so both are decision makers and neither can be treated as the sole contact."], "ret-20260910-thacker-cosigner": ["Check in with Austin Thacker", "Check whether Austin Thacker has found a cosigner. It is the only thing holding up the listing at 4911 S 131st. His newborn arrived around 10 August, so keep it light.", "The $250,000 list price and the whole plan are still agreed and waiting on it. If he has a cosigner, the record goes back to Coming Soon WITH a real list date on the close field."], "ret-20260815-theobald-listprep": ["Theobalds, waiting on the walkthrough", "Theobald listing prep sits behind the walkthrough. Chris is scheduling the home evaluation and nothing moves until that happens.", "5014 S 163 St. No price yet, Paragon comps have not been run. Chris reached out Sunday 16 Aug to schedule. The walkthrough has to happen this week for a 15 September list date to hold, so this is time critical rather than open ended."], "ret-20260817-barker-thursday": ["Barkers, waiting on their reply", "Chris asked the Barkers on the 24th about a listing presentation and a walkthrough. Nothing to do until they answer.", "Ian corrected himself from Wednesday to Thursday 20 August at the earliest: they have something being fixed and a nudge lands mid repair. DO NOT NUDGE EARLIER. They are coming to see the house and the price lands after they have. Get the meeting date in the same message, that item was folded in here 08.18. Status is outreach sent, awaiting reply, and it moves no further until they answer. Do not phrase it as chasing and do not assert they have gone quiet."], "ret-20260817-winchester-fu": ["Follow up with the Winchesters", "Follow up with the Winchesters this week.", "AMBIGUITY FLAGGED RATHER THAN GUESSED. Ian's words were sometime this weekend with Winchesters this week, treated as this week. If he meant the weekend of 22 to 23 August that is a different week and it collided with the APC on Sunday 23. Ask him which he meant rather than picking a day."], "ret-20260817-ryan-kirk": ["Kirks never contacted Ryan", "Did the Kirks ever reach out to Ryan Beachler? Answered on the 24th, they never did.", "Ian gave them Ryan's details on Saturday 15 August. ASK RYAN RATHER THAN THE KIRKS, it is one message and it does not chase the clients. Answered 08.24.2026: they never got back to Ryan and never emailed him. What replaces it is emailing them directly, and the real blocker is that no phone or email is held for them. Lead record lead-kirk-ryan-referral."], "ret-20260820-willis-repair-scope": ["Get the Willis inspection report", "Get the Willis inspection report, the repair bids and the receipts from Chris. The repair cost is still unknown and the relist is 3 September.", "A $3,000 fix and a $25,000 fix support different list prices. Build 318 searched every message thread from Wednesday midday to Thursday morning with attributedBody decoded, plus the mailbox, and found nothing. The receipts matter twice: once for the price, and once because Nebraska requires a repaired material defect to be disclosed anyway, so documented remediation is the only version of that disclosure that helps. FOLDED IN 08.23.2026: this also covers the addendum and the inspection report, both of which go to Chris by email rather than to Ian, which is why neither has surfaced. REFRAMED 08.24.2026: this NO LONGER BLOCKS THE PRICE, Ian set the relist at $619,900. The overlapping todo the handoff named, ret-20260820-willis-docs, is not in this app, so nothing was merged."], "ret-20260822-openhouse-contact": ["Open house lead's name and number", "What is the name and number of the 22 August open house lead? They are on your phone.", "Not in the Messages database on this Mac, searched across the whole day with attributedBody decoded. The record is filed with the hole named rather than guessed. Once he supplies them, contact details go in LEAD_CONTACTS.md, never in a derived file."], "ret-20260824-openhouse-floorplans": ["Send the basement floor plans", "Send the finished basement floor plans to the 22 August open house lead. You promised these in exchange for their details.", "Chris's advice was to get the blueprints from Ryan rather than photograph the countertop copy. This IS the follow up and it beats any check in note. FOLDED IN 08.23.2026, the check in branch: if the plans draw no reply, one check in Friday 28 August, then one at about two weeks, then a single last touch at 30 days. Do NOT write this lead off early, the listing has no paid marketing behind it."], "ret-20260824-rosecreek-2story": ["Rose Creek 2 story needs a strategy", "Rose Creek 2 story at $684,900 needs a real selling strategy rather than another price cut.", "Ian's own framing on 24 August and he pre emptively ruled out a further cut, nearly $45,000 has already come off. Do not surface a price cut recommendation against this."], "ret-20260824-preinspection": ["Book pre inspections on the live listings", "Line up pre inspections on Willis, Belknap, Barker and Theobald before any of them go live.", "Ian 24 August: push pre inspections before going live no matter what on all of our listings. It is a GATE before live, not an item alongside one. Willis is why: it died at inspection on 20 August. Miller is the counter example, a pre inspection on 4 June found an AC fault, cost six days and the listing went live clean."], "ret-20260824-blog-login": ["Log in to the Scenic blog", "Log in to the Scenic blog. The weekly post is waiting on it.", "scenic-blog-weekly is blocked on this and it is NOT a system fault or a bug. He said he would do it today and asked to be reminded, so it surfaces here rather than sitting in a status file. Not a calendar item, his words: that's just a self note not something for calendar."], "ret-20260824-pk-rankings": ["Update your pickleball rankings", "Update your pickleball skill rankings.", "He said he would do it in a few minutes on 24 August. Nothing recomputes them for him and the 4.5 arc is left exactly as it is, per his instruction. DO NOT surface a recalculated arc alongside this."], "ret-20260824-tourney-register": ["Register for the Labor Day Dink-Off", "Register for the Labor Day Dink-Off in Ankeny. Talk to Dylan first. Entries close on 1 September.", "Deadline 1 September 8:00 AM, which is a boundary on this task and not an appointment. Blocked on talking to Dylan first. He said sometime this week. DELIBERATELY NOT SCHEDULED."]};
+      state.realEstate.todos.forEach(function(t){
+        if(!t||!_CP[t.id]) return;
+        var c=_CP[t.id];
+        if(!t.agent) t.agent=c[2];
+        t.short=c[0];
+        t.text=c[1];
+        t.copyOwned=true;
+      });
+      if(Array.isArray(state.realEstate.leads)){
+        state.realEstate.leads.forEach(function(l){
+          if(!l||l.id!=="lead-kirk-ryan-referral") return;
+          l.copyOwned=true;
+          if(!l.agent) l.agent=String(l.note||"")+" "+"CORRECTED 08.24.2026 BY IAN. They are the 2 STORY COUPLE and the ROSE CREEK COUPLE, one set of people, and they are IAN'S OWN LEAD off the $684,900 two storey. NOT a referral, NOT Chris's client. The id still reads lead-kirk-ryan-referral only because other records point at it; the id is a handle, not a claim. NO DUPLICATE RECORD EXISTS IN THIS APP. Ian approved removing a dead second Kirk record; there is only this one, so nothing was deleted. THEY EXISTED NOWHERE BEFORE 08.17.2026: the app, BRAIN, the pipeline snapshot and every export were searched, zero hits, every match on the string kirk was Selkirk the pickleball shoe. THIS WAS THE THIRD REAL LEAD IN A WEEK THAT LEFT NO TRACE and the first of a different kind, because a referral out happens in conversation and produces no artefact unless somebody writes it down. IAN REFERRING BUYERS OUT TO A BUILDER IS A REAL CHANNEL and is worth naming as one.";
+          l.note="Ian's own lead off the Rose Creek two storey. They asked for Ryan Beachler's details on 15 August and never contacted him. No phone or email on file, which is the blocker.";
+        });
+      }
+      state.meta.mig_agentcopy_split=true; save(true);
+  } }catch(e){ try{ console.warn("agentcopy split did not apply:",e&&e.message); }catch(_){} }
+
   /* ===== v21 build 336: DAILY INJECT, MONDAY 24 AUGUST 2026 ==================================
      Written by ian-daily-brief off export ian-dashboard-2026-08-22.json plus the live build 335
      APC block. There is NO export for 23 August, so tournament day carried no logged input and
@@ -13184,7 +13219,7 @@ function dealVolume(d){ return priceNum(d&&d.price); }
 function dealCountWeight(d){ return (dealSource(d)==="Dual agency" || dealSide(d)==="Both")?2:1; }
 function dealCard(parent,d){ const c=card(); const b=c._body; const head=el("div"); head.appendChild(el("h3",null,d.title)); if(d.price){ const p=el("div"); p.style.color="var(--sec2,var(--accent2))"; p.style.fontWeight="800"; p.style.marginTop="4px"; p.style.fontSize="16px"; p.textContent=d.price; head.appendChild(p);} if(d.close){ const cd=el("div","small dim"); cd.style.marginTop="3px"; cd.textContent="Close: "+d.close; head.appendChild(cd);} b.appendChild(head); const cs=el("div"); cs.style.marginTop="11px"; cs.appendChild(chipRow(RESTAGES,d.stage,s=>{d.stage=s;save();render();})); b.appendChild(cs); const pr=el("input","in"); pr.placeholder="Price"; pr.value=d.price||""; pr.style.marginTop="10px"; pr.oninput=()=>{d.price=pr.value;save();}; b.appendChild(pr); const cl=el("input","in"); cl.placeholder="Close date"; cl.value=d.close||""; cl.style.marginTop="9px"; cl.oninput=()=>{ d.close=cl.value; save(); }; b.appendChild(cl); const ta=el("textarea","in"); ta.style.minHeight="52px"; ta.style.marginTop="9px"; ta.value=d.note||""; ta.placeholder="Notes, next step..."; ta.oninput=()=>{d.note=ta.value;save();}; b.appendChild(ta); const del=el("button","del","Remove"); del.style.fontSize="13px"; del.style.marginTop="8px"; del.onclick=()=>{ if(confirm("Remove this deal?")){ state.realEstate.deals=state.realEstate.deals.filter(x=>x.id!==d.id); save(); render(); } }; b.appendChild(del); parent.appendChild(c); }
 function rePipeline(parent){ state.realEstate.deals.forEach(d=>{ const c=card(d.stage==="Just Sold"?"a-blue":"a-gold"); const b=c._body; const head=el("div"); head.appendChild(el("h3",null,d.title)); if(d.price){ const p=el("div","small"); p.style.color="var(--accent2)"; p.style.fontWeight="700"; p.textContent=d.price; head.appendChild(p);} b.appendChild(head); const cs=el("div"); cs.style.marginTop="10px"; cs.appendChild(chipRow(RESTAGES,d.stage,s=>{d.stage=s;save();render();})); b.appendChild(cs); const pr=el("input","in"); pr.placeholder="Price (optional)"; pr.value=d.price||""; pr.style.marginTop="10px"; pr.oninput=()=>{d.price=pr.value;save();}; b.appendChild(pr); const ta=el("textarea","in"); ta.style.minHeight="52px"; ta.style.marginTop="10px"; ta.value=d.note||""; ta.placeholder="Notes, next step..."; ta.oninput=()=>{d.note=ta.value;save();}; b.appendChild(ta); const del=el("button","del","Remove"); del.style.fontSize="13px"; del.style.marginTop="8px"; del.onclick=()=>{ if(confirm("Remove this deal?")){ state.realEstate.deals=state.realEstate.deals.filter(x=>x.id!==d.id); save(); render(); } }; b.appendChild(del); parent.appendChild(c); }); const add=card(); add._body.appendChild(adder("New deal or prospect...",t=>{state.realEstate.deals.push({id:uid(),title:t,stage:"Prospecting",price:"",note:""});save();render();})); parent.appendChild(add); }
-function leadsModule(parent){ const c=card(); const b=c._body; const ls=state.realEstate.leads||(state.realEstate.leads=[]); if(!ls.length)b.appendChild(el("div","empty","No leads yet.")); ls.forEach(l=>{ const row=el("div","chk"); const t=el("div","ctext"); t.textContent=l.name; const m=el("span","meta"); m.textContent=(l.source?l.source+" \u00B7 ":"")+(l.status||"New")+(l.note?" \u00B7 "+l.note:""); t.appendChild(m); row.appendChild(t); const d=el("button","del","\u00D7"); d.onclick=()=>{ state.realEstate.leads=ls.filter(x=>x.id!==l.id); save(); render(); }; row.appendChild(d); b.appendChild(row); }); b.appendChild(adder("Add a lead...",n=>{ ls.push({id:uid(),name:n,source:"",status:"New",note:""}); save(); render(); })); parent.appendChild(c); }
+function leadsModule(parent){ const c=card(); const b=c._body; const ls=state.realEstate.leads||(state.realEstate.leads=[]); if(!ls.length)b.appendChild(el("div","empty","No leads yet.")); ls.forEach(l=>{ const row=el("div","chk"); const t=el("div","ctext"); t.textContent=l.name; const m=el("span","meta"); m.textContent=(l.source?l.source+" \u00B7 ":"")+(l.status||"New")+(l.note?" \u00B7 "+userLine(l.note,150):""); t.appendChild(m); row.appendChild(t); const d=el("button","del","\u00D7"); d.onclick=()=>{ state.realEstate.leads=ls.filter(x=>x.id!==l.id); save(); render(); }; row.appendChild(d); b.appendChild(row); }); b.appendChild(adder("Add a lead...",n=>{ ls.push({id:uid(),name:n,source:"",status:"New",note:""}); save(); render(); })); parent.appendChild(c); }
 /* ===== build 338: A TO DO LIST IS FOUR LISTS, NOT ONE ==============================
    Ian, 24 August 2026: "for to do's I mean stuff I actually need to do, things that I have
    to do and some of these are not that."
@@ -13199,6 +13234,51 @@ function leadsModule(parent){ const c=card(); const b=c._body; const ls=state.re
 
    todoList() defaults to "todo", so every existing item and anything an agent adds without
    the field keeps working and lands in the actions group. */
+/* ===== build 339: USER COPY AND AGENT COPY ARE DIFFERENT FIELDS ======================
+   Ian, 24 August 2026, on the First thing today card: "this just looks dumb and unorganized."
+   He was right, and the styling was the smaller half of it. The card was rendering our
+   INTERNAL AGENT INSTRUCTIONS to him verbatim. What he read on his own home screen was
+   "DO NOT NUDGE EARLIER", "Do not phrase it as chasing and do not assert they have gone
+   quiet", and "This is now a WAITING item rather than an action". Those are notes to
+   whoever writes his brief. They are not addressed to him and he should never see one.
+
+   ROOT CAUSE: the `text` field was doing double duty as the display string and as the
+   working record, so every directive an agent wrote for the next agent went straight to
+   the screen.
+
+   THE RULE, AND IT IS A HARD ONE FROM THIS BUILD:
+     t.text   USER FACING. Plain sentence case, one to three sentences, written to be read
+              by Ian. No shouting, no revision history, no dates repeated, no reasoning
+              about how we handled it.
+     t.short  OPTIONAL one line headline for a hero card. Under about 60 characters.
+     t.agent  INTERNAL ONLY. Directives, evidence class, provenance, what was folded in and
+              when, what a future session must not do. NOTHING IN THE UI READS THIS FIELD
+              and nothing may be added that does.
+   The same split now applies to lead records. Deal notes are deliberately NOT converted:
+   they render into an editable textarea in the deal editor, which is the record itself and
+   is Ian's to edit, not display copy on a card he did not ask for.
+
+   userLine() is the belt to that braces. Even if a future agent puts a paragraph back into
+   text, a hero card takes the first sentence and caps it rather than printing a wall. */
+function userLine(sv,max){
+  var t=String(sv||"").replace(/\s+/g," ").trim();
+  if(!t) return "";
+  var m=t.match(/^[\s\S]*?[.!?](?=\s|$)/);
+  var first=m?m[0].trim():t;
+  if(first.length>max){
+    var cut=first.slice(0,max);
+    var sp=cut.lastIndexOf(" ");
+    first=(sp>30?cut.slice(0,sp):cut).replace(/[ ,;:.]+$/,"")+"...";
+  }
+  return first;
+}
+function userRest(sv,max){
+  var t=String(sv||"").replace(/\s+/g," ").trim();
+  var head=t.match(/^[\s\S]*?[.!?](?=\s|$)/);
+  if(!head) return "";
+  var rest=t.slice(head[0].length).trim();
+  return rest?userLine(rest,max):"";
+}
 function todoList(t){ var k=t&&t.list; return (k==="waiting"||k==="ask")?k:"todo"; }
 function reTodoCounts(){
   var rt=(state.realEstate&&state.realEstate.todos)||[];
@@ -13832,13 +13912,27 @@ function buildIanHome(v){ const workout=daySplit(DOW); const reTop=firstUndone((
      so the card cannot claim a reason it does not have.
      =================================================================================== */
   var QUIET=[];
+  /* ===== build 339: THE CARD REBUILT ==================================================
+     Same concept, which Ian said was good: one thing, surfaced first, with the reason it won.
+     Rebuilt as a chip, a short title and one line of plain language, which is the same
+     information he could not read before at about a fifth of the weight.
+
+     WHAT WENT AND WHY. The "Because ..." footer block is gone as a bordered paragraph and
+     survives as the CHIP. RULES.md P1 requires the app to say when something it knows about
+     Ian drove an update, and "waiting on them" or "closing in 2 days" discharges that in two
+     words rather than a sentence that repeated a date he had already read twice.
+
+     A WAITING ITEM CANNOT BE THE FIRST THING HE DOES. Todo candidates are actions only.
+     A waiting item is still allowed to win, but only when nothing actionable exists at all,
+     and when it does the heading changes to say so, because "First thing today" above
+     something he cannot act on is the same category error as the copy leak. */
   var secFirstThing=function(){ safe(v,function(){
     var k2d=function(k){ if(!isFinite(k)) return 999; var s=String(k); return daysUntil(s.slice(0,4)+"-"+s.slice(4,6)+"-"+s.slice(6,8)); };
-    var C=[]; var push=function(rank,title,why,go){ if(title) C.push({rank:rank,title:String(title),why:why,go:go}); };
+    var C=[]; var push=function(o){ if(o&&o.title) C.push(o); };
     var goRe=function(){ reView="pipeline"; try{ render(); }catch(e){} selectTab("re"); };
+    var goTodo=function(){ reView="todo"; try{ render(); }catch(e){} selectTab("re"); };
     var goStudy=function(){ try{ PK_OPEN["pk_study"]=true; }catch(e){} try{ render(); }catch(e){} selectTab("pickle"); };
-    /* 1. dated money. Reuses closeSortKey, the same parser the pipeline sorts by, so a
-          close date written in prose still ranks correctly instead of being ignored. */
+    /* 1. dated money. */
     try{ ((state.realEstate&&state.realEstate.deals)||[]).forEach(function(d){
       if(!d||!d.close) return;
       if(d.stage!=="Under Contract"&&d.stage!=="Coming Soon") return;
@@ -13846,26 +13940,30 @@ function buildIanHome(v){ const workout=daySplit(DOW); const reTop=firstUndone((
       var when=days===0?"today":days===1?"tomorrow":"in "+days+" days";
       var uc=(d.stage==="Under Contract");
       var who=String(d.title||"A deal").split(",")[0];
-      push((uc?10:16)+days, who+(uc?", closes "+when:", goes live "+when),
-        "Because "+(d.price?d.price+", ":"")+(d.side?String(d.side).toLowerCase()+" side, ":"")+(uc?"closing ":"listing ")+when+".", goRe);
+      var bits=[]; if(d.price) bits.push(d.price); if(d.side) bits.push(String(d.side).toLowerCase()+" side");
+      push({rank:(uc?10:16)+days, kind:"deal",
+        title:who+(uc?" closes "+when:" goes live "+when),
+        line:bits.join(", "), chip:(uc?"closing":"listing")+" "+when, go:goRe});
     }); }catch(e){}
-    /* 2. anything on the calendar for today. */
+    /* 2. anything on the calendar for today. Titles are capped, because an event title
+          written by an agent can be a paragraph and this is a hero card. */
     try{ (Array.isArray(state.events)?state.events:[]).forEach(function(ev){
       if(!ev||!ev.date||daysUntil(ev.date)!==0) return;
-      push(14, ev.title+", today", "Because it is on your calendar for today.", null);
+      push({rank:14, kind:"event", title:userLine(ev.title,70),
+        line:userRest(ev.title,90), chip:"on today", go:null});
     }); }catch(e){}
-    /* 3. a to do you dated yourself and have not closed. */
+    /* 3. an ACTION he dated himself and has not closed. Actions only. */
     try{ ((state.realEstate&&state.realEstate.todos)||[]).forEach(function(t){
-      if(!t||t.done||!t.due) return; var days=daysUntil(t.due); if(days>0) return;
-      /* clamp at -8, NOT at the raw overdue count. First pass used Math.max(days,-20), which
-         let a to do 24 days overdue score 10 and tie a deal closing tomorrow. Caught in
-         verification against Ian's real profile: it picked a Jul 9 Troester task over Spicer
-         closing Aug 3. Age is not urgency, and dated money outranks a stale checkbox. */
-      push(30+Math.max(days,-8), t.text,
-        days<0?"Because you set this for "+fmtShort(t.due)+" and it is still open.":"Because you set this for today.", goRe);
+      if(!t||t.done||!t.due) return; if(todoList(t)!=="todo") return;
+      var days=daysUntil(t.due); if(days>0) return;
+      /* clamp at -8, NOT the raw overdue count. Age is not urgency, and dated money
+         outranks a stale checkbox. Caught in verification against Ian's real profile. */
+      push({rank:30+Math.max(days,-8), kind:"action",
+        title:t.short||userLine(t.text,70),
+        line:t.short?userLine(t.text,110):userRest(t.text,110),
+        chip:(days<0?"overdue":"due today"), go:goTodo});
     }); }catch(e){}
-    /* 4. the tournament runway. skillEstimate has never been rendered anywhere in the app,
-          and it is the field that knows he is UNRATED and that Aug 23 is where that changes. */
+    /* 4. the tournament runway. */
     try{ (function(){
       var pb=state.pickleball||{}; var se=pb.skillEstimate||null;
       var ev=(Array.isArray(state.events)?state.events:[]).filter(function(e){
@@ -13875,26 +13973,54 @@ function buildIanHome(v){ const workout=daySplit(DOW); const reTop=firstUndone((
       var sk=(Array.isArray(pb.skills)?pb.skills:[]).filter(function(s){ return s&&typeof s.current==="number"; })
         .sort(function(a,b){ return a.current-b.current; })[0];
       if(!sk||!sk.label) return;
-      var tgt=(se&&se.target&&se.target.lo)?(", target "+se.target.lo+" to "+se.target.hi):"";
-      push(50+Math.min(d,44), sk.label+" is your weakest at "+sk.current+", "+d+" day"+(d===1?"":"s")+" out",
-        "Because "+(se&&se.rated===false?"you are unrated and this is where your DUPR gets established":"the tournament is close")+tgt+".", goStudy);
+      push({rank:50+Math.min(d,44), kind:"focus",
+        title:sk.label+" is your weakest link",
+        line:"Worth a session on it before the tournament.",
+        chip:d===0?"tournament today":(d===1?"1 day out":d+" days out"), go:goStudy});
     })(); }catch(e){}
-    /* 5. fallbacks, so the card is never empty on a genuinely quiet day. */
+    /* 5. WAITING, and only when nothing actionable exists. Ranked below every real action
+          and above the standing fallbacks, so it fills a genuinely quiet day rather than
+          outranking work. */
+    try{ ((state.realEstate&&state.realEstate.todos)||[]).forEach(function(t){
+      if(!t||t.done||todoList(t)!=="waiting") return;
+      push({rank:85, kind:"waiting",
+        title:t.short||userLine(t.text,70),
+        line:t.short?userLine(t.text,120):userRest(t.text,120),
+        chip:"waiting on them", go:goTodo});
+    }); }catch(e){}
+    /* 6. fallbacks, so the card is never empty on a genuinely quiet day. */
     try{ (function(){ var day=daySplit(DOW); var exs=(day&&day.exercises)||[]; if(!exs.length) return;
-      /* build 214: same clock fix as the gym card. This printed day.day, so on an override day it
-         claimed "Because it is Sat on your split" on a Sunday. Reason comes from the real day now. */
       var _sw2=daySwapInfo();
-      push(90, cleanFocus(day.focus)+" today", (_sw2&&_sw2.kind==="swap")?("Because "+_sw2.from+"'s session moved to today."):("Because it is "+DAYFULL[DOW]+" on your split."), function(){ selectTab("gym"); }); })(); }catch(e){}
+      push({rank:90, kind:"gym", title:cleanFocus(day.focus)+" today",
+        line:(_sw2&&_sw2.kind==="swap")?(_sw2.from+"'s session moved to today."):"",
+        chip:"on your split", go:function(){ selectTab("gym"); }}); })(); }catch(e){}
     try{ (function(){ var rt=((state.realEstate&&state.realEstate.routineTasks)||[])[0];
       if(!rt||!rt.text) return;
-      push(95, rt.text, "Because it is one of your standing daily real estate tasks.", goRe); })(); }catch(e){}
+      push({rank:95, kind:"routine", title:userLine(rt.text,70), line:"",
+        chip:"daily", go:goRe}); })(); }catch(e){}
     if(!C.length) return;
     C.sort(function(a,b){ return a.rank-b.rank; });
     var top=C[0];
-    sect(v,"First thing today",C.length>1?(C.length-1)+" more today":"one thing");
+    var waiting=(top.kind==="waiting");
+    sect(v, waiting?"Waiting on someone else":"First thing today",
+            waiting?"nothing to do here yet":(C.length>1?(C.length-1)+" more today":"one thing"));
     var c=card("a-purple"); if(top.go) c.className+=" tap"; var b=c._body;
-    var t=el("div"); t.style.cssText="font-weight:800;font-size:18px;letter-spacing:-.02em;line-height:1.32"; t.textContent=top.title; b.appendChild(t);
-    if(top.why){ var w=el("div","small"); w.style.cssText="margin-top:9px;padding-top:8px;border-top:1px solid var(--line);color:var(--sec2,var(--accent2));line-height:1.45"; w.textContent=top.why; b.appendChild(w); }
+    if(top.chip){
+      var ch=el("span","pill"); ch.textContent=top.chip;
+      ch.style.cssText="display:inline-block;margin-bottom:8px;font-size:11px;letter-spacing:.04em;text-transform:lowercase";
+      b.appendChild(ch);
+    }
+    var t=el("div"); t.style.cssText="font-weight:800;font-size:18px;letter-spacing:-.02em;line-height:1.3";
+    t.textContent=top.title; b.appendChild(t);
+    /* build 339: a supporting line that just restates the title is worse than no line.
+       Where short and text say the same thing, the card shows one of them. */
+    var _norm=function(x){ return String(x||"").toLowerCase().replace(/[^a-z0-9 ]/g,"").trim(); };
+    var _ta=_norm(top.title), _tb=_norm(top.line);
+    var _dupe=(!!_tb && !!_ta && (_tb.indexOf(_ta)===0 || _ta.indexOf(_tb)===0));
+    if(top.line && !_dupe){
+      var ln=el("div","small"); ln.style.cssText="margin-top:6px;line-height:1.5;color:var(--gray)";
+      ln.textContent=top.line; b.appendChild(ln);
+    }
     if(top.go) c.onclick=top.go;
     v.appendChild(c);
   },"First thing"); };
