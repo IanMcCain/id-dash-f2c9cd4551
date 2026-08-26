@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 341 (2026-08-25)">
+<meta name="build" content="v21 build 342 (2026-08-26)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -12802,6 +12802,81 @@ try{ if(profile==="ian"){
       } }catch(e){}
       state.meta.mig341_league_time=true; save(true);
   } }catch(e){ try{ console.warn("mig341 did not apply:",e&&e.message); }catch(_){} }
+
+/* ===== build 342: TUESDAY 25 AUGUST LEAGUE, WEEK 3 =====================================
+     Mixed doubles league with Bianca. Watch data from Apple Health, match results and the
+     league standing from Ian.
+
+     THE STANDING IS INFERRED AND IS MARKED AS SUCH IN THREE PLACES. It comes from a garbled
+     voice to text, "we are now their place", which most likely means third place and might
+     not. It is written as inferred on the session note Ian reads, on the league record, and
+     on a dedicated confidence field, so no later session can quote third place as confirmed.
+     state.pickleball.league.standing is a single scalar and correcting it is a one field edit.
+
+     THE LEAGUE DOES NOT END ON 1 SEPTEMBER. There is one more week of MATCHES after tonight,
+     week 4 on 1 September, and playoffs after that. The app already carried both dates, so
+     nothing asserted the wrong end date; what was wrong was the 8 September event calling
+     itself FINALS and only if they reach finals, which reads as a maybe-nothing rather than
+     as the playoffs the league actually runs. Retitled, and whether Ian plays in them depends
+     on a standing that is itself inferred, which the title now says. */
+  try{ if(profile==="ian" && state.pickleball && state.meta && !state.meta.mig_league0825){
+      var _L5=state.pickleball;
+      if(!Array.isArray(_L5.sessions)) _L5.sessions=[];
+      var _has=false;
+      for(var i=0;i<_L5.sessions.length;i++){ if(_L5.sessions[i]&&_L5.sessions[i].id==="pk-20260825-league") _has=true; }
+      if(!_has){
+        _L5.sessions.push({
+          id:"pk-20260825-league", date:"2026-08-25", kind:"League", venue:"Omaha",
+          duration:"1h 51m 33s", calories:1127, activeCalories:953,
+          avgHr:123, maxHr:161, minHr:80, effort:6,
+          result:"Split the night, won match 1 and lost match 2",
+          score:"Match 1 won 2-0, match 2 lost 0-2",
+          opponent:"Mixed doubles league week 3, with Bianca",
+          copyOwned:true,
+          note:"Mixed doubles league week 3 with Bianca, Omaha, 6:24 to 8:16 PM, 1:51:33. "
+            +"Effort 6 of 10, moderate, and the watch agrees: average HR 123 and a peak of 161 "
+            +"are the lowest of any league night you have played. Active 953, total 1,127. "
+            +"You won the first match 2-0 and called it easy, then lost the second 0-2. "
+            +"League standing looks like THIRD PLACE, but that came from a garbled voice note "
+            +"and is not confirmed, so treat it as a best guess until you check the table. "
+            +"There is one more week of matches, week 4 on 1 September, and playoffs after that.",
+          agent:"Watch data from Apple Health. Match results and the standing from Ian by voice "
+            +"note on 25 August. THE STANDING IS INFERRED, not confirmed: the transcription read "
+            +"'we are now their place', most plausibly 'we are now third place'. Do not quote it "
+            +"as confirmed anywhere and do not build a seeding argument on it. No footage, so NO "
+            +"RATING CHANGE and the skills radar is untouched. Evidence class SELF REPORT for the "
+            +"results, MEASURED for the watch figures. Note the load contrast worth watching: his "
+            +"two 2026 league nights before this ran avg HR 139 and 140, the 23 August APC ran "
+            +"128, and this ran 123 on a moderate self rating."
+        });
+      }
+      /* the league record. One scalar per fact, so a correction is a one field edit. */
+      if(!_L5.league) _L5.league={};
+      _L5.league.name="Mixed doubles beginner plus league";
+      _L5.league.partner="Bianca";
+      _L5.league.night="Tuesday";
+      _L5.league.standing="3rd";
+      _L5.league.standingStatus="INFERRED";
+      _L5.league.standingAsOf="2026-08-25";
+      _L5.league.standingSource="Ian voice note 25 Aug 2026, transcribed as 'we are now their place'. Read as third. NOT CONFIRMED.";
+      _L5.league.lastMatchWeek=4;
+      _L5.league.lastMatchDate="2026-09-01";
+      _L5.league.playoffsAfter=true;
+      _L5.league.note="One more week of matches after 25 August, week 4 on 1 September, then playoffs.";
+
+      /* the 8 September event was framed as a conditional final rather than the playoffs. */
+      if(Array.isArray(state.events)){
+        state.events.forEach(function(e){
+          if(!e || e.id!=="ev-20260908-league-finals") return;
+          if(String(e.title||"").indexOf("PLAYOFFS")>=0) return;
+          e.title="Mixed doubles league PLAYOFFS, 6:30pm (if you qualify)";
+          e.note="Week 4 on 1 September is the last week of MATCHES, playoffs follow. Standing "
+            +"after week 3 looks like third but is not confirmed, so qualification is not certain. "
+            +"Recorded 25 August 2026.";
+        });
+      }
+      state.meta.mig_league0825=true; save(true);
+  } }catch(e){ try{ console.warn("league0825 did not apply:",e&&e.message); }catch(_){} }
 
 
 
