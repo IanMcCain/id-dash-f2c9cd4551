@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 344 (2026-08-26)">
+<meta name="build" content="v21 build 345 (2026-08-26)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -12819,6 +12819,80 @@ try{ if(profile==="ian"){
      itself FINALS and only if they reach finals, which reads as a maybe-nothing rather than
      as the playoffs the league actually runs. Retitled, and whether Ian plays in them depends
      on a standing that is itself inferred, which the title now says. */
+  /* DAILY 08.26.2026, ian-daily-brief. Date keyed coach content, easy wins, one new drill,
+     one to do retired and one created. Idempotent, guarded, add only apart from the single
+     to do retirement, which archives rather than deletes per the 08.02.2026 carve out. */
+  try{ if(profile==="ian" && state.meta && !state.meta.mig_daily0826){
+      var D826="2026-08-26";
+      var _P=state.pickleball=state.pickleball||{};
+      _P.coachBullets=_P.coachBullets||{};
+      if(!_P.coachBullets[D826]) _P.coachBullets[D826]=[
+        "Ian, the next session focus does not move, and that is the point. Pull the trigger first, move them with the dink, then attack the pop up.",
+        "Here is the actual problem. Every coaching conclusion on your file is five weeks old, from 22 July. Since then you have played a rated tournament and three league weeks, and none of it has been graded.",
+        "Last night was 1:51 at effort 6, your lightest pickleball day in a week, and you split it. Three days after five hours at effort 10 that is the correct load. Do not read the loss as a step back.",
+        "The Sunday hand speed blocks have been skipped both times they came up, 16 and 23 August. The 23rd was tournament day so call that one excused. The 16th was not. You pinned them to Sunday yourself, so they stay there."
+      ];
+      _P.coachRec=_P.coachRec||{};
+      if(!_P.coachRec[D826]) _P.coachRec[D826]={
+        title:"Film one game from your own end",
+        note:"Every conclusion on your file comes from 22 July footage shot from the far end. Set the phone behind your own baseline for one game, at league week 4 on 1 September or at any open play before it. From your own end the net dumps and the speed ups are finally countable."
+      };
+      _P.videoRec=_P.videoRec||{};
+      if(!_P.videoRec[D826]) _P.videoRec[D826]={
+        title:"The COMPLETE Guide To The Backhand Punch, Roll and Flick",
+        url:"https://www.youtube.com/watch?v=DB1Ofdt4FTU",
+        note:"Backhand offense at the kitchen line is already on your Work on list, and the July film measured your backhand at roughly 15 to 18 percent pop ups against 6 to 8 on the forehand. This is the shot family that fixes it."
+      };
+      _P.research=_P.research||{};
+      if(!_P.research[D826]) _P.research[D826]={
+        title:"A wall and a fixed focal point beat waiting on a partner",
+        text:"On volleys off a wall, do not track the ball into the paddle, your eyes are not fast enough. Pick a fixed spot on the wall and keep your eyes there while the ball comes and goes in your peripheral vision. Grip light to medium, a tight grip fatigues the hand over a full session. Forehand, then backhand, then alternating, works for dinks and for volleys. No partner and no ball machine required.",
+        url:"https://www.youtube.com/watch?v=zW8HVsmzdX8",
+        source:"Briones Pickleball, The Ultimate Guide To Training On A Wall, pulled 08.25.2026"
+      };
+      if(!Array.isArray(_P.drills)) _P.drills=[];
+      var _hasBR=false;
+      for(var i=0;i<_P.drills.length;i++){ if(_P.drills[i]&&_P.drills[i].id==="pkd-s-bhroll") _hasBR=true; }
+      if(!_hasBR) _P.drills.push({
+        id:"pkd-s-bhroll", group:"machine",
+        text:"Backhand roll off the wall, ten in a row. Stand 6 to 8 feet out, feed it in, let it bounce, then roll the backhand up and over with topspin rather than poking it flat. Eyes on a fixed spot on the wall, not on the ball. Miss one and restart the count. This is the leakiest wing on your file and the one shot that turns a neutral dink into an attack."
+      });
+      var _Q=state.quickWin=state.quickWin||{};
+      _Q.picks=_Q.picks||{};
+      if(!_Q.picks[D826]) _Q.picks[D826]=[
+        "Get the time for tomorrow's Crystal Johnson closing. It was confirmed for Thursday 27 August at Monday's team meeting and the time was never set, so the app, the calendar and the pipeline all still read TIME NOT SET the day before. One text to Chris or the title company on a 577,861 dollar close.",
+        "Decide when Legs happens before you leave for Blair. The Zillow 360 shoot at 843 Arbor Dr is at 9:30 and the Kirk email is blocked at 5:30, so the gym sits either side of both. You logged five of five Monday and again Tuesday. Pick the slot now rather than at 4pm."
+      ];
+      var _R=state.realEstate=state.realEstate||{};
+      if(!Array.isArray(_R.todos)) _R.todos=[];
+      state.archive=state.archive||{};
+      if(!Array.isArray(state.archive.todosDone)) state.archive.todosDone=[];
+      var _keep=[];
+      for(var j=0;j<_R.todos.length;j++){
+        var _t=_R.todos[j];
+        if(_t && _t.id==="ret-20260824-openhouse-floorplans"){
+          _t.retiredOn="2026-08-26";
+          _t.retiredWhy="The easy win covering exactly this task was ticked on both 24 and 25 August, so the grounding is gone. Archived, not deleted.";
+          state.archive.todosDone.push(_t);
+        } else { _keep.push(_t); }
+      }
+      _R.todos=_keep;
+      var _hasJT=false;
+      for(var k=0;k<_R.todos.length;k++){ if(_R.todos[k]&&_R.todos[k].key==="johnson-close-time") _hasJT=true; }
+      if(!_hasJT) _R.todos.push({
+        id:"ret-20260826-johnson-time", key:"johnson-close-time", done:false,
+        exp:"2026-08-27", due:"2026-08-26", list:"todo",
+        src:"Event ev-20260814-johnson-close, date confirmed 24 August, TIME NOT SET",
+        text:"Get the time for the Crystal Johnson closing at 11911 Horizon. It is tomorrow, 27 August, on a 577,861 dollar sale and the time is still not on the record.",
+        agent:"Created 08.26.2026 by the daily run. Expires the moment the closing happens."
+      });
+      var _C=state.context=state.context||{};
+      _C.dailyLog=_C.dailyLog||{};
+      _C.dailyLog[D826]=_C.dailyLog[D826]||{};
+      _C.dailyLog[D826].claudeAction="Post midnight export, saved 00:04. Completed day read from the dated history for 25 August, not from the zeroed live counters. Today's entry was empty and no archived input was unprocessed, so nothing to execute. Wrote coach bullets, coach rec, video, research, a backhand roll wall drill and two easy wins. Retired the open house floor plans to do, created the Johnson closing time to do.";
+      state.meta.mig_daily0826=true;
+      save(true);
+  } }catch(e){}
   try{ if(profile==="ian" && state.pickleball && state.meta && !state.meta.mig_league0825){
       var _L5=state.pickleball;
       if(!Array.isArray(_L5.sessions)) _L5.sessions=[];
