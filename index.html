@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 343 (2026-08-26)">
+<meta name="build" content="v21 build 344 (2026-08-26)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -13027,6 +13027,33 @@ try{ if(profile==="ian"){
       state.meta.mig_dupr3226=true; save(true);
   } }catch(e){ try{ console.warn("dupr3226 did not apply:",e&&e.message); }catch(_){} }
 
+/* ===== build 344: DANGLING REFERENCES AFTER THE REDESIGN ==============================
+     Three surfaces were removed in this build: Today from Claude, Future ideas and the Deep
+     Dive route. Two of them left no references. The Deep Dive left a pointer inside a goal
+     Ian reads, so it is rewritten rather than left pointing at a door that no longer exists.
+
+     THE DATED COACH BULLET FROM 26 JULY IS DELIBERATELY NOT TOUCHED. It is a historical
+     record of what was said that day, it does not render today, and editing history to tidy
+     a link would be worse than the dangling link. */
+  try{ if(profile==="ian" && state.pickleball && state.meta && !state.meta.mig_redesign0826){
+      if(Array.isArray(state.pickleball.goals)){
+        state.pickleball.goals.forEach(function(g){
+          if(!g||typeof g.text!=="string") return;
+          g.text=g.text.split("See Deep Dive section 13.")
+            .join("The Deep Dive was retired on 26 August because it had gone stale and started "
+                 +"contradicting your current state. Ask for the arc maths in conversation, where "
+                 +"it can be current.");
+        });
+      }
+      /* the paddle note pointed there too, from build 100 */
+      if(typeof state.pickleball.paddle==="string"){
+        state.pickleball.paddle=state.pickleball.paddle
+          .split("See the Deep Dive page for how to play it.")
+          .join("Ask about how to play it when you want it, it changes as your game does.");
+      }
+      state.meta.mig_redesign0826=true; save(true);
+  } }catch(e){ try{ console.warn("redesign0826 did not apply:",e&&e.message); }catch(_){} }
+
 
 
 
@@ -13721,7 +13748,57 @@ function reTodos(parent){
 }
 function reContacts(parent){ const c=card(); const b=c._body; state.realEstate.contacts.forEach(k=>{ const row=el("div","chk"); const t=el("div","ctext"); t.textContent=k.name; const m=el("span","meta"); m.textContent=(k.role?k.role+". ":"")+(k.detail||""); t.appendChild(m); row.appendChild(t); const d=el("button","del","\u00D7"); d.onclick=()=>{state.realEstate.contacts=state.realEstate.contacts.filter(x=>x.id!==k.id);save();render();}; row.appendChild(d); b.appendChild(row); }); b.appendChild(adder("Add a contact...",n=>{state.realEstate.contacts.push({id:uid(),name:n,role:"",detail:""});save();render();})); parent.appendChild(c); }
 function reNeigh(parent){ const c=card(); const b=c._body; state.realEstate.neighborhoods.forEach(n=>{ const row=el("div","chk"); const t=el("div","ctext"); t.textContent=n.name; const m=el("span","meta"); m.textContent=n.note||""; t.appendChild(m); row.appendChild(t); const d=el("button","del","\u00D7"); d.onclick=()=>{state.realEstate.neighborhoods=state.realEstate.neighborhoods.filter(x=>x.id!==n.id);save();render();}; row.appendChild(d); b.appendChild(row); }); b.appendChild(adder("Add a neighborhood...",n=>{state.realEstate.neighborhoods.push({id:uid(),name:n,note:""});save();render();})); parent.appendChild(c); }
-function scriptsModule(parent){ (state.realEstate.scripts||[]).forEach(s=>{ const c=card(); const b=c._body; const head=el("div","between"); head.appendChild(el("h3",null,s.title)); const del=el("button","del","\u00D7"); del.onclick=()=>{ state.realEstate.scripts=state.realEstate.scripts.filter(x=>x.id!==s.id); save(); render(); }; head.appendChild(del); b.appendChild(head); const ta=el("textarea","in"); ta.style.minHeight="90px"; ta.style.marginTop="9px"; ta.value=s.body||""; ta.oninput=()=>{ s.body=ta.value; save(); }; b.appendChild(ta); parent.appendChild(c); }); const add=card(); add._body.appendChild(adder("New script title...",t=>{ state.realEstate.scripts.push({id:uid(),title:t,body:"Write your script here."}); save(); render(); })); parent.appendChild(add); }
+function scriptsModule(parent){
+  /* ===== build 344: AN EMERGENCY RETRIEVAL SURFACE, NOT A SCRIPT LIBRARY ==============
+     The first call was to cut this, on the grounds that a conversation writes a better script
+     than a frozen one. That is true when Ian has a spare minute and false at the moment he
+     actually needs it, standing at a front door or halfway through a call. The real comparison
+     is not static versus generated, it is AVAILABLE IN ONE TAP versus starting an interaction
+     while already socially engaged. So it stays, compressed hard.
+     A two sentence door knock opener does not become wrong because he played a tournament, so
+     unlike the Deep Dive this is evergreen procedural reference. It is closer to Easy wins.
+     NO FOLDERS, NO ARCHIVE, NO TEMPLATES. If a script needs context or nuance it belongs in
+     conversation. Capped at four, and each one has to be readable at a glance. */
+  var SCRIPT_CAP=4;
+  var list=(state.realEstate.scripts||[]).slice(0,SCRIPT_CAP);
+  var c=card(); var b=c._body;
+  b.appendChild(el("div","small dim","Tap one to open it. Kept short on purpose, for the moment you need it rather than the moment you plan it."));
+  if(!list.length) b.appendChild(el("div","empty","Nothing saved yet."));
+  var openId=null;
+  var pills=el("div"); pills.style.cssText="display:flex;flex-wrap:wrap;gap:8px;margin-top:11px";
+  var body=el("div"); body.style.cssText="margin-top:11px";
+  var draw=function(){
+    body.innerHTML="";
+    var sc=list.filter(function(x){ return x&&x.id===openId; })[0];
+    if(!sc) return;
+    var box=el("div"); box.style.cssText="padding:11px 12px;border-radius:12px;background:rgba(255,255,255,.05);line-height:1.5";
+    var t=el("div","small"); t.style.cssText="font-weight:800;margin-bottom:6px"; t.textContent=sc.title||"Script"; box.appendChild(t);
+    var ta=el("textarea","in"); ta.style.minHeight="86px"; ta.value=sc.body||"";
+    ta.oninput=function(){ sc.body=ta.value; save(); };
+    box.appendChild(ta);
+    var del=el("button","del","Remove this script"); del.style.cssText="font-size:13px;margin-top:8px";
+    del.onclick=function(){ state.realEstate.scripts=(state.realEstate.scripts||[]).filter(function(x){ return x.id!==sc.id; }); save(); render(); };
+    box.appendChild(del);
+    body.appendChild(box);
+  };
+  list.forEach(function(sc){
+    var p=el("button","btn ghost sm");
+    p.style.cssText="border-radius:999px;padding:7px 13px;font-size:12.5px;font-weight:700";
+    p.textContent=sc.title||"Script";
+    p.onclick=function(){ openId=(openId===sc.id)?null:sc.id; draw(); };
+    pills.appendChild(p);
+  });
+  b.appendChild(pills); b.appendChild(body);
+  if((state.realEstate.scripts||[]).length<SCRIPT_CAP){
+    b.appendChild(adder("New opener, keep it short...",function(t){
+      state.realEstate.scripts.push({id:uid(),title:t,body:"Write it short enough to read at a glance."}); save(); render(); }));
+  } else {
+    var cap=el("div","small dim"); cap.style.cssText="margin-top:10px;line-height:1.45";
+    cap.textContent="Four is the cap. Anything that needs more than a few lines belongs in a conversation, not here.";
+    b.appendChild(cap);
+  }
+  parent.appendChild(c);
+}
 
 /* ===== v20 real estate: collapsible stages, simplified deals, grouped secondary tools ===== */
 const STAGE_COL={ "Closed":"green","Under Contract":"blue","Active":"orange","Coming Soon":"purple","Prospecting":"pink","Building":"violet","Buyer":"cyan","Just Sold":"teal","Follow up":"cyan" };
@@ -14420,6 +14497,106 @@ function buildIanHome(v){ const workout=daySplit(DOW); const reTop=firstUndone((
     if(top.go) c.onclick=top.go;
     v.appendChild(c);
   },"First thing"); };
+  /* ===== build 344: THE FOUR DOMAIN STATUS STRIP =======================================
+     This replaces "Today from Claude", which is cut in the same build.
+
+     WHY THE OLD SECTION WENT, and the evidence is unusually clean. Over 41 days it wrote 144
+     cards and Ian ticked 37. The curve is the finding: 38 percent, then 11 percent, then ONE
+     TICK IN 44 CARDS across the last fortnight. Easy wins is the SAME mechanic, the same card
+     shape, the same checkbox, the same agent authorship, on the same page, and it ran at 61
+     percent over that fortnight. Same interaction, same page, 2 percent against 61 percent.
+     That rules out the checkbox and it rules out the copy, and leaves the content class.
+
+     The class it got wrong is TIME BOUND SITUATIONAL ADVICE. The app writes once at 6am and
+     his day changes hourly, so a card is routinely stale before he reads it. Two of the three
+     cards in the screenshot he complained about were already wrong when he saw it. For part of
+     every day the section rendered an empty placeholder in prime space above the fold.
+
+     WHAT REPLACES IT IS CANONICAL STATE, which is the thing a dashboard is actually good at
+     and a conversation is bad at. Four numbers, one per part of his life, each true at the
+     moment it renders, each needing no interpretation. It also gives Solara a real place in
+     the app rather than one card that links out.
+
+     NOTHING HERE IS ADVICE. If a number needs a recommendation attached, that belongs in
+     conversation, which can be current. */
+  var secStatus=function(){ safe(v,function(){
+    var tiles=[];
+    /* real estate: the two figures the goal card already computes */
+    try{
+      var _d=(state.realEstate&&state.realEstate.deals)||[];
+      var _cl=_d.filter(function(x){ return x&&x.stage==="Closed"; });
+      var _uc=_d.filter(function(x){ return x&&x.stage==="Under Contract"; });
+      var _vol=function(a){ return a.reduce(function(t,x){ return t+dealVolume(x); },0); };
+      var _prod=_vol(_cl)+_vol(_uc);
+      var _n=_cl.concat(_uc).reduce(function(t,x){ return t+dealCountWeight(x); },0);
+      var _g=(state.realEstate&&state.realEstate.goals2026)||{};
+      tiles.push({k:"Real estate", v:String(_n), u:"deals", sub:fmtMoneyShort(_prod)+" of "+fmtMoneyShort(_g.production||10000000),
+                  col:"var(--blue,#0a84ff)", go:function(){ reView="pipeline"; try{render();}catch(e){} selectTab("re"); }});
+    }catch(e){}
+    /* pickleball: the measured rating, and the last result beneath it */
+    try{
+      var _pb=state.pickleball||{};
+      var _dp=(Array.isArray(_pb.dupr)&&_pb.dupr.length)?_pb.dupr[_pb.dupr.length-1]:null;
+      var _ss=Array.isArray(_pb.sessions)?_pb.sessions.slice().sort(function(a,b){
+        return String((b&&b.date)||"").localeCompare(String((a&&a.date)||"")); }):[];
+      /* the subtitle is the LAST SESSION, not the last result. A result string is written for
+         the session log and truncates badly in a tile; kind plus a relative day never does,
+         and it answers the question a glance actually asks, which is when he last played. */
+      var _last=_ss.length?_ss[0]:null;
+      var _when="";
+      if(_last&&_last.date){ try{ var _du=daysUntil(_last.date);
+        _when=(_du===0?"today":_du===-1?"yesterday":(_du<0?(-_du)+" days ago":fmtShort(_last.date))); }catch(e){ _when=_last.date; } }
+      tiles.push({k:"Pickleball", v:_dp?String(_dp.rating):"unrated", u:_dp?"DUPR":"",
+                  sub:_last?((_last.kind||"Played")+", "+_when):((_ss.length||0)+" sessions"),
+                  col:"var(--pk1,#2ee66f)", go:function(){ selectTab("pickle"); }});
+    }catch(e){}
+    /* gym: sessions this week, counted the way the heatmap counts them */
+    try{
+      var _t=new Date(); var _dow=_t.getDay(); var _mon=new Date(_t); _mon.setDate(_mon.getDate()-(_dow===0?6:_dow-1));
+      var _keys={};
+      var _gl=(state.gym&&state.gym.logs)||{};
+      Object.keys(_gl).forEach(function(k){ var L=_gl[k]; if(!L) return;
+        var dn=L.done||{}; var ticked=Object.keys(dn).some(function(id){ return dn[id]; });
+        var noted=(typeof L.note==="string" && L.note.trim().length>0);
+        if(ticked||noted) _keys[k]=true; });
+      ((state.pickleball&&state.pickleball.sessions)||[]).forEach(function(x){ if(x&&x.date) _keys[x.date]=true; });
+      var _wk=0;
+      for(var j=0;j<7;j++){ var dd=new Date(_mon); dd.setDate(dd.getDate()+j); if(_keys[todayKey(dd)]) _wk++; }
+      tiles.push({k:"Gym", v:String(_wk), u:"sessions", sub:"this week, target 5 to 6",
+                  col:"var(--gy1,#ff9f0a)", go:function(){ selectTab("gym"); }});
+    }catch(e){}
+    /* solara: the one fact that changes */
+    try{
+      if(!hidden("solara")){
+        var _sd=state.solara||{};
+        tiles.push({k:"Solara", v:String(_sd.drop||"Drop 001").replace(/^Drop\s*/i,""), u:"drop",
+                    sub:userLine(_sd.status||"In progress",34),
+                    col:"var(--amber,#ffd60a)", go:function(){ selectTab("solara"); }});
+      }
+    }catch(e){}
+    if(!tiles.length) return;
+    sect(v,"Where everything stands","four numbers, all true right now");
+    var c=card(); var b=c._body;
+    var grid=el("div"); grid.style.cssText="display:grid;grid-template-columns:1fr 1fr;gap:10px";
+    tiles.forEach(function(t){
+      var cell=el("div"); cell.style.cssText="position:relative;padding:11px 12px 12px 13px;border-radius:13px;"
+        +"background:rgba(255,255,255,.035);overflow:hidden;cursor:pointer";
+      var bar=el("i"); bar.style.cssText="position:absolute;left:0;top:9px;bottom:9px;width:3px;border-radius:3px;background:"+t.col;
+      cell.appendChild(bar);
+      var lab=el("div","small"); lab.style.cssText="font-weight:800;letter-spacing:.05em;text-transform:uppercase;font-size:10.5px;color:"+t.col;
+      lab.textContent=t.k; cell.appendChild(lab);
+      var row=el("div"); row.style.cssText="display:flex;align-items:baseline;gap:5px;margin-top:3px";
+      var val=el("div"); val.style.cssText="font-weight:800;font-size:24px;letter-spacing:-.03em;line-height:1.1;font-variant-numeric:tabular-nums;color:var(--white,#fff)";
+      val.textContent=t.v; row.appendChild(val);
+      if(t.u){ var un=el("div","small dim"); un.style.cssText="font-size:11px"; un.textContent=t.u; row.appendChild(un); }
+      cell.appendChild(row);
+      if(t.sub){ var sb=el("div","small dim"); sb.style.cssText="margin-top:3px;line-height:1.35;font-size:11.5px"; sb.textContent=t.sub; cell.appendChild(sb); }
+      if(t.go) cell.onclick=t.go;
+      grid.appendChild(cell);
+    });
+    b.appendChild(grid);
+    v.appendChild(c);
+  },"Status strip"); };
   var secLearn=function(){ safe(v,function(){
     var pb=state.pickleball||{}; var vs=Array.isArray(pb.videoStats)?pb.videoStats:[];
     if(!vs.length) return;
@@ -14490,12 +14667,17 @@ function buildIanHome(v){ const workout=daySplit(DOW); const reTop=firstUndone((
      with is the start of the 6am agent failures. Placement is being corrected because it is
      wrong on the merits, not because it is the known cause of the drop.
      =================================================================================== */
+  secStatus();     /* build 344: canonical state, replaces Today from Claude */
   secFirstThing(); /* build 212: ONE thing, computed, with the reason it won  */
   secWins();       /* daily wins,      he asked for this first  */
   secEntry();      /* build 231: HIS INPUT, above everything it feeds  */
   secWorkout();    /* his gym workout, silent on a rest day     */
   secHeat();       /* favourite, high, pairs with the workout   */
-  secBrief();      /* what Claude left him overnight            */
+  /* secBrief REMOVED build 344. "Today from Claude" is cut, not shrunk. 1 tick in 44
+     cards over a fortnight against 61 percent for Easy wins, the identical mechanic on the
+     same page. A one line version would have preserved the exact mental model the data
+     disproved. state.briefing is untouched and still exports; only the surface is gone.
+     The function is kept in place and not called, per the BRAIN convention. */
   /* secReAlert REMOVED build 236, 08.06.2026, Ian: "it is the same as the calendar to me".
      Audited before removal per the Stats discipline. It drew on three sources and NONE of them
      dies with it: calendar events inside 2 days are the calendar itself, overdue todos live in
@@ -14516,7 +14698,10 @@ function buildIanHome(v){ const workout=daySplit(DOW); const reTop=firstUndone((
   secWater();
   secSphere();
   secSummary();
-  secIdeas();
+  /* secIdeas REMOVED build 344. 158 ideas written, ZERO ever marked done, for the life
+     of the app. That is not an idea system, it is a write only store. state.futureIdeas is
+     untouched and still exports. Deliberately NOT replaced with a better idea manager: a
+     standing backlog of 158 aspirational items is the opposite of a two second glance. */
   /* build 236, 08.06.2026, Ian: schedule and calendar to the BOTTOM of Home. They are reference,
      not a morning decision, and on 08.06 the schedule at 590px tall was the thing pushing his own
      entry box below the fold. Build 231 solved that by demoting the entry above the schedule; this
@@ -15774,11 +15959,18 @@ function buildPickle(v){ var pb=state.pickleball||(state.pickleball={});
       gv.appendChild(cc);
       
     },ICO.trophy,"purple");
-  safe(v,function(){
-    sect(v,"Deep Dive","your full study guide");
-    (function(){ var dc=card(); var b=dc._body; b.appendChild(el("span","pill g","Study")); var tx=el("div","small"); tx.style.cssText="margin-top:9px;line-height:1.55;color:var(--gray)"; tx.textContent="All the heavy teaching lives here now, footwork, shot form vs the pros, drops and dinks, hands battles, patterns, your paddle, stacking, weights, and the six answers. Open it when you want to study."; b.appendChild(tx); var btn=el("button","btn block","Open Deep Dive"+String.fromCharCode(160)+String.fromCharCode(8250)); btn.style.marginTop="12px"; btn.onclick=function(){ try{ window.open("deep-dive.html","_blank","noopener"); }catch(e){ location.href="deep-dive.html"; } }; b.appendChild(btn); v.appendChild(dc); })();
-    
-  },"Deep dive section");
+  /* DEEP DIVE ROUTE REMOVED, build 344. The guide it opened was last touched on 22
+     July, roughly 220 builds behind this file, and it had stopped being merely unused and
+     become WRONG. It still taught stacking with Dylan, a decision Ian closed on 9 August.
+     It still prepared him for a first tournament he has played and lost. It contained zero
+     mentions of his DUPR. High confidence obsolete coaching is the worst failure mode a
+     training surface has, and rebuilding a parallel static curriculum would only recreate
+     it on a slower clock: the app moved 220 builds while the guide sat still.
+     NOTHING OF VALUE IS LOST. The paddle, drills, work on, cues, the radar, the sessions
+     and the rating all live in this app as state that updates. Teaching that has to be
+     current is what conversation does better, which is the whole Jarvis split.
+     THE FILE IS NOT DELETED. deep-dive.html stays on disk and stays live at its own URL;
+     only the route from the app is gone. It cannot be reached from the app now. */
 }
 /* RETIRED 08.04.2026 (build 225). NOT IN IAN_PAGES, never called. Kept in place per the BRAIN
    convention for retired things. Ian retired the tab on the condition that every number on it had a
