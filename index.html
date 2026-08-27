@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 346 (2026-08-26)">
+<meta name="build" content="v21 build 347 (2026-08-27)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -12903,6 +12903,97 @@ try{ if(profile==="ian"){
       _C.dailyLog[D826]=_C.dailyLog[D826]||{};
       _C.dailyLog[D826].claudeAction="Post midnight export, saved 00:04. Completed day read from the dated history for 25 August, not from the zeroed live counters. Today's entry was empty and no archived input was unprocessed, so nothing to execute. Wrote coach bullets, coach rec, video, research, a backhand roll wall drill and two easy wins. Retired the open house floor plans to do, created the Johnson closing time to do.";
       state.meta.mig_daily0826=true;
+      save(true);
+  } }catch(e){}
+  /* DAILY 08.27.2026, ian-daily-brief. Date keyed coach content, easy wins, one new drill,
+     the post tournament Work on and Cues refresh, the 26 August gym note archive, and one
+     unverified event retitled. Idempotent, guarded, add only. The Work on and Cues arrays
+     are REPLACED because deepMergeDefaults leaves an existing local array untouched, so a
+     seed change alone would never reach the phone. The prior set is archived first. */
+  try{ if(profile==="ian" && state.meta && !state.meta.mig_daily0827){
+      var D827="2026-08-27";
+      var _P7=state.pickleball=state.pickleball||{};
+      _P7.coachBullets=_P7.coachBullets||{};
+      if(!_P7.coachBullets[D827]) _P7.coachBullets[D827]=[
+        "Ian, tonight is a training block, 16:30 to 20:00, and you called it training rather than open play. Treat it that way. One focus: say defense mode or offense mode out loud every time you approach the kitchen.",
+        "Defense after a drop, get low and expect to reset. Offense after a drive or a weak reply, pounce forward and take it early. The 22 July doubles study said you play not to lose, and that read repeats across all three studies on file.",
+        "Move forward WITH the ball on a third you think was good. Step back only if it turns out bad. Never wait then move. That is plays tall and arrives late, restated as something you can actually do.",
+        "Backhand offense at the kitchen is a real assignment now, roll on a higher ball, flick on a rushed one. July measured that wing at 15 to 18 percent pop ups against 6 to 8 on the forehand.",
+        "Count it, do not feel it. Drops that peak on your side, dinks punched down, speed ups you actually initiated. Bring a number home. Yesterday was 50 minutes at effort 6, a recovery touch, not training."
+      ];
+      _P7.coachRec=_P7.coachRec||{};
+      if(!_P7.coachRec[D827]) _P7.coachRec[D827]={
+        title:"Name your mode at the kitchen line",
+        note:"Every approach after a third shot, say defense or offense out loud. Defense after a drop means reset. Offense after a drive or a weak reply means pounce. Track for a week which mode you are actually landing in, because that number tells you whether you are constructing points or just surviving them."
+      };
+      _P7.videoRec=_P7.videoRec||{};
+      if(!_P7.videoRec[D827]) _P7.videoRec[D827]={
+        title:"5 Pickleball Mistakes That TRAP You in 3.0 to 4.0 Prison",
+        url:"https://www.youtube.com/watch?v=MNTVavr0kYI",
+        note:"This names your exact rated band. 3.226 sits inside 3.0 to 4.0. Two of the five habits are already yours by name: no forward moving reflex after the third, and no backhand offense at the kitchen line. Ten minutes before you leave for Blair."
+      };
+      _P7.research=_P7.research||{};
+      if(!_P7.research[D827]) _P7.research[D827]={
+        title:"Judge a drop by height, not by length",
+        text:"A drop that peaks on your own side of the net is a good drop even if it lands mid kitchen, because your opponent has to hit up on it. A drop that peaks over the net is attackable even if it lands short. Length is what you notice, height is what decides. Call the height out loud on your own drops tonight and you will find your good drop count is not what you think it is.",
+        url:"",
+        source:"Pickleball knowledge base, coaching spine item 1, consistency before technique, 08.25.2026"
+      };
+      if(!Array.isArray(_P7.drills)) _P7.drills=[];
+      var _hasML=false;
+      for(var i7=0;i7<_P7.drills.length;i7++){ if(_P7.drills[i7]&&_P7.drills[i7].id==="pkd-modeladder") _hasML=true; }
+      if(!_hasML) _P7.drills.push({
+        id:"pkd-modeladder", group:"partner",
+        text:"MODE CALL LADDER. Ten third shots in a row. Before the ball crosses the net, say defense or offense out loud, then play the next two balls to match the call. Defense means reset and stay low. Offense means step in and take it early. Count how many you called correctly out of ten. Calling the mode is worthless if you cannot do it under time pressure, which is the whole reason this is a drill and not a note."
+      });
+      state.archive=state.archive||{};
+      if(!state.archive.activePickleballPreB347) state.archive.activePickleballPreB347={
+        workOn:(_P7.workOn||[]).slice(), cues:(_P7.cues||[]).slice(), at:D827,
+        why:"Tournament day set, retired the morning after the 23 August event was played and closed."
+      };
+      _P7.workOn=[
+        "Name defense mode or offense mode every time you approach the kitchen",
+        "Move forward WITH the ball on a good third, step back only if it was bad",
+        "Backhand offense at the kitchen line, roll on a higher ball, flick on a rushed one",
+        "Firm wrist, about 7 out of 10, linear swing, on genuinely hard drives only",
+        "Film the next competitive session, phone locked and elevated behind your own baseline",
+        "Count drops that peak on your side, dinks punched down, speed ups actually initiated"
+      ];
+      _P7.cues=[
+        "Say it out loud, defense mode or offense mode",
+        "Move in with the ball, step back only if it was bad",
+        "Backhand at the kitchen, roll when there is time, flick when rushed",
+        "Hard drive coming, lock the wrist, swing linear",
+        "Reset grip stays soft, 2 to 3 out of 10, this is different",
+        "Good drop advance, bad drop stay back, okay drop hold and reset",
+        "Serve backhand by default",
+        "Crosscourt or middle, down the line only on a clear read",
+        "Set your feet before you swing on a ball that has not bounced",
+        "Judge a drop by height, not length"
+      ];
+      var _Q7=state.quickWin=state.quickWin||{};
+      _Q7.picks=_Q7.picks||{};
+      if(!_Q7.picks[D827]) _Q7.picks[D827]=[
+        "Text Chris for the Crystal Johnson closing time, then put it on NP Dodge yourself. The closing is TODAY on a 577,861 dollar sale, the deal record carries the date, and the NP Dodge calendar does not carry the event at all. Nothing on your phone will remind you.",
+        "You have gym 11:30 to 13:00 with Bianca and pickleball training 16:30 to 20:00. Yesterday was 3 of 5 on Legs and Was not feeling it today. Log the whole list this time, and pick up the two Legs items you dropped inside the same block rather than carrying them into next week."
+      ];
+      var _C7=state.context=state.context||{};
+      _C7.dailyLog=_C7.dailyLog||{};
+      _C7.dailyLog["2026-08-26"]=_C7.dailyLog["2026-08-26"]||{};
+      if(!_C7.dailyLog["2026-08-26"].gymNoteArchive) _C7.dailyLog["2026-08-26"].gymNoteArchive="Was not feeling it today ";
+      _C7.dailyLog["2026-08-26"].gymNoteAgentActed=D827;
+      _C7.dailyLog[D827]=_C7.dailyLog[D827]||{};
+      _C7.dailyLog[D827].claudeAction="Read the 26 August gym session note, Was not feeling it today, as a state report rather than an instruction. Split unchanged, the two unlogged Legs items ride forward per his own keep it rule from 24 August. Wrote coach bullets, coach rec, video, research, the mode call ladder drill and two easy wins. Refreshed Work on and Cues to the post tournament set, prior set archived. Flagged that the Crystal Johnson closing is not on the NP Dodge calendar today.";
+      var _E7=state.events;
+      if(Array.isArray(_E7)){
+        for(var e7=0;e7<_E7.length;e7++){
+          if(_E7[e7] && _E7[e7].id==="ev-20260912-fallcup" && String(_E7[e7].title||"").indexOf("UNVERIFIED")<0){
+            _E7[e7].title="Fall Cup, mens doubles 3.5 plus, Sept 12 to 13 2026. UNVERIFIED, this event may not exist";
+            _E7[e7].note="Kept rather than deleted. Three direct searches on 23, 24 and 25 August failed to find this tournament, and the research agent pruned it from its own event list on 25 August. Do not plan around it. The four real candidates sit with Dylan: Ankeny 4 to 6 Sep with entries closing 1 Sep, Papillion 25 to 27 Sep, Kansas City 25 to 27 Sep, Omaha in October.";
+          }
+        }
+      }
+      state.meta.mig_daily0827=true;
       save(true);
   } }catch(e){}
   try{ if(profile==="ian" && state.pickleball && state.meta && !state.meta.mig_league0825){
