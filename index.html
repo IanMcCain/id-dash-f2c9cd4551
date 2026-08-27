@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 345 (2026-08-26)">
+<meta name="build" content="v21 build 346 (2026-08-26)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -878,7 +878,19 @@ const SEED_VERSION=13;
    only works on a literal string, not on anything computed at runtime. Editing the meta tag alone
    is now a complete build bump. The fallback below only fires if the tag is missing entirely. */
 const APP_BUILD=(function(){ try{ var m=document.querySelector('meta[name="build"]'); var c=m&&m.getAttribute("content"); return (c&&c.trim())||"v21 (build stamp missing)"; }catch(e){ return "v21 (build stamp missing)"; } })();
-const WATER_GOAL=9; /* build 220: stage 2 water detector action 08.03.2026, was 10, bounds never below 8 */ 
+/* ===== build 346: THE WATER GOAL IS A FLOOR OF 9 AND IT NEVER DROPS =================
+   Ian, 26.08.2026, verbatim: "never decrease my water intake past 9 cups even if I don't hit
+   it, tell the daily agent that."
+
+   THIS SUPERSEDES THE BUILD 220 WORDING, which said "bounds never below 8". That sentence
+   licensed a future drop to 8 and it is now dead. Nine is the floor. Missing it is not a
+   reason to lower it, which was the whole point of him saying "even if I don't hit it".
+
+   The goal now derives from WATER_FLOOR so the number and the rule live in one place. If a
+   future session is about to lower this, that is the thing Ian explicitly ruled out.
+   The detector in BRAIN/GLOBAL/detectors.py has had its stage 2 target lowering removed to
+   match, and history_build.py must not restamp past rows below their original goal either. */
+const WATER_FLOOR=9; const WATER_GOAL=WATER_FLOOR; 
 const uid=()=>Math.random().toString(36).slice(2,9);
 function todayKey(d){ d=d||new Date(); const p=n=>String(n).padStart(2,"0"); return d.getFullYear()+"-"+p(d.getMonth()+1)+"-"+p(d.getDate()); }
 /* ===== v21 build 214: THE DATE IS NOW LIVE, NOT A STAMP TAKEN AT LOAD =======================
@@ -13128,6 +13140,66 @@ try{ if(profile==="ian"){
       state.meta.mig_redesign0826=true; save(true);
   } }catch(e){ try{ console.warn("redesign0826 did not apply:",e&&e.message); }catch(_){} }
 
+/* ===== build 346: WEDNESDAY 26 AUGUST OPEN PLAY, AND THE 50 MINUTES IS THE REAL NUMBER ===
+     Ian: "it was actually only 50 minutes not what it says so ignore that and put in what I said."
+
+     THE WATCH WINDOW AND THE PLAYING TIME ARE DIFFERENT THINGS AND BOTH ARE KEPT. The watch ran
+     5:25 to 6:46 PM, 1:20:41, but only 50 minutes of that was play. duration carries the 50
+     minutes because that is what every downstream surface should count, and the watch window is
+     kept in its own field because the heart rate and calorie figures came from it and would be
+     unattributable without it.
+
+     THE HR AND CALORIES OVERSTATE THE SESSION AND THE RECORD SAYS SO. They cover the full 1:20,
+     so roughly 31 minutes of not playing is averaged into them. Avg HR 111 is NOT comparable to
+     the 123 at league on 25 August or the 128 at the APC, and nobody should read an intensity
+     trend across those three numbers. That caveat is on the note Ian reads, not only in an
+     internal field, because the misreading is the obvious one. */
+  try{ if(profile==="ian" && state.pickleball && state.meta && !state.meta.mig_pk0826){
+      var _P7=state.pickleball;
+      if(!Array.isArray(_P7.sessions)) _P7.sessions=[];
+      var _has7=false;
+      for(var i=0;i<_P7.sessions.length;i++){ if(_P7.sessions[i]&&_P7.sessions[i].id==="pk-20260826-openplay") _has7=true; }
+      if(!_has7){
+        _P7.sessions.push({
+          id:"pk-20260826-openplay", date:"2026-08-26", kind:"Open play",
+          duration:"50m", playingMinutes:50,
+          watchWindow:"5:25 to 6:46 PM, watch recorded 1:20:41",
+          calories:691, activeCalories:565, avgHr:111, maxHr:150, minHr:67, effort:6,
+          result:"", score:"", opponent:"Solo, not with Dylan",
+          copyOwned:true,
+          note:"Open play, Wednesday 26 August, a light day. FIFTY MINUTES OF ACTUAL PLAY. The "
+            +"watch ran 5:25 to 6:46 PM and recorded 1:20:41, but only 50 minutes of that was on "
+            +"court and 50 is the number that counts. Effort 6 of 10, moderate, your own rating. "
+            +"From Apple Watch across the full window: avg HR 111, peak 150, low 67, active 565, "
+            +"total 691. READ THE HEART RATE WITH CARE. Those figures cover the whole 1:20, so "
+            +"about 31 minutes of standing around is averaged into them. The 111 is NOT comparable "
+            +"to the 123 at league yesterday or the 128 at the APC, and there is no intensity "
+            +"trend to read across the three. Solo session, not with Dylan.",
+          agent:"Ian corrected the duration by hand and was explicit: ignore the watch figure and "
+            +"use 50 minutes. duration and playingMinutes both carry 50 so anything that parses "
+            +"duration for the heatmap or a weekly total gets the right number. watchWindow keeps "
+            +"the 1:20:41 only so the HR and calorie provenance is not orphaned. DO NOT compute an "
+            +"intensity or HR trend that puts this session next to 25 Aug league or 23 Aug APC, "
+            +"the denominators are different. No footage, so no rating change."
+        });
+      }
+      state.meta.mig_pk0826=true; save(true);
+  } }catch(e){ try{ console.warn("pk0826 did not apply:",e&&e.message); }catch(_){} }
+
+/* ===== build 346: WATER FLOOR RECORDED IN STATE SO THE 6AM AGENT READS IT =============
+     The constant above protects the app. This puts the rule where the daily agent looks, since
+     it reads state and not the source. */
+  try{ if(profile==="ian" && state.meta && !state.meta.mig_water_floor_0826){
+      if(!state.nutrition) state.nutrition={};
+      state.nutrition.waterFloor=9;
+      state.nutrition.waterRule="HARD FLOOR OF 9 CUPS, set by Ian 26.08.2026. His words: never "
+        +"decrease my water intake past 9 cups even if I don't hit it. The goal does NOT adapt "
+        +"downward. A run of missed days is not evidence the target is wrong, it is the thing the "
+        +"target is for. Do not propose lowering it, do not lower it, and do not rewrite past days "
+        +"to a lower goal. The build 220 wording that allowed a drop to 8 is dead.";
+      state.meta.mig_water_floor_0826=true; save(true);
+  } }catch(e){ try{ console.warn("water floor did not apply:",e&&e.message); }catch(_){} }
+
 
 
 
@@ -14324,7 +14396,7 @@ function buildIanHome(v){ const workout=daySplit(DOW); const reTop=firstUndone((
   /* build 191: Easy wins opens by default. It is the first thing he wants to see and a
      collapsed win list is not a win list. */
   var secWins=function(){ pkCollapse(v,"h_wins","Easy wins","two small wins today",true,function(hh){ quickWinCard(hh); },ICO.check,"green"); };
-  var secWater=function(){ pkCollapse(v,"h_water","Water","aim 10 cups a day",false,function(hh){ waterCard(hh); },ICO.water,"cyan"); };
+  var secWater=function(){ pkCollapse(v,"h_water","Water","aim "+WATER_GOAL+" cups a day",false,function(hh){ waterCard(hh); },ICO.water,"cyan"); /* build 346: this said "aim 10 cups a day" while WATER_GOAL was 9, so Home contradicted the water card two sections below it. Reads the constant now and cannot drift again. */ };
   var secSphere=function(){ pkCollapse(v,"h_sphere","Stay in touch","your sphere",false,function(hh){ homeSphereNudge(hh); },ICO.people,"orange"); };
   var secProg=function(){ pkCollapse(v,"h_prog","Progress and upcoming","where you stand",false,function(hh){ reGoalsCard(hh); homeUpcomingCard(hh); },ICO.trend,"blue"); };
   var secSummary=function(){ pkCollapse(v,"h_summary","Daily summary","today at a glance",false,function(hh){ const gday=daySplit(DOW); const glog=(state.gym.logs&&state.gym.logs[TODAY])||{done:{}}; const gT=gday.exercises.length||0, gD=gday.exercises.filter(e=>glog.done&&glog.done[e.id]).length; const hs=habitsActiveOn(TODAY); const hD=hs.filter(h=>h.log&&h.log[TODAY]).length; const water=(state.nutrition&&state.nutrition.water&&state.nutrition.water[TODAY])||0; summaryGrid(hh,[ fracTile({label:"Workout",color:"orange",done:gD,goal:gT||1,unit:"sets",tab:"gym"}), fracTile({label:"Habits",color:"green",done:hD,goal:hs.length||7,unit:"done",tab:"gym"}), fracTile({label:"Water",color:"cyan",done:water,goal:WATER_GOAL,unit:"cups",tab:"gym"}) ]); },ICO.clipboard,"teal"); };
