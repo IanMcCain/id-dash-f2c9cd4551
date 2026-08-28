@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 349 (2026-08-28)">
+<meta name="build" content="v21 build 350 (2026-08-28)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -13487,6 +13487,113 @@ try{ if(profile==="ian"){
       }
       state.meta.mig_willis_evt0827=true; save(true);
   } }catch(e){ try{ console.warn("willis evt0827 did not apply:",e&&e.message); }catch(_){} }
+
+  /* ===== v21 build 350: FRIDAY 28 AUGUST, THE DAILY BRIEF RUN =============================
+     Written by ian-daily-brief from the 2026-08-27 export. Ian wrote nothing for the agent on
+     25, 26 or 27 August, so NOTHING here executes an instruction from him. It is the day's
+     coaching content, the two easy wins, one to do retired and one created, a courtside prune,
+     and three stale processed flags closed out so the false backlog stops growing.
+     Additive and guarded. No SEED_VERSION bump. The guard flag lives only in saved state and
+     is deliberately NOT baked into the seed.
+     LAST WRITER ON PURPOSE: this block sits after every existing assignment to
+     state.pickleball.cues and state.pickleball.workOn, per the build 127 rule. */
+  try{ if(profile==="ian" && !(state.meta&&state.meta.mig350_daily0828)){
+      if(!state.meta) state.meta={};
+      var P350=state.pickleball=state.pickleball||{};
+      var D350="2026-08-28";
+
+      /* A. Coach bullets, DATE KEYED. A plain array never reaches the phone. */
+      if(!P350.coachBullets||typeof P350.coachBullets!=="object"||Array.isArray(P350.coachBullets)) P350.coachBullets={};
+      if(!P350.coachBullets[D350]) P350.coachBullets[D350]=["Ian, the one that matters today is not a drill, it is the Ankeny entry. Entries for the Labor Day Dink-Off close Tuesday 1 September and you have no confirmed rated event after it, and a DUPR only moves at events.", "Yesterday was the right session. 53 minutes drilling then 50 of open play, your first drilling since the tournament, and an average HR of 125 sat between league night at 123 and the tournament at 128. That was competitive work, not filler.", "Your last three sessions average 88 minutes against a 142 minute baseline, effort 6.0 against 8.2. Five days after five hours at effort 10 that was correct recovery. From today it stops being recovery and starts being the new normal.", "Keep the backhand assignment countable. Roll on a higher ball, flick on a rushed one, and count how many of your backhand dinks sit above the net band across one block. July measured that wing at 15 to 18 percent pop ups against 6 to 8 on the forehand and nothing has re measured it since.", "No court block on your calendar today and Friday is push, medium, four items. If you play tonight, drill the backhand while you are fresh and let open play test it after, not the other way round."];
+
+      /* B. This week focus, today's video, today's research. */
+      if(!P350.coachRec||typeof P350.coachRec!=="object"||Array.isArray(P350.coachRec)) P350.coachRec={};
+      if(!P350.coachRec[D350]) P350.coachRec[D350]={"title": "Count the backhand, one session, one number.", "note": "Take one block of cross court backhand dinks and count how many of yours sit above the net band. July put that wing at 15 to 18 percent pop ups against 6 to 8 on the forehand and nothing has measured it since, so the roll and flick work has no scoreboard. A number beats a feeling."};
+      if(!P350.videoRec||typeof P350.videoRec!=="object"||Array.isArray(P350.videoRec)) P350.videoRec={};
+      if(!P350.videoRec[D350]) P350.videoRec[D350]={"title": "Ben Johns Dink Technique That Ends Pop-Ups, backhand and forehand", "url": "https://www.youtube.com/watch?v=RpRXKJ80kj0", "note": "Posted 12 January 2026. It is on your exact fault, the pop up, and it covers the backhand specifically, which is the wing the July film measured as your leaky one. Not either of the two you were given on 26 and 27 August."};
+      if(!P350.research||typeof P350.research!=="object"||Array.isArray(P350.research)) P350.research={};
+      if(!P350.research[D350]) P350.research[D350]={"title": "Judge a drop by height, not by length, and let a wall do the volley work.", "text": "A drop that peaks on your own side of the net is a good drop even if it lands mid kitchen, because they have to hit up on it. A drop that peaks over the net is attackable even if it lands short. Length is what you notice, height is what decides. On a night nobody is free, the wall covers the volley work: fix your eyes on one spot and let the ball travel in your peripheral vision rather than tracking it into the paddle, and keep the grip light to medium so the hand does not fatigue.", "url": "https://www.youtube.com/watch?v=zW8HVsmzdX8", "source": "ian-daily-brief 08.28.2026, extending the Briones wall training pull of 08.25.2026"};
+
+      /* C. Easy wins, date keyed, prior days kept. */
+      var QW350=state.quickWin=state.quickWin||{};
+      if(!QW350.picks||typeof QW350.picks!=="object"||Array.isArray(QW350.picks)) QW350.picks={};
+      if(!QW350.picks[D350]) QW350.picks[D350]=["One text to Chris does both live deals. Ask whether the Crystal Johnson closing went through yesterday, 27 August, and ask for the Willis inspection report and repair bids in the same message. The Johnson record still reads Under Contract on a 577,861 dollar sale a day past its close date, and the Willis relist is Thursday 3 September with the repair scope still deciding the price.", "Friday push is four items, with a 9:00 shoot in Blair and an 11:00 vet appointment either side of it. Get all four in, and do the weekly weigh in while you are there. It is the Friday item on your own checklist and the 7 day average is the number that counts, not the reading."];
+
+      /* D. New drill, additive with a duplicate guard on the id. */
+      if(!Array.isArray(P350.drills)) P350.drills=[];
+      if(!P350.drills.some(function(d){ return d&&d.id==="pbk-bhladder-0828"; })) P350.drills.push({"id": "pbk-bhladder-0828", "text": "Backhand dink ladder. Ten cross court backhand dinks in a row that stay BELOW the net band, and one that floats above it restarts the count. Same restart mechanic as your serve drill, which is the one you already said works. Partner or the club machine, one block per session.", "done": false});
+
+      /* E and F. Courtside prune. Cues were 13 against a soft cap of 8 to 10 and Work on was
+         10 against 5 to 7. Only AGENT WRITTEN coaching content is touched, and the pre prune
+         state is archived first so nothing is lost. Removal is by exact string match, so any
+         item Ian added himself survives untouched. */
+      try{
+        state.archive=state.archive||{};
+        if(!state.archive.activePickleballPreB350){
+          state.archive.activePickleballPreB350={ when:"2026-08-28",
+            reason:"Prune before build 350. Cues at 13 against a cap of 8 to 10, Work on at 10 against 5 to 7. Four cues written for APC tournament day and two Work on items superseded by the tournament being played and the rating landing.",
+            workOn:(P350.workOn||[]).slice(), cues:(P350.cues||[]).slice() };
+        }
+      }catch(e){}
+      if(Array.isArray(P350.cues)){
+        var CUT350=["Same routine between every game, water, towel, one breath, then the serve or receive call", "Nothing new on tournament day, run what you already own", "If you get the choice, receive first", "60 percent power on the early thirds, just put it in play"];
+        P350.cues=P350.cues.filter(function(c){ return CUT350.indexOf(c)<0; });
+        if(P350.cues.indexOf("Backhand high ball, roll it. Backhand rushed, flick it.")<0) P350.cues.push("Backhand high ball, roll it. Backhand rushed, flick it.");
+      }
+      if(Array.isArray(P350.workOn)){
+        var WCUT350=["Green zone, above net height gets accelerated every time", "Points per game, not the win. Twelve of fifteen against a stronger pair is a good day, and DUPR agreed with that in writing on 23 August."];
+        P350.workOn=P350.workOn.filter(function(w){ return WCUT350.indexOf(w)<0; });
+      }
+
+      /* G. To dos. RETIRE FIRST, CREATE SECOND, ceiling of 10. Retired items move to
+         state.archive.todosDone with a reason, they are never deleted. */
+      try{
+        var RE350=state.realEstate=state.realEstate||{};
+        if(!Array.isArray(RE350.todos)) RE350.todos=[];
+        state.archive=state.archive||{};
+        if(!Array.isArray(state.archive.todosDone)) state.archive.todosDone=[];
+        var keep350=[];
+        RE350.todos.forEach(function(td){
+          if(td&&td.id==="ret-20260826-johnson-time"){
+            td.retiredOn="2026-08-28";
+            td.retiredReason="Expiry 2026-08-27 passed and so did the closing itself. The live question is now whether it closed, which is carried by ret-20260828-johnson-confirm.";
+            state.archive.todosDone.push(td);
+          } else keep350.push(td);
+        });
+        RE350.todos=keep350;
+        RE350.todos.forEach(function(td){
+          if(td&&td.id==="ret-20260824-tourney-register"&&!td.exp){
+            td.exp="2026-09-01";
+            td.src=(td.src?td.src+" ":"")+"Expiry set 2026-08-28: entries close 1 September, so the item retires itself rather than going stale.";
+          }
+        });
+        if(!RE350.todos.some(function(td){ return td&&td.id==="ret-20260828-johnson-confirm"; })
+           && !state.archive.todosDone.some(function(td){ return td&&td.id==="ret-20260828-johnson-confirm"; })){
+          RE350.todos.push({"id": "ret-20260828-johnson-confirm", "key": "johnson-closing-confirm", "done": false, "src": "Deal re-crystal-johnson, close date Thursday 27 August 2026, still stage Under Contract in the 2026-08-27 export", "exp": "", "text": "Ask Chris whether the Crystal Johnson closing at 11911 Horizon went through on 27 August. The record still reads Under Contract on a 577,861 dollar sale a day past its date. This is a question for Chris, not a claim that anything went wrong."});
+        }
+      }catch(e){}
+
+      /* H. Three stale processed flags. The 23 August entry was never flagged and its content
+         was a prediction about Monday that came true on its own, no session logged on 24 August
+         and a gym day logged. The 20 and 21 August gym note archives are duplicates of daily
+         entries that were already processed and flagged. Closing all three stops them
+         resurfacing as unprocessed input every morning. */
+      try{
+        var CTX350=state.context=state.context||{};
+        var DL350=CTX350.dailyLog=CTX350.dailyLog||{};
+        if(DL350["2026-08-23"] && !DL350["2026-08-23"].dailyEntryAgentActed){
+          DL350["2026-08-23"].dailyEntryAgentActed="2026-08-28";
+          DL350["2026-08-23"].claudeAction="Closed out on 28 August, five days late and deliberately not acted on. The entry said no gym on tournament day and predicted a rest from pickleball on Monday 24 August with a workout still happening. Both came true without intervention, no session is logged for 24 August and the gym log for it reads 4 of 5. Recorded rather than executed.";
+        }
+        ["2026-08-20","2026-08-21"].forEach(function(d){
+          if(DL350[d] && DL350[d].gymNoteArchive && !DL350[d].gymNoteAgentActed && DL350[d].dailyEntryAgentActed){
+            DL350[d].gymNoteAgentActed=DL350[d].dailyEntryAgentActed;
+          }
+        });
+      }catch(e){}
+
+      state.meta.mig350_daily0828=true; save(true);
+  } }catch(e){ try{ console.warn("mig350 did not apply:",e&&e.message); }catch(_){} }
 
 
 
