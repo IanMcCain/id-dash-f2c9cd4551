@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 348 (2026-08-27)">
+<meta name="build" content="v21 build 349 (2026-08-28)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -763,6 +763,13 @@ header{ background:rgba(0,0,0,.82); border-bottom:1px solid rgba(255,255,255,.07
 .slb{flex:1 1 0;min-width:0;height:100%;display:flex;align-items:flex-end;border-radius:5px;background:#20202a;overflow:hidden}
 .slf{width:100%;border-radius:5px;--sldim:0;position:relative}
 .slf::after{content:"";position:absolute;inset:0;border-radius:5px;background:rgba(14,14,18,var(--sldim))}
+/* build 349: UNKNOWN EFFORT IS NOT THE SAME AS MAXIMUM EFFORT. _slEffDim(null) returns 0, the
+   identical dim to effort 9 and 10, so a session with no rating was drawn exactly like the
+   hardest session on the strip. The old comment defends NOT DIMMING an unknown, and that part
+   is right: dimming it would assert the session was easy. The bug is that leaving it bright
+   asserts the opposite. So it stays full brightness and gets a hatch instead, which reads as
+   "no data" rather than as any effort value. First live case is 27 August 2026. */
+.slf.slf-unk::before{content:"";position:absolute;inset:0;border-radius:5px;z-index:1;background:repeating-linear-gradient(135deg,rgba(14,14,18,0) 0 3px,rgba(14,14,18,.30) 3px 6px)}
 .slaxis{display:flex;justify-content:space-between;margin-top:6px}
 .slaxis span{font-size:9.5px;font-weight:700;color:var(--gray2);white-space:nowrap}
 .slnote{margin-top:9px;font-size:11.5px;line-height:1.5;color:var(--gray)}
@@ -13355,6 +13362,132 @@ try{ if(profile==="ian"){
       state.meta.mig_pk0827=true; save(true);
   } }catch(e){ try{ console.warn("pk0827 did not apply:",e&&e.message); }catch(_){} }
 
+/* ===== build 349: THE JOHNSON CLOSING IS NOT TODAY, AND TWO OLDER FIELDS WERE STALE TOO =======
+
+   WHAT IAN SAW THIS MORNING. The app told him a $577,861 closing was happening today, 27 August.
+   It is not. He told us on the 26th that it moved off Thursday to a tentative Monday because the
+   bank was not ready. The calendar was updated, three prose files were updated, and the two
+   fields the app actually reads were not.
+
+   THE FAILURE MODE IS PARTIAL PROPAGATION, AND IT IS THE POINT OF THIS BUILD. The corrected
+   wording existed in this very file, in a code comment, while `close` and the event still said
+   27 August. A fact written where humans read it and not where the app reads it has not been
+   recorded, it has been described. THE TEST IS NOT "IS THE NEW STORY WRITTEN DOWN", IT IS "DOES
+   EVERY FIELD THAT RENDERS IT AGREE".
+
+   THE SWEEP FOUND TWO MORE ON THE SAME DEAL, BOTH OLDER THAN THE DATE BUG.
+
+     (a) `risk` STILL SAID "APPRAISAL NOT BACK ... THE DEAL IS LOST", SEVEN DAYS AFTER IT CLEARED.
+         The appraisal came back on 20 August. This deal's own note says so, and says in terms
+         that the AT RISK figure "falls from $577,861 to ZERO". But the AT RISK banner on the real
+         estate page is computed from `d.risk` being non-empty, so the app was still showing
+         $577,861 and one deal at risk. THIS WAS THE MORE SERIOUS OF THE TWO DEFECTS and nobody
+         had reported it, because the note reads correct and only the field is wrong. Clearing it
+         removes the banner, which is the behaviour build 295 designed: the line disappears
+         entirely when no deal carries a risk.
+
+     (b) The to do `ret-20260826-johnson-time` reads "It is tomorrow, 27 August". Its `exp` is
+         2026-08-27 and the expiry sweep at the top of this file retires on `exp < TODAY`, so it
+         does NOT expire until tomorrow and was on his list this morning repeating the false date.
+
+   WHAT IS DELIBERATELY NOT ASSERTED. Ian said "Monday or something" and "it'll be closing next
+   week early most likely". That is not a date. `close` is therefore written so it CANNOT read as
+   a scheduled day, and the event carries TENTATIVE in the title itself rather than only in a note
+   nobody expands. Monday is where the calendar put it, so the event sits there to stay in step
+   with the calendar, but the title says the date is unconfirmed and he is not required.
+
+   NOT TOUCHED: price $577,861, stage Under Contract, side, source, the deal count and the
+   $6,440,357 production figure. The date moved, the deal did not. */
+  try{ if(profile==="ian" && state.realEstate && state.meta && !state.meta.mig_johnson0827){
+      var _D9=Array.isArray(state.realEstate.deals)?state.realEstate.deals:[];
+      var _cj9=null;
+      for(var i=0;i<_D9.length;i++){ if(_D9[i]&&_D9[i].id==="re-crystal-johnson") _cj9=_D9[i]; }
+      if(_cj9){
+        _cj9.close="Early week of 31 August 2026, DATE NOT CONFIRMED";
+        _cj9.risk="";
+        if(String(_cj9.note||"").indexOf("DATE MOVED 08.26.2026")<0){
+          _cj9.note=String(_cj9.note||"")
+            +" DATE MOVED 08.26.2026, AND THE 27 AUGUST DATE IS DEAD. From Ian: THE BANK WAS NOT "
+            +"READY, so it came off Thursday 27 August. His words were that it will be closing "
+            +"next week early most likely, and Monday or something. THE CALENDAR CARRIES A "
+            +"TENTATIVE MONDAY 31 AUGUST MARKER AND THE DATE IS EXPLICITLY UNCONFIRMED. Monday is "
+            +"not a fact and must not be quoted as one. THIS IS THE THIRD DATE THIS DEAL HAS HAD: "
+            +"14 August, then Thursday 27 August fixed at the 24 August team meeting, now early "
+            +"the week of 31 August. THE DATE MOVES, THE DEAL DOES NOT. It appraised on 20 August, "
+            +"AT RISK IS ZERO, price $577,861, Under Contract, seller side, Chris's client, all "
+            +"unchanged. THE RISK FIELD IS ALSO CLEARED IN THIS BUILD: it still read APPRAISAL NOT "
+            +"BACK seven days after the appraisal cleared, so the AT RISK banner was showing "
+            +"$577,861 that was not at risk.";
+        }
+      }
+      if(Array.isArray(state.events)){
+        state.events.forEach(function(e){
+          if(!e || e.id!=="ev-20260814-johnson-close") return;
+          e.date="2026-08-31";
+          e.title="Crystal Johnson closing, 11911 Horizon, TENTATIVE, date not confirmed";
+          e.note="MOVED 08.26.2026. Was on 27 August, taken off it because THE BANK WAS NOT READY. "
+            +"Ian said it will close early the week of 31 August, Monday or something. Monday is "
+            +"where the calendar put it and this event follows the calendar, but THE DATE IS NOT "
+            +"CONFIRMED and no time has ever been given. Ian is not required to attend. Do not "
+            +"quote Monday as a settled date.";
+        });
+      }
+      /* THE TO DO HAS TO BE REBUILT, NOT JUST EDITED, AND THE REASON IS A LOAD ORDER TRAP.
+         `ret-20260826-johnson-time` carried exp 2026-08-27 and said "It is tomorrow, 27 August".
+         The expiry sweep near the top of this file retires on `exp < TODAY` and runs LONG BEFORE
+         this migration, so from 28 August onward the item is already in state.archive.todosDone
+         by the time we get here and a forEach over `todos` finds nothing. Editing in place would
+         silently no op on exactly the days this fix matters. So: update it if present, recreate
+         it if the sweep already took it, and match on `key` rather than `id` so the old archived
+         id is never resurrected. The question it asks is still open, which is the whole point,
+         and it should not have expired on the strength of a date that had already moved. */
+      var _R9=state.realEstate;
+      if(!Array.isArray(_R9.todos)) _R9.todos=[];
+      var _JTX="Get the closing date and time for Crystal Johnson at 11911 Horizon. It came off "
+        +"27 August because the bank was not ready and is now tentatively early the week of 31 "
+        +"August, with nothing confirmed on a $577,861 sale.";
+      var _JTA="Rewritten 08.28.2026 by build 349, and recreated if the expiry sweep had already "
+        +"archived it. The previous text asserted \"It is tomorrow, 27 August\" and carried exp "
+        +"2026-08-27, so it sat on his list through the 27th repeating a date that had already "
+        +"moved, then expired on the 28th as though answered. It was never answered. Exp is now "
+        +"04 September so it outlives the tentative window instead of expiring mid question.";
+      var _foundJT=false;
+      _R9.todos.forEach(function(t){
+        if(!t || t.key!=="johnson-close-time") return;
+        _foundJT=true;
+        t.text=_JTX; t.due="2026-08-28"; t.exp="2026-09-04"; t.list="todo"; t.done=false;
+        t.src="Event ev-20260814-johnson-close, moved 26 August, date and time both unconfirmed";
+        t.agent=_JTA;
+      });
+      if(!_foundJT){
+        _R9.todos.push({
+          id:"ret-20260828-johnson-date-time", key:"johnson-close-time", done:false,
+          exp:"2026-09-04", due:"2026-08-28", list:"todo",
+          src:"Event ev-20260814-johnson-close, moved 26 August, date and time both unconfirmed",
+          text:_JTX, agent:_JTA
+        });
+      }
+      state.meta.mig_johnson0827=true; save(true);
+  } }catch(e){ try{ console.warn("johnson0827 did not apply:",e&&e.message); }catch(_){} }
+
+/* ===== build 349: WILLIS EVENT TITLE STILL SAID THE PRICE WAS NOT DECIDED ====================
+   Same class as the Johnson defect, found by the same sweep and much smaller. The deal record has
+   carried "Price $619,900" since the 24 August meeting batch, while the calendar event for the
+   same relist still read "Price not yet decided". One of the two was going to be read on its own.
+   Only the title changes; the date, 3 September, is unaffected and was never in question. */
+  try{ if(profile==="ian" && state.meta && !state.meta.mig_willis_evt0827){
+      if(Array.isArray(state.events)){
+        state.events.forEach(function(e){
+          if(!e || e.id!=="ev-20260903-willis-relist") return;
+          e.title="Willis relist, 10218 Spyglass Dr, Thursday. Price $619,900";
+          e.note="Title corrected 08.27.2026. It read \"Price not yet decided\", which stopped "
+            +"being true at the 24 August team meeting when Ian set $619,900. The deal record was "
+            +"updated then and this event was not. Repairs happen before the relist.";
+        });
+      }
+      state.meta.mig_willis_evt0827=true; save(true);
+  } }catch(e){ try{ console.warn("willis evt0827 did not apply:",e&&e.message); }catch(_){} }
+
 
 
 
@@ -16460,8 +16593,10 @@ function pkLoadStrip(parent){
     var mins=pkParseMin(s.duration);
     var f=el("div","slf "+_slCls(s.kind));
     f.style.height=(mins>0?_slDurBand(mins):100)+"%";
-    f.style.setProperty("--sldim",String(_slEffDim(pkEffort(s))));
-    f.title=s.date+"  "+(s.kind||"Play")+(mins>0?("  "+Math.round(mins)+" min"):"")+(pkEffort(s)!=null?("  effort "+pkEffort(s)):"");
+    var _ef=pkEffort(s);
+    f.style.setProperty("--sldim",String(_slEffDim(_ef)));
+    if(_ef==null) f.className+=" slf-unk"; /* build 349: hatch, see the CSS note */
+    f.title=s.date+"  "+(s.kind||"Play")+(mins>0?("  "+Math.round(mins)+" min"):"")+(_ef!=null?("  effort "+_ef):"  effort not recorded");
     slot.appendChild(f); wrap.appendChild(slot);
   });
   b.appendChild(wrap);
