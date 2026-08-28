@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 347 (2026-08-27)">
+<meta name="build" content="v21 build 348 (2026-08-27)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -13290,6 +13290,70 @@ try{ if(profile==="ian"){
         +"to a lower goal. The build 220 wording that allowed a drop to 8 is dead.";
       state.meta.mig_water_floor_0826=true; save(true);
   } }catch(e){ try{ console.warn("water floor did not apply:",e&&e.message); }catch(_){} }
+
+/* ===== build 348: THURSDAY 27 AUGUST, A SPLIT SESSION, 53 DRILLING AND ~50 OPEN PLAY ==========
+     Ian's own words: "53 min drilling, and the rest was open play."
+
+     ONE RECORD, NOT TWO, AND THE SPLIT IS STRUCTURED RATHER THAN BURIED IN PROSE. Two records
+     would double the session count for the week and would force the heart rate and calorie
+     figures to be divided between them, which would be inventing numbers: the watch measured one
+     continuous 1:42:57 block and cannot say which calories belong to which half. So this is one
+     session carrying a segments array, plus drillMinutes and playMinutes for anything that wants
+     to total structured practice without parsing text.
+
+     WHY THE SPLIT IS THE POINT OF THIS RECORD. Ian's own diagnosis is that consistency is his
+     limiter and that it comes from not practising enough. A record that says "1h 43m of
+     pickleball" cannot answer that question. A record that says 53 minutes of it was drilling
+     can. This is also the FIRST DRILLING recorded since the APC on 23 August; everything between
+     was league or open play.
+
+     EFFORT IS DELIBERATELY ABSENT. The screenshot carried no effort rating and none was inferred.
+     Note that pkEffort() falls back to scraping the note for "effort N of 10", so the note below
+     must never contain that phrasing or it would manufacture the number this record is refusing
+     to guess. Absent effort simply drops out of the effort trend, which is the correct behaviour.
+
+     NO DENOMINATOR CAVEAT HERE, unlike 26 August. The watch window and the activity are the same
+     1:42:57, so avg HR 125 and the calorie figures are sound and comparable. */
+  try{ if(profile==="ian" && state.pickleball && state.meta && !state.meta.mig_pk0827){
+      var _P8=state.pickleball;
+      if(!Array.isArray(_P8.sessions)) _P8.sessions=[];
+      var _has8=false;
+      for(var i=0;i<_P8.sessions.length;i++){ if(_P8.sessions[i]&&_P8.sessions[i].id==="pk-20260827-training") _has8=true; }
+      if(!_has8){
+        _P8.sessions.push({
+          id:"pk-20260827-training", date:"2026-08-27", kind:"Drilling + open play",
+          duration:"1h 42m 57s",
+          window:"4:51 to 6:34 PM, Omaha",
+          drillMinutes:53, playMinutes:50,
+          segments:[{type:"Drilling",minutes:53},{type:"Open play",minutes:50}],
+          calories:1041, activeCalories:880, avgHr:125, maxHr:156, minHr:75,
+          result:"", score:"", opponent:"",
+          copyOwned:true,
+          note:"Pickleball training, Thursday 27 August, Omaha, 4:51 to 6:34 PM. 1:42:57 in total "
+            +"and it SPLITS: 53 minutes drilling, the remaining 50 or so open play. In your words, "
+            +"53 min drilling and the rest was open play. FIRST DRILLING SESSION SINCE THE "
+            +"TOURNAMENT on 23 August. Everything in between was league or open play. From Apple "
+            +"Watch: avg HR 125, peak 156, low 75, active 880, total 1,041. The 125 sits between "
+            +"league night at 123 and the tournament at 128, so this was competitive rather than "
+            +"light, unlike yesterday. The watch window and the actual session match here, so the "
+            +"heart rate and calories are sound. No rating was recorded for how hard it felt and "
+            +"none has been guessed. This was a scheduled block: 4:30 to 8:00 was on the calendar "
+            +"and you did 1:43 of it.",
+          agent:"SPLIT SESSION. drillMinutes 53 and playMinutes 50 are the structured fields, "
+            +"segments carries the same thing as an array, and duration 1h 42m 57s is the total "
+            +"the watch measured. Do NOT split calories or HR across the segments, the watch "
+            +"measured one continuous block and any per segment figure would be invented. Do NOT "
+            +"write this as two sessions, it would double the weekly session count. EFFORT IS "
+            +"ABSENT ON PURPOSE, none was shown and Ian was explicit that none should be inferred; "
+            +"keep the note clear of the phrase pkEffort scrapes for. First structured practice "
+            +"logged since the APC on 23 August, which is the fact worth tracking given his own "
+            +"read that consistency is the limiter and comes from not practising enough. Scheduled "
+            +"4:30 to 8:00 PM, completed 1:43 of the 3:30. No training plan was written and no "
+            +"skill rating or the 4.5 arc was touched by this migration."
+        });
+      }
+      state.meta.mig_pk0827=true; save(true);
+  } }catch(e){ try{ console.warn("pk0827 did not apply:",e&&e.message); }catch(_){} }
 
 
 
