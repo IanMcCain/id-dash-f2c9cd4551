@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 350 (2026-08-28)">
+<meta name="build" content="v21 build 351 (2026-08-28)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -13595,6 +13595,172 @@ try{ if(profile==="ian"){
       state.meta.mig350_daily0828=true; save(true);
   } }catch(e){ try{ console.warn("mig350 did not apply:",e&&e.message); }catch(_){} }
 
+/* ===== build 351: FRIDAY 28 AUGUST OPEN PLAY, AND THE HEEL BECOMES A TRACKED FACT ============
+
+   FOUR THINGS, AND THE INJURY IS THE ONE THAT MATTERS BEYOND TODAY.
+
+   1. THE HEEL. "my heel still hurts from the tournament". The APC was 23 August, so this is DAY
+      SIX of the same pain, and it is the FIRST INJURY EVER MENTIONED IN ANY SESSION LOG. It is
+      written to state.health.injuries with a start date and drawn by healthCard() on both the gym
+      and pickleball pages, so it is a tracked fact rather than a sentence inside one session.
+      NO DIAGNOSIS, NO TREATMENT, NO PLAN, and none should be added here.
+
+      IT ALSO CONTRADICTS A LIVE INSTRUCTION. gym.notes has said since 07.20.2026: "NO INJURIES
+      ... Stop asking about injuries, just keep an eye out if something new shows up." That is
+      superseded below rather than deleted, so the change is visible, and because leaving it would
+      actively tell the next agent to stop looking at the thing it should be looking at.
+
+   2. THE GYM WAS SKIPPED AND THIS REPLACED IT. A SUBSTITUTION, NOT A MISS. The precedent is
+      exact and is followed to the letter: 2026-08-21, also a Friday, also a skipped push for
+      court time, recorded at gym.restDays with planned:true. Nothing may score this as a missed
+      gym session.
+
+   3. "I have been going light since the tournament." His framing of the whole period since 23
+      August, recorded as context and not as a judgement about it.
+
+   4. EFFORT 7 AT AVG HR 131, AND THE BRIEF'S CLAIM ABOUT IT WAS WRONG SO IT IS NOT REPEATED.
+      The brief said 131 was his highest average heart rate on record. CHECKED AGAINST ALL 38
+      SESSIONS THAT CARRY avgHr: IT RANKS TENTH. His high is 143 on 27 July; 140, 139, 134 three
+      times and 133 three times all beat it, and he logged 131 exactly on 01 August at effort 8.
+      What is TRUE is that 131 is the highest of the five sessions since the tournament, which is
+      a five session window and not a record.
+
+      THE CORRECTION CHANGES THE STORY RATHER THAN TRIMMING IT. The point was going to be that a
+      session he calls light measured as his most intense. With the full series in view there is
+      no anomaly at all: 131 at effort 7 is an ordinary open play number for him. The unusual
+      figure in the recent run is the 111 on 26 August being LOW. So the heel hypothesis loses
+      the evidence it was resting on. It is still recorded in the agent field, held loosely, for
+      the coaching lane, and it stays out of the note Ian reads. */
+  try{ if(profile==="ian" && state.pickleball && state.meta && !state.meta.mig_pk0828){
+      var _PA=state.pickleball;
+      if(!Array.isArray(_PA.sessions)) _PA.sessions=[];
+      var _hasA=false;
+      for(var i=0;i<_PA.sessions.length;i++){ if(_PA.sessions[i]&&_PA.sessions[i].id==="pk-20260828-openplay") _hasA=true; }
+      if(!_hasA){
+        _PA.sessions.push({
+          id:"pk-20260828-openplay", date:"2026-08-28", kind:"Open play doubles",
+          duration:"1h 13m 21s",
+          window:"7:17 to 8:31 PM, Omaha, elapsed 1:13:56",
+          calories:847, activeCalories:733, avgHr:131, maxHr:157, minHr:90, effort:7,
+          result:"", score:"", opponent:"",
+          replacedGym:true,
+          copyOwned:true,
+          note:"Open play doubles, Friday 28 August, Omaha, 7:17 to 8:31 PM, 1:13:21. YOUR WORDS: "
+            +"open play doubles, did decent but wasn't feeling it, my heel still hurts from the "
+            +"tournament, and I was tired, I have been going light since the tournament. Effort 7, "
+            +"hard, your own rating. From Apple Watch: avg HR 131, peak 157, low 90, active 733, "
+            +"total 847. THIS REPLACED THE GYM, it did not add to it. You skipped the lift and "
+            +"played instead, so Friday is a swap and not a gap. THE HEEL IS NOW ON THE RECORD as "
+            +"an active thing rather than a line in one session, six days on from the tournament. "
+            +"ONE FLAT OBSERVATION, AND IT IS SMALLER THAN IT FIRST LOOKS: avg 131 is the highest "
+            +"of the five sessions since the tournament, above the tournament at 128, the drilling "
+            +"at 125, league at 123 and Wednesday at 111. IT IS NOT A RECORD THOUGH. It ranks 10th "
+            +"of the 38 sessions that carry heart rate, your high is 143 on 27 July, and through "
+            +"July and early August your open play regularly sat at 130 to 134. So 131 at effort 7 "
+            +"is an ordinary open play number for you. What stands out in the last week is the 111 "
+            +"on Wednesday being low, not tonight being high. Nothing is being read into it here.",
+          agent:"FOUR RECORDS, NOT ONE. (a) state.health.injuries carries the heel with started "
+            +"2026-08-23, drawn by healthCard on the gym and pickleball pages. (b) gym.restDays "
+            +"2026-08-28 is a SUBSTITUTION per the 2026-08-21 precedent, nothing may score a "
+            +"missed gym session. (c) gym.notes NO INJURIES is superseded. (d) the HR observation. "
+            +"THE BRIEF FOR THIS SESSION SAID 131 WAS HIS HIGHEST AVERAGE HR ON RECORD. IT IS NOT, "
+            +"AND THE CORRECTION MATTERS MORE THAN THE ORIGINAL POINT. Checked against all 38 "
+            +"sessions carrying avgHr: 131 ranks TENTH. His high is 143 on 27 July, and 140, 139, "
+            +"134 x3, 133 x3 all sit above it. He logged 131 exactly on 01 August at effort 8. "
+            +"Through July and early August his open play routinely ran 130 to 134 at efforts 7 "
+            +"to 9. The true statement is that 131 is the highest of the FIVE sessions since the "
+            +"tournament, which is a five session window and not a record. "
+            +"WHAT THAT DOES TO THE HYPOTHESIS: it mostly dissolves it. The interesting shape was "
+            +"supposed to be a light off form session measuring as his most intense, and once the "
+            +"full series is in view there is no anomaly to explain, because 131 at effort 7 is an "
+            +"ordinary open play number for him. The outlier in the recent run is the 111 on 26 "
+            +"August being LOW, not this one being high. "
+            +"THE HEEL HYPOTHESIS IS THEREFORE HELD VERY LOOSELY AND IS KEPT OUT OF THE USER NOTE: "
+            +"effort 7 at avg 131 six days into heel pain is CONSISTENT WITH the heel making the "
+            +"same work cost more, via altered gait or guarding, but it is equally consistent with "
+            +"plain fatigue, with doubles being harder than he perceived, and with this simply "
+            +"being a normal session. NOTHING SEPARATES THESE, and the number that was supposed to "
+            +"be the evidence is not unusual. Do not report it as a finding, do not build a plan "
+            +"on it, and do not tell him his heel is changing his mechanics. For the coaching lane "
+            +"to weigh with more sessions. No training plan written, no skill rating touched, 4.5 "
+            +"arc untouched."
+        });
+      }
+
+      /* (a) THE INJURY, in its own container, with the start date and no advice. */
+      if(!state.health || typeof state.health!=="object") state.health={};
+      if(!Array.isArray(state.health.injuries)) state.health.injuries=[];
+      var _hasInj=false;
+      for(var j=0;j<state.health.injuries.length;j++){
+        if(state.health.injuries[j] && state.health.injuries[j].id==="inj-heel-20260823") _hasInj=true;
+      }
+      if(!_hasInj){
+        state.health.injuries.push({
+          id:"inj-heel-20260823", area:"Heel", status:"active",
+          started:"2026-08-23", from:"from the APC tournament",
+          lastConfirmed:"2026-08-28",
+          said:"my heel still hurts from the tournament",
+          firstLogged:"2026-08-28",
+          note:"First recorded 28 August, when you mentioned it during open play. Dated back to "
+            +"the tournament on 23 August because that is where you said it came from. Nothing "
+            +"here is a diagnosis and no treatment or rest is being suggested. It is on the record "
+            +"so it stops living inside one session note.",
+          agent:"CREATED 08.28.2026, build 351, the first entry in the first injury container this "
+            +"app has had. STATUS IS 'active' AND ONLY IAN CLOSES IT: do not mark it resolved on "
+            +"silence, an absence of mention is not recovery. Update lastConfirmed whenever he "
+            +"mentions it again. started is 2026-08-23 on HIS attribution to the tournament, not "
+            +"on an observed onset. DO NOT DIAGNOSE, DO NOT PRESCRIBE REST OR TREATMENT, DO NOT "
+            +"build a training plan around it, and do not ask him about it repeatedly. Surface it "
+            +"where load is being decided and leave the judgement to him."
+        });
+      }
+
+      /* (b) THE SUBSTITUTION. Same shape as 2026-08-21, set unconditionally by date key. */
+      if(!state.gym || typeof state.gym!=="object") state.gym={};
+      state.gym.restDays=state.gym.restDays||{};
+      state.gym.restDays["2026-08-28"]={date:"2026-08-28", planned:true,
+        reason:"SUBSTITUTION, NOT A MISS. He skipped the gym and played pickleball instead, 7:17 "
+          +"to 8:31 PM in Omaha, 1:13:21 at effort 7, logged as pk-20260828-openplay at build 351. "
+          +"Same shape as the 21 August Friday swap. NOTHING MAY SCORE THIS AS A MISSED GYM "
+          +"SESSION and the training heatmap should read it as a swap. His own framing of the "
+          +"period: he has been going light since the tournament on 23 August.",
+        /* THESE TWO STRINGS ARE THE ONES IAN ACTUALLY SEES. gymToday renders `cut` and
+           `makeup` and never renders `reason`, so writing SUBSTITUTION only into `reason`
+           would have put the correction in a field nothing draws, which is the defect this
+           week keeps producing. The rest card otherwise reads as a cut. */
+        cut:"Nothing was cut. The Friday lift was SWAPPED for pickleball, not missed",
+        makeup:"None needed. Tonight's 1:13:21 of open play is the replacement and the normal split resumes next week.",
+        setBy:"Ian, 08.28.2026"};
+
+      /* (c) THE NO INJURIES CLAIM IS SUPERSEDED IN PLACE. Not deleted: the old sentence is what
+             made this invisible and it should stay visible that it was there. */
+      if(typeof state.gym.notes==="string" && state.gym.notes.indexOf("HEEL, 08.28.2026")<0){
+        state.gym.notes=state.gym.notes
+          +" ACTIVE INJURY, HEEL, 08.28.2026, AND THIS SUPERSEDES THE 'NO INJURIES' PARAGRAPH "
+          +"ABOVE. That paragraph is from 07.20.2026 and ends 'Stop asking about injuries, just "
+          +"keep an eye out if something new shows up.' SOMETHING NEW HAS SHOWN UP. Ian, 28 "
+          +"August: his heel still hurts from the tournament, which was 23 August, so it is six "
+          +"days of the same pain. It is tracked at state.health.injuries and drawn on the gym and "
+          +"pickleball pages. He has also said he has been going light since the tournament. NO "
+          +"DIAGNOSIS, NO TREATMENT AND NO PROGRAMME CHANGE IS BEING MADE HERE, and load is not "
+          +"being ramped on the old 'no injuries' basis until he says otherwise.";
+      }
+
+      state.meta.mig_pk0828=true; save(true);
+  } }catch(e){ try{ console.warn("pk0828 did not apply:",e&&e.message); }catch(_){} }
+
+/* ===== build 351: the swap and the injury go on the Changes I made card ====================== */
+  try{ if(profile==="ian" && state.meta && !state.meta.mig_autolog0828){
+      if(!Array.isArray(state.autoLog)) state.autoLog=[];
+      if(!state.autoLog.some(function(x){ return x&&x.id==="auto-20260828-heel-swap"; })){
+        state.autoLog.unshift({id:"auto-20260828-heel-swap", date:"2026-08-28", area:"Fitness",
+          what:"Started tracking your heel as an active injury, and recorded Friday's gym as a swap rather than a miss.",
+          why:"You said your heel still hurts from the tournament. That was 23 August, so it is six days, and it was the first time an injury had been mentioned in any session. It now has its own record and shows on the gym and pickleball pages instead of sitting inside one session note. Friday's lift was replaced by open play, so it is logged as a substitution the same way 21 August was.",
+          undo:"Set the heel to resolved on the injury record, or delete the 2026-08-28 entry from gym.restDays to score Friday as a normal rest day."});
+      }
+      state.meta.mig_autolog0828=true; save(true);
+  } }catch(e){ try{ console.warn("autolog0828 did not apply:",e&&e.message); }catch(_){} }
+
 
 
 
@@ -15777,7 +15943,57 @@ function habitConsistencyCard(parent){
   const c=card("a-green"); c._body.appendChild(el("div","small muted","Habit consistency, last 7 days"));
   c._body.firstChild.style.marginBottom="6px";
   c._body.appendChild(barChart(items,"g",120)); parent.appendChild(c); }
-function gymToday(parent){ const day=daySplit(DOW); const log=state.gym.logs[TODAY]||(state.gym.logs[TODAY]={done:{},note:""});
+/* ===== build 351: ACTIVE INJURY CARD. THE FIRST INJURY SURFACE THIS APP HAS EVER HAD ==========
+   Ian, 28.08.2026: "my heel still hurts from the tournament". The tournament was 23 August, so it
+   is day six of the same pain. Nothing in this app could hold that. The only injury statement in
+   the whole of state was `gym.notes` saying "NO INJURIES (confirmed by Ian 07.20.2026) ... Stop
+   asking about injuries, just keep an eye out if something new shows up." Something new showed up.
+
+   WHY IT GETS A CARD AND NOT JUST A FIELD. A note buried in a session record is how this went
+   unnoticed for six days in the first place, and build 349 was spent on a fact that lived in three
+   files a human reads and zero fields the app renders. So the container and the surface ship in
+   the same build. It draws on the gym page AND the pickleball page, because the heel is loaded by
+   both and either page is where he would think about it.
+
+   IT DESCRIBES, IT DOES NOT ADVISE. No diagnosis, no treatment, no rest prescription, no plan.
+   Ian did not ask for one and this card is not the place it would come from. It carries what he
+   said, when it started, how many days that is, and when it was last confirmed. The day counter
+   is computed on every render rather than stored, so it cannot go stale in the way a written
+   "six days" would by Monday. */
+/* build 351: INCLUSIVE COUNT, and it is inclusive on purpose. daysUntil gives 5 for 23 to 28
+   August, but the pain has been present on SIX calendar days and "six days" is how Ian and the
+   session note both describe it. An elapsed count here would have put "5 days" on the card while
+   the note two taps away said six, which is the kind of small disagreement that makes a reader
+   distrust both numbers. Rendered as "day N" rather than "N days" so there is no ambiguity about
+   which convention is in use. */
+function _injDays(iso){ try{ var d=daysUntil(iso); return (typeof d==="number"&&d<=0)?(1-d):null; }catch(e){ return null; } }
+function healthCard(parent){
+  try{
+    var H=state.health, list=(H&&Array.isArray(H.injuries))?H.injuries:[];
+    var live=list.filter(function(x){ return x && x.status==="active"; });
+    if(!live.length) return;
+    live.forEach(function(inj){
+      var c=card("a-red"); var b=c._body;
+      var top=el("div","between");
+      var L=el("div"); L.appendChild(el("h3",null,inj.area||"Injury"));
+      var dn=_injDays(inj.started);
+      var sub=el("div","small muted");
+      sub.textContent=(dn!=null?("day "+dn+", since "+fmtShort(inj.started)):("since "+fmtShort(inj.started)))
+        +(inj.from?(", "+inj.from):"");
+      L.appendChild(sub); top.appendChild(L);
+      top.appendChild(el("span","pill b","Active"));
+      b.appendChild(top);
+      if(inj.said){ var q=el("div","small"); q.style.cssText="margin-top:9px;line-height:1.55;color:var(--gray)";
+        q.textContent="\u201C"+inj.said+"\u201D"; b.appendChild(q); }
+      if(inj.note){ var n=el("div","small dim"); n.style.cssText="margin-top:7px;line-height:1.5";
+        n.textContent=inj.note; b.appendChild(n); }
+      if(inj.lastConfirmed){ var lc=el("div","small dim"); lc.style.marginTop="6px";
+        lc.textContent="Last mentioned "+fmtShort(inj.lastConfirmed)+"."; b.appendChild(lc); }
+      parent.appendChild(c);
+    });
+  }catch(e){ try{ console.error("[dash] healthCard",e); }catch(_){} }
+}
+function gymToday(parent){ try{ healthCard(parent); }catch(e){} const day=daySplit(DOW); const log=state.gym.logs[TODAY]||(state.gym.logs[TODAY]={done:{},note:""});
   /* build 266: a PLANNED REST day renders as rest, with nothing to tick. Without this the day
      still gets the synthetic warm up prepended and reads "0 of 1 logged", which is an unfinished
      checklist, which is the exact thing a rest day is not. Ian chose these days. */
@@ -16320,6 +16536,7 @@ function buildPickle(v){ var pb=state.pickleball||(state.pickleball={});
 
 
     /* v21 build 152: pickleball page CLEANED and reordered coaching first. Removed and archived, the DUPR mega chart, the 7 day minutes chart, the two countdown tiles, the moved Talk to your coach card, the duplicate goals, the hardcoded drill list, and the paddle block (paddle now in Settings). */
+  safe(v,function(){ healthCard(v); },"Active injury"); /* build 351: above everything, the heel loads every session on this page */
   safe(v,function(){ buildSkillsRadar(v); },"Skills radar");
   /* v21 build 183: removed the This week sessions per week card (Ian's request). The underlying pb.sessions data is untouched and still drives the training heatmap and the session log, only this per week counter card is gone from the Pickleball page. */
   pkCollapse(v,"pk_coach","Coach","your plan, focus, and video",true,function(c){
