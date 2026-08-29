@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 351 (2026-08-28)">
+<meta name="build" content="v21 build 352 (2026-08-29)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -13760,6 +13760,140 @@ try{ if(profile==="ian"){
       }
       state.meta.mig_autolog0828=true; save(true);
   } }catch(e){ try{ console.warn("autolog0828 did not apply:",e&&e.message); }catch(_){} }
+
+/* ===== build 352: SATURDAY 29 AUGUST. TWO WATCH RECORDS, ONE SESSION ==========================
+
+   Ian: "Add these two sessions in, I cancelled on accident that's just today's session."
+
+   ONE RECORD, AND BOTH WATCH FILES ARE KEPT INSIDE IT. He was on court continuously 12:54 to
+   3:57 PM. The watch stopped at 3:44 because he hit cancel by mistake and restarted at 3:46, so
+   the two files are an artefact of a thumb, not two sessions. Logging them separately would put a
+   second session in the week count and would make an eleven minute session with its own effort
+   rating, which is nonsense. Logging only the combined figures would delete the evidence and
+   guarantee somebody rediscovers the two files later and "fixes" this back into two rows. So the
+   session carries sourceRecords with both, and mergedFrom explains why.
+
+   THE AVERAGE HEART RATE IS DURATION WEIGHTED, NOT A MEAN OF THE TWO. Averaging 117 and 118
+   gives 117.5 and treats eleven minutes as equal to two hours fifty. Weighted: (170.2 x 117 +
+   10.7 x 118) / 180.9 = 117.06, so 117. Peak is 156, the higher of the two. Low is 74, the lower.
+
+   THREE CLAIMS FROM THE BRIEF WERE CHECKED AGAINST ALL 39 SESSIONS. Two did not survive, and the
+   scope discipline that caught yesterday's "highest heart rate ever" is what caught them.
+
+     (a) "Effort 8 is his highest since the tournament." TRUE, and kept. Since 23 August: 10 at
+         the tournament, then 6, 6, unrated, 7. BUT IT IS NOT A PEAK IN ANY WIDER SENSE. Effort 8
+         is his most common rating: 23 of his 34 rated sessions are 8 or above, this one included.
+         So the sentence is true only because the last week was soft, and it is written that way.
+
+     (b) "Longer sessions pull the average down through rest between games." THIS IS BACKWARDS FOR
+         HIS DATA AND IS NOT REPEATED. Sessions of 100 minutes or more average 127.9 bpm across 25
+         of them. Sessions under 100 minutes average 122.3 across 13. HIS LONG SESSIONS RUN
+         HOTTER, NOT COOLER. The proposed explanation would have excused the number using a
+         pattern that is not in his record.
+
+     (c) Which makes the real finding the opposite of the brief's, and it is left as a bare fact:
+         AMONG HIS 25 SESSIONS OF 100 MINUTES OR MORE, 117 TIES FOR THE LOWEST AVERAGE HEART RATE
+         HE HAS EVER RECORDED, level with 18 August and below the other 23. NOTHING IS CONCLUDED
+         FROM THAT. Not the heel, not fatigue, not a light day. It is one number and this build
+         does not have the standing to explain it.
+
+   NOT A RECORD, AND SAYING SO STOPS SOMEBODY CLAIMING IT LATER: 3:00:55 is his SIXTH longest
+   session of 40, behind the APC at 5:14, 19 August at 3:50, the July tournament at 3:37, 13 July
+   league at 3:24 and 11 August league at 3:07. 1,403 active calories ranks 12th of 38.
+
+   THE HEEL. This is three hours on a heel that has hurt since 23 August, which is day seven. THAT
+   TENSION IS RECORDED AS A FACT ON BOTH THE SESSION AND THE INJURY AND IS NOT COMMENTED ON. He
+   did not mention the heel today, so lastConfirmed STAYS at 28 August: playing on it is not the
+   same as reporting on it, and moving the date would invent a mention. No plan, no rest advice,
+   no load recommendation, no skill rating and no 4.5 arc change. */
+  try{ if(profile==="ian" && state.pickleball && state.meta && !state.meta.mig_pk0829){
+      var _PB=state.pickleball;
+      if(!Array.isArray(_PB.sessions)) _PB.sessions=[];
+      var _hasB=false;
+      for(var i=0;i<_PB.sessions.length;i++){ if(_PB.sessions[i]&&_PB.sessions[i].id==="pk-20260829-openplay") _hasB=true; }
+      if(!_hasB){
+        _PB.sessions.push({
+          id:"pk-20260829-openplay", date:"2026-08-29", kind:"Open play",
+          duration:"3h 00m 55s",
+          window:"12:54 to 3:57 PM, continuous",
+          calories:1685, activeCalories:1403, avgHr:117, maxHr:156, minHr:74, effort:8,
+          result:"", score:"", opponent:"",
+          mergedFrom:"Two watch records, one session. The watch was cancelled by accident at 3:44 PM and restarted at 3:46 PM. The two minute gap is the mistake, not a break.",
+          avgHrMethod:"Duration weighted across both records, (170.2 x 117 + 10.7 x 118) / 180.9 = 117.1. NOT the mean of 117 and 118, which would be 117.5 and would treat 11 minutes as equal to 2h 50m.",
+          sourceRecords:[
+            {part:1, window:"12:54 to 3:44 PM", duration:"2h 50m 12s", minutes:170.2,
+             activeCalories:1321, calories:1587, avgHr:117, maxHr:156, minHr:74, effort:8},
+            {part:2, window:"3:46 to 3:57 PM", duration:"0h 10m 43s", minutes:10.7,
+             activeCalories:82, calories:98, avgHr:118, maxHr:151, minHr:85, effort:8}
+          ],
+          copyOwned:true,
+          note:"Open play, Saturday 29 August, 12:54 to 3:57 PM. THREE HOURS ON COURT, 3:00:55. "
+            +"ONE SESSION, NOT TWO: you cancelled the watch by accident at 3:44 and restarted it "
+            +"at 3:46, so there are two watch files and a two minute gap that was a thumb rather "
+            +"than a break. Both files are kept on this record so nobody splits it back apart "
+            +"later. Combined: 1,403 active and 1,685 total calories, avg HR 117 weighted by how "
+            +"long each part ran, peak 156, low 74. Effort 8, hard, your own rating. "
+            +"EFFORT 8 IS YOUR HIGHEST SINCE THE TOURNAMENT, which was 10, with 6 at league, 6 on "
+            +"Wednesday and 7 on Friday in between. Worth saying it is not a peak though, 8 is "
+            +"your most common rating, 23 of your 34 rated sessions are 8 or above. The last week "
+            +"was the soft patch, not this. "
+            +"ON THE HEART RATE, ONE FACT AND NO EXPLANATION: 117 across three hours is, level "
+            +"with 18 August, the LOWEST average you have recorded in any session of an hour and "
+            +"forty minutes or more, and there are 26 of those. Your long sessions usually run "
+            +"HOTTER than your short ones, averaging 128 against 122, so length does not account "
+            +"for it. Nothing is being concluded from that here. "
+            +"NOT A RECORD, for the avoidance of doubt: this is your sixth longest session of 40, "
+            +"and the 1,403 active calories rank twelfth. "
+            +"AND THE PLAIN FACT ABOUT THE HEEL: this is three hours on a heel that has hurt since "
+            +"the tournament on 23 August, which is day seven. That is recorded, not judged.",
+          agent:"MERGED RECORD. sourceRecords holds both watch files with their own figures, "
+            +"mergedFrom says why, avgHrMethod documents the weighting. DO NOT SPLIT THIS INTO TWO "
+            +"SESSIONS and do not recompute avgHr as a plain mean of 117 and 118. "
+            +"TWO CLAIMS IN THE INCOMING BRIEF WERE WRONG AND WERE NOT SHIPPED. (1) It said longer "
+            +"sessions pull the average down through rest between games, so the 117 should not be "
+            +"read as lighter work. HIS DATA SAYS THE OPPOSITE: 100 min plus sessions average "
+            +"127.9 bpm (n=25), under 100 min average 122.3 (n=13). Long sessions run hotter for "
+            +"him, so that excuse is unavailable and repeating it would have explained the number "
+            +"away with a pattern he does not have. (2) The framing implied effort 8 was a notable "
+            +"high; it is his modal rating, 23 of 34 rated sessions are 8 or above, this one included. "
+            +"WHAT IS ACTUALLY UNUSUAL, STATED AS A BARE FACT AND DELIBERATELY NOT EXPLAINED: 117 "
+            +"ties 18 August for his lowest average HR in any session of 100 minutes or more. "
+            +"CANDIDATE READINGS, NONE SUPPORTED BY ONE SESSION: heel guarding or altered gait, "
+            +"accumulated fatigue across a heavy week, a genuinely social three hours with long "
+            +"waits, or measurement drift on a long wear. Do not pick one, do not report it as a "
+            +"finding, do not build a plan on it. For the coaching lane with more sessions. "
+            +"HEEL: lastConfirmed deliberately NOT moved to 29 August, he did not mention it "
+            +"today. Playing on it is not reporting on it and moving the date would invent a "
+            +"mention. The three hour load is recorded on the injury's load array instead. "
+            +"No training plan written, no skill rating touched, 4.5 arc untouched."
+        });
+      }
+
+      /* THE INJURY GETS THE LOAD, NOT A NEW CONFIRMATION DATE. */
+      if(state.health && Array.isArray(state.health.injuries)){
+        state.health.injuries.forEach(function(inj){
+          if(!inj || inj.id!=="inj-heel-20260823") return;
+          if(!Array.isArray(inj.load)) inj.load=[];
+          var seen=false;
+          for(var k=0;k<inj.load.length;k++){ if(inj.load[k]&&inj.load[k].date==="2026-08-29") seen=true; }
+          if(!seen){
+            inj.load.push({date:"2026-08-29", what:"Open play, 3h 00m 55s, effort 8",
+              session:"pk-20260829-openplay",
+              note:"Day seven. Three hours on court. Recorded as a fact, not as a judgement, and "
+                +"he did not mention the heel today."});
+          }
+          if(String(inj.agent||"").indexOf("LOAD ARRAY")<0){
+            inj.agent=String(inj.agent||"")
+              +" LOAD ARRAY ADDED 08.29.2026, build 352. inj.load holds dated entries for sessions "
+              +"played while this was active, so the record shows what he did on it rather than "
+              +"only that it exists. Appending to load is NOT a confirmation that he mentioned the "
+              +"injury, and lastConfirmed must not be moved on the strength of a load entry.";
+          }
+        });
+      }
+
+      state.meta.mig_pk0829=true; save(true);
+  } }catch(e){ try{ console.warn("pk0829 did not apply:",e&&e.message); }catch(_){} }
 
 
 
