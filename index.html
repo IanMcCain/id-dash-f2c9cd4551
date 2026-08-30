@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 353 (2026-08-30)">
+<meta name="build" content="v21 build 354 (2026-08-30)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -15100,7 +15100,9 @@ function buildIanHome(v){ const workout=daySplit(DOW); const reTop=firstUndone((
     q.appendChild(qb("re",ICO.property,"Real Estate",function(){ reView="pipeline"; try{ render(); }catch(e){} selectTab("re"); }));
     q.appendChild(qb("gy",ICO.dumbbell,"Workout",function(){ gymJump("Workout routine"); }));
     /* build 121: Coach opens the Pickleball tab AND expands the Personal Coach section, which is keyed pk_coach. */
-    q.appendChild(qb("pk",PICKLE_SVG,"Coach",function(){ try{ PK_OPEN["pk_coach"]=true; }catch(e){} try{ render(); }catch(e){} selectTab("pickle"); }));
+    /* build 354: was "Coach" and opened pk_coach, which no longer exists. Points at Mechanics,
+       the surface that replaced it, rather than being left to open nothing. */
+    q.appendChild(qb("pk",PICKLE_SVG,"Mechanics",function(){ try{ PK_OPEN["pk_mechanics"]=true; }catch(e){} try{ render(); }catch(e){} selectTab("pickle"); }));
     q.appendChild(qb("so",ICO.sun,"Solara",function(){ selectTab("solara"); }));
     qc._body.appendChild(q); v.appendChild(qc);
   },"Quick actions");
@@ -15458,7 +15460,9 @@ function buildIanHome(v){ const workout=daySplit(DOW); const reTop=firstUndone((
     var C=[]; var push=function(o){ if(o&&o.title) C.push(o); };
     var goRe=function(){ reView="pipeline"; try{ render(); }catch(e){} selectTab("re"); };
     var goTodo=function(){ reView="todo"; try{ render(); }catch(e){} selectTab("re"); };
-    var goStudy=function(){ try{ PK_OPEN["pk_study"]=true; }catch(e){} try{ render(); }catch(e){} selectTab("pickle"); };
+    /* build 354: pk_study is cut. The weakest link candidate below is about a SHOT, so it now
+       opens Mechanics, which is the page that answers "what do I do about it". */
+    var goStudy=function(){ try{ PK_OPEN["pk_mechanics"]=true; }catch(e){} try{ render(); }catch(e){} selectTab("pickle"); };
     /* 1. dated money. */
     try{ ((state.realEstate&&state.realEstate.deals)||[]).forEach(function(d){
       if(!d||!d.close) return;
@@ -15667,7 +15671,10 @@ function buildIanHome(v){ const workout=daySplit(DOW); const reTop=firstUndone((
     lf.appendChild(s); row.appendChild(lf);
     var cv=el("div","dim"); cv.textContent="\u203A"; cv.style.cssText="font-size:20px;flex:0 0 auto"; row.appendChild(cv);
     b.appendChild(row);
-    c.onclick=function(){ try{ PK_OPEN["pk_study"]=true; }catch(e){} try{ render(); }catch(e){} selectTab("pickle"); };
+    /* build 354: secLearn is no longer called, so this is unreachable. Retargeted anyway rather
+       than left pointing at a deleted key, so re-enabling the function later lands somewhere
+       real instead of opening nothing. */
+    c.onclick=function(){ try{ PK_OPEN["pk_mechanics"]=true; }catch(e){} try{ render(); }catch(e){} selectTab("pickle"); };
     v.appendChild(c);
   },"Learning mode"); };
   var secQuiet=function(){ safe(v,function(){
@@ -15747,7 +15754,10 @@ function buildIanHome(v){ const workout=daySplit(DOW); const reTop=firstUndone((
      gated on there being video stats, so on a profile with none, six collapsed drawers rendered under
      no header at all. It is unconditional now and it covers everything below it. */
   safe(v,function(){ sect(v,"Learning mode","depth when you want it, none of it daily"); },"Learning mode header");
-  secLearn();      /* build 212: the Learning Mode door          */
+  /* secLearn NOT CALLED from build 354. It was the Home door into "Pickleball study", which is
+     cut, so tapping it would have opened a section that no longer renders. The function is left
+     defined and uncalled per the same convention that kept pkInsights and pkRecord, and
+     state.pickleball.videoStats is untouched and still exports. */
   secProg();       /* goal pace and closing money               */
   secWater();
   secSphere();
@@ -16358,9 +16368,10 @@ function gymToday(parent){ try{ healthCard(parent); }catch(e){} const day=daySpl
   (function(){ var hn=(state.gym&&state.gym.handSpeedNote)||""; if(!hn) return;
     var hc=card("a-blue"); var hb=hc._body; hb.appendChild(el("span","pill b","Hand speed, honest read"));
     var ht=el("div","small"); ht.style.cssText="margin-top:9px;line-height:1.55;color:var(--gray)"; ht.textContent=hn; hb.appendChild(ht);
-    var hg=el("button","btn ghost block","On court drills are the primary path"); hg.style.marginTop="11px";
-    hg.onclick=function(){ try{ PK_OPEN["pk_active"]=true; }catch(e){} try{ render(); }catch(e){} selectTab("pickle"); };
-    hb.appendChild(hg); parent.appendChild(hc); })();
+    /* build 354: the button under this note pointed at pk_active, "Work on and cues", which is
+       cut. The note itself is gym content and stays. A button that opens nothing is worse than no
+       button, and there is no honest replacement destination for "on court drills". */
+    parent.appendChild(hc); })();
   
   const c=card("a-blue"); const b=c._body; const top=el("div","between"); const left=el("div"); left.appendChild(el("h3",null,cleanFocus(day.focus))); const sub=el("div","small muted"); /* build 214: day name from the clock, and a swapped in session says so */ const _sw=daySwapInfo(); sub.textContent="Today, "+DAYFULL[DOW]+". "+(_sw&&_sw.kind==="swap"?"Running "+_sw.from+"'s session. ":"")+"Pickleball: "+day.play; left.appendChild(sub); top.appendChild(left); top.appendChild(el("span","pill b",day.play)); b.appendChild(top); if(day.note){ const n=el("div","small muted"); n.style.marginTop="6px"; n.textContent=day.note; b.appendChild(n); } const pbar=el("div","pbar"); const pi=el("i"); pbar.appendChild(pi); b.appendChild(pbar); try{pi.style.width=(total?dc/total*100:0)+"%";}catch(e){} const pl=el("div","small dim"); pl.style.marginTop="7px"; pl.textContent=dc+" of "+total+" logged"; b.appendChild(pl); const list=el("div"); list.style.marginTop="6px"; items.forEach(e=>{ const done=!!log.done[e.id]; const row=el("label","ex"); const inp=el("input","cbx"); inp.type="checkbox"; inp.checked=done; const box=el("span","box"); box.innerHTML=CHECK; inp.addEventListener("change",()=>{ if(log.done[e.id])delete log.done[e.id]; else log.done[e.id]=true; save(); render(); }); row.appendChild(inp); row.appendChild(box); row.appendChild(el("span","exname",e.name)); row.appendChild(el("span","scheme",e.scheme)); list.appendChild(row); }); b.appendChild(list); if(total){ const btn=el("button","btn ghost sm block",dc<total?"Check all":"Reset today"); btn.onclick=()=>{ if(dc<total)items.forEach(e=>log.done[e.id]=true); else items.forEach(e=>delete log.done[e.id]); save(); render(); }; b.appendChild(btn); } parent.appendChild(c);
   const nc=card(); nc._body.appendChild(el("div","small muted","Session note (today)")); const ta=el("textarea","in"); ta.style.minHeight="58px"; ta.style.marginTop="6px"; ta.placeholder="Weights, PRs, how it felt..."; ta.value=log.note||""; ta.oninput=()=>{log.note=ta.value;save();}; nc._body.appendChild(ta); parent.appendChild(nc);
@@ -16871,6 +16882,116 @@ function buildSkillsRadar(parent){
   }catch(e){}
   parent.appendChild(c);
 }
+/* ===== build 354: MECHANICS. THE ONLY TEACHING SURFACE LEFT ON THE PICKLEBALL PAGE ============
+
+   THE SHOT LIST IS CODE, THE TEACHING IS STATE. The eight shots below are fixed and ordered here,
+   because the list is a design decision Ian made and should not drift when an agent writes. The
+   content is read from `state.pickleball.mechanics.shots[<id>]`, so PB-A writes it once, into
+   state, and it rides the normal export and merge path. Nothing is pasted into this file twice.
+
+   THE CONTRACT, and it is deliberately small:
+     state.pickleball.mechanics = {
+       version: 1,
+       shots: {
+         "drives": {
+           status : "ready" | "draft"        omit or use "draft" and it renders as unwritten
+           updated: "YYYY-MM-DD"
+           by     : "PB-A"
+           paras  : ["...", "..."]           the teaching, in reading order, required
+           cues   : ["...", "..."]           optional, short, shown as a checklist
+           video  : { title:"...", url:"https://..." }   OPTIONAL, nice to have, never required
+         }
+       }
+     }
+   Anything missing degrades to the unwritten state. A shot with paras renders; a shot without
+   does not pretend to.
+
+   WHY THE PLACEHOLDER IS EXPLICIT RATHER THAN AN EMPTY CARD. Ian was shown an empty section once
+   before and read it as broken. Each unwritten shot says what it is waiting for and who is
+   writing it, so a half built section reads as in progress rather than as a bug. The header
+   counts how many are written so the state of the whole thing is visible without opening one. */
+var PK_SHOTS=[
+  {id:"drives",           label:"Drives"},
+  {id:"drops",            label:"Drops"},
+  {id:"backhand",         label:"Backhand"},
+  {id:"twoHandBackhand",  label:"Two hand backhand"},
+  {id:"resets",           label:"Resets"},
+  {id:"dinks",            label:"Dinks"},
+  {id:"flicks",           label:"Flicks"},
+  {id:"grip",             label:"Grip"}
+];
+function pkShotContent(id){
+  try{
+    var m=(state.pickleball&&state.pickleball.mechanics)||null;
+    var sh=(m&&m.shots&&m.shots[id])||null;
+    if(!sh) return null;
+    var paras=Array.isArray(sh.paras)?sh.paras.filter(function(x){ return String(x||"").trim(); }):[];
+    if(!paras.length) return null;
+    if(sh.status && sh.status!=="ready") return null;
+    return {paras:paras,
+            cues:Array.isArray(sh.cues)?sh.cues.filter(function(x){ return String(x||"").trim(); }):[],
+            video:(sh.video&&sh.video.url)?sh.video:null,
+            updated:sh.updated||"", by:sh.by||""};
+  }catch(e){ return null; }
+}
+function pkMechanics(parent){
+  var ready=0;
+  PK_SHOTS.forEach(function(s){ if(pkShotContent(s.id)) ready++; });
+  var sub=ready?(ready+" of "+PK_SHOTS.length+" written"):"being written, footage first";
+  pkCollapse(parent,"pk_mechanics","Mechanics",sub,true,function(mv){
+    if(!ready){
+      var ic=card(); var ib=ic._body;
+      var t=el("div","small"); t.style.cssText="line-height:1.55;color:var(--gray);font-weight:600";
+      t.textContent="The mechanics breakdowns are being written now, starting from your own footage. "
+        +"Every shot below is listed and none is written yet, so nothing here is broken.";
+      ib.appendChild(t);
+      mv.appendChild(ic);
+    }
+    PK_SHOTS.forEach(function(sh){
+      var got=pkShotContent(sh.id);
+      pkCollapse(mv,"pkm_"+sh.id,sh.label,got?(got.video?"with video":"breakdown"):"not written yet",false,function(sv){
+        if(!got){
+          var ec=card(); var eb=ec._body;
+          var p=el("span","pill s","Not written yet"); eb.appendChild(p);
+          var d=el("div","small dim"); d.style.cssText="margin-top:9px;line-height:1.5";
+          d.textContent="No breakdown for this shot yet. It is on the list and is being written from "
+            +"your footage. Nothing is missing or broken here.";
+          eb.appendChild(d); sv.appendChild(ec); return;
+        }
+        var cc=card(); var b=cc._body;
+        got.paras.forEach(function(pp,i){
+          var d=el("div","small"); d.style.cssText="line-height:1.55;color:var(--gray)"+(i?";margin-top:10px":"");
+          d.textContent=String(pp); b.appendChild(d);
+        });
+        if(got.cues.length){
+          var ch=el("div","small"); ch.style.cssText="margin-top:13px;padding-top:10px;border-top:1px solid var(--line);font-weight:800;letter-spacing:.09em;text-transform:uppercase;color:var(--sec2,var(--accent2))";
+          ch.textContent="On court"; b.appendChild(ch);
+          got.cues.forEach(function(cu,i){
+            var r=el("div"); r.style.cssText="display:flex;gap:9px;align-items:flex-start;margin-top:"+(i?"9px":"8px");
+            var dot=el("span"); dot.style.cssText="width:5px;height:5px;border-radius:50%;background:var(--sec2,var(--accent2));flex:0 0 auto;margin-top:7px";
+            var tx=el("div","small"); tx.style.cssText="line-height:1.5"; tx.textContent=String(cu);
+            r.appendChild(dot); r.appendChild(tx); b.appendChild(r);
+          });
+        }
+        if(got.video){
+          /* NICE TO HAVE, NEVER REQUIRED. Ian said a video would be better but is not necessary,
+             so it is a link rather than an embed: an iframe would need network on a page that
+             works offline, and a dead embed looks broken in a way a link does not. */
+          var vb=el("button","btn ghost block",got.video.title||"Watch someone demonstrate this");
+          vb.style.marginTop="13px";
+          vb.onclick=function(){ var u=got.video.url; try{ window.open(u,"_blank","noopener"); }catch(e){ location.href=u; } };
+          b.appendChild(vb);
+        }
+        if(got.updated){
+          var f=el("div","small dim"); f.style.marginTop="10px";
+          f.textContent="Written "+fmtShort(got.updated)+(got.by?", "+got.by:"");
+          b.appendChild(f);
+        }
+        sv.appendChild(cc);
+      });
+    });
+  },ICO.target,"green");
+}
 function buildPickle(v){ var pb=state.pickleball||(state.pickleball={});
   if(!Array.isArray(pb.sessions)) pb.sessions=[];
   if(typeof pb.dayNote!=="string") pb.dayNote="";
@@ -16886,121 +17007,37 @@ function buildPickle(v){ var pb=state.pickleball||(state.pickleball={});
   safe(v,function(){ healthCard(v); },"Active injury"); /* build 351: above everything, the heel loads every session on this page */
   safe(v,function(){ buildSkillsRadar(v); },"Skills radar");
   /* v21 build 183: removed the This week sessions per week card (Ian's request). The underlying pb.sessions data is untouched and still drives the training heatmap and the session log, only this per week counter card is gone from the Pickleball page. */
-  pkCollapse(v,"pk_coach","Coach","your plan, focus, and video",true,function(c){
-    (function(){ var du=daysUntil("2026-08-23"); var rc=card(); var t=el("div","small"); t.style.cssText="line-height:1.5;color:var(--gray);font-weight:600"; t.textContent="First tournament, August 23"+(du>=0?", in "+du+" day"+(du===1?"":"s"):""); rc._body.appendChild(t); c.appendChild(rc); })();
+  /* ===== build 354: THE PICKLEBALL PAGE IS CUT BACK TO THE HEATMAP AND MECHANICS ============
+     Ian, 30 August: strip the pro teaching, the pro comments, the talk to my coach material and
+     the video watching. The only thing kept from all of that is a mechanics breakdown.
 
-    safe(c,function(){
-      /* build 118: coachBullets is a DATE KEYED MAP, {"YYYY-MM-DD":[...]}. Seeded arrays never overwrite an
-         existing local array in deepMergeDefaults, so a plain array would land once and then go stale forever.
-         A map merges key by key, so each new day the agent writes actually reaches the phone. Legacy array still read. */
-      var cbSrc=pb.coachBullets, bl=null;
-      if(Array.isArray(cbSrc)&&cbSrc.length){ bl=cbSrc; }
-      else if(cbSrc&&typeof cbSrc==="object"){
-        if(Array.isArray(cbSrc[TODAY])&&cbSrc[TODAY].length){ bl=cbSrc[TODAY]; }
-        else { var ks=Object.keys(cbSrc).filter(function(k){ return Array.isArray(cbSrc[k])&&cbSrc[k].length&&k<=TODAY; }).sort(); if(ks.length) bl=cbSrc[ks[ks.length-1]]; }
-      }
-      if(!bl){ var src=(pb.coachPlan&&pb.coachPlan.paras)||[]; bl=src.slice(0,4).map(function(x){ var s=String(x||"").split(/(?<=[.!?])\s+/); return (s[0]||"").trim(); }).filter(Boolean); }
-      if(!bl.length) return;
-      var _prep=(function(){ try{ var evs=(state.events||[]); for(var _i=0;_i<evs.length;_i++){ var e=evs[_i]; if(!e||!e.date) continue; var du=daysUntil(e.date); var tx=((e.kind||"")+" "+(e.title||"")).toLowerCase(); if(du>=0&&du<=2 && /(tournament|fall cup|tryout|apc|doubles)/.test(tx)) return true; } }catch(e){} return false; })();
-      sect(c,"Your coach", _prep?"prep day, full plan":"today, one focus");
-      var cc=card(); var b=cc._body; b.appendChild(el("span","pill s","Coach"));
-      function _addLine(host,line,idx){ var r=el("div"); r.style.cssText="display:flex;gap:9px;align-items:flex-start"+(idx>0?";margin-top:9px":""); var dot=el("span"); dot.style.cssText="color:var(--sec,var(--accent));font-weight:900;line-height:1.5;flex:0 0 auto"; dot.textContent="\u2022"; var s=el("div","small"); s.style.cssText="line-height:1.5;color:var(--gray)"; s.textContent=String(line||"").trim(); r.appendChild(dot); r.appendChild(s); host.appendChild(r); }
-      var ul=el("div"); ul.style.marginTop="10px";
-      if(_prep){ bl.slice(0,5).forEach(function(line,i){ _addLine(ul,line,i); }); b.appendChild(ul); }
-      else {
-        _addLine(ul,bl[0],0); b.appendChild(ul);
-        if(bl.length>1){
-          var _more=el("div"); _more.style.display="none"; _more.style.marginTop="9px";
-          bl.slice(1,5).forEach(function(line,i){ _addLine(_more,line,i); });
-          b.appendChild(_more);
-          var _mb=el("button","btn ghost sm block","Show more"); _mb.style.marginTop="10px";
-          _mb.onclick=function(){ var on=_more.style.display==="none"; _more.style.display=on?"block":"none"; _mb.textContent=on?"Show less":"Show more"; };
-          b.appendChild(_mb);
-        }
-      }
-      var go=el("button","btn ghost block","Full plan and research in Deep Dive"); go.style.marginTop="12px";
-      go.onclick=function(){ try{ window.open("deep-dive.html","_blank","noopener"); }catch(e){ location.href="deep-dive.html"; } };
-      b.appendChild(go);
-      c.appendChild(cc);
-    },"Pickle coach bullets");
-    
-    (function(){ var cr=(pb.coachRec&&(pb.coachRec[TODAY]||pkLatest(pb.coachRec)))||null; if(!cr) return; var title=(typeof cr==="string")?"":(cr.title||""); var body=(cr&&typeof cr==="object")?(cr.note||cr.text||""):String(cr||""); if(!title&&!body) return; sect(c,"This week's focus","picked by your coach"); var cc=card(); var b=cc._body; if(title){ var t=el("div"); t.style.cssText="font-weight:800;font-size:15.5px;letter-spacing:-.01em;margin-bottom:7px"; t.textContent=title; b.appendChild(t); } if(body){ pkParas(b,body); } c.appendChild(cc); })();
-    
-    sect(c,"Today's video","picked by your coach");
-    (function(){ var vr=(pb.videoRec&&pb.videoRec[TODAY])||pkLatest(pb.videoRec)||{title:"Third shot drop, groove the soft game",url:"https://www.youtube.com/results?search_query=pickleball+third+shot+drop+drill",note:"Default pick. Your daily coach swaps this each morning.",_default:true}; var cc=card(); var b=cc._body; b.appendChild(el("span","pill g","Watch")); var t=el("div"); t.style.cssText="font-weight:800;font-size:16px;margin-top:8px;letter-spacing:-.01em"; t.textContent=vr.title||"Pickleball video"; b.appendChild(t); if(vr.note){ var n=el("div","small muted"); n.style.marginTop="5px"; n.textContent=vr.note; b.appendChild(n); } if(vr.url){ var a=el("a","feedlink"); a.href=vr.url; a.target="_blank"; a.rel="noopener"; a.textContent="Watch \u203A"; a.style.marginTop="12px"; a.style.display="inline-block"; b.appendChild(a); } c.appendChild(cc); })();
-    
-    /* "What your coach sees" REMOVED build 236, 08.06.2026, on Ian's instruction.
-       Audited before removal per the Stats discipline: NOTHING unique died with it. Every line it
-       printed was a rollup of values that are still on screen. Sessions this week and minutes on
-       court are the Training consistency heatmap. Win and loss, effort and average HR are on each
-       session card. The next event is on the calendar and is a secFirstThing candidate. It stored
-       nothing at all, pkInsights() is pure and derives from pkStats() at render time, so no field
-       was dropped and nothing needed moving. pkInsights and pkRecord are kept in place per the
-       BRAIN convention and are now uncalled. */
-    
-  },ICO.target,"green");
-  /* =====================================================================================
-     v21 build 212: LEARNING MODE. RULES.md P3. Pickleball is the deliberate exception to
-     short daily use, so this section is allowed to be long, and it is CLOSED BY DEFAULT so
-     it never lengthens a normal day. The Home card sets PK_OPEN["pk_study"] before it
-     navigates, so it is one tap from Today and full depth when he asks for it.
+     WHAT WENT, AND ALL FOUR WERE TEACHING SURFACES:
+       pk_coach   "Coach"             coach bullets, coachRec, Today's video, Deep Dive button
+       pk_study   "Pickleball study"  film studies, next focus, the rating estimate card
+       pk_active  "Work on and cues"  what to drill and remember while playing
+       pk_drills  "Drills"            the capped machine and partner list
 
-     It renders pickleball.videoStats and pickleball.skillEstimate, both of which have been
-     written into state since build 131 and build 119 and rendered NOWHERE until now. Seven
-     studies of his own footage, about 35 conclusions and seven coach notes he has never
-     seen in the app. Read only. It writes nothing and owns nothing, so it cannot disturb
-     the coach sections above it or the session history below it.
+     WHAT STAYED AND WHY, because "everything that is not the heatmap or mechanics" would have
+     taken these too and all three are explicitly protected: the ACTIVE INJURY card, the SKILLS
+     RADAR (the circular skill map, and the chart actually at the top of this page, the training
+     heatmap itself lives on Home and is untouched), SESSIONS (his own records, and the thing five
+     of the last six builds wrote into), and GOALS AND EVENTS (his goals and his calendar, neither
+     of which is pro teaching, and which hold the 4.5 arc).
+
+     THE DEEP DIVE WAS NOT ACTUALLY GONE. Build 344 retired the page and left deep-dive.html on
+     disk, but the "Full plan and research in Deep Dive" button inside pk_coach was still live and
+     still opened it. It died with pk_coach. There is now no route to that file from this app.
+
+     NO DANGLING CALL SITES. Four places outside this function opened the cut sections and all
+     four are handled: the Home Coach quick button and the weakest link candidate now open
+     mechanics, the Home "Pickleball study" door is no longer called, and the gym hand speed
+     button lost its destination and lost the button.
+
+     THE CONTENT DOES NOT EXIST YET AND THE UI SAYS SO RATHER THAN LOOKING BROKEN. PB-A is writing
+     it, footage first. Every shot renders a "not written yet" state until real content lands.
      ===================================================================================== */
-  pkCollapse(v,"pk_study","Pickleball study","your film, your rating, your next focus",false,function(c){
-    var _pb=state.pickleball||{}; var _vs=Array.isArray(_pb.videoStats)?_pb.videoStats:[];
-    var _nf=pkNextFocus();
-    if(_nf&&_nf.note){
-      sect(c,"Next session, one focus","");
-      var fc=card("a-green"); var fb=fc._body;
-      var fk=el("div","small"); fk.style.cssText="font-weight:800;letter-spacing:.09em;text-transform:uppercase;color:var(--sec2,var(--accent2))"; fk.textContent="Do this next time"; fb.appendChild(fk);
-      var ft=el("div"); ft.style.cssText="font-weight:800;font-size:16px;line-height:1.36;margin-top:6px"; ft.textContent=_nf.note; fb.appendChild(ft);
-      var fw=el("div","small dim"); fw.style.cssText="margin-top:9px;padding-top:8px;border-top:1px solid var(--line);line-height:1.45";
-      fw.textContent="From your own film"+(_nf.source?", "+_nf.source:(_nf.date?", "+fmtShort(_nf.date):""))+". "+_nf.n+" stud"+(_nf.n===1?"y":"ies")+" on file.";
-      fb.appendChild(fw); c.appendChild(fc);
-    }
-    if(_vs.length){
-      sect(c,"What your film actually said",_vs.length+" stud"+(_vs.length===1?"y":"ies"));
-      _vs.slice().sort(function(a,b){ return String((b&&b.date)||"").localeCompare(String((a&&a.date)||"")); }).forEach(function(x){
-        if(!x) return;
-        var vc=card(); var vb=vc._body;
-        var h=el("div"); h.style.cssText="font-weight:800;font-size:15px;letter-spacing:-.01em;line-height:1.35"; h.textContent=x.source||(x.date?"Film study "+x.date:"Film study"); vb.appendChild(h);
-        if(x.date){ var dt=el("div","small dim"); dt.style.marginTop="3px"; dt.textContent=fmtShort(x.date)+(x.gradable===false?", estimates rather than a frame perfect ledger":""); vb.appendChild(dt); }
-        (Array.isArray(x.summary)?x.summary:[]).forEach(function(s){
-          if(!s) return; var r=el("div","small"); r.style.cssText="margin-top:8px;line-height:1.45;padding-left:11px;border-left:2px solid var(--line)"; r.textContent=String(s); vb.appendChild(r);
-        });
-        if(x.coachNote){ var cn=el("div","small"); cn.style.cssText="margin-top:10px;padding-top:9px;border-top:1px solid var(--line);line-height:1.45;color:var(--sec2,var(--accent2))"; cn.textContent=x.coachNote; vb.appendChild(cn); }
-        c.appendChild(vc);
-      });
-    }
-    var _se=_pb.skillEstimate;
-    if(_se&&_se.doubles){
-      sect(c,"Rating and the target","");
-      var rc=card("a-purple"); var rb=rc._body;
-      var rt=el("div"); rt.style.cssText="font-weight:800;font-size:16px;line-height:1.35";
-      rt.textContent=(_se.rated===true?"DUPR ":"Self assessed ")+_se.doubles.lo+(_se.doubles.hi!==_se.doubles.lo?" to "+_se.doubles.hi:"")+" doubles"+(_se.rated===false?", unrated":", measured");
-      rb.appendChild(rt);
-      if(_se.target&&_se.target.lo){ var gg=el("div","small"); gg.style.cssText="margin-top:6px;line-height:1.45"; gg.textContent="Target "+_se.target.lo+" to "+_se.target.hi+"."; rb.appendChild(gg); }
-      if(_se.note){ var nn=el("div","small dim"); nn.style.cssText="margin-top:8px;line-height:1.45"; nn.textContent=_se.note; rb.appendChild(nn); }
-      if(_se.source||_se.date){ var ss=el("div","small dim"); ss.style.marginTop="7px"; ss.textContent="Source: "+(_se.source||"")+(_se.date?", "+fmtShort(_se.date):""); rb.appendChild(ss); }
-      c.appendChild(rc);
-    }
-    if(!_vs.length&&!(_se&&_se.doubles)){ var ec=card(); ec._body.appendChild(el("div","empty","No film studies yet. Run the video coach on a session and the conclusions land here.")); c.appendChild(ec); }
-  },ICO.video,"green");
-  pkCollapse(v,"pk_active","Work on and cues","what to drill and remember while playing",false,function(ap){
-    safe(ap,function(){ var wo=(pb.workOn&&pb.workOn.length)?pb.workOn.slice(0,4):[]; sect(ap,"Work on","top 4"); var cc=card(); if(!wo.length){ cc._body.appendChild(el("div","empty","Your coach will fill this in from your sessions.")); } else { wo.forEach(function(line,i){ var r=el("div","small"); r.style.cssText="line-height:1.5;color:var(--white);font-weight:600"+(i>0?";margin-top:9px":""); var dot=el("span"); dot.style.cssText="color:var(--pk1);font-weight:800;margin-right:8px"; dot.textContent="\u2022"; r.appendChild(dot); r.appendChild(document.createTextNode(line)); cc._body.appendChild(r); }); } ap.appendChild(cc); },"Active workon");
-    
-    safe(ap,function(){ var cu=(pb.cues&&pb.cues.length)?pb.cues.slice(0,6):[]; sect(ap,"While playing","6 cues"); var cc=card(); if(!cu.length){ cc._body.appendChild(el("div","empty","Your coach will fill this in from your game plan.")); } else { cu.forEach(function(line,i){ var r=el("div","small"); r.style.cssText="line-height:1.52;color:var(--gray)"+(i>0?";margin-top:9px":""); var dot=el("span"); dot.style.cssText="color:var(--pk2);font-weight:800;margin-right:8px"; dot.textContent="\u203a"; r.appendChild(dot); r.appendChild(document.createTextNode(line)); cc._body.appendChild(r); }); } ap.appendChild(cc); },"Active cues");
-  
-  },null,"orange")   /* build 237: icon DROPPED. The paddle already means Pickleball on the tab bar and on the Coach launcher, so a third use INSIDE the pickleball tab says nothing that being on the page has not already said. Fewer icons is the actual Apple discipline. */;
-  pkCollapse(v,"pk_drills","Drills","one capped list, machine and partner",false,function(ap){
-    safe(ap,function(){ if(!Array.isArray(pb.drills)) pb.drills=[]; function pkGrp(host,label,sub,key){ var list=pb.drills.filter(function(d){return d&&d.group===key;}).slice(0,4); if(!list.length) return; sect(host,label,sub); var gc=card(); list.forEach(function(d){ var r=el("div","small"); r.style.cssText="line-height:1.5;color:var(--gray)"; if(gc._body.childElementCount) r.style.marginTop="9px"; var dot=el("span"); dot.style.cssText="color:var(--sec,var(--accent));font-weight:800;margin-right:8px"; dot.textContent="\u2022"; r.appendChild(dot); r.appendChild(document.createTextNode(d.text||"")); gc._body.appendChild(r); }); host.appendChild(gc); } pkGrp(ap,"SOLO, no partner needed","your session when Dylan is out, 3 to 4 max","machine"); pkGrp(ap,"With a partner","live reps, 3 to 4 max","partner"); },"Pickle drills capped");
+  safe(v,function(){ pkMechanics(v); },"Mechanics");
 
-  },ICO.repeat,"teal");
   pkCollapse(v,"pk_sessions","Sessions","log, this week, and history",false,function(c){
     (function(){ var rc=card(); var t=el("div","small"); t.style.cssText="line-height:1.55;color:var(--gray)"; var _dh5=(pb&&Array.isArray(pb.dupr))?pb.dupr:[]; var _d5=_dh5.length?_dh5[_dh5.length-1]:null; t.textContent=_d5?("Rating status. DUPR "+_d5.rating+", "+(_d5.status||"recorded")+", set "+(_d5.date||"")+". "+(_d5.event||"")):"Rating status. No DUPR on record yet."; rc._body.appendChild(t); c.appendChild(rc); })();
 
