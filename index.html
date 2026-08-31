@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 355 (2026-08-30)">
+<meta name="build" content="v21 build 356 (2026-08-31)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -14136,7 +14136,13 @@ try{ if(profile==="ian"){
 
       if(!_MEC.shots.twoHandBackhand){
         _MEC.shots.twoHandBackhand={
-          status:"ready", updated:"2026-08-30", by:"PB-A",
+          /* build 356: WAS status:"ready". PULLED TO DRAFT, see the block at the end of this
+             file. The content below is left byte for byte as PB-A wrote it, because PB-B is
+             rewriting it and needs to see what it said. Changing the literal alone would NOT
+             have fixed Ian's phone: both guards above stop this block re-running on a profile
+             that already has the shot, so an installed copy would have kept status ready
+             forever. The migration at the end is what actually flips the saved value. */
+          status:"draft", updated:"2026-08-30", by:"PB-A",
           paras:[
             "WHAT IT IS FOR. Two hands buy pace and stability on the backhand baseline DRIVE, and cost you reach. That is the whole trade, and you have already scoped it the right way on 30 August: two hands for the drive, one hand for dinks, resets, rolls, flicks and returns.",
             "THE EVIDENCE, SAID OUT LOUD. n=1. One rep, Hayden Patriquin, jersey confirmed, graded at over 100 pixels per foot at 60 frames per second. That is excellent resolution on a single repetition. It is not a sample. Treat everything below as the best available read rather than as settled technique.",
@@ -14166,6 +14172,59 @@ try{ if(profile==="ian"){
 
       state.meta.mig_pkmech0830=true; save(true);
   } }catch(e){ try{ console.warn("pkmech0830 did not apply:",e&&e.message); }catch(_){} }
+
+/* ===== build 356: twoHandBackhand IS PULLED TO DRAFT. IT IS FACTUALLY WRONG. ==================
+
+   THE SHOT IS NOT A TWO HANDED BACKHAND. A later frame study sampled 50 frames across the same
+   clip and the paddle is in ONE hand in every one of them. The section built its whole account on
+   a two handed rep, so the premise is gone, not a detail of it.
+
+   AND THE 0.18 SECOND RELEASE CANNOT EXIST. It describes a top hand coming off the paddle before
+   contact. There is no top hand. The number was also produced by converting screen recording
+   frame counts to seconds, which the source document explicitly forbids, and it assumed 60 fps on
+   a file that is 30, so even the arithmetic behind a hand that did exist would have been wrong by
+   a factor of two. The "open disagreement with the creator" that the section is built around is
+   therefore a disagreement about something that did not happen.
+
+   WHY DRAFT AND NOT A REWRITE. The corrected material does not exist yet, PB-B is writing it, and
+   this is a section Ian DRILLS FROM. An honest gap beats confident wrong content in a place where
+   he will go and try to do what it says. Rewriting it here from what is left would mean inventing
+   the parts nobody has measured.
+
+   NOTHING IS DELETED. The paras and cues stay in state exactly as written so PB-B can see what
+   was claimed and what has to change. pkShotContent() ignores any shot whose status is not
+   "ready", so it renders as "not written yet", identical to the other seven, and the section
+   header falls back to "being written, footage first". No broken card, no empty card.
+
+   WHY THIS IS SEPARATE FROM THE BUILD 355 BLOCK ABOVE. That block is guarded twice, by
+   state.meta.mig_pkmech0830 and by the shot key already existing, so it will never run again on
+   any profile that has it. Editing its literal fixes new installs and does nothing for Ian's
+   phone. This runs once against saved state and is what actually changes what he sees.
+
+   SCOPE. This build changes twoHandBackhand.status and nothing else. No other shot, no other
+   section, no other field, and SEED_VERSION stays at 13. */
+  try{ if(profile==="ian" && state.meta && !state.meta.mig_pkmech_draft0831){
+      var _M6=state.pickleball && state.pickleball.mechanics;
+      var _S6=_M6 && _M6.shots && _M6.shots.twoHandBackhand;
+      if(_S6){
+        _S6.status="draft";
+        _S6.retractedOn="2026-08-31";
+        _S6.retractedWhy="Pulled from the app on 31 August because the premise is wrong. The rep it "
+          +"is built on is a ONE handed backhand, confirmed across 50 sampled frames, so a two "
+          +"handed account of it cannot stand. The 0.18 second top hand release describes a hand "
+          +"that is not there, and its timing was derived by converting screen recording frame "
+          +"counts at an assumed 60 fps on a 30 fps file, which the source document forbids. "
+          +"CONTENT KEPT, NOT DELETED, so the rewrite can see what was claimed. PB-B is writing "
+          +"the corrected version.";
+        _S6.agent="DO NOT SET THIS BACK TO ready WITHOUT A NEW FRAME STUDY. The four items with "
+          +"independent agreement (front leg plant, subtle crouch, low contact, low to high "
+          +"finish) may well survive, but they were observed on a rep that was mis-described, so "
+          +"they need re-confirming rather than lifting across. The release timing item is dead "
+          +"outright, not disputed: it has no subject. Anything rebuilt here needs the fps stated "
+          +"and the hand count stated.";
+      }
+      state.meta.mig_pkmech_draft0831=true; save(true);
+  } }catch(e){ try{ console.warn("pkmech draft0831 did not apply:",e&&e.message); }catch(_){} }
 
 
 
