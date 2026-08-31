@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 357 (2026-08-31)">
+<meta name="build" content="v21 build 358 (2026-08-31)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -14106,6 +14106,99 @@ try{ if(profile==="ian"){
 
       state.meta.mig_daily0830=true; save(true);
   } }catch(e){ try{ console.warn("daily0830 did not apply:",e&&e.message); }catch(_){} }
+
+  /* ===== v21 build 358, 31.08.2026. THE DAILY INJECT, ian-daily-brief =====================
+     Third run built on the 28 August export, so nothing here is derived from newly logged data.
+     Every write is guarded on the value not already being there. The guard flag mig_daily0831
+     is NOT in the seed.
+     1. Luis Monarrez moves from Iffy on a 90 day cadence to a 30 day cadence. Decided in the
+        weekly unblock list on 30 August and staged for this run. He has a live saved search
+        firing almost daily and he replies, which is not an Iffy contact.
+     2. Willis comes off the pre inspection to do. Ian killed that one on 24 August. Belknap,
+        Barker and Theobald stay and the gate rule itself is unchanged.
+     3. THE WILLIS RELIST EVENT IS REMOVED, NOT MOVED. Build 353 took it off the dead
+        3 September date and put an all day placeholder on 14 September, the first working day
+        after the 11th. That is the exact shape walked back on 28 August, when the rule was
+        written that a marker sitting on a day is a date claim regardless of its title. The
+        floor is 11 September, there is no target, and realistically this is an October
+        listing. The constraint moves onto the repair scope to do, which is where the work is.
+        Fourth instance of this shape and the first caught inside a day of being introduced.
+     4. Today's two easy wins. Easy Wins survived build 344 and are the one daily surface
+        still running at a healthy tick rate. */
+  try{ if(profile==="ian" && state.meta && !state.meta.mig_daily0831){
+      var T831="2026-08-31";
+
+      /* 1. MONARREZ CADENCE. People list and the legacy arrays both, matched on id or name,
+         because the fold happened in build 113 and an old profile can carry either. */
+      try{
+        var _re831=state.realEstate||{};
+        ["people","sphere","contacts","leads"].forEach(function(k){
+          var arr=_re831[k];
+          if(!Array.isArray(arr)) return;
+          arr.forEach(function(pp){
+            if(!pp) return;
+            var hit=(pp.id==="ym5z08j")||(String(pp.name||"").indexOf("Monarrez")>=0);
+            if(!hit) return;
+            if(pp.cadence!==30){
+              pp.cadence=30; pp.quality="Good";
+              pp.agent=String(pp.agent||"")+" CADENCE CHANGED 08.31.2026, build 358, from Iffy 90 "
+                +"to Good 30. Decided in the 30 August unblock list. He has a Paragon saved search "
+                +"firing almost daily and he replies, so 90 days put him out of sight until "
+                +"October. Last contact 7 July, which makes him overdue on the new cadence the "
+                +"day it changes.";
+            }
+          });
+        });
+      }catch(_a831){}
+
+      /* 2. WILLIS OFF THE PRE INSPECTION GATE. */
+      try{
+        var _td831=(state.realEstate&&state.realEstate.todos)||[];
+        _td831.forEach(function(t){
+          if(!t||t.id!=="ret-20260824-preinspection") return;
+          if(String(t.text||"").indexOf("Willis")>=0 || String(t.short||"").indexOf("Willis")>=0){
+            t.short="Book pre inspections on the live listings";
+            t.text="Line up pre inspections on Belknap, Barker and Theobald before any of them go live.";
+            t.agent=String(t.agent||"")+" WILLIS REMOVED 08.31.2026, build 358. Ian killed the "
+              +"Willis pre inspection on 24 August and the 30 August unblock list confirmed it as "
+              +"decided. The other three stay. The gate before live rule is unchanged.";
+          }
+        });
+      }catch(_b831){}
+
+      /* 3. THE DATED WILLIS RELIST EVENT IS REMOVED AND THE CONSTRAINT MOVES TO THE TO DO. */
+      try{
+        if(Array.isArray(state.events)){
+          var _keep831=state.events.filter(function(e){ return !e || e.id!=="ev-20260903-willis-relist"; });
+          if(_keep831.length!==state.events.length) state.events=_keep831;
+        }
+        var _td2831=(state.realEstate&&state.realEstate.todos)||[];
+        _td2831.forEach(function(t){
+          if(!t||t.id!=="ret-20260820-willis-repair-scope") return;
+          if(String(t.agent||"").indexOf("NOT BEFORE 11 SEPTEMBER")<0){
+            t.agent=String(t.agent||"")+" RELIST CONSTRAINT MOVED HERE 08.31.2026, build 358. "
+              +"NOT BEFORE 11 SEPTEMBER 2026, no target date, realistically October. The dated "
+              +"calendar placeholder was deleted because a marker sitting on a day is a date "
+              +"claim whatever its title says. Price stays $619,900 with the 3.7 percent seller "
+              +"override. This to do carries the constraint now, not the calendar.";
+          }
+        });
+      }catch(_c831){}
+
+      /* 4. EASY WINS. */
+      try{
+        state.quickWin=state.quickWin||{};
+        state.quickWin.picks=state.quickWin.picks||{};
+        if(!Array.isArray(state.quickWin.picks[T831]) || !state.quickWin.picks[T831].length){
+          state.quickWin.picks[T831]=[
+            "Text Dylan about the Ankeny Labor Day Dink Off. Yes or no, one minute, and entries close at 8:00 AM tomorrow.",
+            "Text Luis Monarrez. Last contact 7 July, 55 days, and he moved to a 30 day cadence today so he is already overdue."
+          ];
+        }
+      }catch(_d831){}
+
+      state.meta.mig_daily0831=true; save(true);
+  } }catch(e){ try{ console.warn("daily0831 did not apply:",e&&e.message); }catch(_){} }
 
 /* ===== build 355: THE FIRST MECHANICS SECTION IS WRITTEN. twoHandBackhand ONLY. ==============
 
