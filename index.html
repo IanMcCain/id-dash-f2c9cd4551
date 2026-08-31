@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 354 (2026-08-30)">
+<meta name="build" content="v21 build 355 (2026-08-30)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -14106,6 +14106,66 @@ try{ if(profile==="ian"){
 
       state.meta.mig_daily0830=true; save(true);
   } }catch(e){ try{ console.warn("daily0830 did not apply:",e&&e.message); }catch(_){} }
+
+/* ===== build 355: THE FIRST MECHANICS SECTION IS WRITTEN. twoHandBackhand ONLY. ==============
+
+   ONE SHOT OF EIGHT, AND THAT IS THE HONEST NUMBER. Build 354 shipped the Mechanics container
+   with eight shots listed and none written. This writes exactly ONE of them, twoHandBackhand,
+   because it is the only one of tonight's four written sections whose subject matter maps to an
+   id in PK_SHOTS. The other three, the BASE, the ROLL and the PUNCH VOLLEY, are written in full
+   at WORK/Personal/Pickleball Video/reports/PLAYBOOK Part 1 and have NO id to live in here.
+   Flagged to the orchestrator rather than forced into the nearest wrong bucket: putting the
+   punch volley under "flicks" would teach Ian the wrong mechanic, since the punch is shoulder
+   and elbow driven with a quiet wrist and the flick is wrist driven off a dropped paddle head.
+
+   WHY THE PARAS READ THE WAY THEY DO. n=1. One rep of one player on one day, graded at over
+   100 px/ft and 60 fps. Every claim below either carries that n out loud or is one of the four
+   items with independent agreement. The release timing is recorded as an OPEN DISAGREEMENT with
+   the source creator rather than resolved, because the frames and his commentary do not match
+   and one rep cannot settle it. Ian is meant to be able to disagree with both readings.
+
+   NON DESTRUCTIVE. Creates state.pickleball.mechanics only if absent, writes the one shot key
+   only if that key is absent, never touches the other seven, never bumps SEED_VERSION. Runs on
+   every load outside the SEED_VERSION gate so existing installed profiles get it. Idempotent,
+   guarded by state.meta.mig_pkmech0830. */
+  try{ if(profile==="ian" && !(state.meta&&state.meta.mig_pkmech0830)){
+      if(!state.pickleball) state.pickleball={};
+      var _MEC=state.pickleball.mechanics;
+      if(!_MEC || typeof _MEC!=="object"){ _MEC={version:1,shots:{}}; }
+      if(!_MEC.shots || typeof _MEC.shots!=="object") _MEC.shots={};
+
+      if(!_MEC.shots.twoHandBackhand){
+        _MEC.shots.twoHandBackhand={
+          status:"ready", updated:"2026-08-30", by:"PB-A",
+          paras:[
+            "WHAT IT IS FOR. Two hands buy pace and stability on the backhand baseline DRIVE, and cost you reach. That is the whole trade, and you have already scoped it the right way on 30 August: two hands for the drive, one hand for dinks, resets, rolls, flicks and returns.",
+            "THE EVIDENCE, SAID OUT LOUD. n=1. One rep, Hayden Patriquin, jersey confirmed, graded at over 100 pixels per foot at 60 frames per second. That is excellent resolution on a single repetition. It is not a sample. Treat everything below as the best available read rather than as settled technique.",
+            "1. THE FRONT LEG PLANTS AND THE WHOLE SHOT COMES OFF IT. This is the most solid item here because two independent readings reached it separately in nearly identical words, ours from the frames and the source creator's from his own pass. If one thing gets copied, copy this.",
+            "2. A SUBTLE CROUCH INTO THE SHOT. Low through the knees and hips, not a dip of the head. Both readings agree.",
+            "3. THE PADDLE LAGS BEFORE IT COMES THROUGH. The creator's phrase is that it drifts back a little and starts to lag, and the lag is what loads the shot. Attributed to him. We missed it entirely on our own pass, so credit where it is due.",
+            "4. CONTACT IS LOW, AT MID THIGH AND BELOW THE HIP. Measured, n=1.",
+            "5. THE SWING RUNS LOW TO HIGH AND FINISHES ABOVE THE HEAD. Measured from the paddle tip pointing at the floor to a finish above head height, n=1.",
+            "6. HANDS STACKED WITH NO GAP, CHOKED UP HIGH NEAR THE THROAT. Measured. The butt cap is out of frame so how much handle sits below the bottom hand is UNKNOWN, and it is left unknown rather than guessed.",
+            "THE OPEN DISAGREEMENT, AND YOU SHOULD BE ABLE TO TAKE A SIDE. Contact is frame 478. By frame 467, eleven frames and 0.18 seconds BEFORE contact, the top hand is already off the paddle and the left arm is travelling backward. At contact the shot is unambiguously one handed. The creator instead places the release at or through contact, saying it allows the arms to open and THEN the follow through to happen. Those cannot both be right about timing, and the frames say before.",
+            "WHAT WE ARE NOT CLAIMING. Not that he is wrong the release is deliberate. Our first read called it a stylistic reach adaptation and his causal account was better than ours. What is disputed is WHEN, and when is the part you would be copying. Honest limit: from frames 452 to 462 the paddle sits low behind his right leg and his own torso hides the left arm, so the release may be earlier still, and one rep cannot separate a repeatable swing point from him simply reaching on this ball.",
+            "SO WHAT TO ACTUALLY BUILD. The four measured and agreed items: front leg plant, subtle crouch, low contact, low to high finish. Leave the hand release OPEN and do not train it off one disputed rep. If it turns out to be real it is a refinement you add later to a shot that already works.",
+            "DRILL. Plant and hold. Partner feeds to your backhand from mid court. Plant the front foot, hit, then FREEZE at the finish for a full second before recovering. Ten balls, and you are grading only the plant and the finish position. Then film it side on at 60 frames per second with the paddle logo facing the camera, because that single capture settles the release question on YOUR swing even if it never gets settled on his."
+          ],
+          cues:[
+            "Front leg plants first, everything comes off it",
+            "Subtle crouch, knees and hips, head stays level",
+            "Contact at mid thigh, below the hip",
+            "Low to high, finish above the head",
+            "Hands stacked, no gap, choked up",
+            "Freeze the finish for one second in practice"
+          ]
+        };
+      }
+      _MEC.version=_MEC.version||1;
+      state.pickleball.mechanics=_MEC;
+
+      state.meta.mig_pkmech0830=true; save(true);
+  } }catch(e){ try{ console.warn("pkmech0830 did not apply:",e&&e.message); }catch(_){} }
 
 
 
