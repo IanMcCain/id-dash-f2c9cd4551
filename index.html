@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 356 (2026-08-31)">
+<meta name="build" content="v21 build 357 (2026-08-31)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -14226,6 +14226,152 @@ try{ if(profile==="ian"){
       state.meta.mig_pkmech_draft0831=true; save(true);
   } }catch(e){ try{ console.warn("pkmech draft0831 did not apply:",e&&e.message); }catch(_){} }
 
+/* ===== build 357: THE ROLL AS A SHOT, THE PUNCH VOLLEY AS AN EXTRA ============================
+
+   Ian, 31.08.2026: "Add roll, but keep punchVolley as an additional, not a list, just a
+   move/technique I could learn on the side."
+
+   SOURCE. Both pulled from WORK/Personal/Pickleball Video/reports/08.30.2026 - PRO MECHANICS
+   PLAYBOOK (consolidated, single source of truth).md, which supersedes PB-A's Part 1 and Part 2.
+   Both sections passed GEN-A's audit clean.
+
+   TWO CORRECTIONS FROM THAT FILE ARE CARRIED THROUGH HERE DELIBERATELY.
+     1. THE ROLL SUBJECT IS GE OF DALLAS, NOT BEN JOHNS. The scoreboard reads DALLAS GE/JOHNSON
+        against LOS ANGELES JOHNS/FREEMAN. Ben Johns is the OPPONENT. Ge's first name is not
+        confirmed from audio and is not invented here.
+     2. THE PUNCH DOES NOT "COIL". An earlier draft built a step on an on screen annotation
+        reading "watch the coiling in of the shoulder", which could not be found in four sampled
+        frames and does not appear in the transcript. The verified wording is that the shoulder
+        ROLLS AROUND, and that is what is used below.
+
+   WHY A GUARDED MIGRATION AND NOT JUST A LITERAL. Same lesson as build 356. The build 355 block
+   is fenced by its own meta flag and by a key existence test, so it will never run again on a
+   profile that already has mechanics. A new shot added only to that block would reach nobody who
+   already has the app. This runs once, on its own flag, and touches ONLY roll and extras: every
+   other shot key is left exactly as it is, including twoHandBackhand, which stays draft.
+
+   n=1 THROUGHOUT AND THE PAGE SAYS SO. One rep of one player on one day in each case. */
+  try{ if(profile==="ian" && state.meta && !state.meta.mig_pkmech_roll0831){
+      if(!state.pickleball) state.pickleball={};
+      var _M7=state.pickleball.mechanics;
+      if(!_M7 || typeof _M7!=="object"){ _M7={version:1,shots:{}}; }
+      if(!_M7.shots || typeof _M7.shots!=="object") _M7.shots={};
+      if(!_M7.extras || typeof _M7.extras!=="object") _M7.extras={};
+
+      if(!_M7.shots.roll){
+        _M7.shots.roll={
+          status:"ready", updated:"2026-08-31", by:"GEN-A playbook",
+          paras:[
+            "WHAT IT IS FOR. The roll is controlled offense off a ball that is not attackable. Not "
+              +"a drive, not a dink. It takes a ball near or below net height and sends it back "
+              +"with topspin, low and moving, so your opponent has to hit up. YOU WIN THE POINT "
+              +"TWO SHOTS LATER, NOT ON THIS ONE. Attackable ball, you attack. Ball at your feet, "
+              +"you reset. The roll is the middle band, and the middle band is where most kitchen "
+              +"points are actually decided.",
+            "THE EVIDENCE. n=1. One file, measured and quoted throughout. MLP playoffs at Newport "
+              +"Beach, scoreboard legible. The player being studied is GE, of Dallas. Ben Johns is "
+              +"on the other side of the net, not the subject. Ge's first name is not confirmed on "
+              +"the audio so it is not guessed here.",
+            "1. HINGE, AND KEEP THE BACK LONG. Hip hinge with a straight spine, described in the "
+              +"film as the rod of the back. A rounded back is the common amateur substitute and "
+              +"it kills the rotation you need next.",
+            "2. STABILISE ON THE BACK LEG. Weight loads into the back leg and stays there. This is "
+              +"the same plant your one hand backhand uses, so it is one skill and not two.",
+            "3. SKATE AROUND THE BALL, DO NOT REACH FOR IT. The single most valuable line here for "
+              +"you. Reaching is what a player does when their feet did not move. Your 19 August "
+              +"film measured you sitting 12.2 feet deep, which is the same fault showing up "
+              +"earlier in the point.",
+            "4. THE SWING IS COMPACT. No backswing worth the name. A long backswing on a roll is a "
+              +"drive in disguise, and it is why rolls sail long.",
+            "5. WINDSHIELD WIPER THROUGH THE BALL. Attributed to the creator, not measured. The "
+              +"paddle travels low to high and across, brushing rather than driving. Spin was not "
+              +"measured in this file.",
+            "6. THE WRIST IS QUICK, NOT VIOLENT. His words: just a quick wrist action, nothing "
+              +"hyper. The roll fails in both directions, from a dead wrist and from a snapped "
+              +"one, and the right amount is closer to nice than to fast.",
+            "7. DO NOT COME OUT OF THE HINGE. He stays down after the shot and switches his feet "
+              +"while still hinged, ready for the next ball. THIS IS THE MOST COPYABLE THING IN "
+              +"THE FILE because it costs no technique and no strength, only intent.",
+            "YOUR PADDLE COSTS YOU ON THIS ONE. A higher swing weight takes longer to come around, "
+              +"so a roll that starts late arrives late. The fix is not a faster arm, it is "
+              +"earlier and shorter preparation. Compact is not a style preference for you, it is "
+              +"something your equipment requires.",
+            "DRILL, AND IT GRADES ONE THING. The hinge hold, 10 balls. Partner feeds knee to thigh "
+              +"height cross court. You roll, and you may not stand up until the ball has crossed "
+              +"the net. Count how many of the 10 you stood up on and write the number down. Not "
+              +"shot quality, the hinge. Then have them feed the second ball immediately: if you "
+              +"came out of the hinge you will not be ready, which is the whole point."
+          ],
+          cues:[
+            "Hinge at the hips, back long, not rounded",
+            "Load the back leg and stay on it",
+            "Skate around the ball, never reach for it",
+            "Compact, no backswing",
+            "Quick wrist, not a violent one",
+            "Stay down after the shot, do not stand up"
+          ]
+        };
+      }
+
+      if(!_M7.extras.punchVolley){
+        _M7.extras.punchVolley={
+          status:"ready", updated:"2026-08-31", by:"GEN-A playbook",
+          paras:[
+            "ON THE SIDE, NOT ON YOUR LIST. This is here because you asked for it as a technique to "
+              +"pick up alongside the nine, not as a tenth shot to work through.",
+            "WHAT IT IS FOR, AND THIS IS WHERE MOST PLAYERS GET IT WRONG. A punch is not a hard "
+              +"shot. It is an ANGLED shot that happens to be firm. The rec version aims at the "
+              +"opponent. The pro version aims at a place the opponent cannot cover. Same effort, "
+              +"different target, completely different outcome.",
+            "THE EVIDENCE. n=1. MLP at Miami Pickleball Club, confirmed from the backdrop. The "
+              +"creator names the player as Scarpa, which is attributed to his audio and not "
+              +"independently verified.",
+            "1. FAST, QUIET FEET FIRST. He notes the feet before the hand. The punch is a base shot "
+              +"before it is a hand shot.",
+            "2. ARM EXTENDED ON THE APPROACH. The paddle is already out in front on the way to the "
+              +"ball, not cocked back. Measured, visible in frame.",
+            "3. THE ELBOW EXTENDS AT THE BALL AND THE SHOULDER ROLLS AROUND. That is the power "
+              +"source: elbow extension plus shoulder roll. Not a wrist flick and not an arm "
+              +"swing.",
+            "4. A LITTLE TORSO TWIST. There is some and there is no getting away from it.",
+            "5. PADDLE ANGLE IS THE WHOLE DIFFERENCE. Sit up on the ball to get the line, then dip "
+              +"the face through it. That is what creates an angle instead of a flat push.",
+            "6. BALANCE IS NEVER TRADED FOR PACE. Consistent across every close up in the file.",
+            "HOW THIS RELATES TO THE FLICK, AND BE CLEAR ABOUT IT. They are NOT the same mechanic. "
+              +"The punch is shoulder and elbow with a quiet wrist, off a ball at or above net "
+              +"height, with the paddle already out front. The flick is wrist, from a dropped "
+              +"paddle head, usually off a lower ball. Use the punch's shoulder on a flick and you "
+              +"get a slow flick. Use the flick's wrist on a punch and you get a spray. What DOES "
+              +"transfer completely is target discipline: angles rather than pace.",
+            "YOUR PADDLE IS AT ITS WORST HERE. Hand speed exchanges at the kitchen are the worst "
+              +"case for a high swing weight, because there is no time to accelerate mass. So "
+              +"start earlier and keep the paddle further out front, which is exactly what the pro "
+              +"already does on the approach. Step 2 is not optional for you.",
+            "DRILL, AND IT GRADES ONE THING. Two targets, no pace, 10 balls. Partner feeds at net "
+              +"height to your forehand. Two cones, one at the opponent's right hip, one at the "
+              +"outside sideline corner. Call the target out loud before you hit. Count how many "
+              +"of the 10 hit the called target and write the number down. Not how hard."
+          ],
+          cues:[
+            "Feet first, the punch is a base shot",
+            "Paddle already out front on the approach",
+            "Elbow extends, shoulder rolls around, wrist quiet",
+            "Sit up on the ball, then dip the face through it",
+            "Aim at a gap, not at a person",
+            "Never trade balance for pace"
+          ],
+          agent:"EXTRA, NOT A SHOT, by Ian's explicit ruling 31.08.2026. Do NOT move this into "
+            +"mechanics.shots and do NOT add a punchVolley id to PK_SHOTS. Step 3 says the "
+            +"shoulder ROLLS AROUND: the earlier 'coiling in of the shoulder' wording was an "
+            +"unverified on screen annotation that could not be found in four sampled frames and "
+            +"does not appear in the transcript. Do not reintroduce 'coil' without a frame number."
+        };
+      }
+      _M7.version=_M7.version||1;
+      state.pickleball.mechanics=_M7;
+      state.meta.mig_pkmech_roll0831=true; save(true);
+  } }catch(e){ try{ console.warn("pkmech roll0831 did not apply:",e&&e.message); }catch(_){} }
+
 
 
 
@@ -17036,9 +17182,40 @@ var PK_SHOTS=[
   {id:"twoHandBackhand",  label:"Two hand backhand"},
   {id:"resets",           label:"Resets"},
   {id:"dinks",            label:"Dinks"},
+  /* build 357: ROLL, added on Ian's ruling 31.08.2026, "Add roll". NINTH SHOT, full status
+     machinery and the same display as the other eight. Placed after dinks and before flicks
+     because that is the escalation ladder at the kitchen: dink the unattackable ball, roll the
+     middle band, flick the attackable one. The playbook calls the roll "the middle band, and the
+     middle band is where most kitchen points are actually decided". */
+  {id:"roll",             label:"Roll"},
   {id:"flicks",           label:"Flicks"},
   {id:"grip",             label:"Grip"}
 ];
+/* ===== build 357: EXTRAS ARE NOT SHOTS AND THE SEPARATION IS THE POINT ========================
+   Ian, 31.08.2026: "Add roll, but keep punchVolley as an additional, not a list, just a
+   move/technique I could learn on the side."
+
+   SO THE PUNCH VOLLEY IS STRUCTURALLY SECONDARY IN THE DATA, NOT ONLY IN THE STYLING. It lives at
+   mechanics.EXTRAS, never at mechanics.shots. That means it can never be counted in "N of 9
+   written", can never be reached by a loop over PK_SHOTS, and cannot drift into the list later by
+   accident. A styling-only separation would have relied on every future editor remembering. */
+var PK_EXTRAS=[
+  {id:"punchVolley",      label:"Punch volley"}
+];
+function pkExtraContent(id){
+  try{
+    var m=(state.pickleball&&state.pickleball.mechanics)||null;
+    var ex=(m&&m.extras&&m.extras[id])||null;
+    if(!ex) return null;
+    var paras=Array.isArray(ex.paras)?ex.paras.filter(function(x){ return String(x||"").trim(); }):[];
+    if(!paras.length) return null;
+    if(ex.status && ex.status!=="ready") return null;
+    return {paras:paras,
+            cues:Array.isArray(ex.cues)?ex.cues.filter(function(x){ return String(x||"").trim(); }):[],
+            video:(ex.video&&ex.video.url)?ex.video:null,
+            updated:ex.updated||"", by:ex.by||""};
+  }catch(e){ return null; }
+}
 function pkShotContent(id){
   try{
     var m=(state.pickleball&&state.pickleball.mechanics)||null;
@@ -17066,8 +17243,24 @@ function pkMechanics(parent){
       ib.appendChild(t);
       mv.appendChild(ic);
     }
-    PK_SHOTS.forEach(function(sh){
-      var got=pkShotContent(sh.id);
+    PK_SHOTS.forEach(function(sh){ pkMechRow(mv,sh,pkShotContent(sh.id),false); });
+
+    /* THE EXTRAS SIT BELOW THE NINE AND READ AS SECONDARY. A quiet divider and a plain label
+       rather than a second section header, because this week's redesign was about cutting
+       surfaces and the punch volley does not warrant one. It is one tap from the shot list,
+       clearly not part of it, and not hidden. */
+    var _anyEx=false;
+    PK_EXTRAS.forEach(function(x){ if(pkExtraContent(x.id)) _anyEx=true; });
+    if(_anyEx){
+      var lb=el("div","small dim");
+      lb.style.cssText="margin:16px 2px 6px;line-height:1.45;padding-top:12px;border-top:1px solid var(--line)";
+      lb.textContent="Also worth learning, on the side. Not part of your shot list.";
+      mv.appendChild(lb);
+      PK_EXTRAS.forEach(function(x){ pkMechRow(mv,x,pkExtraContent(x.id),true); });
+    }
+  },ICO.target,"green");
+}
+function pkMechRow(mv,sh,got,isExtra){
       pkCollapse(mv,"pkm_"+sh.id,sh.label,got?(got.video?"with video":"breakdown"):"not written yet",false,function(sv){
         if(!got){
           var ec=card(); var eb=ec._body;
@@ -17108,8 +17301,6 @@ function pkMechanics(parent){
         }
         sv.appendChild(cc);
       });
-    });
-  },ICO.target,"green");
 }
 function buildPickle(v){ var pb=state.pickleball||(state.pickleball={});
   if(!Array.isArray(pb.sessions)) pb.sessions=[];
