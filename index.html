@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 359 (2026-09-01)">
+<meta name="build" content="v21 build 360 (2026-09-02)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -14256,6 +14256,97 @@ try{ if(profile==="ian"){
     });
     if(_wrote359) save(true);
   }catch(e){ try{ console.warn("build359 did not apply:",e&&e.message); }catch(_){} }
+
+
+/* ===== v21 build 360, 02.09.2026. THE DAILY INJECT, ian-daily-brief =======================
+
+   SIXTH DAY WITH NO EXPORT, so nothing here is derived from newly logged data. Two writes,
+   both to the to do list, both idempotent and both guarded on the value not already being
+   there. The guard flag mig_daily0902 is NOT in the seed.
+
+   1. RETIRE ret-20260824-tourney-register. Ankeny Labor Day Dink Off entries shut at 8:00 AM
+      on 1 September, which is the item's own exp date. It is MOVED to state.archive.todosDone
+      with the reason, never deleted, per the STEP 2f retire contract. The app's own expiry
+      sweep would also catch it, and this is written to be a no op if it already has.
+
+   2. CREATE ret-20260902-perseus-film, key pk-perseus-baseline, exp 2026-09-02. The Six Zero
+      Coral Pro is expected tonight. PENDING_TRIGGERS Trigger 11, opened 01.09.2026, carries a
+      sub trigger that expires on its own: any session filmed BEFORE the first Coral session is
+      the last chance at a Perseus era baseline, and Ian's own 31 August claim that his hands
+      at the net are getting faster has no footage behind it. From tonight that claim has two
+      available causes and no way to separate them. The exp is TODAY on purpose. Tomorrow this
+      is not a task, it is a missed one, and it should leave the list rather than nag.
+
+   NOT DONE ON PURPOSE. Nothing was written to state.pickleball.paddle. That field is not
+   rendered anywhere in this file, all 24 references to it are migrations, so a gear note about
+   the Coral would land on a surface nobody sees. Flagged in the brief instead. Same reasoning
+   as builds 344 and 354.  */
+  try{ if(profile==="ian" && state.meta && !state.meta.mig_daily0902){
+      var _re902 = state.realEstate || (state.realEstate={});
+      if(!Array.isArray(_re902.todos)) _re902.todos=[];
+      var _ar902 = state.archive || (state.archive={});
+      if(!Array.isArray(_ar902.todosDone)) _ar902.todosDone=[];
+      var _w902=false;
+
+      /* 1. retire the expired Ankeny registration item, archive first then remove. */
+      for(var _i902=_re902.todos.length-1; _i902>=0; _i902--){
+        var _t902=_re902.todos[_i902];
+        if(_t902 && _t902.id==="ret-20260824-tourney-register"){
+          var _seen902=false;
+          for(var _j902=0; _j902<_ar902.todosDone.length; _j902++){
+            if(_ar902.todosDone[_j902] && _ar902.todosDone[_j902].id==="ret-20260824-tourney-register"){ _seen902=true; break; }
+          }
+          if(!_seen902){
+            _ar902.todosDone.push({
+              id:"ret-20260824-tourney-register",
+              text:String(_t902.text||""),
+              done:!!_t902.done,
+              retiredOn:"2026-09-02",
+              reason:"Expired. Registration for the Ankeny Labor Day Dink Off shut at 8:00 AM on "
+                +"1 September 2026, which was this item's own exp date. Retired because the window "
+                +"closed, NOT because it was done. There is no record either way of whether Ian entered."
+            });
+          }
+          _re902.todos.splice(_i902,1);
+          _w902=true;
+        }
+      }
+
+      /* 2. create the Perseus era baseline film item, keyed so it can never duplicate. */
+      var _have902=false;
+      for(var _k902=0; _k902<_re902.todos.length; _k902++){
+        var _e902=_re902.todos[_k902];
+        if(_e902 && (_e902.id==="ret-20260902-perseus-film" || _e902.key==="pk-perseus-baseline")){ _have902=true; break; }
+      }
+      var _arch902=false;
+      for(var _m902=0; _m902<_ar902.todosDone.length; _m902++){
+        if(_ar902.todosDone[_m902] && _ar902.todosDone[_m902].id==="ret-20260902-perseus-film"){ _arch902=true; break; }
+      }
+      if(!_have902 && !_arch902){
+        _re902.todos.push({
+          id:"ret-20260902-perseus-film",
+          key:"pk-perseus-baseline",
+          done:false,
+          due:"2026-09-02",
+          exp:"2026-09-02",
+          list:"todo",
+          src:"PENDING_TRIGGERS Trigger 11 sub trigger, opened 01.09.2026 by PB-1; "
+             +"Personal/SELF_ASSESSMENT_LOG.md entry 2026-08-31, prediction P4",
+          text:"Film one game today, before the Six Zero Coral Pro arrives tonight. Phone against "
+             +"a fence post, one game, no setup. On 31 August you said your hands at the net are "
+             +"getting faster and there is no footage of it, or of any session since 19 August. "
+             +"From the first Coral session that claim has two causes, you or a 114 swing weight "
+             +"paddle against the Perseus 118, and no way to separate them. This is the last "
+             +"Perseus era baseline that can ever be taken.",
+          agent:"Created 02.09.2026 by ian-daily-brief, build 360. Exp is TODAY on purpose: after "
+             +"tonight this is not a task, it is a missed one, and it leaves the list rather than nag."
+        });
+        _w902=true;
+      }
+
+      if(_w902) save(true);
+      state.meta.mig_daily0902=true; save(true);
+  } }catch(e){ try{ console.warn("daily0902 did not apply:",e&&e.message); }catch(_){} }
 
 
 /* ===== build 355: THE FIRST MECHANICS SECTION IS WRITTEN. twoHandBackhand ONLY. ==============
