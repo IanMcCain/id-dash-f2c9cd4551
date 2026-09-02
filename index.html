@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 360 (2026-09-02)">
+<meta name="build" content="v21 build 361 (2026-09-02)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -14347,6 +14347,71 @@ try{ if(profile==="ian"){
       if(_w902) save(true);
       state.meta.mig_daily0902=true; save(true);
   } }catch(e){ try{ console.warn("daily0902 did not apply:",e&&e.message); }catch(_){} }
+
+
+/* ===== v21 build 361, 02.09.2026. THE 31 AUGUST SESSION, ian-daily-brief =================
+
+   CLOSING A NAMED CROSS LANE HANDOFF, NOT INVENTING DATA. pickleball_knowledge_base.md, in
+   the block "SESSION, MONDAY 31 AUGUST 2026", says in its own words: "The APP is the system
+   of record for sessions and this lane did NOT write to it... An app record for 31 August
+   still needs to be created by APP-A, and until it is, the app session count for the week is
+   short by one." This run is APP-A. The numbers below are copied from that block, which PB-1
+   recorded on 01.09.2026 from an Apple Watch workout screenshot, and nothing is estimated.
+
+   WHY IT DID NOT ARRIVE THE NORMAL WAY. There has been no export since 28 August, so this
+   session exists in BRAIN only. It is not a substitute for his own log. If he already logged
+   31 August on his phone, the guard below finds it and this is a no op.
+
+   GUARD. Writes ONLY if state.pickleball.sessions contains NO entry dated 2026-08-31, so it
+   can never duplicate one he logged himself, whatever id or shape that entry has. Guarded a
+   second time by state.meta.mig_pksess0831, which is NOT in the seed.
+
+   EFFORT 6 IS HIS OWN RATING, carried through as such. No footage exists, no rating moved,
+   and this is the last full session on the Perseus.  */
+  try{ if(profile==="ian" && state.meta && !state.meta.mig_pksess0831){
+      var _pk831 = state.pickleball || (state.pickleball={});
+      if(!Array.isArray(_pk831.sessions)) _pk831.sessions=[];
+      var _dup831=false;
+      for(var _q831=0; _q831<_pk831.sessions.length; _q831++){
+        var _s831=_pk831.sessions[_q831];
+        if(_s831 && String(_s831.date||"")==="2026-08-31"){ _dup831=true; break; }
+      }
+      if(!_dup831){
+        _pk831.sessions.push({
+          id:"pk-20260831-openplay",
+          date:"2026-08-31",
+          kind:"Open play",
+          venue:"Omaha",
+          duration:"1h 35m 25s",
+          window:"5:54 to 7:30 PM, Omaha",
+          calories:945,
+          activeCalories:796,
+          avgHr:121,
+          maxHr:144,
+          minHr:78,
+          effort:6,
+          result:"",
+          score:"",
+          opponent:"",
+          copyOwned:true,
+          note:"Open play, Monday 31 August, Omaha, 5:54 to 7:30 PM, 1:35:25. Effort 6 of 10, "
+              +"which is low for you, 23 of your 34 rated sessions sit at 8 or above. From the "
+              +"watch: avg HR 121, peak 144, low 78, active 796, total 945, an active rate of "
+              +"8.34 calories a minute. Both sit marginally under the August open play band of "
+              +"8.8 to 10.9 and 122 to 134, and that band has no n behind it, so nothing is "
+              +"concluded from one session. YOUR WORDS: open play I played decent, I can tell "
+              +"my hands at the net are getting faster. Hands is your lowest rated skill, so "
+              +"that is the most useful thing you said all week, and there is no footage of it. "
+              +"THIS IS THE LAST FULL SESSION ON THE PERSEUS. Everything from the first Coral "
+              +"session is a different instrument and is not comparable to this one. "
+              +"Added 02.09.2026 by ian-daily-brief from the Apple Watch numbers PB-1 recorded "
+              +"on 01.09.2026, because there has been no export since 28 August."
+        });
+        try{ _pk831.sessions.sort(function(a,b){ return String((a&&a.date)||"").localeCompare(String((b&&b.date)||"")); }); }catch(_srt831){}
+        save(true);
+      }
+      state.meta.mig_pksess0831=true; save(true);
+  } }catch(e){ try{ console.warn("pksess0831 did not apply:",e&&e.message); }catch(_){} }
 
 
 /* ===== build 355: THE FIRST MECHANICS SECTION IS WRITTEN. twoHandBackhand ONLY. ==============
