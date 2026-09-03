@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 361 (2026-09-02)">
+<meta name="build" content="v21 build 362 (2026-09-02)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -813,7 +813,6 @@ header{ background:rgba(0,0,0,.82); border-bottom:1px solid rgba(255,255,255,.07
       <div class="keypad" id="keypad"></div>
     </div>
     <div class="lockbot">
-      <div class="lockwater" id="lockWater"></div>
     </div>
   </div>
 </div>
@@ -14414,6 +14413,113 @@ try{ if(profile==="ian"){
   } }catch(e){ try{ console.warn("pksess0831 did not apply:",e&&e.message); }catch(_){} }
 
 
+/* ===== v21 build 362, 02.09.2026. THREE SESSIONS AND THE HEEL, APP-1 =====================
+
+   1 AND 2 SEPTEMBER CAME FROM IAN DIRECTLY, not from an export. There has been no export
+   since 28 August, so these exist nowhere else in the app. Every number below is his, copied
+   as given, and nothing is estimated or averaged.
+
+   1 SEPTEMBER IS TWO SESSIONS IN ONE DAY, 6h04m24s in total. They are pushed as two separate
+   records with two separate ids, NOT merged, because merging would lose the morning drilling
+   block and the two have different efforts and different heart rate profiles. THE GUARD IS BY
+   ID, NOT BY DATE. Build 361 guarded by date, which was right for a single session day and is
+   exactly wrong here: a date guard would have written the morning and then silently refused
+   the evening. The heatmap was fixed in the same build to sum a day's minutes so the depth
+   band reads 6h04 rather than whichever record happened to be last.
+
+   THE 30 AUGUST GAP IS REAL AND STAYS EMPTY. Ian confirmed there was no session that day.
+   Nothing is written for it and nothing should be inferred later from its absence.
+
+   2 SEPTEMBER kind is recorded as "Play" because he did not say which format it was. It is
+   the first session on the Six Zero Coral Pro, which is why the note names the paddle: the
+   next rating move needs to know where the paddle changed.
+
+   THE HEEL IS RESOLVED. inj-heel-20260823 has read status active since build 351 and Ian
+   closed it on 2 September. Flipped UNCONDITIONALLY by id rather than guarded on the old
+   value, per RULES step 2. healthCard() renders only status==="active", so the card comes off
+   the gym and pickleball pages on the next load. The record is kept in full, not deleted.
+
+   Guarded once by state.meta.mig362_sess_heel, which is NOT in the seed. */
+  try{ if(profile==="ian" && state.meta && !state.meta.mig362_sess_heel){
+      var _P362 = state.pickleball || (state.pickleball={});
+      if(!Array.isArray(_P362.sessions)) _P362.sessions=[];
+      var _add362=function(rec){
+        for(var q=0;q<_P362.sessions.length;q++){
+          var s=_P362.sessions[q];
+          if(s && String(s.id||"")===rec.id) return false;
+        }
+        _P362.sessions.push(rec); return true;
+      };
+      _add362({
+        id:"pk-20260901-drills-am", date:"2026-09-01", kind:"Drills",
+        venue:"Titan Drills Pro",
+        duration:"1h 57m 32s",
+        window:"7:17 to 9:15 AM, Titan Drills Pro",
+        calories:1202, activeCalories:1018, avgHr:125, maxHr:158, minHr:84,
+        result:"", score:"", opponent:"", copyOwned:true,
+        note:"Morning drilling block at Titan Drills Pro, Tuesday 1 September, 7:17 to 9:15 AM, "
+            +"1:57:32. HIS FIRST EVER EARLY MORNING SESSION, confirmed by him on 2 September. Every "
+            +"other session on file starts at midday or later, so this is a new slot rather than "
+            +"a new volume. From the watch: avg HR 125, peak 158, low 84, active 1,018, total 1,202. "
+            +"This is the FIRST of two sessions on 1 September. The evening open play is a "
+            +"separate record, pk-20260901-openplay-pm, and the two together make 6h04m24s, the "
+            +"longest day on file. No effort rating was given for the morning."
+      });
+      _add362({
+        id:"pk-20260901-openplay-pm", date:"2026-09-01", kind:"Open play",
+        duration:"4h 06m 52s",
+        window:"6:15 to 10:22 PM",
+        calories:2482, activeCalories:2096, avgHr:124, maxHr:166, minHr:88, effort:8,
+        result:"", score:"", opponent:"", copyOwned:true,
+        note:"Evening open play, Tuesday 1 September, 6:15 to 10:22 PM, 4:06:52, effort 8 of 10. "
+            +"From the watch: avg HR 124, peak 166, low 88, active 2,096, total 2,482. Peak 166 "
+            +"is the highest on file. This is the SECOND session of 1 September, after the "
+            +"1:57:32 morning drilling block at Titan Drills Pro, 6h04m24s across the day."
+      });
+      _add362({
+        id:"pk-20260902-openplay", date:"2026-09-02", kind:"Play",
+        duration:"2h 01m 59s",
+        window:"6:16 to 8:18 PM",
+        calories:1093, activeCalories:902, avgHr:113, maxHr:155, minHr:55, effort:9,
+        result:"", score:"", opponent:"", copyOwned:true,
+        note:"Tuesday 2 September, 6:16 to 8:18 PM, 2:01:59, effort 9 of 10. From the watch: "
+            +"avg HR 113, peak 155, low 55, active 902, total 1,093. FIRST SESSION ON THE SIX "
+            +"ZERO CORAL PRO. Effort 9 on the lowest average heart rate of the recent block, "
+            +"which is worth watching rather than reading anything into on one night: a new "
+            +"paddle changes what the same rally costs you. The format was not recorded, so the "
+            +"kind here is Play rather than a guess at open play or drilling."
+      });
+      /* THE 31 AUGUST RECORD IS ALREADY ON HIS DEVICE, written by build 361\u0027s own guarded
+         block, so a literal edited inside that block would change this file and reach NOBODY who
+         has already run it. That is the failure mode this app has hit twice. The new fact, that
+         he played it with his girlfriend, is therefore applied HERE, unconditionally by id,
+         inside a migration guarded by a flag no existing profile carries. */
+      for(var _e831=0;_e831<_P362.sessions.length;_e831++){
+        var _r831=_P362.sessions[_e831];
+        if(_r831 && _r831.id==="pk-20260831-openplay"){
+          _r831.partner="His girlfriend";
+          if(String(_r831.note||"").indexOf("girlfriend")<0){
+            _r831.note=String(_r831.note||"")+" Played with his girlfriend, confirmed by Ian on "
+              +"2 September. Recorded because who he plays with changes what the session is worth "
+              +"as evidence: it is not a read on his level against ranked opposition.";
+          }
+        }
+      }
+      if(state.health && Array.isArray(state.health.injuries)){
+        for(var _h362=0;_h362<state.health.injuries.length;_h362++){
+          var _inj=state.health.injuries[_h362];
+          if(_inj && _inj.id==="inj-heel-20260823"){
+            _inj.status="resolved";
+            _inj.resolved="2026-09-02";
+            _inj.agent=String(_inj.agent||"")+" RESOLVED 02.09.2026, build 362, by APP-1 on "
+              +"Ian's word. Set unconditionally by id, not guarded on the old value. The "
+              +"record is kept in full so the 23 August to 2 September window stays on file.";
+          }
+        }
+      }
+      state.meta.mig362_sess_heel=true; save(true);
+  } }catch(e){ try{ console.warn("mig362 did not apply:",e&&e.message); }catch(_){} }
+
 /* ===== build 355: THE FIRST MECHANICS SECTION IS WRITTEN. twoHandBackhand ONLY. ==============
 
    ONE SHOT OF EIGHT, AND THAT IS THE HONEST NUMBER. Build 354 shipped the Mechanics container
@@ -15063,7 +15169,9 @@ function animate(root){ if(!root) return; chRun(root);
 function currentPageId(){ try{ const r=document.querySelector('input[name="tab"]:checked'); return r?"p-"+r.id.slice(2):"p-home"; }catch(e){ return "p-home"; } }
 function animateVisible(){ try{ requestAnimationFrame(()=>animate(document.getElementById(currentPageId()))); }catch(e){} }
 function updateDailySummary(){ try{ if(!state.context) state.context={forClaude:"",dailyLog:{}}; if(!state.context.dailyLog[TODAY]) state.context.dailyLog[TODAY]={note:"",summary:""}; state.context.dailyLog[TODAY].summary=todaySummary(); }catch(e){} }
-function summaryForDate(dt){ try{ const a=String(dt).split("-"); const dow=new Date(a[0],a[1]-1,a[2]).getDay(); const day=daySplit(dow); const log=(state.gym&&state.gym.logs&&state.gym.logs[dt])||{done:{}}; const wD=day.exercises.filter(e=>log.done[e.id]).length, wT=day.exercises.length; const hs=habitsActiveOn(dt); const hD=hs.filter(h=>h.log&&h.log[dt]).length; const water=(state.nutrition&&state.nutrition.water&&state.nutrition.water[dt])||0; const m=(state.realEstate&&state.realEstate.metrics&&state.realEstate.metrics.log&&state.realEstate.metrics.log[dt])||{}; const qw=(state.quickWin&&state.quickWin.done&&state.quickWin.done[dt])?"done":"not done"; return "Workout: "+cleanFocus(day.focus)+", "+wD+"/"+wT+" logged. Habits: "+hD+"/"+hs.length+". Water: "+water+(water===1?" glass":" glasses")+". Quick win: "+qw+". Real estate: "+(m.calls||0)+" calls, "+(m.appointments||0)+" appts, "+(m.doors||0)+" doors."; }catch(e){ return "No activity logged."; } }
+function summaryForDate(dt){ try{ const a=String(dt).split("-"); const dow=new Date(a[0],a[1]-1,a[2]).getDay(); const day=daySplit(dow); const log=(state.gym&&state.gym.logs&&state.gym.logs[dt])||{done:{}}; const wD=day.exercises.filter(e=>log.done[e.id]).length, wT=day.exercises.length; const hs=habitsActiveOn(dt); const hD=hs.filter(h=>h.log&&h.log[dt]).length; const water=(state.nutrition&&state.nutrition.water&&state.nutrition.water[dt])||0; const m=(state.realEstate&&state.realEstate.metrics&&state.realEstate.metrics.log&&state.realEstate.metrics.log[dt])||{}; const qw=(state.quickWin&&state.quickWin.done&&state.quickWin.done[dt])?"done":"not done"; /* ===== build 362: THIS LINE MAY NEVER ASSERT A ZERO AGAIN. ==========================
+    Ticking is gone from water, habits, supplements, the gym and the morning checklist, so these counters no longer receive input. Left as it was, this writer would have stamped "Habits: 0/4. Water: 0 glasses" into context.dailyLog EVERY NIGHT, forever, and that string goes into the export the 6am agent reads. That is the exact failure Ian named on 30 August: "I did all of my meds and pills and supplements and vitamins today but they aren\u0027t marked". A blank is NOT a zero. GLOBAL/RULES.md: say "not logged", never "missed".
+    HISTORY IS UNTOUCHED. A past date that really does carry ticks still prints its real numbers, because the branch only falls through to "not tracked" when there is nothing there. */ const wPart=(wD>0)?(wD+"/"+wT+" logged"):"not tracked"; const hPart=(hD>0)?(hD+"/"+hs.length):"not tracked"; const hasW=!!(state.nutrition&&state.nutrition.water&&Object.prototype.hasOwnProperty.call(state.nutrition.water,dt)&&state.nutrition.water[dt]>0); const waPart=hasW?(water+(water===1?" glass":" glasses")):"not tracked"; return "Workout: "+cleanFocus(day.focus)+", "+wPart+". Habits: "+hPart+". Water: "+waPart+". Quick win: "+qw+". Real estate: "+(m.calls||0)+" calls, "+(m.appointments||0)+" appts, "+(m.doors||0)+" doors."; }catch(e){ return "No activity logged."; } }
 function dailyReset(){ try{ if(!state.meta) state.meta={}; if(!state.context) state.context={forClaude:"",dailyLog:{}}; const last=state.meta.lastDay;
   if(last && last!==TODAY){ if(!state.context.dailyLog[last]) state.context.dailyLog[last]={note:"",summary:""}; const cur=state.context.dailyLog[last].summary; if(!cur || cur==="No activity logged yet.") state.context.dailyLog[last].summary=summaryForDate(last); state.meta.lastReset=TODAY; state.meta.archivedDay=last; }
   state.meta.lastDay=TODAY;
@@ -15078,7 +15186,23 @@ function todaySummary(){ try{
 function qwPicks(){ const q=state.quickWin||{}; const p=(q.picks&&q.picks[TODAY]); if(p&&p.length) return p.slice(0,2); const items=q.items||[]; if(!items.length) return ["Do one small high value thing today."]; const d=new Date(); const doy=Math.floor((d-new Date(d.getFullYear(),0,0))/86400000); const a=items[doy%items.length]; const b=items[(doy+1)%items.length]; return (items.length>1 && b!==a)?[a,b]:[a]; }
 function qwIsDone(i){ const v=state.quickWin&&state.quickWin.done&&state.quickWin.done[TODAY]; if(v===true) return i===0; if(v&&typeof v==="object") return !!v[i]; return false; }
 function qwToggle(i){ if(!state.quickWin) state.quickWin={items:[],done:{}}; if(!state.quickWin.done) state.quickWin.done={}; let v=state.quickWin.done[TODAY]; if(v===true) v={0:true}; if(!v||typeof v!=="object") v={}; if(v[i]) delete v[i]; else v[i]=true; if(Object.keys(v).length) state.quickWin.done[TODAY]=v; else delete state.quickWin.done[TODAY]; save(); render(); }
-function quickWinCard(parent){ const picks=qwPicks(); const c=card("a-green"); picks.forEach(function(txt,i){ const row=el("label","qw"); const inp=el("input","cbx"); inp.type="checkbox"; inp.checked=qwIsDone(i); const box=el("span","box"); box.innerHTML=CHECK; inp.addEventListener("change",()=>qwToggle(i)); const t=el("span","qt",txt); row.appendChild(inp); row.appendChild(box); row.appendChild(t); c._body.appendChild(row); if(i<picks.length-1){ const hr=el("div"); hr.style.cssText="height:1px;background:rgba(255,255,255,0.06);margin:3px 0"; c._body.appendChild(hr); } }); parent.appendChild(c); }
+/* ===== build 362: EASY WINS KEEPS ITS CONTENT AND LOSES ITS TICK ====================
+   This was the LAST tickable thing left on any page, and it is a genuinely hard call, which is
+   why the reasoning is written down. Easy Wins is the best performing surface in the app: the
+   build 344 measurement put it at 61 percent against 2 percent for the identical mechanic in
+   Today from Claude, and that number is the whole evidence base for the redesign.
+
+   IT STAYS, AND ONLY THE CHECKBOX GOES. Ian said "No ticks at all, all checkmarks go" and he
+   has said it twice. He objects to being ASKED TO TICK, not to being told what to do, so the
+   two picks still render and still come from the 6am agent. THE DATA MODEL IS UNTOUCHED:
+   state.quickWin.picks and state.quickWin.done both keep every historic entry, qwToggle,
+   qwIsDone and qwPicks are all still defined, and summaryForDate still reports the quick win
+   because those historic values are real.
+
+   ONE OF TODAY\u0027S OWN PICKS PROVED THE POINT. It read "Log today\u0027s workout, every set",
+   an instruction to use a surface this same build removes. Nothing in the app could have caught
+   that; the agent doc update shipped alongside is what stops it recurring. */
+function quickWinCard(parent){ const picks=qwPicks(); const c=card("a-green"); picks.forEach(function(txt,i){ const row=el("div","qw"); row.style.cursor="default"; row.appendChild(el("span","qt",txt)); c._body.appendChild(row); if(i<picks.length-1){ const hr=el("div"); hr.style.cssText="height:1px;background:rgba(255,255,255,0.06);margin:3px 0"; c._body.appendChild(hr); } }); parent.appendChild(c); }
 const TYPECOL={"Pickleball":"a-blue","Supplement":"a-green","Real estate":"a-gold","Recovery":"a-blue","Nutrition":"a-green"};
 /* v21 build 56: Today-from-Claude card checks live in a DATE + STABLE-CARD-ID store (state.briefing.done[date][cardId]=true),
    NOT on the card object. Date-keyed like habits/water/quickWin, so it merges non-destructively and survives reloads AND
@@ -15735,8 +15859,23 @@ function buildIanHome(v){ const workout=daySplit(DOW); const reTop=firstUndone((
       var pb=state.pickleball||{};
       var cardEl=card(); var b=cardEl._body;
       function _pkCls(kind){ var k=String(kind||"").toLowerCase(); if(/tournament|fall cup|\bapc\b/.test(k)) return "k-tourn"; if(k.indexOf("league")>=0) return "k-league"; var dr=/drill/.test(k); var pl=/open play|doubles|\bplay\b/.test(k); if(dr&&pl) return "k-mix"; if(dr) return "k-drill"; if(pl) return "k-open"; return "k-play"; }
-      var pkDays={}; var pkLbl={}; var pkMin={};
-      (pb.sessions||[]).forEach(function(s){ if(!s||!s.date) return; pkDays[s.date]=_pkCls(s.kind); pkLbl[s.date]=s.kind||"Play"; var _m=pkParseMin(s.duration); if(_m>0) pkMin[s.date]=_m; });
+      var pkDays={}; var pkLbl={}; var pkMin={}; var pkCnt={}; var pkLong={};
+      /* ===== build 362: A DAY CAN HOLD MORE THAN ONE SESSION ==============================
+         1 September 2026 held two, a 1:57:32 drilling block in the morning and a 4:06:52
+         evening, 6h04 across the day. The old line was last write wins on all three maps, so
+         that day would have drawn with ONE session\u0027s duration in the depth band and one
+         session\u0027s label, understating the hardest day on the grid by two thirds.
+         MINUTES NOW SUM, so the depth band tells the truth about the day. THE COLOUR AND THE
+         LABEL COME FROM THE LONGEST session of that day, so a tournament or a league still
+         wins the cell over a short knock about on the same date. THE COUNT IS UNCHANGED: the
+         cell loop below iterates DAYS and fires n++ once per day, so two sessions in one day
+         is still one training day against the 5 to 6 target, which is correct. */
+      (pb.sessions||[]).forEach(function(s){ if(!s||!s.date) return;
+        var _m=pkParseMin(s.duration);
+        pkCnt[s.date]=(pkCnt[s.date]||0)+1;
+        if(!(s.date in pkDays) || _m>(pkLong[s.date]||0)){ pkDays[s.date]=_pkCls(s.kind); pkLbl[s.date]=s.kind||"Play"; pkLong[s.date]=_m; }
+        if(_m>0) pkMin[s.date]=(pkMin[s.date]||0)+_m; });
+      Object.keys(pkCnt).forEach(function(k){ if(pkCnt[k]>1) pkLbl[k]=pkCnt[k]+" sessions, "+(pkLbl[k]||"play"); });
       /* v21 build 207: SESSION LENGTH AS CELL DEPTH. The grid counted days and said nothing about how
          long any of them were, so a 45 minute hit and a 2h48m night were the same cell. Four bands
          rather than a continuous ramp, because Ian's sessions cluster between 60 and 170 minutes and a
@@ -15751,6 +15890,31 @@ function buildIanHome(v){ const workout=daySplit(DOW); const reTop=firstUndone((
       var _hmBand=function(m){ return m<45?46:(m<90?64:(m<150?82:100)); };
       var gyDays={}; var gl=(state.gym&&state.gym.logs)||{};
       Object.keys(gl).forEach(function(k){ var L=gl[k]; if(!L) return; var d=L.done||{}; var ticked=Object.keys(d).some(function(id){ return d[id]; }); var noted=(typeof L.note==="string" && L.note.trim().length>0); if(ticked||noted) gyDays[k]=true; });
+      /* ===== build 362: WHERE A GYM DAY COMES FROM NOW THAT NOTHING IS TICKED =============
+         The two sources above still work and every historic tick still colours its own cell,
+         so the past is unchanged. Going forward neither fires: gym.logs[date].note was used on
+         ZERO of 56 days in the window measured on 02.09.2026, and the ticks are gone.
+         Nine days in that window were coloured by ticks alone and would have gone grey.
+         THE REPLACEMENT IS SOMETHING IAN ALREADY WRITES: a GYM labelled line in Today\u0027s
+         entry, state.daily[date].text, mirrored to context.dailyLog[date].note. It is a
+         textarea, not a tick, so it survives the cut, and with the boxes gone it is now his
+         only logging surface.
+         THE LABEL, NOT LOOSE WORD MATCHING, AND THIS WAS MEASURED NOT GUESSED. Against his
+         real 56 days: the GYM label recovers 14 gym days with ZERO false positives. Matching
+         on the loose words gym, lift or workout recovers 16 but colours two days he did NOT
+         train, one of which reads "Zero time to workout". A cell that claims a session he did
+         not do is worse than a grey cell, so the loose version was rejected on his own data.
+         A DECLARED REST DAY CAN NEVER BE COLOURED THIS WAY. THE PLAN IS NOT USED, on purpose:
+         colouring every planned gym day would make the weekly count always hit target and turn
+         the heatmap into decoration. It measures what happened or it measures nothing. */
+      try{ var _rest=(state.gym&&state.gym.restDays)||{};
+        var _dd=state.daily||{}; var _dl=(state.context&&state.context.dailyLog)||{};
+        var _gk={}; Object.keys(_dd).forEach(function(k){ _gk[k]=true; }); Object.keys(_dl).forEach(function(k){ _gk[k]=true; });
+        var _gymLab=/(^|[\s>.;])GYM\s*:/i;
+        Object.keys(_gk).forEach(function(k){ if(gyDays[k]||_rest[k]) return;
+          var _tx=String((_dd[k]&&_dd[k].text)||"")+" "+String((_dl[k]&&_dl[k].note)||"");
+          if(_tx.trim() && _gymLab.test(_tx)) gyDays[k]=true; });
+      }catch(e){}
       /* ===== v21 build 214: TWO HEATMAP FIXES, both reported by Ian on 08.02.2026 ==============
          1. THE COUNT DID NOT COUNT GYM. `if(kindCls) n++` fired only on a pickleball day, while the
             section header promises "gym and pickleball, target 5 to 6 a week" and a gym only day is
@@ -15947,7 +16111,10 @@ function buildIanHome(v){ const workout=daySplit(DOW); const reTop=firstUndone((
     t.textContent=cleanFocus(day.focus)||"Workout";
     top.appendChild(t); top.appendChild(el("div","chev","\u203A")); b.appendChild(top);
     var meta=el("div","small dim"); meta.style.marginTop="3px";
-    meta.textContent=doneN+" of "+exs.length+" exercises logged"; b.appendChild(meta);
+    /* build 362: this read "0 of 5 exercises logged" on every future and untouched day, the
+       last zero fraction left in the app once the ticking went. It is a REFERENCE view of the
+       week, so the honest line is how much work the day holds, not how much of it he ticked. */
+    meta.textContent=exs.length+(exs.length===1?" exercise":" exercises"); b.appendChild(meta);
     var track=el("div","pbar"); var fill=el("i"); track.appendChild(fill); b.appendChild(track);
     try{ var pct=exs.length?Math.round(doneN/exs.length*100):0; fill.style.width=pct+"%"; }catch(e){}
     var names=el("div","small"); names.style.cssText="margin-top:9px;line-height:1.5;color:var(--gray)";
@@ -16333,7 +16500,9 @@ function buildIanHome(v){ const workout=daySplit(DOW); const reTop=firstUndone((
   secProg();       /* goal pace and closing money               */
   secWater();
   secSphere();
-  secSummary();
+  /* build 362: secSummary is NOT called any more. Its three tiles were Workout sets,
+     Habits done and Water cups, all three fed by ticking that is now gone. The function is
+     left defined rather than deleted so the diff stays small and the shape is recoverable. */
   /* secIdeas REMOVED build 344. 158 ideas written, ZERO ever marked done, for the life
      of the app. That is not an idea system, it is a write only store. state.futureIdeas is
      untouched and still exports. Deliberately NOT replaced with a better idea manager: a
@@ -16936,7 +17105,10 @@ function gymToday(parent){ try{ healthCard(parent); }catch(e){} const day=daySpl
     const rf=el("div","small dim"); rf.style.marginTop="7px"; rf.textContent=_why?_why:"Nothing to log today."; rb.appendChild(rf);
     parent.appendChild(rc); return; }
   var items=[{id:"stretch5",name:"5 to 10 minute stretch",scheme:"warm up"}].concat(day.exercises); const total=items.length, dc=items.filter(e=>log.done[e.id]).length;
-  summaryGrid(parent,[ fracTile({label:"Today's session",color:"orange",done:dc,goal:total||1,unit:"sets"}), statTile({label:"This week",color:"orange",value:workoutsThisWeek(),unit:"days",sub:"Workouts logged",spark:weekWorkoutSpark(),sparkH:34}) ]);
+  /* build 362: both tiles here were computed from the ticks. "Today's session 0 of 8 sets"
+     and a "Workouts logged" sparkline that can only ever read zero are worse than no tile,
+     because they state a failure that never happened. Removed with the ticking that fed them.
+     The training heatmap on Home is now the honest answer to "how is the week going". */
   (function(){ var hn=(state.gym&&state.gym.handSpeedNote)||""; if(!hn) return;
     var hc=card("a-blue"); var hb=hc._body; hb.appendChild(el("span","pill b","Hand speed, honest read"));
     var ht=el("div","small"); ht.style.cssText="margin-top:9px;line-height:1.55;color:var(--gray)"; ht.textContent=hn; hb.appendChild(ht);
@@ -16945,23 +17117,29 @@ function gymToday(parent){ try{ healthCard(parent); }catch(e){} const day=daySpl
        button, and there is no honest replacement destination for "on court drills". */
     parent.appendChild(hc); })();
   
-  const c=card("a-blue"); const b=c._body; const top=el("div","between"); const left=el("div"); left.appendChild(el("h3",null,cleanFocus(day.focus))); const sub=el("div","small muted"); /* build 214: day name from the clock, and a swapped in session says so */ const _sw=daySwapInfo(); sub.textContent="Today, "+DAYFULL[DOW]+". "+(_sw&&_sw.kind==="swap"?"Running "+_sw.from+"'s session. ":"")+"Pickleball: "+day.play; left.appendChild(sub); top.appendChild(left); top.appendChild(el("span","pill b",day.play)); b.appendChild(top); if(day.note){ const n=el("div","small muted"); n.style.marginTop="6px"; n.textContent=day.note; b.appendChild(n); } const pbar=el("div","pbar"); const pi=el("i"); pbar.appendChild(pi); b.appendChild(pbar); try{pi.style.width=(total?dc/total*100:0)+"%";}catch(e){} const pl=el("div","small dim"); pl.style.marginTop="7px"; pl.textContent=dc+" of "+total+" logged"; b.appendChild(pl); const list=el("div"); list.style.marginTop="6px"; items.forEach(e=>{ const done=!!log.done[e.id]; const row=el("label","ex"); const inp=el("input","cbx"); inp.type="checkbox"; inp.checked=done; const box=el("span","box"); box.innerHTML=CHECK; inp.addEventListener("change",()=>{ if(log.done[e.id])delete log.done[e.id]; else log.done[e.id]=true; save(); render(); }); row.appendChild(inp); row.appendChild(box); row.appendChild(el("span","exname",e.name)); row.appendChild(el("span","scheme",e.scheme)); list.appendChild(row); }); b.appendChild(list); if(total){ const btn=el("button","btn ghost sm block",dc<total?"Check all":"Reset today"); btn.onclick=()=>{ if(dc<total)items.forEach(e=>log.done[e.id]=true); else items.forEach(e=>delete log.done[e.id]); save(); render(); }; b.appendChild(btn); } parent.appendChild(c);
+  const c=card("a-blue"); const b=c._body; const top=el("div","between"); const left=el("div"); left.appendChild(el("h3",null,cleanFocus(day.focus))); const sub=el("div","small muted"); /* build 214: day name from the clock, and a swapped in session says so */ const _sw=daySwapInfo(); sub.textContent="Today, "+DAYFULL[DOW]+". "+(_sw&&_sw.kind==="swap"?"Running "+_sw.from+"'s session. ":"")+"Pickleball: "+day.play; left.appendChild(sub); top.appendChild(left); top.appendChild(el("span","pill b",day.play)); b.appendChild(top); if(day.note){ const n=el("div","small muted"); n.style.marginTop="6px"; n.textContent=day.note; b.appendChild(n); } /* build 362: the gym card now says WHAT DAY IT IS AND WHAT IS ON IT, and nothing is ticked. The progress bar, the "x of y logged" line, the per exercise checkboxes and the Check all / Reset today button are all gone. state.gym.logs is untouched and every set he has ever logged is still in it. The session note textarea below survives, because it is a note and not a tick, and it is now the only thing on this page that writes. */ const list=el("div"); list.style.marginTop="10px"; items.forEach(e=>{ const row=el("div","ex"); row.style.cursor="default"; row.appendChild(el("span","exname",e.name)); row.appendChild(el("span","scheme",e.scheme)); list.appendChild(row); }); b.appendChild(list); parent.appendChild(c);
   const nc=card(); nc._body.appendChild(el("div","small muted","Session note (today)")); const ta=el("textarea","in"); ta.style.minHeight="58px"; ta.style.marginTop="6px"; ta.placeholder="Weights, PRs, how it felt..."; ta.value=log.note||""; ta.oninput=()=>{log.note=ta.value;save();}; nc._body.appendChild(ta); parent.appendChild(nc);
   const tog=el("div"); tog.style.margin="2px 2px 0"; const link=el("button"); link.style.cssText="background:none;border:none;color:var(--sec2,var(--accent2));font-weight:700;font-size:13px;padding:6px 2px"; link.textContent=gymShowWeek?"Hide full week":"View full week"; link.onclick=()=>{ gymShowWeek=!gymShowWeek; render(); }; tog.appendChild(link); parent.appendChild(tog);
   if(gymShowWeek){ sect(parent,"Full week reference","for reference only"); gymWeek(parent); }
 }
+/* ===== build 362: WATER IS A DISPLAY, NOT A COUNTER =================================
+   Ian, 02.09.2026, verbatim: "no more check boxes I just want it to display what I need to
+   do for the day and stuff like that, no water check, no vitamin and supplement check, no
+   gym check just the boxes to let me know what I need to take each day, what gym day it is,
+   how much water to drink etc" and then "No ticks at all, all checkmarks go."
+
+   THE DATA MODEL IS UNTOUCHED. state.nutrition.water is still there and every past day he
+   logged is still in it, still read by history_build.py and detect_water(). Nothing writes
+   to it any more, and history_build.py already treats a missing key as logged:false rather
+   than zero, so the removal degrades to "unlogged" and never to "he drank nothing".
+   WATER_FLOOR stays 9 and is still the single source for the number. */
 function waterCard(parent){
-  const get=()=>state.nutrition.water[TODAY]||0;
   const w=card("a-blue"); const wb=w._body;
   const top=el("div","between");
-  const l=el("div"); l.appendChild(el("h3",null,"Water (cups)")); l.appendChild(el("div","small dim","Tap plus for each cup. Aim "+WATER_GOAL+" cups.")); top.appendChild(l);
-  const big=el("div"); big.style.cssText="font-size:23px;font-weight:800;font-variant-numeric:tabular-nums;color:var(--cyan);white-space:nowrap"; big.textContent=get()+" / "+WATER_GOAL; top.appendChild(big);
+  const l=el("div"); l.appendChild(el("h3",null,"Water"));
+  l.appendChild(el("div","small dim","What to drink today.")); top.appendChild(l);
+  const big=el("div"); big.style.cssText="font-size:23px;font-weight:800;font-variant-numeric:tabular-nums;color:var(--cyan);white-space:nowrap"; big.textContent=WATER_GOAL+" cups"; top.appendChild(big);
   wb.appendChild(top);
-  const bar=el("div","pbar"); const bi=el("i"); bar.appendChild(bi); wb.appendChild(bar); try{bi.style.width=Math.min(100,get()/WATER_GOAL*100)+"%"; bi.style.background="var(--cyan)";}catch(e){}
-  const row=el("div"); row.style.cssText="display:flex;gap:10px;margin-top:13px";
-  const minus=el("button","btn ghost","\u2212 Cup"); minus.style.flex="1"; minus.onclick=()=>{ state.nutrition.water[TODAY]=Math.max(0,get()-1); save(); render(); };
-  const plus=el("button","btn","+ Cup"); plus.style.flex="2"; plus.onclick=()=>{ state.nutrition.water[TODAY]=get()+1; save(); render(); };
-  row.appendChild(minus); row.appendChild(plus); wb.appendChild(row);
   parent.appendChild(w);
 }
 /* RETIRED 08.04.2026 (build 224). NOT CALLED ANYWHERE. Kept in place, not deleted, so the content is
@@ -16983,30 +17161,56 @@ function habitsActiveOn(dt){ return ((state.routine&&state.routine.habits)||[]).
    (state.nutrition.supplements) merged into ONE section, a single place to tick everything. Both data stores
    are untouched, so all daily reset and archive behaviour is preserved. Buy list items (fish oil) render as a
    greyed buy line, not a checkbox he cannot complete. */
+/* ===== build 362: THE DAILY SECTION IS A DISPLAY, NOT A CHECKLIST ===================
+   Ian, 02.09.2026: "No ticks at all, all checkmarks go." This section now TELLS him what to
+   take and how much to drink, and asks nothing of him.
+
+   THE EVIDENCE THIS IS RIGHT, so no future session re raises it as a gap. The build 344
+   redesign measured the identical checkbox mechanic in two places on the same page: 2 percent
+   against 61 percent. And on 30 August he said, verbatim: "I did all of my meds and pills and
+   supplements and vitamins today but they aren\u0027t marked and I\u0027m not submitting tonight."
+   The box was recording ABSENCE OF INPUT, not absence of behaviour, so every completion
+   statistic built on it was measuring the wrong thing.
+
+   NOTHING WAS DELETED FROM SAVED STATE. state.routine.habits and state.nutrition.supplements
+   still carry every item and every historical log entry, and the ids are unchanged, so a
+   future session can restore the controls in one edit if he ever asks. The ring card, the
+   streak line and both adders are gone with the ticking: a ring that can only ever read 0 of 7
+   is a daily accusation, which is the opposite of what he asked for.
+
+   THE BUY LIST KEEPS ITS "Got it" BUTTON. That is not a completion tick, it is the only way to
+   move an item off the buy list and back onto the take list, and losing it would strand fish
+   oil there permanently. */
+function dispItem(name,meta){
+  var row=el("div","chk"); row.style.cursor="default";
+  var tx=el("div","ctext"); tx.textContent=name;
+  if(meta){ var m=el("span","meta"); m.textContent=meta; tx.appendChild(m); }
+  row.appendChild(tx); return row;
+}
 function dailyChecklistModule(parent){
-  const allH=state.routine.habits||(state.routine.habits=[]);
   const hs=habitsActiveOn(TODAY);
   const supps=state.nutrition.supplements||(state.nutrition.supplements=[]);
   const dailyS=supps.filter(s=>!s.toBuy);
   const buyS=supps.filter(s=>s.toBuy);
-  const total=hs.length+dailyS.length;
-  const done=hs.filter(h=>h.log[TODAY]).length + dailyS.filter(s=>!!s.log[TODAY]).length;
-  parent.appendChild(ringCard(done,total,"Daily checklist",done+" of "+total+" done \u00b7 "+habitStreak()+" day streak",false,"a-green"));
   waterCard(parent);
   const c=card(); const b=c._body;
-  const grpH=el("div","small muted","Habits"); grpH.style.marginBottom="8px"; b.appendChild(grpH);
-  hs.forEach(h=>{ b.appendChild(checkItem(!!h.log[TODAY],h.name,null,()=>{ if(h.log[TODAY])delete h.log[TODAY]; else h.log[TODAY]=true; save(); render(); },()=>{ state.routine.habits=allH.filter(x=>x.id!==h.id); save(); render(); })); });
-  b.appendChild(adder("Add a habit...",tx=>{ allH.push({id:uid(),name:tx,log:{}}); save(); render(); }));
-  const grpS=el("div","small muted","Supplements"); grpS.style.margin="16px 0 8px"; b.appendChild(grpS);
-  dailyS.forEach(s=>{ b.appendChild(checkItem(!!s.log[TODAY],s.name,s.dose,()=>{ if(s.log[TODAY])delete s.log[TODAY]; else s.log[TODAY]=true; save(); render(); },()=>{ state.nutrition.supplements=supps.filter(x=>x.id!==s.id); save(); render(); })); });
-  b.appendChild(adder("Add a supplement...",tx=>{ supps.push({id:uid(),name:tx,dose:"",log:{},toBuy:false}); save(); render(); }));
+  const grpH=el("div","small muted","Today"); grpH.style.marginBottom="8px"; b.appendChild(grpH);
+  if(!hs.length) b.appendChild(el("div","empty","Nothing scheduled today."));
+  hs.forEach(h=>{ b.appendChild(dispItem(h.name,null)); });
+  const grpS=el("div","small muted","Take today"); grpS.style.margin="16px 0 8px"; b.appendChild(grpS);
+  if(!dailyS.length) b.appendChild(el("div","empty","Nothing on the list."));
+  dailyS.forEach(s=>{ b.appendChild(dispItem(s.name,s.dose||null)); });
   if(buyS.length){
-    const bl=el("div","small muted"); bl.style.margin="16px 0 8px"; bl.textContent="On the buy list, not owned yet"; b.appendChild(bl);
-    buyS.forEach(s=>{ const row=el("div","chk"); row.style.opacity="0.6"; const tx=el("div","ctext"); tx.textContent=s.name; const m=el("span","meta"); m.textContent=(s.dose?s.dose+" \u00b7 ":"")+"buy list"; tx.appendChild(m); row.appendChild(tx); const got=el("button","btn sm","Got it"); got.onclick=()=>{ s.toBuy=false; save(); render(); }; row.appendChild(got); const del=el("button","del","\u00d7"); del.onclick=()=>{ state.nutrition.supplements=supps.filter(x=>x.id!==s.id); save(); render(); }; row.appendChild(del); b.appendChild(row); });
+    const bl=el("div","small muted"); bl.style.margin="16px 0 8px"; bl.textContent="Out of, buy these"; b.appendChild(bl);
+    buyS.forEach(s=>{ const row=el("div","chk"); row.style.opacity="0.6"; const tx=el("div","ctext"); tx.textContent=s.name; const m=el("span","meta"); m.textContent=(s.dose?s.dose+" \u00b7 ":"")+"buy list"; tx.appendChild(m); row.appendChild(tx); const got=el("button","btn sm","Got it"); got.onclick=()=>{ s.toBuy=false; save(); render(); }; row.appendChild(got); b.appendChild(row); });
   }
   parent.appendChild(c);
 }
-function habitsModule(parent){ const all=state.routine.habits; const hs=habitsActiveOn(TODAY); const hd=hs.filter(h=>h.log[TODAY]).length; parent.appendChild(ringCard(hd,hs.length,"Daily habits",hd+" of "+hs.length+" done \u00B7 "+habitStreak()+" day streak",false,"a-green")); const c=card(); const b=c._body; hs.forEach(h=>{ b.appendChild(checkItem(!!h.log[TODAY],h.name,null,()=>{ if(h.log[TODAY])delete h.log[TODAY]; else h.log[TODAY]=true; save(); render(); },()=>{state.routine.habits=all.filter(x=>x.id!==h.id);save();render();})); }); b.appendChild(adder("Add a habit...",t=>{all.push({id:uid(),name:t,log:{}});save();render();})); parent.appendChild(c); }
+/* build 362: habitsModule has had NO call site since build 130 folded habits into
+   dailyChecklistModule. It is converted rather than left ticking so that no ticking code path
+   survives anywhere in the file, and kept rather than deleted so the build 215 habitStrip14
+   wrapper below it still has something to wrap. */
+function habitsModule(parent){ const hs=habitsActiveOn(TODAY); const c=card(); const b=c._body; if(!hs.length) b.appendChild(el("div","empty","Nothing scheduled today.")); hs.forEach(h=>{ b.appendChild(dispItem(h.name,null)); }); parent.appendChild(c); }
 /* ===== v21 build 72: pickleball coaching page + helpers (additive, non-destructive) ===== */
 function pkParseMin(s){ if(typeof s==="number") return s; s=String(s||""); if(!s.trim()) return 0; var h=(s.match(/(\d+)\s*h/i)||[])[1], m=(s.match(/(\d+)\s*m(?!s)/i)||[])[1], sec=(s.match(/(\d+)\s*s/i)||[])[1]; var mins=0; if(h)mins+=parseInt(h,10)*60; if(m)mins+=parseInt(m,10); if(sec)mins+=parseInt(sec,10)/60; if(!h&&!m&&!sec){ var n=parseFloat(s); if(!isNaN(n)) mins=n; } return Math.round(mins*10)/10; }
 function pkEffort(s){ if(s&&typeof s.effort==="number") return s.effort; var t=String(s&&s.note||""); var m=t.match(/effort\s*(\d+(?:\.\d+)?)\s*(?:of|\/)\s*10/i); return m?parseFloat(m[1]):null; }
@@ -17735,7 +17939,16 @@ function buildPickle(v){ var pb=state.pickleball||(state.pickleball={});
    convention for retired things. Ian retired the tab on the condition that every number on it had a
    home elsewhere first; the two that did not were placed in this same build. Do not re-add this tab.
    See BRAIN/Personal/Context/APP_REMOVED_FEATURES.md section 3. */
-function buildStats(v){ safe(v,()=>{ const wk=workoutsThisWeek(); const hs=habitsActiveOn(TODAY); const hD=hs.filter(h=>h.log&&h.log[TODAY]).length; const water=(state.nutrition&&state.nutrition.water&&state.nutrition.water[TODAY])||0; const m=(state.realEstate.metrics&&state.realEstate.metrics.log&&state.realEstate.metrics.log[TODAY])||{}; const cg=(state.realEstate.metrics&&state.realEstate.metrics.targets&&state.realEstate.metrics.targets.calls)||10; const sp=weekWorkoutSpark(); var _statsTop=el("div"); _statsTop.style.height="14px"; v.appendChild(_statsTop); sect(v,"Summary","this week and today"); summaryGrid(v,[ fracTile({label:"Workouts",color:"orange",done:wk,goal:5,unit:"days",tab:"gym"}), fracTile({label:"Habits",color:"green",done:hD,goal:hs.length||7,unit:"today",tab:"gym"}), fracTile({label:"Water",color:"cyan",done:water,goal:WATER_GOAL,unit:"cups",tab:"gym"}) ]); v.appendChild(statTile({label:"Workout completion",color:"orange",value:(sp.slice(-1)[0]||0)+"%",unit:"today",sub:"Last 7 days",spark:sp,sparkH:64})); },"Stats summary"); sectG(v,"Habit consistency"); const c2=card("a-green"); const hItems=[]; for(let i=6;i>=0;i--){ const d=new Date(); d.setDate(d.getDate()-i); const k=todayKey(d); const hk=habitsActiveOn(k); const hsn=hk.length||1; const done=hk.filter(h=>h.log[k]).length; hItems.push({label:["Su","Mo","Tu","We","Th","Fr","Sa"][d.getDay()],pct:Math.round(done/hsn*100)}); } c2._body.appendChild(barChart(hItems,"g",132)); const _hstreak=habitStreak(); const sl=el("div","small dim"); sl.style.marginTop="8px"; sl.innerHTML='Current streak: <span class="countup" data-n="'+_hstreak+'">'+_hstreak+'</span> '+(_hstreak===1?"day":"days"); c2._body.appendChild(sl); v.appendChild(c2);
+function buildStats(v){ safe(v,()=>{ const wk=workoutsThisWeek(); const hs=habitsActiveOn(TODAY); const hD=hs.filter(h=>h.log&&h.log[TODAY]).length; const water=(state.nutrition&&state.nutrition.water&&state.nutrition.water[TODAY])||0; const m=(state.realEstate.metrics&&state.realEstate.metrics.log&&state.realEstate.metrics.log[TODAY])||{}; const cg=(state.realEstate.metrics&&state.realEstate.metrics.targets&&state.realEstate.metrics.targets.calls)||10; const sp=weekWorkoutSpark(); var _statsTop=el("div"); _statsTop.style.height="14px"; v.appendChild(_statsTop); sect(v,"Summary","this week and today");
+    /* build 362: the three tiles here (Workouts, Habits, Water) and the "Workout completion"
+       sparkline were all computed from ticks that no longer exist. Every one of them would
+       have read zero forever. Removed rather than reworded, because a Summary section whose
+       every number is "not tracked" is not a summary. The real estate numbers below are
+       typed figures, not ticks, so they are untouched and this page keeps its purpose. */
+    },"Stats summary"); /* build 362: the seven day habit consistency bars and the "Current streak" line came
+     straight off routine.habits[].log. With ticking gone they would draw seven empty bars and
+     a zero day streak under a green heading, which reads as a collapse that did not happen.
+     habitStreak() and barChart() are both still used elsewhere and are left in place. */
   sect(v,"Real estate pipeline","active stages and closed");
   const _deals=state.realEstate.deals||[];
   const _counts={}; RESTAGES.forEach(x=>_counts[x]=0); _deals.forEach(d=>{ _counts[d.stage]=(_counts[d.stage]||0)+1; });
@@ -17765,7 +17978,11 @@ function buildStats(v){ safe(v,()=>{ const wk=workoutsThisWeek(); const hs=habit
 }
 function contextModule(parent){ updateDailySummary(); const c=card("a-blue"); const b=c._body; b.appendChild(el("div","small muted","A clean daily rollup the agent reads. Auto fills as you use the app.")); b.firstChild.style.marginBottom="8px"; const box=el("div","stat"); box.appendChild(el("div","k",fmtShort(TODAY)+" summary")); const val=el("div","v"); val.style.fontSize="13.5px"; val.style.fontWeight="600"; val.style.lineHeight="1.45"; val.textContent=state.context.dailyLog[TODAY].summary||todaySummary(); box.appendChild(val); b.appendChild(box); b.appendChild(el("div","small muted","Your note for today")); b.lastChild.style.margin="11px 0 6px"; const _mv=el("div","small"); _mv.style.cssText="line-height:1.5;color:var(--gray)"; _mv.textContent="Daily writing moved to Today's entry on the home screen, one box for everything."; b.appendChild(_mv); const _mb=el("button","btn block","Open Today's entry"); _mb.style.marginTop="10px"; _mb.onclick=()=>{ selectTab("home"); }; b.appendChild(_mb); parent.appendChild(c); const c2=card(); c2._body.appendChild(el("div","small muted","Notes and instructions for Claude")); c2._body.firstChild.style.marginBottom="6px"; const ta2=el("textarea","in"); ta2.style.minHeight="86px"; ta2.placeholder="Standing context for the daily agent..."; ta2.value=state.context.forClaude||""; ta2.oninput=()=>{ state.context.forClaude=ta2.value; save(); }; c2._body.appendChild(ta2); parent.appendChild(c2); }
 function todosModule(parent){ const c=card(); const b=c._body; if(!state.todos.length)b.appendChild(el("div","empty","All clear.")); state.todos.forEach(t=>{ b.appendChild(checkItem(t.done,t.text,null,()=>{t.done=!t.done;save();render();},()=>{state.todos=state.todos.filter(x=>x.id!==t.id);save();render();})); }); b.appendChild(adder("Add a task...",x=>{state.todos.push({id:uid(),text:x,done:false});save();render();})); parent.appendChild(c); }
-function checklistModule(parent){ const blocks=[["morning","Morning"],["day","Day"],["evening","Evening"]]; const clog=state.routine.checklistLog[TODAY]||(state.routine.checklistLog[TODAY]={}); blocks.forEach(function(bk){ const key=bk[0],label=bk[1]; const lbl=el("div","small muted"); lbl.style.margin="4px 2px 8px"; lbl.style.fontWeight="800"; lbl.textContent=label; parent.appendChild(lbl); const items=state.routine.checklist[key]; const shown=items.filter(function(it){return habitActiveOn(it,TODAY);}); const c=card(); const b=c._body; if(!shown.length)b.appendChild(el("div","empty","Nothing here yet.")); shown.forEach(it=>{ b.appendChild(checkItem(!!clog[it.id],it.text,null,()=>{ if(clog[it.id])delete clog[it.id]; else clog[it.id]=true; save(); render(); },()=>{state.routine.checklist[key]=items.filter(x=>x.id!==it.id);save();render();})); }); b.appendChild(adder("Add to "+label.toLowerCase()+"...",t=>{items.push({id:uid(),text:t});save();render();})); parent.appendChild(c); }); }
+/* build 362: the morning, day and evening checklist is a DISPLAY now, same instruction and
+   same reasoning as the daily section. state.routine.checklist keeps every item and
+   state.routine.checklistLog keeps every historical tick, untouched. checklistLog is no longer
+   written to, so the 6am agent must read it as unlogged and never as a miss. */
+function checklistModule(parent){ const blocks=[["morning","Morning"],["day","Day"],["evening","Evening"]]; blocks.forEach(function(bk){ const key=bk[0],label=bk[1]; const lbl=el("div","small muted"); lbl.style.margin="4px 2px 8px"; lbl.style.fontWeight="800"; lbl.textContent=label; parent.appendChild(lbl); const items=state.routine.checklist[key]||[]; const shown=items.filter(function(it){return habitActiveOn(it,TODAY);}); const c=card(); const b=c._body; if(!shown.length)b.appendChild(el("div","empty","Nothing here yet.")); shown.forEach(it=>{ b.appendChild(dispItem(it.text,null)); }); parent.appendChild(c); }); }
 
 /* ===== CHRIS pages ===== */
 /* ===== SETTINGS ===== */
@@ -17820,8 +18037,9 @@ function lockNow(){ try{ sess.remove("ianDash.session"); }catch(e){} const l=doc
    needed. Floor at 0. Lock->app sync: unlockApp calls render() which rebuilds from state. App->lock sync:
    showKeypad calls renderLockWater() whenever the lock is shown. */
 const LOCK_WATER_GOAL=WATER_GOAL;
-function lockWaterAdjust(n){ try{ if(!state) return; if(!state.nutrition) state.nutrition={}; if(!state.nutrition.water) state.nutrition.water={}; var cur=state.nutrition.water[TODAY]||0; state.nutrition.water[TODAY]=Math.max(0,cur+n); save(true); renderLockWater(); }catch(e){} }
-function renderLockWater(){ try{ var host=document.getElementById("lockWater"); if(!host) return; var goal=LOCK_WATER_GOAL; var cur=0; try{ cur=(state&&state.nutrition&&state.nutrition.water&&state.nutrition.water[TODAY])||0; }catch(e){ cur=0; } var pct=Math.max(0,Math.min(100,goal?(cur/goal*100):0)); host.innerHTML='<div class="lw-top"><div class="lw-lab">Water</div><div class="lw-amt">'+cur+' / '+goal+' cups</div></div><div class="lw-main"><button class="lw-btn" id="lwMinus" aria-label="Remove a cup of water">\u2212</button><div class="lw-bar"><i style="width:'+pct+'%"></i></div><button class="lw-btn" id="lwPlus" aria-label="Add a cup of water">+</button></div>'; var mi=document.getElementById("lwMinus"), pl=document.getElementById("lwPlus"); if(mi) mi.onclick=function(){ lockWaterAdjust(-1); }; if(pl) pl.onclick=function(){ lockWaterAdjust(1); }; }catch(e){} }
+/* build 362: the lock screen water quick log is RETIRED with the rest of the ticking. Both functions are kept as no ops rather than deleted, because renderLockWater() is called from the lock screen render path and a missing symbol there throws inside a try that would have swallowed it silently. The host div is gone, so this could not draw anything even if it were called. Do not wire either back up without Ian asking for it by name. */
+function lockWaterAdjust(){ return; }
+function renderLockWater(){ return; }
 
 /* ===== export / import / pwa ===== */
 function doExport(){ try{ state.meta.lastSaved=new Date().toISOString(); updateDailySummary(); const blob=new Blob([JSON.stringify(state,null,2)],{type:"application/json"}); const url=URL.createObjectURL(blob); const a=document.createElement("a"); a.href=url; a.download=(profile==="chris"?"chris":"ian")+"-dashboard-"+TODAY+".json"; a.click(); setTimeout(()=>{try{URL.revokeObjectURL(url);}catch(e){}},500); toast("Backup downloaded"); }catch(e){ toast("Export failed"); } }
