@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 363 (2026-09-03)">
+<meta name="build" content="v21 build 364 (2026-09-03)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -14661,6 +14661,67 @@ try{ if(profile==="ian"){
       state.meta.mig_willis_evt0903=true; save(true);
   } }catch(e){ try{ console.warn("willis evt0903 did not apply:",e&&e.message); }catch(_){} }
 
+
+/* ===== v21 build 364, 03.09.2026. THE 3 SEPTEMBER SESSION, APP-1 ========================
+
+   ONE SESSION, FROM IAN DIRECTLY. There has still been no export since 28 August, so this
+   exists nowhere else in the app. Every number is his, copied as given, nothing estimated.
+
+   WHAT WAS CHECKED BEFORE WRITING, because a report reaching this lane claimed 1, 2 and 3
+   September were all missing and that the heel still read active. TWO OF THOSE THREE CLAIMS
+   WERE WRONG. Verified by running a real post-361 profile through the live build 363 bytes:
+   44 sessions on file, 1 September holds BOTH of its records, 2 September holds its one, no
+   duplicate ids anywhere, and inj-heel-20260823 already reads status resolved with
+   resolved 2026-09-02 and is the only injury on file, so nothing renders. Only 3 September
+   was genuinely absent. The stale source is almost certainly the export directory, whose
+   newest file is still ian-dashboard-2026-08-28.json, and the seed literal in this file,
+   which still says status:"active" because that is the CREATION default inside build 351's
+   add-if-missing block. Build 362 overrides it at runtime. DO NOT "FIX" THAT LITERAL.
+
+   THE GUARD IS BY ID, NOT BY DATE, for the same reason as build 362: 1 September is a two
+   session day and a date guard would have silently refused its second record.
+
+   SECOND SESSION ON THE SIX ZERO CORAL PRO, after 2 September. Both are logged now, which is
+   the minimum needed before anything is read into the paddle change.
+
+   Guarded once by state.meta.mig364_sess0903, which is NOT in the seed. */
+  try{ if(profile==="ian" && state.meta && !state.meta.mig364_sess0903){
+      var _P364 = state.pickleball || (state.pickleball={});
+      if(!Array.isArray(_P364.sessions)) _P364.sessions=[];
+      var _dup364=false;
+      for(var _q364=0;_q364<_P364.sessions.length;_q364++){
+        var _s364=_P364.sessions[_q364];
+        if(_s364 && String(_s364.id||"")==="pk-20260903-openplay") _dup364=true;
+      }
+      if(!_dup364){
+        _P364.sessions.push({
+          id:"pk-20260903-openplay",
+          date:"2026-09-03",
+          kind:"Play",
+          venue:"Omaha",
+          duration:"2h 18m 09s",
+          window:"7:04 to 9:22 AM, Omaha",
+          calories:1306,
+          activeCalories:1090,
+          avgHr:115,
+          maxHr:157,
+          minHr:72,
+          effort:8,
+          result:"", score:"", opponent:"",
+          copyOwned:true,
+          note:"Thursday 3 September, 7:04 to 9:22 AM, Omaha, 2:18:09, effort 8 of 10. From the "
+              +"watch: avg HR 115, peak 157, low 72, active 1,090, total 1,306, an active rate of "
+              +"7.89 calories a minute. SECOND SESSION ON THE SIX ZERO CORAL PRO. It is also his "
+              +"SECOND EARLY MORNING SESSION, after 1 September, so the 7am slot is starting to "
+              +"look like a pattern rather than a one off. The two Coral sessions now sit at avg "
+              +"HR 113 effort 9 and avg HR 115 effort 8, both lower average heart rates than the "
+              +"August open play band at higher stated effort. Two points is not a trend and "
+              +"nothing should be read into the paddle yet, but this is the pair to watch. The "
+              +"format was not recorded, so the kind is Play rather than a guess."
+        });
+      }
+      state.meta.mig364_sess0903=true; save(true);
+  } }catch(e){ try{ console.warn("mig364 did not apply:",e&&e.message); }catch(_){} }
 
 /* ===== build 355: THE FIRST MECHANICS SECTION IS WRITTEN. twoHandBackhand ONLY. ==============
 
