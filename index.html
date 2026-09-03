@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 362 (2026-09-02)">
+<meta name="build" content="v21 build 363 (2026-09-03)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -14519,6 +14519,148 @@ try{ if(profile==="ian"){
       }
       state.meta.mig362_sess_heel=true; save(true);
   } }catch(e){ try{ console.warn("mig362 did not apply:",e&&e.message); }catch(_){} }
+
+/* ===== v21 build 363, 03.09.2026. THE STALE WILLIS EVENT, ian-daily-brief ================
+
+   THE DEFECT, and it is the reason this build exists. state.events still carries
+   ev-20260903-willis-relist dated 2026-09-03, which is TODAY, titled as a relist happening
+   today at $619,900. IT IS NOT HAPPENING. The relist moved to AFTER 11 SEPTEMBER 2026 at the
+   earliest, with NO date set, and that correction was made on 01.09.2026 to the DEAL record
+   (re-cynthia-willis) and to the repair scope to do. THE EVENT WAS MISSED. So for two days the
+   deal record and the calendar entry for the same relist have said different things, and this
+   morning the calendar one would have shown him a relist that is not real, on the day it
+   claims to happen. Exactly the class of defect build 349 fixed on this same event.
+
+   WHY THE EVENT IS MOVED AND NOT DELETED. The hard safety rule is add only, with two named
+   carve outs, and events are not one of them. So the date is CORRECTED to 2026-09-11, which is
+   the earliest the relist can happen, and the title says in its own words that it is an
+   earliest date and not a booked one. The old value is written into the event note so the
+   record shows what it used to say and why it changed.
+
+   IDEMPOTENT. Keyed on the event id, and a second load rewrites the same values. Guarded by
+   state.meta.mig_willis_evt0903, which is NOT in the seed.
+
+   ALSO IN THIS BLOCK, and both are grounded:
+   1. ret-20260820-willis-repair-scope still ends "and the relist is 3 September". That was true
+      when it was written on 20 August and stopped being true on 1 September. Text corrected.
+      Grounding unchanged, the item is not retired, it is fourteen days old and still open.
+   2. ret-20260902-perseus-film expired on its own date on 2 September when the Coral arrived
+      and he played on it that evening. Retired to state.archive.todosDone with that reason,
+      never deleted, per the STEP 2f retire contract. Written to be a no op if the app's own
+      expiry sweep has already taken it.
+   3. CREATE ret-20260903-coral-film, key pk-coral-baseline, no expiry. PENDING_TRIGGERS
+      Trigger 11 fired 02.09.2026 and its sub trigger EXPIRED UNUSED: the Perseus era baseline
+      was never filmed, P4 is now UNTESTABLE and P5 is crippled. That file's own conclusion is
+      that a flag is not a mechanism and that the only thing which has ever produced a filmed
+      session on this project was a booked court agreed in advance. So the item names the
+      mechanism rather than the intention. No expiry, because unlike the Perseus window this
+      one does not close, it just gets less useful the longer the Coral era runs unmeasured.
+   4. ADD ev-20260904-belknap-close. The Belknap buy closes TOMORROW on $452,000 cash and there
+      is no calendar event for it, while there is one for a Willis relist that is not happening.
+      Guarded on the id not already existing.  */
+  try{ if(profile==="ian" && state.meta && !state.meta.mig_willis_evt0903){
+
+      /* 1. THE EVENT. Correct the date and say plainly that it is an earliest, not a booking. */
+      if(Array.isArray(state.events)){
+        state.events.forEach(function(e){
+          if(!e || e.id!=="ev-20260903-willis-relist") return;
+          e.date="2026-09-11";
+          e.title="Willis relist EARLIEST, 10218 Spyglass Dr. No date set, repairs first. Price $619,900";
+          e.note="Date corrected 03.09.2026 by ian-daily-brief, build 363. It read 3 September, "
+            +"which was the target set at the 24 August team meeting and which STOPPED BEING TRUE "
+            +"on 1 September, when the relist moved to after 11 September at the earliest with no "
+            +"date set. The deal record was corrected then and this event was not, so for two days "
+            +"the two disagreed. 11 September is the EARLIEST POSSIBLE date and is not a booking. "
+            +"The repair scope from the inspection still sets both the date and the price.";
+        });
+      }
+
+      /* 4. THE BELKNAP CLOSE, which is real and dated and had no event. */
+      var _hasBk=false;
+      if(Array.isArray(state.events)){
+        for(var _b=0; _b<state.events.length; _b++){
+          if(state.events[_b] && state.events[_b].id==="ev-20260904-belknap-close"){ _hasBk=true; break; }
+        }
+        if(!_hasBk){
+          state.events.push({
+            id:"ev-20260904-belknap-close",
+            date:"2026-09-04",
+            kind:"Real estate",
+            title:"Belknap buy closes, 5122 N 141st. $452,000 cash, buyer side",
+            note:"Added 03.09.2026 by ian-daily-brief, build 363. From the deal record "
+              +"re-belknap-buy, Under Contract at $452,000 cash with a 4 September close, "
+              +"unchanged since Trigger 8 fired on 22 August. Nothing is needed from Ian. "
+              +"It is the first close since Bonks on 20 August."
+          });
+        }
+      }
+
+      /* 2 and 3. THE TO DOS. */
+      var _R3 = state.realEstate || (state.realEstate={});
+      if(!Array.isArray(_R3.todos)) _R3.todos=[];
+      var _A3 = state.archive || (state.archive={});
+      if(!Array.isArray(_A3.todosDone)) _A3.todosDone=[];
+
+      /* 2. Willis repair scope text, the relist date inside it is stale. */
+      _R3.todos.forEach(function(t){
+        if(!t || t.id!=="ret-20260820-willis-repair-scope") return;
+        t.text="Get the Willis inspection report, the repair bids and the receipts from Chris. "
+          +"The repair cost is still unknown fourteen days on and it sets both the relist price "
+          +"and the relist date. The relist cannot happen before 11 September and no date is set.";
+        t.agent=String(t.agent||"")+" TEXT CORRECTED 03.09.2026, build 363. It ended \"and the "
+          +"relist is 3 September\", which was true on 20 August and stopped being true on "
+          +"1 September. The item itself is unchanged and still open.";
+      });
+
+      /* 3a. Retire the expired Perseus film item, move it, never delete it. */
+      var _keep3=[];
+      for(var _t3=0; _t3<_R3.todos.length; _t3++){
+        var _it3=_R3.todos[_t3];
+        if(_it3 && _it3.id==="ret-20260902-perseus-film"){
+          _it3.retired="2026-09-03";
+          _it3.retiredReason="EXPIRED UNUSED on its own date. The Six Zero Coral Pro arrived on "
+            +"2 September and Ian played on it that evening, 6:16 to 8:18 PM, so the Perseus era "
+            +"baseline window closed. Nothing was filmed. Recorded in PENDING_TRIGGERS Trigger 11 "
+            +"in plain words: P4, his 31 August hand speed claim, is now UNTESTABLE, and P5 is "
+            +"crippled because its long error baseline can never be taken. Retired because the "
+            +"window shut, not because it was done.";
+          _A3.todosDone.push(_it3);
+          continue;
+        }
+        _keep3.push(_it3);
+      }
+      _R3.todos=_keep3;
+
+      /* 3b. Create the Coral baseline item, and name the mechanism rather than the intention. */
+      var _hasCf=false;
+      for(var _c3=0; _c3<_R3.todos.length; _c3++){
+        var _q3=_R3.todos[_c3];
+        if(_q3 && (_q3.id==="ret-20260903-coral-film" || _q3.key==="pk-coral-baseline")){ _hasCf=true; break; }
+      }
+      for(var _d3=0; _d3<_A3.todosDone.length; _d3++){
+        var _z3=_A3.todosDone[_d3];
+        if(_z3 && (_z3.id==="ret-20260903-coral-film" || _z3.key==="pk-coral-baseline")){ _hasCf=true; break; }
+      }
+      if(!_hasCf){
+        _R3.todos.push({
+          id:"ret-20260903-coral-film", key:"pk-coral-baseline", done:false, exp:"", list:"todo",
+          src:"PENDING_TRIGGERS Trigger 11, FIRED 02.09.2026, and its sub trigger which expired "
+             +"unused the same day. Last footage of Ian is 19 August.",
+          text:"Book a court and film one game on the Coral. A booked slot and a phone on "
+             +"something, not an intention to film if it happens. Three foreseen windows have "
+             +"expired unfilmed in a fortnight and the only thing that has ever worked on this "
+             +"was a court booked in advance.",
+          agent:"Created 03.09.2026 by ian-daily-brief, build 363. The Perseus baseline is gone "
+             +"permanently and cannot be retaken, so this is about the Coral era having a "
+             +"measurement at all. No expiry: unlike the Perseus window this one does not slam "
+             +"shut, it just gets less useful the longer the new paddle goes unmeasured."
+        });
+      }
+
+      save(true);
+      state.meta.mig_willis_evt0903=true; save(true);
+  } }catch(e){ try{ console.warn("willis evt0903 did not apply:",e&&e.message); }catch(_){} }
+
 
 /* ===== build 355: THE FIRST MECHANICS SECTION IS WRITTEN. twoHandBackhand ONLY. ==============
 
