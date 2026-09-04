@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 366 (2026-09-04)">
+<meta name="build" content="v21 build 367 (2026-09-04)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -14985,6 +14985,111 @@ try{ if(profile==="ian"){
       }
       state.meta.mig366_belknap_cma=true; save(true);
   } }catch(e){ try{ console.warn("mig366 did not apply:",e&&e.message); }catch(_){} }
+
+/* ===== v21 build 367, 04.09.2026. BELKNAP PRATT, THE COMP QUALITY AUDIT ================
+
+   THE THIRD BELKNAP NUMBER TODAY AND THE SECOND IN SIX HOURS. This is not churn: each move
+   was correct on what was known at the time. Build 366 fixed a days on market inversion. A
+   comp quality audit has now failed the same comp set on GEOGRAPHY AND STYLE, which is a
+   deeper fault than the timing was, and correcting for it drops the supportable value again.
+
+   WHAT THE AUDIT FOUND. Nine comps in NINE DIFFERENT ADDITIONS, none of them in the subject's
+   own plat, and three of the four highest priced sat more than a mile away. A comp set that
+   never lands in the subject's own subdivision is not measuring the subject's market, and
+   because the distant comps clustered at the TOP, removing the geography error removes value
+   rather than adding it.
+
+   THE SEQUENCE, AND IT IS THE POINT OF THIS BLOCK. $249,900 agreed by Ian and Chris on 17
+   August. $239,900 is now the recommendation. $244,900 lived between them for one morning.
+   NOTHING IS ERASED. $249,900 is not deleted, it has become the TOP OF RANGE band rather than
+   the recommendation, which is a more useful fate than a strikethrough: the number Ian and
+   Chris picked is still on the table, it is just no longer the opening move.
+
+   TWO FINDINGS CARRIED IN. The CONDITION SPREAD IS ABOUT $35,000, not the $15,000 on the
+   record, evidenced by two same size homes a quarter mile apart: dated sold $215,000 at 96
+   percent of ask in 19 days, updated sold $250,000 at 104 percent in 2 days. That is a bigger
+   swing than the whole gap between the tiers, so the walkthrough matters more than the
+   pricing decision does. And 4949 PRATT, THE CLOSEST SALE TO THE SUBJECT AT 206 FEET, SOLD
+   $215,000, which is the single most relevant transaction in the file.
+
+   IAN'S OWN 17 AUGUST REASONING IS NOT REWRITTEN. It is recorded verbatim on this note as his
+   words, including his $15,000 condition estimate. The correction is APPENDED after it rather
+   than replacing it, because overwriting a sentence explicitly marked "recorded rather than
+   paraphrased" would delete his thinking and leave a number that looks like it was always
+   his.
+
+   FOURTH TIME IN SIX BUILDS THAT A FRESH MIGRATION WAS NEEDED because the target literals sit
+   inside a guarded block that has already run on Ian's device, this time mig366_belknap_cma.
+
+   Guarded once by state.meta.mig367_belknap_geo, NOT in the seed. Every rewrite is a
+   split/join on an exact phrase, so it is idempotent, and any phrase Ian has edited by hand
+   will simply not match and will be left alone. */
+  try{ if(profile==="ian" && state.meta && !state.meta.mig367_belknap_geo && state.realEstate && Array.isArray(state.realEstate.deals)){
+      var _bk367=null;
+      for(var _i367=0;_i367<state.realEstate.deals.length;_i367++){
+        if(state.realEstate.deals[_i367] && state.realEstate.deals[_i367].id==="re-belknap-sell"){ _bk367=state.realEstate.deals[_i367]; break; }
+      }
+      if(_bk367 && typeof _bk367.note==="string"){
+        var _n367=_bk367.note;
+
+        /* 1. THE HEADLINE. Replaces the build 366 headline outright. */
+        _n367=_n367.split("CMA REBUILT 04.09.2026. RECOMMENDED LIST $244,900, band $240,000 to $245,000, "
+            +"expect 7 to 18 days. This SUPERSEDES the $249,900 Ian and Chris agreed on 17 August, which "
+            +"stays on the record below as a real decision that was later revised. Subject is 1,103 above "
+            +"grade, 801 below, 1,904 total, 2 baths, per MLS 21811732. The previous tier table was "
+            +"INVERTED and is corrected in full further down. ")
+          .join("CMA REBUILT TWICE ON 04.09.2026. RECOMMENDED LIST $239,900, band $235,000 to $240,000, "
+            +"expect 7 to 18 days. THE PRICE HISTORY IN ORDER, ALL THREE STILL ON THE RECORD: $249,900 "
+            +"agreed by Ian and Chris on 17 August; $244,900 this morning after the days on market rebuild; "
+            +"$239,900 this afternoon after a comp quality audit failed the comp set on geography and style. "
+            +"$249,900 IS NOT GONE, IT IS NOW THE TOP OF RANGE BAND rather than the recommendation. "
+            +"WHY IT MOVED AGAIN: nine comps sat in nine different additions, none in the subject's own "
+            +"plat, and three of the four highest priced were more than a mile away, so the geography error "
+            +"was holding the top of the range up. CONDITION IS WORTH ABOUT $35,000 EITHER WAY, not the "
+            +"$15,000 previously carried, which is wider than the entire gap between these tiers, so THE "
+            +"WALKTHROUGH MATTERS MORE THAN THE PRICE DECISION DOES. Subject is 1,103 above grade, 801 "
+            +"below, 1,904 total, 2 baths, per MLS 21811732. ");
+
+        /* 2. THE TIERS. */
+        _n367=_n367.split("THREE TIERS, REBUILT 04.09.2026, AND THE PREVIOUS TABLE WAS INVERTED. "
+            +"QUICK SALE band $230,000 to $235,000, list $234,900, 3 to 7 days. "
+            +"RECOMMENDED band $240,000 to $245,000, LIST $244,900, 7 to 18 days. "
+            +"TOP OF RANGE band $250,000 to $255,000, list $254,900, 20 to 40+ days. ")
+          .join("THREE TIERS, REBUILT A SECOND TIME 04.09.2026 AFTER THE COMP QUALITY AUDIT. "
+            +"QUICK SALE band $225,000 to $230,000, list $229,900, 3 to 7 days. "
+            +"RECOMMENDED band $235,000 to $240,000, LIST $239,900, 7 to 18 days. "
+            +"TOP OF RANGE band $245,000 to $250,000, list $249,900, 20 to 40+ days. "
+            +"THE WHOLE TABLE CAME DOWN $5,000 because the comp set failed on NEIGHBOURHOOD AND STYLE: "
+            +"nine comps across nine different additions, NONE in the subject's own plat, and three of the "
+            +"four highest priced more than a mile away. Correcting for geography removes value rather than "
+            +"adding it, because the distant comps were the expensive ones. THE MORNING TABLE, quick "
+            +"$234,900 / recommended $244,900 / top $254,900, is superseded and should not be quoted. ");
+
+        /* 3. THE CONDITION SPREAD. Ian's own words are kept and the correction is APPENDED. */
+        _n367=_n367.split("condition is worth about $15,000 in either direction, and $249,900 is the good "
+            +"condition price, so the upside case gets tested first.")
+          .join("condition is worth about $15,000 in either direction, and $249,900 is the good "
+            +"condition price, so the upside case gets tested first. "
+            +"[CORRECTED 04.09.2026, AND IAN'S SENTENCE ABOVE IS LEFT AS HE SAID IT: THE CONDITION SPREAD "
+            +"IS ABOUT $35,000, NOT $15,000. Two same size homes a quarter mile apart settle it. The dated "
+            +"one sold $215,000 at 96 percent of ask in 19 days. The updated one sold $250,000 at 104 "
+            +"percent in 2 days. His instinct that condition drives this file was right and he "
+            +"UNDERSTATED it by more than half. A $35,000 swing is wider than the gap between the quick "
+            +"sale and top of range tiers, which means the walkthrough decides the price and the tier "
+            +"table only decides the opening move.]");
+
+        /* 4. THE CLOSEST SALE, now with its distance. */
+        _n367=_n367.split("Across the street, 4949 Pratt SOLD $215,000 on 6 August after a cut from $225,000.")
+          .join("Across the street, 4949 Pratt SOLD $215,000 on 6 August after a cut from $225,000. "
+            +"IT IS 206 FEET FROM THE SUBJECT, THE CLOSEST SALE IN THE FILE, and after the comp quality "
+            +"audit it is the single most relevant transaction on the record. A $215,000 sale that close, "
+            +"which needed a cut to get there, is the reason the top of the range came down.");
+
+        if(_n367!==_bk367.note){ _bk367.note=_n367; }
+        _bk367.priceNote="Recommended list $239,900, CMA 04.09.2026 rev 2";
+      }
+      state.meta.mig367_belknap_geo=true; save(true);
+  } }catch(e){ try{ console.warn("mig367 did not apply:",e&&e.message); }catch(_){} }
 
 /* ===== build 355: THE FIRST MECHANICS SECTION IS WRITTEN. twoHandBackhand ONLY. ==============
 
