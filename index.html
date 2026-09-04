@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 364 (2026-09-03)">
+<meta name="build" content="v21 build 365 (2026-09-04)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -1514,8 +1514,17 @@ function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]
         save(true);
       }
   } }catch(e){}
-  /* build 129: gear feedback appended once to the paddle note so it travels with his gear context. */
-  try{ if(state.pickleball&&typeof state.pickleball.paddle==="string"&&state.pickleball.paddle.indexOf("Gear log 07.21")<0){
+  /* build 129: gear feedback appended once to the paddle note so it travels with his gear context.
+     BUILD 365 ADDED THE meta.paddleOwned GUARD, and this is the sixth member of the every load
+     writer family named in build 339. "Append once" was only ever true by accident: the block is
+     unguarded and its ONLY stop condition is the string already containing "Gear log 07.21". The
+     moment any later build authored a new paddle string, which build 365 did when Ian moved to the
+     Six Zero Coral Pro, this re-appended a July 2026 gear log to it on EVERY load, forever. Caught
+     by the four load rule, paddle differed between load 1 and load 2. Fixed at the writer per
+     RULES rule 5 rather than by writing the magic phrase into the new copy, because the next
+     rewrite would have hit exactly the same wall. paddleOwned means a later build owns this
+     string. */
+  try{ if(state.pickleball&&typeof state.pickleball.paddle==="string"&&!((state.meta||{}).paddleOwned)&&state.pickleball.paddle.indexOf("Gear log 07.21")<0){
       state.pickleball.paddle+=" Gear log 07.21.2026: the thin overgrip is a confirmed keeper, he really likes it. "
         +"Cushioned athletic socks are still PENDING, the order was delayed two days, and playing without them left his feet sore.";
       save(true);
@@ -14722,6 +14731,157 @@ try{ if(profile==="ian"){
       }
       state.meta.mig364_sess0903=true; save(true);
   } }catch(e){ try{ console.warn("mig364 did not apply:",e&&e.message); }catch(_){} }
+
+/* ===== v21 build 365, 04.09.2026. THE 3 SEPTEMBER EVENING SESSION AND A CURRENCY PASS, APP-1
+
+   FIVE THINGS, ALL FROM IAN DIRECTLY. There has still been no export since 28 August, so none
+   of this exists anywhere else in the app.
+
+   1. THE 3 SEPTEMBER EVENING SESSION. Thursday is now a TWO SESSION DAY, 4:24:12 across the
+      two. Guarded BY ID, never by date, for the same reason as builds 362 and 364: a date
+      guard would find the morning record and silently refuse this one. That is the exact bug
+      build 362 fixed for 1 September and it must not be reintroduced.
+
+   2. THE PADDLE. state.pickleball.paddle still read "Joola 16mm elongated perseus IV". He
+      moved to a SIX ZERO CORAL PRO 16mm HYBRID on 2 September and the Perseus is retired.
+      BRAIN names state.pickleball.paddle as the authoritative paddle context, so it being
+      wrong makes every downstream read wrong. Set unconditionally, not guarded on the old
+      value. THE VENUE COST PARAGRAPH IS CARRIED THROUGH VERBATIM because it is still true and
+      it is the only place that reasoning lives.
+
+   3. THE GRIP, AND THIS ONE NEARLY WENT IN THE WRONG PLACE. state.pickleball.gear.grip is a
+      record of OVERGRIP, the physical wrap: bulky, then bare, then thin white. The 3 September
+      change is a GRIP TECHNIQUE change, probably eastern to continental, which is how he HOLDS
+      the paddle. They are different facts and writing one into the other would have corrupted
+      a three state wear experiment that took a month to build. It goes in a NEW container,
+      gear.gripType, and gear.grip is not touched. IT IS RECORDED AS UNCONFIRMED because Ian
+      said "probably".
+
+   4. MECHANICS, SHOTS, GRIP was stale in two ways and one of them was actively blocking. It
+      named the Perseus, and it carried "That question is not open, do not relitigate the grip
+      type" plus a cue reading "Equipment grip question is closed, do not reopen it". He
+      reopened it on 3 September. A closed sign on a question the user has just reopened is
+      worse than silence, because the next coaching run would have refused to look at it.
+
+   5. THE GOAL. pk-goal-tourney is done, the APC is played, and nothing replaced it. The real
+      target is now PPA ARIZONA, MID FEBRUARY 2027, MEN'S DOUBLES WITH DYLAN, with stated
+      ambitions of pro or amateur status next year and a place in the Nebraska Pro League.
+      Added as a goal and as an event. THE EXACT DATE IS NOT KNOWN and the event says so
+      rather than inventing one. pk-goal-pro already targets the Nebraska Pro League roster and
+      is consistent, so it is left alone. THE STALE RATING LADDERS ARE NOT TOUCHED: both
+      pk-goal-dupr and pk-goal-pro already flag their own checkpoints as drawn off an assumed
+      3.3 start against a real 3.226, and both say recalculating is Ian's call. Quietly
+      rewriting a number he was told he owns would be worse than leaving it flagged.
+
+   Guarded once by state.meta.mig365_currency, which is NOT in the seed. */
+  try{ if(profile==="ian" && state.meta && !state.meta.mig365_currency){
+      var _P365 = state.pickleball || (state.pickleball={});
+      if(!Array.isArray(_P365.sessions)) _P365.sessions=[];
+
+      /* 1. the session, by id */
+      var _dup365=false;
+      for(var _q=0;_q<_P365.sessions.length;_q++){
+        if(_P365.sessions[_q] && String(_P365.sessions[_q].id||"")==="pk-20260903-evening") _dup365=true; }
+      if(!_dup365){
+        _P365.sessions.push({
+          id:"pk-20260903-evening", date:"2026-09-03", kind:"Play", venue:"Omaha",
+          duration:"2h 06m 03s", window:"4:45 to 6:51 PM, Omaha",
+          calories:1285, activeCalories:1088, avgHr:120, maxHr:157, minHr:79, effort:8,
+          result:"", score:"", opponent:"", copyOwned:true,
+          note:"Thursday 3 September, evening, 4:45 to 6:51 PM, Omaha, 2:06:03, effort 8 of 10. "
+              +"From the watch: avg HR 120, peak 157, low 79, active 1,088, total 1,285. THIRD "
+              +"SESSION ON THE SIX ZERO CORAL PRO. SECOND SESSION OF THE DAY, after the 2:18:09 "
+              +"morning block, 4:24:12 in total, which is his heaviest single day since the "
+              +"6h04 on 1 September. Two sessions in a day twice inside a week is a volume "
+              +"pattern worth watching against the heel, which he closed out on 2 September."
+        });
+      }
+
+      /* 2. the paddle. Unconditional. The venue costs paragraph is carried through verbatim. */
+      _P365.paddle="Six Zero Coral Pro 16mm Hybrid, since 2 September 2026, roughly 6 to 8 hours in "
+        +"across three sessions (2 Sep 2:01:59, 3 Sep AM 2:18:09, 3 Sep PM 2:06:03). THE JOOLA "
+        +"PERSEUS IV IS RETIRED and should not be quoted as his paddle. Too early to read anything "
+        +"into it: the first two Coral sessions ran avg HR 113 and 115 at stated effort 9 and 8, "
+        +"lower average heart rates than the August open play band at higher stated effort, but "
+        +"three points is not a trend and a new paddle changes what the same rally costs you. "
+        +"GRIP TECHNIQUE CHANGED 3 September, probably eastern to continental, UNCONFIRMED, see "
+        +"gear.gripType. VENUE COSTS (07.20.2026, unchanged and still true): Ace is 70 a month "
+        +"UNLIMITED and already paid for, it is closer, and he knows people who go consistently, "
+        +"so Ace stays primary. Midwest would be roughly 50 a month ON TOP, about 600 a year, so "
+        +"use DROP IN rates there instead and concentrate visits Jan to Apr 2027 near tryouts. "
+        +"Only reconsider a Midwest membership in early 2027 if he has committed to trying out. "
+        +"GEAR LOG 07.21.2026, still true and carried forward from the previous paddle note: the "
+        +"thin overgrip is a confirmed keeper, he really likes it, and it moves to the Coral with "
+        +"him. Cushioned athletic socks were still PENDING as of that date.";
+      state.meta.paddleOwned=true;
+
+      /* 3. grip TECHNIQUE, a new container. gear.grip (overgrip) is deliberately untouched. */
+      if(!_P365.gear || typeof _P365.gear!=="object") _P365.gear={};
+      if(!_P365.gear.gripType || typeof _P365.gear.gripType!=="object"){
+        _P365.gear.gripType={
+          current:"Continental",
+          previous:"Eastern",
+          changed:"2026-09-03",
+          status:"UNCONFIRMED",
+          note:"Ian changed his grip on 3 September 2026 and described the change as PROBABLY "
+              +"eastern to continental. Recorded as unconfirmed because he said probably. THIS IS "
+              +"GRIP TECHNIQUE, HOW HE HOLDS THE PADDLE, and it is a different fact from "
+              +"gear.grip, which records the OVERGRIP he wraps it with and is a closed three "
+              +"state wear experiment. Do not merge them. Confirm the grip with him before any "
+              +"coaching reads a change in drive depth or hand speed against it, because a grip "
+              +"change and a paddle change landed within two days of each other and either one "
+              +"could explain the same symptom."
+        };
+      }
+
+      /* 4. mechanics, shots, grip. Named a retired paddle and told the next run not to look. */
+      try{
+        var _mg=_P365.mechanics && _P365.mechanics.shots && _P365.mechanics.shots.grip;
+        if(_mg && Array.isArray(_mg.paras) && _mg.paras.length){
+          _mg.paras[0]="Equipment grip: a thin ordinary tacky overgrip, coming from a tennis "
+            +"background and a preference for a smaller handle. That overgrip question is settled "
+            +"and closed since 08.2026. THE PADDLE UNDER IT IS NOW A SIX ZERO CORAL PRO 16mm "
+            +"HYBRID as of 2 September 2026, not the Joola Perseus IV this paragraph used to "
+            +"name. GRIP TECHNIQUE IS A SEPARATE AND CURRENTLY OPEN QUESTION: he changed it on 3 "
+            +"September 2026, probably eastern to continental, unconfirmed, recorded at "
+            +"gear.gripType. The closed question is the overgrip, not the grip type.";
+          if(Array.isArray(_mg.cues)){
+            for(var _c=0;_c<_mg.cues.length;_c++){
+              if(String(_mg.cues[_c]||"").indexOf("Equipment grip question is closed")>=0){
+                _mg.cues[_c]="Overgrip question is closed. Grip TYPE changed 3 Sep, unconfirmed";
+              }
+            }
+          }
+          _mg.updated="2026-09-04";
+        }
+      }catch(_mge){}
+
+      /* 5. the goal and the event */
+      if(!Array.isArray(_P365.goals)) _P365.goals=[];
+      var _hasG=false;
+      for(var _g=0;_g<_P365.goals.length;_g++){ if(_P365.goals[_g] && _P365.goals[_g].id==="pk-goal-ppa-az") _hasG=true; }
+      if(!_hasG){
+        _P365.goals.push({ id:"pk-goal-ppa-az", done:false, copyOwned:true,
+          text:"THE TARGET EVENT IS NOW PPA ARIZONA, MID FEBRUARY 2027, MEN'S DOUBLES WITH DYLAN. "
+              +"This replaces the APC as the thing being trained for; the APC is played, 0 and 7 on "
+              +"23 August, and pk-goal-tourney holds that result as history. The stated ambition "
+              +"around it is pro or amateur status next year and a place in the Nebraska Pro "
+              +"League, which pk-goal-pro already tracks against an April 2027 tryout. EXACT DATE "
+              +"NOT CONFIRMED, mid February is what he said, so registration timing and the "
+              +"division are both still open. Ratings only move at events, so this is also the "
+              +"next thing that moves the DUPR after 3.226."});
+      }
+      if(!Array.isArray(state.events)) state.events=[];
+      var _hasE=false;
+      for(var _e=0;_e<state.events.length;_e++){ if(state.events[_e] && state.events[_e].id==="ev-20270215-ppa-arizona") _hasE=true; }
+      if(!_hasE){
+        state.events.push({ id:"ev-20270215-ppa-arizona", date:"2027-02-15",
+          title:"PPA Arizona, men's doubles with Dylan. MID FEBRUARY, exact date NOT confirmed",
+          kind:"Pickleball" });
+      }
+
+      state.meta.mig365_currency=true; save(true);
+  } }catch(e){ try{ console.warn("mig365 did not apply:",e&&e.message); }catch(_){} }
 
 /* ===== build 355: THE FIRST MECHANICS SECTION IS WRITTEN. twoHandBackhand ONLY. ==============
 
