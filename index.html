@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 368 (2026-09-05)">
+<meta name="build" content="v21 build 369 (2026-09-05)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -15951,8 +15951,13 @@ function pkNextFocus(){
 }
 function briefCard(it){ const c=card(TYPECOL[it.type]||"a-blue"); const b=c._body; const top=el("div","between"); const _lft=el("div"); _lft.style.cssText="display:flex;align-items:center;gap:8px"; _lft.appendChild(claudeAvatar("av-sm")); _lft.appendChild(el("span","pill b",it.type||"Info")); top.appendChild(_lft); const lab=el("label","cbmini"); lab.style.marginLeft="auto"; const inp=el("input","cbx"); inp.type="checkbox"; inp.checked=briefDone(it.id); const box=el("span","box mini"); box.innerHTML=CHECK; inp.addEventListener("change",()=>{ var _nv=!briefDone(it.id); briefSetDone(it.id,_nv); it.done=_nv; save(true); render(); }); lab.appendChild(inp); lab.appendChild(box); top.appendChild(lab); b.appendChild(top); const title=el("div","feedtitle",it.title); if(briefDone(it.id)){ title.style.color="var(--dim)"; title.style.textDecoration="line-through"; } b.appendChild(title); if(it.note) b.appendChild(el("div","feednote briefnote",it.note)); /* v21 build 212: THE DRIVER TAG. RULES.md P1 requires that when the app acts on something it knows about Ian, it says so. A few words, never a paragraph. Optional field, so every card written before build 212 renders exactly as it did. */ if(it.why){ var _wy=el("div","small dim"); _wy.style.cssText="margin-top:7px;line-height:1.4"; _wy.textContent=it.why; b.appendChild(_wy); } if(it.url){ const a=el("a","feedlink",(it.type==="Pickleball"?"Watch":it.type==="Supplement"?"Read the research":"Open")+" \u203A"); a.href=it.url; a.target="_blank"; a.rel="noopener"; b.appendChild(a); } return c; }
 function eventsModule(parent){ /* build 178: only show upcoming events (today or later). Past dated events are kept in state but hidden from the calendar so nothing stale shows. */ const evs=(state.events||[]).filter(e=>e&&daysUntil(e.date)>=0).slice().sort((a,b)=>String(a.date).localeCompare(String(b.date))); const c=card(); const b=c._body; if(!evs.length) b.appendChild(el("div","empty","No upcoming events.")); evs.forEach(ev=>{ const row=el("div","evrow"); const p=evParts(ev.date); const du=daysUntil(ev.date); const dd=el("div","evdate"); dd.innerHTML='<div class="d">'+p.d+'</div><div class="m">'+p.m+'</div>'; row.appendChild(dd); const et=el("div","evt"); et.appendChild(el("div","en",ev.title)); et.appendChild(el("div","ec",ev.kind+(du>=0?(du===0?" \u00B7 today":du===1?" \u00B7 tomorrow":" \u00B7 in "+du+" days"):" \u00B7 past"))); row.appendChild(et); const del=el("button","del","\u00D7"); del.onclick=()=>{ state.events=state.events.filter(x=>x.id!==ev.id); save(); render(); }; row.appendChild(del); b.appendChild(row); }); parent.appendChild(c);
-  let kind="League"; const ac=card(); const ab=ac._body; const kc=el("div"); const setChips=()=>{ [...kc.querySelectorAll(".chip")].forEach(ch=>ch.classList.toggle("on",ch.textContent===kind)); }; kc.appendChild(chipRow(["League","Tournament","Real estate","Personal"],kind,k=>{kind=k;setChips();})); ab.appendChild(kc); const inp=el("input","in"); inp.placeholder="Event..."; inp.setAttribute("data-add","Event..."); inp.style.marginTop="10px"; const dt=el("input","in"); dt.type="date"; dt.style.marginTop="9px"; const btn=el("button","btn block","Add event"); btn.onclick=()=>{ const t=inp.value.trim(); if(!t)return; pendingFocus="Event..."; state.events.push({id:uid(),title:t,date:dt.value||addDays(1),kind:kind}); save(); render(); }; ab.appendChild(inp); ab.appendChild(dt); ab.appendChild(btn); parent.appendChild(ac); }
-function goalsList(parent,arr){ const c=card(); const b=c._body; if(!arr.length)b.appendChild(el("div","empty","No goals yet.")); arr.forEach(g=>{ b.appendChild(checkItem(g.done,g.text,g.horizon||null,()=>{g.done=!g.done;save();render();},()=>{ const i=arr.indexOf(g); if(i>-1)arr.splice(i,1); save(); render(); })); }); b.appendChild(adder("Add a goal...",t=>{ arr.push({id:uid(),text:t,done:false}); save(); render(); })); parent.appendChild(c); }
+  /* build 369: THE EVENT ADD FORM IS GONE. Events are Dispatch written and always have been
+     in practice: every event on the calendar was created by a lane. The upcoming events list
+     above is untouched, and state.events keeps all 53 entries. */
+  }
+/* build 369: goals are DISPLAY ONLY. Tick, delete and the adder are gone; state.goals keeps
+   every item and its done flag, and a goal is added or closed through Dispatch. */
+function goalsList(parent,arr){ const c=card(); const b=c._body; if(!arr.length)b.appendChild(el("div","empty","No goals yet.")); arr.forEach(g=>{ b.appendChild(doneRow(g.text,g.horizon||null,!!g.done)); }); parent.appendChild(c); }
 function textNotes(parent,get,set,ph,min){ const c=card(); const ta=el("textarea","in"); ta.style.minHeight=(min||150)+"px"; ta.value=get()||""; ta.placeholder=ph; ta.oninput=()=>{set(ta.value);save();}; c._body.appendChild(ta); parent.appendChild(c); }
 /* ===== focus timer, REMOVED build 225, 08.04.2026 =====
    Ian's instruction, after being shown that state.realEstate.focus.count was {} for the entire life of
@@ -16195,20 +16200,13 @@ function reTodos(parent){
     sect(parent,g[1],g[2]);
     var c=card(); var b=c._body;
     if(!list.length){ b.appendChild(el("div","empty","Nothing here.")); }
+    /* build 369: DISPLAY ONLY. The build 338 four way grouping, the due labels and the done
+       tally at the bottom all survive untouched, because they are how he READS the list. What
+       is gone is the tick, the delete and the add box. The 6am agent already owns this list
+       under STEP 2f, so nothing that maintains it is lost. */
     list.forEach(function(t){
-      b.appendChild(checkItem(t.done,t.text,t.due?dueLabel(t.due):null,
-        function(){ t.done=!t.done; save(); render(); },
-        function(){ state.realEstate.todos=state.realEstate.todos.filter(function(x){ return x!==t; }); save(); render(); }));
+      b.appendChild(doneRow(t.text,t.due?dueLabel(t.due):null,!!t.done));
     });
-    if(g[0]==="todo"){
-      var inp=el("input","in"); inp.placeholder="Add a follow up..."; inp.setAttribute("data-add","Add a follow up...");
-      var dt=el("input","in"); dt.type="date"; dt.style.marginTop="9px";
-      var btn=el("button","btn block","Add task");
-      btn.onclick=function(){ var v=inp.value.trim(); if(!v) return; pendingFocus="Add a follow up...";
-        rt.push({id:uid(),text:v,done:false,due:dt.value||"",list:"todo"}); save(); render(); };
-      var wrap=el("div"); wrap.style.marginTop="12px";
-      wrap.appendChild(inp); wrap.appendChild(dt); wrap.appendChild(btn); b.appendChild(wrap);
-    }
     parent.appendChild(c);
   });
   var doneN=rt.filter(function(t){ return t&&t.done; }).length;
@@ -16414,11 +16412,11 @@ function buildSolara(v){
   /* ---- DETAILS (editable drop + status) ---- */
   var dc=card(); var db=dc._body;
   db.appendChild(el("div","small muted","Drop name"));
-  var di=el("input","in"); di.style.marginTop="5px"; di.value=sd.drop||""; di.placeholder="Drop 001, Launch capsule..."; di.oninput=function(){ sd.drop=di.value; save(); }; db.appendChild(di);
+  var di=el("div"); di.style.cssText="margin-top:5px;font-weight:700"; di.textContent=sd.drop||"Not set"; db.appendChild(di);
   var sl=el("div","small muted"); sl.style.marginTop="13px"; sl.textContent="Status"; db.appendChild(sl);
-  var si=el("input","in"); si.style.marginTop="5px"; si.value=sd.status||""; si.placeholder="In progress, Launched, Paused..."; si.oninput=function(){ sd.status=si.value; save(); }; db.appendChild(si);
+  var si=el("div"); si.style.cssText="margin-top:5px;font-weight:700"; si.textContent=sd.status||"Not set"; db.appendChild(si);
   var igl=el("div","small muted"); igl.style.marginTop="13px"; igl.textContent="Instagram (handle or link)"; db.appendChild(igl);
-  var igi=el("input","in"); igi.style.marginTop="5px"; igi.value=sd.instagram||""; igi.placeholder="@solaramotorsports or full link"; igi.oninput=function(){ sd.instagram=igi.value; save(); }; db.appendChild(igi);
+  var igi=el("div"); igi.style.cssText="margin-top:5px;font-weight:700"; igi.textContent=sd.instagram||"Not set"; db.appendChild(igi);
   v.appendChild(dc);
 
   /* ---- TIMELINE / CALENDAR ---- */
@@ -16441,16 +16439,14 @@ function buildSolara(v){
     col.appendChild(dtop);
     var lbl=el("div"); lbl.style.cssText="font-size:14.5px;font-weight:600;margin-top:2px;line-height:1.35;color:var(--white)"; lbl.textContent=m.label||"Milestone"; col.appendChild(lbl);
     row.appendChild(col);
-    var del=el("button","del","\u00D7"); del.onclick=function(){ var ix=sd.milestones.indexOf(m); if(ix>-1)sd.milestones.splice(ix,1); save(); render(); }; row.appendChild(del);
     tb.appendChild(row);
   });
-  var addWrap=el("div"); addWrap.style.cssText="margin-top:13px;border-top:1px solid var(--line);padding-top:13px";
-  addWrap.appendChild(el("div","small muted","Add a milestone"));
-  var arow=el("div"); arow.style.cssText="display:flex;gap:8px;margin-top:6px;flex-wrap:wrap";
-  var din=el("input","in"); din.type="date"; din.setAttribute("data-add","solara-date"); din.style.cssText="flex:1 1 140px;min-width:0";
-  var lin=el("input","in"); lin.placeholder="What happens (date optional)"; lin.setAttribute("data-add","solara-milestone"); lin.style.cssText="flex:2 1 180px;min-width:0";
-  arow.appendChild(din); arow.appendChild(lin); addWrap.appendChild(arow);
-  var ab=el("button","btn sm block","Add milestone"); ab.style.marginTop="9px"; ab.onclick=function(){ var d=din.value; var t=(lin.value||"").trim(); if(!t) return; sd.milestones.push({id:uid(),date:d||"",label:t,done:false}); save(); render(); }; addWrap.appendChild(ab);
+  /* build 369: the milestone ADD FORM is gone in full. An earlier pass in this same build
+     removed only its submit button and left the date and label inputs on screen, which is
+     worse than either state: a typed value would have been silently discarded on the next
+     render. Milestones are added through Dispatch. */
+  /* build 369: milestones are added through Dispatch, not here. addWrap is left in place but
+     never populated, so the layout below it is unchanged. */
   tb.appendChild(addWrap);
   v.appendChild(tc);
 
@@ -16458,9 +16454,9 @@ function buildSolara(v){
   sect(v,"Tasks","what to move on");
   var kc=card(); var kb=kc._body;
   if(!sd.tasks.length){ kb.appendChild(el("div","empty","No Solara tasks yet.")); }
-  sd.tasks.slice(0,20).forEach(function(t){ kb.appendChild(checkItem(t.done,t.text,null,function(){ t.done=!t.done; save(); render(); },function(){ var ix=sd.tasks.indexOf(t); if(ix>-1)sd.tasks.splice(ix,1); save(); render(); })); });
+  /* build 369: display only, sd.tasks untouched */
+  sd.tasks.slice(0,20).forEach(function(t){ kb.appendChild(doneRow(t.text,null,!!t.done)); });
   if(sd.tasks.length>20){ kb.appendChild(el("div","small dim",(sd.tasks.length-20)+" more tasks")); }
-  kb.appendChild(adder("Add a Solara task...",function(txt){ sd.tasks.push({id:uid(),text:txt,done:false}); save(); render(); }));
   v.appendChild(kc);
 
   /* build 181: the Notes section was removed from the Solara page at Ian's request, he keeps notes in the
@@ -17904,6 +17900,21 @@ function habitsActiveOn(dt){ return ((state.routine&&state.routine.habits)||[]).
    THE BUY LIST KEEPS ITS "Got it" BUTTON. That is not a completion tick, it is the only way to
    move an item off the buy list and back onto the take list, and losing it would strand fish
    oil there permanently. */
+/* ===== build 369: doneRow, a read only list row that still shows completion =============
+   Ian, 05.09.2026: "I want to kind of turn it into a database ... entirely remove all the
+   checkmarks and all the things I fill out ... I will make all the changes and updates to the
+   app myself VIA dispatch". So a to do, a goal and a Solara task all still need to DISPLAY
+   whether they are done, they just must not be tickable. dispItem() from build 362 has no
+   done state, which is right for habits and supplements where the concept no longer exists.
+   These three keep the concept and lose the control, so they get their own row. */
+function doneRow(text,meta,done){
+  var row=el("div","chk"); row.style.cursor="default";
+  var tx=el("div","ctext"); tx.textContent=text;
+  if(done){ tx.style.textDecoration="line-through"; tx.style.opacity="0.55"; }
+  var bits=[]; if(meta) bits.push(meta); if(done) bits.push("done");
+  if(bits.length){ var m=el("span","meta"); m.textContent=bits.join(" \u00b7 "); tx.appendChild(m); }
+  row.appendChild(tx); return row;
+}
 function dispItem(name,meta){
   var row=el("div","chk"); row.style.cursor="default";
   var tx=el("div","ctext"); tx.textContent=name;
@@ -17925,7 +17936,8 @@ function dailyChecklistModule(parent){
   dailyS.forEach(s=>{ b.appendChild(dispItem(s.name,s.dose||null)); });
   if(buyS.length){
     const bl=el("div","small muted"); bl.style.margin="16px 0 8px"; bl.textContent="Out of, buy these"; b.appendChild(bl);
-    buyS.forEach(s=>{ const row=el("div","chk"); row.style.opacity="0.6"; const tx=el("div","ctext"); tx.textContent=s.name; const m=el("span","meta"); m.textContent=(s.dose?s.dose+" \u00b7 ":"")+"buy list"; tx.appendChild(m); row.appendChild(tx); const got=el("button","btn sm","Got it"); got.onclick=()=>{ s.toBuy=false; save(); render(); }; row.appendChild(got); b.appendChild(row); });
+    buyS.forEach(s=>{ const row=el("div","chk"); row.style.opacity="0.6"; const tx=el("div","ctext"); tx.textContent=s.name; const m=el("span","meta"); m.textContent=(s.dose?s.dose+" \u00b7 ":"")+"buy list"; tx.appendChild(m); row.appendChild(tx); /* build 369: the "Got it" button is gone with everything else he taps. Moving a supplement
+   off the buy list is now a Dispatch instruction. */ b.appendChild(row); });
   }
   parent.appendChild(c);
 }
@@ -18588,15 +18600,16 @@ function buildPickle(v){ var pb=state.pickleball||(state.pickleball={});
     safe(c,function(){ pkLoadStrip(c); },"Session load strip");
 
     
-    pkCollapse(c,"pk_logform","Log a session","match details optional",false,function(f){
-      var fc=card(); var fb=fc._body; var dl=el("div","small muted","Date"); dl.style.marginBottom="4px"; fb.appendChild(dl); var din=el("input","in"); din.type="date"; din.value=TODAY; fb.appendChild(din); var kind="League"; var kc=el("div"); kc.style.marginTop="11px"; var setc=function(){ Array.prototype.slice.call(kc.querySelectorAll(".chip")).forEach(function(ch){ ch.classList.toggle("on",ch.textContent===kind); }); }; kc.appendChild(chipRow(["League","Open play","Drills","Tournament"],kind,function(k){kind=k;setc();})); fb.appendChild(kc);
-      var vl=el("div","small muted","Venue"); vl.style.margin="13px 0 5px"; fb.appendChild(vl); var venue="Ace"; var vc=el("div"); var setv=function(){ Array.prototype.slice.call(vc.querySelectorAll(".chip")).forEach(function(ch){ ch.classList.toggle("on",ch.textContent===venue); }); }; vc.appendChild(chipRow(["Ace","Midwest","Prairie Lane","Other"],venue,function(k){venue=k;setv();})); fb.appendChild(vc);
-      var g=el("div","grid2"); g.style.marginTop="11px"; var durIn=el("input","in"); durIn.placeholder="Duration, e.g. 1h 20m"; g.appendChild(durIn); var calIn=el("input","in"); calIn.type="number"; calIn.placeholder="Calories"; g.appendChild(calIn); var hrIn=el("input","in"); hrIn.type="number"; hrIn.placeholder="Avg HR"; g.appendChild(hrIn); var maxIn=el("input","in"); maxIn.type="number"; maxIn.placeholder="Max HR"; g.appendChild(maxIn); var effIn=el("input","in"); effIn.type="number"; effIn.min="1"; effIn.max="10"; effIn.placeholder="Effort 1-10"; g.appendChild(effIn); fb.appendChild(g);
-      var ml=el("div","small muted","Match result, optional"); ml.style.margin="13px 0 5px"; fb.appendChild(ml); var result=""; var rc=el("div"); var setr=function(){ Array.prototype.slice.call(rc.querySelectorAll(".chip")).forEach(function(ch){ ch.classList.toggle("on", (ch.textContent==="Win"&&result==="Win")||(ch.textContent==="Loss"&&result==="Loss")||(ch.textContent==="\u2014"&&result==="")); }); }; rc.appendChild(chipRow(["Win","Loss","\u2014"],"\u2014",function(k){ result=(k==="\u2014")?"":k; setr(); })); fb.appendChild(rc);
-      var g2=el("div","grid2"); g2.style.marginTop="11px"; var scoreIn=el("input","in"); scoreIn.placeholder="Score, e.g. 11-7, 11-9"; g2.appendChild(scoreIn); var oppIn=el("input","in"); oppIn.placeholder="Partner / opponent"; g2.appendChild(oppIn); fb.appendChild(g2);
-      var noteIn=el("textarea","in"); noteIn.style.minHeight="54px"; noteIn.style.marginTop="11px"; noteIn.placeholder="Match note, what you worked on, how it felt..."; fb.appendChild(noteIn);
-      var btn=el("button","btn block","Log session"); btn.style.marginTop="12px"; btn.onclick=function(){ var e=parseInt(effIn.value,10); pb.sessions.push({id:uid(),date:din.value||TODAY,kind:kind,venue:venue,duration:durIn.value.trim(),calories:calIn.value?parseInt(calIn.value,10):0,avgHr:hrIn.value?parseInt(hrIn.value,10):0,maxHr:maxIn.value?parseInt(maxIn.value,10):0,effort:(!isNaN(e)?e:null),result:result,score:scoreIn.value.trim(),opponent:oppIn.value.trim(),note:noteIn.value.trim()}); save(); render(); }; fb.appendChild(btn); f.appendChild(fc);
-    });
+    /* ===== build 369: THE SESSION LOGGER IS REMOVED =================================
+       Nine fields plus a Log session button: date, kind, venue, duration, calories, avg HR,
+       max HR, effort, result, score, partner and a match note. THE LARGEST INPUT SURFACE
+       LEFT IN THE APP, and both earlier sweeps missed it because pkCollapse renders the
+       section CLOSED, and a control that is not rendered cannot be counted. That is the
+       reason this build audited the DOM for what EXISTS as well as what is visible.
+       Ian already logs sessions through Dispatch: all six September sessions came to a
+       lane as numbers off his watch and were written by migration. state.pickleball.sessions
+       keeps all 46, and the session list, the history dropdown and the heatmap below are
+       untouched. */
     (function(){ var all=pkSorted().slice().reverse(); if(!all.length){ var ec=card(); ec._body.appendChild(el("div","empty","No sessions logged yet.")); c.appendChild(ec); return; }
       var week=all.filter(function(s){ var du=daysUntil(s.date); return du>=-6 && du<=0; });
       var older=all.filter(function(s){ return daysUntil(s.date) < -6; });
@@ -18608,7 +18621,10 @@ function buildPickle(v){ var pb=state.pickleball||(state.pickleball={});
     
   },null,"blue")   /* build 237: icon DROPPED. A calendar glyph on a session LOG is the wrong idea, and this section's own two children, Log a session and History, already carry no icon. The label is clearer than any drawing here. */;
   pkCollapse(v,"pk_goals","Goals and events","tap to expand",false,function(gv){
-      (function(){ if(!Array.isArray(pb.goals)) pb.goals=[]; var gc=card(); var gb=gc._body; if(!pb.goals.length){ gb.appendChild(el("div","empty","No goals yet.")); } pb.goals.forEach(function(g,i){ var row=el("div"); row.style.cssText="padding:10px 0"+(i>0?";border-top:1px solid var(--line)":""); var head=el("div","between"); head.style.cursor="pointer"; var lt=el("div"); lt.style.cssText="display:flex;gap:9px;align-items:center;min-width:0"; var cb=el("input","cbx"); cb.type="checkbox"; cb.checked=!!g.done; cb.onclick=function(ev){ ev.stopPropagation(); g.done=cb.checked; save(); }; var lab=el("div"); lab.style.cssText="font-weight:700;font-size:14px;letter-spacing:-.01em"+(g.done?";text-decoration:line-through;opacity:.6":""); lab.textContent=g.short||String(g.text||"").split(/(?<=[.!?])\s/)[0]; lt.appendChild(cb); lt.appendChild(lab); head.appendChild(lt); var chev=el("div","chev","\u203a"); head.appendChild(chev); row.appendChild(head); var body=el("div"); body.style.cssText="display:none;margin-top:8px;line-height:1.55;color:var(--gray);font-size:13px"; body.textContent=g.text||""; row.appendChild(body); head.onclick=function(){ var on=body.style.display==="none"; body.style.display=on?"block":"none"; chev.style.transform=on?"rotate(90deg)":""; }; gb.appendChild(row); }); gv.appendChild(gc); })();
+      (function(){ if(!Array.isArray(pb.goals)) pb.goals=[]; var gc=card(); var gb=gc._body; if(!pb.goals.length){ gb.appendChild(el("div","empty","No goals yet.")); } pb.goals.forEach(function(g,i){ var row=el("div"); row.style.cssText="padding:10px 0"+(i>0?";border-top:1px solid var(--line)":""); var head=el("div","between"); head.style.cursor="pointer"; var lt=el("div"); lt.style.cssText="display:flex;gap:9px;align-items:center;min-width:0"; /* build 369: THE LAST CHECKBOX IN THE APP. It sits inside a collapsed pickleball goals
+   section, which is why the build 362 sweep and its DOM check both missed it: nothing that
+   is not rendered can be counted. Replaced with a static marker that still shows done. */
+var cb=el("span"); cb.style.cssText="font-size:13px;line-height:1;opacity:.75;width:13px;display:inline-block"; cb.textContent=g.done?"\u2713":"\u00b7"; var lab=el("div"); lab.style.cssText="font-weight:700;font-size:14px;letter-spacing:-.01em"+(g.done?";text-decoration:line-through;opacity:.6":""); lab.textContent=g.short||String(g.text||"").split(/(?<=[.!?])\s/)[0]; lt.appendChild(cb); lt.appendChild(lab); head.appendChild(lt); var chev=el("div","chev","\u203a"); head.appendChild(chev); row.appendChild(head); var body=el("div"); body.style.cssText="display:none;margin-top:8px;line-height:1.55;color:var(--gray);font-size:13px"; body.textContent=g.text||""; row.appendChild(body); head.onclick=function(){ var on=body.style.display==="none"; body.style.display=on?"block":"none"; chev.style.transform=on?"rotate(90deg)":""; }; gb.appendChild(row); }); gv.appendChild(gc); })();
       var PREP={
         "2026-08-23":["Your FIRST tournament, so the day itself is the skill.","PLAY ON A GRIP THAT IS ALREADY BROKEN IN. Not one fitted the day before or the morning of. On 08.15 you found a new grip starts slick and improves with use, and one full session looks like roughly enough, so fit any replacement by Wednesday 19 or Thursday 20 and play on it twice before the 23rd.","Get there early and hit before match one, a cold start is how first timers lose winnable games.","Re warm up before EVERY match, dinks and drops especially.","Between matches keep moving, eat small and steady, drink through the day.","Start every match patient, lead with dinks and drops, expect nerves early and do not chase them with bigger swings.","Judge the day on execution and team play, not the bracket. Your DUPR baseline gets set here."],
         "2027-04-01":["NPL tryouts, this is the real deadline, not the June season start.","Be peaked by end of March.","Be a known face at Midwest Pickleball Club by then.","Have your DUPR and results ready to point at."]
@@ -18700,7 +18716,8 @@ function buildStats(v){ safe(v,()=>{ const wk=workoutsThisWeek(); const hs=habit
   v.appendChild(nc);
 }
 function contextModule(parent){ updateDailySummary(); const c=card("a-blue"); const b=c._body; b.appendChild(el("div","small muted","A clean daily rollup the agent reads. Auto fills as you use the app.")); b.firstChild.style.marginBottom="8px"; const box=el("div","stat"); box.appendChild(el("div","k",fmtShort(TODAY)+" summary")); const val=el("div","v"); val.style.fontSize="13.5px"; val.style.fontWeight="600"; val.style.lineHeight="1.45"; val.textContent=state.context.dailyLog[TODAY].summary||todaySummary(); box.appendChild(val); b.appendChild(box); b.appendChild(el("div","small muted","Your note for today")); b.lastChild.style.margin="11px 0 6px"; const _mv=el("div","small"); _mv.style.cssText="line-height:1.5;color:var(--gray)"; _mv.textContent="Daily writing moved to Today's entry on the home screen, one box for everything."; b.appendChild(_mv); const _mb=el("button","btn block","Open Today's entry"); _mb.style.marginTop="10px"; _mb.onclick=()=>{ selectTab("home"); }; b.appendChild(_mb); parent.appendChild(c); const c2=card(); c2._body.appendChild(el("div","small muted","Notes and instructions for Claude")); c2._body.firstChild.style.marginBottom="6px"; const ta2=el("textarea","in"); ta2.style.minHeight="86px"; ta2.placeholder="Standing context for the daily agent..."; ta2.value=state.context.forClaude||""; ta2.oninput=()=>{ state.context.forClaude=ta2.value; save(); }; c2._body.appendChild(ta2); parent.appendChild(c2); }
-function todosModule(parent){ const c=card(); const b=c._body; if(!state.todos.length)b.appendChild(el("div","empty","All clear.")); state.todos.forEach(t=>{ b.appendChild(checkItem(t.done,t.text,null,()=>{t.done=!t.done;save();render();},()=>{state.todos=state.todos.filter(x=>x.id!==t.id);save();render();})); }); b.appendChild(adder("Add a task...",x=>{state.todos.push({id:uid(),text:x,done:false});save();render();})); parent.appendChild(c); }
+/* build 369: personal to dos are DISPLAY ONLY. state.todos is untouched. */
+function todosModule(parent){ const c=card(); const b=c._body; if(!state.todos.length)b.appendChild(el("div","empty","All clear.")); state.todos.forEach(t=>{ b.appendChild(doneRow(t.text,null,!!t.done)); }); parent.appendChild(c); }
 /* build 362: the morning, day and evening checklist is a DISPLAY now, same instruction and
    same reasoning as the daily section. state.routine.checklist keeps every item and
    state.routine.checklistLog keeps every historical tick, untouched. checklistLog is no longer
@@ -18713,10 +18730,10 @@ const ACCENTS=[["#2f6bff","#6fa8ff"],["#3d9bff","#8fd0ff"],["#18c3b3","#66e6da"]
 function applyAccent(){ try{ const a=(state.settings&&state.settings.accent)||"#2f6bff"; const a2=(state.settings&&state.settings.accent2)||"#6fa8ff"; document.documentElement.style.setProperty("--accent",a); document.documentElement.style.setProperty("--accent2",a2); }catch(e){} }
 function buildSettings(v){
   const backc=el("div","backrow"); const back=el("label","btn ghost sm"); back.setAttribute("for","t-home"); back.style.display="inline-block"; back.textContent="\u2039 Done"; backc.appendChild(back); v.appendChild(backc);
-  sect(v,"Profile"); const pc=card(); pc._body.appendChild(el("div","small muted","Display name")); pc._body.firstChild.style.marginBottom="6px"; const nin=el("input","in"); nin.value=(state.settings&&state.settings.name)||""; nin.placeholder="Your name"; nin.oninput=()=>{ state.settings.name=nin.value; save(); }; pc._body.appendChild(nin);
-  const phl=el("div","small muted","Contact number"); phl.style.margin="13px 0 6px"; pc._body.appendChild(phl); const phin=el("input","in"); phin.type="tel"; phin.placeholder="Your phone"; phin.value=(state.settings&&state.settings.phone)||(profile==="chris"?"":"402-591-1133"); if(state.settings&&!state.settings.phone&&profile!=="chris"){ state.settings.phone="402-591-1133"; } phin.oninput=()=>{ state.settings.phone=phin.value; save(); }; pc._body.appendChild(phin);
+  sect(v,"Profile"); const pc=card(); pc._body.appendChild(el("div","small muted","Display name")); pc._body.firstChild.style.marginBottom="6px"; /* build 369: display only */ const nin=el("div"); nin.style.cssText="font-weight:700"; nin.textContent=(state.settings&&state.settings.name)||"Not set"; pc._body.appendChild(nin);
+  const phl=el("div","small muted","Contact number"); phl.style.margin="13px 0 6px"; pc._body.appendChild(phl); /* build 369: display only */ const phin=el("div"); phin.style.cssText="font-weight:700"; phin.textContent=(state.settings&&state.settings.phone)||(profile==="chris"?"Not set":"402-591-1133"); pc._body.appendChild(phin);
   const who=el("div","small dim"); who.style.marginTop="12px"; who.textContent="Signed in as "+(profile==="chris"?"Chris McCain":"Ian McCain")+(state.settings&&state.settings.phone?"  \u00B7  "+state.settings.phone:""); pc._body.appendChild(who); v.appendChild(pc);
-  sect(v,"Paddle","your current paddle and specs, edit anytime"); (function(){ if(!state.pickleball||typeof state.pickleball!=="object") state.pickleball={}; const ppc=card(); ppc._body.appendChild(el("div","small muted","Current paddle and specs")); ppc._body.firstChild.style.marginBottom="6px"; const pta=el("textarea","in"); pta.style.minHeight="74px"; pta.value=state.pickleball.paddle||""; pta.placeholder="e.g. JOOLA Perseus IV, 16mm, elongated, small grip plus one overgrip"; pta.oninput=function(){ state.pickleball.paddle=pta.value; save(); }; ppc._body.appendChild(pta); v.appendChild(ppc); })();
+  sect(v,"Paddle","current paddle and specs"); (function(){ if(!state.pickleball||typeof state.pickleball!=="object") state.pickleball={}; const ppc=card(); ppc._body.appendChild(el("div","small muted","Current paddle and specs")); ppc._body.firstChild.style.marginBottom="6px"; /* build 369: READ ONLY. This was a textarea bound to state.pickleball.paddle, which is authored by migration. Build 365 rewrote it for the Six Zero Coral Pro and set meta.paddleOwned to stop the build 129 every load writer fighting it. A free textarea here let one stray tap silently overwrite that record, with no warning and no recovery except another lane. Paddle changes come through Dispatch. */ const pv=el("div"); pv.style.cssText="white-space:pre-wrap;line-height:1.5;font-size:13px;color:var(--gray)"; pv.textContent=(state.pickleball.paddle||"Not set"); ppc._body.appendChild(pv); v.appendChild(ppc); })();
   sect(v,"Accent color"); const ac=card(); ac._body.appendChild(el("div","small muted","Defaults to blue.")); ac._body.firstChild.style.marginBottom="8px"; const sw=el("div","swatches"); ACCENTS.forEach(pair=>{ const s=el("div","sw"+(state.settings.accent===pair[0]?" on":"")); s.style.background=pair[0]; s.onclick=()=>{ state.settings.accent=pair[0]; state.settings.accent2=pair[1]; applyAccent(); save(); render(); }; sw.appendChild(s); }); ac._body.appendChild(sw); v.appendChild(ac);
   sect(v,"Show or hide"); const hc=card(); const hb=hc._body; const toggles=[["neighborhoods","Neighborhoods"],["scripts","Quick scripts"],["ideas","Ideas and notes"],["solara","Solara"]]; toggles.forEach(([key,label])=>{ const r=el("div","mrow"); r.appendChild(el("div","ml",label)); const tg=el("div","toggle"+(!hidden(key)?" on":"")); tg.onclick=()=>{ if(!state.settings.hidden)state.settings.hidden={}; if(hidden(key))delete state.settings.hidden[key]; else state.settings.hidden[key]=true; save(); render(); }; r.appendChild(tg); hb.appendChild(r); }); v.appendChild(hc);
   sect(v,"Account"); const acc=card(); const ab=acc._body; const lk=el("button","btn ghost block","Lock now"); lk.style.marginTop="0"; lk.onclick=()=>{ lockNow(); }; ab.appendChild(lk); v.appendChild(acc);
