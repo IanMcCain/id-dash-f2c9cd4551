@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 367 (2026-09-04)">
+<meta name="build" content="v21 build 368 (2026-09-05)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -15090,6 +15090,158 @@ try{ if(profile==="ian"){
       }
       state.meta.mig367_belknap_geo=true; save(true);
   } }catch(e){ try{ console.warn("mig367 did not apply:",e&&e.message); }catch(_){} }
+
+/* ===== v21 build 368, 05.09.2026. BELKNAP PRATT, THE COHORT REBUILD, AND A CMA STAMP ====
+
+   FOURTH BELKNAP CHANGE AND THE NUMBER HAS RETURNED TO WHERE IT STARTED. $249,900 is the
+   recommendation again, which is exactly what Ian and Chris chose on 17 August. IT DID NOT
+   COME BACK BY ACCIDENT AND IT IS NOT THE SAME NUMBER: on 17 August it was an instinct about
+   condition sitting $15,900 above a supported $234,000. It is now the 51st percentile of a
+   measured cohort of 37. Same figure, different and much better reason, and that distinction
+   is worth more than the figure.
+
+   WHY IT REVERSED, AND THIS IS THE ACTUAL LESSON. Yesterday afternoon's comp quality audit
+   filtered by GEOGRAPHY. That filter ACCIDENTALLY SELECTED FOR ONE BATHROOM HOUSES: its two
+   heaviest comps, 4949 Pratt and 4824 Pratt, are both one bath, and the subject has two. A
+   filter chosen on one axis silently sorted on another, so correcting a real geography fault
+   introduced a real bathroom fault, and the value fell for a reason that had nothing to do
+   with location. THAT IS THE THIRD SELECTION EFFECT ON THIS ONE FILE IN TWO DAYS, after the
+   days on market inversion and the nine additions problem. EVERY FILTER APPLIED TO A COMP
+   SET SORTS ON MORE THAN THE THING IT NAMES. Check what the survivors have in common that
+   you did not ask for.
+
+   THE REAL COHORT: ranch or raised ranch, 2+ baths, same size band, 68104, 2026. n=37,
+   median $242,500, mean $247,236, and the subject sits DEAD CENTRE on size. $249,900 is the
+   51st percentile.
+
+   TWO MEASURED CORRECTIONS THAT KILL EARLIER CLAIMS IN THIS NOTE.
+   1. THE RAISED RANCH QUESTION IS SETTLED AT ZERO. Ranch median $240,000, raised ranch
+      median $240,000, n=64. Identical. Style does not move this number and nothing in the
+      file may imply that it does.
+   2. THE DAYS FIGURES WERE WRONG, ALL OF THEM. Eleven houses launched between $245,000 and
+      $260,000 this year took a MEDIAN 7 DAYS AT 99.4 PERCENT OF ORIGINAL ASK. The "20 to
+      40+ days at $249,900" came from mapping onto a curve anchored at a $227,500 centre that
+      no longer stands. $249,900 is not a slow price in this cohort, it is a normal one.
+
+   THE STAMP, AND WHY IT IS DATA RATHER THAN A NEW CARD. This number has moved FOUR TIMES IN
+   ONE DAY and a reader has no way to know that. state.realEstate.deals[].cma now carries the
+   source file, its revision, the as-of date, a move count and a volatility flag, and the note
+   opens with a plain reading of the same thing. NO RENDERER WAS CHANGED, so this is zero
+   visual risk; the note already renders in the deal editor. A VISIBLE CHIP ON THE PIPELINE
+   CARD IS THE OTHER HALF AND IT IS NOT BUILT HERE, because it is a render change to Ian's
+   main real estate surface and he has not seen it. Roughly ten lines in rePipeline, offered
+   rather than assumed.
+
+   THE priceNote FIELD IS DELETED, AND FINDING OUT WHY MATTERS MORE THAN THE DELETION.
+   dealRow renders priceNote ONLY INSIDE `if(d.price)`. Belknap Pratt carries NO PRICE by
+   Ian's explicit instruction of 22 August, recorded in the build 333 audit on this very note:
+   "PRICE FIELD CLEARED ON IAN'S INSTRUCTION ... the record should carry NO PRICE on Pratt".
+   So the priceNote written by builds 366 and 367 HAS NEVER BEEN VISIBLE TO HIM, on any load,
+   and writing it again would be writing to a field nobody reads. Removed rather than left as
+   a decoy. THE PRICE FIELD IS STILL NOT SET, because his 22 August instruction stands and
+   nothing today supersedes it.
+
+   FIFTH TIME IN SEVEN BUILDS a fresh migration was needed because the target literals sit in
+   an already-run guarded block, this time mig367_belknap_geo.
+
+   Guarded once by state.meta.mig368_belknap_cohort, NOT in the seed. Every rewrite is a
+   split/join on an exact phrase, so it is idempotent, and a phrase Ian has hand edited will
+   not match and is left alone. THEOBALD IS DELIBERATELY NOT TOUCHED, it is still moving. */
+  try{ if(profile==="ian" && state.meta && !state.meta.mig368_belknap_cohort && state.realEstate && Array.isArray(state.realEstate.deals)){
+      var _bk368=null;
+      for(var _i368=0;_i368<state.realEstate.deals.length;_i368++){
+        if(state.realEstate.deals[_i368] && state.realEstate.deals[_i368].id==="re-belknap-sell"){ _bk368=state.realEstate.deals[_i368]; break; }
+      }
+      if(_bk368 && typeof _bk368.note==="string"){
+        var _n368=_bk368.note;
+
+        /* 1. THE HEADLINE, replacing the build 367 one outright. */
+        _n368=_n368.split("CMA REBUILT TWICE ON 04.09.2026. RECOMMENDED LIST $239,900, band $235,000 to $240,000, "
+            +"expect 7 to 18 days. THE PRICE HISTORY IN ORDER, ALL THREE STILL ON THE RECORD: $249,900 "
+            +"agreed by Ian and Chris on 17 August; $244,900 this morning after the days on market rebuild; "
+            +"$239,900 this afternoon after a comp quality audit failed the comp set on geography and style. "
+            +"$249,900 IS NOT GONE, IT IS NOW THE TOP OF RANGE BAND rather than the recommendation. "
+            +"WHY IT MOVED AGAIN: nine comps sat in nine different additions, none in the subject's own "
+            +"plat, and three of the four highest priced were more than a mile away, so the geography error "
+            +"was holding the top of the range up. CONDITION IS WORTH ABOUT $35,000 EITHER WAY, not the "
+            +"$15,000 previously carried, which is wider than the entire gap between these tiers, so THE "
+            +"WALKTHROUGH MATTERS MORE THAN THE PRICE DECISION DOES. Subject is 1,103 above grade, 801 "
+            +"below, 1,904 total, 2 baths, per MLS 21811732. ")
+          .join("[CMA rev 4, as of 05.09.2026. THIS NUMBER MOVED FOUR TIMES ON 4 SEPTEMBER. IT IS "
+            +"VOLATILE: CHECK THE CMA FILE BEFORE QUOTING IT TO ANYONE.] "
+            +"RECOMMENDED LIST $249,900, band $245,000 to $250,000, expect 6 to 9 days. "
+            +"THE FULL SEQUENCE, NOTHING ERASED: $249,900 agreed by Ian and Chris 17 August on instinct; "
+            +"$244,900 on 4 Sep after the days on market rebuild; $239,900 on 4 Sep after a comp quality "
+            +"audit; $249,900 on 4 Sep after the cohort rebuild. IT RETURNED TO THE ORIGINAL NUMBER FOR A "
+            +"DIFFERENT AND BETTER REASON THAN IT WAS FIRST CHOSEN. In August it was an instinct about "
+            +"condition sitting $15,900 above a supported $234,000. It is now the 51st PERCENTILE OF A "
+            +"MEASURED COHORT: ranch or raised ranch, 2+ baths, same size band, 68104, 2026, n=37, median "
+            +"$242,500, mean $247,236, subject dead centre on size. "
+            +"WHY $239,900 DID NOT HOLD: yesterday's geography filter ACCIDENTALLY SELECTED FOR ONE "
+            +"BATHROOM HOUSES. Its two heaviest comps, 4949 Pratt and 4824 Pratt, are both one bath and "
+            +"the subject has TWO. Correcting a real geography fault introduced a real bathroom fault. "
+            +"CONDITION IS WORTH ABOUT $35,000 EITHER WAY, wider than the whole tier table, so THE "
+            +"WALKTHROUGH MATTERS MORE THAN THE PRICE DECISION DOES. Subject is 1,103 above grade, 801 "
+            +"below, 1,904 total, 2 baths, per MLS 21811732. ");
+
+        /* 2. THE TIERS. */
+        _n368=_n368.split("THREE TIERS, REBUILT A SECOND TIME 04.09.2026 AFTER THE COMP QUALITY AUDIT. "
+            +"QUICK SALE band $225,000 to $230,000, list $229,900, 3 to 7 days. "
+            +"RECOMMENDED band $235,000 to $240,000, LIST $239,900, 7 to 18 days. "
+            +"TOP OF RANGE band $245,000 to $250,000, list $249,900, 20 to 40+ days. "
+            +"THE WHOLE TABLE CAME DOWN $5,000 because the comp set failed on NEIGHBOURHOOD AND STYLE: "
+            +"nine comps across nine different additions, NONE in the subject's own plat, and three of the "
+            +"four highest priced more than a mile away. Correcting for geography removes value rather than "
+            +"adding it, because the distant comps were the expensive ones. THE MORNING TABLE, quick "
+            +"$234,900 / recommended $244,900 / top $254,900, is superseded and should not be quoted. ")
+          .join("THREE TIERS, REBUILT ON THE REAL COHORT 04.09.2026, rev 4 and CURRENT. "
+            +"QUICK SALE band $235,000 to $240,000, list $239,900, 3 to 5 days. "
+            +"RECOMMENDED band $245,000 to $250,000, LIST $249,900, 6 to 9 days. "
+            +"TOP OF RANGE band $255,000 to $260,000, list $259,900, 10 to 14 days. "
+            +"THE DAYS FIGURES IN EVERY EARLIER VERSION OF THIS TABLE WERE WRONG. Eleven houses launched "
+            +"between $245,000 and $260,000 this year took a MEDIAN 7 DAYS AT 99.4 PERCENT OF ORIGINAL "
+            +"ASK. The old '20 to 40+ days at $249,900' came from mapping onto a curve anchored at a "
+            +"$227,500 centre that no longer stands. $249,900 IS NOT A SLOW PRICE IN THIS COHORT, IT IS A "
+            +"NORMAL ONE. "
+            +"THE GEOGRAPHY FILTER THAT PRODUCED THE $229,900 / $239,900 / $249,900 TABLE IS WITHDRAWN. "
+            +"It was right that nine comps across nine additions with the expensive ones a mile away was a "
+            +"real fault. It was wrong in what it selected instead: its two heaviest comps, 4949 Pratt and "
+            +"4824 Pratt, are BOTH ONE BATH against a two bath subject. EVERY FILTER SORTS ON MORE THAN "
+            +"THE AXIS IT NAMES, and that is now three selection effects on this one file. "
+            +"BOTH SUPERSEDED TABLES, quick $234,900 / rec $244,900 / top $254,900 and quick $229,900 / "
+            +"rec $239,900 / top $249,900, SHOULD NOT BE QUOTED. ");
+
+        /* 3. THE RAISED RANCH QUESTION IS SETTLED AT ZERO. Appended where style is discussed. */
+        if(_n368.indexOf("RAISED RANCH PREMIUM IS MEASURED AT ZERO")<0){
+          _n368=_n368+" RAISED RANCH PREMIUM IS MEASURED AT ZERO, 05.09.2026. Ranch median $240,000, "
+            +"raised ranch median $240,000, n=64. Identical. STYLE DOES NOT MOVE THIS NUMBER. Anything "
+            +"earlier in this note that treats style as a value driver, including the removal of 5024 "
+            +"Spaulding for being a Split Entry, was reasoning from an effect that does not exist. The "
+            +"Spaulding removal still stands on SUBDIVISION grounds, which is a separate and valid reason.";
+        }
+
+        if(_n368!==_bk368.note){ _bk368.note=_n368; }
+
+        /* 4. THE STAMP. Data only, no renderer touched. */
+        _bk368.cma={
+          file:"4946 Pratt CMA",
+          rev:4,
+          asOf:"2026-09-05",
+          recommended:"$249,900",
+          band:"$245,000 to $250,000",
+          expectDays:"6 to 9",
+          movesOn:"2026-09-04",
+          moveCount:4,
+          volatile:true,
+          basis:"Cohort n=37, ranch or raised ranch, 2+ baths, same size band, 68104, 2026. Median $242,500, mean $247,236. $249,900 is the 51st percentile.",
+          note:"THIS NUMBER MOVED FOUR TIMES ON 4 SEPTEMBER 2026. Treat it as volatile and check the CMA file before quoting it to anyone. Sequence: 249900 on 17 Aug, 244900, 239900, 249900."
+        };
+
+        /* 5. priceNote is a field NOTHING RENDERS on this record. Remove, do not rewrite. */
+        if(_bk368.priceNote){ delete _bk368.priceNote; }
+      }
+      state.meta.mig368_belknap_cohort=true; save(true);
+  } }catch(e){ try{ console.warn("mig368 did not apply:",e&&e.message); }catch(_){} }
 
 /* ===== build 355: THE FIRST MECHANICS SECTION IS WRITTEN. twoHandBackhand ONLY. ==============
 
