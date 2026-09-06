@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 375 (2026-09-06)">
+<meta name="build" content="v21 build 376 (2026-09-06)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -15601,6 +15601,78 @@ try{ if(profile==="ian"){
 
       state.meta.mig375_corrections=true; save(true);
   } }catch(e){ try{ console.warn("mig375 did not apply:",e&&e.message); }catch(_){} }
+
+/* ===== v21 build 376, 06.09.2026. THE 5 AND 6 SEPTEMBER SESSIONS, APP-1 ===============
+
+   TWO SESSIONS THAT WERE WRITTEN TO BRAIN AND NEVER REACHED THE APP. Ian noticed his own
+   days were not marked. THE HEATMAP IS NOT AT FAULT: it reads pickleball straight off
+   state.pickleball.sessions, and build 362 moved only the GYM signal to a text label.
+   Pickleball has always been data driven. The records simply did not exist here.
+
+   THIS IS THE THIRD INSTANCE OF ONE ROUTING FAILURE, not three separate misses. Mattox had
+   two CMAs and never reached the pipeline. These two sessions were written to BRAIN by a
+   lane with no write path to this file. The 31 August session had the identical problem and
+   sat for a day until the daily brief happened to catch it. IAN FOUND ALL THREE HIMSELF, and
+   in a read only app that is the failure mode that matters most, because he cannot add what
+   is missing. The mechanism proposal is reported separately and is not built here.
+
+   5 SEPTEMBER CARRIES NO WATCH DATA AND THAT IS DELIBERATE. Heart rate, calories and effort
+   are ABSENT KEYS, not zeros. A zero would dim the heatmap cell through the build 207 depth
+   band and would drag every average that reads these fields. It follows the shape of
+   pk-20260819-openplay, the 19 August manual log, which carries duration and note only.
+   THE DURATION IS IAN'S OWN ESTIMATE, about 80 minutes, not a measurement, and the record
+   says so rather than presenting it as watch data.
+
+   4 SEPTEMBER STAYS ABSENT ON PURPOSE. Ian's own account places the 80 minute session on the
+   5th and leaves the 4th unknown. Creating a record for it would be inventing a day.
+
+   GUARDED BY ID, never by date. Neither of these is a two session day, so a date guard would
+   work here, and it is still wrong: builds 362 and 364 both had to fix date guards that
+   silently refused a second record, and the id guard costs nothing.
+
+   Guarded once by state.meta.mig376_sess0506, NOT in the seed. */
+  try{ if(profile==="ian" && state.meta && !state.meta.mig376_sess0506){
+      var _P376 = state.pickleball || (state.pickleball={});
+      if(!Array.isArray(_P376.sessions)) _P376.sessions=[];
+      var _has376=function(id){ for(var i=0;i<_P376.sessions.length;i++){ if(_P376.sessions[i] && String(_P376.sessions[i].id||"")===id) return true; } return false; };
+
+      /* SATURDAY 5 SEPTEMBER. No watch. HR, calories and effort are deliberately absent. */
+      if(!_has376("pk-20260905-openplay")){
+        _P376.sessions.push({
+          id:"pk-20260905-openplay", date:"2026-09-05", kind:"Open play", venue:"Omaha",
+          duration:"About 1h 20m",
+          window:"Saturday 5 September, light session with Bianca",
+          result:"", score:"", opponent:"Bianca", copyOwned:true,
+          note:"Saturday 5 September, LIGHT SESSION WITH BIANCA, about 80 minutes. "
+              +"NO WATCH DATA AND NOTHING IS ESTIMATED. Heart rate, calories and effort are "
+              +"ABSENT from this record rather than set to zero: a zero would dim the heatmap cell "
+              +"and drag every average that reads those fields, and it would assert a measurement "
+              +"that was never taken. THE 80 MINUTES IS IAN'S OWN FIGURE, not a reading, so treat "
+              +"it as an estimate and do not compare it against watch timed sessions as if it were "
+              +"one. Same shape as pk-20260819-openplay, the 19 August manual log. "
+              +"A session with Bianca is not a read on his level against ranked opposition."
+        });
+      }
+
+      /* SUNDAY 6 SEPTEMBER. Full watch data. */
+      if(!_has376("pk-20260906-openplay")){
+        _P376.sessions.push({
+          id:"pk-20260906-openplay", date:"2026-09-06", kind:"Open play", venue:"Omaha",
+          duration:"2h 36m 46s",
+          window:"8:18 to 10:55 AM, Omaha",
+          calories:1704, activeCalories:1459, avgHr:125, maxHr:164, minHr:78, effort:7,
+          result:"", score:"", opponent:"", copyOwned:true,
+          note:"Sunday 6 September, 8:18 to 10:55 AM, 2:36:46, effort 7 of 10. From the watch: "
+              +"avg HR 125, peak 164, low 78, active 1,459, total 1,704, an active rate of 9.31 "
+              +"calories a minute. HIS THIRD EARLY MORNING SESSION, after 1 and 3 September, so the "
+              +"morning slot is now a settled pattern rather than a trial. Peak 164 is the second "
+              +"highest on file behind the 166 on 1 September. Fourth session on the Six Zero Coral "
+              +"Pro."
+        });
+      }
+
+      state.meta.mig376_sess0506=true; save(true);
+  } }catch(e){ try{ console.warn("mig376 did not apply:",e&&e.message); }catch(_){} }
 
 /* ===== build 355: THE FIRST MECHANICS SECTION IS WRITTEN. twoHandBackhand ONLY. ==============
 
