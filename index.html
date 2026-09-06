@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 371 (2026-09-06)">
+<meta name="build" content="v21 build 372 (2026-09-06)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -2588,11 +2588,10 @@ function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]
      wins over the older every load pushers that still try to re add legacy ungrouped drills. Strip any drill that does
      not carry a machine or partner group, and cap each group at 4. Idempotent, only saves when it actually changed. The
      agents curate within this cap, best in and best out, rather than appending. */
-  try{ if(state.pickleball && Array.isArray(state.pickleball.drills)){
-      var _seenG={machine:0,partner:0}; var _keptD=[];
-      state.pickleball.drills.forEach(function(d){ if(d&&(d.group==="machine"||d.group==="partner")&&_seenG[d.group]<4){ _seenG[d.group]++; _keptD.push(d); } });
-      if(_keptD.length!==state.pickleball.drills.length){ state.pickleball.drills=_keptD; save(true); }
-  } }catch(e){}
+  /* build 372: THIS SWEEP MOVED TO convergeState(). Its own comment above claimed it was
+     "placed as the LAST drills writer". It was not: 14 of the 25 drills.push sites in this file
+     run after it, so it stripped a drill, a later pusher put one back, and it stripped again on
+     the next load. That is why pickleball.drills read 18 then 17 across loads. */
   /* new to do: build the sphere, the actual top of funnel gap. */
   try{ if(profile==="ian" && state.realEstate){ if(!Array.isArray(state.realEstate.todos)) state.realEstate.todos=[];
       if(!state.realEstate.todos.some(function(t){return t&&t.id==="ret-20260719-sphere";})){ state.realEstate.todos.push({id:"ret-20260719-sphere",text:"Add ten past clients, friends, and family to the sphere list with a quality and a cadence. Two contacts is not a lead source against a 20 deal goal.",done:false}); save(true); } } }catch(e){}
@@ -4262,19 +4261,11 @@ function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]
      defeats the existing six, the two seed copies, and any re adder added later, none of which
      surgical edits would cover. Nothing is deleted: the items are in archive.todosDone with the
      reason each one left. Ian can still add a new to do, it gets a new id and is untouched. */
-  try{ if(!state.meta) state.meta={};
-      if(!Array.isArray(state.meta.retiredTodoIds)) state.meta.retiredTodoIds=[];
-      var _TOMB=["ret-20260718-leadgen", "ret-20260710-trip-coverage", "ret-20260709-chad-launch", "ret-spicer-appraisal", "ret-cynthia-listdate-0720", "ret-20260719-sphere"];
-      _TOMB.forEach(function(id){ if(state.meta.retiredTodoIds.indexOf(id)<0) state.meta.retiredTodoIds.push(id); });
-      ((state.archive&&state.archive.todosDone)||[]).forEach(function(a){
-        if(a&&a.id&&state.meta.retiredTodoIds.indexOf(a.id)<0) state.meta.retiredTodoIds.push(a.id); });
-      if(state.realEstate && Array.isArray(state.realEstate.todos)){
-        var _n=state.realEstate.todos.length;
-        state.realEstate.todos=state.realEstate.todos.filter(function(t){
-          return !(t && state.meta.retiredTodoIds.indexOf(t.id)>=0); });
-        if(state.realEstate.todos.length!==_n) save(true);
-      }
-  }catch(e){}
+  /* build 372: THIS SWEEP MOVED TO convergeState(). Its own comment above states the
+     requirement exactly, that it must run "after every re adder AND after deepMergeDefaults".
+     It did neither: 17 of the 20 archive.todosDone.push sites run after it, so a to do archived
+     during load N was not tombstoned until load N+1 and not removed from the live list until
+     N+1. That is why archive.todosDone read 60 then 62 and realEstate.todos read 9 then 10. */
   /* v21 build 220: workOn dedupe. Unguarded and idempotent by content check because it competes
      with the build 185 whole array writer and the build 208 unshift above it. Removes the
      standalone raised heart rate serve item, which now lives inside the pre play drill line. */
@@ -10076,10 +10067,11 @@ try{ if(profile==="ian"){
             }
             if(state.meta.retiredTodoIds.indexOf(f.id)<0) state.meta.retiredTodoIds.push(f.id);
           });
-          if(_live){
-            state.realEstate.todos=_live.filter(function(t){
-              return !(t && state.meta.retiredTodoIds.indexOf(t.id)>=0); });
-          }
+          /* build 372: THE FILTER HERE IS REMOVED and convergeState() does it instead. The
+             ARCHIVING above is kept: it is add-if-missing by id and genuinely idempotent, and it
+             is the only record of why those four items were folded. What was wrong was having a
+             SECOND filter of realEstate.todos, 5,800 lines away from the first, with the two
+             disagreeing about when the list is final. */
         }catch(_e312b){}
 
         /* CONTEXT ARCHIVE. Ian's two 08.18 inputs, plus one housekeeping flag on 08.13. */
@@ -15580,8 +15572,95 @@ try{ if(profile==="ian"){
 
 
 /* build 225: focus timer removed, nothing to clear here anymore. */
+  /* build 372: LAST THING BEFORE THE SAVE. Every migration above has run, deepMergeDefaults
+     has run, so this is the only point in the file where the state is actually final. */
+  try{ convergeState(); }catch(e){}
   applyAccent(); dailyReset(); save(true);
 }
+
+/* ===== v21 build 372: convergeState(), ONE PASS AFTER EVERY WRITER =====================
+   THE DEFECT THIS CLOSES. State did not settle until the THIRD load. Across builds 361 to 371
+   the same 16 to 18 leaves moved between loads 1 and 3: archive.todosDone 60 then 62,
+   meta.retiredTodoIds 57 then 60, realEstate.todos 9 then 10, pickleball.drills 18 then 17.
+
+   ONE CAUSE FOR ALL THREE. File order is execution order, and all three cleanup sweeps sat
+   EARLIER in the file than the writers they existed to defeat. Two of them said in their own
+   comments that they ran last. Neither did.
+     - build 220 tombstone sweep, was at line 4267, with 17 of 20 todosDone.push sites after it
+     - build 312b fold filter, was at line 10080, a second filter of the same list
+     - build 152b drill cap, was at line 2591, with 14 of 25 drills.push sites after it
+
+   WHY IT MATTERED RATHER THAN JUST BEING UNTIDY. doExport() serialises whatever is in memory
+   when it is called. A cold open followed by an export, which is what a late night export
+   usually is, shipped the UNCONVERGED state, and that export is the only way a lane reads
+   Ian's device. The app was capable of handing a lane a list with an extra live to do and two
+   missing archive rows, and nothing would have looked wrong.
+
+   THIS RUNS AS THE LAST THING IN loadProfile, after every migration and after
+   deepMergeDefaults, on every load path including profile switch and import. It is idempotent:
+   the second run finds nothing to do. It performs no save of its own because the caller saves
+   on the next line.
+
+   THE SAFETY PROPERTY, AND IT IS THE ONLY ONE THAT MATTERS HERE. The tombstone filter can
+   ONLY remove a to do whose id is ALREADY in archive.todosDone or in the six item TOMB list
+   below. It never matches on text, age, date or done state. So a to do created by a lane
+   through Dispatch, with a fresh id, is untouchable by this pass. That is asserted by a
+   negative control in the build 372 verification: inject a to do with a fresh id, run four
+   loads, and confirm it is still in realEstate.todos and still absent from archive.todosDone.
+   The same control is run against build 371 so the result proves this pass changed nothing
+   about that guarantee, rather than proving the sweep is harmless in general.
+
+   MOVING THE SWEEPS LATER MAKES THEM SEE MORE, AND THAT IS THE POINT. They now run after
+   deepMergeDefaults has restored seed items, so on the first load they will retire items the
+   old early position never saw. Those deletions are the fix working, not damage: every one of
+   them is an id that is already sitting in archive.todosDone with the reason it left. */
+function convergeState(){
+  try{
+    if(!state.meta) state.meta={};
+    if(!Array.isArray(state.meta.retiredTodoIds)) state.meta.retiredTodoIds=[];
+    var TOMB=["ret-20260718-leadgen","ret-20260710-trip-coverage","ret-20260709-chad-launch",
+              "ret-spicer-appraisal","ret-cynthia-listdate-0720","ret-20260719-sphere"];
+    TOMB.forEach(function(id){ if(state.meta.retiredTodoIds.indexOf(id)<0) state.meta.retiredTodoIds.push(id); });
+    ((state.archive&&state.archive.todosDone)||[]).forEach(function(a){
+      if(a&&a.id&&state.meta.retiredTodoIds.indexOf(a.id)<0) state.meta.retiredTodoIds.push(a.id); });
+    if(state.realEstate && Array.isArray(state.realEstate.todos)){
+      state.realEstate.todos=state.realEstate.todos.filter(function(t){
+        return !(t && t.id && state.meta.retiredTodoIds.indexOf(t.id)>=0); });
+    }
+  }catch(e){ try{ console.warn("converge todos:",e&&e.message); }catch(_){} }
+  try{
+    if(state.pickleball && Array.isArray(state.pickleball.drills)){
+      var seen={machine:0,partner:0}, kept=[], dropped=[];
+      state.pickleball.drills.forEach(function(d){
+        if(d&&(d.group==="machine"||d.group==="partner")&&seen[d.group]<4){ seen[d.group]++; kept.push(d); }
+        else if(d) dropped.push(d); });
+      if(kept.length!==state.pickleball.drills.length){
+        /* ARCHIVE BEFORE DROPPING, and this was added after the first verification run showed
+           the cap removing NINE legacy ungrouped drills with no way to get them back. The build
+           152b cap has always been meant to strip exactly these, and moving it here is what
+           finally lets it, but a sweep that deletes written content with no record is not
+           something this app does anywhere else: retired to dos keep an archive.todosDone row
+           with the reason they left. Drills now get the same treatment. Nothing is lost, the
+           drills surface itself was cut in build 354 so none of this renders, and a lane can
+           restore any of them from state.archive.drillsDropped. */
+        if(!state.archive || typeof state.archive!=="object") state.archive={};
+        if(!Array.isArray(state.archive.drillsDropped)) state.archive.drillsDropped=[];
+        dropped.forEach(function(d){
+          if(!d||!d.id) return;
+          for(var q=0;q<state.archive.drillsDropped.length;q++){ if(state.archive.drillsDropped[q] && state.archive.drillsDropped[q].id===d.id) return; }
+          var cp={}; for(var k in d){ if(Object.prototype.hasOwnProperty.call(d,k)) cp[k]=d[k]; }
+          cp.droppedOn=TODAY;
+          cp.reason=(d.group==="machine"||d.group==="partner")
+            ? "Over the cap of 4 in its group. Kept in the archive, not deleted."
+            : "No machine or partner group, which the build 152b cap has always stripped. It only takes effect now that the cap runs after every drill writer.";
+          state.archive.drillsDropped.push(cp);
+        });
+        state.pickleball.drills=kept;
+      }
+    }
+  }catch(e){ try{ console.warn("converge drills:",e&&e.message); }catch(_){} }
+}
+
 /* v21 build 291: THE DEFAULT PAYMENT STATE FOR A NEWLY CLOSED DEAL IS OUTSTANDING.
    Unguarded on purpose. It runs on every load and inside every save, so a stage moved by
    hand on the phone is covered the moment it is saved rather than at the next load, and no
