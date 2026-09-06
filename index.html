@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 372 (2026-09-06)">
+<meta name="build" content="v21 build 373 (2026-09-06)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -16085,11 +16085,9 @@ function pkNextFocus(){
   }catch(e){ return null; }
 }
 function briefCard(it){ const c=card(TYPECOL[it.type]||"a-blue"); const b=c._body; const top=el("div","between"); const _lft=el("div"); _lft.style.cssText="display:flex;align-items:center;gap:8px"; _lft.appendChild(claudeAvatar("av-sm")); _lft.appendChild(el("span","pill b",it.type||"Info")); top.appendChild(_lft); const lab=el("label","cbmini"); lab.style.marginLeft="auto"; const inp=el("input","cbx"); inp.type="checkbox"; inp.checked=briefDone(it.id); const box=el("span","box mini"); box.innerHTML=CHECK; inp.addEventListener("change",()=>{ var _nv=!briefDone(it.id); briefSetDone(it.id,_nv); it.done=_nv; save(true); render(); }); lab.appendChild(inp); lab.appendChild(box); top.appendChild(lab); b.appendChild(top); const title=el("div","feedtitle",it.title); if(briefDone(it.id)){ title.style.color="var(--dim)"; title.style.textDecoration="line-through"; } b.appendChild(title); if(it.note) b.appendChild(el("div","feednote briefnote",it.note)); /* v21 build 212: THE DRIVER TAG. RULES.md P1 requires that when the app acts on something it knows about Ian, it says so. A few words, never a paragraph. Optional field, so every card written before build 212 renders exactly as it did. */ if(it.why){ var _wy=el("div","small dim"); _wy.style.cssText="margin-top:7px;line-height:1.4"; _wy.textContent=it.why; b.appendChild(_wy); } if(it.url){ const a=el("a","feedlink",(it.type==="Pickleball"?"Watch":it.type==="Supplement"?"Read the research":"Open")+" \u203A"); a.href=it.url; a.target="_blank"; a.rel="noopener"; b.appendChild(a); } return c; }
-function eventsModule(parent){ /* build 178: only show upcoming events (today or later). Past dated events are kept in state but hidden from the calendar so nothing stale shows. */ const evs=(state.events||[]).filter(e=>e&&daysUntil(e.date)>=0).slice().sort((a,b)=>String(a.date).localeCompare(String(b.date))); const c=card(); const b=c._body; if(!evs.length) b.appendChild(el("div","empty","No upcoming events.")); evs.forEach(ev=>{ const row=el("div","evrow"); const p=evParts(ev.date); const du=daysUntil(ev.date); const dd=el("div","evdate"); dd.innerHTML='<div class="d">'+p.d+'</div><div class="m">'+p.m+'</div>'; row.appendChild(dd); const et=el("div","evt"); et.appendChild(el("div","en",ev.title)); et.appendChild(el("div","ec",ev.kind+(du>=0?(du===0?" \u00B7 today":du===1?" \u00B7 tomorrow":" \u00B7 in "+du+" days"):" \u00B7 past"))); row.appendChild(et); const del=el("button","del","\u00D7"); del.onclick=()=>{ state.events=state.events.filter(x=>x.id!==ev.id); save(); render(); }; row.appendChild(del); b.appendChild(row); }); parent.appendChild(c);
-  /* build 369: THE EVENT ADD FORM IS GONE. Events are Dispatch written and always have been
-     in practice: every event on the calendar was created by a lane. The upcoming events list
-     above is untouched, and state.events keeps all 53 entries. */
-  }
+/* build 373: eventsModule() is REMOVED. It was the browsable calendar renderer, date
+   blocks and all, and secCal was its only caller. Today's schedule and homeUpcomingCard
+   build their own rows and do not touch it. */
 /* build 369: goals are DISPLAY ONLY. Tick, delete and the adder are gone; state.goals keeps
    every item and its done flag, and a goal is added or closed through Dispatch. */
 function goalsList(parent,arr){ const c=card(); const b=c._body; if(!arr.length)b.appendChild(el("div","empty","No goals yet.")); arr.forEach(g=>{ b.appendChild(doneRow(g.text,g.horizon||null,!!g.done)); }); parent.appendChild(c); }
@@ -17048,18 +17046,26 @@ function buildIanHome(v){ const workout=daySplit(DOW); const reTop=firstUndone((
       var hr=el("div"); hr.style.cssText="height:1px;background:var(--line);margin:12px 0 2px;opacity:.6"; b.appendChild(hr);
       next.forEach(function(e){ line(e,false); });
     }
-    if(evs.length>todays.length+next.length){
-      var more=el("button","btn block","See the full calendar");
-      more.style.marginTop="12px";
-      more.onclick=function(){ try{ PK_OPEN["h_cal"]=true; }catch(e){} try{ render(); }catch(e){}
-        setTimeout(function(){ try{ var t=document.getElementById("home-cal-anchor"); if(t) t.scrollIntoView({behavior:"smooth",block:"start"}); }catch(e){} },60); };
-      b.appendChild(more);
-    }
+    /* build 373: the "See the full calendar" button is gone with the calendar it opened.
+       Today's schedule above it stays: Ian kept "some things that are on the calendar". */
     v.appendChild(c);
   },"Today's schedule"); };
-  /* the full browsable calendar, collapsed, lower down. Same eventsModule as before. */
-  var secCal=function(){ var a=el("div"); a.id="home-cal-anchor"; v.appendChild(a);
-    pkCollapse(v,"h_cal","Calendar","everything coming up",false,function(hh){ eventsModule(hh); },ICO.calendar,"purple"); };
+  /* ===== build 373: THE CALENDAR IS REMOVED ==========================================
+     Ian, 06.09.2026: "since I have an actual calendar, I don't need there to be any actual
+     sort of calendar in the app ... That makes it too complex and can get in the way and can
+     be wrong."
+
+     HIS REASON IS THE RIGHT ONE AND IT IS THE SAME FAULT THAT HIT THE BELKNAP NUMBER FOUR
+     TIMES: a second copy of something that has a real source elsewhere will drift, and in a
+     read only app he cannot correct what he sees.
+
+     WHAT STAYS, BECAUSE HE ASKED FOR IT IN THE SAME BREATH: "Maybe some things that are on
+     the calendar, some things I can do, recommendations that are changing daily." So Today's
+     schedule keeps rendering today plus the next few, and homeUpcomingCard keeps rendering
+     next moves. WHAT GOES IS THE BROWSABLE GRID, the surface that presented itself as a
+     calendar and invited him to trust it as one. state.events is untouched and still holds
+     all 53 entries, because the day relevant surfaces read from it. */
+  var secCal=function(){ /* removed, see above */ };
 
   /* build 191 NEW: TODAY'S WORKOUT on Home. Ian named the workout one of the three things he
      opens the app for, and it had no surface on Home at all, only a Quick actions button. This
@@ -17720,7 +17726,10 @@ function contactEditors(parent,k){
   parent.appendChild(chipRow(SPHERE_TYPES,k.type,s=>{ k.type=s; save(); render(); }));
   const ph=el("input","in"); ph.type="tel"; ph.placeholder="Phone (optional)"; ph.value=k.phone||""; ph.oninput=()=>{ k.phone=ph.value; save(); }; parent.appendChild(ph);
   const lcl=el("div","small muted"); lcl.textContent="Last contacted"; lcl.style.margin="10px 0 4px"; parent.appendChild(lcl);
-  const lc=el("input","in"); lc.type="date"; lc.value=k.lastContacted||""; lc.oninput=()=>{ k.lastContacted=lc.value; save(); }; parent.appendChild(lc);
+  /* build 373: THE LAST INPUT OF ANY KIND IN THE APP. It escaped the build 369 sweep because
+     contact editors only render once a contact is opened, which is the collapsed surface trap
+     for the fourth time. Display only now; lastContacted is set through Dispatch. */
+  const lc=el("div"); lc.style.cssText="font-weight:700"; lc.textContent=k.lastContacted?fmtShort(k.lastContacted):"Not recorded"; parent.appendChild(lc);
   /* build 288: a CONDITIONAL one time record gets one extra control and one line of plain state.
      It renders only for oneTime, so every other contact card is byte identical to build 287.
      The control exists because the whole conditional hangs on a fact only Ian has, whether they
