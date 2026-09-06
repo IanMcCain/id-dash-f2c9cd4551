@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 373 (2026-09-06)">
+<meta name="build" content="v21 build 374 (2026-09-06)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -15331,6 +15331,173 @@ try{ if(profile==="ian"){
       state.meta.mig371_solara_status=true; save(true);
   } }catch(e){ try{ console.warn("mig371 did not apply:",e&&e.message); }catch(_){} }
 
+/* ===== v21 build 374, 06.09.2026. THE PIPELINE AUDIT, APP-1 ===========================
+
+   IAN AUDITED HIS OWN PIPELINE AGAINST THE APP AND FOUND IT WRONG IN SEVEN PLACES. His
+   words: "Crystal Johnson is fully closed idk why that's still wrong, Belknap buy side is
+   fully closed that's still wrong ... Make sure the whole real estate is perfected."
+
+   THE MECHANISM BEHIND THE TWO CLOSED DEALS, because the fix without it is worthless.
+   NOTHING IN THIS APP OR IN ANY AGENT MOVES A DEAL TO CLOSED. Every one of the 31 stage
+   assignments in this file is a hand written literal inside a dated migration, for one named
+   deal, written by a lane after a human noticed. And closeDate is FREE TEXT, so nothing can
+   compare it to today. Both conditions together mean a closed deal stays Under Contract
+   until Ian himself spots it, which is exactly what happened. Build 374 adds closeOn, a
+   machine readable date, and a CLOSE DATE PASSED flag on the row. It does not auto close
+   anything: inferring a close from a date would be inventing a fact.
+
+   WHAT IAN NAMED, AND WHAT WAS ACTUALLY WRONG.
+     Crystal Johnson      Under Contract -> CLOSED, 31 August 2026
+     Belknap BUY          Under Contract -> CLOSED, 4 September 2026, closed and disbursed
+     Theobald             Prospecting    -> COMING SOON, and the price was stale
+     Barker               price stale, three dead figures in circulation
+     MATTOX               DID NOT EXIST IN THE APP AT ALL. Created here.
+     Belknap sell, Willis, Barker stages were already correct.
+     THE 2 STORY WAS ALREADY RIGHT. re-rose-creek carries sub "2 story" and stage "Active",
+     and in this app's vocabulary ACTIVE IS THE ON MARKET STAGE. There is no "For Sale"
+     value in RESTAGES. Nothing was changed and nothing should be.
+
+   PRICES, from _HANDOFF_stale_prices_to_app.md by RE-3 and Ian's own routing.
+     Barker   $279,900 / RECOMMENDED $289,900 / $294,900. Walkthrough contingent.
+     Theobald $309,900 / BALANCED $319,900 / $329,900, condition neutral centre $330,000,
+              and $349,900 only if the walkthrough finds it updated to 5038's standard.
+     Belknap sell stays $249,900 in the note with $244,900 as the conditional fallback, and
+              the price FIELD stays empty per Ian's 22 August instruction that Pratt carries
+              no price. That instruction still stands and nothing here supersedes it.
+     MATTOX   $474,900, IAN'S DELIBERATE FIGURE, above our own $464,900 because he thinks the
+              file runs low. DO NOT CORRECT IT DOWN ANYWHERE. Closed in ANSWERED_AND_CLOSED.
+
+   THE BARKER PRICE LIVES IN seedIan(), so a seed edit would never reach an installed
+   profile. It is set here unconditionally by deal id, which is the only thing that works for
+   both a profile carrying an old value and one that never did.
+
+   Guarded once by state.meta.mig374_pipeline, NOT in the seed. */
+  try{ if(profile==="ian" && state.meta && !state.meta.mig374_pipeline && state.realEstate && Array.isArray(state.realEstate.deals)){
+      var _D374=state.realEstate.deals;
+      var _get=function(id){ for(var i=0;i<_D374.length;i++){ if(_D374[i]&&_D374[i].id===id) return _D374[i]; } return null; };
+      var _app=function(d,s){ if(d && String(d.note||"").indexOf(s.slice(0,48))<0) d.note=String(d.note||"")+" "+s; };
+
+      /* 1. CRYSTAL JOHNSON, CLOSED 31 AUGUST */
+      var _cj=_get("re-crystal-johnson");
+      if(_cj){
+        _cj.stage="Closed";
+        _cj.closeDate="August 31, 2026 (CLOSED)";
+        _cj.closeOn="2026-08-31";
+        _app(_cj,"CLOSED 31 AUGUST 2026, corrected 06.09.2026 by Ian's own pipeline audit. It had "
+          +"read Under Contract with a close date of \"Early week of 31 August 2026, DATE NOT "
+          +"CONFIRMED\" for six days after it closed. His words: \"Crystal Johnson is fully closed "
+          +"idk why that's still wrong\". Nothing in the app or the agents moves a deal to Closed, "
+          +"so it sat until he noticed. closeOn is now set so the row flags itself next time.");
+      }
+
+      /* 2. BELKNAP BUY, CLOSED AND DISBURSED 4 SEPTEMBER */
+      var _bb=_get("re-belknap-buy");
+      if(_bb){
+        _bb.stage="Closed";
+        _bb.closeDate="September 4, 2026 (CLOSED and DISBURSED)";
+        _bb.closeOn="2026-09-04";
+        /* DISBURSED is Ian's own word, so the commission is PAID, not outstanding. Without this
+           the build 291 writer defaults a newly Closed deal to unpaid and the money card would
+           have shown an outstanding commission that has already landed. Crystal Johnson is
+           deliberately LEFT as outstanding: "fully closed" is a statement about the transaction
+           and says nothing about whether the commission has been disbursed, and inventing that
+           is the kind of guess this file has been burned by. Flagged to Ian instead. */
+        _bb.paid=true;
+        _app(_bb,"CLOSED AND DISBURSED 4 SEPTEMBER 2026, corrected 06.09.2026 by Ian's pipeline "
+          +"audit. Same failure as Crystal Johnson: the close date passed and the stage did not "
+          +"move, because nothing watches for that.");
+      }
+
+      /* 3. THEOBALD, STAGE AND PRICE */
+      var _th=_get("re-theobald-sell");
+      if(_th){
+        _th.stage="Coming Soon";
+        _th.price="$319,900";
+        _th.priceNote="Balanced list, CMA refresh 04.09.2026";
+        _app(_th,"CMA REFRESHED 04.09.2026 AND THE STAGE CORRECTED 06.09.2026. Stage was "
+          +"Prospecting and Ian says Coming Soon. TIERS: entry $309,900, BALANCED $319,900, "
+          +"patient $329,900. Condition neutral centre $330,000, confidence LOW. $349,900 ONLY IF "
+          +"the walkthrough finds it updated to 5038's standard. THE TIERS ARE EXPOSURE BANDS, NOT "
+          +"DAY COUNTS: this file has already produced one inverted days on market table, on "
+          +"Belknap, and the honest unit here is how much market you are exposed to at each price. "
+          +"SUPERSEDED: the $324,900 that was in the price field, and any card saying the condition "
+          +"swing is worth up to $45,000 or that it must be walked this week to list by 15 "
+          +"September. The swing is $30,000 or more and the 15 September date is gone.");
+      }
+
+      /* 4. BARKER PRICE. Set unconditionally by id because the old value lives in seedIan(). */
+      var _bk=_get("re-barkers");
+      if(_bk){
+        _bk.price="$289,900";
+        _bk.priceNote="Recommended list, walkthrough contingent, 05.09.2026";
+        _app(_bk,"PRICE CORRECTED 06.09.2026. TIERS: quick $279,900, RECOMMENDED $289,900, top "
+          +"$294,900. Supported $289,000 to $293,000, centre $291,000, CEILING $300,000 not "
+          +"$290,000. Walkthrough contingent. THREE DEAD FIGURES WERE IN CIRCULATION and none was "
+          +"right: $270,000 to $280,000 in this app, $275,000 to $285,000 in the pipeline snapshot, "
+          +"and $284,900 in an older file. The app carried the oldest of the three. Source is "
+          +"01_MASTER_CONTEXT under THE BARKER NUMBER, as of 5 September 2026.");
+      }
+
+      /* 5. MATTOX. It did not exist. */
+      if(!_get("re-mattox-sell")){
+        _D374.push({
+          id:"re-mattox-sell", title:"Mattox", sub:"Sell side, 19859 Burke St",
+          address:"19859 Burke St, Omaha, NE 68022",
+          stage:"Coming Soon", price:"$474,900",
+          priceNote:"Ian's figure, deliberately above our $464,900",
+          source:"Ian's own", side:"Seller", closeDate:"", copyOwned:true,
+          note:"CREATED 06.09.2026. IAN NAMED THIS DEAL IN HIS PIPELINE AUDIT AND IT DID NOT EXIST "
+            +"IN THE APP AT ALL, which is a worse failure than a wrong stage: a wrong stage is "
+            +"visible and an absent deal is not. It had a CMA on 4 September and an audit on 5 "
+            +"September and neither reached this file. "
+            +"$474,900 IS IAN'S DELIBERATE FIGURE. Our own CMA reads RECOMMENDED $464,900 with "
+            +"$474,900 as the top, and he quotes the top ON PURPOSE because he thinks the file runs "
+            +"low. DO NOT CORRECT IT DOWN ANYWHERE, and any automated check that flags it as a "
+            +"discrepancy is wrong. This is closed in ANSWERED_AND_CLOSED.md."
+        });
+      }
+
+      /* 6. closeOn FOR EVERY DEAL WITH A REAL, UNAMBIGUOUS DATE. Free text stays as it is. */
+      var _co={"re-spicer-sell":"2026-08-03","re-bonks-sell":"2026-08-19","re-bonks-buy":"2026-08-20",
+               "re-michelle-miller":"2026-08-07","re-chad-troester":"2026-08-10","re-chad-troester-buy":"2026-07-01",
+               "re-allison-spicer-buy":"2026-11-13"};
+      for(var _k374 in _co){ if(Object.prototype.hasOwnProperty.call(_co,_k374)){
+        var _dd=_get(_k374); if(_dd && !_dd.closeOn) _dd.closeOn=_co[_k374]; } }
+
+      /* 7. THE STALE THEOBALD BRIEFING CARD. Content only, the stable id is preserved and
+         state.briefing.done is NOT touched. */
+      try{
+        var _bf=(state.briefing&&state.briefing.forIan)||{};
+        Object.keys(_bf).forEach(function(day){
+          (_bf[day]||[]).forEach(function(c){
+            if(!c||typeof c.note!=="string") return;
+            if(c.note.indexOf("Theobald condition is worth up to $45,000")>=0){
+              c.note=c.note.replace(/Theobald condition is worth up to \$45,000 and has to be walked thi[^.]*\./,
+                "Theobald condition swings $30,000 or more and the 15 September list date is GONE. "
+                +"Refreshed 04.09.2026: entry $309,900, balanced $319,900, patient $329,900, centre $330,000.");
+              c.note=c.note.replace(/Theobald condition is worth up to \$45,000[^.]*\./,
+                "Theobald condition swings $30,000 or more, refreshed 04.09.2026.");
+            }
+          });
+        });
+      }catch(_ec){}
+
+      /* 8. TWO EVENTS THAT OUTLIVED THEIR OWN UNCERTAINTY. */
+      try{
+        (state.events||[]).forEach(function(e){
+          if(!e) return;
+          if(e.id==="ev-20260814-johnson-close"){
+            e.title="Crystal Johnson CLOSED, 11911 Horizon, 31 August 2026";
+          }
+          if(e.id==="ev-20260819-siena-viewing"){
+            e.title="Siena II viewing, 19 August 2026. NEVER CONFIRMED and now long past, left as a record";
+          }
+        });
+      }catch(_ee){}
+
+      state.meta.mig374_pipeline=true; save(true);
+  } }catch(e){ try{ console.warn("mig374 did not apply:",e&&e.message); }catch(_){} }
+
 /* ===== build 355: THE FIRST MECHANICS SECTION IS WRITTEN. twoHandBackhand ONLY. ==============
 
    ONE SHOT OF EIGHT, AND THAT IS THE HONEST NUMBER. Build 354 shipped the Mechanics container
@@ -16443,7 +16610,31 @@ function dealRow(parent,d){
   /* build 267: a qualifier on a price is a MARKER, not part of the number. It renders under the
      figure on the right, in the same .dsub style as the rest of the detail text, so the price cell
      holds a price and nothing else. A row with no qualifier renders exactly as it did before. */
-  const right=el("div","dr"); if(d.price){ right.appendChild(el("div","dp",d.price)); if(d.priceNote) right.appendChild(el("div","dsub",d.priceNote)); } right.appendChild(stagePill(d.stage)); row.appendChild(right);
+  const right=el("div","dr"); if(d.price){ right.appendChild(el("div","dp",d.price)); if(d.priceNote) right.appendChild(el("div","dsub",d.priceNote)); } right.appendChild(stagePill(d.stage));
+  /* ===== build 374: THE STALE STAGE FLAG, and this is the actual fix ====================
+     Ian found Crystal Johnson and Belknap buy still reading Under Contract days after both
+     had closed, and said "idk why that's still wrong". THE ANSWER IS THAT NOTHING WAS EVER
+     WATCHING. All 31 stage assignments in this file are hand written literals inside dated
+     migration blocks, one per named deal, written by a lane after a human noticed. And
+     closeDate is FREE TEXT: "September 4, 2026", "Early week of 31 August 2026, DATE NOT
+     CONFIRMED", "Can sell anytime". Nothing parses it, so nothing can compare it to today.
+     A deal therefore stays Under Contract forever unless a person spots it.
+
+     closeOn is a machine readable ISO date written alongside the human closeDate. When it has
+     passed and the stage is still not a closed stage, the row says so. It cannot fix the stage
+     by itself, and it deliberately does not try: guessing that a deal closed because a date
+     passed is exactly the kind of invented fact this app has been burned by. It converts a
+     SILENT failure into a VISIBLE one, which is the most a read only surface can honestly do.
+     Deals with no closeOn are unaffected. */
+  try{
+    if(d.closeOn && String(d.closeOn)<TODAY && d.stage!=="Closed" && d.stage!=="Just Sold"){
+      var _fl=el("div","small"); _fl.style.cssText="margin-top:4px;font-weight:800;font-size:10.5px;letter-spacing:.04em;color:var(--amber,#ffd60a);text-align:right";
+      _fl.textContent="CLOSE DATE PASSED";
+      _fl.title="closeOn "+d.closeOn+" has passed and the stage still reads "+d.stage+". Confirm and update through Claude.";
+      right.appendChild(_fl);
+    }
+  }catch(e){}
+  row.appendChild(right);
   row.onclick=()=>{ reDealOpen[d.id]=!reDealOpen[d.id]; render(); };
   wrap.appendChild(row);
   if(reDealOpen[d.id]){ const det=el("div","deal-detail"); dealEditors(det,d); wrap.appendChild(det); }
