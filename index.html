@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 374 (2026-09-06)">
+<meta name="build" content="v21 build 375 (2026-09-06)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -15498,6 +15498,110 @@ try{ if(profile==="ian"){
       state.meta.mig374_pipeline=true; save(true);
   } }catch(e){ try{ console.warn("mig374 did not apply:",e&&e.message); }catch(_){} }
 
+/* ===== v21 build 375, 06.09.2026. FOUR CORRECTIONS, APP-1 =============================
+
+   ALL FOUR CHANGED WITHIN AN HOUR OF BUILD 374 SHIPPING, and two of them make build 374
+   wrong. Recorded plainly because a build that was correct when it shipped and wrong an hour
+   later is not a mistake, it is the pace of the underlying facts.
+
+   1. MATTOX IS $464,900 AND THE DO NOT CORRECT DOWN INSTRUCTION IS DEAD.
+      Build 374 created this record at $474,900 carrying an explicit DO NOT CORRECT IT DOWN
+      ANYWHERE, on the strength of ANSWERED_AND_CLOSED. IAN HIMSELF RETIRED THAT STEER the
+      same afternoon. Chris at 15:38: "my ranges are of what we see. if same as pics from
+      2019. your 464900." Ian asked "Oh so similar price just 10k less recommended?" and
+      closed it at 15:44 with "Claude agreed with you. So good to finish it."
+      TIERS: $459,900 / RECOMMENDED $464,900 / top $474,900.
+      WHY IT MOVED, which matters more than the number: Chris ran his own comps, graded the
+      2019 interior 6.1, and favours $464,900 IF the house still looks like those photos. The
+      condition question is the open variable, not the price.
+      NOTHING HAS BEEN QUOTED TO MARK MATTOX. His thread ends 4 September on scheduling.
+
+   2. BARKER HAS TWO LIVE NUMBERS AND THIS BUILD DOES NOT PICK BETWEEN THEM.
+      Our CMA says $289,900, which build 374 wrote an hour ago. CHRIS, 15:41 TODAY: "Barker,
+      im thinking 280. let the market push it higher?" Both are carried with attribution and
+      dates because THE DISAGREEMENT IS THE FACT. Silently choosing either one would delete
+      the thing Ian needs to see. Also new from the same thread: PROBABLY TWO WEEKS OUT FROM
+      LISTING. The price FIELD keeps $289,900, the CMA figure, and Chris's $280,000 is on the
+      record beside it rather than overwriting it.
+
+   3. THEOBALD TIMING IS CONTRADICTED AND IS NOT RESOLVED HERE.
+      Our file targets LIVE BY 15 SEPTEMBER. Chris relayed Nancy as "(two weeks)". NANCY'S
+      OWN MESSAGE, 5 SEPTEMBER: "The next couple weeks are busy for us. Could we connect at
+      the end of the month perhaps?" END OF SEPTEMBER AND MID SEPTEMBER ARE DIFFERENT, and a
+      relay is not the client. Flagged, not decided. Whoever speaks to her settles it.
+
+   4. CRYSTAL JOHNSON'S COMMISSION IS UNKNOWN, NOT OUTSTANDING.
+      Build 374 left paid=false via the build 291 default, which puts it under "Closed,
+      awaiting payment" and ASSERTS it is owed. Ian said "fully closed", which is about the
+      transaction. payUnknown moves it to the app's own third bucket, "Closed, payment not on
+      record", and the row now says COMMISSION NOT ON RECORD.
+
+   Guarded once by state.meta.mig375_corrections, NOT in the seed. */
+  try{ if(profile==="ian" && state.meta && !state.meta.mig375_corrections && state.realEstate && Array.isArray(state.realEstate.deals)){
+      var _D375=state.realEstate.deals;
+      var _g5=function(id){ for(var i=0;i<_D375.length;i++){ if(_D375[i]&&_D375[i].id===id) return _D375[i]; } return null; };
+      var _ap5=function(d,s){ if(d && String(d.note||"").indexOf(s.slice(0,46))<0) d.note=String(d.note||"")+" "+s; };
+
+      /* 1. MATTOX */
+      var _mx=_g5("re-mattox-sell");
+      if(_mx){
+        _mx.price="$464,900";
+        _mx.priceNote="Recommended list, agreed with Chris 06.09.2026";
+        _mx.note=String(_mx.note||"").split("DO NOT CORRECT IT DOWN ANYWHERE, and any automated check that flags it as a discrepancy is wrong. This is closed in ANSWERED_AND_CLOSED.md.").join("");
+        _ap5(_mx,"PRICE CORRECTED TO $464,900 ON 06.09.2026 AND THE DO NOT CORRECT DOWN INSTRUCTION IS "
+          +"RETIRED. It was written into this record earlier the same day on the strength of "
+          +"ANSWERED_AND_CLOSED, and IAN HIMSELF SUPERSEDED IT that afternoon. Chris, 15:38: \"my "
+          +"ranges are of what we see. if same as pics from 2019. your 464900.\" Ian: \"Oh so similar "
+          +"price just 10k less recommended?\" and at 15:44: \"Claude agreed with you. So good to "
+          +"finish it.\" TIERS: $459,900 / RECOMMENDED $464,900 / top $474,900. "
+          +"WHY IT MOVED: Chris ran his own comps and graded the 2019 interior 6.1, and favours "
+          +"$464,900 IF the house still looks like those photos. THE CONDITION IS THE OPEN VARIABLE, "
+          +"NOT THE PRICE. NOTHING HAS BEEN QUOTED TO MARK MATTOX, his thread ends 4 September on "
+          +"scheduling, so there is nothing to walk back with him.");
+      }
+
+      /* 2. BARKER, both numbers, no choice made */
+      var _bk5=_g5("re-barkers");
+      if(_bk5){
+        _bk5.priceNote="CMA $289,900, Chris says $280,000. Unresolved 06.09.2026";
+        _ap5(_bk5,"TWO LIVE NUMBERS AS OF 06.09.2026 AND THIS IS NOT RESOLVED. Our CMA says "
+          +"$289,900, tiers $279,900 / $289,900 / $294,900, supported $289,000 to $293,000, ceiling "
+          +"$300,000, as of 5 September. CHRIS, 15:41 ON 6 SEPTEMBER: \"Barker, im thinking 280. let "
+          +"the market push it higher?\" THE DISAGREEMENT IS THE FACT and neither number is being "
+          +"quietly picked, because choosing one would delete the thing worth seeing. The price field "
+          +"holds the CMA figure because that is the one with a document behind it; Chris's $280,000 "
+          +"is a strategy call about letting the market bid it up, which is a different kind of claim "
+          +"and is recorded as his. TIMING, NEW FROM THE SAME THREAD: probably TWO WEEKS OUT FROM "
+          +"LISTING. Walkthrough still contingent.");
+      }
+
+      /* 3. THEOBALD timing contradiction */
+      var _th5=_g5("re-theobald-sell");
+      if(_th5){
+        _ap5(_th5,"TIMING IS CONTRADICTED AS OF 06.09.2026 AND IS NOT RESOLVED HERE. This file "
+          +"targets LIVE BY 15 SEPTEMBER. Chris relayed Nancy as \"(two weeks)\". NANCY'S OWN MESSAGE, "
+          +"5 SEPTEMBER: \"The next couple weeks are busy for us. Could we connect at the end of the "
+          +"month perhaps?\" END OF SEPTEMBER AND MID SEPTEMBER ARE DIFFERENT PLANS, and a relay is "
+          +"not the client. Do not schedule a 15 September listing against a client message that says "
+          +"end of the month, and do not quietly move the target either. Whoever speaks to Nancy "
+          +"settles it, and until then both dates stay on the record.");
+      }
+
+      /* 4. CRYSTAL JOHNSON, unknown rather than owed */
+      var _cj5=_g5("re-crystal-johnson");
+      if(_cj5){
+        _cj5.payUnknown=true;
+        try{ delete _cj5.paid; }catch(_d5){ _cj5.paid=undefined; }
+        _ap5(_cj5,"COMMISSION STATUS IS UNKNOWN, NOT OUTSTANDING, corrected 06.09.2026. Ian said "
+          +"\"fully closed\", which is a statement about the transaction and says nothing about "
+          +"whether the commission has been disbursed. It was sitting under \"Closed, awaiting "
+          +"payment\", which asserts it is owed. It now sits under \"Closed, payment not on record\" "
+          +"and the row says COMMISSION NOT ON RECORD. One question to Ian settles it.");
+      }
+
+      state.meta.mig375_corrections=true; save(true);
+  } }catch(e){ try{ console.warn("mig375 did not apply:",e&&e.message); }catch(_){} }
+
 /* ===== build 355: THE FIRST MECHANICS SECTION IS WRITTEN. twoHandBackhand ONLY. ==============
 
    ONE SHOT OF EIGHT, AND THAT IS THE HONEST NUMBER. Build 354 shipped the Mechanics container
@@ -15839,6 +15943,7 @@ function convergeState(){
 function rePayDefault(){ var n=0; try{
     var ds=(state && state.realEstate && state.realEstate.deals) || [];
     for(var i=0;i<ds.length;i++){ var d=ds[i];
+      if(d && d.payUnknown===true) continue; /* build 375: never default a deliberately unknown commission to outstanding */
       if(d && d.stage==="Closed" && typeof d.paid!=="boolean" && typeof d.actualNet!=="number"){ d.paid=false; n++; }
     }
   }catch(e){} return n; }
@@ -16351,7 +16456,14 @@ function dealNetIsActual(d){ return !!(d&&typeof d.actualNet==="number"); }
    dealIsPaid reads it as confirmed rather than requiring the flag to be set twice. Spicer is the one
    deal carrying it, $2,770. */
 function dealIsPaid(d){ return !!(d && (d.paid===true || typeof d.actualNet==="number")); }
-function dealIsUnpaid(d){ return !!(d && d.paid===false && typeof d.actualNet!=="number"); }
+/* build 375: payUnknown means the commission status is GENUINELY NOT KNOWN, as opposed to
+   known to be outstanding. Ian said Crystal Johnson is "fully closed", which is a statement
+   about the transaction and says nothing about whether the commission has been disbursed.
+   Without this the build 291 default lands it in "Closed, awaiting payment", which ASSERTS it
+   is owed. The app already has the right third bucket, "Closed, payment not on record", and
+   sumUnknownPay() picks up anything that is neither paid nor unpaid, so excluding it here is
+   all that is needed. rePayDefault() also skips it, otherwise every save would put it back. */
+function dealIsUnpaid(d){ return !!(d && d.paid===false && d.payUnknown!==true && typeof d.actualNet!=="number"); }
 function sumPaid(arr){ return (arr||[]).filter(dealIsPaid).reduce(function(a,d){ return a+dealIanNet(d); },0); }
 function sumUnpaid(arr){ return (arr||[]).filter(dealIsUnpaid).reduce(function(a,d){ return a+dealIanNet(d); },0); }
 function sumUnknownPay(arr){ return (arr||[]).filter(function(d){ return !dealIsPaid(d) && !dealIsUnpaid(d); }).reduce(function(a,d){ return a+dealIanNet(d); },0); }
@@ -16632,6 +16744,13 @@ function dealRow(parent,d){
       _fl.textContent="CLOSE DATE PASSED";
       _fl.title="closeOn "+d.closeOn+" has passed and the stage still reads "+d.stage+". Confirm and update through Claude.";
       right.appendChild(_fl);
+    }
+    /* build 375: an unknown commission says so, rather than sitting silently in a money bucket. */
+    if(d.payUnknown===true){
+      var _pu=el("div","small"); _pu.style.cssText="margin-top:4px;font-weight:700;font-size:10.5px;letter-spacing:.03em;color:var(--gray);text-align:right";
+      _pu.textContent="COMMISSION NOT ON RECORD";
+      _pu.title="Closed, but whether the commission has been disbursed is not known. Not the same as outstanding.";
+      right.appendChild(_pu);
     }
   }catch(e){}
   row.appendChild(right);
