@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 369 (2026-09-05)">
+<meta name="build" content="v21 build 370 (2026-09-06)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -15243,6 +15243,51 @@ try{ if(profile==="ian"){
       state.meta.mig368_belknap_cohort=true; save(true);
   } }catch(e){ try{ console.warn("mig368 did not apply:",e&&e.message); }catch(_){} }
 
+/* ===== v21 build 370, 06.09.2026. THE PUNCH VOLLEY COMES OFF, APP-1 ====================
+
+   Ian, verbatim: "take the punch volley off. I'll just learn that gradually on my own but
+   keep the roll because that's obvious."
+
+   ROLL IS UNTOUCHED. It is a proper shot at mechanics.shots.roll, it sits in PK_SHOTS after
+   dinks and before flicks, and nothing in this build reads or writes it.
+
+   NOTHING IS LOST. The punch volley write up survives in full in the consolidated playbook,
+   which is the point: he is learning the shot on his own, so the source has to outlive the
+   surface. ONLY THE APP SURFACE GOES.
+
+   THREE THINGS HAD TO BE REMOVED, NOT ONE.
+     1. The saved record, mechanics.extras.punchVolley, which is what this migration does.
+     2. The CREATOR in the build 357 block, removed above. That block is guarded by
+        mig_pkmech_roll0831, already run on his device, so its literals are dead text for him,
+        but on a profile that has NEVER run it the creator sits LATER IN THE FILE than this
+        migration and would have re-added the record immediately after it was deleted.
+     3. The renderer: PK_EXTRAS, pkExtraContent(), the divider, the label and the loop.
+        Removing the data alone would have left the section correct but dead, because the
+        _anyEx guard would simply never go true, and Ian asked for the divider and the label
+        to go, not only the content.
+
+   THE CONTAINER GOES WHEN IT EMPTIES. punchVolley was the only key extras ever held, so once
+   it is gone the object is deleted rather than left as an empty {}. An empty container is an
+   invitation, and it is also the shape that has caught this app twice: a section that renders
+   when it should not, and a control that survives inside something nothing looks at.
+
+   BOTH PROFILE SHAPES ARE HANDLED. If extras is absent entirely, every step below is a no op
+   and the flag is still set, so this can never throw on a profile that never had it.
+
+   Guarded once by state.meta.mig370_drop_punchvolley, NOT in the seed. */
+  try{ if(profile==="ian" && state.meta && !state.meta.mig370_drop_punchvolley){
+      var _M370=(state.pickleball && state.pickleball.mechanics) || null;
+      if(_M370 && _M370.extras && typeof _M370.extras==="object"){
+        if(Object.prototype.hasOwnProperty.call(_M370.extras,"punchVolley")){
+          try{ delete _M370.extras.punchVolley; }catch(_d){ _M370.extras.punchVolley=undefined; }
+        }
+        var _k370=[];
+        for(var _kk in _M370.extras){ if(Object.prototype.hasOwnProperty.call(_M370.extras,_kk) && _M370.extras[_kk]!==undefined) _k370.push(_kk); }
+        if(!_k370.length){ try{ delete _M370.extras; }catch(_d2){ _M370.extras=undefined; } }
+      }
+      state.meta.mig370_drop_punchvolley=true; save(true);
+  } }catch(e){ try{ console.warn("mig370 did not apply:",e&&e.message); }catch(_){} }
+
 /* ===== build 355: THE FIRST MECHANICS SECTION IS WRITTEN. twoHandBackhand ONLY. ==============
 
    ONE SHOT OF EIGHT, AND THAT IS THE HONEST NUMBER. Build 354 shipped the Mechanics container
@@ -15364,6 +15409,12 @@ try{ if(profile==="ian"){
 
 /* ===== build 357: THE ROLL AS A SHOT, THE PUNCH VOLLEY AS AN EXTRA ============================
 
+   SUPERSEDED IN PART BY BUILD 370, 06.09.2026. The punch volley was REMOVED on Ian's
+   instruction: "take the punch volley off. I'll just learn that gradually on my own but keep
+   the roll because that's obvious." The roll half of this block still stands and is live. Do
+   NOT restore the punch volley from the quote below; it is kept only as the record of why the
+   extras container once existed.
+
    Ian, 31.08.2026: "Add roll, but keep punchVolley as an additional, not a list, just a
    move/technique I could learn on the side."
 
@@ -15392,7 +15443,6 @@ try{ if(profile==="ian"){
       var _M7=state.pickleball.mechanics;
       if(!_M7 || typeof _M7!=="object"){ _M7={version:1,shots:{}}; }
       if(!_M7.shots || typeof _M7.shots!=="object") _M7.shots={};
-      if(!_M7.extras || typeof _M7.extras!=="object") _M7.extras={};
 
       if(!_M7.shots.roll){
         _M7.shots.roll={
@@ -15449,60 +15499,15 @@ try{ if(profile==="ian"){
         };
       }
 
-      if(!_M7.extras.punchVolley){
-        _M7.extras.punchVolley={
-          status:"ready", updated:"2026-08-31", by:"GEN-A playbook",
-          paras:[
-            "ON THE SIDE, NOT ON YOUR LIST. This is here because you asked for it as a technique to "
-              +"pick up alongside the nine, not as a tenth shot to work through.",
-            "WHAT IT IS FOR, AND THIS IS WHERE MOST PLAYERS GET IT WRONG. A punch is not a hard "
-              +"shot. It is an ANGLED shot that happens to be firm. The rec version aims at the "
-              +"opponent. The pro version aims at a place the opponent cannot cover. Same effort, "
-              +"different target, completely different outcome.",
-            "THE EVIDENCE. n=1. MLP at Miami Pickleball Club, confirmed from the backdrop. The "
-              +"creator names the player as Scarpa, which is attributed to his audio and not "
-              +"independently verified.",
-            "1. FAST, QUIET FEET FIRST. He notes the feet before the hand. The punch is a base shot "
-              +"before it is a hand shot.",
-            "2. ARM EXTENDED ON THE APPROACH. The paddle is already out in front on the way to the "
-              +"ball, not cocked back. Measured, visible in frame.",
-            "3. THE ELBOW EXTENDS AT THE BALL AND THE SHOULDER ROLLS AROUND. That is the power "
-              +"source: elbow extension plus shoulder roll. Not a wrist flick and not an arm "
-              +"swing.",
-            "4. A LITTLE TORSO TWIST. There is some and there is no getting away from it.",
-            "5. PADDLE ANGLE IS THE WHOLE DIFFERENCE. Sit up on the ball to get the line, then dip "
-              +"the face through it. That is what creates an angle instead of a flat push.",
-            "6. BALANCE IS NEVER TRADED FOR PACE. Consistent across every close up in the file.",
-            "HOW THIS RELATES TO THE FLICK, AND BE CLEAR ABOUT IT. They are NOT the same mechanic. "
-              +"The punch is shoulder and elbow with a quiet wrist, off a ball at or above net "
-              +"height, with the paddle already out front. The flick is wrist, from a dropped "
-              +"paddle head, usually off a lower ball. Use the punch's shoulder on a flick and you "
-              +"get a slow flick. Use the flick's wrist on a punch and you get a spray. What DOES "
-              +"transfer completely is target discipline: angles rather than pace.",
-            "YOUR PADDLE IS AT ITS WORST HERE. Hand speed exchanges at the kitchen are the worst "
-              +"case for a high swing weight, because there is no time to accelerate mass. So "
-              +"start earlier and keep the paddle further out front, which is exactly what the pro "
-              +"already does on the approach. Step 2 is not optional for you.",
-            "DRILL, AND IT GRADES ONE THING. Two targets, no pace, 10 balls. Partner feeds at net "
-              +"height to your forehand. Two cones, one at the opponent's right hip, one at the "
-              +"outside sideline corner. Call the target out loud before you hit. Count how many "
-              +"of the 10 hit the called target and write the number down. Not how hard."
-          ],
-          cues:[
-            "Feet first, the punch is a base shot",
-            "Paddle already out front on the approach",
-            "Elbow extends, shoulder rolls around, wrist quiet",
-            "Sit up on the ball, then dip the face through it",
-            "Aim at a gap, not at a person",
-            "Never trade balance for pace"
-          ],
-          agent:"EXTRA, NOT A SHOT, by Ian's explicit ruling 31.08.2026. Do NOT move this into "
-            +"mechanics.shots and do NOT add a punchVolley id to PK_SHOTS. Step 3 says the "
-            +"shoulder ROLLS AROUND: the earlier 'coiling in of the shoulder' wording was an "
-            +"unverified on screen annotation that could not be found in four sampled frames and "
-            +"does not appear in the transcript. Do not reintroduce 'coil' without a frame number."
-        };
-      }
+      /* build 370: THE PUNCH VOLLEY CREATOR IS REMOVED. Ian, 06.09.2026: "take the punch
+         volley off. I'll just learn that gradually on my own but keep the roll because
+         that's obvious." This block is guarded by mig_pkmech_roll0831, which has already
+         run on his device, so deleting these literals alone would have reached NOBODY. The
+         build 370 migration below removes it from saved state. BOTH ARE NEEDED: the
+         migration handles his profile, this handles a profile that has never run 357, on
+         which the migration runs FIRST and this creator would otherwise put it straight
+         back. The written material is NOT lost, it lives in the consolidated playbook, and
+         he is learning the shot on his own. Only the app surface goes. */
       _M7.version=_M7.version||1;
       state.pickleball.mechanics=_M7;
       state.meta.mig_pkmech_roll0831=true; save(true);
@@ -18437,31 +18442,11 @@ var PK_SHOTS=[
   {id:"flicks",           label:"Flicks"},
   {id:"grip",             label:"Grip"}
 ];
-/* ===== build 357: EXTRAS ARE NOT SHOTS AND THE SEPARATION IS THE POINT ========================
-   Ian, 31.08.2026: "Add roll, but keep punchVolley as an additional, not a list, just a
-   move/technique I could learn on the side."
-
-   SO THE PUNCH VOLLEY IS STRUCTURALLY SECONDARY IN THE DATA, NOT ONLY IN THE STYLING. It lives at
-   mechanics.EXTRAS, never at mechanics.shots. That means it can never be counted in "N of 9
-   written", can never be reached by a loop over PK_SHOTS, and cannot drift into the list later by
-   accident. A styling-only separation would have relied on every future editor remembering. */
-var PK_EXTRAS=[
-  {id:"punchVolley",      label:"Punch volley"}
-];
-function pkExtraContent(id){
-  try{
-    var m=(state.pickleball&&state.pickleball.mechanics)||null;
-    var ex=(m&&m.extras&&m.extras[id])||null;
-    if(!ex) return null;
-    var paras=Array.isArray(ex.paras)?ex.paras.filter(function(x){ return String(x||"").trim(); }):[];
-    if(!paras.length) return null;
-    if(ex.status && ex.status!=="ready") return null;
-    return {paras:paras,
-            cues:Array.isArray(ex.cues)?ex.cues.filter(function(x){ return String(x||"").trim(); }):[],
-            video:(ex.video&&ex.video.url)?ex.video:null,
-            updated:ex.updated||"", by:ex.by||""};
-  }catch(e){ return null; }
-}
+/* build 370: PK_EXTRAS and pkExtraContent() are REMOVED with the punch volley, the only
+   entry either ever had. The container goes with its last occupant rather than being left
+   as an empty array that renders nothing, because an empty extras list is a thing a future
+   session would feel invited to fill. mechanics.shots and PK_SHOTS are untouched: ROLL STAYS,
+   it is a proper shot sitting after dinks and before flicks, and Ian confirmed it stays. */
 function pkShotContent(id){
   try{
     var m=(state.pickleball&&state.pickleball.mechanics)||null;
@@ -18491,19 +18476,10 @@ function pkMechanics(parent){
     }
     PK_SHOTS.forEach(function(sh){ pkMechRow(mv,sh,pkShotContent(sh.id),false); });
 
-    /* THE EXTRAS SIT BELOW THE NINE AND READ AS SECONDARY. A quiet divider and a plain label
-       rather than a second section header, because this week's redesign was about cutting
-       surfaces and the punch volley does not warrant one. It is one tap from the shot list,
-       clearly not part of it, and not hidden. */
-    var _anyEx=false;
-    PK_EXTRAS.forEach(function(x){ if(pkExtraContent(x.id)) _anyEx=true; });
-    if(_anyEx){
-      var lb=el("div","small dim");
-      lb.style.cssText="margin:16px 2px 6px;line-height:1.45;padding-top:12px;border-top:1px solid var(--line)";
-      lb.textContent="Also worth learning, on the side. Not part of your shot list.";
-      mv.appendChild(lb);
-      PK_EXTRAS.forEach(function(x){ pkMechRow(mv,x,pkExtraContent(x.id),true); });
-    }
+    /* build 370: the extras divider, its label "Also worth learning, on the side. Not part of
+       your shot list.", the _anyEx guard and the render loop are all gone. Removing only the
+       data would have left this block correct but dead, because _anyEx would simply never go
+       true; Ian asked for the divider and the label to go too, not just the content. */
   },ICO.target,"green");
 }
 function pkMechRow(mv,sh,got,isExtra){
