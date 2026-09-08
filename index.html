@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 378 (2026-09-07)">
+<meta name="build" content="v21 build 379 (2026-09-07)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -16097,6 +16097,150 @@ try{ if(!state.meta.mig378_record && state.gym){
   state.meta.mig378_record=true; save(true);
 } }catch(e){ try{ console.warn("mig378 record did not apply:",e&&e.message); }catch(_){} }
 
+/* ===== v21 build 379: THE THREE QUEUED REAL ESTATE CORRECTIONS, DRAINED. ==============
+   Queued 07.09.2026 by lane RE-CORR, which did not hold the deploy lock. Reviewed and
+   confirmed correct before shipping. Queue ids q178883517596595, q178883518696650 and
+   q178883518696663, all marked DRAINED against this build in _APP_QUEUE.md.
+
+   1. GILLIAM. All THREE fields were wrong on a CLOSED deal, which means the commission
+      record was wrong too. Side was auto inferred at build 40 and flagged unreliable then.
+   2. MATTOX. Ian gave a BAND, not a number, and the app carried a third figure entirely.
+   3. RACHEL JENKINS. Searched the whole state: she is not in it. No deal, no person, no
+      todo, no trigger. So there was nothing to delete, and the real defect is that a
+      confirmed meeting eleven days out has no record at all. She is added in the contacts
+      block below, with price, area and style DELIBERATELY EMPTY and said to be empty on
+      purpose so no future lane raises them as a gap.
+   4. NOT QUEUED, FOUND WHILE DOING 3. The Theobald deal title read Scott and Nancy
+      Theobald. BRAIN says, twice and in bold, DO NOT WRITE NANCY THEOBALD ANYWHERE:
+      Ian is not certain the co-owner is called Nancy at all. The app has been carrying a
+      name that may not belong to a real person. Corrected here. */
+try{ if(!state.meta.mig379_recorr && state.realEstate){
+  var _D9=function(id){ var a=state.realEstate.deals||[]; for(var i=0;i<a.length;i++){ if(a[i]&&a[i].id===id) return a[i]; } return null; };
+
+  /* ---- 1. GILLIAM. Listing, not buy side. ---- */
+  var _g=_D9("re-ashley-gilliam");
+  if(_g){
+    _g.title="Ashley Gilliam";
+    _g.side="Seller";
+    _g.close="April 22, 2026";
+    _g.sub="Listing side, 8020 S 200 St, Gretna. MLS 22605096";
+    _g.note="CORRECTED 07.09.2026, build 379, Ian confirmed direct. IAN WAS THE LISTING AGENT, not the buyer side agent. Client Ashley Gilliam. 8020 S 200 St, Gretna. Sold $378,000, CLOSED 22 April 2026, 16 days on market, MLS 22605096. The app previously carried this as BUYER side with a close of \u0022early June 2026\u0022. All three were wrong, and the side had been auto inferred at build 40 and flagged unreliable at the time.";
+  }
+
+  /* ---- 2. MATTOX. A BAND, and the app had a third number. ---- */
+  var _m=_D9("re-mattox-sell");
+  if(_m){
+    _m.price="$474,900 to $479,900";
+    _m.priceNote="Ian's decision 07.09.2026, in his words: \u0022we are going to go with 474,900-479,900.\u0022 IT IS A BAND, NOT A SINGLE FIGURE. The analysis recommended $479,900 on a ladder of $469,900 / $479,900 / $489,900 and he took the recommendation plus the tier below it. Floors done before photos plus a passing roof puts it at the TOP of the band; floors not done puts it at the BOTTOM. The app previously showed $464,900, which was neither the recommendation nor his decision.";
+  }
+
+  /* ---- 4. THEOBALD. Remove a name BRAIN says may not exist. ---- */
+  var _t=_D9("re-theobald-sell");
+  if(_t && /nancy/i.test(String(_t.title||""))){
+    _t.title="Scott Theobald";
+    _t.note=String(_t.note||"")+" NAME CORRECTED 07.09.2026, build 379: this record paired Scott Theobald with a co-owner first name that BRAIN says may not be that person's name at all. BRAIN states twice and in bold that Ian is NOT certain the co-owner is called Nancy at all, and instructs that the name is never to be written anywhere. The co-owner's first name is UNCONFIRMED and stays blank. Get both names at the walkthrough.";
+  }
+
+  /* ---- 5. THE LIVE KIRK LEAD ASSERTED THE BANNED NAME AS FACT. ----
+     realEstate.leads[3].agent carried: there is already a NANCY in the system, [that name] of
+     Scott and [that name] at 5014 S 163 St. That is the forbidden string, stated as an
+     established fact, inside a live record. The Kirk collision it was written to flag is
+     CLOSED: Ian confirmed on 24.08.2026 that Nancy Kirk is a real and separate person, and
+     that he is not sure the Theobald co-owner is called Nancy at all. So the flag has been
+     answered and the sentence that carried it is wrong twice over. Rewritten, not deleted:
+     Patrick and Nancy Kirk keep their names, because they are real. */
+  try{
+    var _ld=(state.realEstate.leads||[]);
+    for(var _i9=0;_i9<_ld.length;_i9++){
+      var _L9=_ld[_i9];
+      if(_L9 && typeof _L9.agent==="string" && /NAME COLLISION, FLAGGED EARLY/.test(_L9.agent)){
+        _L9.agent=_L9.agent.replace(
+          /NAME COLLISION, FLAGGED EARLY:[\s\S]*?Qualify the surname\./,
+          "NAME COLLISION, RAISED 08.2026 AND CLOSED 24.08.2026. Ian confirmed Nancy Kirk is a real and SEPARATE person, and that he is NOT certain the Theobald co-owner shares that first name, so the Theobald co-owner is recorded as UNCONFIRMED and blank. Nothing needs qualifying and this is not an open item."
+        );
+      }
+    }
+  }catch(e){}
+
+  state.meta.mig379_recorr=true; save(true);
+} }catch(e){ try{ console.warn("mig379 recorr did not apply:",e&&e.message); }catch(_){} }
+
+/* ===== v21 build 379: THE MISSING PEOPLE. =============================================
+   Nine records added to realEstate.people, which held ten and none of these.
+
+   EVERY FIELD IS SOURCED FROM BRAIN/Real_Estate/Context/LEAD_CONTACTS.md. NOTHING IS
+   INVENTED. Where a value is not on file the field is EMPTY, never guessed, and the note
+   says it is missing. An invented phone number is worse than a blank one.
+
+   AMANDA IS FIRST BECAUSE SHE IS THE WORST ABSENCE. She is a live buyer lead on
+   re-rose-creek, the ONLY deal in the pipeline at stage Active, and she was in no record
+   the app holds. HER SURNAME IS NOHAVA. LEAD_CONTACTS.md line 391 says the surname is
+   unknown and to stop asking, but line 459, written later on 06.09.2026, names her
+   \u0022Amanda Nohava\u0022, and his NP Dodge calendar carries
+   \u0022Amanda Nohava / Two Story Purchase Consultation\u0022 on 3 September. Two independent
+   sources, and line 391 itself said to record the surname if it surfaced on its own. It did.
+
+   SHE IS NOT MERGED WITH RACHEL JENKINS AND THE RECORDS SAY SO ON BOTH SIDES. Same house,
+   opposite sides: Amanda is being pressed on BUYING the Rose Creek two storey, Rachel wants
+   to BUILD with its builder.
+
+   THE BELKNAPS ARE TWO RECORDS, NOT ONE. They have separate phones and separate emails, and
+   only Bryant signs on the 5122 N 141st purchase because he is the trustee. One row could
+   carry only one phone number, and the phone number is the point of a contact record.
+
+   THE STRAATMANNS ARE FOUR RECORDS BECAUSE THEY ARE ONE TEAM WITH FOUR PEOPLE. BRAIN is
+   explicit that they are colleagues rather than competing approaches, so each carries the
+   same teamed note and nobody later treats them as three separate leads. */
+try{ if(!state.meta.mig379_people && state.realEstate){
+  if(!Array.isArray(state.realEstate.people)) state.realEstate.people=[];
+  var _PP=state.realEstate.people;
+  var _has=function(id,rx){ return _PP.some(function(p){ return p && (p.id===id || (rx && rx.test(String(p.name||"")))); }); };
+  var _add=function(o){ if(!_has(o.id,o._rx)) { delete o._rx; _PP.push(o); return 1; } return 0; };
+  var _n=0;
+
+  _n+=_add({ id:"pp-amanda-nohava", name:"Amanda Nohava", phone:"", kind:"Lead", quality:"Iffy", last:"2026-09-03",
+    _rx:/nohava/i,
+    note:"BUYER LEAD ON THE ROSE CREEK TWO STOREY, deal re-rose-creek, the only Active listing. SHE IS A LICENSED REALTOR, which changes the meeting: establish whether she is buying for HERSELF, representing a buyer, or undecided, BEFORE any net proceeds number is discussed. If she buys for herself she is likely to expect the co-op side or a rebate into the price, and that comes straight out of the net. IAN'S OWN READ IS IFFY: some interest, waiting on her husband. Do not upgrade her on the strength of that and do not chase the husband. Consultation held Thursday 3 September 2026. NOT THE SAME THREAD AS RACHEL JENKINS: same house, opposite sides, Amanda BUYS, Rachel BUILDS. NO PHONE OR EMAIL ON FILE, which is worth fixing. Source LEAD_CONTACTS.md." });
+
+  _n+=_add({ id:"pp-rachel-jenkins", name:"Rachel Jenkins", phone:"", kind:"Lead", quality:"Warm", last:"2026-09-07",
+    _rx:/rachel jenkins/i,
+    note:"PROSPECT, BUILD SIDE, AND IAN'S OWN CLIENT. Plus a partner whose name was not given. MEETING CONFIRMED: Thursday 17 September 2026, 1:00 to 2:30pm, with Ryan Beachler at the two storey. All three parties agreed, Ryan first and Rachel on 07.09.2026. PRICE RANGE, AREA AND STYLE ARE DELIBERATELY EMPTY AND THAT IS NOT A GAP. Ian, 07.09.2026: she will not give a price range or anything until the meeting. They get TAKEN AT the meeting, so this is not an open item, a blocker or a question for any brief, and no follow up before the 17th is needed. Turn up ready to take the brief. NOT THE SAME THREAD AS AMANDA NOHAVA: same house, opposite sides, Rachel BUILDS, Amanda BUYS. Source LEAD_CONTACTS.md." });
+
+  _n+=_add({ id:"pp-scott-theobald", name:"Scott Theobald", phone:"", kind:"Contact", last:"",
+    _rx:/scott theobald/i,
+    note:"SELLER, 5014 S 163 St, Omaha 68135. CHRIS'S CLIENT, confirmed by Ian 08.17.2026. Deal re-theobald-sell. PHONE AND EMAIL ARE NOT ON FILE ANYWHERE AND ARE NEEDED. THE CO-OWNER'S FIRST NAME IS UNCONFIRMED AND IS LEFT BLANK ON PURPOSE: Ian is not certain it is Nancy at all, and BRAIN instructs that the name is never written. Get both names at the walkthrough. The walkthrough is still unscheduled, it is CHRIS'S to book, and it gates the 15 September list target. Zero photographs of this house exist, so the walkthrough is the only condition evidence there will ever be. Source LEAD_CONTACTS.md." });
+
+  _n+=_add({ id:"pp-bryant-belknap", name:"Bryant Belknap", phone:"402-639-9783", kind:"Contact", last:"",
+    _rx:/bryant belknap/i,
+    note:"SELLER AND BUYER, 4946 Pratt St, Omaha 68104. Email grayharring@gmail.com. Chris's client. Titled owner of record on 4946 Pratt, Douglas County PIN 2233350000, as BELKNAP BRYANT JAMES. ON THE 5122 N 141st PURCHASE ONLY BRYANT SIGNS, because he is a trustee of the trust and his signature alone is sufficient. Deals re-belknap-sell and re-belknap-buy. CASH on the purchase, no financing contingency and no lender appraisal, and they buy first then sell, so the sale carries no contingency and no bridge pressure. They homeschool, so the school year start is a non factor and they are largely insulated from the autumn slowdown. Phone recovered 08.24.2026 from Chris's Messages, not from Ian. Source LEAD_CONTACTS.md." });
+
+  _n+=_add({ id:"pp-emily-belknap", name:"Emily Belknap", phone:"817-366-7295", kind:"Contact", last:"",
+    _rx:/emily belknap/i,
+    note:"SELLER, 4946 Pratt St, Omaha 68104, with Bryant Belknap. Email emilybelknap09@gmail.com. Chris's client. Names confirmed 08.24.2026 from Chris's 17 August message asking them directly whether Bryant and Emily Belknap were the proper legal names for the deed. Her number independently matches the handle she texts Chris from. SHE DOES NOT SIGN ON THE 5122 N 141st PURCHASE, only Bryant does, as trustee. Held as a separate record from Bryant because they have separate numbers and separate emails. Source LEAD_CONTACTS.md." });
+
+  var _TEAM=" STRAATMANN LENDING GROUP, CMG Home Loans, 701 Olson Drive suites 111 and 112, Papillion NE 68046. THE FOUR CMG CONTACTS ARE ONE TEAM, NOT FOUR APPROACHES. They are colleagues, not competitors, so this is one relationship with several doors and there is nothing awkward to manage. Source LEAD_CONTACTS.md.";
+
+  _n+=_add({ id:"pp-dezmond-straatmann", name:"Dezmond Straatmann", phone:"531-210-7151", kind:"Contact", last:"2026-09-03",
+    _rx:/dezmond/i,
+    note:"JUNIOR LOAN OFFICER, CMG Home Loans. Email dstraatmann@cmghomeloans.com. NMLS 2632551. THE PRIMARY CONTACT of the four and the one who reached out. He is Jeremy Straatmann's son and is motivated to follow his father, which is why a brand new loan officer is doing his own cold outreach to agents. Identification is VERY HIGH confidence: the number Ian holds is published against him by name on CMG's own team page, an exact digit for digit match, and no second candidate on that roster carries it. First contact was a call then a text on Wednesday 8 July 2026. Coffee Wednesday 2 September 9:00 AM at Karma Koffee, lunch Thursday 3 September."+_TEAM });
+
+  _n+=_add({ id:"pp-jeremy-straatmann", name:"Jeremy Straatmann", phone:"402-902-8380", kind:"Contact", last:"",
+    _rx:/jeremy straatmann/i,
+    note:"BRANCH MANAGER and team leader, CMG Home Loans. Email jstraatmann@cmgfi.com. NMLS 1645476. Dezmond's father."+_TEAM });
+
+  _n+=_add({ id:"pp-matt-harrison-cmg", name:"Matt Harrison", phone:"402-699-3129", kind:"Contact", last:"",
+    _rx:/matt harrison/i,
+    note:"PRODUCTION MANAGER, CMG Home Loans. NMLS 2436856. NO EMAIL ON FILE."+_TEAM });
+
+  _n+=_add({ id:"pp-jhaimi-andrick", name:"Jhaimi Andrick", phone:"", kind:"Contact", last:"2026-08-19",
+    _rx:/jhaimi/i,
+    note:"JUNIOR LOAN OFFICER, CMG Home Loans. NMLS 1575010. NO PHONE AND NO EMAIL ON FILE, and they are not in any BRAIN record, so both fields are left empty rather than guessed. Ian already met her on 6 and 19 August 2026 at Karma Koffee, the same venue as the Dezmond coffee, so mention Dezmond to her as a courtesy."+_TEAM });
+
+  if(_n){ state.realEstate.peopleNote="Nine records added 07.09.2026 in build 379 from LEAD_CONTACTS.md. Empty phone or email fields on these records mean NOT ON FILE ANYWHERE, not unchecked."; save(true); }
+  state.meta.mig379_people=true; save(true);
+} }catch(e){ try{ console.warn("mig379 people did not apply:",e&&e.message); }catch(_){} }
+
+
 
 /* ===== build 355: THE FIRST MECHANICS SECTION IS WRITTEN. twoHandBackhand ONLY. ==============
 
@@ -17027,8 +17171,8 @@ function dealVolume(d){ return priceNum(d&&d.price); }
    settlement exactly: COUNT measures sides, VOLUME measures transactions. Only the count moved. */
 function dealCountWeight(d){ return (dealSource(d)==="Dual agency" || dealSide(d)==="Both")?2:1; }
 function dealCard(parent,d){ const c=card(); const b=c._body; const head=el("div"); head.appendChild(el("h3",null,d.title)); if(d.price){ const p=el("div"); p.style.color="var(--sec2,var(--accent2))"; p.style.fontWeight="800"; p.style.marginTop="4px"; p.style.fontSize="16px"; p.textContent=d.price; head.appendChild(p);} if(d.close){ const cd=el("div","small dim"); cd.style.marginTop="3px"; cd.textContent="Close: "+d.close; head.appendChild(cd);} b.appendChild(head); const cs=el("div"); cs.style.marginTop="11px"; cs.appendChild(chipRow(RESTAGES,d.stage,s=>{d.stage=s;save();render();})); b.appendChild(cs); const pr=el("input","in"); pr.placeholder="Price"; pr.value=d.price||""; pr.style.marginTop="10px"; pr.oninput=()=>{d.price=pr.value;save();}; b.appendChild(pr); const cl=el("input","in"); cl.placeholder="Close date"; cl.value=d.close||""; cl.style.marginTop="9px"; cl.oninput=()=>{ d.close=cl.value; save(); }; b.appendChild(cl); const ta=el("textarea","in"); ta.style.minHeight="52px"; ta.style.marginTop="9px"; ta.value=d.note||""; ta.placeholder="Notes, next step..."; ta.oninput=()=>{d.note=ta.value;save();}; b.appendChild(ta);  parent.appendChild(c); }
-function rePipeline(parent){ state.realEstate.deals.forEach(d=>{ const c=card(d.stage==="Just Sold"?"a-blue":"a-gold"); const b=c._body; const head=el("div"); head.appendChild(el("h3",null,d.title)); if(d.price){ const p=el("div","small"); p.style.color="var(--accent2)"; p.style.fontWeight="700"; p.textContent=d.price; head.appendChild(p);} b.appendChild(head); const cs=el("div"); cs.style.marginTop="10px"; cs.appendChild(chipRow(RESTAGES,d.stage,s=>{d.stage=s;save();render();})); b.appendChild(cs); const pr=el("input","in"); pr.placeholder="Price (optional)"; pr.value=d.price||""; pr.style.marginTop="10px"; pr.oninput=()=>{d.price=pr.value;save();}; b.appendChild(pr); const ta=el("textarea","in"); ta.style.minHeight="52px"; ta.style.marginTop="10px"; ta.value=d.note||""; ta.placeholder="Notes, next step..."; ta.oninput=()=>{d.note=ta.value;save();}; b.appendChild(ta);  parent.appendChild(c); }); const add=card(); add._body.appendChild(adder("New deal or prospect...",t=>{state.realEstate.deals.push({id:uid(),title:t,stage:"Prospecting",price:"",note:""});save();render();})); parent.appendChild(add); }
-function leadsModule(parent){ const c=card(); const b=c._body; const ls=state.realEstate.leads||(state.realEstate.leads=[]); if(!ls.length)b.appendChild(el("div","empty","No leads yet.")); ls.forEach(l=>{ const row=el("div","chk"); const t=el("div","ctext"); t.textContent=l.name; const m=el("span","meta"); m.textContent=(l.source?l.source+" \u00B7 ":"")+(l.status||"New")+(l.note?" \u00B7 "+userLine(l.note,150):""); t.appendChild(m); row.appendChild(t);  b.appendChild(row); }); b.appendChild(adder("Add a lead...",n=>{ ls.push({id:uid(),name:n,source:"",status:"New",note:""}); save(); render(); })); parent.appendChild(c); }
+function rePipeline(parent){ state.realEstate.deals.forEach(d=>{ const c=card(d.stage==="Just Sold"?"a-blue":"a-gold"); const b=c._body; const head=el("div"); head.appendChild(el("h3",null,d.title)); if(d.price){ const p=el("div","small"); p.style.color="var(--accent2)"; p.style.fontWeight="700"; p.textContent=d.price; head.appendChild(p);} b.appendChild(head); const cs=el("div"); cs.style.marginTop="10px"; cs.appendChild(chipRow(RESTAGES,d.stage,s=>{d.stage=s;save();render();})); b.appendChild(cs); const pr=el("input","in"); pr.placeholder="Price (optional)"; pr.value=d.price||""; pr.style.marginTop="10px"; pr.oninput=()=>{d.price=pr.value;save();}; b.appendChild(pr); const ta=el("textarea","in"); ta.style.minHeight="52px"; ta.style.marginTop="10px"; ta.value=d.note||""; ta.placeholder="Notes, next step..."; ta.oninput=()=>{d.note=ta.value;save();}; b.appendChild(ta);  parent.appendChild(c); }); }
+function leadsModule(parent){ const c=card(); const b=c._body; const ls=state.realEstate.leads||(state.realEstate.leads=[]); if(!ls.length)b.appendChild(el("div","empty","No leads yet.")); ls.forEach(l=>{ const row=el("div","chk"); const t=el("div","ctext"); t.textContent=l.name; const m=el("span","meta"); m.textContent=(l.source?l.source+" \u00B7 ":"")+(l.status||"New")+(l.note?" \u00B7 "+userLine(l.note,150):""); t.appendChild(m); row.appendChild(t);  b.appendChild(row); }); parent.appendChild(c); }
 /* ===== build 338: A TO DO LIST IS FOUR LISTS, NOT ONE ==============================
    Ian, 24 August 2026: "for to do's I mean stuff I actually need to do, things that I have
    to do and some of these are not that."
@@ -17125,8 +17269,8 @@ function reTodos(parent){
     parent.appendChild(dc);
   }
 }
-function reContacts(parent){ const c=card(); const b=c._body; state.realEstate.contacts.forEach(k=>{ const row=el("div","chk"); const t=el("div","ctext"); t.textContent=k.name; const m=el("span","meta"); m.textContent=(k.role?k.role+". ":"")+(k.detail||""); t.appendChild(m); row.appendChild(t);  b.appendChild(row); }); b.appendChild(adder("Add a contact...",n=>{state.realEstate.contacts.push({id:uid(),name:n,role:"",detail:""});save();render();})); parent.appendChild(c); }
-function reNeigh(parent){ const c=card(); const b=c._body; state.realEstate.neighborhoods.forEach(n=>{ const row=el("div","chk"); const t=el("div","ctext"); t.textContent=n.name; const m=el("span","meta"); m.textContent=n.note||""; t.appendChild(m); row.appendChild(t);  b.appendChild(row); }); b.appendChild(adder("Add a neighborhood...",n=>{state.realEstate.neighborhoods.push({id:uid(),name:n,note:""});save();render();})); parent.appendChild(c); }
+function reContacts(parent){ const c=card(); const b=c._body; state.realEstate.contacts.forEach(k=>{ const row=el("div","chk"); const t=el("div","ctext"); t.textContent=k.name; const m=el("span","meta"); m.textContent=(k.role?k.role+". ":"")+(k.detail||""); t.appendChild(m); row.appendChild(t);  b.appendChild(row); }); parent.appendChild(c); }
+function reNeigh(parent){ const c=card(); const b=c._body; state.realEstate.neighborhoods.forEach(n=>{ const row=el("div","chk"); const t=el("div","ctext"); t.textContent=n.name; const m=el("span","meta"); m.textContent=n.note||""; t.appendChild(m); row.appendChild(t);  b.appendChild(row); }); parent.appendChild(c); }
 function scriptsModule(parent){
   /* ===== build 344: AN EMERGENCY RETRIEVAL SURFACE, NOT A SCRIPT LIBRARY ==============
      The first call was to cut this, on the grounds that a conversation writes a better script
@@ -17166,10 +17310,9 @@ function scriptsModule(parent){
     pills.appendChild(p);
   });
   b.appendChild(pills); b.appendChild(body);
-  if((state.realEstate.scripts||[]).length<SCRIPT_CAP){
-    b.appendChild(adder("New opener, keep it short...",function(t){
-      state.realEstate.scripts.push({id:uid(),title:t,body:"Write it short enough to read at a glance."}); save(); render(); }));
-  } else {
+  /* build 379: the opener adder is gone with the rest of the input era surfaces. The cap
+     line below is the honest remaining statement, so it now renders unconditionally. */
+  {
     var cap=el("div","small dim"); cap.style.cssText="margin-top:10px;line-height:1.45";
     cap.textContent="Four is the cap. Anything that needs more than a few lines belongs in a conversation, not here.";
     b.appendChild(cap);
@@ -18353,13 +18496,11 @@ function closeSortKey(str){
 function rePipelineGroupedPipe(parent){
   const deals=state.realEstate.deals||[]; const seen={};
   RE_PIPE_GROUPS.forEach(function(g){ const stage=g[0],label=g[1]; const gd=deals.filter(d=>d.stage===stage).map(function(x,ix){return {x:x,ix:ix,k:closeSortKey(x.close)};}).sort(function(a,b){ return a.k!==b.k ? a.k-b.k : a.ix-b.ix; }).map(function(o){return o.x;}); if(!gd.length)return; gd.forEach(d=>seen[d.id]=1); const vol=gd.reduce((a,d)=>a+dealVolume(d),0); collapseGroup(parent,stage,label,gd,vol); });
-  const add=card(); add._body.appendChild(adder("New deal...",t=>{ state.realEstate.deals.push({id:uid(),title:t,stage:"Coming Soon",price:"",close:"",note:""}); reStageOpen["Coming Soon"]=true; save(); render(); })); parent.appendChild(add);
 }
 function reProspectsList(parent){
   const prospects=(state.realEstate.deals||[]).filter(reIsProspect);
   if(!prospects.length){ const c=card(); c._body.appendChild(el("div","empty","No prospects yet.")); parent.appendChild(c); }
   else { const c=card(); c._body.style.padding="0"; const body=el("div","collapse-body"); prospects.forEach(d=>dealRow(body,d)); c._body.appendChild(body); parent.appendChild(c); }
-  const add=card(); add._body.appendChild(adder("New prospect...",t=>{ state.realEstate.deals.push({id:uid(),title:t,stage:"Prospecting",price:"",close:"",note:""}); save(); render(); })); parent.appendChild(add);
 }
 function buildIanRe(v){
   if(reView==="pipeline") return reViewPipeline(v);
@@ -18523,9 +18664,10 @@ function contactOverdue(k){
   }
   const cad=(k&&k.cadence)||90; const ds=daysSinceDate(k&&k.lastContacted); if(ds==null) return true; return ds>=cad; }
 function sphereOverdue(){ return sphereList().filter(contactOverdue); }
-function markContacted(k){ k.lastContacted=TODAY; save(); render(); }
+/* build 379: markContacted removed with its three buttons. lastContacted is written by
+   Dispatch, four of the five assignments in this file are migrations, so the cadence and
+   overdue logic below are unaffected. Nothing reads this function any more. */
 function contactEditors(parent,k){
-  const mc=el("button","btn sm block","Mark contacted today"); mc.style.marginTop="0"; mc.onclick=()=>markContacted(k); parent.appendChild(mc);
   const nm=el("input","in"); nm.placeholder="Name"; nm.value=k.name||""; nm.style.marginTop="10px"; nm.oninput=()=>{ k.name=nm.value; save(); }; parent.appendChild(nm);
   parent.appendChild(chipRow(SPHERE_TYPES,k.type,s=>{ k.type=s; save(); render(); }));
   const ph=el("input","in"); ph.type="tel"; ph.placeholder="Phone (optional)"; ph.value=k.phone||""; ph.oninput=()=>{ k.phone=ph.value; save(); }; parent.appendChild(ph);
@@ -18582,10 +18724,12 @@ function reachOutRow(parent,k){
   const l=el("div"); const nm=el("div"); nm.style.fontWeight="800"; nm.style.fontSize="16px"; nm.textContent=k.name||"(no name)"; l.appendChild(nm);
   const ds=daysSinceDate(k.lastContacted); const meta=el("div","small dim"); meta.style.marginTop="3px"; meta.textContent=(k.lastContacted?("Last contacted "+ds+" days ago"):"No contact logged yet")+(k.phone?("  \u00B7  "+k.phone):""); l.appendChild(meta);
   top.appendChild(l);
-  const mc=el("button","btn sm","Mark contacted"); mc.onclick=()=>markContacted(k); top.appendChild(mc);
   b.appendChild(top); parent.appendChild(c);
 }
-function sphereAdder(parent){ const c=card(); c._body.appendChild(adder("Add a name to your sphere...",n=>{ sphereList().push({id:uid(),name:n,type:"Sphere",phone:"",lastContacted:"",quality:"Iffy",cadence:90,note:""}); save(); render(); })); parent.appendChild(c); }
+/* build 379: sphereAdder is a no op. The sphere is written by Dispatch, and an add box on a
+   read only app produced contacts with a name and nothing else. Kept as a function rather
+   than deleted because two call sites pass it a parent and a missing symbol would throw. */
+function sphereAdder(parent){ void parent; }
 /* ===== v21 build 47: Sphere Orbit visual (people side only, pipeline untouched) =====
    A radial orbit graph for the CRM. Center node = Ian. INNER orbit = prospects (Prospecting/Buyer deals),
    orange. OUTER orbit = sphere contacts, colored by reach-out cadence (green Good ~monthly, grey Iffy
@@ -18696,7 +18840,6 @@ function reViewSphere(v){
   /* v21 build 49: the standalone Prospects list was removed (redundant with the orbit above). Keep an
      add-prospect path here so prospects stay addable. Tapping a prospect node in the orbit opens its full
      editor (stage, price, notes, remove), so edit stays reachable too. New prospects appear in the orbit. */
-  safe(v,function(){ var _pac=card(); _pac._body.appendChild(el("div","small muted","Prospects")); _pac._body.lastChild.style.marginBottom="7px"; _pac._body.appendChild(adder("New prospect...",function(t){ if(!state.realEstate.deals) state.realEstate.deals=[]; state.realEstate.deals.push({id:uid(),title:t,stage:"Prospecting",price:"",close:"",note:"",source:"Chris's client",side:"Seller"}); orbitSel=null; save(); render(); })); v.appendChild(_pac); },"Add prospect");
   const sphere=sphereList();
   if(!sphere.length){
     const c=card("a-teal"); const b=c._body;
@@ -18726,7 +18869,6 @@ function homeSphereNudge(parent){
   b.appendChild(el("span","pill g","Stay in touch"));
   const tt=el("div","feedtitle"); tt.style.marginTop="7px"; tt.textContent="Reach out to "+(k.name||"someone")+" today"; b.appendChild(tt);
   b.appendChild(el("div","feednote",(k.lastContacted?("It has been "+ds+" days since you connected."):"You have not logged a touch with them yet.")+(k.phone?("  "+k.phone):"")+(overdue.length>1?("  "+(overdue.length-1)+" more are also due."):"")));
-  const mc=el("button","btn sm block","Mark contacted today"); mc.style.marginTop="12px"; mc.onclick=()=>markContacted(k); b.appendChild(mc);
   const go=el("button","feedlink","See all in Sphere \u203A"); go.style.marginTop="10px"; go.onclick=()=>{ reView="sphere"; selectTab("re"); render(); }; b.appendChild(go);
   parent.appendChild(c);
 }
@@ -18897,8 +19039,7 @@ function gymToday(parent){ try{ healthCard(parent); }catch(e){} const day=daySpl
     parent.appendChild(hc); })();
   
   const c=card("a-blue"); const b=c._body; const top=el("div","between"); const left=el("div"); left.appendChild(el("h3",null,cleanFocus(day.focus))); const sub=el("div","small muted"); /* build 214: day name from the clock, and a swapped in session says so */ const _sw=daySwapInfo(); sub.textContent="Today, "+DAYFULL[DOW]+". "+(_sw&&_sw.kind==="swap"?"Running "+_sw.from+"'s session. ":"")+"Pickleball: "+day.play; left.appendChild(sub); top.appendChild(left); top.appendChild(el("span","pill b",day.play)); b.appendChild(top); if(day.note){ const n=el("div","small muted"); n.style.marginTop="6px"; n.textContent=day.note; b.appendChild(n); } /* build 362: the gym card now says WHAT DAY IT IS AND WHAT IS ON IT, and nothing is ticked. The progress bar, the "x of y logged" line, the per exercise checkboxes and the Check all / Reset today button are all gone. state.gym.logs is untouched and every set he has ever logged is still in it. The session note textarea below survives, because it is a note and not a tick, and it is now the only thing on this page that writes. */ const list=el("div"); list.style.marginTop="10px"; items.forEach(e=>{ const row=el("div","ex"); row.style.cursor="default"; row.appendChild(el("span","exname",e.name)); row.appendChild(el("span","scheme",e.scheme)); list.appendChild(row); }); b.appendChild(list); parent.appendChild(c);
-  const nc=card(); nc._body.appendChild(el("div","small muted","Session note (today)")); const ta=el("textarea","in"); ta.style.minHeight="58px"; ta.style.marginTop="6px"; ta.placeholder="Weights, PRs, how it felt..."; ta.value=log.note||""; ta.oninput=()=>{log.note=ta.value;save();}; nc._body.appendChild(ta); parent.appendChild(nc);
-  const tog=el("div"); tog.style.margin="2px 2px 0"; const link=el("button"); link.style.cssText="background:none;border:none;color:var(--sec2,var(--accent2));font-weight:700;font-size:13px;padding:6px 2px"; link.textContent=gymShowWeek?"Hide full week":"View full week"; link.onclick=()=>{ gymShowWeek=!gymShowWeek; render(); }; tog.appendChild(link); parent.appendChild(tog);
+    const tog=el("div"); tog.style.margin="2px 2px 0"; const link=el("button"); link.style.cssText="background:none;border:none;color:var(--sec2,var(--accent2));font-weight:700;font-size:13px;padding:6px 2px"; link.textContent=gymShowWeek?"Hide full week":"View full week"; link.onclick=()=>{ gymShowWeek=!gymShowWeek; render(); }; tog.appendChild(link); parent.appendChild(tog);
   if(gymShowWeek){ sect(parent,"Full week reference","for reference only"); gymWeek(parent); }
 }
 /* ===== build 362: WATER IS A DISPLAY, NOT A COUNTER =================================
