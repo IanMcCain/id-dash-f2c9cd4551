@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 376 (2026-09-06)">
+<meta name="build" content="v21 build 377 (2026-09-07)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -1243,7 +1243,13 @@ function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]
      he can adopt these piece by piece. Idempotent. */
   try{ if(state.pickleball){ if(!Array.isArray(state.pickleball.goals)) state.pickleball.goals=[]; if(!state.pickleball.goals.some(function(g){return g&&g.id==="pk-goal-pro";})){ state.pickleball.goals.push({id:"pk-goal-pro",text:"Decide on going pro, with evidence not vibes. Get a DUPR at the Aug 23 tournament, play 3 to 4 more events, climb toward 4.5 then 5.0, and reassess with real results before committing anything. See the Deep Dive for the honest math.",done:false}); save(true); } } }catch(e){}
   try{ if(state.gym&&Array.isArray(state.gym.split)){ var _adds=[
-      {day:"Wed",ex:{id:"pkl-latlunge",name:"Smith machine lateral lunge",scheme:"3\u00d710 per side"}},
+      /* build 377: the Wed pkl-latlunge re-add is REMOVED AT SOURCE. Wednesday became a NO GYM
+         double court day in the 05.09.2026 four day rebuild and the lateral lunge moved to Day 1
+         Lower on Friday. This block is UNGUARDED and runs EVERY LOAD, so leaving the entry here
+         silently refilled Wednesday on the load after mig377 emptied it, which is exactly the
+         failure build 138 documents for pkl-splitsquat and build 150 for the Thursday items.
+         A guarded migration cannot win against an unguarded every load re-add that runs earlier
+         in the file. Fix at source, not downstream. */
       /* build 150: Thursday cable chop and farmer carry re-adds REMOVED. Thursday is now Ian's canonical Abs and Cardio day, set by mig150_abscardio below, so this every load re-add must not put the old items back. */
       {day:"Fri",ex:{id:"pkl-extrot",name:"Cable external rotation",scheme:"3\u00d715 per side"}}
     ]; var _gc=false; _adds.forEach(function(a){ state.gym.split.forEach(function(d){ if(d&&d.day===a.day&&Array.isArray(d.exercises)&&!d.exercises.some(function(x){return x&&x.id===a.ex.id;})){ d.exercises.push(a.ex); _gc=true; } }); }); if(_gc) save(true); } }catch(e){}
@@ -15674,6 +15680,131 @@ try{ if(profile==="ian"){
       state.meta.mig376_sess0506=true; save(true);
   } }catch(e){ try{ console.warn("mig376 did not apply:",e&&e.message); }catch(_){} }
 
+/* ===== v21 build 377: THE FOUR DAY GYM REBUILD. =====================================
+   Written to BRAIN on 05.09.2026 and never written to the app. It was not half migrated,
+   it simply was not there, and Ian trained off the wrong split for two days.
+   SOURCE OF TRUTH: BRAIN/Personal/Context/01_FITNESS_CONTEXT.md, the 05.09.2026 rebuild
+   block. Six lifting days to FOUR plus one optional.
+
+   NOTHING IS DELETED. Every removed exercise moves to gym.archivedExercises with the
+   reason, following the abc-crunch and abc-rollout precedent already in this state.
+   gym.logs is UNTOUCHED. Historic sets keep their exercise ids on purpose.
+   taperWeek moves to state.archive.gymTaper0817, it is not dropped.
+
+   THURSDAY IS DELIBERATELY NOT TOUCHED. BRAIN says Day 4 is UNCHANGED with both pins
+   intact. The app carries FOUR items and BRAIN's section 3 list says six; the two extra
+   were archived on 08.08 by build 245 as Ian's own call. Restoring them would ADD
+   exercises he removed, so this migration changes nothing there and the conflict is
+   reported instead.
+
+   Guarded once by state.meta.mig377_gym4day, which is NOT in the seed. */
+try{ if(!state.meta.mig377_gym4day && state.gym && Array.isArray(state.gym.split)){
+  var _G=state.gym, _SP=_G.split;
+  var _D=function(k){ for(var i=0;i<_SP.length;i++){ if(_SP[i] && _SP[i].day===k) return _SP[i]; } return null; };
+  if(!Array.isArray(_G.archivedExercises)) _G.archivedExercises=[];
+  var _ARCH=function(ex,fromDay,why){ if(!ex) return;
+    for(var i=0;i<_G.archivedExercises.length;i++){ if(_G.archivedExercises[i].id===ex.id) return; }
+    _G.archivedExercises.push({id:ex.id,name:ex.name,scheme:ex.scheme,fromDay:fromDay,archivedOn:"2026-09-07",why:why}); };
+  var _PULL=function(day,id,why){ var d=_D(day); if(!d||!Array.isArray(d.exercises)) return null;
+    for(var i=0;i<d.exercises.length;i++){ if(d.exercises[i].id===id){ var ex=d.exercises.splice(i,1)[0]; _ARCH(ex,day,why); return ex; } } return null; };
+  var _FIND=function(day,id){ var d=_D(day); if(!d||!Array.isArray(d.exercises)) return null;
+    for(var i=0;i<d.exercises.length;i++){ if(d.exercises[i].id===id) return d.exercises[i]; } return null; };
+
+  var _IAN='Ian, 05.09.2026: "No explosive blocks find a swap, Bulgarian split squats maybe with smith machine of course"';
+
+  /* ---- MON, DAY 3 PULL, HARD, FOUR ITEMS ---- */
+  var _mon=_D("Mon");
+  if(_mon){
+    _PULL("Mon","q602yl0","CUT in the 05.09.2026 four day rebuild. Day 3 Pull runs FOUR items, which is Ian's own cap for a day he also plays.");
+    _mon.focus="Day 3, Pull (back, biceps, rear delts), hard";
+    _mon.note="FOUR items, his own cap for a day he also plays. Evening play. Lift after 10am, the team meeting blocks the early slot. Rebuilt 05.09.2026.";
+  }
+
+  /* ---- TUE, DAY 2 PUSH, HARD, FOUR ITEMS ---- */
+  var _tue=_D("Tue");
+  if(_tue){
+    _PULL("Tue","trlite15","CUT in the 05.09.2026 four day rebuild. Cable external rotation takes the fourth slot for cuff health.");
+    if(!_FIND("Tue","d2-extrot")){
+      _tue.exercises.push({id:"d2-extrot",name:"Cable external rotation",scheme:"3\u00d715 per side"});
+    }
+    _tue.focus="Day 2, Push (chest, shoulders, tris), hard";
+    _tue.note="FOUR items. LEAGUE 6:30 to 8:30pm, lift first. OHP stays optional on a heavy play day. Rebuilt 05.09.2026.";
+  }
+
+  /* ---- WED, NO GYM. DOUBLE COURT DAY. ---- */
+  var _wed=_D("Wed");
+  if(_wed){
+    (_wed.exercises||[]).slice().forEach(function(ex){
+      if(ex.id==="0kix437"||ex.id==="7hpsmgb"||ex.id==="pkl-latlunge"||ex.id==="jdkpi57"||ex.id==="315bifh") return;
+      _PULL("Wed",ex.id,"Wednesday became a NO GYM double court day in the 05.09.2026 rebuild.");
+    });
+    _wed.exercises=[];
+    _wed.focus="No gym. Double court day.";
+    _wed.play="Double";
+    _wed.note="NO GYM. Wednesday is a double court day and stays gym free. The five leg exercises that were here moved to Day 1 Lower on Friday. Rebuilt 05.09.2026.";
+  }
+
+  /* ---- FRI, DAY 1 LOWER AND REPEATED ACCELERATION, HARD, SIX PLUS FINISHER ---- */
+  var _fri=_D("Fri");
+  if(_fri){
+    ["0x81lyf","cea7roe","30p1894","ui81mo6"].forEach(function(id){
+      _PULL("Fri",id,"The Friday push round 2 day was CUT ENTIRELY on 05.09.2026. This item survives as part of the Day 5 optional push week pool.");
+    });
+    _PULL("Fri","hs-cablepress-fast","REMOVED ENTIRELY by Ian on 05.09.2026, not moved. "+_IAN+". Do not re-add, and do not re-add a gym substitute: the replacement is on court by design.");
+    var _legpress=_FIND("Wed","0kix437")||{id:"0kix437",name:"Leg press",scheme:"4\u00d78 heavy"};
+    var _legcurl =_FIND("Wed","7hpsmgb")||{id:"7hpsmgb",name:"Seated leg curl",scheme:"4\u00d710/8/8/8"};
+    var _latlunge=_FIND("Wed","pkl-latlunge")||{id:"pkl-latlunge",name:"Smith machine lateral lunge",scheme:"3\u00d710 per side"};
+    var _abd     =_FIND("Wed","jdkpi57")||{id:"jdkpi57",name:"Hip abductor machine",scheme:"3\u00d715/12/12"};
+    var _calf    =_FIND("Wed","315bifh")||{id:"315bifh",name:"Calf raise",scheme:"3\u00d710"};
+    _fri.exercises=[
+      {id:"0kix437",name:"Leg press",scheme:"4\u00d78 heavy"},
+      {id:"d1-bulgarian",name:"Smith machine Bulgarian split squat \u2014 START AT 2 SETS FOR TWO WEEKS, bodyweight or one light DB, then build",scheme:"Weeks 1 to 2: 2\u00d78 per leg. From week 3: 3\u00d78 per leg"},
+      {id:"pkl-latlunge",name:"Smith machine lateral lunge",scheme:"3\u00d710 per side"},
+      {id:"7hpsmgb",name:"Seated leg curl",scheme:"4\u00d710/8/8/8"},
+      {id:"jdkpi57",name:"Hip abductor machine",scheme:"3\u00d715/12/12"},
+      {id:"315bifh",name:"Standing calf raise, 3 second lowering phase, pause at the bottom",scheme:"4\u00d712"},
+      {id:"d1-finisher",name:"FINISHER, repeated acceleration: 8 s hard, 12 s easy",scheme:"8 to 10 reps, 3 to 4 rounds, rest 2 to 3 min. Every 2nd or 3rd week: 10 reps of 10 s hard, 50 s easy"}
+    ];
+    _fri.focus="Day 1, Lower and repeated acceleration, hard. The lead day";
+    _fri.play="Light or none";
+    _fri.note="THE NEW LEAD DAY, six items plus the finisher. Court light or none, protect it. Bulgarian split squat is NEW, approved by Ian 05.09.2026, Smith machine, and it STARTS AT 2 SETS for two weeks. Rebuilt 05.09.2026.";
+  }
+
+  /* ---- SAT, DAY 5 OPTIONAL, MEDIUM, FOUR ITEMS ---- */
+  var _sat=_D("Sat");
+  if(_sat){
+    _PULL("Sat","pkl-cablerow-fast","REMOVED ENTIRELY by Ian on 05.09.2026, not moved. "+_IAN+". Do not re-add, and do not re-add a gym substitute: the replacement is on court by design.");
+    /* BRAIN 05.09.2026 cuts "the Saturday pull day, both entire" and names exactly FOUR survivors
+       on the optional Day 5: incline press, pec deck, cable lateral raise and hammer curl. Only
+       hammer curl was already on Saturday. Lat pulldown vary grip and straight arm cable pulldown
+       are NOT survivors, so they go to archivedExercises with the rest of the cut day. Nothing is
+       invented and nothing is deleted. */
+    _PULL("Sat","aiyjlo6","The Saturday pull day was CUT ENTIRE on 05.09.2026. Not a named Day 5 survivor.");
+    _PULL("Sat","sat-straightarm","The Saturday pull day was CUT ENTIRE on 05.09.2026. Not a named Day 5 survivor.");
+    var _keepHammer=null;
+    for(var _s=0;_s<_sat.exercises.length;_s++){ if(_sat.exercises[_s].id==="sat-hammer") _keepHammer=_sat.exercises[_s]; }
+    _sat.exercises=[
+      {id:"0x81lyf",name:"Incline DB or machine press",scheme:"4\u00d712/10/8/8"},
+      {id:"cea7roe",name:"Pec deck or cable fly",scheme:"3\u00d715/12/12"},
+      {id:"ui81mo6",name:"Cable lateral raise",scheme:"3\u00d715/12/12"},
+      _keepHammer||{id:"sat-hammer",name:"Hammer curl (DB or rope)",scheme:"3\u00d715/12/12"}
+    ];
+    _sat.focus="Day 5, OPTIONAL, alternating push and pull, medium";
+    _sat.play="Long competitive session, 2.5 to 3 h";
+    _sat.note="OPTIONAL and the FIRST thing to drop under pressure. FOUR items, the four BRAIN names as surviving the cut: incline press, pec deck, cable lateral raise, hammer curl. Alternate the emphasis push week A and pull week B. Rebuilt 05.09.2026.";
+  }
+
+  /* ---- taperWeek: three weeks stale, no taper now. ARCHIVED, not deleted. ---- */
+  if(_G.taperWeek){
+    if(!state.archive || typeof state.archive!=="object") state.archive={};
+    state.archive.gymTaper0817={archivedOn:"2026-09-07",why:"taper-0817-0823 was three weeks stale and there is no taper now. Kept in full rather than dropped.",taperWeek:_G.taperWeek};
+    delete _G.taperWeek;
+  }
+
+  _G.planVersion="four day rebuild, 05.09.2026, shipped build 377";
+  state.meta.mig377_gym4day=true; save(true);
+} }catch(e){ try{ console.warn("mig377 did not apply:",e&&e.message); }catch(_){} }
+
 /* ===== build 355: THE FIRST MECHANICS SECTION IS WRITTEN. twoHandBackhand ONLY. ==============
 
    ONE SHOT OF EIGHT, AND THAT IS THE HONEST NUMBER. Build 354 shipped the Mechanics container
@@ -16161,7 +16292,7 @@ function daySwapInfo(){
   return null;
 }
 function habitStreak(){ const h=(state.routine&&state.routine.habits)||[]; if(!h.length)return 0; let st=0; for(let i=0;i<400;i++){ const d=new Date();d.setDate(d.getDate()-i); const k=todayKey(d); const any=h.some(x=>x.log&&x.log[k]); if(any)st++; else if(i===0)continue; else break; } return st; }
-function autoObjective(hub){ try{ if(hub==="re"){ const t=firstUndone(state.realEstate.todos); return t?t.text:"Prospect and follow up leads"; } if(hub==="gym"){ return daySplit(DOW).focus+".  Warm up, then log your sets."; } const g=firstUndone(state.goals),td=firstUndone(state.todos); return g?g.text:(td?td.text:"Reset, log pickleball, jot ideas"); }catch(e){ return "Set a focus for today"; } }
+function autoObjective(hub){ try{ if(hub==="re"){ const t=firstUndone(state.realEstate.todos); return t?t.text:"Prospect and follow up leads"; } if(hub==="gym"){ return daySplit(DOW).focus+"."; } const g=firstUndone(state.goals),td=firstUndone(state.todos); return g?g.text:(td?td.text:"Reset, log pickleball, jot ideas"); }catch(e){ return "Set a focus for today"; } }
 function hidden(key){ return !!(state.settings&&state.settings.hidden&&state.settings.hidden[key]); }
 function card(accClass){ const c=el("div","card"); if(accClass){ c.appendChild(el("div","accent "+accClass)); } const b=el("div","cbody"); c.appendChild(b); c._body=b; return c; }
 let pendingFocus=null;
@@ -17201,7 +17332,7 @@ function buildIanHome(v){ const workout=daySplit(DOW); const reTop=firstUndone((
      pickleball colour coding and gym colour intact, weekly count against the 5 to 6 target intact. */
   /* build 191: open by default now. Ian named the heatmap one of his two favourite things in
      the app, and a favourite that starts collapsed is a favourite he has to go find. */
-  var secHeat=function(){ pkCollapse(v,"h_heat","Training consistency","gym and pickleball, target 5 to 6 a week",true,function(hh){
+  var secHeat=function(){ pkCollapse(v,"h_heat","Training consistency","gym and pickleball, target 12 a week",true,function(hh){
       var pb=state.pickleball||{};
       var cardEl=card(); var b=cardEl._body;
       function _pkCls(kind){ var k=String(kind||"").toLowerCase(); if(/tournament|fall cup|\bapc\b/.test(k)) return "k-tourn"; if(k.indexOf("league")>=0) return "k-league"; var dr=/drill/.test(k); var pl=/open play|doubles|\bplay\b/.test(k); if(dr&&pl) return "k-mix"; if(dr) return "k-drill"; if(pl) return "k-open"; return "k-play"; }
@@ -17328,7 +17459,7 @@ function buildIanHome(v){ const workout=daySplit(DOW); const reTop=firstUndone((
         }
         row.appendChild(cells);
         /* THE COUNT IS AGAINST THE FULL WEEK, NEVER AGAINST DAYS ELAPSED. Decided 08.02.2026.
-           The target is 5 to 6 SESSIONS A WEEK, a weekly quantity, so the denominator is the week.
+           The target is 12 A WEEK from build 377, 4 gym plus 8 to 9 court, a weekly quantity, so the denominator is the week.
            Dividing by days elapsed would make the same number mean something different every day
            and turn a normal Tuesday into an apparent miss, which is the failure mode the whole
            surface exists to avoid. The current week is instead marked IN PROGRESS: its count is
@@ -17341,10 +17472,10 @@ function buildIanHome(v){ const workout=daySplit(DOW); const reTop=firstUndone((
           cnt=el("div","hmn ahead"); cnt.textContent="ahead";
           row.title="The week ahead. Nothing has happened yet, so there is no count.";
         } else if(_isCur){
-          cnt=el("div","hmn"+(n>=5?" hit":" wip")); cnt.textContent=n+"/6";
-          row.title="This week so far, "+n+" of a 5 to 6 target. Counted against the full week, not days elapsed.";
+          cnt=el("div","hmn"+(n>=12?" hit":" wip")); cnt.textContent=n+"/12";
+          row.title="This week so far, "+n+" of a 12 a week target, 4 gym plus 8 to 9 court. Counted against the full week, not days elapsed.";
         } else {
-          cnt=el("div","hmn"+(n>=5?" hit":"")); cnt.textContent=n+"/6";
+          cnt=el("div","hmn"+(n>=12?" hit":"")); cnt.textContent=n+"/12";
         }
         row.appendChild(cnt);
         b.appendChild(row);
@@ -17713,7 +17844,7 @@ function buildIanHome(v){ const workout=daySplit(DOW); const reTop=firstUndone((
       ((state.pickleball&&state.pickleball.sessions)||[]).forEach(function(x){ if(x&&x.date) _keys[x.date]=true; });
       var _wk=0;
       for(var j=0;j<7;j++){ var dd=new Date(_mon); dd.setDate(dd.getDate()+j); if(_keys[todayKey(dd)]) _wk++; }
-      tiles.push({k:"Gym", v:String(_wk), u:"sessions", sub:"this week, target 5 to 6",
+      tiles.push({k:"Gym", v:String(_wk), u:"sessions", sub:"this week, target 4",
                   col:"var(--gy1,#ff9f0a)", go:function(){ selectTab("gym"); }});
     }catch(e){}
     /* solara: the one fact that changes */
