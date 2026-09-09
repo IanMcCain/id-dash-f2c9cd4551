@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 382 (2026-09-09)">
+<meta name="build" content="v21 build 383 (2026-09-09)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -16314,6 +16314,189 @@ try{ if(profile==="ian" && state.meta && !state.meta.mig382_repairs){
     save(true);
 } }catch(e){ try{ console.warn("mig382 repairs did not apply:",e&&e.message); }catch(_){} }
 
+/* ===== v21 build 383: FOUR GYM DAYS TO THREE. THE MERGE, NOT A DELETION. =============
+   IAN, 09.09.2026, VERBATIM: "on the days that I do two sessions a day, which is typically
+   Tuesday, Wednesday and Thursday, I do not work out at all on those days, because it's
+   already taking a pretty heavy toll on my body and on top of that it takes up hours each
+   day so I'm running out of time. I'd like to have workouts on the other days that are also
+   pickleball specific."
+
+   THIS IS FORCED ARITHMETIC, NOT A PREFERENCE. Tue, Wed and Thu are now gym free by his own
+   instruction. Sunday is the hand speed and mobility block, PINNED by Ian 06.08.2026, and is
+   not a lifting day. That leaves Mon, Fri and Sat: THREE slots for four required days. Four
+   does not fit in three, so the programme drops to three. Build 378 predicted exactly this
+   lever and said out loud that it was his call and would not be taken unilaterally. He has
+   now taken it.
+
+   ONE CORRECTION TO THE FRAMING, because it changes whether a rule is being broken. Mon, Fri
+   and Sat is NOT three gym days back to back. Sunday is not a gym day, by this file's own
+   definition and by build 378's own spacing note, which called Thu/Fri/Sat "three in a row"
+   while Sunday sat next to it uncounted. The new week is one on, three off, two on, one
+   pinned mobility block. Rule 2 (max two back to back) is satisfied with room to spare.
+
+   AND RULE 1 IS SATISFIED FOR THE FIRST TIME. Bianca works Tue 4 to 6, Wed 4 to 8, Thu 4 to 8.
+   Build 378 had to break "no gym on her work days" on Tuesday and said so on the card. That
+   exception is GONE. Every gym day now sits on a day she is off.
+
+   WHAT THE THREE OFF DAYS ARE NOT. Ian's 07.09 rule also says do not clump the off days. Tue,
+   Wed and Thu are three consecutive gym free days, which looks like the thing he ruled out.
+   It is not. Those are his three DOUBLE COURT days. The week now contains no rest day at all,
+   which is the real fatigue story and is written on the cards rather than smoothed over.
+
+   THE MERGE, DAY BY DAY.
+
+   MON becomes the ONE upper day and absorbs Day 2 Push into Day 3 Pull. FIVE items, which is
+   one over his own cap of "about 4 when he also plays". That break is deliberate and named:
+   at four items this week loses a movement pattern outright, because there is no second upper
+   day to catch it. Five is the smallest number that keeps vertical pull, horizontal push,
+   horizontal pull, delts and rear delt/cuff.
+
+   FRI is UNTOUCHED. Day 1 Lower, six items plus the finisher, still the lead day, and the
+   Bulgarian split squat keeps its visible two week ramp exactly as Ian asked for it.
+
+   SAT takes DAY 4, abs, cardio and rotation, moved intact from Thursday. Both of Ian's pins,
+   the cable chop and the treadmill finisher, travel with it. This is Day 5's SLOT, not Day
+   5's content.
+
+   DAY 5 OPTIONAL IS THE DAY THAT DIES, AND HIS OWN PLACEMENT RULE 7 CHOSE IT: "what leaves
+   under pressure, in order: Day 5, then Day 4, then Day 3 or Day 2, and Day 1 LAST." Day 5
+   goes first, Day 4 survives, Day 2 and Day 3 merge rather than either being cut, Day 1 is
+   untouched. The rule is followed to the letter rather than reinvented.
+   Day 5 also had the worst adherence on the board, 1 of 3 logged, and its push and pull lists
+   were accessory duplicates of Monday's compounds. Putting the only push stimulus of the week
+   on his least attended day would have been the wrong place for it.
+
+   NOTHING IS DELETED. Every removed exercise moves to gym.archivedExercises with a reason.
+   The two Day 5 lists move to state.archive.gymDay5_383 in full. gym.logs IS UNTOUCHED and
+   every historic set keeps its exercise id.
+
+   WHAT GENUINELY HAS NO HOME IN THREE DAYS, SAID PLAINLY RATHER THAN CRAMMED IN:
+     - DIRECT ARM WORK. Machine curl and hammer curl both go. Pulldown and row load the biceps
+       indirectly and that is all the arm volume left. Restoring a curl costs a slot on Monday
+       or Saturday and that is Ian's trade to make, not ours.
+     - CHEST ISOLATION and INCLINE PRESS. A "look good" loss, not a court loss.
+     - VERTICAL PRESS. DB or Smith OHP was already flagged optional on a heavy play day and
+       every week is now a heavy play week.
+   ONE THING THAT LOOKS LIKE A LOSS AND IS NOT: cable external rotation. Its job is cuff
+   health and face pull / reverse pec deck at 3x20/15/15 does that job on Monday. Ian also had
+   this exact exercise taken OFF Friday on 15.08.2026 because he did not know the movement and
+   skipped it two of two (build 292). It should not have come back on Tuesday in the first place.
+
+   Guarded once by state.meta.mig383_gym3day, which is NOT in the seed. */
+try{ if(!state.meta.mig383_gym3day && state.gym && Array.isArray(state.gym.split)){
+  var _G3=state.gym, _SP3=_G3.split;
+  var _D3=function(k){ for(var i=0;i<_SP3.length;i++){ if(_SP3[i] && _SP3[i].day===k) return _SP3[i]; } return null; };
+  if(!Array.isArray(_G3.archivedExercises)) _G3.archivedExercises=[];
+  var _A3=function(ex,fromDay,why){ if(!ex||!ex.id) return;
+    for(var i=0;i<_G3.archivedExercises.length;i++){ if(_G3.archivedExercises[i].id===ex.id) return; }
+    _G3.archivedExercises.push({id:ex.id,name:ex.name,scheme:ex.scheme,fromDay:fromDay,archivedOn:"2026-09-09",why:why}); };
+  var _TAKE=function(day,id,why){ var d=_D3(day); if(!d||!Array.isArray(d.exercises)) return null;
+    for(var i=0;i<d.exercises.length;i++){ if(d.exercises[i].id===id){ var ex=d.exercises.splice(i,1)[0]; if(why) _A3(ex,day,why); return ex; } } return null; };
+  var _IAN3='Ian, 09.09.2026: "on the days that I do two sessions a day, which is typically Tuesday, Wednesday and Thursday, I do not work out at all on those days."';
+  var _DBL="NO GYM. One of his three DOUBLE COURT days. "+_IAN3;
+
+  /* ---- MON: the one upper day. Day 3 Pull absorbs Day 2 Push. FIVE items. ---- */
+  var _m3=_D3("Mon");
+  if(_m3){
+    var _press=_TAKE("Tue","5igu8kh",null) || {id:"5igu8kh",name:"DB or machine chest press",scheme:"4\u00d710/8/6/4"};
+    var _lat  =_TAKE("Tue","35qmmjc",null) || {id:"35qmmjc",name:"Lateral raise",scheme:"3\u00d715/12/12"};
+    _TAKE("Tue","r6zuj26","Day 2 Push merged into Monday on 09.09.2026 at FIVE items. Vertical press is the item that lost the slot: it was ALREADY marked optional on a heavy play day, and every week is now a heavy play week. Lateral raise carries the delts.");
+    _TAKE("Tue","d2-extrot","Day 2 Push merged into Monday on 09.09.2026. NOT A HOLE: face pull or reverse pec deck at 3x20/15/15 on Monday does the same cuff health job. Ian also had this exact exercise removed from Friday on 15.08.2026 because he did not know the movement and skipped it two of two, build 292.");
+    _TAKE("Mon","zpcfoka","DIRECT ARM WORK HAS NO HOME IN A THREE DAY WEEK, and this is named as a real loss rather than substituted away. Monday runs five compounds and a sixth item breaks his own play day cap by two. Lat pulldown and chest supported row load the biceps indirectly and that is all that is left. Restoring a curl costs a slot on Monday or Saturday and that is Ian's trade.");
+    _m3.exercises=[
+      {id:"qb4fypm",name:"Lat pulldown",scheme:"4\u00d712/10/8/8"},
+      {id:"5igu8kh",name:_press.name,scheme:_press.scheme},
+      {id:"q33svaw",name:"Chest supported machine row",scheme:"3\u00d712/10/10"},
+      {id:"35qmmjc",name:_lat.name,scheme:_lat.scheme},
+      {id:"h4iq5eo",name:"Face pull or reverse pec deck",scheme:"3\u00d720/15/15"}
+    ];
+    _m3.focus="Day 2 and Day 3 MERGED. Upper, push and pull, hard. The only upper day of the week";
+    _m3.play="Evening play";
+    _m3.note="THE ONLY UPPER DAY OF THE WEEK, so it carries both push and pull. FIVE items, which is ONE OVER your own cap of about four on a day you also play, and that break is deliberate: at four, a movement pattern disappears from the week entirely and there is no second upper day to catch it. Lift AFTER 10am, the team meeting blocks the early slot. Bianca is off Monday. WHAT MOVED IN: chest press and lateral raise from the old Tuesday. WHAT WENT: OHP (was already optional on a heavy play day), cable external rotation (face pull does the cuff work), machine curl (direct arm work has no home in three days, and that is a real loss, not a substitution). Rebuilt 09.09.2026.";
+  }
+
+  /* ---- TUE: gym free. Double court day. ---- */
+  var _t3=_D3("Tue");
+  if(_t3){
+    (_t3.exercises||[]).slice().forEach(function(ex){
+      _TAKE("Tue",ex.id,"Tuesday became a NO GYM double court day on 09.09.2026. "+_IAN3);
+    });
+    _t3.exercises=[];
+    _t3.focus="No gym. Double court day";
+    _t3.play="Double. LEAGUE 6:30 to 8:30pm";
+    _t3.lockNote="Double court day, gym free.";
+    _t3.note=_DBL+" Day 2 Push moved to Monday and merged with Day 3 Pull. THIS ALSO CLOSES THE ONE RULE BREAK BUILD 378 HAD TO SHIP: Bianca works Tuesday 4 to 6 and a HARD lift used to sit here against your own no gym on her work days rule. Every gym day now sits on a day she is off.";
+  }
+
+  /* ---- WED: already gym free. The reason changes, so the card changes. ---- */
+  var _w3=_D3("Wed");
+  if(_w3){
+    _w3.exercises=[];
+    _w3.focus="No gym. Double court day";
+    _w3.play="Double";
+    _w3.lockNote="Double court day, gym free.";
+    _w3.note=_DBL+" Wednesday was already gym free from 05.09.2026. It is restated here because the REASON changed: it is no longer one exception, it is one of three double days. The five leg exercises that used to live here are on Day 1 Lower on Friday.";
+  }
+
+  /* ---- THU: gym free. Day 4 moves WHOLE to Saturday. ---- */
+  var _h3=_D3("Thu");
+  if(_h3){
+    var _d4=[];
+    (_h3.exercises||[]).forEach(function(ex){ if(ex&&ex.id) _d4.push({id:ex.id,name:ex.name,scheme:ex.scheme}); });
+    _h3.exercises=[];
+    _h3.focus="No gym. Double court day";
+    _h3.play="Double";
+    _h3.lockNote="Double court day, gym free.";
+    _h3.note=_DBL+" Day 4, abs and cardio, MOVED WHOLE TO SATURDAY. Nothing in it was cut and both of your pins, the cable chop and the treadmill finisher, went with it.";
+
+    /* ---- SAT: Day 5 dies, Day 4 takes its slot. ---- */
+    var _s3=_D3("Sat");
+    if(_s3){
+      if(!state.archive || typeof state.archive!=="object") state.archive={};
+      if(!state.archive.gymDay5_383){
+        state.archive.gymDay5_383={archivedOn:"2026-09-09",
+          why:"Day 5 OPTIONAL is the day that leaves when four gym days become three, and Ian's own placement rule 7 chose it: what leaves under pressure, in order, Day 5, then Day 4, then Day 3 or Day 2, and Day 1 LAST. It also had the worst adherence on the board at 1 of 3 logged, and both of its lists were accessory duplicates of Monday's compounds rather than unique patterns. Saturday keeps its SLOT and now holds Day 4.",
+          pushWeek:_s3.pushWeek||null, pullWeek:_s3.pullWeek||null, phase:_s3.phase||null};
+      }
+      [{id:"0x81lyf",name:"Incline DB or machine press",scheme:"4\u00d712/10/8/8"},
+       {id:"cea7roe",name:"Pec deck or cable fly",scheme:"3\u00d715/12/12"},
+       {id:"ui81mo6",name:"Cable lateral raise",scheme:"3\u00d715/12/12"},
+       {id:"sat-hammer",name:"Hammer curl (DB or rope)",scheme:"3\u00d715/12/12"},
+       {id:"aiyjlo6",name:"Lat pulldown, varied grip",scheme:"4\u00d712/10/8/8"},
+       {id:"sat-straightarm",name:"Straight arm cable pulldown",scheme:"3\u00d715/12/12"},
+       {id:"sat-facepull",name:"Face pull or reverse pec deck",scheme:"3\u00d720/15/15"}
+      ].forEach(function(ex){
+        _A3(ex,"Sat","Day 5 OPTIONAL was CUT ENTIRE on 09.09.2026 when four gym days became three. Placement rule 7 picks Day 5 first. Saturday now holds Day 4, abs and cardio. Incline press and pec deck are a look good loss and hammer curl is the arm loss, both named rather than substituted away; the varied grip pulldown, straight arm pulldown and face pull were accessory duplicates of Monday, which still runs a pulldown, a row and a face pull.");
+      });
+      /* satPhaseSync returns early with no pushWeek/pullWeek, so removing them disables it. */
+      delete _s3.pushWeek; delete _s3.pullWeek; delete _s3.phase;
+      _s3.exercises=_d4.length?_d4:[
+        {id:"abc-elevate",name:"Elevate machine, incline knee raise (hands overhead, pull knees to chest)",scheme:"3\u00d710"},
+        {id:"abc-rotary",name:"Rotary twist machine (rotary torso, oblique twists)",scheme:"3\u00d710"},
+        {id:"pkl-cablechop",name:"Cable chop, low to high, both sides (pickleball drives and drops)",scheme:"2\u00d712 per side"},
+        {id:"abc-cardio",name:"Treadmill finisher, incline 6, speed 2.5 walk",scheme:"10 min"}
+      ];
+      _s3.focus="Day 4, Abs, cardio and rotation, light";
+      _s3.play="Long competitive session, 2.5 to 3 h";
+      _s3.note="DAY 4 LIVES HERE NOW, moved whole from Thursday, four items, both pins intact. It is the LIGHT day and it sits against the long competitive session on purpose: a light rotation and cardio block pairs with 2.5 to 3 hours of play far better than a medium push day did. DAY 5 OPTIONAL IS GONE, and your own rule chose it: what leaves under pressure, in order, Day 5, then Day 4, then Day 3 or Day 2, Day 1 last. NOTE THE ADHERENCE: Saturday is your weakest day at 1 of 3 logged. Four items, two of them abs machines and one a ten minute walk, is the shortest card of the week for exactly that reason. Rebuilt 09.09.2026.";
+    }
+  }
+
+  /* ---- FRI: the lead day, UNTOUCHED. Note only. ---- */
+  var _f3=_D3("Fri");
+  if(_f3){
+    _f3.play="Light or none";
+    _f3.note="THE LEAD DAY AND IT DID NOT MOVE. Six items plus the finisher, unchanged. Court light or none, protect it. Bulgarian split squat is Smith machine, approved by Ian 05.09.2026, and it STARTS AT 2 SETS for two weeks before it builds. Bianca has no classes and no shift on Friday. UNCHANGED by the 09.09.2026 three day rebuild: when four days became three, Day 1 was the one thing that could not be touched.";
+  }
+
+  /* ---- SUN: pinned. Not a gym day. Untouched. ---- */
+  var _u3=_D3("Sun");
+  if(_u3){ _u3.noGym=true; _u3.lockNote="Hand speed block, walk and mobility."; }
+
+  _G3.planVersion="three day rebuild, 09.09.2026, shipped build 383";
+  state.meta.mig383_gym3day=true; save(true);
+} }catch(e){ try{ console.warn("mig383 did not apply:",e&&e.message); }catch(_){} }
+
 
 /* ===== v21 build 381: THE TWO 8 SEPTEMBER SESSIONS. QUEUE DRAINED. ====================
    Queue ids q178890945152539 and q178890945752567, appended by PB-2 which did not hold the
@@ -17937,7 +18120,7 @@ function buildIanHome(v){ const workout=daySplit(DOW); const reTop=firstUndone((
      pickleball colour coding and gym colour intact, weekly count against the 5 to 6 target intact. */
   /* build 191: open by default now. Ian named the heatmap one of his two favourite things in
      the app, and a favourite that starts collapsed is a favourite he has to go find. */
-  var secHeat=function(){ pkCollapse(v,"h_heat","Training consistency","gym and pickleball, target 12 a week",true,function(hh){
+  var secHeat=function(){ pkCollapse(v,"h_heat","Training consistency","gym and pickleball, target 11 a week",true,function(hh){
       var pb=state.pickleball||{};
       var cardEl=card(); var b=cardEl._body;
       function _pkCls(kind){ var k=String(kind||"").toLowerCase(); if(/tournament|fall cup|\bapc\b/.test(k)) return "k-tourn"; if(k.indexOf("league")>=0) return "k-league"; var dr=/drill/.test(k); var pl=/open play|doubles|\bplay\b/.test(k); if(dr&&pl) return "k-mix"; if(dr) return "k-drill"; if(pl) return "k-open"; return "k-play"; }
@@ -18090,15 +18273,28 @@ function buildIanHome(v){ const workout=daySplit(DOW); const reTop=firstUndone((
            Tuesday is not a fact about his training, it is a fact about the calendar.
            THE WEEK AHEAD HAS NO COUNT AT ALL. Zero out of six for a week that has not happened is
            a claim about the future, and the app does not get to make one. It reads "ahead". */
+        /* ===== v21 build 383: THE TARGET MOVES 12 TO 11, AND IT IS DERIVED, NOT CHOSEN ====
+           THE TARGET HAS ALWAYS BEEN THE FLOOR OF HIS OWN RANGE. Build 377 set 12 because the
+           plan was 4 gym plus 8 to 9 court, which is 12 to 13, and 12 is the bottom of that.
+           On 09.09.2026 Ian cut the gym to THREE days. 3 plus 8 to 9 is 11 TO 12, so the floor
+           moved to 11 and the target moves with it. Leaving 12 in place would have made a
+           normal 8 court week read 11/12 and the hit would never fire, week after week, on a
+           plan written the same night. That is the same defect build 380 fixed from the other
+           direction, where 12 was unreachable at any effort.
+           NOT SILENT, AND NOT A PRODUCT DECISION TAKEN ON HIS BEHALF. The number is arithmetic
+           off an input he changed. The SEPARATE question, whether the unit should be sessions
+           or days, is on HOLD for Ian as queue entry q17888449477794 and is NOT touched here.
+           The unit stays SESSIONS, exactly as build 380 left it. */
+        var _hmT=11;
         var cnt;
         if(_isAhead){
           cnt=el("div","hmn ahead"); cnt.textContent="ahead";
           row.title="The week ahead. Nothing has happened yet, so there is no count.";
         } else if(_isCur){
-          cnt=el("div","hmn"+(n>=12?" hit":" wip")); cnt.textContent=n+"/12";
-          row.title="This week so far, "+n+" SESSIONS of a 12 a week target, 4 gym plus 8 to 9 court. A day with two pickleball sessions counts two. Counted against the full week, not days elapsed.";
+          cnt=el("div","hmn"+(n>=_hmT?" hit":" wip")); cnt.textContent=n+"/"+_hmT;
+          row.title="This week so far, "+n+" SESSIONS of an "+_hmT+" a week target, 3 gym plus 8 to 9 court. Target moved 12 to 11 on 09.09.2026 when the gym went from four days to three. A day with two pickleball sessions counts two. Counted against the full week, not days elapsed.";
         } else {
-          cnt=el("div","hmn"+(n>=12?" hit":"")); cnt.textContent=n+"/12";
+          cnt=el("div","hmn"+(n>=_hmT?" hit":"")); cnt.textContent=n+"/"+_hmT;
         }
         row.appendChild(cnt);
         b.appendChild(row);
@@ -18455,7 +18651,18 @@ function buildIanHome(v){ const workout=daySplit(DOW); const reTop=firstUndone((
                   sub:_last?((_last.kind||"Played")+", "+_when):((_ss.length||0)+" sessions"),
                   col:"var(--pk1,#2ee66f)", go:function(){ selectTab("pickle"); }});
     }catch(e){}
-    /* gym: sessions this week, counted the way the heatmap counts them */
+    /* gym: gym days this week
+       ===== v21 build 383: TWO CHANGES, AND THE SECOND IS A DEFECT FOUND WHILE MAKING THE FIRST.
+       ONE. TARGET 4 TO 3. Ian cut the gym to three days on 09.09.2026, Mon, Fri and Sat.
+       TWO. THIS TILE WAS NOT COUNTING THE GYM. The old _keys map merged gym days AND every
+       pickleball session date, so a court only day incremented a tile labelled "Gym" against a
+       gym target. On his real data that reads about 7 every week. Against the old target of 4
+       it looked like a generous overshoot and nobody caught it. Against a target of THREE it
+       would have read 7 of 3 every single week, which is why it surfaced tonight.
+       The tile now counts GYM DAYS ONLY, by the same three signals the heatmap uses: a tick in
+       gym.logs[d].done, a non empty gym.logs[d].note, or a GYM: labelled line in the daily
+       entry. Pickleball is not a gym session and the training heatmap directly below already
+       counts the whole week properly. */
     try{
       var _t=new Date(); var _dow=_t.getDay(); var _mon=new Date(_t); _mon.setDate(_mon.getDate()-(_dow===0?6:_dow-1));
       var _keys={};
@@ -18464,10 +18671,20 @@ function buildIanHome(v){ const workout=daySplit(DOW); const reTop=firstUndone((
         var dn=L.done||{}; var ticked=Object.keys(dn).some(function(id){ return dn[id]; });
         var noted=(typeof L.note==="string" && L.note.trim().length>0);
         if(ticked||noted) _keys[k]=true; });
-      ((state.pickleball&&state.pickleball.sessions)||[]).forEach(function(x){ if(x&&x.date) _keys[x.date]=true; });
+      /* The build 362 GYM: label. COPIED VERBATIM from the heatmap's own block at ~line 18174,
+         same regex, same two sources, same restDays exclusion, so the tile and the chart
+         directly below it can never disagree about what a gym day is. */
+      try{ var _rest=(state.gym&&state.gym.restDays)||{};
+        var _dd=state.daily||{}; var _dlg=(state.context&&state.context.dailyLog)||{};
+        var _gk={}; Object.keys(_dd).forEach(function(k){ _gk[k]=true; }); Object.keys(_dlg).forEach(function(k){ _gk[k]=true; });
+        var _gymLab=/(^|[\s>.;])GYM\s*:/i;
+        Object.keys(_gk).forEach(function(k){ if(_keys[k]||_rest[k]) return;
+          var _tx=String((_dd[k]&&_dd[k].text)||"")+" "+String((_dlg[k]&&_dlg[k].note)||"");
+          if(_tx.trim() && _gymLab.test(_tx)) _keys[k]=true; });
+      }catch(_e){}
       var _wk=0;
       for(var j=0;j<7;j++){ var dd=new Date(_mon); dd.setDate(dd.getDate()+j); if(_keys[todayKey(dd)]) _wk++; }
-      tiles.push({k:"Gym", v:String(_wk), u:"sessions", sub:"this week, target 4",
+      tiles.push({k:"Gym", v:String(_wk), u:_wk===1?"day":"days", sub:"this week, target 3",
                   col:"var(--gy1,#ff9f0a)", go:function(){ selectTab("gym"); }});
     }catch(e){}
     /* solara: the one fact that changes */
