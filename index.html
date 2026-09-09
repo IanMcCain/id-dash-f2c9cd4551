@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 379 (2026-09-07)">
+<meta name="build" content="v21 build 382 (2026-09-09)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -2823,7 +2823,26 @@ function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]
         if(!state.context.dailyLog[_gp]) state.context.dailyLog[_gp]={note:"",summary:""};
         var _gEx=state.context.dailyLog[_gp].gymNoteArchive;
         if(!_gEx){ state.context.dailyLog[_gp].gymNoteArchive=_gn; } else if(_gEx.indexOf(_gn)<0){ state.context.dailyLog[_gp].gymNoteArchive=_gEx+"\n\n"+_gn; }
-        state.gym.logs[_gp].note="";
+        /* ===== v21 build 382: THE BLANKING IS GONE. THE ARCHIVING STAYS. ==================
+           This line used to read state.gym.logs[_gp].note="". It existed for one reason: to
+           empty the session note BOX so the new day started clean. THE BOX WAS CUT IN BUILD
+           379, so there is nothing left to clear, and the only thing the blanking still did
+           was destroy the heatmap's gym signal for that day.
+           The heatmap takes a gym day from gym.logs[d].done, gym.logs[d].note, or a GYM:
+           label in state.daily[d].text. IT NEVER READS gymNoteArchive. So a note written on
+           the day rendered a coloured cell, and the first load of the next morning turned it
+           grey while the note itself sat safely in the archive. The DATA was never lost. The
+           SIGNAL was, silently, every single time.
+           MEASURED, not reasoned: a note written for 8 September rendered `hmc gymonly today`
+           on the 8th and plain `hmc` on the 9th. Four same day loads cannot see this. Only
+           advancing the clock can. Evidence in _audit_382/.
+           WHY NOT THE OTHER REPAIR. Teaching the heatmap to read gymNoteArchive was the
+           obvious fix and it is WRONG. Three days in his real state carry an archived note:
+           11 July says "Gym closed today before I could get any reps in", 21 August says
+           "skipped gym and did a pickleball session instead", and only 2 August describes a
+           session he actually did. Reading the archive would have coloured two days he did
+           not train. Build 362 already rejected loose matching on exactly this ground: a cell
+           that claims a session he did not do is worse than a grey cell. */
       }
       state.meta.lastGymNoteDay=TODAY;
     }
@@ -16240,6 +16259,135 @@ try{ if(!state.meta.mig379_people && state.realEstate){
   state.meta.mig379_people=true; save(true);
 } }catch(e){ try{ console.warn("mig379 people did not apply:",e&&e.message); }catch(_){} }
 
+/* ===== v21 build 382, 08.09.2026. TWO DATA REPAIRS, GEN-1. ==========================
+
+   1. THE 2 AUGUST GYM CELL. It is grey and he trained that day.
+   The build 34 rollover archived his session note into context.dailyLog["2026-08-02"]
+   .gymNoteArchive and then blanked gym.logs["2026-08-02"].note. The heatmap reads the note
+   and never the archive, so the cell went grey the next morning. Build 382 stops the
+   blanking, but that only protects the future: this day was already emptied months ago, so
+   the note is put back FROM HIS OWN ARCHIVED WORDS. Nothing is composed here.
+   His archived note describes the session: "Saturday's session, done today... lat pulldown,
+   then wrist flexion and extension, pronation and supination, and grip squeezes."
+
+   ONLY THIS ONE DAY IS RESTORED, AND THAT IS THE WHOLE POINT.
+   Two other days carry an archived note and NEITHER is restored, because his own words say
+   he did not train:
+     11 July  "Gym closed today before I could get any reps in"
+     21 August "GYM: skipped gym and did a pickleball session instead"  (also a declared rest day)
+   A blanket restore, or teaching the heatmap to read the archive, would colour both. That is
+   the failure build 362 named: a cell that claims a session he did not do is worse than a
+   grey one. THE ARCHIVE IS NOT A TRAINING LOG, it is a note field, and some notes say no.
+
+   2. TWO ZEROS THAT WERE NEVER MEASURED. Session 3sfen7c, 8 July, carries calories:0 and
+   maxHr:0 alongside a real avgHr of 110. A maximum heart rate of zero next to an average of
+   110 is not a reading, it is an empty box that got a number. The KEYS ARE DELETED, not set
+   to anything, because absent and zero are different claims and only absent is true here.
+   duration, avgHr and the note are untouched.
+   ==================================================================================== */
+try{ if(profile==="ian" && state.meta && !state.meta.mig382_repairs){
+    var _r382=[];
+
+    if(state.gym && state.gym.logs && state.context && state.context.dailyLog){
+      var _d802="2026-08-02";
+      var _a802=state.context.dailyLog[_d802] && state.context.dailyLog[_d802].gymNoteArchive;
+      if(_a802 && String(_a802).trim()){
+        if(!state.gym.logs[_d802] || typeof state.gym.logs[_d802]!=="object") state.gym.logs[_d802]={done:{},note:""};
+        if(!state.gym.logs[_d802].done || typeof state.gym.logs[_d802].done!=="object") state.gym.logs[_d802].done={};
+        if(typeof state.gym.logs[_d802].note!=="string" || !state.gym.logs[_d802].note.trim()){
+          state.gym.logs[_d802].note=String(_a802);
+          _r382.push("restored gym note 2026-08-02 from its own archive");
+        }
+      }
+    }
+
+    if(state.pickleball && Array.isArray(state.pickleball.sessions)){
+      state.pickleball.sessions.forEach(function(s){
+        if(!s || s.id!=="3sfen7c") return;
+        if(s.calories===0){ delete s.calories; _r382.push("3sfen7c calories 0 -> absent"); }
+        if(s.maxHr===0){ delete s.maxHr; _r382.push("3sfen7c maxHr 0 -> absent"); }
+      });
+    }
+
+    state.meta.mig382_repairs=true;
+    if(_r382.length){ try{ console.log("build 382 repairs: "+_r382.join("; ")); }catch(_){} }
+    save(true);
+} }catch(e){ try{ console.warn("mig382 repairs did not apply:",e&&e.message); }catch(_){} }
+
+
+/* ===== v21 build 381: THE TWO 8 SEPTEMBER SESSIONS. QUEUE DRAINED. ====================
+   Queue ids q178890945152539 and q178890945752567, appended by PB-2 which did not hold the
+   lock. Both reviewed and correct. Detail taken from pickleball_knowledge_base.md, sections
+   SESSION, TUESDAY 8 SEPTEMBER 2026 MORNING and EVENING, plus the APP WRITE block.
+
+   GUARDED BY ID, ONE GUARD EACH, AND NO meta FLAG. Build 364 established that a DATE guard
+   writes the morning and then silently refuses the evening, which is exactly this case: 8
+   September is a TWO SESSION DAY. A shared meta flag would have the same failure in a
+   different costume, because a single flag set after a partial write never retries the
+   missing half. Two independent id checks, so each record lands or does not on its own, and
+   either can self heal on a later load if it is ever removed.
+
+   ALL SIX WATCH FIELDS ARE PRESENT ON BOTH AND NONE IS A ZERO. Build 376 shipped avgHr:0,
+   which fails a falsy check identically to a missing field while meaning something completely
+   different. Every value below is known and measured; nothing is defaulted.
+
+   THE EVENING CARRIES NO drillMinutes, playMinutes OR segments, AND THAT IS DELIBERATE.
+   BRAIN describes it as "first half drilling, second half open play" and gives NO minute
+   split. The 27 August precedent has those fields only because Ian stated "53 min drilling
+   and the rest was open play" in his own words. Writing 52 and 52 here would convert the
+   word "half" into a measurement he never gave. The kind string "Drilling + open play" is
+   stated, and _pkCls matches both /drill/ and /open play/ on it, so the cell still renders
+   k-mix. Nothing visual is lost by leaving out numbers nobody has.
+
+   BUILD 380 COUNTS SESSIONS, NOT DAYS, so these two records make 8 September contribute
+   2 to the weekly count. That is the whole point of 380 and it is verified below, not assumed. */
+try{ if(profile==="ian" && state.pickleball){
+    var _P98=state.pickleball;
+    if(!Array.isArray(_P98.sessions)) _P98.sessions=[];
+    var _hasAM=false,_hasPM=false,_w98=false;
+    for(var _i98=0;_i98<_P98.sessions.length;_i98++){ var _s98=_P98.sessions[_i98];
+      if(!_s98) continue;
+      if(_s98.id==="pk-20260908-openplay-am") _hasAM=true;
+      if(_s98.id==="pk-20260908-training-pm") _hasPM=true; }
+    if(!_hasAM){
+      _P98.sessions.push({
+        id:"pk-20260908-openplay-am", date:"2026-09-08", kind:"Open play", venue:"Omaha",
+        duration:"2h 19m 53s",
+        window:"7:07 to 9:27 AM, Omaha",
+        calories:1595, activeCalories:1376, avgHr:129, maxHr:175, minHr:68, effort:8,
+        result:"", score:"", opponent:"",
+        copyOwned:true,
+        note:"Morning session, Tuesday 8 September, Omaha, 7:07 to 9:27 AM, 2:19:53. OPEN PLAY "
+          +"THROUGHOUT against DUPR 3.6 to 3.9 players, and you kept up. From Apple Watch: avg HR "
+          +"129, max 175, min 68, active 1,376, total 1,595. Active rate 9.84 a minute, the highest "
+          +"in the current window. EFFORT 8 IS YOUR RATING, not the watch's. First of two sessions "
+          +"this day and kept separate from the evening on purpose: seven hours apart, different "
+          +"structure, different effort and a different heart rate profile."
+      });
+      _w98=true; }
+    if(!_hasPM){
+      _P98.sessions.push({
+        id:"pk-20260908-training-pm", date:"2026-09-08", kind:"Drilling + open play", venue:"Omaha",
+        duration:"1h 44m 31s",
+        window:"4:19 to 6:03 PM, Omaha",
+        calories:1026, activeCalories:862, avgHr:121, maxHr:154, minHr:87, effort:6,
+        result:"", score:"", opponent:"",
+        copyOwned:true,
+        note:"Evening session, Tuesday 8 September, Omaha, 4:19 to 6:03 PM, 1:44:31. FIRST HALF "
+          +"DRILLING, SECOND HALF OPEN PLAY. You drilled well, then in open play your drops were "
+          +"really off, in your words you were not hitting any of them. Your own summary was that it "
+          +"was not a horrible session, it was OK, and that is the ceiling on how it gets described. "
+          +"From Apple Watch: avg HR 121, max 154, min 87, active 862, total 1,026. Active rate 8.25 "
+          +"a minute. EFFORT 6 IS YOUR RATING, not the watch's. NO MINUTE SPLIT IS RECORDED because "
+          +"you described halves rather than giving numbers, and a guess would read as a measurement. "
+          +"Context you gave, recorded as context and not as an excuse: tired, more rest breaks than "
+          +"usual, the players were not as strong with a big power difference between them so it was "
+          +"less fun, and a stomach ache. Second of two sessions this day."
+      });
+      _w98=true; }
+    if(_w98) save(true);
+} }catch(e){ try{ console.warn("mig381 pk 8 Sep did not apply:",e&&e.message); }catch(_){} }
+
 
 
 /* ===== build 355: THE FIRST MECHANICS SECTION IS WRITTEN. twoHandBackhand ONLY. ==============
@@ -17335,9 +17483,32 @@ function dealEditors(parent,d){
      side, it never touches the stage. */
   const stLab=el("div","small muted","Stage"); parent.appendChild(stLab);
   parent.appendChild(chipRow(RESTAGES,d.stage,s=>{ d.stage=s; save(); render(); }));
-  const pr=el("input","in"); pr.placeholder="Price"; pr.value=d.price||""; pr.style.marginTop="10px"; pr.oninput=()=>{ d.price=pr.value; save(); }; parent.appendChild(pr);
-  const cl=el("input","in"); cl.placeholder="Close date"; cl.value=d.close||""; cl.oninput=()=>{ d.close=cl.value; save(); }; parent.appendChild(cl);
-  const ta=el("textarea","in"); ta.style.minHeight="52px"; ta.value=d.note||""; ta.placeholder="Notes, next step..."; ta.oninput=()=>{ d.note=ta.value; save(); }; parent.appendChild(ta);
+  /* ===== v21 build 382: PRICE, CLOSE DATE AND NOTES ARE DISPLAY ONLY. =================
+     These were three free text boxes bound straight to d.price, d.close and d.note with an
+     oninput that saved on every keystroke. THEY SURVIVED THE BUILD 379 SWEEP because a deal
+     editor only renders after two taps, Real Estate then the Pipeline card then the deal row,
+     and every sweep so far has counted what was on screen. That is the collapsed surface trap
+     for the FIFTH time. DRIVEN, not read: opening the first deal row produced exactly these
+     three writable controls. Evidence in _audit_382/probe_re4.log.
+     WHY THIS MATTERS MORE HERE THAN ANYWHERE ELSE. d.price is a CMA backed number. Barker is
+     $289,900 off a document, Mattox is Ian's own 07.09 decision. One stray tap on a phone and
+     one keystroke silently replaces it, there is no undo, nothing records that it happened,
+     and in a read only app he would have no reason to doubt what he is reading. This is the
+     same reasoning that made the paddle field display only in build 369, in the same words:
+     a free textarea let one stray tap silently overwrite a record with no warning and no
+     recovery except another lane.
+     THE VALUES ARE UNCHANGED AND STILL SHOWN. Only the write path is gone. Prices and dates
+     come through Dispatch, which is where every one of them already came from.
+     THE CHIP ROWS BELOW ARE DELIBERATELY LEFT. They are a constrained list, visible, and one
+     tap to undo, so they are not the same risk. Whether they should go too is Ian's call and
+     it is queued for him rather than decided here. */
+  const _roLab=function(t){ const e=el("div","small muted",t); e.style.margin="10px 0 3px"; return e; };
+  const _roVal=function(t,ph){ const e=el("div"); const has=!!(t&&String(t).trim());
+    e.style.cssText="font-weight:700;line-height:1.45;white-space:pre-wrap"+(has?"":";color:var(--gray2)");
+    e.textContent=has?String(t):ph; return e; };
+  parent.appendChild(_roLab("Price"));      parent.appendChild(_roVal(d.price,"Not on record"));
+  parent.appendChild(_roLab("Close date")); parent.appendChild(_roVal(d.close,"Not on record"));
+  parent.appendChild(_roLab("Notes"));      parent.appendChild(_roVal(d.note,"No notes"));
   const divr=el("div"); divr.style.cssText="border-top:1px solid var(--line,#1e2a3a);margin:15px 0 0"; parent.appendChild(divr);
   const commHead=el("div","small muted","Commission tags, these do not change the stage above"); commHead.style.marginTop="11px"; commHead.style.fontWeight="700"; parent.appendChild(commHead);
   const srcLab=el("div","small muted","Whose client"); srcLab.style.marginTop="9px"; parent.appendChild(srcLab);
@@ -17888,7 +18059,25 @@ function buildIanHome(v){ const workout=daySplit(DOW); const reTop=firstUndone((
           if(kindCls && pkMin[k]){ var _b=_hmBand(pkMin[k]);
             if(_b<100){ cell.className+=" dur"; try{ cell.style.setProperty("--hmdim",((100-_b)/100).toFixed(2)); }catch(e){} } }
           cell.title=k+(kindCls?" pickleball, "+(pkLbl[k]||"play"):"")+(pkMin[k]?", "+Math.round(pkMin[k])+" min":"")+(hasGy?" gym":"")+(future?" upcoming":"");
-          if(kindCls||hasGy) n++; /* build 214: a gym only day is a training day, see the note above */
+          /* ===== v21 build 380: THE COUNT COUNTS SESSIONS, NOT DAYS ==========================
+             Build 377 set the target to 12 a week. This line counted once per DAY, so the
+             maximum reachable number was 7 and the hit threshold at n>=12 could never fire.
+             His best possible week rendered 7/12 and read as a miss. That was my error, not
+             a data problem.
+             WHY SESSIONS IS THE RIGHT UNIT AND NOT A WORKAROUND. Ian does DOUBLE pickleball
+             sessions on the days Bianca works, his own stated plan, and 1 September and
+             3 September were both two session days. 4 gym plus 8 to 9 court is 12 to 13
+             sessions across roughly SIX days. A day based count cannot represent that shape at
+             any denominator; restating the target in days would have hidden the double days
+             rather than measured them.
+             A DAY WITH BOTH GYM AND PICKLEBALL COUNTS TWO, which is why hasGy is added
+             separately rather than folded in. Such a day already renders k-mix with a gymdot,
+             so the data distinguishes them and the cell already says so.
+             pkCnt IS ALREADY COMPUTED ABOVE by build 362 for the multi session label. No new
+             field, no new data, nothing added to state.
+             NOTHING VISUAL CHANGES. The cell classes, the colours, the depth bands and the
+             gymdot are all untouched. This is the weekly number and the hit threshold only. */
+          n += (pkCnt[k]||0) + (hasGy?1:0);
           cells.appendChild(cell);
         }
         row.appendChild(cells);
@@ -17907,7 +18096,7 @@ function buildIanHome(v){ const workout=daySplit(DOW); const reTop=firstUndone((
           row.title="The week ahead. Nothing has happened yet, so there is no count.";
         } else if(_isCur){
           cnt=el("div","hmn"+(n>=12?" hit":" wip")); cnt.textContent=n+"/12";
-          row.title="This week so far, "+n+" of a 12 a week target, 4 gym plus 8 to 9 court. Counted against the full week, not days elapsed.";
+          row.title="This week so far, "+n+" SESSIONS of a 12 a week target, 4 gym plus 8 to 9 court. A day with two pickleball sessions counts two. Counted against the full week, not days elapsed.";
         } else {
           cnt=el("div","hmn"+(n>=12?" hit":"")); cnt.textContent=n+"/12";
         }
@@ -18668,9 +18857,26 @@ function sphereOverdue(){ return sphereList().filter(contactOverdue); }
    Dispatch, four of the five assignments in this file are migrations, so the cadence and
    overdue logic below are unaffected. Nothing reads this function any more. */
 function contactEditors(parent,k){
-  const nm=el("input","in"); nm.placeholder="Name"; nm.value=k.name||""; nm.style.marginTop="10px"; nm.oninput=()=>{ k.name=nm.value; save(); }; parent.appendChild(nm);
+  /* ===== v21 build 382: NAME, PHONE AND NOTES ARE DISPLAY ONLY. ======================
+     Same finding and same repair as the deal editor above. Build 373's comment ten lines
+     below this one calls the date picker it removed "THE LAST INPUT OF ANY KIND IN THE APP".
+     It was not: a name box, a phone box and a notes box were sitting in the same function,
+     two of them within ten lines of that sentence, and they survived build 379 as well.
+     They render only after Real Estate, then Sphere, then tapping a contact, so no sweep that
+     counts what is on screen has ever seen them. DRIVEN, not read: opening a contact produced
+     exactly these three writable controls, evidence in _audit_382/probe_re4.log.
+     PHONE NUMBERS ARE THE SPECIFIC RISK HERE. LEAD_CONTACTS.md in BRAIN is the source of
+     record for every number, and a real lead was already lost once on 07.30.2026 through
+     contact details drifting out of it. A silently mistyped digit in the app is a number that
+     no longer matches the source and nothing would report the difference.
+     VALUES UNCHANGED AND STILL SHOWN. Only the write path is gone. */
+  const _roLab=function(t){ const e=el("div","small muted",t); e.style.margin="10px 0 3px"; return e; };
+  const _roVal=function(t,ph2){ const e=el("div"); const has=!!(t&&String(t).trim());
+    e.style.cssText="font-weight:700;line-height:1.45;white-space:pre-wrap"+(has?"":";color:var(--gray2)");
+    e.textContent=has?String(t):ph2; return e; };
+  parent.appendChild(_roLab("Name")); parent.appendChild(_roVal(k.name,"No name on record"));
   parent.appendChild(chipRow(SPHERE_TYPES,k.type,s=>{ k.type=s; save(); render(); }));
-  const ph=el("input","in"); ph.type="tel"; ph.placeholder="Phone (optional)"; ph.value=k.phone||""; ph.oninput=()=>{ k.phone=ph.value; save(); }; parent.appendChild(ph);
+  parent.appendChild(_roLab("Phone")); parent.appendChild(_roVal(k.phone,"Not on file anywhere"));
   const lcl=el("div","small muted"); lcl.textContent="Last contacted"; lcl.style.margin="10px 0 4px"; parent.appendChild(lcl);
   /* build 373: THE LAST INPUT OF ANY KIND IN THE APP. It escaped the build 369 sweep because
      contact editors only render once a contact is opened, which is the collapsed surface trap
@@ -18700,7 +18906,8 @@ function contactEditors(parent,k){
      cadence entirely for those. The quality chip still works and still means something, the
      clock it normally implies does not. Say that rather than print a 90 day promise nothing keeps. */
   const qhint=el("div","small dim"); qhint.style.marginTop="6px"; qhint.textContent=(k&&k.oneTime)?((_qcur==="Good")?"Good lead. No recurring clock on this one, it is a single check.":"Iffy lead. No recurring clock on this one, it is a single check."):((_qcur==="Good")?"Good lead, reach out monthly, about every 30 days.":"Iffy lead, reach out quarterly, about every 90 days."); parent.appendChild(qhint);
-  const ta=el("textarea","in"); ta.style.minHeight="52px"; ta.style.marginTop="10px"; ta.placeholder="Notes, how you know them, family, referrals given..."; ta.value=k.note||""; ta.oninput=()=>{ k.note=ta.value; save(); }; parent.appendChild(ta);
+  /* build 382: the third of the three, display only. See the header of this function. */
+  parent.appendChild(_roLab("Notes")); parent.appendChild(_roVal(k.note,"No notes"));
   
 }
 function contactRow(parent,k){
