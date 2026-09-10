@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 383 (2026-09-09)">
+<meta name="build" content="v21 build 384 (2026-09-09)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -16570,6 +16570,91 @@ try{ if(profile==="ian" && state.pickleball){
       _w98=true; }
     if(_w98) save(true);
 } }catch(e){ try{ console.warn("mig381 pk 8 Sep did not apply:",e&&e.message); }catch(_){} }
+
+/* ===== v21 build 384: BOTH 9 SEPTEMBER 2026 SESSIONS =====================================
+   TWO RECORDS, TWO IDS, TWO GUARDS. 9 September is a two session day exactly like
+   8 September: an hour and eleven in the morning and two fifty four in the evening,
+   4h05 across the day. GUARDED BY ID AND NEVER BY DATE. Build 364 established that a date
+   guard writes the first record and then silently refuses the second, and build 380 made
+   the cost visible by counting SESSIONS rather than days: a date guard here would make
+   9 September contribute 1 to the weekly count instead of 2.
+
+   ALL TWELVE WATCH VALUES ARE KNOWN AND NONE IS WRITTEN AS ZERO. The build 376 defect was
+   writing 0 for a value we had, because `avgHr: 0` and a missing `avgHr` both fail a falsy
+   check and only one of them is correct. Morning 124/147/82, evening 116/148/68, all real.
+
+   THE EFFORT FIGURES ARE IAN'S, NOT THE WATCH'S. Every other number came off the device.
+   Effort 7 and effort 9 came off him, and the notes say so, because a later comparison
+   across sessions is comparing a judgement and should know it.
+
+   THE DINK LINE IS NOW HIS RESOLVED ANSWER, NOT A GUESS. An earlier reading of the
+   transcript had "my dinks are dumb" and it was deliberately never written as "dinks were
+   good". He was asked and he answered: fine but not perfect, and he hits a lot of DEAD
+   DINKS. That is a sharper and worse fault than the guess would have been, which is the
+   whole argument for asking rather than smoothing. "Dead dink" is his term and it is kept
+   verbatim, not softened into "inconsistent". */
+try{ if(profile==="ian" && state.pickleball){
+    var _P99=state.pickleball;
+    if(!Array.isArray(_P99.sessions)) _P99.sessions=[];
+    var _has99am=false,_has99pm=false,_w99=false;
+    for(var _i99=0;_i99<_P99.sessions.length;_i99++){ var _s99=_P99.sessions[_i99];
+      if(!_s99) continue;
+      if(_s99.id==="pk-20260909-openplay-am") _has99am=true;
+      if(_s99.id==="pk-20260909-openplay-pm") _has99pm=true; }
+    if(!_has99am){
+      _P99.sessions.push({
+        id:"pk-20260909-openplay-am", date:"2026-09-09", kind:"Open play", venue:"Omaha",
+        duration:"1h 10m 48s",
+        window:"8:09 to 9:20 AM, Omaha",
+        calories:745, activeCalories:634, avgHr:124, maxHr:147, minHr:82, effort:7,
+        result:"", score:"", opponent:"",
+        copyOwned:true,
+        note:"Morning session, Wednesday 9 September, Omaha, 8:09 to 9:20 AM, 1:10:48. Your SHORTEST "
+          +"session on file in this window and the first of two this day. From Apple Watch: avg "
+          +"HR 124, max 147, min 82, active 634, total 745. Active rate 8.95 a minute. EFFORT 7 IS "
+          +"YOUR RATING, not the watch\u0027s. Together with the evening this day carries 4h05 of "
+          +"pickleball, the same as 8 September."
+      });
+      _w99=true; }
+    if(!_has99pm){
+      _P99.sessions.push({
+        id:"pk-20260909-openplay-pm", date:"2026-09-09", kind:"Open play doubles", venue:"Omaha",
+        duration:"2h 53m 47s",
+        window:"4:20 to 7:14 PM, Omaha",
+        calories:1634, activeCalories:1362, avgHr:116, maxHr:148, minHr:68, effort:9,
+        result:"", score:"", opponent:"",
+        copyOwned:true,
+        note:"Evening session, Wednesday 9 September, Omaha, 4:20 to 7:14 PM, 2:53:47. FIRST SESSION WITH "
+          +"DYLAN IN ABOUT TWO WEEKS. Three recorded matches, you and Dylan against the same two "
+          +"opponents throughout. Result: two close games and one loss that was fairly heavy but "
+          +"not a blowout. DYLAN WAS NOT AT FULL CAPABILITY: still injured with a cut on his "
+          +"forehand hand, the hand he uses, and cold from two weeks off. You put him at 90 to 95 "
+          +"percent. YOUR OWN READ WAS AROUND 75 PERCENT: drops off, drives off, decision making "
+          +"off and you were specific that it was SHOT SELECTION, choosing the wrong shot, and not "
+          +"consistent. Your words were also \u0027I didn\u0027t play horrible, I made good shots, "
+          +"I made good drops.\u0027 Both halves stay. YOU HIT YOUR SECOND EVER ATP. DINKS, IN "
+          +"YOUR OWN WORDS AND THIS IS THE SHARPEST THING IN THE REPORT: they were fine but not "
+          +"perfect, and you have realised you hit a lot of DEAD DINKS, dinks that are easy to "
+          +"speed up if the opponent is a high level player. That is a specific fault, not general "
+          +"inconsistency, and tonight it lands against opponents you described as quicker than "
+          +"you and Dylan. OPPONENTS: DUPR unknown, your estimate is mid threes and maybe high "
+          +"threes, not 4.0. Serves on point, drops decent, and they make mistakes too. Your view "
+          +"is that you and Dylan beat them if both of you are at 100 percent. From Apple Watch: "
+          +"avg HR 116, max 148, min 68, active 1,362, total 1,634. Active rate 7.84 a minute. "
+          +"EFFORT 9 IS YOUR RATING, not the watch\u0027s, and it is your highest yet. WORTH "
+          +"WATCHING RATHER THAN EXPLAINING: three of your four logged efforts now sit against a "
+          +"lower average heart rate than the rating implies. 129 at effort 8, 121 at effort 6, "
+          +"124 at effort 7, and tonight 116 at effort 9, your highest effort on your lowest "
+          +"average. Recorded as a pattern to watch, not explained. You recorded all three games "
+          +"and are sending games 2 and 3, holding game 1 back because you were cold. ALSO: you "
+          +"are still on the FIRST overgrip on the Coral Pro and can tell it is going. That is "
+          +"about 18.5 hours of play on it across 9 sessions since 2 September, at the top of the "
+          +"10 to 20 hour convention and past the weekly one."
+      });
+      _w99=true; }
+    if(_w99) save(true);
+} }catch(e){ try{ console.warn("mig384 pk 9 Sep did not apply:",e&&e.message); }catch(_){} }
+
 
 
 
