@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 384 (2026-09-09)">
+<meta name="build" content="v21 build 385 (2026-09-10)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -16654,6 +16654,121 @@ try{ if(profile==="ian" && state.pickleball){
       _w99=true; }
     if(_w99) save(true);
 } }catch(e){ try{ console.warn("mig384 pk 9 Sep did not apply:",e&&e.message); }catch(_){} }
+
+/* ===== v21 build 385: THURSDAY 10 SEPTEMBER 2026 ==========================================
+   ONE pickleball session, plus the queued gym day for the same date. TWO SEPARATE PATHS
+   THAT MUST NOT BE CONFUSED: the session goes to state.pickleball.sessions, the gym day goes
+   to state.daily[d].text as a GYM: line. The build 380 counter adds pkCnt[k] + (hasGy?1:0),
+   so 10 September must contribute 2 to the weekly total, not 1. Writing the gym day into the
+   session array, or the session into state.daily, would each cost one of those two.
+
+   GUARDED BY ID, NOT BY DATE, even though this is a ONE session day. Build 364 established
+   that a date guard silently refuses the second record of a two session day. The id guard
+   costs nothing and the date guard has already caused one bug, so the rule is applied
+   unconditionally rather than being re-decided per session.
+
+   ALL SIX WATCH VALUES ARE KNOWN AND NONE IS WRITTEN AS ZERO. 116/157/78, 1402 active,
+   1693 total. The build 376 defect was writing 0 for a value we had, because `avgHr: 0` and
+   a missing `avgHr` both fail a falsy check and only one of them is correct.
+
+   EFFORT 9 IS IAN'S, NOT THE WATCH'S, and the note says so. Every other number came off the
+   device. This is his second consecutive 9 and his second consecutive avg 116.
+
+   THE CENTRAL FACT OF THIS SESSION IS AN UNKNOWN AND THE NOTE SAYS SO OUT LOUD. A 4.5 player
+   taught him a different way to drop and he says it changed his play. WHAT HE TAUGHT IS NOT
+   KNOWN. No mechanic is inferred here, not contact point, paddle face, height or spin. An
+   invented mechanic would poison every future drop observation, because the record would read
+   as though it knows what changed. The note carries the gap explicitly so nobody reading the
+   app fills it in either.
+
+   NO drillMinutes, playMinutes or segments. He said "the first hour", which is his estimate
+   and not a measurement. Same decision as the 8 September evening record in build 381.
+
+   BOTH HALVES OF HIS SELF REPORT ARE IN THE NOTE. "It all went amazing" and "still made some
+   consistency errors" came from the same sentence and neither is quoted without the other.
+
+   NO SEED_VERSION BUMP. NO RATING CHANGE. Self report never moves a rating. */
+try{ if(profile==="ian" && state.pickleball){
+    var _P10=state.pickleball;
+    if(!Array.isArray(_P10.sessions)) _P10.sessions=[];
+    var _has10=false;
+    for(var _i10=0;_i10<_P10.sessions.length;_i10++){ var _s10=_P10.sessions[_i10];
+      if(_s10 && _s10.id==="pk-20260910-training") _has10=true; }
+    if(!_has10){
+      _P10.sessions.push({
+        id:"pk-20260910-training", date:"2026-09-10", kind:"Drilling + doubles", venue:"Omaha",
+        duration:"3h 05m 31s",
+        window:"4:19 to 7:25 PM, Omaha",
+        calories:1693, activeCalories:1402, avgHr:116, maxHr:157, minHr:78, effort:9,
+        result:"", score:"", opponent:"",
+        copyOwned:true,
+        note:"Thursday 10 September, Omaha, 4:19 to 7:25 PM, 3:05:31. YOUR LONGEST SINGLE SESSION ON "
+          +"RECORD. First hour DRILLING with a 4.5 rated multi year player: dinks, drops, resets and "
+          +"drives. Rest of the time doubles with Dylan. POSSIBLE INFLECTION POINT ON DROPS, and it is "
+          +"flagged as possible, not proven. The 4.5 TAUGHT YOU A DIFFERENT WAY TO HIT YOUR DROP and "
+          +"you say it changed how you played. WHAT HE TAUGHT IS NOT RECORDED ANYWHERE. Your words "
+          +"were 'how to hit drops better' and 'the new way I drop', and that is "
+          +"all the record has. NO MECHANIC IS GUESSED HERE. Nobody knows the contact point, the "
+          +"paddle face, the height or the spin, and one sentence from you would close the single "
+          +"most valuable gap in your pickleball record right now. The 4.5 player is also unnamed. "
+          +"WHY THIS MATTERS MORE THAN A USUAL ENTRY: drops are named in 23 of 38 sessions on file, "
+          +"your most recurring fault by a distance, and two days ago you named DEAD DINKS for the "
+          +"first time ever. Both of those shots were drilled tonight. 10 SEPTEMBER IS NOW A "
+          +"TECHNIQUE BOUNDARY IN THE DROP RECORD, the same way 2 September is the paddle boundary: "
+          +"footage either side of tonight is not comparing like with like on drops. YOUR OWN REPORT, "
+          +"BOTH HALVES: 'it all went amazing', 'I believe I played better than I have "
+          +"before', 'I played very good', 'good day for sure', AND "
+          +"'still made some consistency errors'. That is your most positive report on file "
+          +"and the errors were still there by your own account. Both stay. NOTHING IS GRADED HERE "
+          +"and no rating moved: grading runs blind to self report, there is no footage of tonight, "
+          +"and your DUPR stays 3.226. From Apple Watch: avg HR 116, max 157, min 78, active 1,402, "
+          +"total 1,693. Active rate 7.56 a minute, your lowest of the five sessions since 8 "
+          +"September, which is what three hours does. EFFORT 9 IS YOUR RATING, not the watch's. "
+          +"PATTERN, FIFTH DATA POINT, WATCHED NOT EXPLAINED: 129 at effort 8, 121 at effort 6, 124 "
+          +"at effort 7, 116 at effort 9, and tonight 116 at effort 9 again. Two sessions now sit at "
+          +"your highest effort on your lowest average heart rate, the same two numbers both times. "
+          +"It may be session length, it may be mental load, it may be that your effort scale tracks "
+          +"something other than cardiovascular work. n=5 is not enough to say. ALSO: you are "
+          +"debating going in tomorrow morning to drill. That is recorded as a maybe and NOTHING WAS "
+          +"BOOKED."
+      });
+      save(true); }
+} }catch(e){ try{ console.warn("mig385 pk 10 Sep did not apply:",e&&e.message); }catch(_){} }
+
+/* ===== v21 build 385: GYM DAY 2026-09-10, DRAINED FROM _APP_QUEUE.md =====================
+   Queue entry q178906331676594, producer gym_day.sh, source row GYM 2026-09-10 in
+   BRAIN/GLOBAL/_GYM_DAYS.md. Shipped here rather than left queued because THIS LANE HOLDS
+   THE DEPLOY LOCK, and the queue exists to catch writes from lanes that do not. 10 September
+   needs both its pickleball session and its gym day to count, and shipping one without the
+   other would have left the heatmap showing 1 for a day that was 2.
+
+   Written to state.daily[d].text, NOT gym.logs[d].note. The build 34 archive-then-clear
+   rollover blanks gym.logs[<yesterday>].note on the first load of a new day, so a gym day
+   written there renders on the day and goes grey overnight. Measured both ways in
+   WORK/Personal/Output/_gym_probe/run2.log.
+
+   APPENDS, never overwrites. If the day already carries a GYM: line this is a no op, so
+   Ian's own words in Today's entry always win. Block is gym_day.sh output, unmodified. */
+try{ if(profile==="ian"){
+  if(!state.daily || typeof state.daily!=="object") state.daily={};
+  if(!state.context) state.context={forClaude:"",dailyLog:{}};
+  if(!state.context.dailyLog) state.context.dailyLog={};
+  var _gd85=function(d,t){
+    if(!state.daily[d] || typeof state.daily[d]!=="object") state.daily[d]={text:""};
+    var _cur=String(state.daily[d].text||"");
+    if(!/(^|[\s>.;])GYM\s*:/i.test(_cur)){
+      state.daily[d].text=(_cur.trim()? _cur.replace(/\s+$/,"")+"\n" : "")+"GYM: "+t;
+    }
+    if(!state.context.dailyLog[d]) state.context.dailyLog[d]={note:"",summary:""};
+    var _dn=String(state.context.dailyLog[d].note||"");
+    if(!/(^|[\s>.;])GYM\s*:/i.test(_dn)){
+      state.context.dailyLog[d].note=(_dn.trim()? _dn.replace(/\s+$/,"")+"\n" : "")+"GYM: "+t;
+    }
+  };
+  _gd85("2026-09-10", "Medium AB/Stretch/cardio day. His words: 'since I didn't do a double pickleball session today and only doing one later I'm going to do a medium AB/Stretch/cardio day at the gym, this may be different next week.' ONE pickleball session later today, not a double.");
+  save(true);
+} }catch(e){ try{ console.warn("build 385 gym day did not apply:",e&&e.message); }catch(_){} }
+
 
 
 
