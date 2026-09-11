@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 385 (2026-09-10)">
+<meta name="build" content="v21 build 386 (2026-09-10)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -16769,6 +16769,304 @@ try{ if(profile==="ian"){
   save(true);
 } }catch(e){ try{ console.warn("build 385 gym day did not apply:",e&&e.message); }catch(_){} }
 
+/* ===== v21 build 386: THE VARIABLE WEEK. THE GYM SPLIT STOPS CLAIMING TO KNOW HIS DOUBLES ====
+   IAN ANSWERED THE QUESTION THAT WAS HELD ON HIM. Queue entry q178906336077088, filed by PB-12
+   on 10 September and deliberately HELD rather than guessed, asked whether the app should encode
+   the session count rule instead of the fixed Mon/Fri/Sat weekday map. His answer, 10.09.2026:
+
+     "I am going to workout early tomorrow morning, and then after my 3pm meeting I will go drill
+      pickleball, so no double pickleball session tomorrow. I think my double session days will be
+      in the Mon-Thursday span, likely 2-3 of those days each week."
+
+   THE RULE, AS HE STATES IT: no gym on days he plays TWICE. Doubles are 2 to 3 days a week,
+   somewhere in Monday to Thursday, and WHICH days vary. Friday to Sunday are never doubles.
+
+   THE HONEST DESIGN PROBLEM, AND IT IS NOT PRETENDED AWAY. A fixed weekday map cannot represent
+   "2 to 3 days, varying". The app knows how many pickleball sessions a date holds only AFTER the
+   fact, and a morning read has to say something before the day has happened. There is no data
+   source that fixes this: the app cannot see tomorrow, and his own words are "this may be
+   different next week", so there is nothing to read even in principle.
+
+   SO THE ANSWER IS THE ONE HE ANTICIPATED, SAID OUT LOUD RATHER THAN ENGINEERED AROUND. THE APP
+   SHOWS THE PLANNED THREE LIFTING DAYS AND NEVER CONTRADICTS HIM WHEN HE DOES SOMETHING ELSE.
+   Two halves, and the second half is the one that was actually broken:
+
+   1. THE PLAN HALF. Mon, Fri and Sat remain the three planned lifting days and their CONTENT IS
+      UNTOUCHED. That is not a weekday map of his doubles, it is where the three sessions are
+      scheduled, which is a different claim. Note where the plan sits relative to the risk:
+      FRIDAY AND SATURDAY ARE OUTSIDE THE MONDAY TO THURSDAY DOUBLE WINDOW ENTIRELY, so two of
+      the three lifting days can never collide with a double. MONDAY IS THE ONLY ONE THAT CAN,
+      and that collision is written on Monday's card rather than smoothed over. Tue, Wed and Thu
+      hold no planned lift, which is true, and they stop asserting "No gym. Double court day",
+      which is not.
+
+   2. THE NEVER CONTRADICT HALF, which is the code change and the real fix. gymLoggedOn() means
+      any day carrying a gym record renders as trained, on the lock screen and on the gym page,
+      whatever the plan said. On 10 September that alone would have made the app correct.
+
+   WHAT IS DELIBERATELY NOT BUILT, and it is worth naming so nobody builds it later thinking it
+   was missed. There is no prediction of which days will be doubles, no prompt asking him to
+   declare his doubles for the week, and no rule that infers a double from a calendar. A guess
+   dressed as a schedule is how this broke in the first place, and a weekly declaration is a
+   chore added to a man who opens the app to be told things, not to feed it.
+
+   ONE THING GENUINELY WAITING ON IAN, and it is NOT an escape hatch from the above, because the
+   app is correct either way once this ships. If a Monday turns out to be a double, the rule says
+   no gym, and the week lands at TWO lifts rather than three. He has never said whether he wants
+   that lift MOVED (to Thursday, the last day before the safe window) or simply LOST. The app
+   does not move it, because moving a session he did not ask to move is the same class of error
+   as telling him he had no gym. Queued for him.
+
+   NOTHING IS DELETED. The Bianca derived scheduling string is archived verbatim next to its
+   replacement. No exercise moves, no exercise is removed, no day gains or loses content, gym.logs
+   is untouched, SEED_VERSION stays 13, and the training heatmap and the skill map are not read or
+   written by any of this. Guarded once by state.meta.mig386_gymvarweek, which is NOT in the seed. */
+try{ if(!state.meta.mig386_gymvarweek && state.gym && Array.isArray(state.gym.split)){
+  var _G6=state.gym, _SP6=_G6.split;
+  var _D6=function(k){ for(var i=0;i<_SP6.length;i++){ if(_SP6[i] && _SP6[i].day===k) return _SP6[i]; } return null; };
+  var _IAN6='Ian, 10.09.2026: "I think my double session days will be in the Mon-Thursday span, '
+    +'likely 2-3 of those days each week", and his standing rule, 09.09.2026: "on the days that I '
+    +'do two sessions a day I do not work out at all on those days."';
+  var _VARNOTE="NO LIFT IS PLANNED HERE, AND THAT IS NOT THE SAME AS NO GYM. Your doubles land "
+    +"somewhere in Monday to Thursday, 2 to 3 of those four days, and WHICH days changes week to "
+    +"week. The app cannot know in the morning whether today is one of them, so it does not "
+    +"pretend to: it schedules no lift on this day and leaves the decision where it actually "
+    +"lives, with you. IF YOU ONLY PLAY ONCE TODAY, THE GYM IS OPEN and anything you do counts. "
+    +"Log it on Today and the app will say you trained instead of arguing with you. This replaces "
+    +"the old card, which read 'No gym. Double court day' and was wrong on Thursday 10 September, "
+    +"a single session day you spent in the gym. "+_IAN6;
+
+  ["Tue","Wed","Thu"].forEach(function(k){
+    var _d=_D6(k); if(!_d) return;
+    if((_d.exercises||[]).length) return;   /* never blank a day that carries content */
+    _d.varDouble=true;
+    _d.focus="No lift planned. Double likely";
+    _d.lockNote="No lift planned. If you only play once today, the gym is open.";
+    _d.play=(k==="Tue")?"Likely double. LEAGUE 6:30 to 8:30pm":"Likely double";
+    _d.note=_VARNOTE;
+  });
+
+  var _m6=_D6("Mon");
+  if(_m6){ _m6.note=String(_m6.note||"").trim()
+    +" MONDAY IS THE ONLY LIFTING DAY THAT CAN COLLIDE WITH A DOUBLE, and that is named here "
+    +"rather than smoothed over. Friday and Saturday sit outside the Monday to Thursday double "
+    +"window entirely, so they are never at risk; Monday is inside it. If a Monday turns out to "
+    +"be a double, your own rule says no gym, and the week lands at TWO lifts rather than three. "
+    +"THE APP DOES NOT MOVE THE SESSION FOR YOU. Whether that lift should shift to Thursday or "
+    +"simply be lost is your call and you have not made it, so nothing is moved on your behalf. "
+    +"Added 10.09.2026, build 386."; }
+
+  ["Fri","Sat"].forEach(function(k){
+    var _d=_D6(k); if(!_d) return;
+    _d.safeWindow=true;
+    _d.note=String(_d.note||"").trim()
+      +" OUTSIDE THE DOUBLE WINDOW, so this day is never at risk. Your doubles fall Monday to "
+      +"Thursday and Friday through Sunday are not double days, which makes this one of the two "
+      +"lifting days nothing can take. Added 10.09.2026, build 386.";
+  });
+
+  if(!_G6.scheduling || typeof _G6.scheduling!=="object") _G6.scheduling={};
+  if(_G6.scheduling.herWorkDays && !_G6.scheduling.herWorkDaysArchived){
+    _G6.scheduling.herWorkDaysArchived="ARCHIVED 10.09.2026, build 386, VERBATIM, not deleted. It "
+      +"read: \""+String(_G6.scheduling.herWorkDays)+"\" It was true about HER and it was used as a "
+      +"proxy for HIS doubles, which is where it went wrong. Her shifts are fixed, his doubles are "
+      +"not, and they agreed for months only because nothing had yet made them disagree.";
+  }
+  _G6.scheduling.herWorkDays="Tue, Wed, Thu. FIXED. HER SHIFTS ARE NOT A MAP OF HIS DOUBLES and "
+    +"must never be used as one again. That substitution is what told him he had no gym on "
+    +"Thursday 10 September, a day he trained.";
+  _G6.scheduling.doubleRule="NO GYM ON A DAY HE PLAYS TWICE. Doubles are 2 to 3 days a week, "
+    +"somewhere in Monday to Thursday, and WHICH days VARY. Friday, Saturday and Sunday are never "
+    +"double days. "+_IAN6;
+  _G6.scheduling.planShape="THREE PLANNED LIFTS: Monday upper, Friday lower, Saturday abs, cardio "
+    +"and rotation, plus the pinned Sunday stretch and hand speed block. Friday and Saturday sit "
+    +"outside the double window and are safe. Monday is the only one inside it. Tue, Wed and Thu "
+    +"carry NO PLANNED LIFT, which is a statement about the plan and NOT a claim that he will play "
+    +"twice on any of them.";
+  _G6.planVersion="variable week, 10.09.2026, shipped build 386. Three planned lifts, no weekday "
+    +"map of his doubles.";
+  state.meta.mig386_gymvarweek=true; save(true);
+} }catch(e){ try{ console.warn("mig386 gym variable week did not apply:",e&&e.message); }catch(_){} }
+
+/* ===== v21 build 386: CLIENTS AND PROSPECTS BROUGHT CURRENT ==================================
+   Ian, 10.09.2026: "app should have all the updated clients and prospects." Reconciled record by
+   record against Real_Estate/Context/01_MASTER_CONTEXT.md and LEAD_CONTACTS.md, both of which were
+   brought current on 10 September, and against the four undrained app queue entries.
+
+   WHAT WAS ALREADY RIGHT AND IS THEREFORE NOT TOUCHED, checked on a real post 385 profile rather
+   than assumed, because a migration that rewrites a correct field is how a correct field becomes
+   wrong: re-ashley-gilliam is already Seller side, $378,000, closed April 22 2026, with MLS
+   22605096 and the 16 days on market in its note, fixed in build 379. re-mattox-sell already
+   carries the BAND "$474,900 to $479,900" with Ian's verbatim decision in priceNote, fixed in the
+   same build. pp-rachel-jenkins already exists with the 17 September 1:00pm meeting and with
+   price, area and style deliberately empty. NONE OF THOSE IS REWRITTEN HERE.
+
+   THE 2026 GOAL CHECK, RUN RATHER THAN ASSERTED. reGoalsCard counts Closed plus Under Contract
+   only, so a Prospecting or Building record contributes zero to the $10M bar, zero to the 20 deal
+   bar and zero to the in flight ceiling. Every Closed and Under Contract record on the live
+   profile carries a 2026 close date. The three builds are Jed, created below at PROSPECTING with
+   a 2027 close, Rachel Jenkins, who is NOT created as a deal at all, and Sydney Spicer, already
+   Prospecting. NONE of them can reach a 2026 total. The known trap is documented in this file on
+   the Thacker record: is27 cannot exclude an EMPTY close string, so a record with a blank close
+   walks its whole price into the 2026 ceiling the moment its stage becomes Active or Coming Soon.
+   Spicer's close was blank. It is filled below, which closes that trap for good rather than
+   relying on nobody changing her stage.
+
+   Guarded once by state.meta.mig386_re, which is NOT in the seed. */
+try{ if(!state.meta.mig386_re && state.realEstate){
+  var _RE6=state.realEstate;
+  if(!Array.isArray(_RE6.deals)) _RE6.deals=[];
+  if(!Array.isArray(_RE6.people)) _RE6.people=[];
+  var _dl6=function(id){ for(var i=0;i<_RE6.deals.length;i++){ if(_RE6.deals[i]&&_RE6.deals[i].id===id) return _RE6.deals[i]; } return null; };
+  var _pp6=function(id){ for(var i=0;i<_RE6.people.length;i++){ if(_RE6.people[i]&&_RE6.people[i].id===id) return _RE6.people[i]; } return null; };
+  var _app6=function(o,k,t){ var c=String(o[k]||""); if(c.indexOf(t.slice(0,60))>=0) return; o[k]=(c.trim()?c.trim()+" ":"")+t; };
+
+  /* ---- JED. Not in the app at all before this. Queue q178904673960728 and q178904883665763. ---- */
+  if(!_dl6("re-jed-lot185")){
+    _RE6.deals.push({
+      id:"re-jed-lot185",
+      title:"Jed, Blondo Point Lot 185",
+      sub:"Seller side, Blondo Point Lot 185, walkout ranch",
+      stage:"Prospecting",
+      price:"$815,000 to $825,000",
+      priceNote:"A RANGE ON PURPOSE AND IT IS NOT A GAP. Chris said 'up to 825' on 8 September, "
+        +"Julie Tartaglia is drafting at an estimated purchase price of $815,000, and THE CONTRACT "
+        +"MAKES THE PRICE CONTINGENT ON PLANS AND SPECS, so it is open BY DESIGN until the "
+        +"blueprints exist. Do not collapse it to one figure. The spread to you is $61.20, "
+        +"$4,987.80 at $815,000 against $5,049.00 at $825,000, so nothing turns on which it is.",
+      close:"Oct or Nov 2027",
+      source:"Chris's client",
+      side:"Seller",
+      sellerRate:0.036,
+      ianSplit:0.20,
+      note:"CREATED 10.09.2026, build 386. SURNAME UNKNOWN AND LEFT EMPTY, not researched away and "
+        +"not invented. WE ARE THE SELLER'S AGENT, which is Ian's own wording: \"For JED we are "
+        +"sellers agent so 3.6%, my dads client so I only get 20%.\" Builder side and seller side "
+        +"are the same position on this deal. Building with Ryan Beachler at Rose Creek Homes, "
+        +"walkout ranch, Blondo Point Lot 185. CHRIS IS THE OWNER OF THE RELATIONSHIP. "
+        +"JED IS NOT OUR CLIENT. He is represented by JULIE TARTAGLIA of BHHS Ambassador, so this "
+        +"is a CO-OP across two brokerages and ALL CONTACT RUNS THROUGH HIS AGENT. There is no "
+        +"phone and no email on file for him anywhere and those fields are empty for that reason. "
+        +"THE 50/50 ROSE CREEK RULE DOES NOT REACH HIM and must not be allowed to leak onto him: "
+        +"it needs Rose Creek building AND an unrepresented buyer, and he has an agent, so he "
+        +"stays on the ordinary case, 3.6 percent seller side x 0.85 x 0.20. "
+        +"TIMELINE: lot deposit September 2026, blueprints October 2026, build starts early spring "
+        +"2027, completion October or November 2027. Builder meeting held 8 September 12:30 at the "
+        +"two storey model, 20131 R Street. "
+        +"STAGE IS PROSPECTING ON PURPOSE: the purchase agreement had NOT arrived as at 10 "
+        +"September 08:24. THIS IS 2027 PRODUCTION AND IT MUST NEVER TOUCH A 2026 TOTAL. At "
+        +"Prospecting it contributes zero to the $10M bar, zero to the 20 deal bar and zero to the "
+        +"in flight ceiling. The close field says 2027 as well, so the is27 filter parks it even if "
+        +"the stage moves. DO NOT CLEAR THAT CLOSE FIELD. Full record with every verbatim quote is "
+        +"in Real_Estate/Context/LEAD_CONTACTS.md under JED."
+    });
+  }
+  if(!_pp6("pp-jed")){
+    _RE6.people.push({
+      id:"pp-jed", name:"Jed", phone:"", kind:"Lead", quality:"Warm", last:"2026-09-08",
+      note:"SURNAME NOT KNOWN AND DELIBERATELY EMPTY. NO PHONE AND NO EMAIL, and that is not an "
+        +"unchecked field: he is the BUYER on a co-op and he has his own agent, so there is no "
+        +"direct line to him and there should not be one. HIS AGENT IS JULIE TARTAGLIA, BHHS "
+        +"Ambassador, 402-215-2156. Chris owns the Scenic Group side with Ryan Beachler at Rose "
+        +"Creek Homes. Blondo Point Lot 185, walkout ranch, $815,000 to $825,000 contingent on "
+        +"plans and specs. Deal re-jed-lot185. Source LEAD_CONTACTS.md, created 10.09.2026."
+    });
+  }
+
+  /* ---- SYDNEY SPICER. Spring start, and the empty close was a live trap. ---- */
+  var _sp6=_dl6("re-sydney-spicer-sell");
+  if(_sp6){
+    if(!String(_sp6.close||"").trim()){
+      _sp6.close="Spring 2027 start, March or April. Not listed, no list date";
+    }
+    _app6(_sp6,"note","SPRING START CONFIRMED 10.09.2026 AND THE QUIET IS NOT A STALL. Chris, "
+      +"10.09.2026 08:22, verbatim: \"Good. They are a spring start\" then \"Like march/april\". "
+      +"The 8 September introductory meeting with Brandon at Trademark went well. DO NOT TREAT "
+      +"HER AS AN ACTIVE NEAR TERM BUILD, do not chase a contract, and do not report the silence "
+      +"as a stalled deal. Siena 2 plan, McCardle Ridge when buildable, budget up to $625,000, all "
+      +"unchanged. THE CLOSE FIELD WAS EMPTY UNTIL NOW AND THAT WAS A LIVE TRAP: the is27 filter "
+      +"cannot exclude an empty string, so this record would have walked $458,000 straight into the "
+      +"2026 ceiling the moment anyone moved it off Prospecting. It now says 2027 and is parked "
+      +"wherever the stage goes. Build 386.");
+  }
+
+  /* ---- THE TWO RACHELS. Different people. Marked on BOTH records, not one. ---- */
+  var _rh6=_dl6("re-hartley-buy");
+  if(_rh6){ _app6(_rh6,"note","NAME COLLISION, FLAGGED 10.09.2026, build 386. THIS IS RACHEL "
+    +"HARTLEY. There is a DIFFERENT Rachel in the pipeline, RACHEL JENKINS, a build side prospect "
+    +"of Ian's own with a 17 September meeting, held at people record pp-rachel-jenkins. DO NOT "
+    +"MERGE THEM and do not let a search on 'Rachel' return one for the other."); }
+  var _rj6=_pp6("pp-rachel-jenkins");
+  if(_rj6){ _app6(_rj6,"note","NAME COLLISION, FLAGGED 10.09.2026, build 386. A DIFFERENT Rachel "
+    +"is in the deal pipeline, RACHEL HARTLEY, re-hartley-buy, Chris's client, buyer side. DO NOT "
+    +"MERGE THEM. SHE STAYS A PROSPECT AND IS NOT A DEAL: Ian calls her \"a maybe\", so no deal "
+    +"record exists for her and none should be created until she is real. IF SHE STAYS "
+    +"UNREPRESENTED SHE IS THE 50/50 ROSE CREEK CASE, which is roughly four times the money for "
+    +"the same work, so know that before the meeting rather than after. NO DOLLAR FIGURE IS "
+    +"MODELLED FOR HER AND NONE MAY BE: she has given no price by her own choice until the 17th, "
+    +"and a modelled number on a prospect with no price is an invented number that would feed take "
+    +"home arithmetic. HER SOURCE SHARE IS DISPUTED AND IS NOT SET ANYWHERE: Ian said \"I get the "
+    +"full 3%, just brokerage taking 15% of that\", which reads as share 1.00, while the standing "
+    +"model says Ian's own client is 0.80 and is itself still UNVERIFIED. One line from him closes "
+    +"it. Nobody may pick for him."); }
+
+  /* ---- THE COMMISSION RULES. The app models money, so the rule belongs in the app. ---- */
+  if(!_RE6.commissionRules){
+    _RE6.commissionRules={
+      asOf:"10.09.2026, build 386",
+      order:"ORDER OF OPERATIONS, AND IT IS WHERE THIS GOES WRONG. gross = side rate x price. "
+        +"THEN brokerage takes 15 percent off the GROSS and the team keeps 85 percent. THEN Ian "
+        +"takes his share of what is left. Ian, 10.09.2026: \"remember we get 85% after brokerage "
+        +"takes their cut, so factor that in.\"",
+      cases:[
+        {name:"ORDINARY SINGLE SIDE. The default, and almost everything is this.",
+         formula:"side rate x price x 0.85 x source share",
+         detail:"Seller side 3.6 percent by default, buyer side 2.4 percent. Source share: Chris's "
+           +"client 0.20, Ian's own 0.90 as the app default. THE 80/20 FOR IAN'S OWN CLIENTS IS "
+           +"STILL UNVERIFIED and that flag stays. A rate or a split stated on a deal always beats "
+           +"the default."},
+        {name:"DUAL AGENCY. Both sides of one transaction.",
+         formula:"(charged rate x price) minus (0.009 x price), then 50/50",
+         detail:"The brokerage takes 15 percent of a FIXED 6 percent basis on dual deals, not 15 "
+           +"percent of the charged rate. Matt Snyder at 4.5 percent and Brandon Winchester at 5 "
+           +"percent are the two on file and both carry their stated rate."},
+        {name:"ROSE CREEK BUILD WITH AN UNREPRESENTED BUYER. NEW 10.09.2026. THE ONLY 50/50 CASE.",
+         formula:"price x rate x 0.85 x 0.50, where rate is 5 to 6 percent",
+         detail:"IAN, VERBATIM: \"with rose creek homes building and they don't have an agent, it "
+           +"means we get, typically, a full 5-6% commission. When this is the case me and my dad "
+           +"split it down the middle, so 6% is 3% each and 5% is 2.5% each. There's no 80-20 or "
+           +"20/80 split on those. Mat Snyder was an example of this, but this is the only case "
+           +"where we do this.\" BOTH CONDITIONS ARE REQUIRED: Rose Creek Homes is building AND the "
+           +"buyer has NO agent. No source share, no 80/20, no 20/80, whosever client it is. Per "
+           +"$100,000 Ian nets $2,550 at 6 percent and $2,125 at 5 percent. "
+           +"HOW TO ENCODE IT ON A DEAL, so nobody reaches for the wrong lever: set sellerRate to "
+           +"0.06 or 0.05 AND ianSplit to 0.50, and leave source as the real source. DO NOT set "
+           +"source to 'Dual agency' to get the 50/50. Dual agency uses the fixed 6 percent "
+           +"brokerage basis, which is identical at 6 percent and DIVERGENT below it, so it would "
+           +"quietly produce the wrong number at 5 percent. "
+           +"A ROSE CREEK BUILD WHERE THE BUYER HAS AN AGENT IS AN ORDINARY CO-OP, NOT THIS. Jed "
+           +"is exactly that case and is NOT affected: he has Julie Tartaglia."}
+      ],
+      openForIan:"TWO THINGS ARE WAITING ON IAN AND NEITHER IS GUESSED HERE. (1) RACHEL JENKINS'S "
+        +"SHARE. His wording reads as the full 3 percent with only brokerage taken, share 1.00, "
+        +"while the standing model says his own client is 0.80. One line closes it. (2) THE DUAL "
+        +"BROKERAGE BASIS. The app takes 0.009 x price on dual deals, a fixed 6 percent basis, "
+        +"while he described 15 percent of the CHARGED rate. Identical at 6 percent, divergent "
+        +"below. Matt Snyder at 4.5 percent on $797,850 is $14,361.30 on the app model and "
+        +"$15,258.88 on his. Snyder is closed and paid, so the real figure is knowable. Brandon "
+        +"Winchester at $1.1m to $1.2m is the live one this affects. BOTH MODELS ARE LEFT AS THEY "
+        +"ARE and the difference is flagged, not resolved.",
+      mayBeMisTagged:"REPORTED, NOT CHANGED. Four records could meet the new 50/50 shape and are "
+        +"tagged for the ordinary case: re-frahm-build, re-bruce-oneil, re-openhouse-lead-20260822 "
+        +"and possibly re-sydney-spicer-sell, which builds with TRADEMARK rather than Rose Creek so "
+        +"the rule as Ian stated it does not reach her. Every one is a question about money and the "
+        +"standing rule is to report, not to fix."
+    };
+  }
+
+  save(true); state.meta.mig386_re=true; save(true);
+} }catch(e){ try{ console.warn("mig386 real estate did not apply:",e&&e.message); }catch(_){} }
+
 
 
 
@@ -19529,6 +19827,25 @@ function reViewTodo(v){
   sect(v,"Things I need to do","follow ups, comps, appointments");
   safe(v,()=>reTodos(v),"Follow ups");
 }
+/* build 386: renderer for state.realEstate.commissionRules. Pure read. */
+function reCommissionRules(parent){
+  var R=state.realEstate&&state.realEstate.commissionRules; if(!R) return;
+  var c=card("a-teal"); var b=c._body;
+  b.appendChild(el("div","small muted","Commission rules, as at "+(R.asOf||"")));
+  var ord=el("div","small"); ord.style.cssText="margin-top:8px;line-height:1.55;color:var(--gray)";
+  ord.textContent=R.order||""; b.appendChild(ord);
+  (R.cases||[]).forEach(function(x){
+    var w=el("div"); w.style.cssText="margin-top:11px;padding:9px 10px;border-radius:9px;background:rgba(255,255,255,.04);line-height:1.55";
+    var h=el("div"); h.style.cssText="font-weight:800;font-size:13px;letter-spacing:-.01em"; h.textContent=x.name||""; w.appendChild(h);
+    var f=el("div","small"); f.style.cssText="margin-top:4px;font-weight:700;color:var(--sec2,var(--accent2))"; f.textContent=x.formula||""; w.appendChild(f);
+    var d=el("div","small dim"); d.style.marginTop="5px"; d.textContent=x.detail||""; w.appendChild(d);
+    b.appendChild(w);
+  });
+  if(R.openForIan){ var o=el("div","small"); o.style.cssText="margin-top:11px;padding:9px 10px;border-radius:9px;background:rgba(255,99,99,.10);border:1px solid rgba(255,99,99,.35);line-height:1.5";
+    o.textContent=R.openForIan; b.appendChild(o); }
+  if(R.mayBeMisTagged){ var m=el("div","small dim"); m.style.marginTop="9px"; m.style.lineHeight="1.5"; m.textContent=R.mayBeMisTagged; b.appendChild(m); }
+  parent.appendChild(c);
+}
 function reViewTools(v){
   reBack(v,"Real Estate");
   /* build 225: THE FOCUS TIMER AND THE METRIC COUNTS ARE REMOVED. Ian's call 08.04.2026 after being
@@ -19545,6 +19862,11 @@ function reViewTools(v){
   const leads=(state.realEstate.leads||[]);
   collapseTool(v,"Leads",leads.length?(leads.length+(leads.length===1?" lead":" leads")):"none yet",()=>leadsModule(v));
   collapseTool(v,"Key contacts","",()=>reContacts(v));
+  /* build 386: the app models take home on every deal and had NOWHERE that stated the rules it
+     models with. The third case, Rose Creek building with an unrepresented buyer, is worth about
+     four times the ordinary case on the same work, and it was only in a BRAIN file. Read only,
+     renders nothing at all when the record is absent. */
+  if(state.realEstate.commissionRules) collapseTool(v,"Commission rules","three cases, and the 50/50 one",()=>reCommissionRules(v));
   if(!hidden("neighborhoods")) collapseTool(v,"Neighborhoods & farm","",()=>reNeigh(v));
   if(!hidden("scripts")) collapseTool(v,"Quick scripts","",()=>scriptsModule(v));
   
@@ -19649,6 +19971,34 @@ function gymToday(parent){ try{ healthCard(parent); }catch(e){} const day=daySpl
     var _why=""; try{ var _r2=((state.gym&&state.gym.restDays)||{})[TODAY]; if(_r2){ _why=_r2.cut?("Cut this week: "+_r2.cut+". "+(_r2.makeup||"")):(_r2.reason||""); } }catch(e){}
     const rf=el("div","small dim"); rf.style.marginTop="7px"; rf.textContent=_why?_why:"Nothing to log today."; rb.appendChild(rf);
     parent.appendChild(rc); return; }
+  /* ===== build 386: A DAY WITH NO EXERCISES GETS ITS OWN CARD ===============================
+     Before this, Tue, Wed and Thu fell through to the normal session card, which prepended the
+     synthetic warm up and rendered a one item workout headed "No gym. Double court day". A card
+     that both denies there is a gym day and lists something to do in it is the surface half of
+     the 10 September failure. These days now render what is actually true: no lift is PLANNED,
+     the reason is the rule rather than a claim about today, and if he HAS trained today the card
+     says so instead of arguing with him. */
+  if(!(day.exercises||[]).length){
+    const nc=card("a-blue"); const nb=nc._body;
+    const did=gymLoggedOn(TODAY);
+    const ntop=el("div","between"); const nleft=el("div");
+    nleft.appendChild(el("h3",null,did?"Gym logged today":(day.varDouble?"No lift planned":cleanFocus(day.focus)||"No gym today")));
+    const nsub=el("div","small muted");
+    nsub.textContent="Today, "+DAYFULL[DOW]+". Pickleball: "+(day.play||"Off"); nleft.appendChild(nsub);
+    ntop.appendChild(nleft); ntop.appendChild(el("span","pill b",did?"Trained":"No lift"));
+    nb.appendChild(ntop);
+    if(did){ const dn=el("div","small"); dn.style.cssText="margin-top:7px;line-height:1.55;color:var(--gray)";
+      dn.textContent="You trained today and this day carries no planned lift. That is allowed and it is not a miss: the rule is no gym on a day you play TWICE, so a single session day leaves the gym open. Your entry is on Today and it counts on the training heatmap.";
+      nb.appendChild(dn); }
+    else if(day.note){ const nn=el("div","small muted"); nn.style.marginTop="7px"; nn.textContent=day.note; nb.appendChild(nn); }
+    parent.appendChild(nc);
+    const tog0=el("div"); tog0.style.margin="2px 2px 0";
+    const lk0=el("button"); lk0.style.cssText="background:none;border:none;color:var(--sec2,var(--accent2));font-weight:700;font-size:13px;padding:6px 2px";
+    lk0.textContent=gymShowWeek?"Hide full week":"View full week";
+    lk0.onclick=()=>{ gymShowWeek=!gymShowWeek; render(); }; tog0.appendChild(lk0); parent.appendChild(tog0);
+    if(gymShowWeek){ sect(parent,"Full week reference","for reference only"); gymWeek(parent); }
+    return;
+  }
   var items=[{id:"stretch5",name:"5 to 10 minute stretch",scheme:"warm up"}].concat(day.exercises); const total=items.length, dc=items.filter(e=>log.done[e.id]).length;
   /* build 362: both tiles here were computed from the ticks. "Today's session 0 of 8 sets"
      and a "Workouts logged" sparkline that can only ever read zero are worse than no tile,
@@ -20589,9 +20939,50 @@ function lockNow(){ try{ sess.remove("ianDash.session"); }catch(e){} const l=doc
    THE NO GYM STATE IS REQUIRED, NOT AN EDGE CASE. Wednesday is a gym free double court day
    and Sunday is the pinned hand speed and mobility block, so two days in seven have no gym.
    An empty bubble or yesterday's day on those days would be a lie. */
+/* ===== v21 build 386: THE APP MUST NEVER CONTRADICT WHAT HE ACTUALLY DID =====================
+   THE FAILURE THIS CLOSES, and it is measured, not hypothetical. On Thursday 10 September Ian
+   played ONE pickleball session, not a double, so by his own rule the gym was open, and he
+   trained: abs, stretch and cardio. The app told him "No gym today - Thursday. Double court day,
+   gym free." on the lock screen, for the whole of a day he spent in the gym. The rule was right
+   and the APP was wrong.
+
+   WHY A WEEKDAY MAP COULD NOT GET THIS RIGHT. state.gym.split is indexed by weekday. His actual
+   rule is indexed by SESSION COUNT: no gym on a day he plays twice. Those two agreed for months
+   because Bianca's shifts fixed his doubles to Tue, Wed and Thu, so nothing ever distinguished
+   them. The 10th is the first day they disagreed and it is the only evidence available about
+   which one the app had encoded. It had encoded the proxy.
+
+   THIS FUNCTION IS THE GENERAL FIX AND IT IS NOT ABOUT WEEKDAYS AT ALL. A day carrying a gym
+   record is a day he trained, whatever the plan said, so no surface may render "No gym today"
+   against it. It reads the same two places gym_day.sh writes, plus the historic tick map, and
+   it is READ ONLY: it writes nothing, creates nothing and cannot change a counter. The training
+   heatmap reads state.daily[d].text directly and is not touched by anything here. */
+function gymLoggedOn(k){
+  try{
+    if(!k) return false;
+    var t=String(((state.daily||{})[k]||{}).text||"");
+    if(/(^|[\s>.;])GYM\s*:/i.test(t)) return true;
+    var n=String((((state.context||{}).dailyLog||{})[k]||{}).note||"");
+    if(/(^|[\s>.;])GYM\s*:/i.test(n)) return true;
+    var lg=((state.gym||{}).logs||{})[k];
+    if(lg&&lg.done){ for(var id in lg.done){ if(lg.done[id]) return true; } }
+  }catch(e){}
+  return false;
+}
 function lockGymBubble(){
   var d=null; try{ d=daySplit(DOW); }catch(e){ d=null; }
   var name=DAYFULL[DOW];
+  /* build 386: HIS OWN RECORD OUTRANKS THE PLAN, and it is checked FIRST so no later branch can
+     overwrite it. This is the branch that would have been correct on 10 September. */
+  if(gymLoggedOn(TODAY)){
+    var _did=""; try{ _did=String(((state.daily||{})[TODAY]||{}).text||"").split(/\n/)
+      .filter(function(l){ return /^\s*GYM\s*:/i.test(l); })[0]||""; }catch(e){}
+    /* NO LOOKBEHIND. Older iOS Safari does not support it and this ships to his phone. */
+    _did=_did.replace(/^\s*GYM\s*:\s*/i,"");
+    var _dot=_did.indexOf(". "); if(_dot>0) _did=_did.slice(0,_dot+1);
+    if(_did.length>90) _did=_did.slice(0,88)+"..";
+    return {lab:"Gym logged today",sub:name+(_did?(". "+_did):". Your own entry.")};
+  }
   if(!d) return {lab:"No gym today",sub:name};
   var noGym=!!d.noGym, rest=!!d.rest;
   if(!rest){ try{ var _rd=(state.gym&&state.gym.restDays)||{}; rest=!!(_rd[TODAY]&&_rd[TODAY].planned); }catch(e){} }
@@ -20599,6 +20990,10 @@ function lockGymBubble(){
   var focus=String((d&&d.focus)||"");
   if(noGym||rest||nEx===0||/^\s*no gym/i.test(focus)){
     var why=String((d&&d.lockNote)||"")||(d&&d.play?("Pickleball: "+d.play):"");
+    /* build 386: on a VARIABLE DOUBLE day the honest label is that no lift is PLANNED, not that
+       there is no gym. Whether there is a gym is decided by how many times he plays, and the
+       app cannot know that in the morning. It says what it knows and stops there. */
+    if(d&&d.varDouble) return {lab:"No lift planned",sub:why?(name+". "+why):name};
     return {lab:"No gym today",sub:why?(name+". "+why):name};
   }
   var short=cleanFocus(focus).replace(/,\s*(hard|medium|light)\b.*$/i,"").replace(/[\s.,]+$/,"");
