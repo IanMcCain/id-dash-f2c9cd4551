@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 387 (2026-09-11)">
+<meta name="build" content="v21 build 388 (2026-09-12)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -17383,6 +17383,98 @@ try{ if(!state.meta.mig386_re && state.realEstate){
       state.pickleball.mechanics=_M7;
       state.meta.mig_pkmech_roll0831=true; save(true);
   } }catch(e){ try{ console.warn("pkmech roll0831 did not apply:",e&&e.message); }catch(_){} }
+
+/* ===== v21 build 388: FRIDAY 11 AND SATURDAY 12 SEPTEMBER 2026 ============================
+   TWO RECORDS, TWO DATES, ONE SESSION EACH. GUARDED BY ID, NOT BY DATE. Neither is a two
+   session day and the id guard is used anyway: build 364 established that a date guard
+   silently refuses the second record of a two session day, and re-deciding the guard per
+   session is exactly how that bug returns.
+
+   IAN LABELLED BOTH DATES HIMSELF. He sent the two screenshots together and said which was
+   which, so the dates are his and are not inferred from file order or from a timestamp.
+
+   ALL SIX WATCH VALUES KNOWN ON BOTH AND NONE IS WRITTEN AS ZERO. 11 Sep 129/164/78, active
+   1281, total 1484. 12 Sep 115/150/67, active 1246, total 1499. The build 376 defect was
+   writing 0 for a value we had, because `avgHr: 0` and a missing `avgHr` both fail a falsy
+   check and only one of them is correct.
+
+   EFFORT 7 ON BOTH IS IAN'S RATING, NOT THE WATCH'S, and both notes say so.
+
+   HE GAVE NO ACCOUNT OF EITHER SESSION AND THE RECORDS SAY SO OUT LOUD. No opponents, no
+   partner, no format, no drills, no result, no self assessment. result, score and opponent
+   are EMPTY on both, and each note states plainly that no account was given, so nobody
+   reading the app mistakes a blank for an oversight and fills it in. NOTHING IS INFERRED
+   FROM DURATION OR HEART RATE: a 2h42 at avg 115 and a 2h09 at avg 129 could be the same
+   format played differently or two different formats, and this record cannot tell which.
+
+   BOTH ARE POST TECHNIQUE CHANGE, after the 10 September drop boundary, and both notes tag
+   that explicitly so a future film study knows which side of the boundary they sit on.
+   11 September is the FIRST session after it.
+
+   NOTHING IS WRITTEN TO state.daily AND NOTHING TO gym.logs. No gym day exists for either
+   date. Under the build 380 counter, 11 September contributes 1 and 12 September contributes
+   1, which is correct: a gym row for either date would arrive through gym_day.sh on its own
+   path and add its own +1.
+
+   NO SEED_VERSION BUMP. NO RATING CHANGE. */
+try{ if(profile==="ian" && state.pickleball){
+    var _P13=state.pickleball;
+    if(!Array.isArray(_P13.sessions)) _P13.sessions=[];
+    var _h11=false,_h12=false,_w13=false;
+    for(var _i13=0;_i13<_P13.sessions.length;_i13++){ var _s13=_P13.sessions[_i13];
+      if(!_s13) continue;
+      if(_s13.id==="pk-20260911-training") _h11=true;
+      if(_s13.id==="pk-20260912-openplay") _h12=true; }
+    if(!_h11){
+      _P13.sessions.push({
+        id:"pk-20260911-training", date:"2026-09-11", kind:"Pickleball", venue:"Omaha",
+        duration:"2h 09m 27s",
+        window:"5:52 to 8:01 PM, Omaha",
+        calories:1484, activeCalories:1281, avgHr:129, maxHr:164, minHr:78, effort:7,
+        result:"", score:"", opponent:"",
+        copyOwned:true,
+        note:"Friday 11 September, Omaha, 5:52 to 8:01 PM, 2:09:27. WATCH DATA ONLY. YOU GAVE NO "
+          +"ACCOUNT OF THIS SESSION: no opponents, no partner, no format, no drills, no result and "
+          +"no self assessment, so those fields are EMPTY ON PURPOSE and nothing has been guessed "
+          +"from the duration or the heart rate. THIS IS THE DRILL BLOCK YOU MOVED BY HAND TO 17:30 "
+          +"to 20:30. It actually ran 17:52 to 20:01, so it started 22 minutes late and finished 29 "
+          +"minutes early, 2:09:27 against a 3 hour slot. THE RECORD CARRIES THE ACTUAL TIMES, not "
+          +"the planned ones, and the gap is noted without a reason attached because you did not "
+          +"give one. FIRST SESSION AFTER THE 10 SEPTEMBER DROP TECHNIQUE CHANGE, so it sits on the "
+          +"new side of that boundary. From Apple Watch: avg HR 129, max 164, min 78, active 1,281, "
+          +"total 1,484. Active rate 9.90 a minute, your HIGHEST of the seven sessions since 8 "
+          +"September, and it is also the shortest of the seven, which is the ordinary direction for "
+          +"that number to move. EFFORT 7 IS YOUR RATING, not the watch's."
+      });
+      _w13=true; }
+    if(!_h12){
+      _P13.sessions.push({
+        id:"pk-20260912-openplay", date:"2026-09-12", kind:"Pickleball", venue:"Omaha",
+        duration:"2h 42m 04s",
+        window:"7:06 to 9:48 AM, Omaha",
+        calories:1499, activeCalories:1246, avgHr:115, maxHr:150, minHr:67, effort:7,
+        result:"", score:"", opponent:"",
+        copyOwned:true,
+        note:"Saturday 12 September, Omaha, 7:06 to 9:48 AM, 2:42:04. WATCH DATA ONLY. YOU GAVE NO "
+          +"ACCOUNT OF THIS SESSION: no opponents, no partner, no format, no drills, no result and "
+          +"no self assessment. Those fields are EMPTY ON PURPOSE. A blank here is not an oversight, "
+          +"it is the honest state of the record, and nothing has been inferred from the duration or "
+          +"the heart rate. POST TECHNIQUE CHANGE, after the 10 September drop boundary. From Apple "
+          +"Watch: avg HR 115, max 150, min 67, active 1,246, total 1,499. Active rate 7.69 a "
+          +"minute. EFFORT 7 IS YOUR RATING, not the watch's. THE EFFORT PATTERN HAS TURNED AND "
+          +"IT IS RECORDED, NOT EXPLAINED. Seven sessions since 8 September: 129 at effort 8, 121 at "
+          +"6, 124 at 7, 116 at 9, 116 at 9, then 129 at 7 and now 115 at 7. EFFORT 7 NOW SPANS AN "
+          +"AVERAGE HEART RATE OF 115 TO 129, and avg 116 was rated 9 twice while avg 115 is rated "
+          +"7, so one beat of difference carries two points of rating. Your effort rating does not "
+          +"track average heart rate and does not track consistently against itself either. NOBODY "
+          +"IS SUGGESTING YOU RATE DIFFERENTLY. Effort is the one field with no instrument behind it "
+          +"and it may be measuring something real that heart rate does not capture. n=7 across five "
+          +"days is not enough to say what."
+      });
+      _w13=true; }
+    if(_w13) save(true);
+} }catch(e){ try{ console.warn("mig388 pk 11 and 12 Sep did not apply:",e&&e.message); }catch(_){} }
+
 
 
 
