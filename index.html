@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 386 (2026-09-10)">
+<meta name="build" content="v21 build 387 (2026-09-11)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -16497,6 +16497,94 @@ try{ if(!state.meta.mig383_gym3day && state.gym && Array.isArray(state.gym.split
   state.meta.mig383_gym3day=true; save(true);
 } }catch(e){ try{ console.warn("mig383 did not apply:",e&&e.message); }catch(_){} }
 
+/* ===== v21 build 387: A NAME IS A LABEL, NOT AN INSTRUCTION. ==================
+   Ian, 11.09.2026, on the Friday lower body card: "Take this completely off."
+
+   WHAT WAS WRONG. d1-bulgarian carried its entire two week ramp inside the exercise
+   NAME: "Smith machine Bulgarian split squat \u2014 START AT 2 SETS FOR TWO WEEKS,
+   bodyweight or one light DB, then build", 107 characters, with the scheme carrying
+   "Weeks 1 to 2: 2\u00d78 per leg. From week 3: 3\u00d78 per leg" behind it. An earlier
+   session put it there deliberately, on the reasoning that if it sat in a note he
+   would not see it. That was wrong twice over: the row wrapped ELEVEN LINES at 390px
+   and pushed its scheme off the right edge, and it put OUR WORKING into a surface he
+   reads at a glance. He gave the same note about calendar events hours earlier, no
+   notes on pickleball events, title and time only.
+
+   THE TEST IAN SET, AND IT DECIDES EVERY CASE LIKE THIS FROM NOW ON:
+   IS THIS OUR EXPLANATION, OR HIS PROGRAMMING? Ours comes off. His stays, however
+   untidy it looks. His caps are emphasis and his parentheticals are naming aids and
+   rationale he chose, and they are not ours to tidy.
+
+   SO THIS TOUCHES EXACTLY TWO EXERCISES, both ruled on by Ian by name.
+     d1-bulgarian  name   -> "Smith machine Bulgarian split squat"
+                   scheme -> "3\u00d78 per leg"
+                   The scheme format is the NEIGHBOURS' format, read off the same
+                   day rather than invented: 4\u00d78 heavy, 3\u00d710 per side,
+                   4\u00d710/8/8/8, 3\u00d715/12/12, 4\u00d712. He is past week one, so the
+                   ramp has served its purpose and the clean scheme is the truth now.
+     315bifh       name   -> "Standing calf raise"
+                   cue    -> "3 second lowering phase, pause at the bottom"
+                   THE TEMPO IS REAL PROGRAMMING, NOT OUR WORKING. Ian was explicit
+                   that it must survive somewhere visible rather than be archived
+                   away, so it MOVES to the exercise's cue field and renders as a
+                   caption under the scheme. It is still on the card. It has simply
+                   stopped pretending to be part of the name.
+
+   AND IT LEAVES SEVEN ALONE, every one of them his, ruled 11.09.2026: hs-wrist-fast,
+   hs-pronation, pkl-cablechop, abc-elevate, abc-rotary, abc-cardio, and d1-finisher,
+   where FINISHER is a programme term and the intervals ARE the exercise.
+   DO NOT TIDY THESE IN A LATER BUILD.
+
+   NEITHER EXERCISE IS DELETED AND NEITHER ID MOVES. Bulgarian split squats were
+   Ian's own request, 05.09.2026. gym.logs IS UNTOUCHED: only the display name and
+   the scheme string changed, the ids d1-bulgarian and 315bifh are exactly what they
+   were, so every historic set still resolves to its exercise.
+
+   NOTHING IS DELETED. The superseded strings go to state.archive.gymNameStrings387
+   with the reason and the date. They do NOT go to gym.archivedExercises, because
+   that array means "an exercise REMOVED from a day", and both of these are still on
+   Friday. Filing a live exercise there is how a future audit concludes they were cut.
+   The precedent for parking superseded STRINGS is state.archive.gymLegsTrim0722 and
+   state.archive.gymDay5_383, and that is the one followed here.
+
+   Guarded once by state.meta.mig387_gymnames, which is NOT in the seed, per the
+   standing rule that a guard flag baked into seedIan().meta is pre-set to true by
+   deepMergeDefaults and makes the migration self-skip.
+
+   AND IT RUNS LAST ON PURPOSE. Build 99 refilled Wednesday on every load from an
+   unguarded block 1.4 MB earlier in this file. The two blocks that write these two
+   names are mig377_gym4day (line ~15811) and mig383_gym3day, both guarded, both
+   above this one, so neither can reinstate the old strings on a later load. Verified
+   across four loads rather than assumed. */
+try{ if(!state.meta.mig387_gymnames && state.gym && Array.isArray(state.gym.split)){
+  var _G7=state.gym;
+  if(!state.archive) state.archive={};
+  if(!Array.isArray(state.archive.gymNameStrings387)) state.archive.gymNameStrings387=[];
+  var _FX7=function(id){ for(var i=0;i<_G7.split.length;i++){ var d=_G7.split[i];
+      if(!d||!Array.isArray(d.exercises)) continue;
+      for(var j=0;j<d.exercises.length;j++){ if(d.exercises[j]&&d.exercises[j].id===id) return {ex:d.exercises[j],day:d.day}; } }
+    return null; };
+  var _PARK7=function(hit,why){ if(!hit) return;
+    for(var i=0;i<state.archive.gymNameStrings387.length;i++){ if(state.archive.gymNameStrings387[i].id===hit.ex.id) return; }
+    state.archive.gymNameStrings387.push({id:hit.ex.id,day:hit.day,name:hit.ex.name,scheme:hit.ex.scheme,
+      supersededOn:"2026-09-11",build:"v21 build 387",stillLive:true,why:why}); };
+
+  var _bul=_FX7("d1-bulgarian");
+  if(_bul){
+    _PARK7(_bul,"The two week ramp was carried in the NAME and again in the SCHEME. Ian, 11.09.2026: \"Take this completely off.\" It was OUR explanation rather than his programming, and it wrapped eleven lines at 390px with the scheme off the right edge. He is past week one, so the ramp has served out. THE EXERCISE STAYS, it was his own request on 05.09.2026, and the id is unchanged so gym.logs still resolves.");
+    _bul.ex.name="Smith machine Bulgarian split squat";
+    _bul.ex.scheme="3\u00d78 per leg";
+  }
+  var _calf=_FX7("315bifh");
+  if(_calf && /lowering phase/i.test(String(_calf.ex.name||""))){
+    _PARK7(_calf,"The tempo cue was carried in the NAME. Ian, 11.09.2026, agreed to move it off the name AND ruled that the tempo is real programming which must stay visible. It is now the exercise cue, rendered as a caption under the scheme. MOVED, NOT ARCHIVED AWAY. This entry is the record of where it used to sit, not a removal.");
+    _calf.ex.name="Standing calf raise";
+    _calf.ex.cue="3 second lowering phase, pause at the bottom";
+  }
+  _G7.namePolicy="Names are labels. Instructions, caveats, ramps and rationale do not belong in an exercise name. The test, set by Ian 11.09.2026: is this OUR explanation, or HIS programming? Ours comes off, his stays, however untidy it looks. Set build 387.";
+  state.meta.mig387_gymnames=true; save(true);
+} }catch(e){ try{ console.warn("mig387 did not apply:",e&&e.message); }catch(_){} }
+
 
 /* ===== v21 build 381: THE TWO 8 SEPTEMBER SESSIONS. QUEUE DRAINED. ====================
    Queue ids q178890945152539 and q178890945752567, appended by PB-2 which did not hold the
@@ -19873,9 +19961,16 @@ function reViewTools(v){
 }
 let gymDayIdx=DOW;
 let gymShowWeek=false;
+/* RETIRED 11.09.2026 (build 387). Only the retired gymToday() still calls it, so it is
+   dead on the live page. It rendered all seven days stacked, every one with its full
+   1,200 character note, which is the density problem this build was opened to fix. The
+   seven day switcher in gymPage387() is the replacement. Kept in place, not deleted. */
 function gymWeek(v){ (state.gym.split||[]).forEach(function(d,i){ const c=card(i===DOW?"a-blue":null); const b=c._body; const top=el("div","between"); top.appendChild(el("h3",null,d.day+", "+cleanFocus(d.focus))); top.appendChild(el("span","pill b",d.play)); b.appendChild(top); if(d.note){ const n=el("div","small muted"); n.style.margin="5px 0 4px"; n.textContent=d.note; b.appendChild(n); } (d.exercises||[]).forEach(function(e){ const row=el("div","ex"); row.appendChild(el("span","exname",e.name)); row.appendChild(el("span","scheme",e.scheme)); b.appendChild(row); }); v.appendChild(c); }); }
-function buildGym(v){ var _gymTop=el("div"); _gymTop.style.height="14px"; v.appendChild(_gymTop); objectiveCard(v,"gym","a-blue");
-  collapseTool(v,"Workout routine","today's session and full week",()=>{ gymToday(v); });
+function buildGym(v){ var _gymTop=el("div"); _gymTop.style.height="14px"; v.appendChild(_gymTop);
+  /* v21 build 387: the day switcher and the selected day, drawn first and drawn whole.
+     objectiveCard and the "Workout routine" collapse wrapper both came off here; the
+     reasoning is written out in full above gymPage387(). */
+  safe(v,()=>gymPage387(v),"Gym day");
   /* build 212: sublabel said "meals, supplements are in the Daily checklist" while the meals card
      itself was removed at build 178 because Ian never used it. A label advertising a surface that
      does not exist is how a future session concludes meals are missing and rebuilds them. Ian
@@ -19958,6 +20053,9 @@ function healthCard(parent){
     });
   }catch(e){ try{ console.error("[dash] healthCard",e); }catch(_){} }
 }
+/* RETIRED 11.09.2026 (build 387). NOT CALLED ANYWHERE. Replaced by gymPage387() below.
+   Kept in place, not deleted, per the same convention as nutritionModule(), so the old
+   behaviour is readable rather than reconstructed. Do not wire this back up. */
 function gymToday(parent){ try{ healthCard(parent); }catch(e){} const day=daySplit(DOW); const log=state.gym.logs[TODAY]||(state.gym.logs[TODAY]={done:{},note:""});
   /* build 266: a PLANNED REST day renders as rest, with nothing to tick. Without this the day
      still gets the synthetic warm up prepended and reads "0 of 1 logged", which is an unfinished
@@ -20015,6 +20113,199 @@ function gymToday(parent){ try{ healthCard(parent); }catch(e){} const day=daySpl
   const c=card("a-blue"); const b=c._body; const top=el("div","between"); const left=el("div"); left.appendChild(el("h3",null,cleanFocus(day.focus))); const sub=el("div","small muted"); /* build 214: day name from the clock, and a swapped in session says so */ const _sw=daySwapInfo(); sub.textContent="Today, "+DAYFULL[DOW]+". "+(_sw&&_sw.kind==="swap"?"Running "+_sw.from+"'s session. ":"")+"Pickleball: "+day.play; left.appendChild(sub); top.appendChild(left); top.appendChild(el("span","pill b",day.play)); b.appendChild(top); if(day.note){ const n=el("div","small muted"); n.style.marginTop="6px"; n.textContent=day.note; b.appendChild(n); } /* build 362: the gym card now says WHAT DAY IT IS AND WHAT IS ON IT, and nothing is ticked. The progress bar, the "x of y logged" line, the per exercise checkboxes and the Check all / Reset today button are all gone. state.gym.logs is untouched and every set he has ever logged is still in it. The session note textarea below survives, because it is a note and not a tick, and it is now the only thing on this page that writes. */ const list=el("div"); list.style.marginTop="10px"; items.forEach(e=>{ const row=el("div","ex"); row.style.cursor="default"; row.appendChild(el("span","exname",e.name)); row.appendChild(el("span","scheme",e.scheme)); list.appendChild(row); }); b.appendChild(list); parent.appendChild(c);
     const tog=el("div"); tog.style.margin="2px 2px 0"; const link=el("button"); link.style.cssText="background:none;border:none;color:var(--sec2,var(--accent2));font-weight:700;font-size:13px;padding:6px 2px"; link.textContent=gymShowWeek?"Hide full week":"View full week"; link.onclick=()=>{ gymShowWeek=!gymShowWeek; render(); }; tog.appendChild(link); parent.appendChild(tog);
   if(gymShowWeek){ sect(parent,"Full week reference","for reference only"); gymWeek(parent); }
+}
+
+/* ===== v21 build 387: THE GYM PAGE, REBUILT SIMPLE ==========================
+   Ian, 11.09.2026: "Clean up the entire gym page, simpler, more of a modern Apple
+   style design, you can put button and switching pages in places you think should
+   have them."
+
+   WHAT REPLACED WHAT, so nothing is hunted for later.
+     gymToday()  is RETIRED IN PLACE directly above, not deleted, per the same
+                 convention as nutritionModule(). It is no longer called. Read it if
+                 you need to know what the page used to do.
+     gymWeek()   is also retired in place. It rendered all seven days stacked, each
+                 with its full 1,200 character note, which is the density problem in
+                 its purest form. The day switcher replaces it: the same seven days,
+                 one at a time, complete.
+     The "Workout routine" collapseTool wrapper is GONE. Today's session is the
+                 primary content of this page and it was sitting behind a disclosure
+                 header. Progressive disclosure is for the secondary material, which
+                 is what the notes now sit behind.
+     objectiveCard is no longer drawn here. On the gym page it rendered
+                 autoObjective("gym"), which is literally daySplit(DOW).focus, so it
+                 said the same sentence as the day title one card below it. Its
+                 "Open Today's entry" button is preserved as the same jump on Home.
+                 The RE page still calls objectiveCard and is untouched.
+     The hand speed note now draws on SUNDAY ONLY. It used to draw on every lifting
+                 day, so a 340 character essay about hand speed sat on the Friday leg
+                 card. Sunday is the day that carries the three hand speed moves, so
+                 that is where the note about them belongs. state.gym.handSpeedNote is
+                 unchanged and still exported.
+
+   WHAT DID NOT CHANGE, deliberately.
+     READ ONLY, per build 362 and Ian's "No ticks at all, all checkmarks go". Every
+     control below either switches day or opens a disclosure. There is no checkbox,
+     no set logger, no mark complete and no input field anywhere in this function.
+     THE NEVER CONTRADICT RULE FROM BUILD 386 IS PRESERVED AND EXTENDED. Any date
+     carrying a gym record renders as trained regardless of what the plan said. It is
+     checked FIRST, before any branch that could say otherwise, exactly as
+     lockGymBubble does it, and it now runs for whichever day is selected rather than
+     only for today, so a Wednesday he trained on says so when he looks back at it.
+     THE HEATMAP AND THE SKILL MAP ARE NOT TOUCHED. Neither is on this page: the
+     training heatmap is on Home and the circular skill map is on Pickleball. Nothing
+     in this build reaches either of them.
+     THE PROGRAMME IS NOT TOUCHED. This is a presentation change. Monday's merged
+     upper day, Friday's lower day, Saturday's abs cardio and rotation, Sunday's
+     stretch and hand speed block, and the Tue/Wed/Thu "no lift planned, double
+     likely" wording from build 386 all render exactly the strings that are in state.
+
+   THE THREE STATES THAT BREAK A REDESIGN, all handled explicitly below: a full day
+   (Friday, seven rows), a no lift day (Tue/Wed/Thu, no exercises at all), and a
+   planned rest day. Each gets its own branch with its own written statement, because
+   an empty state that looks like a bug is worse than the overflow this build fixes. */
+let g7sel=null;   /* null means FOLLOW TODAY. A weekday index means he has tapped away. */
+let g7note=false; /* the "Why this day" disclosure, closed on arrival and on every day change */
+
+/* The date key for a weekday in the CURRENT week, so gymLoggedOn can be asked about a
+   day that is not today. i === DOW returns TODAY exactly, which is what keeps the
+   build 386 behaviour identical on the day it already covered. */
+function g7key(i){ try{ var d=new Date(NOW); d.setDate(d.getDate()+(i-DOW)); return todayKey(d); }catch(e){ return ""; } }
+
+function g7switcher(parent,sel){
+  var seg=el("div","g7seg");
+  var L=["S","M","T","W","T","F","S"];
+  for(var i=0;i<7;i++){
+    (function(i){
+      var cls="g7day"+(i===sel?" g7sel":"")+(i===DOW?" g7today":"");
+      var b=el("button",cls);
+      b.type="button";
+      b.appendChild(el("span","g7ltr",L[i]));
+      b.appendChild(el("span","g7dot"));
+      b.setAttribute("aria-label",DAYFULL[i]+(i===DOW?", today":""));
+      b.onclick=function(){ g7sel=(i===DOW)?null:i; g7note=false; render(); };
+      seg.appendChild(b);
+    })(i);
+  }
+  parent.appendChild(seg);
+}
+
+/* One exercise, one block, three lines at most and each free to wrap on its own.
+   cue is the build 387 field that holds real programming which is not a name and not
+   a set scheme. Today that is the calf raise tempo. */
+function g7row(list,e,warm){
+  var r=el("div","g7row"+(warm?" g7warm":""));
+  r.appendChild(el("div","g7name",e.name||""));
+  if(e.scheme) r.appendChild(el("div","g7sch",e.scheme));
+  if(e.cue) r.appendChild(el("div","g7cue",e.cue));
+  list.appendChild(r);
+}
+
+function gymPage387(parent){
+  try{ healthCard(parent); }catch(e){}
+
+  var sel=(g7sel==null)?DOW:g7sel;
+  var split=(state.gym&&state.gym.split)||[];
+  var day=(sel===DOW)?daySplit(DOW):(split[sel]||null);
+  g7switcher(parent,sel);
+  if(!day) return;
+
+  var isToday=(sel===DOW), key=g7key(sel);
+  /* BUILD 386, CHECKED FIRST SO NO LATER BRANCH CAN OVERWRITE IT. */
+  var trained=false; try{ trained=gymLoggedOn(key); }catch(e){}
+
+  var rest=!!day.rest;
+  if(!rest){ try{ var _rd=(state.gym&&state.gym.restDays)||{}; rest=!!(_rd[key]&&_rd[key].planned); }catch(e){} }
+
+  var c=card("a-blue"), b=c._body;
+
+  /* HEADER. The focus string splits on its first sentence break so the title is a
+     title and the qualifier is a subtitle, rather than one 81 character line wrapping
+     four times. Nothing is dropped: both halves render. */
+  var kick=el("div","g7kicker");
+  kick.textContent=(isToday?"Today, ":"")+DAYFULL[sel];
+  b.appendChild(kick);
+
+  var f=cleanFocus(day.focus)||"Workout", cut=f.indexOf(". ");
+  var t1=(cut>0)?f.slice(0,cut):f, t2=(cut>0)?f.slice(cut+2):"";
+  b.appendChild(el("div","g7title",t1));
+  if(t2) b.appendChild(el("div","g7titlesub",t2));
+
+  var meta=el("div","g7meta");
+  meta.textContent="Pickleball: "+(day.play||"Off")+(trained?". Gym logged.":"");
+  b.appendChild(meta);
+
+  var exs=(day.exercises||[]);
+
+  if(rest){
+    var re=el("div","g7empty");
+    re.appendChild(el("div","g7big","Planned rest"));
+    var why=""; try{ var r2=((state.gym&&state.gym.restDays)||{})[key];
+      if(r2){ why=r2.cut?("Cut this week: "+r2.cut+". "+(r2.makeup||"")):(r2.reason||""); } }catch(e){}
+    re.appendChild(el("div","g7small",why||"You chose this one. Nothing is planned."));
+    b.appendChild(re);
+  }
+  else if(!exs.length){
+    /* THE NO LIFT DAY. Tue, Wed and Thu. It says what is true rather than what is
+       missing, and if he HAS trained it says that first and does not argue with him.
+       day.lockNote is his own one line version of this, already in state. */
+    var ne=el("div","g7empty");
+    var nbig=trained?"Gym logged today":(day.varDouble?"No lift planned":"No gym today");
+    var nsm=trained
+      ? "You trained and this day carries no planned lift. That is not a miss: the rule is no gym on a day you play twice, so a single session day leaves the gym open."
+      : (day.lockNote||"Double likely. If you only play once today, the gym is open.");
+    /* his lockNote opens with the same sentence the headline just said, so do not say it
+       twice. Strips the duplicate lead only, the rest of HIS line is untouched. */
+    if(nsm.indexOf(nbig+". ")===0) nsm=nsm.slice(nbig.length+2);
+    /* and do not say it a THIRD time. On Tue/Wed/Thu the day's own focus string is
+       already "No lift planned", so the title above has said it; repeating it as a
+       headline made the card read as a stutter. The headline only appears when it
+       carries something the title does not, which is the trained case. */
+    if(nbig!==t1) ne.appendChild(el("div","g7big",nbig));
+    ne.appendChild(el("div","g7small",nsm));
+    b.appendChild(ne);
+  }
+  else {
+    var list=el("div","g7list");
+    /* The warm up is shown as the first row rather than prepended into the data, so
+       nothing synthetic is ever written to state.gym. */
+    g7row(list,{name:"5 to 10 minute stretch",scheme:"Warm up"},true);
+    for(var i=0;i<exs.length;i++) g7row(list,exs[i],false);
+    b.appendChild(list);
+  }
+
+  /* WHY THIS DAY. The notes run past 1,200 characters and are largely our own
+     rationale for the rebuild, so they are reachable rather than stacked on the card.
+     They render VERBATIM when opened, because where a note is his it is still his. */
+  var note=day.note||"";
+  if(note){
+    var disc=el("div","g7disc");
+    var db=el("button","g7discbtn"); db.type="button";
+    db.textContent=g7note?"Hide why this day":"Why this day";
+    db.onclick=function(){ g7note=!g7note; render(); };
+    disc.appendChild(db);
+    if(g7note) disc.appendChild(el("div","g7note",note));
+    b.appendChild(disc);
+  }
+  parent.appendChild(c);
+
+  if(!isToday){
+    var back=el("button","g7back","Back to today");
+    back.type="button";
+    back.onclick=function(){ g7sel=null; g7note=false; render(); };
+    parent.appendChild(back);
+  }
+
+  /* The hand speed read, on the day that carries the hand speed moves. */
+  if(sel===0){
+    try{ var hn=(state.gym&&state.gym.handSpeedNote)||"";
+      if(hn){ var hc=card("a-blue"), hb=hc._body;
+        hb.appendChild(el("div","g7kicker","Hand speed, honest read"));
+        /* its own class, not .g7note: sharing one made "is the day note open?" unanswerable
+           from the DOM, which cost a verification run a false positive. */
+        hb.appendChild(el("div","g7hs",hn));
+        parent.appendChild(hc); } }catch(e){}
+  }
 }
 /* ===== build 362: WATER IS A DISPLAY, NOT A COUNTER =================================
    Ian, 02.09.2026, verbatim: "no more check boxes I just want it to display what I need to
@@ -21407,6 +21698,80 @@ function autoLogCard(area){
 
 /* 6. Slightly tighter, more consistent feed link buttons */
 .feedlink{border-radius:999px;padding:7px 14px}
+</style>
+<style id="gym-b387">
+/* ===== v21 build 387: THE GYM PAGE, SIMPLIFIED. ==============================
+   Ian, 11.09.2026: "Clean up the entire gym page, simpler, more of a modern Apple
+   style design, you can put button and switching pages in places you think should
+   have them."
+
+   WHY THE OLD ROW OVERFLOWED, since that screenshot is what started this. The .ex
+   row (line 335) is a flex PAIR: .exname at flex:1 against a .scheme at
+   white-space:nowrap. At 390px a 107 character name could not shrink the nowrap
+   scheme, so the name was squeezed into a narrow column and wrapped ELEVEN LINES
+   while the scheme still ran off the right edge. Widening the name would not have
+   fixed it; the two elements were competing for one line. So they no longer share
+   one. ONE THING PER LINE: the name owns its line, the scheme is a caption beneath
+   it, and neither can crowd the other. Nothing here can overflow horizontally.
+
+   TYPOGRAPHY AND SPACING DO THE WORK. Weight and size carry the hierarchy and line
+   height carries the air. There is one hairline between list rows and no boxes
+   inside boxes, no pills carrying sentences, no borders drawing what whitespace
+   already says.
+
+   .ex IS LEFT ALONE. It is still used by the retired gymWeek() and by other pages,
+   so this is an additive class family (.g7*) rather than an edit to a shared rule.
+
+   READ ONLY. Every control in here navigates or discloses. Nothing records. There
+   is no input, no checkbox and no tick anywhere in this block, per build 362. */
+
+/* The seven day switcher. This is the page switching Ian gave latitude for, and it
+   is structural: it is what lets today render COMPLETE instead of the whole week
+   rendering stacked. */
+.g7seg{display:flex;gap:2px;background:var(--card2);border-radius:13px;padding:3px;margin:0 0 16px}
+.g7day{flex:1 1 0;min-width:0;-webkit-appearance:none;appearance:none;background:none;border:0;border-radius:10px;padding:8px 0 6px;cursor:pointer;display:block;text-align:center;font:inherit;color:var(--gray2);transition:background .15s ease,color .15s ease}
+.g7day .g7ltr{display:block;font-size:13px;font-weight:600;line-height:1.1;letter-spacing:.01em}
+/* TODAY IS OBVIOUS WITHOUT BEING SELECTED. He opens this while doing something else,
+   so today carries the accent colour AND a dot at all times, whichever day is shown. */
+.g7day .g7dot{display:block;width:4px;height:4px;border-radius:50%;background:transparent;margin:4px auto 0}
+.g7day.g7today{color:var(--sec2,var(--accent2))}
+.g7day.g7today .g7dot{background:var(--sec2,var(--accent2))}
+.g7day.g7sel{background:var(--card);color:var(--white);box-shadow:0 1px 3px rgba(0,0,0,.55)}
+.g7day.g7sel.g7today{color:var(--sec2,var(--accent2))}
+
+.g7kicker{font-size:12.5px;font-weight:700;line-height:1.2;color:var(--sec2,var(--accent2))}
+.g7title{font-size:20px;font-weight:700;line-height:1.28;letter-spacing:-.015em;color:var(--white);margin:6px 0 0;overflow-wrap:break-word}
+.g7titlesub{font-size:14.5px;font-weight:500;line-height:1.45;color:var(--gray);margin:5px 0 0;overflow-wrap:break-word}
+.g7meta{font-size:13.5px;line-height:1.5;color:var(--gray2);margin:9px 0 0;overflow-wrap:break-word}
+
+/* The list. One hairline, generous vertical rhythm, and every string free to wrap
+   on its own line. overflow-wrap:anywhere is the belt and braces: even a single
+   unbroken token cannot push the card wider than the viewport. */
+.g7list{margin:17px 0 0}
+.g7row{padding:13px 0 14px;border-bottom:1px solid var(--line)}
+.g7row:first-child{padding-top:4px}
+.g7row:last-child{border-bottom:none;padding-bottom:2px}
+.g7name{font-size:16px;font-weight:600;line-height:1.34;color:var(--white);overflow-wrap:anywhere}
+.g7sch{font-size:13.5px;font-weight:600;line-height:1.45;color:var(--sec2,var(--accent2));font-variant-numeric:tabular-nums;margin:4px 0 0;overflow-wrap:anywhere}
+/* The cue line. Real programming that is not a name and not a set scheme lives here,
+   VISIBLE, which is where the calf raise tempo went. */
+.g7cue{font-size:13px;line-height:1.5;color:var(--gray2);margin:4px 0 0;overflow-wrap:anywhere}
+.g7warm .g7name{color:var(--gray);font-weight:500}
+
+/* The empty and near empty days. They must look DELIBERATE, not broken: a centred
+   statement with room around it reads as a decision, a blank card reads as a bug. */
+.g7empty{padding:22px 4px 10px;text-align:center}
+.g7big{font-size:19px;font-weight:700;line-height:1.3;letter-spacing:-.01em;color:var(--white);overflow-wrap:break-word}
+.g7small{font-size:14px;line-height:1.55;color:var(--gray2);margin:9px auto 0;max-width:29ch;overflow-wrap:break-word}
+
+/* Progressive disclosure. The day notes run past 1,200 characters and are mostly our
+   own rationale, so they are REACHABLE rather than stacked on the card face. Nothing
+   is deleted and nothing is summarised: the note renders verbatim when opened. */
+.g7disc{margin:16px 0 0}
+.g7discbtn{-webkit-appearance:none;appearance:none;background:none;border:0;padding:7px 0;margin:0;cursor:pointer;font:inherit;font-size:13.5px;font-weight:700;color:var(--sec2,var(--accent2));display:block;text-align:left}
+.g7note,.g7hs{font-size:13.5px;line-height:1.62;color:var(--gray);margin:3px 0 2px;overflow-wrap:anywhere}
+.g7hs{margin-top:9px}
+.g7back{-webkit-appearance:none;appearance:none;background:none;border:0;padding:8px 2px;margin:2px 0 0;cursor:pointer;font:inherit;font-size:13.5px;font-weight:700;color:var(--sec2,var(--accent2));display:block;text-align:left}
 </style>
 <script id="rr-b69-js">
 (function(){
