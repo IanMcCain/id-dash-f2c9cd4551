@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 392 (2026-09-14)">
+<meta name="build" content="v21 build 393 (2026-09-14)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -17550,6 +17550,59 @@ try{ if(profile==="ian" && state.pickleball){
       save(true); }
 } }catch(e){ try{ console.warn("mig389 pk 14 Sep did not apply:",e&&e.message); }catch(_){} }
 
+/* ===== v21 build 393, 14.09.2026. THE SOLARA PRESS POSITION WAS EIGHT DAYS STALE, GEN-18 =====
+
+   SAME SHAPE AS THE BELKNAP NUMBER AND AS BUILD 371 ITSELF. mig371 wrote the Solara status on
+   6 September and it has been rendering unchanged ever since. Two things in it are no longer
+   true on 14 September and BOTH of them render as an open, in progress action on the press:
+
+     1. statusNote said the vendor "has NOT RESPONDED IN ABOUT THREE WEEKS" and that "Ian is
+        giving Dylan one to two more days before telling him to go and collect them."
+        THAT WAS WRITTEN EIGHT DAYS AGO. A one to two day countdown that is eight days old is
+        not a wait, it is a dead clock, and it is the worst kind of wrong because it reads as
+        live. The three week duration has the same defect: it ages every day and nothing in
+        the app can re-derive it.
+     2. nextSteps[0] was "Give Dylan one to two more days, then tell him to collect the blanks
+        from the press." Same dead clock, rendered as step one of the list.
+
+   THE TRUE POSITION TODAY, from Ian: there has been NO MOVEMENT from the press contact, and he
+   picks it back up once real estate quietens after this month. So the press is PARKED, not
+   pending. Both fields now say that, and neither carries a duration that ages.
+
+   THE ALL CAPS FRAGMENT IS GONE TOO. "has NOT RESPONDED IN ABOUT THREE WEEKS" shouting inside
+   a field is the same standard violation the build 387 gym page removed: a field holds a value,
+   it does not raise its voice.
+
+   SCOPE, DELIBERATELY NARROW. status, dropDate, website, drop, milestones, tasks and notes are
+   NOT TOUCHED. nextSteps is rewritten AT INDEX 0 ONLY, by matching the old text, so entries 1,
+   2 and 3 survive byte for byte and the list length does not change. NOTHING IS CUT. The items
+   this lane thinks may not belong on a "small section with the clothes" are in the report for
+   Ian, not removed here.
+
+   Guarded by state.meta.mig393_solara_press, NOT in the seed, so SEED_VERSION stays 13. Writes
+   by named key and by matched text, so a value Ian changes later through Dispatch is not
+   clobbered, and the flag means it cannot re-run anyway. */
+try{ if(profile==="ian" && state.meta && !state.meta.mig393_solara_press){
+    var _S393=state.solara;
+    if(_S393 && typeof _S393==="object"){
+      _S393.statusNote="The press vendor has all three blanks, the tee, the long sleeve and the "
+        +"sweatshirt, with the designs and the measurements, and there has been no movement. "
+        +"Nothing can be shot, listed or launched until the blanks are physically back. Ian "
+        +"picks this back up once real estate quietens after this month. The plan is to use "
+        +"the off season rather than fight the date: finish the website, add more designs, and "
+        +"either find a new press or bring pressing in house.";
+      if(Array.isArray(_S393.nextSteps)){
+        for(var _n393=0;_n393<_S393.nextSteps.length;_n393++){
+          if(String(_S393.nextSteps[_n393]||"").indexOf("one to two more days")>=0){
+            _S393.nextSteps[_n393]="The press. No movement, and nothing moves here until real "
+              +"estate quietens after this month.";
+          }
+        }
+      }
+      state.meta.mig393_solara_press=true; save(true);
+    }
+} }catch(e){ try{ console.warn("mig393 solara press did not apply:",e&&e.message); }catch(_){} }
+
 
 
 
@@ -18637,7 +18690,12 @@ function buildSolara(v){
   var t2=el("div","small dim"); t2.textContent=sd.drop||"Drop 001"; hd.appendChild(t2);
   v.appendChild(hd);
   var sub=el("div","small dim"); sub.style.cssText="margin:0 2px 14px;line-height:1.45";
-  sub.textContent="Apparel brand with Dylan. Everything here is read only and updated through Claude.";
+  /* build 393: the second sentence, "Everything here is read only and updated through Claude",
+     is gone. It is instructional prose about the app's own mechanics sitting in the page's
+     opening line, which is the exact thing the build 387 gym standard removed everywhere else.
+     Ian is not being told how his own dashboard works every time he opens Solara. The first
+     sentence is a label and stays. */
+  sub.textContent="Apparel brand with Dylan.";
   v.appendChild(sub);
 
   /* ---------- MENU ---------- */
