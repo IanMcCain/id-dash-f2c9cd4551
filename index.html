@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 389 (2026-09-14)">
+<meta name="build" content="v21 build 390 (2026-09-14)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -20167,8 +20167,11 @@ function habitConsistencyCard(parent){
   const items=[]; for(let i=6;i>=0;i--){ const d=new Date(); d.setDate(d.getDate()-i); const k=todayKey(d);
     const hk=habitsActiveOn(k); const hsn=hk.length||1; const done=hk.filter(h=>h.log&&h.log[k]).length;
     items.push({label:["Su","Mo","Tu","We","Th","Fr","Sa"][d.getDay()],pct:Math.round(done/hsn*100)}); }
-  const c=card("a-green"); c._body.appendChild(el("div","small muted","Habit consistency, last 7 days"));
-  c._body.firstChild.style.marginBottom="6px";
+  /* build 390: label in the page's own type scale and the card on the page's own
+     accent, so it stops reading as a card borrowed from somewhere else. The BARS keep
+     their green: that is the chart's palette, not the page's chrome, and the chart
+     itself is untouched. */
+  const c=card("a-blue"); c._body.appendChild(el("div","g7grp","Habit consistency, last 7 days"));
   c._body.appendChild(barChart(items,"g",120)); parent.appendChild(c); }
 /* ===== build 351: ACTIVE INJURY CARD. THE FIRST INJURY SURFACE THIS APP HAS EVER HAD ==========
    Ian, 28.08.2026: "my heel still hurts from the tournament". The tournament was 23 August, so it
@@ -20554,23 +20557,76 @@ function dispItem(name,meta){
   if(meta){ var m=el("span","meta"); m.textContent=meta; tx.appendChild(m); }
   row.appendChild(tx); return row;
 }
+/* ===== v21 build 390: THE DAILY CHECKLIST, BROUGHT TO THE BUILD 387 STANDARD ====
+   Ian, 14.09.2026: "Make sure all pages get the correct full redesign." The gym day
+   card above this one is the reference, and this module sat directly underneath it in
+   a different visual language, which made it the most visible mismatch in the app.
+
+   WHAT CHANGED, AND IT IS PRESENTATION ONLY. No migration, no state write, no data
+   touched. state.routine.habits and state.nutrition.supplements are read exactly as
+   they were and every name and dose renders verbatim. Diff this against build 389 and
+   the saved profile is identical.
+
+     TWO CARDS BECAME ONE. waterCard() drew a whole separate card above this one for a
+     single number. Water is now the lead row of this card, in the same name-plus-value
+     shape as an exercise row. waterCard() ITSELF IS UNTOUCHED and still called by the
+     Home page water collapse, which is a later pass.
+
+     THE .chk / .ctext ROW BECAME .g7row. Same three line shape as the gym card: name
+     on its own line, the value in the accent beneath it, grey caption under that.
+     The dose is the value, because a dose is a prescription in exactly the way a set
+     scheme is, and putting it in the accent makes the card scannable rather than
+     read-through. Nothing can overflow: every line wraps on its own.
+
+     THE DASHED EMPTY BOXES CAME OFF. .empty draws a dashed border box, which is an
+     invitation to fill something in. Ian, today: "I'm not going to be checking
+     anything, not going to be filling anything out." An empty group is now one quiet
+     grey line, because it is information, not a prompt.
+
+     NOTHING HERE RECORDS. Same as build 362 and the gym page: no ticks, no boxes, no
+     inputs. The buy list keeps its "Got it" removal from build 369.
+
+   dispItem() is left in place and is now called only by the retired habitsModule. */
 function dailyChecklistModule(parent){
   const hs=habitsActiveOn(TODAY);
   const supps=state.nutrition.supplements||(state.nutrition.supplements=[]);
   const dailyS=supps.filter(s=>!s.toBuy);
   const buyS=supps.filter(s=>s.toBuy);
-  waterCard(parent);
   const c=card(); const b=c._body;
-  const grpH=el("div","small muted","Today"); grpH.style.marginBottom="8px"; b.appendChild(grpH);
-  if(!hs.length) b.appendChild(el("div","empty","Nothing scheduled today."));
-  hs.forEach(h=>{ b.appendChild(dispItem(h.name,null)); });
-  const grpS=el("div","small muted","Take today"); grpS.style.margin="16px 0 8px"; b.appendChild(grpS);
-  if(!dailyS.length) b.appendChild(el("div","empty","Nothing on the list."));
-  dailyS.forEach(s=>{ b.appendChild(dispItem(s.name,s.dose||null)); });
+  var mkList=function(){ var l=el("div","g7list"); b.appendChild(l); return l; };
+  var mkGrp=function(label){ b.appendChild(el("div","g7grp",label)); return mkList(); };
+  var mkRow=function(list,name,val,cue,dim){
+    var r=el("div","g7row"+(dim?" g7dimrow":""));
+    r.appendChild(el("div","g7name",name));
+    if(val) r.appendChild(el("div","g7sch",val));
+    if(cue) r.appendChild(el("div","g7cue",cue));
+    list.appendChild(r); return r; };
+
+  /* A DOSE IS ONLY A VALUE WHEN IT IS SHORT. "5 g, any time" and "daily" are
+     quantities and belong in the accent, where they are scannable. "30 to 60 min pre,
+     last dose 8 to 10 h before bed" is a sentence, and a sentence set in bold accent
+     reads as an alarm rather than as information. Long ones drop to the grey caption
+     line. The string itself is never altered, only which line it lands on. */
+  var DOSE_AS_VALUE=16;
+  var mkDosed=function(list,name,dose,dim){
+    var d=dose||"";
+    return mkRow(list,name,(d&&d.length<=DOSE_AS_VALUE)?d:null,(d&&d.length>DOSE_AS_VALUE)?d:null,dim); };
+
+  /* WATER, the lead row. WATER_GOAL stays the single source for the number. No
+     caption: "What to drink today." said nothing the row did not already say. */
+  mkRow(mkList(),"Water",WATER_GOAL+" cups",null,false);
+
+  var t=mkGrp("Today");
+  if(!hs.length) t.appendChild(el("div","g7quiet","Nothing scheduled today."));
+  hs.forEach(function(h){ mkRow(t,h.name,null,null,false); });
+
+  var s=mkGrp("Take today");
+  if(!dailyS.length) s.appendChild(el("div","g7quiet","Nothing on the list."));
+  dailyS.forEach(function(x){ mkDosed(s,x.name,x.dose,false); });
+
   if(buyS.length){
-    const bl=el("div","small muted"); bl.style.margin="16px 0 8px"; bl.textContent="Out of, buy these"; b.appendChild(bl);
-    buyS.forEach(s=>{ const row=el("div","chk"); row.style.opacity="0.6"; const tx=el("div","ctext"); tx.textContent=s.name; const m=el("span","meta"); m.textContent=(s.dose?s.dose+" \u00b7 ":"")+"buy list"; tx.appendChild(m); row.appendChild(tx); /* build 369: the "Got it" button is gone with everything else he taps. Moving a supplement
-   off the buy list is now a Dispatch instruction. */ b.appendChild(row); });
+    var bl=mkGrp("Out of, buy these");
+    buyS.forEach(function(x){ mkRow(bl,x.name,null,(x.dose?x.dose+", ":"")+"on the buy list",true); });
   }
   parent.appendChild(c);
 }
@@ -21938,6 +21994,19 @@ function autoLogCard(area){
 .g7discbtn{-webkit-appearance:none;appearance:none;background:none;border:0;padding:7px 0;margin:0;cursor:pointer;font:inherit;font-size:13.5px;font-weight:700;color:var(--sec2,var(--accent2));display:block;text-align:left}
 .g7note,.g7hs{font-size:13.5px;line-height:1.62;color:var(--gray);margin:3px 0 2px;overflow-wrap:anywhere}
 .g7hs{margin-top:9px}
+
+/* ----- build 390: the same row family, reused by the daily checklist ---------
+   Reused rather than reimplemented. One type scale across the page is most of what
+   "belongs to the same app" actually means, and a second near-identical row class is
+   how two surfaces drift apart again. */
+.g7grp{font-size:12.5px;font-weight:700;line-height:1.2;color:var(--sec2,var(--accent2));margin:21px 0 1px}
+.g7grp:first-child{margin-top:2px}
+/* A group with nothing in it states that quietly. It does NOT draw a dashed box
+   inviting him to add something: he does not add anything. */
+.g7quiet{font-size:13.5px;line-height:1.5;color:var(--dim);padding:11px 0 3px}
+/* The buy list is real information but it is not today's business, so it recedes by
+   weight and colour rather than by a blanket opacity that also dims its own caption. */
+.g7dimrow .g7name{color:var(--gray2);font-weight:500}
 .g7back{-webkit-appearance:none;appearance:none;background:none;border:0;padding:8px 2px;margin:2px 0 0;cursor:pointer;font:inherit;font-size:13.5px;font-weight:700;color:var(--sec2,var(--accent2));display:block;text-align:left}
 </style>
 <script id="rr-b69-js">
