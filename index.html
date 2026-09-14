@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 401 (2026-09-14)">
+<meta name="build" content="v21 build 402 (2026-09-14)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -17884,6 +17884,108 @@ try{ if(profile==="ian" && state.meta && !state.meta.mig399_fallcup){
     state.meta.mig399_fallcup=true;
     save(true);
 } }catch(e){ try{ console.warn("mig399 fall cup did not apply:",e&&e.message); }catch(_){} }
+
+/* ===== v21 build 402: PICKLEBALL SESSION 2, MONDAY 14 SEPTEMBER 2026, AFTERNOON ==========
+
+   SECOND SESSION OF THE SAME DAY, ON TOP OF A GYM DAY AND A MORNING SESSION. Three
+   records now exist for 14 September and NONE of them replaces another:
+     pk-20260914-session      morning, 7:22 to 8:28 AM, written by build 389
+     pk-20260914-session-pm   this one, 4:13 to 5:18 PM
+     mig396_gym0914           the gym day, in state.daily and context.dailyLog
+   GUARDED BY ID, never by date, because a date guard would have refused this record.
+   The guard lives in the sessions array itself, not in seedIan().meta, so
+   deepMergeDefaults cannot pre set it. No SEED_VERSION bump. Appended after the last
+   existing writer to state.pickleball.sessions.
+
+   ALL SIX WATCH FIELDS ARE KNOWN AND NONE IS WRITTEN AS ZERO: 4:13 to 5:18 PM Omaha,
+   workout 1:04:19, elapsed 1:04:25, active 569, total 669, avg HR 120, max 153, min 69.
+   EFFORT 7 IS IAN'S OWN RATING, NOT THE WATCH'S.
+
+   HIS DEFINITION OF THE EFFORT SCALE IS RECORDED AS HIS, NOT AS A CONTRADICTION OF THE
+   HEART RATE. He said the 7 is how hard he tried AND how well he did, not exertion. That
+   is written down as his definition. No comparison table, no n, no pattern claim.
+
+   NO COACHING ANALYSIS IS ADDED. Ian, today: "Do not infer, invent or create anything I
+   did not specifically request." The drop finding in particular is recorded exactly as he
+   observed it and is NOT explained, normalised or turned into advice.
+
+   THE OVERGRIP PREDICTION IS WRITTEN BEFORE THE RESULT, at gear.grip.replacementTest, a
+   new container beside the existing moistureTest. Same reason blind grading exists: a
+   prediction recorded after the outcome is not a prediction. */
+try{ if(profile==="ian" && state.pickleball){
+    var _P02=state.pickleball;
+    if(!Array.isArray(_P02.sessions)) _P02.sessions=[];
+    var _h02=false;
+    for(var _i02=0;_i02<_P02.sessions.length;_i02++){ var _s02=_P02.sessions[_i02];
+      if(!_s02) continue;
+      if(_s02.id==="pk-20260914-session-pm") _h02=true; }
+    if(!_h02){
+      _P02.sessions.push({
+        id:"pk-20260914-session-pm", date:"2026-09-14", kind:"Pickleball", venue:"Omaha",
+        duration:"1h 04m 19s",
+        window:"4:13 to 5:18 PM, Omaha",
+        calories:669, activeCalories:569, avgHr:120, maxHr:153, minHr:69, effort:7,
+        result:"", score:"", opponent:"",
+        copyOwned:true,
+        note:"Monday 14 September, Omaha, 4:13 to 5:18 PM. SECOND SESSION OF THE DAY, after "
+          +"the 7:22 to 8:28 AM session and a gym day. From Apple Watch: workout time 1:04:19, "
+          +"elapsed 1:04:25, active 569, total 669, avg HR 120, max 153, min 69. EFFORT 7, "
+          +"Hard, IS YOUR RATING, not the watch's. "
+          +"WHAT THE 7 MEANS, IN YOUR WORDS: \"the reason I got a seven rating is because I "
+          +"didn't play that hard, but in general I played fairly well.\" Recorded as YOUR "
+          +"definition of the scale, how hard you tried and how well you did, not exertion. "
+          +"SHAPE OF THE SESSION: short and fairly relaxed, deliberately. The first 30 minutes "
+          +"was hitting back and forth with a random older guy, which you said did not help "
+          +"with much. "
+          +"WHAT WENT WELL: drives are really good, noticeably more power and still mostly "
+          +"landing inside the court. Serves continuing to be pretty good. "
+          +"THE DROP FINDING, RECORDED AS OBSERVED AND DELIBERATELY NOT EXPLAINED: when you "
+          +"hit the ball off the TIP of the paddle, off the sweet spot, it went perfectly into "
+          +"the kitchen EVERY SINGLE TIME, with no high bounce because there is no topspin from "
+          +"there. When you went for a REAL drop it went in about 75% of the time. No cause is "
+          +"attached to this and no advice is drawn from it. "
+          +"WHAT YOU SAID YOU NEED TO WORK ON: resets and drops under pressure, named as the "
+          +"main one. Deciding when to drop versus drive, which you said is not as big an issue "
+          +"but would help. Overall consistency, which you call a permanent work item. The one "
+          +"handed backhand push, which you worked on and did not improve; your description is "
+          +"that it is more like a drive, but with less power than the two handed backhand. "
+          +"EQUIPMENT, TWO THINGS. 1. The overgrip is going and it is affecting your play. YOUR "
+          +"WORDS: \"I can tell my grip is starting to go, so I need to replace the overgrip "
+          +"because it's making it hard to choose what grip I want to use when I'm playing, and "
+          +"it's kind of interfering with how I hit the ball.\" You are replacing it tonight. "
+          +"2. You have switched to Lifetime balls, more power, more spin, more bounce. You "
+          +"rate them as genuinely better than the Amazon balls you were using and you are "
+          +"getting used to them. "
+          +"NO DINKING HAPPENED AND IT FRUSTRATED YOU. Nobody you played with would dink. "
+          +"Opponents sped up every ball off the first hit, and if you took a drop and came to "
+          +"the kitchen you might get one dink before a speed up. Your own partner did the same. "
+          +"Your view: the slower games are more fun and better practice, and higher level "
+          +"players dink more. "
+          +"TOMORROW: a long early morning session."
+      });
+      save(true); }
+
+    /* THE OVERGRIP REPLACEMENT TEST. Stated prediction, written BEFORE the result.
+       New container beside gear.grip.moistureTest. Never overwritten once present. */
+    if(!_P02.gear || typeof _P02.gear!=="object") _P02.gear={};
+    if(!_P02.gear.grip || typeof _P02.gear.grip!=="object") _P02.gear.grip={};
+    if(!_P02.gear.grip.replacementTest || typeof _P02.gear.grip.replacementTest!=="object"){
+      _P02.gear.grip.replacementTest={
+        status:"OPEN, prediction recorded 2026-09-14 before the result",
+        statedBy:"Ian",
+        statedOn:"2026-09-14",
+        trigger:"Overgrip being replaced the evening of 14 September 2026.",
+        testSession:"The long early morning session on 15 September 2026.",
+        hisWords:"I can tell my grip is starting to go, so I need to replace the overgrip because it's making it hard to choose what grip I want to use when I'm playing, and it's kind of interfering with how I hit the ball.",
+        prediction:"If tomorrow goes well and the hand placement problem is gone, that shows the overgrip matters more than he has been treating it, and he should be swapping them more often.",
+        whyItIsWrittenNow:"A prediction recorded after the outcome is not a prediction. Written before the 15 September session so the result cannot be read backwards into it.",
+        result:"",
+        resolvedOn:""
+      };
+      save(true);
+    }
+} }catch(e){ try{ console.warn("mig402 pk 14 Sep PM did not apply:",e&&e.message); }catch(_){} }
+
 
 
 
