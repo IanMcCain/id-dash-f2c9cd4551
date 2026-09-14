@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 391 (2026-09-14)">
+<meta name="build" content="v21 build 392 (2026-09-14)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -18056,7 +18056,9 @@ function qwToggle(i){ if(!state.quickWin) state.quickWin={items:[],done:{}}; if(
    ONE OF TODAY\u0027S OWN PICKS PROVED THE POINT. It read "Log today\u0027s workout, every set",
    an instruction to use a surface this same build removes. Nothing in the app could have caught
    that; the agent doc update shipped alongside is what stops it recurring. */
-function quickWinCard(parent){ const picks=qwPicks(); const c=card("a-green"); picks.forEach(function(txt,i){ const row=el("div","qw"); row.style.cursor="default"; row.appendChild(el("span","qt",txt)); c._body.appendChild(row); if(i<picks.length-1){ const hr=el("div"); hr.style.cssText="height:1px;background:rgba(255,255,255,0.06);margin:3px 0"; c._body.appendChild(hr); } }); parent.appendChild(c); }
+/* build 392: a-green to a-blue. Home runs one accent now; quickWinCard is called from Home
+   and nowhere else, checked before the change. */
+function quickWinCard(parent){ const picks=qwPicks(); const c=card("a-blue"); picks.forEach(function(txt,i){ const row=el("div","qw"); row.style.cursor="default"; row.appendChild(el("span","qt",txt)); c._body.appendChild(row); if(i<picks.length-1){ const hr=el("div"); hr.style.cssText="height:1px;background:rgba(255,255,255,0.06);margin:3px 0"; c._body.appendChild(hr); } }); parent.appendChild(c); }
 const TYPECOL={"Pickleball":"a-blue","Supplement":"a-green","Real estate":"a-gold","Recovery":"a-blue","Nutrition":"a-green"};
 /* v21 build 56: Today-from-Claude card checks live in a DATE + STABLE-CARD-ID store (state.briefing.done[date][cardId]=true),
    NOT on the card object. Date-keyed like habits/water/quickWin, so it merges non-destructively and survives reloads AND
@@ -18810,14 +18812,18 @@ function buildIanHome(v){ const workout=daySplit(DOW); const reTop=firstUndone((
     /* build 191: one row of four instead of a 2 by 2 block. On a 390px phone the 2 by 2 cost
        182px of prime morning space for four buttons; a single row does the same job in about 90
        and buys that back for the wins, the schedule and the workout. */
+    /* build 392: the per button colour classes are dropped. .qab.gy and .qab.pk tinted their
+       borders gym orange and pickleball green while .re and .so had no rule at all, so the row
+       read as two coloured buttons and two plain ones. One accent, and the border comes off
+       the .qab rule entirely, see the CSS. Nav targets are unchanged. */
     q.style.gridTemplateColumns="repeat(4,minmax(0,1fr))";
-    q.appendChild(qb("re",ICO.property,"Real Estate",function(){ reView="pipeline"; try{ render(); }catch(e){} selectTab("re"); }));
-    q.appendChild(qb("gy",ICO.dumbbell,"Workout",function(){ gymJump("Workout routine"); }));
+    q.appendChild(qb("",ICO.property,"Real Estate",function(){ reView="pipeline"; try{ render(); }catch(e){} selectTab("re"); }));
+    q.appendChild(qb("",ICO.dumbbell,"Workout",function(){ gymJump("Workout routine"); }));
     /* build 121: Coach opens the Pickleball tab AND expands the Personal Coach section, which is keyed pk_coach. */
     /* build 354: was "Coach" and opened pk_coach, which no longer exists. Points at Mechanics,
        the surface that replaced it, rather than being left to open nothing. */
-    q.appendChild(qb("pk",PICKLE_SVG,"Mechanics",function(){ try{ PK_OPEN["pk_mechanics"]=true; }catch(e){} try{ render(); }catch(e){} selectTab("pickle"); }));
-    q.appendChild(qb("so",ICO.sun,"Solara",function(){ selectTab("solara"); }));
+    q.appendChild(qb("",PICKLE_SVG,"Mechanics",function(){ try{ PK_OPEN["pk_mechanics"]=true; }catch(e){} try{ render(); }catch(e){} selectTab("pickle"); }));
+    q.appendChild(qb("",ICO.sun,"Solara",function(){ selectTab("solara"); }));
     qc._body.appendChild(q); v.appendChild(qc);
   },"Quick actions");
   /* ===================================================================================
@@ -18873,6 +18879,11 @@ function buildIanHome(v){ const workout=daySplit(DOW); const reTop=firstUndone((
      pickleball colour coding and gym colour intact, weekly count against the 5 to 6 target intact. */
   /* build 191: open by default now. Ian named the heatmap one of his two favourite things in
      the app, and a favourite that starts collapsed is a favourite he has to go find. */
+  /* build 392: the accent argument on the line below is the ONLY change to secHeat, green to
+     blue, and it is the collapse chrome, not the chart. Every cell, class, band, colour,
+     legend entry, count, threshold, title and footnote below is byte identical to build 391.
+     Same line build 390 drew on habitConsistencyCard: card takes the page accent, bars keep
+     their own colours. Ian named the heatmap a favourite; it is not being diluted. */
   var secHeat=function(){ pkCollapse(v,"h_heat","Training consistency","gym and pickleball, target 11 a week",true,function(hh){
       var pb=state.pickleball||{};
       var cardEl=card(); var b=cardEl._body;
@@ -19068,7 +19079,7 @@ function buildIanHome(v){ const workout=daySplit(DOW); const reTop=firstUndone((
         _fn.textContent="A day counts if you played or lifted. Four weeks: two back, this week with today ringed, and the week ahead. This week counts against the FULL week, not days elapsed, so a low number mid week is the calendar rather than a miss. The week ahead has no count because it has not happened. Weeks with no records at all are not drawn rather than shown as zero; tracking starts Jul 6."+fmtShort(_firstRec)+", so they are not zero weeks.";
         b.appendChild(_fn); }
       hh.appendChild(cardEl);
-    },ICO.chart,"green"); };
+    },ICO.chart,"blue"); }; /* build 392: "green" to "blue". COLLAPSE CHROME ONLY, see the header above. */
   var secIdeas=function(){ safe(v,function(){ buildFutureIdeasHome(v); },"Future ideas"); };
   /* build 225: SOLARA IS A CARD HERE, NOT A TAB. Ian's call 08.04.2026. It is an entry point rather
      than a summary: it carries the one fact that changes (days to drop) plus the current status, and
@@ -19082,7 +19093,8 @@ function buildIanHome(v){ const workout=daySplit(DOW); const reTop=firstUndone((
     var L=el("div"); L.appendChild(el("h3",null,sd.drop||"Drop 001"));
     L.appendChild(el("div","small dim",sd.status||"In progress")); top.appendChild(L);
     var R=el("div"); R.style.cssText="text-align:right;flex:0 0 auto";
-    if(du!=null&&du>=0){ var n=el("div"); n.style.cssText="font-weight:800;font-size:19px;color:#ffb020"; n.textContent=du;
+    /* build 392: one accent. The hard coded #ffb020 was Home's fifth colour. */
+    if(du!=null&&du>=0){ var n=el("div"); n.style.cssText="font-weight:700;font-size:19px;letter-spacing:-.015em;color:var(--sec2,var(--accent2))"; n.textContent=du;
       R.appendChild(n); R.appendChild(el("div","small dim",du===1?"day to drop":"days to drop")); }
     top.appendChild(R); b.appendChild(top);
     c.onclick=function(){ selectTab("solara"); };
@@ -19090,10 +19102,20 @@ function buildIanHome(v){ const workout=daySplit(DOW); const reTop=firstUndone((
   },"Solara card"); };
   /* build 191: Easy wins opens by default. It is the first thing he wants to see and a
      collapsed win list is not a win list. */
-  var secWins=function(){ pkCollapse(v,"h_wins","Easy wins","two small wins today",true,function(hh){ quickWinCard(hh); },ICO.check,"green"); };
-  var secWater=function(){ pkCollapse(v,"h_water","Water","aim "+WATER_GOAL+" cups a day",false,function(hh){ waterCard(hh); },ICO.water,"cyan"); /* build 346: this said "aim 10 cups a day" while WATER_GOAL was 9, so Home contradicted the water card two sections below it. Reads the constant now and cannot drift again. */ };
-  var secSphere=function(){ pkCollapse(v,"h_sphere","Stay in touch","your sphere",false,function(hh){ homeSphereNudge(hh); },ICO.people,"orange"); };
-  var secProg=function(){ pkCollapse(v,"h_prog","Progress and upcoming","where you stand",false,function(hh){ reGoalsCard(hh); homeUpcomingCard(hh); },ICO.trend,"blue"); };
+  /* build 392: ONE ACCENT. Home ran four accent colours in its chrome, green here, cyan on
+     water, orange on the sphere, purple and orange on the cards below, plus four more in the
+     status tiles. Every collapse and every card on this page is now "blue", which is the
+     var(--sec2,var(--accent2)) the build 387 gym page uses throughout. Colour that means
+     something keeps it: the heatmap legend, the pickleball session classes and the chart
+     bars are palette, not chrome, and are untouched. */
+  var secWins=function(){ pkCollapse(v,"h_wins","Easy wins","two small wins today",true,function(hh){ quickWinCard(hh); },ICO.check,"blue"); };
+  var secWater=function(){ pkCollapse(v,"h_water","Water","aim "+WATER_GOAL+" cups a day",false,function(hh){ waterCard(hh); },ICO.water,"blue"); /* build 346: this said "aim 10 cups a day" while WATER_GOAL was 9, so Home contradicted the water card two sections below it. Reads the constant now and cannot drift again. */ };
+  var secSphere=function(){ pkCollapse(v,"h_sphere","Stay in touch","your sphere",false,function(hh){ homeSphereNudge(hh); },ICO.people,"blue"); };
+  /* build 392: OPEN BY DEFAULT. This is the third of Ian's three things and it was behind a
+     tap. reGoalsCard is passed through untouched and deliberately not trimmed: deciding which
+     of its figures survive is his call, not a side effect of a layout pass, exactly as the
+     build 391 header on buildIanRe says. */
+  var secProg=function(){ pkCollapse(v,"h_prog","Progress and upcoming","where you stand",true,function(hh){ reGoalsCard(hh,"a-blue"); homeUpcomingCard(hh); },ICO.trend,"blue"); };
   var secSummary=function(){ pkCollapse(v,"h_summary","Daily summary","today at a glance",false,function(hh){ const gday=daySplit(DOW); const glog=(state.gym.logs&&state.gym.logs[TODAY])||{done:{}}; const gT=gday.exercises.length||0, gD=gday.exercises.filter(e=>glog.done&&glog.done[e.id]).length; const hs=habitsActiveOn(TODAY); const hD=hs.filter(h=>h.log&&h.log[TODAY]).length; const water=(state.nutrition&&state.nutrition.water&&state.nutrition.water[TODAY])||0; summaryGrid(hh,[ fracTile({label:"Workout",color:"orange",done:gD,goal:gT||1,unit:"sets",tab:"gym"}), fracTile({label:"Habits",color:"green",done:hD,goal:hs.length||7,unit:"done",tab:"gym"}), fracTile({label:"Water",color:"cyan",done:water,goal:WATER_GOAL,unit:"cups",tab:"gym"}) ]); },ICO.clipboard,"teal"); };
   /* build 191: promoted from dead last to the top block and renamed. It is his schedule, and
      "Calendar" sitting under Daily summary meant he never saw it in the morning. */
@@ -19114,7 +19136,7 @@ function buildIanHome(v){ const workout=daySplit(DOW); const reTop=firstUndone((
        build 236: both of these now render at the BOTTOM of Home, see THE ORDER. */
     if(!evs.length){ QUIET.push("nothing on your schedule"); return; }
     sect(v,"Today's schedule",evs.length+" coming up");
-    var c=card("a-purple"); var b=c._body;
+    var c=card("a-blue"); var b=c._body; /* build 392: was a-purple */
     var line=function(e,isToday){
       var row=el("div","between"); if(b.childElementCount) row.style.marginTop="10px";
       var lft=el("div"); lft.style.cssText="min-width:0;flex:1;padding-right:10px";
@@ -19162,9 +19184,9 @@ function buildIanHome(v){ const workout=daySplit(DOW); const reTop=firstUndone((
     var log=(state.gym&&state.gym.logs&&state.gym.logs[TODAY])||{done:{}};
     var doneN=exs.filter(function(e){ return log.done&&log.done[e.id]; }).length;
     sect(v,"Today's workout","tap to open the gym");
-    var c=card("a-orange"); c.className+=" tap"; var b=c._body;
+    var c=card("a-blue"); c.className+=" tap"; var b=c._body; /* build 392: was a-orange */
     var top=el("div","between");
-    var t=el("div"); t.style.cssText="font-weight:800;font-size:17px;letter-spacing:-.02em";
+    var t=el("div"); t.style.cssText="font-weight:700;font-size:17px;letter-spacing:-.015em"; /* build 392: 387 type scale */
     t.textContent=cleanFocus(day.focus)||"Workout";
     top.appendChild(t); top.appendChild(el("div","chev","\u203A")); b.appendChild(top);
     var meta=el("div","small dim"); meta.style.marginTop="3px";
@@ -19172,8 +19194,14 @@ function buildIanHome(v){ const workout=daySplit(DOW); const reTop=firstUndone((
        last zero fraction left in the app once the ticking went. It is a REFERENCE view of the
        week, so the honest line is how much work the day holds, not how much of it he ticked. */
     meta.textContent=exs.length+(exs.length===1?" exercise":" exercises"); b.appendChild(meta);
-    var track=el("div","pbar"); var fill=el("i"); track.appendChild(fill); b.appendChild(track);
-    try{ var pct=exs.length?Math.round(doneN/exs.length*100):0; fill.style.width=pct+"%"; }catch(e){}
+    /* build 392: THE PROGRESS BAR IS GONE. It was driven by doneN, and build 362 already
+       recorded that nothing ticks any more, so it rendered a 0 percent track on every single
+       day. A bar permanently at zero is an empty state wearing a chart, and it sat directly
+       under a line that build 362 rewrote for exactly this reason. doneN is still computed
+       above and still unused elsewhere; it is left in place rather than removed so the diff
+       stays presentation only.
+       var track=el("div","pbar"); var fill=el("i"); track.appendChild(fill); b.appendChild(track);
+       try{ var pct=exs.length?Math.round(doneN/exs.length*100):0; fill.style.width=pct+"%"; }catch(e){} */
     var names=el("div","small"); names.style.cssText="margin-top:9px;line-height:1.5;color:var(--gray)";
     names.textContent=exs.slice(0,4).map(function(e){ return e.name; }).join(", ")+(exs.length>4?", and "+(exs.length-4)+" more":"");
     b.appendChild(names);
@@ -19331,13 +19359,13 @@ function buildIanHome(v){ const workout=daySplit(DOW); const reTop=firstUndone((
     var waiting=(top.kind==="waiting");
     sect(v, waiting?"Waiting on someone else":"First thing today",
             waiting?"nothing to do here yet":(C.length>1?(C.length-1)+" more today":"one thing"));
-    var c=card("a-purple"); if(top.go) c.className+=" tap"; var b=c._body;
+    var c=card("a-blue"); if(top.go) c.className+=" tap"; var b=c._body; /* build 392: was a-purple */
     if(top.chip){
       var ch=el("span","pill"); ch.textContent=top.chip;
       ch.style.cssText="display:inline-block;margin-bottom:8px;font-size:11px;letter-spacing:.04em;text-transform:lowercase";
       b.appendChild(ch);
     }
-    var t=el("div"); t.style.cssText="font-weight:800;font-size:18px;letter-spacing:-.02em;line-height:1.3";
+    var t=el("div"); t.style.cssText="font-weight:700;font-size:18px;letter-spacing:-.015em;line-height:1.3"; /* build 392: 387 type scale */
     t.textContent=top.title; b.appendChild(t);
     /* build 339: a supporting line that just restates the title is worse than no line.
        Where short and text say the same thing, the card shows one of them. */
@@ -19374,6 +19402,12 @@ function buildIanHome(v){ const workout=daySplit(DOW); const reTop=firstUndone((
      NOTHING HERE IS ADVICE. If a number needs a recommendation attached, that belongs in
      conversation, which can be current. */
   var secStatus=function(){ safe(v,function(){
+    /* build 392: ONE ACCENT. Each tile carried its own domain colour, blue, pickleball green,
+       gym orange and amber, which made a four number glance into a four colour one and was
+       half of Home's palette on its own. The colours below are left as written and simply not
+       used, so the domain mapping is still readable if Ian wants it back. ACC is the page
+       accent, the same one the build 387 gym page uses. */
+    var ACC="var(--sec2,var(--accent2))";
     var tiles=[];
     /* real estate: the two figures the goal card already computes */
     try{
@@ -19456,12 +19490,14 @@ function buildIanHome(v){ const workout=daySplit(DOW); const reTop=firstUndone((
     tiles.forEach(function(t){
       var cell=el("div"); cell.style.cssText="position:relative;padding:11px 12px 12px 13px;border-radius:13px;"
         +"background:rgba(255,255,255,.035);overflow:hidden;cursor:pointer";
-      var bar=el("i"); bar.style.cssText="position:absolute;left:0;top:9px;bottom:9px;width:3px;border-radius:3px;background:"+t.col;
+      var bar=el("i"); bar.style.cssText="position:absolute;left:0;top:9px;bottom:9px;width:3px;border-radius:3px;background:"+ACC;
       cell.appendChild(bar);
-      var lab=el("div","small"); lab.style.cssText="font-weight:800;letter-spacing:.05em;text-transform:uppercase;font-size:10.5px;color:"+t.col;
+      /* build 392: the label takes the .g7grp values off the build 387 gym page, 12.5px 700 on
+         the page accent, and it is NO LONGER UPPERCASE. 387 sets no fragment in caps. */
+      var lab=el("div","small"); lab.style.cssText="font-weight:700;letter-spacing:0;font-size:12.5px;line-height:1.2;color:"+ACC;
       lab.textContent=t.k; cell.appendChild(lab);
       var row=el("div"); row.style.cssText="display:flex;align-items:baseline;gap:5px;margin-top:3px";
-      var val=el("div"); val.style.cssText="font-weight:800;font-size:24px;letter-spacing:-.03em;line-height:1.1;font-variant-numeric:tabular-nums;color:var(--white,#fff)";
+      var val=el("div"); val.style.cssText="font-weight:700;font-size:24px;letter-spacing:-.02em;line-height:1.1;font-variant-numeric:tabular-nums;color:var(--white,#fff)";
       val.textContent=t.v; row.appendChild(val);
       if(t.u){ var un=el("div","small dim"); un.style.cssText="font-size:11px"; un.textContent=t.u; row.appendChild(un); }
       cell.appendChild(row);
@@ -19494,6 +19530,68 @@ function buildIanHome(v){ const workout=daySplit(DOW); const reTop=firstUndone((
     c.onclick=function(){ try{ PK_OPEN["pk_mechanics"]=true; }catch(e){} try{ render(); }catch(e){} selectTab("pickle"); };
     v.appendChild(c);
   },"Learning mode"); };
+  /* ===== v21 build 392: NEW FOR YOU. THE FIRST OF IAN'S THREE THINGS ==================
+     BRAIN/Personal/Context/00_PERSONAL_CONTEXT.md line 86, his own words: the three things he
+     wants when he opens the app are, FIRST some new info or a video to watch, SECOND his easy
+     wins, THIRD a good summary of progress made and what is coming up. Home has never carried
+     the first one.
+
+     WHAT IT READS, AND WHY IT IS THE ONLY HONEST SOURCE LEFT. Three candidate surfaces were
+     checked against his real profile before a line of this was written. Two are dead:
+       state.briefing.forIan          LAST WRITTEN 25.08.2026. 41 days, 144 items, 60 of them
+                                      carrying a url, and nothing since. Reviving "Today from
+                                      Claude" would render an empty card every morning, on top
+                                      of the build 344 evidence that killed it.
+       state.pickleball.videoRec      LAST WRITTEN 22.07.2026, and the research agent's own
+                                      pointer file states in writing, run 17 on 13.09.2026,
+                                      that it no longer carries videoRec. Retired, not stale.
+       state.pickleball.mechanics.shots  LIVE. Nine shots, each with status, updated, by and
+                                      paras, revised a shot or two at a time by the twice
+                                      weekly research agent. The only one still being written.
+     So the card is the most recently revised shot, named, dated, and one tap from the
+     Mechanics section that holds it. NOTHING IS INVENTED. Every word on it except the heading
+     comes out of the record it is reporting, and the sentence is taken whole rather than
+     summarised, because a summary would be a claim about his coaching content that no agent
+     signed off on.
+
+     THERE IS NO VIDEO, and that is reported rather than papered over. The "or a video to
+     watch" half of his sentence has no live source anywhere in the app: videoRec held them
+     and videoRec is retired. A search link would be this lane inventing content. Ian's call.
+
+     IT GOES QUIET, NEVER EMPTY. The agent runs twice a week, so a gap past 30 days is about
+     eight missed runs and the newest thing on file is not news any more. Past that it hands
+     one clause to the quiet line rather than putting the word "new" over a month old card.
+     No empty state, no placeholder, no dashed box. */
+  var MECH_LABEL={drives:"Drives",drops:"Drops",backhand:"Backhand",twoHandBackhand:"Two hand backhand",
+    resets:"Resets",dinks:"Dinks",flicks:"Flicks",grip:"Grip",roll:"Roll"};
+  var secNew=function(){ safe(v,function(){
+    var sh=(((state.pickleball||{}).mechanics)||{}).shots||{};
+    var best=null;
+    Object.keys(sh).forEach(function(k){
+      var s=sh[k]; if(!s||!s.updated) return;
+      if(!(Array.isArray(s.paras)&&s.paras.length)) return;
+      if(!best||String(s.updated)>String(best.updated)) best={key:k,updated:String(s.updated),paras:s.paras};
+    });
+    if(!best){ QUIET.push("nothing new to read"); return; }
+    var age=null; try{ var _du=daysUntil(best.updated); if(typeof _du==="number") age=-_du; }catch(e){ age=null; }
+    if(age===null||age>30){ QUIET.push("nothing new to read"); return; }
+    var name=MECH_LABEL[best.key]||String(best.key).replace(/([A-Z])/g," $1").replace(/^./,function(c){ return c.toUpperCase(); });
+    var p0=String(best.paras[0]||"").trim();
+    var m=p0.match(/^[\s\S]{20,180}?[.!?](\s|$)/);
+    var line=(m?m[0]:p0).trim();
+    if(line.length>180) line=line.slice(0,177).replace(/[\s,;:]+$/,"")+"\u2026";
+    sect(v,"New for you","pickleball mechanics");
+    var c=card("a-blue"); c.className+=" tap"; var b=c._body;
+    var top=el("div","between");
+    var t=el("div","h92title"); t.textContent=name; top.appendChild(t);
+    top.appendChild(el("div","chev","\u203A")); b.appendChild(top);
+    if(line){ var ln=el("div","h92sub"); ln.textContent=line; b.appendChild(ln); }
+    var mt=el("div","h92meta");
+    mt.textContent="Updated "+fmtShort(best.updated)+(age===0?", today":(age===1?", yesterday":", "+age+" days ago"));
+    b.appendChild(mt);
+    c.onclick=function(){ try{ PK_OPEN["pk_mechanics"]=true; }catch(e){} try{ render(); }catch(e){} selectTab("pickle"); };
+    v.appendChild(c);
+  },"New for you"); };
   var secQuiet=function(){ safe(v,function(){
     if(!QUIET.length) return;
     var d=el("div","small dim"); d.style.cssText="margin:16px 2px 6px;line-height:1.5";
@@ -19545,12 +19643,64 @@ function buildIanHome(v){ const workout=daySplit(DOW); const reTop=firstUndone((
      with is the start of the 6am agent failures. Placement is being corrected because it is
      wrong on the merits, not because it is the known cause of the drop.
      =================================================================================== */
-  secStatus();     /* build 344: canonical state, replaces Today from Claude */
-  secFirstThing(); /* build 212: ONE thing, computed, with the reason it won  */
-  secWins();       /* daily wins,      he asked for this first  */
-  secEntry();      /* build 231: HIS INPUT, above everything it feeds  */
-  secWorkout();    /* his gym workout, silent on a rest day     */
-  secHeat();       /* favourite, high, pairs with the workout   */
+  /* ===== v21 build 392: THE ORDER IS NOW IAN'S THREE THINGS, IN HIS ORDER =============
+     Everything above this line still applies about HOW the order works. WHAT the order is
+     has changed, and it now comes from one sourced sentence rather than from a reading of
+     how he opens the app.
+
+     THE SOURCE. BRAIN/Personal/Context/00_PERSONAL_CONTEXT.md line 86, verified from Ian:
+     "The three things he wants when he opens it are, first, some new info or a video to
+     watch, second, his easy wins, and third, a good summary of progress made and what is
+     coming up." Those three go 1, 2, 3 and EVERYTHING ELSE FALLS BELOW THEM. That is the
+     whole rule, and it is why several sections that were reasoned into the top block by
+     earlier builds are now below it. They did not get worse, they are just not one of
+     the three.
+
+     THE PROGRESS BLOCK IS THREE SECTIONS, NOT ONE, because his third thing is two things.
+       secStatus  where everything stands, the four numbers        progress made
+       secHeat    the training heatmap, UNTOUCHED                  progress made, visually
+       secProg    goal pace, and homeUpcomingCard                  and what is coming up
+     secProg now opens by default. It carried the third of his three things behind a tap.
+
+     THE HEATMAP GOES ABOVE secProg INSIDE THE BLOCK, AND THAT ORDER WAS MEASURED, NOT PICKED.
+     Built the other way round first, and on his real profile at 390x844 the open reGoalsCard
+     plus homeUpcomingCard came to 1240px, which put the heatmap at y=2242, nearly three
+     screens down. Ian named the heatmap one of his two favourites; burying a favourite behind
+     the densest block of prose on the page is the exact failure build 191 fixed once already.
+     Glanceable above dense. Measured again after the swap.
+
+     THE HEATMAP IS NOT DILUTED. Ian named it one of his two favourite things in the app.
+     Every cell, band, colour, legend entry, count, threshold and footnote inside secHeat is
+     byte identical to build 391. The only change is the COLLAPSE CHROME accent, green to
+     blue, which is the page's accent and not the chart's palette. That is exactly the line
+     build 390 drew on habitConsistencyCard: the card takes the page accent, the bars keep
+     their own colours, the chart itself is untouched.
+
+     WHAT LEFT THE PAGE. secEntry, "Today's entry, one place for everything", is NOT CALLED
+     from this build. Ian, 14.09.2026: "I'm not going to be checking anything, not going to
+     be filling anything out. This is just for me to open and look at daily." It was the last
+     write surface on Home and the app is a read only daily reference now, so an input card
+     with a placeholder, five tag buttons and two lines of instructions is the single least
+     appropriate thing on the screen. THE FUNCTION IS LEFT DEFINED AND UNCALLED, the same
+     convention that kept secBrief, secReAlert, secSummary, secIdeas and secLearn, and
+     state.daily is untouched and still exports. Nothing was deleted.
+     ONE KNOWN CONSEQUENCE, WRITTEN DOWN RATHER THAN DISCOVERED LATER: the build 362 GYM:
+     label path that colours a heatmap cell reads state.daily[date].text, which this card was
+     the only surface still writing. Historic days are unaffected and every other gym signal
+     still fires, but no NEW gym day can be logged from inside the app. That is a direct
+     consequence of his own instruction, not a regression introduced here, and it is in the
+     build report for him rather than worked around.
+
+     The "Learning mode" header is also not called. It was an unconditional label covering
+     everything below it, and with the order rebuilt it would sit above the progress block
+     and claim it as optional depth, which is the opposite of what it now is. */
+  secNew();        /* 1. new info, the newest revised mechanics shot */
+  secWins();       /* 2. easy wins                                   */
+  secStatus();     /* 3a. progress, the four numbers                 */
+  secHeat();       /* 3b. progress, the heatmap, undiluted           */
+  secProg();       /* 3c. progress, goal pace and what is coming up  */
+  secWorkout();    /* below the three. Silent on a rest day          */
+  secFirstThing(); /* below the three. ONE computed thing            */
   /* secBrief REMOVED build 344. "Today from Claude" is cut, not shrunk. 1 tick in 44
      cards over a fortnight against 61 percent for Easy wins, the identical mechanic on the
      same page. A one line version would have preserved the exact mental model the data
@@ -19570,12 +19720,16 @@ function buildIanHome(v){ const workout=daySplit(DOW); const reTop=firstUndone((
      running a second hidden mechanism beside it. The header used to be printed INSIDE secLearn and was
      gated on there being video stats, so on a profile with none, six collapsed drawers rendered under
      no header at all. It is unconditional now and it covers everything below it. */
-  safe(v,function(){ sect(v,"Learning mode","depth when you want it, none of it daily"); },"Learning mode header");
+  /* build 392: the "Learning mode" header is NOT CALLED. See THE ORDER above. It was an
+     unconditional label covering everything below it, and the progress block is not optional
+     depth. The line is kept here rather than deleted so the shape is recoverable:
+     safe(v,function(){ sect(v,"Learning mode","depth when you want it, none of it daily"); },"Learning mode header"); */
   /* secLearn NOT CALLED from build 354. It was the Home door into "Pickleball study", which is
      cut, so tapping it would have opened a section that no longer renders. The function is left
      defined and uncalled per the same convention that kept pkInsights and pkRecord, and
      state.pickleball.videoStats is untouched and still exports. */
-  secProg();       /* goal pace and closing money               */
+  /* build 392: secProg MOVED UP into the progress block, see THE ORDER. It is the third of
+     Ian's three things and it was ninth, collapsed. It is not called twice. */
   secWater();
   secSphere();
   /* build 362: secSummary is NOT called any more. Its three tiles were Workout sets,
@@ -19893,12 +20047,19 @@ function buildIanRe(v){
   return reViewLanding(v);
 }
 function fmtMoneyShort(n){ n=n||0; if(n>=1e6){ var m=n/1e6; return "$"+(m>=10?String(Math.round(m)):m.toFixed(1))+"M"; } if(n>=1e3) return "$"+Math.round(n/1e3)+"K"; return "$"+Math.round(n); }
-function reGoalsCard(parent){
+/* build 392: accOverride is a NEW OPTIONAL SECOND ARGUMENT and it is the only change to this
+   function. It defaults to "a-teal", so both real estate page call sites are byte identical and
+   the RE page is untouched; Home passes "a-blue" so the progress block runs the page's one
+   accent. THE CARD IS OTHERWISE LEFT WHOLE. Not one figure, label, threshold or paragraph is
+   touched, including the 2027 ceiling prose. Deciding which of its numbers survive is Ian's
+   call, exactly as the build 391 header on buildIanRe says, and it is still the first thing to
+   put to him. A card accent is chrome, not a number. */
+function reGoalsCard(parent,accOverride){
   const deals=state.realEstate.deals||[]; const vol=arr=>arr.reduce((a,d)=>a+dealVolume(d),0);
   const closed=deals.filter(d=>d.stage==="Closed"); const uc=deals.filter(d=>d.stage==="Under Contract");
   const production=vol(closed)+vol(uc); const dealsDone=closed.concat(uc).reduce(function(a,d){ return a+dealCountWeight(d); },0);
   const g=(state.realEstate&&state.realEstate.goals2026)||{}; const PROD_GOAL=g.production||10000000; const DEALS_GOAL=g.deals||20;
-  const c=card("a-teal"); const b=c._body;
+  const c=card(accOverride||"a-teal"); const b=c._body;
   b.appendChild(el("div","small muted","2026 production goals"));
   const mk=(label,valHtml,frac,col)=>{ const wrap=el("div","goalrow"); const top=el("div","between"); top.appendChild(el("div","goal-lab",label)); const vv=el("div","goal-val"); vv.innerHTML=valHtml; top.appendChild(vv); wrap.appendChild(top); const bar=el("div","pbar"); const i=el("i"); bar.appendChild(i); wrap.appendChild(bar); try{ i.style.width=Math.min(100,frac*100)+"%"; i.style.background="var(--"+col+")"; }catch(e){} return wrap; };
   b.appendChild(mk("Production",'<b>'+fmtMoneyShort(production)+'</b> <span>of '+fmtMoneyShort(PROD_GOAL)+'</span>',PROD_GOAL?production/PROD_GOAL:0,"teal"));
@@ -20253,8 +20414,9 @@ function reViewSphere(v){
   const listc=card(); listc._body.style.padding="0"; const body=el("div","collapse-body"); sphere.forEach(k=>contactRow(body,k)); listc._body.appendChild(body); v.appendChild(listc);
   sphereAdder(v);
 }
+/* build 392: a-teal to a-blue. One accent on Home; called from Home only, checked. */
 function homeSphereNudge(parent){
-  const sphere=sphereList(); const c=card("a-teal"); const b=c._body;
+  const sphere=sphereList(); const c=card("a-blue"); const b=c._body;
   if(!sphere.length){
     b.appendChild(el("div","feedtitle","Your sphere is empty"));
     b.appendChild(el("div","feednote","Your referral business runs on staying in touch. Once the people you and Chris nurture are on record, each morning names who is due."));
@@ -22402,7 +22564,19 @@ body.solara-off .tabbar label[for=t-solara]{display:none}
 
 /* ===== v21 build 113: quick actions + consolidated daily entry ===== */
 .qa{display:grid;grid-template-columns:1fr 1fr 1fr;gap:9px;margin:2px 0 4px}
-.qab{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:14px 6px;border-radius:16px;background:var(--card2,#1c1c22);border:1px solid var(--line,#26262e);color:var(--white);font-weight:800;font-size:12.5px;letter-spacing:-.01em;text-align:center;line-height:1.2}
+/* build 392: FEWER BORDERS. The 1px outline round every quick action was four boxes drawn on
+   a page whose own reference, the build 387 gym page, separates things with hairlines and
+   whitespace rather than outlining them. The card2 fill carries the tap target on its own.
+   Weight 800 to 700 to match the 387 scale. The .gy/.pk/.nu tint rules below are now unused,
+   left in place rather than deleted. */
+.qab{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:14px 6px;border-radius:16px;background:var(--card2,#1c1c22);border:0;color:var(--white);font-weight:700;font-size:12.5px;letter-spacing:-.01em;text-align:center;line-height:1.2}
+/* build 392: the Home "New for you" card, on the build 387 gym page's own type scale. These
+   are COPIES of .g7title, .g7titlesub and .g7meta rather than a shared selector, on purpose:
+   sharing would mean a future change to the gym page silently restyles Home, which is the
+   drift this codebase keeps getting bitten by. If you change one, change both deliberately. */
+.h92title{font-size:20px;font-weight:700;line-height:1.28;letter-spacing:-.015em;color:var(--white);overflow-wrap:break-word;min-width:0}
+.h92sub{font-size:14.5px;font-weight:500;line-height:1.45;color:var(--gray);margin:6px 0 0;overflow-wrap:break-word}
+.h92meta{font-size:13.5px;line-height:1.5;color:var(--gray2);margin:9px 0 0;overflow-wrap:break-word}
 .qab:active{transform:scale(.97)}
 .qab .ic{font-size:19px;line-height:1}
 .qab.pk{border-color:color-mix(in srgb,var(--pk1) 45%,transparent)}
