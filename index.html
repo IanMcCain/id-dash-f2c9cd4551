@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 388 (2026-09-12)">
+<meta name="build" content="v21 build 389 (2026-09-14)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -17474,6 +17474,81 @@ try{ if(profile==="ian" && state.pickleball){
       _w13=true; }
     if(_w13) save(true);
 } }catch(e){ try{ console.warn("mig388 pk 11 and 12 Sep did not apply:",e&&e.message); }catch(_){} }
+
+/* ===== v21 build 389: PICKLEBALL SESSION, MONDAY 14 SEPTEMBER 2026, MORNING ==============
+   ONE RECORD, ONE DATE, ONE SESSION. GUARDED BY ID (pk-20260914-session), never by date.
+   Appended AFTER the build 388 block, which is the last existing writer to
+   state.pickleball.sessions. No SEED_VERSION bump. The guard lives in the sessions array
+   itself, not in seedIan().meta, so deepMergeDefaults cannot pre set it.
+
+   ALL SIX WATCH FIELDS ARE KNOWN AND NONE IS WRITTEN AS ZERO: 7:22 to 8:28 AM Omaha,
+   1:05:47, active 532, total 634, avg HR 113, max 149, min 71. EFFORT 7 IS IAN'S OWN
+   RATING, NOT THE WATCH'S, and the note says so.
+
+   HIS ACCOUNT IS QUOTED VERBATIM AND NOT EXPANDED. "not great session just felt cold, but
+   to be fair I haven't played for like 2 days." NO CAUSE IS ATTACHED TO IT. "Felt cold" is
+   his word and the two day gap is his framing. Nothing is diagnosed from it and nothing is
+   inferred from duration or heart rate. result, score and opponent stay EMPTY because he
+   gave no opponents, no partner, no format, no drills and no result.
+
+   THE GAP WAS CHECKED AGAINST THE RECORD RATHER THAN TAKEN FROM HIM. Last logged session
+   is pk-20260912-openplay, Saturday 12 September 7:06 to 9:48 AM. There is no session and
+   no gym row for 13 September. SO SUNDAY 13 SEPTEMBER IS THE ONLY DAY OFF, not "a Saturday
+   and Sunday off": Saturday was a session day. Elapsed 12 Sep 09:48 to 14 Sep 07:22 is
+   45h 34m, so "like 2 days" is right on elapsed time and one day off on the calendar.
+
+   FOURTH SESSION AFTER THE 10 SEPTEMBER DROP TECHNIQUE BOUNDARY (11, 12, then 14), and the
+   note records that 11, 12 and 14 all came with NO account of how the drops held.
+
+   NOTHING IS WRITTEN TO state.daily, NOTHING TO context.dailyLog AND NOTHING TO gym.logs.
+   No gym record exists for 14 September, so under the build 380 counter 14 September
+   contributes exactly 1. A gym row would arrive on its own path through gym_day.sh. */
+try{ if(profile==="ian" && state.pickleball){
+    var _P14=state.pickleball;
+    if(!Array.isArray(_P14.sessions)) _P14.sessions=[];
+    var _h14=false;
+    for(var _i14=0;_i14<_P14.sessions.length;_i14++){ var _s14=_P14.sessions[_i14];
+      if(!_s14) continue;
+      if(_s14.id==="pk-20260914-session") _h14=true; }
+    if(!_h14){
+      _P14.sessions.push({
+        id:"pk-20260914-session", date:"2026-09-14", kind:"Pickleball", venue:"Omaha",
+        duration:"1h 05m 47s",
+        window:"7:22 to 8:28 AM, Omaha",
+        calories:634, activeCalories:532, avgHr:113, maxHr:149, minHr:71, effort:7,
+        result:"", score:"", opponent:"",
+        copyOwned:true,
+        note:"Monday 14 September, Omaha, 7:22 to 8:28 AM, 1:05:47. WATCH DATA PLUS YOUR OWN "
+          +"ACCOUNT. YOUR WORDS, VERBATIM AND UNEXPANDED: \"not great session just felt cold, "
+          +"but to be fair I haven't played for like 2 days.\" NOTHING HAS BEEN ADDED TO THAT. "
+          +"No cause is attached to it, \"felt cold\" is your word for it and the two day gap "
+          +"is your own framing, not a conclusion. You gave no opponents, no partner, no "
+          +"format, no drills and no result, so result, score and opponent are EMPTY ON "
+          +"PURPOSE and nothing has been inferred from the duration or the heart rate. From "
+          +"Apple Watch: avg HR 113, max 149, min 71, active 532, total 634. Active rate 8.09 "
+          +"a minute. EFFORT 7 IS YOUR RATING, not the watch's. THE GAP, CHECKED AGAINST THE "
+          +"RECORD RATHER THAN TAKEN FROM YOU. Your last logged session was Saturday 12 "
+          +"September, 7:06 to 9:48 AM, and there is no session and no gym row for 13 "
+          +"September, so SUNDAY 13 SEPTEMBER IS THE ONLY DAY WITH NO SESSION. Saturday was a "
+          +"session day. Elapsed between the two is 45 hours 34 minutes, so \"like 2 days\" is "
+          +"right on elapsed time and one day off on the calendar. FOURTH SESSION SINCE THE 10 "
+          +"SEPTEMBER DROP TECHNIQUE BOUNDARY, after 11 and 12 September. YOU REPORTED ON THE "
+          +"10TH THAT THE DROP CHANGE WORKED AND HAVE SAID NOTHING ABOUT THE DROPS SINCE. "
+          +"Three sessions have now passed with no account of whether it held, and this record "
+          +"says so rather than assuming either way. THE EFFORT PATTERN, n=8 SINCE 8 SEPTEMBER, "
+          +"RECORDED AND NOT EXPLAINED: 129 at 8, 121 at 6, 124 at 7, 116 at 9, 116 at 9, 129 "
+          +"at 7, 115 at 7, and now 113 at 7. EFFORT 7 NOW SPANS AN AVERAGE HEART RATE OF 113 "
+          +"TO 129, a 16 beat range, while 116 was rated 9 twice. TWO CORRECTIONS FROM THE FULL "
+          +"RECORD. 113 IS NOT YOUR LOWEST AVERAGE HEART RATE ON FILE: 108 on 24 July at effort "
+          +"5, 111 on 2 August at effort 5 and 111 on 26 August at effort 6 are all lower, and "
+          +"avg 113 already occurred on 2 September RATED 9. It is your lowest since 8 "
+          +"September. 1:05:47 IS NOT YOUR SHORTEST SESSION ON RECORD EITHER: 26 August was "
+          +"50m. It is your second shortest on file and your shortest since 8 September. Your "
+          +"effort scale and your heart rate are measuring different things and nobody knows "
+          +"what the scale is measuring. NOBODY IS SUGGESTING YOU RATE DIFFERENTLY."
+      });
+      save(true); }
+} }catch(e){ try{ console.warn("mig389 pk 14 Sep did not apply:",e&&e.message); }catch(_){} }
 
 
 
