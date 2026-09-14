@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 395 (2026-09-14)">
+<meta name="build" content="v21 build 396 (2026-09-14)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -17687,6 +17687,59 @@ try{ if(profile==="ian" && state.meta && !state.meta.mig394_gymsplit && state.gy
       state.meta.mig394_gymsplit=true; save(true);
     }
 } }catch(e){ try{ console.warn("mig394 gym split did not apply:",e&&e.message); }catch(_){} }
+
+/* ===== v21 build 396, GEN-18, 14.09.2026. THE 14 SEPTEMBER GYM DAY ====================
+   HE TRAINED AND THE APP SAYS HE DID NOT. Monday 14 September is a gym day. It is in
+   BRAIN/GLOBAL/_GYM_DAYS.md, written 14.09.2026T15:55:21Z, and queued as
+   q178940132198389. In state it does not exist at all: state.daily["2026-09-14"] is
+   ABSENT, gym.logs has no 14 September, and context.dailyLog["2026-09-14"].note is an
+   empty string sitting under a summary that reads "Workout: Back and biceps, 0/3
+   logged." The heatmap reads state.daily, so the heatmap and "Gym 0 days this week,
+   target 3" are both wrong today.
+
+   WHERE IT IS WRITTEN, AND WHERE IT IS DELIBERATELY NOT.
+   state.daily[date].text and context.dailyLog[date].note. NOT gym.logs[date].note: the
+   build 34 archive-then-clear rollover blanks that field on the first load of a new
+   day, so a gym day written there renders today and goes grey overnight. Both routes
+   were measured, evidence in WORK/Personal/Output/_gym_probe/run2.log. The 10 September
+   gym day is the working precedent and sits in exactly these two places.
+
+   THREE EXERCISES, NOT FIVE, AND THE SOURCE FILE IS THE STALE ONE.
+   The _GYM_DAYS.md row says "five items". That row is stale. Build 394 split Monday on
+   14.09.2026, moving chest press and lateral raise to Saturday because back and chest
+   are never combined, and Monday's own note in this file now reads "Three items rather
+   than five". The app agrees with itself twice over: split[Mon].exercises has LENGTH 3,
+   and the dailyLog summary the app generated for this very date says "0/3 logged".
+   So this writes the three he did, lat pulldown, chest supported machine row and face
+   pull, and says plainly in the text that the markdown row is the one that is wrong.
+
+   NOTHING IS INVENTED. Every fact here is from _GYM_DAYS.md or from this file's own
+   Monday split. No result, no duration, no heart rate and no effort number were given
+   for the gym session, so NONE is written. Absent is not zero.
+
+   NO WRITER WAS BUILT. The Home entry card was the last writer of the GYM: signal and
+   it was removed deliberately, because Ian said "I'm not going to be filling anything
+   out." That is the intended state. We log for him, through migrations like this one.
+
+   GUARDS. state.meta.mig396_gym0914, NOT in the seed, so SEED_VERSION stays 13. Keyed
+   on the date as well, and APPENDS rather than overwrites: if the day already carries a
+   GYM: line this is a no-op, so anything Ian types into Today always wins. An existing
+   dailyLog entry keeps its summary; only the empty note is filled. Idempotent. */
+try{ if(profile==="ian" && state.meta && !state.meta.mig396_gym0914){
+    var _D96="2026-09-14";
+    var _T96="GYM: Monday 14 September, back and biceps. Lat pulldown, chest supported machine row, face pull. NOT a double pickleball day (one session, 7:22 to 8:28 AM), so by his own session-count rule the gym was open. Confirmed by Ian 14.09.2026. THREE items, not the five in the _GYM_DAYS.md row: chest press and lateral raise moved to Saturday on 14.09.2026 when Monday became a back day.";
+    var _has96=function(v){ return /(^|[\s>.;])GYM\s*:/i.test(String(v||"")); };
+    if(!state.daily || typeof state.daily!=="object") state.daily={};
+    if(!state.daily[_D96] || typeof state.daily[_D96]!=="object") state.daily[_D96]={text:""};
+    var _cur96=String(state.daily[_D96].text||"");
+    if(!_has96(_cur96)) state.daily[_D96].text=(_cur96.trim()? _cur96.replace(/\s+$/,"")+"\n" : "")+_T96;
+    if(!state.context) state.context={forClaude:"",dailyLog:{}};
+    if(!state.context.dailyLog) state.context.dailyLog={};
+    if(!state.context.dailyLog[_D96]) state.context.dailyLog[_D96]={note:"",summary:""};
+    var _dn96=String(state.context.dailyLog[_D96].note||"");
+    if(!_has96(_dn96)) state.context.dailyLog[_D96].note=(_dn96.trim()? _dn96.replace(/\s+$/,"")+"\n" : "")+_T96;
+    state.meta.mig396_gym0914=true; save(true);
+} }catch(e){ try{ console.warn("mig396 gym 09-14 did not apply:",e&&e.message); }catch(_){} }
 
 
 
