@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 393 (2026-09-14)">
+<meta name="build" content="v21 build 394 (2026-09-14)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -17602,6 +17602,91 @@ try{ if(profile==="ian" && state.meta && !state.meta.mig393_solara_press){
       state.meta.mig393_solara_press=true; save(true);
     }
 } }catch(e){ try{ console.warn("mig393 solara press did not apply:",e&&e.message); }catch(_){} }
+
+/* ===== v21 build 394, 14.09.2026. BACK AND CHEST WERE IN THE SAME DAY. GEN-18 ==========
+
+   IAN CAUGHT THIS BY TRAINING IT. His words, after today's workout: "you kind of half merged
+   back and chest day for some reason. Back day should just be back and bi, chest should be
+   chest and tri. You can slim down what workouts are in it and add pickleball things but
+   never combine."
+
+   HE IS RIGHT AND IT IS OUR ERROR. Monday carried lat pulldown, DB or machine chest press,
+   chest supported machine row, lateral raise and face pull. That is a back movement, a chest
+   movement, a back movement and two shoulder movements in one session. The 09.09.2026 rebuild
+   named the merge out loud in the focus string, "Day 2 and Day 3 MERGED", so this was a known
+   trade rather than a slip, and it was the wrong trade. Ian has now ruled it out absolutely.
+
+   ALL SEVEN DAYS WERE AUDITED FROM state.gym.split, not from what Monday rendered.
+   Sun hand speed and mobility, no back or chest. Tue, Wed, Thu no lift planned, zero
+   exercises. Fri lower. Sat abs, rotation and cardio. MONDAY IS THE ONLY MERGED DAY IN THE
+   WEEK and it is the only day touched here. Evidence in _gymaudit394.txt.
+
+   WHERE THE SECOND UPPER DAY WENT, AND WHY IT IS FORCED. Ian made Tue, Wed and Thu gym free
+   himself on 05.09.2026, Sunday is the hand speed block he pinned on 06.08.2026, and Friday
+   is the lower lead day. Mon, Fri and Sat are the only gym slots in the week and Friday is
+   spoken for, so the two upper days can only be MONDAY and SATURDAY. There was no choice to
+   make. Fri and Sat back to back is two, which satisfies his rule 2 maximum.
+
+   MONDAY BECOMES BACK AND BICEPS. Lat pulldown, chest supported machine row and face pull
+   stay exactly where they were. Slimmed from five to three, which he explicitly permitted.
+   SATURDAY BECOMES CHEST AND TRICEPS and receives the two movements that had no business on
+   a back day.
+
+   NOTHING IS INVENTED AND NOTHING IS DELETED. The two moved exercises are moved BY OBJECT, so
+   every property, pin and note on them survives. No exercise is created and none is removed
+   anywhere in the week. Saturday therefore now carries six items on a day with a 2.5 to 3
+   hour competitive session; that is flagged in the report for Ian to slim, and is NOT slimmed
+   here, because choosing which of his own movements to drop is his call and not a side effect
+   of a regrouping pass.
+
+   THE FACE PULL SURVIVES, on Monday, where the pulling work is. PB-12's cuff slot does not
+   vanish and no replacement was invented for it.
+
+   THERE IS NO BICEPS MOVEMENT AND NO TRICEPS MOVEMENT ANYWHERE IN state.gym.split. The machine
+   curl was removed by the 09.09.2026 rebuild, which recorded the loss in its own note. Both
+   days are therefore thin against the names Ian gave them and BOTH ARE REPORTED RATHER THAN
+   FILLED, because the instruction was to regroup what is there, not to invent.
+
+   THE FOCUS STRINGS ARE NAMES AGAIN. Monday's was "Day 2 and Day 3 MERGED. Upper, push and
+   pull, hard. The only upper day of the week", a caveat and an ALL CAPS fragment inside a
+   label, which is the exact thing Ian screenshotted and said to take completely off. Both
+   notes are rewritten too, because both described an arrangement that no longer exists and
+   would otherwise be actively false.
+
+   Guarded by state.meta.mig394_gymsplit, NOT in the seed, so SEED_VERSION stays 13. Every
+   write is by day name and by exercise id, and the moves are no-ops if already applied. */
+try{ if(profile==="ian" && state.meta && !state.meta.mig394_gymsplit && state.gym && Array.isArray(state.gym.split)){
+    var _SP=state.gym.split, _MON=null, _SAT=null;
+    for(var _i94=0;_i94<_SP.length;_i94++){
+      if(!_SP[_i94]) continue;
+      if(_SP[_i94].day==="Mon") _MON=_SP[_i94];
+      if(_SP[_i94].day==="Sat") _SAT=_SP[_i94];
+    }
+    if(_MON && _SAT){
+      if(!Array.isArray(_MON.exercises)) _MON.exercises=[];
+      if(!Array.isArray(_SAT.exercises)) _SAT.exercises=[];
+      /* MOVE BY OBJECT, BY ID. 5igu8kh is the chest press, 35qmmjc is the lateral raise. */
+      /* Reverse order because each is unshifted, so the chest press ends up first on the day
+         that is named for it rather than sitting behind the lateral raise. */
+      var _MOVE=["35qmmjc","5igu8kh"];
+      for(var _m94=0;_m94<_MOVE.length;_m94++){
+        var _id=_MOVE[_m94], _obj=null;
+        for(var _k94=_MON.exercises.length-1;_k94>=0;_k94--){
+          if(_MON.exercises[_k94] && _MON.exercises[_k94].id===_id){ _obj=_MON.exercises[_k94]; _MON.exercises.splice(_k94,1); }
+        }
+        if(_obj){
+          var _already=false;
+          for(var _s94=0;_s94<_SAT.exercises.length;_s94++){ if(_SAT.exercises[_s94] && _SAT.exercises[_s94].id===_id) _already=true; }
+          if(!_already) _SAT.exercises.unshift(_obj);
+        }
+      }
+      _MON.focus="Back and biceps";
+      _MON.note="Back and biceps. Lat pulldown, chest supported row and face pull, unchanged and in the same order. Chest press and lateral raise moved to Saturday on 14.09.2026 because back and chest are never combined. Three items rather than five. Lift after 10am, the team meeting blocks the early slot. If today turns out to be a double pickleball day, there is no lift.";
+      _SAT.focus="Chest and triceps";
+      _SAT.note="Chest and triceps. Chest press and lateral raise arrived here on 14.09.2026 when Monday became a back day. The cable chop stays pinned and the abs and treadmill work is unchanged. Six items against a 2.5 to 3 hour competitive session is more than this day has carried before; slimming it is your call and nothing was cut without you.";
+      state.meta.mig394_gymsplit=true; save(true);
+    }
+} }catch(e){ try{ console.warn("mig394 gym split did not apply:",e&&e.message); }catch(_){} }
 
 
 
