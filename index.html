@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 396 (2026-09-14)">
+<meta name="build" content="v21 build 397 (2026-09-14)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -17741,6 +17741,49 @@ try{ if(profile==="ian" && state.meta && !state.meta.mig396_gym0914){
     state.meta.mig396_gym0914=true; save(true);
 } }catch(e){ try{ console.warn("mig396 gym 09-14 did not apply:",e&&e.message); }catch(_){} }
 
+/* v21 build 397: THE PADDLE FACTS, STRUCTURED, SO SETTINGS STOPS RENDERING OUR PROSE AT HIM.
+
+   WHAT WAS ON HIS SCREEN. The Settings Paddle card printed state.pickleball.paddle raw. That
+   blob is authored by us, for us, and it carried a literal field path ("UNCONFIRMED, see
+   gear.gripType"), an instruction to ourselves ("THE JOOLA PERSEUS IV IS RETIRED and should
+   not be quoted as his paddle") and two dated log headers ("VENUE COSTS (07.20.2026, unchanged
+   and still true)", "GEAR LOG 07.21.2026, still true and carried forward"). His rule, given
+   twice: "A name is a label, not a place to teach him something." He once screenshotted an
+   exercise name carrying a ramp instruction and said "take this completely off."
+
+   NOTHING IS DELETED AND NOTHING IS INVENTED. state.pickleball.paddle is left exactly as it
+   is, every word of it, and stays the authored record that BRAIN names as authoritative. It is
+   simply no longer a render source. Every value below is TRANSCRIBED from that same string,
+   which reads "Six Zero Coral Pro 16mm Hybrid, since 2 September 2026" and "THE JOOLA PERSEUS
+   IV IS RETIRED". No fact is added, dropped or reworded into a new claim.
+
+   WHY gear.paddle AND NOT A NEW STORE. state.pickleball.gear is the existing structured gear
+   container, built at build 269 alongside gear.grip and extended at build 365 with
+   gear.gripType. A paddle record belongs beside them. gear.paddle did not exist before today.
+
+   WHAT IS NOT RENDERED AND THAT IS DELIBERATE. The venue costs and the gear log are real facts
+   but they are not paddle specs, and the Settings card is titled "current paddle and specs".
+   They stay in the blob, unrendered, rather than being promoted to a surface nobody asked for.
+   Reported, not built.
+
+   GUARDS. state.meta.mig397_paddleprose, NOT in the seed, so SEED_VERSION stays 13. Create if
+   absent only, so any later field level correction to gear.paddle survives a reload. Idempotent. */
+try{ if(state.meta && !state.meta.mig397_paddleprose){
+    if(!state.pickleball || typeof state.pickleball!=="object") state.pickleball={};
+    if(!state.pickleball.gear || typeof state.pickleball.gear!=="object") state.pickleball.gear={};
+    if(!state.pickleball.gear.paddle || typeof state.pickleball.gear.paddle!=="object"){
+      state.pickleball.gear.paddle={
+        model:"Six Zero Coral Pro",
+        spec:"16mm Hybrid",
+        since:"2026-09-02",
+        previous:"Joola Perseus IV",
+        previousStatus:"retired",
+        source:"transcribed from state.pickleball.paddle by mig397_paddleprose, 2026-09-14. That field is unchanged and remains the authored record."
+      };
+    }
+    state.meta.mig397_paddleprose=true; save(true);
+} }catch(e){ try{ console.warn("mig397 paddle prose did not apply:",e&&e.message); }catch(_){} }
+
 
 
 
@@ -22031,7 +22074,22 @@ function buildSettings(v){
   sect(v,"Profile"); const pc=card(); pc._body.appendChild(el("div","small muted","Display name")); pc._body.firstChild.style.marginBottom="6px"; /* build 369: display only */ const nin=el("div"); nin.style.cssText="font-weight:700"; nin.textContent=(state.settings&&state.settings.name)||"Not set"; pc._body.appendChild(nin);
   const phl=el("div","small muted","Contact number"); phl.style.margin="13px 0 6px"; pc._body.appendChild(phl); /* build 369: display only */ const phin=el("div"); phin.style.cssText="font-weight:700"; phin.textContent=(state.settings&&state.settings.phone)||(profile==="chris"?"Not set":"402-591-1133"); pc._body.appendChild(phin);
   const who=el("div","small dim"); who.style.marginTop="12px"; who.textContent="Signed in as "+(profile==="chris"?"Chris McCain":"Ian McCain")+(state.settings&&state.settings.phone?"  \u00B7  "+state.settings.phone:""); pc._body.appendChild(who); v.appendChild(pc);
-  sect(v,"Paddle","current paddle and specs"); (function(){ if(!state.pickleball||typeof state.pickleball!=="object") state.pickleball={}; const ppc=card(); ppc._body.appendChild(el("div","small muted","Current paddle and specs")); ppc._body.firstChild.style.marginBottom="6px"; /* build 369: READ ONLY. This was a textarea bound to state.pickleball.paddle, which is authored by migration. Build 365 rewrote it for the Six Zero Coral Pro and set meta.paddleOwned to stop the build 129 every load writer fighting it. A free textarea here let one stray tap silently overwrite that record, with no warning and no recovery except another lane. Paddle changes come through Dispatch. */ const pv=el("div"); pv.style.cssText="white-space:pre-wrap;line-height:1.5;font-size:13px;color:var(--gray)"; pv.textContent=(state.pickleball.paddle||"Not set"); ppc._body.appendChild(pv); v.appendChild(ppc); })();
+  sect(v,"Paddle","current paddle and specs"); (function(){ if(!state.pickleball||typeof state.pickleball!=="object") state.pickleball={}; const ppc=card(); ppc._body.appendChild(el("div","small muted","Current paddle and specs")); ppc._body.firstChild.style.marginBottom="6px"; /* build 369: READ ONLY. This was a textarea bound to state.pickleball.paddle, which is authored by migration. Build 365 rewrote it for the Six Zero Coral Pro and set meta.paddleOwned to stop the build 129 every load writer fighting it. A free textarea here let one stray tap silently overwrite that record, with no warning and no recovery except another lane. Paddle changes come through Dispatch. */ /* v21 build 397: STOPPED RENDERING state.pickleball.paddle. That field is a free text blob authored by migrations and it was reaching Ian's screen carrying OUR prose, not his facts: a literal field path "UNCONFIRMED, see gear.gripType", an instruction to ourselves "THE JOOLA PERSEUS IV IS RETIRED and should not be quoted as his paddle", and two dated log headers "VENUE COSTS (07.20.2026, unchanged and still true)" and "GEAR LOG 07.21.2026, still true and carried forward". Same class as the build 339 copy leak he called out. His rule, given twice: "A name is a label, not a place to teach him something." Our reasoning, caveats and uncertainty are ours to carry. NOTHING WAS DELETED. state.pickleball.paddle is untouched and still holds every word, including the venue costs and the gear log; it is simply no longer a render source, and the every load appenders at builds 129, 211 and the venue block keep working against it harmlessly. The facts now come from state.pickleball.gear.paddle, which mig397_paddleprose transcribes from that same record. ABSENT IS NOT ZERO: each line is emitted only if its field exists, never as an empty row. */
+      var _pdG=(state.pickleball.gear&&state.pickleball.gear.paddle)||null;
+      if(_pdG&&_pdG.model){
+        var _MO97=["January","February","March","April","May","June","July","August","September","October","November","December"];
+        var _pv1=el("div"); _pv1.style.cssText="font-weight:700;font-size:15px;letter-spacing:-.01em";
+        _pv1.textContent=String(_pdG.model)+(_pdG.spec?(", "+String(_pdG.spec)):"");
+        ppc._body.appendChild(_pv1);
+        var _sm=String(_pdG.since||"").match(/^(\d{4})-(\d{2})-(\d{2})/);
+        if(_sm){ var _pv2=el("div","small muted"); _pv2.style.marginTop="5px";
+          _pv2.textContent="Since "+_MO97[parseInt(_sm[2],10)-1]+" "+parseInt(_sm[3],10)+", "+_sm[1];
+          ppc._body.appendChild(_pv2); }
+        if(_pdG.previous){ var _pv3=el("div","small dim"); _pv3.style.marginTop="9px";
+          _pv3.textContent="Previous: "+String(_pdG.previous)+(_pdG.previousStatus?(", "+String(_pdG.previousStatus)):"");
+          ppc._body.appendChild(_pv3); }
+      } else { var _pv0=el("div","small dim"); _pv0.textContent="Not set"; ppc._body.appendChild(_pv0); }
+      v.appendChild(ppc); })();
   sect(v,"Accent color"); const ac=card(); ac._body.appendChild(el("div","small muted","Defaults to blue.")); ac._body.firstChild.style.marginBottom="8px"; const sw=el("div","swatches"); ACCENTS.forEach(pair=>{ const s=el("div","sw"+(state.settings.accent===pair[0]?" on":"")); s.style.background=pair[0]; s.onclick=()=>{ state.settings.accent=pair[0]; state.settings.accent2=pair[1]; applyAccent(); save(); render(); }; sw.appendChild(s); }); ac._body.appendChild(sw); v.appendChild(ac);
   sect(v,"Show or hide"); const hc=card(); const hb=hc._body; const toggles=[["neighborhoods","Neighborhoods"],["scripts","Quick scripts"],["ideas","Ideas and notes"],["solara","Solara"]]; toggles.forEach(([key,label])=>{ const r=el("div","mrow"); r.appendChild(el("div","ml",label)); const tg=el("div","toggle"+(!hidden(key)?" on":"")); tg.onclick=()=>{ if(!state.settings.hidden)state.settings.hidden={}; if(hidden(key))delete state.settings.hidden[key]; else state.settings.hidden[key]=true; save(); render(); }; r.appendChild(tg); hb.appendChild(r); }); v.appendChild(hc);
   sect(v,"Account"); const acc=card(); const ab=acc._body; const lk=el("button","btn ghost block","Lock now"); lk.style.marginTop="0"; lk.onclick=()=>{ lockNow(); }; ab.appendChild(lk); v.appendChild(acc);
