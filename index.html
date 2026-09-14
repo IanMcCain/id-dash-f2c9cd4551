@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 390 (2026-09-14)">
+<meta name="build" content="v21 build 391 (2026-09-14)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -19661,6 +19661,227 @@ function reProspectsList(parent){
   if(!prospects.length){ const c=card(); c._body.appendChild(el("div","empty","No prospects yet.")); parent.appendChild(c); }
   else { const c=card(); c._body.style.padding="0"; const body=el("div","collapse-body"); prospects.forEach(d=>dealRow(body,d)); c._body.appendChild(body); parent.appendChild(c); }
 }
+/* ===== v21 build 391: THE REAL ESTATE PAGE, BROUGHT TO THE BUILD 387 STANDARD =====
+   Ian, 14.09.2026: "Make sure all pages get the correct full redesign", and for this page
+   specifically: "All my real estate information on there, like a CMA, and then all of my
+   current clients." Build 387's gym day card is the reference he approved and shipped.
+
+   PRESENTATION ONLY. No migration, no state write, no data touched. Every name, price,
+   address and note below is read verbatim out of state.realEstate.deals. Diff the saved
+   profile against build 390 and it is identical.
+
+   WHAT THIS PAGE NOW LEADS WITH, because it is what he asked for by name.
+     THE CMA. There is exactly ONE structured CMA in the whole state object,
+     deals[].cma on re-belknap-sell, the 4946 Pratt file at revision 4. It was reachable
+     nowhere in the app before this build. It is now the second card on the page, rendered
+     field by field. SEVEN other deals carry pricing evidence as prose in priceNote and
+     those are listed under it, verbatim, each behind its own disclosure. Nothing is
+     averaged, inferred or filled in: a deal with no CMA shows no CMA.
+     ALL CURRENT CLIENTS. Every deal that is not Closed, 21 of the 34 on file, grouped by
+     the stage the record actually carries, in stage order, with the price as the accent
+     value exactly as an exercise set scheme is. Nothing is hidden behind a stage tap.
+
+   THE ROW FAMILY IS REUSED, NOT REIMPLEMENTED. .g7row, .g7name, .g7sch, .g7cue, .g7grp,
+   .g7quiet, .g7list and the .g7disc disclosure are build 387's and build 390's, unchanged.
+   A second near identical row class is how two surfaces drift apart again, so there is
+   one new class in this build, .g7navrow, and it exists only to hang a chevron on a row
+   that navigates. One type scale across the page is most of what "belongs to the same
+   app" actually means.
+
+   LONG AND SHOUTED STRINGS GO BEHIND A DISCLOSURE, THEY ARE NOT PUT ON THE CARD FACE.
+   Ian screenshotted an ALL CAPS caveat sitting inside a field and said "take this
+   completely off." The data is full of them: Cynthia Willis's close reads "Relist AFTER
+   11 SEPTEMBER 2026 ...", Mattox's priceNote is a 340 character paragraph. re391Short()
+   admits a string onto the face only if it is under the length limit AND carries no run
+   of four or more capitals. Everything it rejects renders VERBATIM when opened, which is
+   the same bargain build 387 struck with the 1,200 character gym notes. Nothing is
+   deleted and nothing is summarised.
+
+   NOTHING HERE RECORDS, and two things came off for that reason. objectiveCard, which
+   build 387 had already taken off the gym page, carried instructional text and a button
+   to a screen he is not typing into. The "Import my pipeline" file picker MOVED to the
+   Tools view; it is a real capability and is not removed, but a file input does not
+   belong on the face of a page whose whole job, in his words, is "just for me to open and
+   look at daily."
+
+   WHAT IS DELIBERATELY UNTOUCHED. The 2026 goals bar card, reGoalsCard, keeps its bars:
+   it is a chart, it is dense, and it was not what he asked to have fixed. The Pipeline,
+   Things I have to do, Sphere and Tools views are unchanged and still reachable. The
+   pickleball page is not touched at all. */
+const RE391_ORDER=[["Under Contract","Under contract"],["Active","Active listing"],["Coming Soon","Coming soon"],["Building","Building"],["Prospecting","Prospects"]];
+/* A run of four or more capitals is the signature of a caveat that was written to shout.
+   Three letter strings like CMA and MLS are left alone on purpose. */
+function re391Shouts(s){ return /[A-Z]{4,}/.test(String(s||"")); }
+function re391Short(s,max){ s=String(s||"").trim(); if(!s) return null; if(s.length>(max||38)) return null; if(re391Shouts(s)) return null; return s; }
+/* "August 3, 2026 (CLOSED and PAID)" is a date with a shout stapled to it. The date is
+   worth showing, so the trailing parenthetical comes off rather than the whole string. */
+function re391Paren(s){ return String(s||"").replace(/\s*\([^)]*\)\s*$/,"").trim(); }
+function re391List(parent){ var l=el("div","g7list"); parent.appendChild(l); return l; }
+function re391Grp(parent,label){ parent.appendChild(el("div","g7grp",label)); return re391List(parent); }
+function re391Row(list,name,val,cue,dim){
+  var r=el("div","g7row"+(dim?" g7dimrow":""));
+  r.appendChild(el("div","g7name",name));
+  if(val) r.appendChild(el("div","g7sch",val));
+  if(cue) r.appendChild(el("div","g7cue",cue));
+  list.appendChild(r); return r; }
+/* ONE DISCLOSURE STRIP PER ROW, NOT ONE PER NOTE. Cynthia Willis carries three long
+   strings, and rendering them as three stacked .g7discbtn blocks put three blue links in
+   a column under her name and made one client three times taller than the next. Apple
+   style restraint is the brief, and three links stacked is chrome. The labels now sit on
+   one line and share a single body underneath, and opening one closes the others, so the
+   row is exactly as tall as the thing being read. */
+function re391Discs(row,pairs){
+  var live=(pairs||[]).filter(function(p){ return p&&p[1]&&String(p[1]).trim(); });
+  if(!live.length) return;
+  var w=el("div","g7disc");
+  var strip=el("div","g7discrow");
+  var body=el("div","g7note"); body.style.display="none";
+  var openIx=-1;
+  live.forEach(function(p,ix){
+    var btn=el("button","g7discbtn g7discinline"); btn.textContent=p[0]+" \u203a";
+    btn.onclick=function(ev){
+      if(ev&&ev.stopPropagation) ev.stopPropagation();
+      var wasOpen=(openIx===ix);
+      openIx=wasOpen?-1:ix;
+      Array.prototype.forEach.call(strip.children,function(b,bi){
+        b.textContent=live[bi][0]+((openIx===bi)?" \u2039":" \u203a"); });
+      if(openIx<0){ body.style.display="none"; }
+      else { body.textContent=String(live[openIx][1]); body.style.display=""; }
+    };
+    strip.appendChild(btn);
+  });
+  w.appendChild(strip); w.appendChild(body); row.appendChild(w); }
+function re391Nav(list,name,cue,view){
+  var r=re391Row(list,name,null,cue,false);
+  r.className="g7row g7navrow";
+  var ch=el("div","g7chev"); ch.textContent="\u203a"; r.appendChild(ch);
+  r.onclick=function(){ reView=view; try{window.scrollTo(0,0);}catch(e){} render(); };
+  return r; }
+/* THE FACE OF A CLIENT ROW. sub is a descriptor and is admitted whole unless it shouts;
+   close is a timing string and is held to the short rule; flag is Ian's own one word
+   quality note and is passed through exactly as he wrote it. */
+function re391Cue(d){
+  var bits=[]; var sub=String(d.sub||"").trim();
+  if(sub&&!re391Shouts(sub)) bits.push(sub);
+  var cl=re391Short(d.close,38); if(cl) bits.push(cl);
+  if(d.flag) bits.push(String(d.flag));
+  return bits.length?bits.join("  \u00b7  "):null; }
+function re391ClientRow(list,d,dim){
+  var r=re391Row(list,d.title||"",d.price||null,re391Cue(d),dim);
+  /* A string only reaches the disclosure if it was REJECTED from the face, so nothing is
+     ever printed twice. */
+  re391Discs(r,[
+    ["Timing",(d.close&&!re391Short(d.close,38))?d.close:""],
+    ["On the price",(d.priceNote&&!re391Short(d.priceNote,46))?d.priceNote:""],
+    ["Full note",d.note||""]
+  ]);
+  return r; }
+function re391Head(parent){
+  var deals=(state.realEstate&&state.realEstate.deals)||[];
+  var open=deals.filter(function(d){ return d.stage!=="Closed"; });
+  var names={}; open.forEach(function(d){ if(d.title) names[d.title]=1; });
+  var nNames=Object.keys(names).length;
+  var vol=open.reduce(function(a,d){ return a+dealVolume(d); },0);
+  var c=card(); var b=c._body;
+  b.appendChild(el("div","g7kicker","Real Estate"));
+  b.appendChild(el("div","g7title",nNames+(nNames===1?" current client":" current clients")));
+  b.appendChild(el("div","g7titlesub",open.length+(open.length===1?" open file":" open files")+"  \u00b7  "+fmtMoney(vol)+" in the pipeline"));
+  var closed=deals.filter(function(d){ return d.stage==="Closed"; });
+  b.appendChild(el("div","g7meta",closed.length+" closed on file  \u00b7  "+fmtMoney(closed.reduce(function(a,d){return a+dealVolume(d);},0))+" volume"));
+  parent.appendChild(c); }
+/* THE CMA CARD. Renders only what the record holds. If no deal carries a cma object the
+   whole first half of this card does not exist, rather than drawing an empty shell. */
+function re391Cma(parent){
+  var deals=(state.realEstate&&state.realEstate.deals)||[];
+  var withCma=deals.filter(function(d){ return d&&d.cma&&typeof d.cma==="object"; });
+  var withEvidence=deals.filter(function(d){ return d&&d.priceNote&&!(d.cma&&typeof d.cma==="object"); });
+  if(!withCma.length&&!withEvidence.length) return;
+  var c=card("a-teal"); var b=c._body;
+  b.appendChild(el("div","g7kicker","CMA"));
+  withCma.forEach(function(d){
+    var m=d.cma;
+    b.appendChild(el("div","g7title",m.file||d.title||""));
+    var subBits=[];
+    if(m.rev) subBits.push("Revision "+m.rev);
+    if(m.asOf) subBits.push("as at "+m.asOf);
+    if(subBits.length) b.appendChild(el("div","g7titlesub",subBits.join(", ")));
+    b.appendChild(el("div","g7meta",(d.title||"")+(d.address?("  \u00b7  "+d.address):"")));
+    var l=re391List(b);
+    if(m.recommended) re391Row(l,"Recommended",m.recommended,null,false);
+    if(m.band) re391Row(l,"Supported band",m.band,null,false);
+    if(m.expectDays) re391Row(l,"Days on market",m.expectDays,null,false);
+    if(m.moveCount!=null) re391Row(l,"Price moves",String(m.moveCount),null,false);
+    if(m.movesOn) re391Row(l,"Last moved",m.movesOn,null,false);
+    if(m.volatile) re391Row(l,"Volatile","Yes",null,false);
+    var last=l.lastChild;
+    if(last) re391Discs(last,[["Basis",m.basis||""],["Note",m.note||""]]);
+  });
+  if(withEvidence.length){
+    var el2=re391Grp(b,"Pricing evidence on other files");
+    withEvidence.forEach(function(d){
+      var r=re391Row(el2,d.title||"",d.price||null,re391Short(d.priceNote,46),false);
+      re391Discs(r,[["On the price",re391Short(d.priceNote,46)?"":d.priceNote]]);
+    });
+  }
+  parent.appendChild(c); }
+function re391Clients(parent){
+  var deals=(state.realEstate&&state.realEstate.deals)||[];
+  var c=card("a-blue"); var b=c._body;
+  b.appendChild(el("div","g7kicker","Current clients"));
+  var any=false;
+  RE391_ORDER.forEach(function(g){
+    var stage=g[0], label=g[1];
+    var sel=deals.filter(function(d){ return d.stage===stage; })
+                 .map(function(x,ix){ return {x:x,ix:ix,k:closeSortKey(x.close)}; })
+                 .sort(function(a,z){ return a.k!==z.k ? a.k-z.k : a.ix-z.ix; })
+                 .map(function(o){ return o.x; });
+    if(!sel.length) return;
+    any=true;
+    var l=re391Grp(b,label+"  \u00b7  "+sel.length);
+    sel.forEach(function(d){ re391ClientRow(l,d,false); });
+  });
+  /* Any stage the app can hold but RE391_ORDER does not name still renders. A client is
+     never dropped because a stage string was not anticipated here. */
+  var namedStages={}; RE391_ORDER.forEach(function(g){ namedStages[g[0]]=1; }); namedStages["Closed"]=1;
+  var rest=deals.filter(function(d){ return !namedStages[d.stage]; });
+  if(rest.length){ any=true; var lr=re391Grp(b,"Other  \u00b7  "+rest.length);
+    rest.forEach(function(d){ re391ClientRow(lr,d,false); }); }
+  if(!any) b.appendChild(el("div","g7quiet","No open files on record."));
+  parent.appendChild(c); }
+function re391Closed(parent){
+  var deals=(state.realEstate&&state.realEstate.deals)||[];
+  var closed=deals.filter(function(d){ return d.stage==="Closed"; })
+                  .map(function(x,ix){ return {x:x,ix:ix,k:closeSortKey(x.close)}; })
+                  .sort(function(a,z){ return z.k!==a.k ? z.k-a.k : a.ix-z.ix; })
+                  .map(function(o){ return o.x; });
+  if(!closed.length) return;
+  var c=card(); var b=c._body;
+  b.appendChild(el("div","g7kicker","Closed"));
+  var l=re391List(b);
+  closed.forEach(function(d){
+    var when=re391Short(re391Paren(d.close),46);
+    var cue=[]; if(when) cue.push(when); if(d.paid===true) cue.push("Paid");
+    var r=re391Row(l,d.title||"",d.price||null,cue.length?cue.join("  \u00b7  "):null,true);
+    re391Discs(r,[["Closing",when?"":(d.close||"")],["Full note",d.note||""]]);
+  });
+  parent.appendChild(c); }
+function re391More(parent){
+  var RE=state.realEstate||{};
+  var deals=RE.deals||[];
+  var pipe=deals.filter(function(d){ return !reIsProspect(d); });
+  var openTodos=(RE.todos||[]).filter(function(t){ return !t.done&&todoList(t)==="todo"; }).length;
+  var tc=reTodoCounts();
+  var dueSoon=(RE.todos||[]).filter(function(t){ return t&&!t.done&&t.due&&daysUntil(t.due)<=7; }).length;
+  var sp=sphereList(); var ov=sphereOverdue().length;
+  var c=card(); var b=c._body;
+  b.appendChild(el("div","g7kicker","More"));
+  var l=re391List(b);
+  re391Nav(l,"Pipeline",pipe.length+(pipe.length===1?" deal":" deals")+"  \u00b7  "+fmtMoney(pipe.reduce(function(a,d){return a+dealVolume(d);},0))+" volume","pipeline");
+  re391Nav(l,"Things I have to do",openTodos+(openTodos===1?" action":" actions")+(dueSoon?("  \u00b7  "+dueSoon+" due in 7 days"):"")+(tc.waiting?("  \u00b7  "+tc.waiting+" waiting"):""),"todo");
+  var spCue=(sp.length?(sp.length+" in sphere"):"")+((sp.length&&ov)?"  \u00b7  ":"")+(ov?(ov+" to reach out"):"");
+  re391Nav(l,"Sphere and prospects",spCue||null,"sphere");
+  re391Nav(l,"Tools","Goals, contacts, commission rules, scripts","tools");
+  parent.appendChild(c); }
 function buildIanRe(v){
   if(reView==="pipeline") return reViewPipeline(v);
   /* v21 build 49: the standalone Prospects view was removed (redundant with the Sphere Orbit, which now
@@ -20049,7 +20270,28 @@ function homeSphereNudge(parent){
   const go=el("button","feedlink","See all in Sphere \u203A"); go.style.marginTop="10px"; go.onclick=()=>{ reView="sphere"; selectTab("re"); render(); }; b.appendChild(go);
   parent.appendChild(c);
 }
+/* v21 build 391: the landing is now rePage391(). THE OLD LANDING IS KEPT BELOW as
+   reViewLanding390() and is called by nothing, the same way build 387 kept gymWeek()
+   and build 390 kept habitsModule(). It is the record of what the page was, and every
+   count it computed is computed again in re391More(). Do not delete it and do not wire
+   it back up without reading the build 391 header above buildIanRe(). */
+/* ORDER IS THE DESIGN DECISION HERE. Ian named two things: "a CMA, and then all of my
+   current clients", so those are first and second, and the page opens on them rather than
+   on a goal chart. reGoalsCard KEEPS EVERY FIGURE IT HAD, including the 2027 ceiling
+   paragraph, but it moves below them: it is the densest block of explanatory prose left
+   on this page, and prose is not what he opens the app to look at. It is deliberately not
+   rewritten in this build. Rewriting it means deciding which of its numbers survive, and
+   that is a question for Ian, not a side effect of a layout pass. It is the first thing to
+   put to him after this ships. */
 function reViewLanding(v){
+  safe(v,()=>re391Head(v),"RE header");
+  safe(v,()=>re391Cma(v),"RE CMA");
+  safe(v,()=>re391Clients(v),"RE clients");
+  safe(v,()=>re391Closed(v),"RE closed");
+  safe(v,()=>reGoalsCard(v),"RE goals");
+  safe(v,()=>re391More(v),"RE more");
+}
+function reViewLanding390(v){
   safe(v,()=>reGoalsCard(v),"RE goals");
   objectiveCard(v,"re","a-blue");
   const deals=state.realEstate.deals||[];
@@ -20124,7 +20366,14 @@ function reViewTools(v){
   if(state.realEstate.commissionRules) collapseTool(v,"Commission rules","three cases, and the 50/50 one",()=>reCommissionRules(v));
   if(!hidden("neighborhoods")) collapseTool(v,"Neighborhoods & farm","",()=>reNeigh(v));
   if(!hidden("scripts")) collapseTool(v,"Quick scripts","",()=>scriptsModule(v));
-  
+  /* build 391: MOVED HERE FROM THE LANDING, NOT REMOVED. The pipeline import is how his
+     deals actually get into the app, so it keeps working and keeps the same file input and
+     the same wording. It is off the landing because the landing is a read only face:
+     Ian, 14.09.2026, "I'm not going to be checking anything, not going to be filling
+     anything out." A file picker is the one thing on that page he would ever have to
+     operate, and Tools is where the things you operate live. */
+  sect(v,"Your pipeline data","import");
+  { const ic=card(); const ib=el("button","btn ghost block","Import my pipeline"); ib.style.marginTop="0"; ib.onclick=()=>{ const pf=document.getElementById("pipelineFile"); if(pf)pf.click(); }; const ih=el("div","small dim"); ih.style.marginTop="9px"; ih.textContent="Load real_estate_pipeline.json to replace your pipeline with your deals and follow ups. Your other data stays."; ic._body.appendChild(ib); ic._body.appendChild(ih); v.appendChild(ic); }
 }
 let gymDayIdx=DOW;
 let gymShowWeek=false;
@@ -22008,6 +22257,21 @@ function autoLogCard(area){
    weight and colour rather than by a blanket opacity that also dims its own caption. */
 .g7dimrow .g7name{color:var(--gray2);font-weight:500}
 .g7back{-webkit-appearance:none;appearance:none;background:none;border:0;padding:8px 2px;margin:2px 0 0;cursor:pointer;font:inherit;font-size:13.5px;font-weight:700;color:var(--sec2,var(--accent2));display:block;text-align:left}
+
+/* ----- build 391: the ONE new class in the real estate redesign ----------------
+   Everything else on that page reuses .g7row, .g7name, .g7sch, .g7cue, .g7grp and
+   .g7disc unchanged. This exists only so a row that NAVIGATES can say so, with a
+   chevron in the gutter rather than the .launch card chrome the landing used to
+   draw around every destination. padding-right keeps the longest nav label clear
+   of the chevron at 390px, which is the only width that matters. */
+.g7navrow{cursor:pointer;position:relative;padding-right:24px}
+.g7chev{position:absolute;right:2px;top:13px;font-size:17px;line-height:1;color:var(--dim);font-weight:400}
+/* The disclosure strip: every long string a row owns, on ONE line, sharing one body.
+   margin-top is tighter than .g7disc's because the strip sits under a grey cue line
+   rather than under a block of note text. */
+.g7disc .g7discrow{display:flex;flex-wrap:wrap;column-gap:16px;row-gap:0}
+.g7discinline{padding:3px 0 2px}
+.g7disc:has(.g7discrow){margin-top:9px}
 </style>
 <script id="rr-b69-js">
 (function(){
