@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 402 (2026-09-14)">
+<meta name="build" content="v21 build 403 (2026-09-15)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -18003,6 +18003,79 @@ try{ if(profile==="ian" && state.pickleball){
 
 
 
+
+/* ===== v21 build 403, PB-15, 15.09.2026. TUESDAY SESSION, AND A PREDICTION RESOLVED ====
+   THREE WRITES, ONE GUARD, AND THE SECOND ONE IS THE POINT OF THE BUILD.
+
+   1. THE SESSION. Tuesday 15 September, 7:17 to 9:49 AM, Omaha, 2:31:38. From the watch:
+      active 1334, total 1571, avg HR 122, max 166, min 79. Effort 9, "All Out", WHICH IS
+      HIS RATING AND NOT THE WATCH'S. ABSENT IS NOT ZERO: every heart rate field here was
+      measured and none is written as 0. He gave no result, no score and no opponent, so
+      those three stay EMPTY and nothing is inferred from duration or heart rate.
+
+      HIS EFFORT NUMBER IS NOT EXERTION AND MUST NEVER BE RECONCILED AGAINST HEART RATE.
+      He defined it himself on 14.09.2026: it is how hard he tried AND how well he played.
+      Four earlier observation blocks tracked effort against average HR and were watching
+      an axis that does not exist. This record carries no HR-against-effort comparison.
+
+   2. THE OVERGRIP PREDICTION, RESOLVED. gear.grip.replacementTest was written on
+      14.09.2026 with result and resolvedOn deliberately EMPTY, so the outcome could not be
+      read backwards into the prediction. It held. His words: "I re-wrapped and it helped a
+      lot with the grip." Only result, resolvedOn and status are filled; the prediction
+      text, hisWords and whyItIsWrittenNow are left exactly as written, because editing the
+      prediction after the fact is the failure the empty fields existed to prevent.
+
+      THREE INDEPENDENT LINES NOW AGREE, and that is recorded with the resolution. PB-12
+      measured grip life at roughly six hours: grip 1 ran 18h32m before he mentioned it
+      going, grip 2 reached the same stage at about 5h57m. He then said "I can tell my grip
+      is starting to go" WITHOUT HAVING BEEN SHOWN THAT NUMBER. The re-wrap then fixed it.
+
+   3. HIS REPLACEMENT CADENCE, STORED AS A RULE AND NOT A NOTE so a reminder can be driven
+      off it later. His own words, and the derived figure matches PB-12's measurement.
+
+   NOTHING IS INVENTED AND NO COACHING WAS ADDED. Every line of the session note is either
+   a watch figure or his own account. The back-stepping finding is recorded as he described
+   it, including that he says it is not entirely intentional, with no corrective advice
+   attached. Guarded by state.meta.mig403_pb0915, NOT in the seed, so SEED_VERSION stays 13.
+   Session guarded BY ID, never by date: 14 September proved a date guard writes the first
+   record of a day and silently refuses the second. */
+try{ if(profile==="ian" && state.meta && !state.meta.mig403_pb0915 && state.pickleball){
+    if(!Array.isArray(state.pickleball.sessions)) state.pickleball.sessions=[];
+    var _S403=state.pickleball.sessions, _have403=false;
+    for(var _i403=0;_i403<_S403.length;_i403++){
+      if(_S403[_i403] && _S403[_i403].id==="pk-20260915-openplay") _have403=true;
+    }
+    if(!_have403){
+      _S403.push({
+        id:"pk-20260915-openplay", date:"2026-09-15", kind:"Pickleball", venue:"Omaha",
+        duration:"2h 31m 38s", window:"7:17 to 9:49 AM, Omaha",
+        calories:1571, activeCalories:1334, avgHr:122, maxHr:166, minHr:79, effort:9,
+        result:"", score:"", opponent:"", copyOwned:true,
+        note:"Tuesday 15 September, Omaha, 7:17 to 9:49 AM, 2:31:38. THE LONG EARLY MORNING SESSION YOU SAID YOU WERE GOING TO PLAY. From Apple Watch: active 1334, total 1571, avg HR 122, max 166, min 79. EFFORT 9, All Out, IS YOUR RATING, not the watch's, and on YOUR definition given on 14.09: how hard you tried AND how well you played, not exertion. It is not compared against heart rate anywhere in this record. You gave no result, no score and no opponents, so those stay EMPTY and nothing has been inferred from the duration or the heart rate. ONCE WARM IT WENT REALLY WELL, your words. WHAT WAS GOOD: drops were on point; drives mostly pretty good; serves all pretty good; dinks were good. STILL COMING NOW AND THEN: consistency errors, which you say need more practice and more drilling. THE MAIN THING YOU IDENTIFIED, AND IT IS THE MOST VALUABLE THING IN THIS SESSION: YOU BACK UP OFF THE KITCHEN LINE WHEN A SOFT EXCHANGE GETS SPED UP. Your description: both teams are at the kitchen line in a soft dinking exchange and someone speeds it up, and your instinct is to start back-stepping until you are at a comfortable distance. If you speed it up yourself, they return it, you go for it, and if you get it over your next instinct is to back-step again. A GOOD PLAYER THEN TARGETS YOUR FEET, and because you have backed up they have more court to aim at and can hit a ball that is HARDER for you to reach, not easier. You gain time and lose everything else. YOU SAY IT IS NOT ENTIRELY INTENTIONAL: part of it is instinct, not wanting to get hit in the face by a ball from six feet away. YOU NAME IT AS ONE OF THE MAIN REASONS YOU ARE LOSING HANDS BATTLES. Recorded as you described it. No correction, no drill and no advice is attached to it here. YOUR OWN SUMMARY OF YOUR CURRENT BIGGEST PROBLEMS: (1) CONSISTENCY. (2) DECISION MAKING AND OVERALL PLAY AT THE KITCHEN LINE, specifically hitting the wrong type of shot, speeding up the wrong ball, reading a speed-up wrong, returning a speed-up weakly, and back-stepping when you should hold. You frame all of it as reasonable for someone under four months into the sport. EQUIPMENT: you re-wrapped the overgrip on the evening of 14 September as you said you would. YOUR WORDS: \"I re-wrapped and it helped a lot with the grip.\" That resolves the prediction recorded at gear.grip.replacementTest before this session was played."
+      });
+    }
+    var _G403=state.pickleball.gear && state.pickleball.gear.grip;
+    if(_G403){
+      var _RT=_G403.replacementTest;
+      if(_RT && !String(_RT.result||"").trim()){
+        _RT.result="HELD. His words, 15.09.2026: \"I re-wrapped and it helped a lot with the grip.\" He replaced the overgrip the evening of 14 September as predicted, and the hand placement problem was gone in the 15 September session, which he described as going really well once he was warm. THREE INDEPENDENT LINES NOW AGREE THAT THE OVERGRIP MATTERS MORE THAN HE HAS BEEN TREATING IT. One, PB-12 measured grip working life at roughly SIX HOURS: grip 1 ran 18h32m before he first mentioned it going, grip 2 reached the same stage at about 5h57m. Two, he said \"I can tell my grip is starting to go\" WITHOUT HAVING BEEN SHOWN THAT MEASUREMENT. Three, the re-wrap fixed it. The prediction was written with this field empty on purpose and it is filled only now.";
+        _RT.resolvedOn="2026-09-15";
+        _RT.status="RESOLVED 2026-09-15, prediction HELD. Recorded before the result, filled after it.";
+      }
+      if(!_G403.replacementRule){
+        _G403.replacementRule={
+          statedBy:"Ian", statedOn:"2026-09-15", isRule:true, active:true,
+          hisWords:"Switching it out every 2 to 3 sessions depending on how long they are. If I have two 3 hour sessions I should probably change it before I start my third one. If I have three 1.5 hour sessions I should be changing on the fourth one.",
+          cadenceSessionsMin:2, cadenceSessionsMax:3, workingLifeHours:6,
+          basis:"HIS OWN CADENCE, in his own words, not derived. The two worked examples he gave both come out at about six hours of play: two 3 hour sessions, or three 1.5 hour sessions.",
+          corroboration:"MATCHES THE MEASURED FIGURE INDEPENDENTLY. PB-12 measured grip working life at roughly six hours, grip 2 reaching the worn stage at about 5h57m. He stated this cadence without having been shown that number.",
+          intendedUse:"Stored as a rule rather than a note so a reminder can be driven off cumulative play hours since the last re-wrap. NO REMINDER HAS BEEN BUILT and none is implied by this record.",
+          lastWrap:"2026-09-14"
+        };
+      }
+    }
+    state.meta.mig403_pb0915=true; save(true);
+} }catch(e){ try{ console.warn("mig403 pb 09-15 did not apply:",e&&e.message); }catch(_){} }
 
 /* build 225: focus timer removed, nothing to clear here anymore. */
   /* build 372: LAST THING BEFORE THE SAVE. Every migration above has run, deepMergeDefaults
