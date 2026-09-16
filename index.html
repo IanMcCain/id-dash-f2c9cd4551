@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 403 (2026-09-15)">
+<meta name="build" content="v21 build 404 (2026-09-15)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -18076,6 +18076,83 @@ try{ if(profile==="ian" && state.meta && !state.meta.mig403_pb0915 && state.pick
     }
     state.meta.mig403_pb0915=true; save(true);
 } }catch(e){ try{ console.warn("mig403 pb 09-15 did not apply:",e&&e.message); }catch(_){} }
+
+/* ===== v21 build 404, GEN-20, 15.09.2026. TUESDAY SESSION 2, AND THE TUESDAY GYM DAY =====
+   TWO WRITES, ONE GUARD. Both are things he actually did today.
+
+   1. THE SECOND PICKLEBALL SESSION OF TUESDAY. 5:00 to 6:10 PM, Omaha, 1:09:46. From the
+      watch: active 707, total 816, avg HR 126, max 150, min 81. Effort 8, "Hard", WHICH IS
+      HIS RATING AND NOT THE WATCH'S. ABSENT IS NOT ZERO: all six watch fields were measured
+      and not one is written as 0. He gave no result, no score and no opponent, so those
+      three stay EMPTY and nothing is inferred from duration or heart rate.
+
+      HIS EFFORT NUMBER IS NOT EXERTION AND IS NEVER RECONCILED AGAINST HEART RATE. He
+      defined it himself on 14.09.2026: how hard he tried AND how well he played. No
+      HR-against-effort comparison appears anywhere in this record.
+
+      GUARDED BY ID, NEVER BY DATE. 14 September proved a date guard writes the first record
+      of a day and then silently refuses the second, which is exactly the shape of today.
+
+   2. THE GYM DAY. He trained legs light on a Tuesday and this records it as DONE.
+
+      TWO THINGS HERE CONTRADICT THE PLAN AND NEITHER IS TREATED AS AN ERROR. The standing
+      rule is no gym on a double pickleball day, and he did both today. Tuesday is also
+      configured as "No lift planned. Double likely" with an empty exercise list. HE TRAINED
+      ANYWAY. THE PLAN IS A PLAN AND THE LOG IS WHAT HAPPENED: nothing in this block flags a
+      deviation, corrects him, or argues with the split. state.gym.split IS NOT TOUCHED.
+      Back day stays back and biceps, chest day stays chest and triceps, never combined.
+
+      NO WATCH DATA WAS SENT FOR THE GYM SESSION, so there are NO calorie and NO heart rate
+      fields on this record. They are ABSENT, not zero. Do not add them later from memory.
+
+      It is written to state.daily["2026-09-15"].text carrying a GYM: line and mirrored to
+      context.dailyLog["2026-09-15"].note, which is the route the training heatmap reads.
+      NOT to gym.logs[].note, which the build 34 rollover blanks overnight. The dailyLog
+      entry for 15 Sep ALREADY EXISTS with an empty note and a summary, so the note is SET
+      and every other field on that object is left alone.
+
+   HIS OWN SUMMARY OF THE DAY, recorded without commentary: "So dual pickleball, and gym
+   today. Tiring day." No coaching has been added anywhere in this build.
+
+   Guarded by state.meta.mig404_0915pm, NOT in the seed, so SEED_VERSION stays 13. */
+try{ if(profile==="ian" && state.meta && !state.meta.mig404_0915pm){
+
+    /* 1. SECOND PICKLEBALL SESSION OF TUESDAY 15 SEPTEMBER. Guard by id. */
+    if(state.pickleball){
+      if(!Array.isArray(state.pickleball.sessions)) state.pickleball.sessions=[];
+      var _S404=state.pickleball.sessions, _have404=false;
+      for(var _i404=0;_i404<_S404.length;_i404++){
+        if(_S404[_i404] && _S404[_i404].id==="pk-20260915-session-pm") _have404=true;
+      }
+      if(!_have404){
+        _S404.push({
+          id:"pk-20260915-session-pm", date:"2026-09-15", kind:"Pickleball", venue:"Omaha",
+          duration:"1h 09m 46s", window:"5:00 to 6:10 PM, Omaha",
+          calories:816, activeCalories:707, avgHr:126, maxHr:150, minHr:81, effort:8,
+          result:"", score:"", opponent:"", copyOwned:true,
+          note:"Tuesday 15 September, Omaha, 5:00 to 6:10 PM, 1:09:46. YOUR SECOND PICKLEBALL SESSION OF THE DAY, after the 7:17 to 9:49 AM one. From Apple Watch: active 707, total 816, avg HR 126, max 150, min 81. EFFORT 8, Hard, IS YOUR RATING, not the watch's, and on YOUR definition given on 14.09: how hard you tried AND how well you played, not exertion. It is not compared against heart rate anywhere in this record. You gave no result, no score and no opponents, so those stay EMPTY and nothing has been inferred from the duration or the heart rate. YOU ALSO TRAINED LEGS AT THE GYM TODAY, recorded separately on the same date. YOUR OWN SUMMARY OF THE DAY, VERBATIM: \"So dual pickleball, and gym today. Tiring day.\" Nothing has been added to that."
+        });
+      }
+    }
+
+    /* 2. THE TUESDAY GYM DAY. state.daily text + context.dailyLog mirror. NO watch fields. */
+    var _GT404="GYM: Tuesday 15 September, LIGHT day. Stretch, two light full-leg movements, then an incline treadmill walk, 1 mile in 18 to 19 minutes at incline 6 to 7. HIS WORDS: \"Did a light workout today. Stretch, 2 leg full workouts (light), and then I did an incline fast pace walk for 1 mile, like 18-19 minutes, 6-7 incline.\" NO WATCH DATA WAS SENT for this session, so there are no calories and no heart rate on this record and none may be added later. A HEAVY DAY OVERALL: two pickleball sessions and this. His summary: \"So dual pickleball, and gym today. Tiring day.\"";
+    if(!state.daily) state.daily={};
+    if(!state.daily["2026-09-15"]) state.daily["2026-09-15"]={};
+    if(String(state.daily["2026-09-15"].text||"").indexOf("GYM:")<0){
+      var _prev404=String(state.daily["2026-09-15"].text||"");
+      state.daily["2026-09-15"].text=(_prev404?_prev404+" ":"")+_GT404;
+    }
+    if(!state.context) state.context={};
+    if(!state.context.dailyLog) state.context.dailyLog={};
+    if(!state.context.dailyLog["2026-09-15"]) state.context.dailyLog["2026-09-15"]={};
+    if(String(state.context.dailyLog["2026-09-15"].note||"").indexOf("GYM:")<0){
+      var _pn404=String(state.context.dailyLog["2026-09-15"].note||"");
+      state.context.dailyLog["2026-09-15"].note=(_pn404?_pn404+" ":"")+_GT404;
+    }
+
+    state.meta.mig404_0915pm=true; save(true);
+} }catch(e){ try{ console.warn("mig404 0915 pm did not apply:",e&&e.message); }catch(_){} }
 
 /* build 225: focus timer removed, nothing to clear here anymore. */
   /* build 372: LAST THING BEFORE THE SAVE. Every migration above has run, deepMergeDefaults
