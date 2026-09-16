@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 404 (2026-09-15)">
+<meta name="build" content="v21 build 405 (2026-09-16)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -18154,6 +18154,55 @@ try{ if(profile==="ian" && state.meta && !state.meta.mig404_0915pm){
     state.meta.mig404_0915pm=true; save(true);
 } }catch(e){ try{ console.warn("mig404 0915 pm did not apply:",e&&e.message); }catch(_){} }
 
+/* ===== v21 build 405, GEN-21, 16.09.2026. THE GYM RULE IS PROBABILISTIC NOW ==============
+   IAN CHANGED THE RULE, IN HIS OWN WORDS, 16.09.2026:
+     "My gym schedule is mostly going to be on how I feel, and depending on how many times I
+      play pickleball. If I don't go to pickleball at all I'll likely workout. If I only go
+      once I'll likely workout. If I go twice I most likely won't workout, but occasionally
+      I will."
+
+   WHAT THAT REPLACES. The old rule was ABSOLUTE: no gym on a double pickleball day. Build 386
+   encoded it as a weekday shape, wrote "No lift planned. Double likely" into Tue, Wed and Thu,
+   and the app has been saying it every week since. THE OLD RULE IS GONE. The new one is a
+   likelihood, not a gate: 0 sessions likely lift, 1 session likely lift, 2 sessions most likely
+   not BUT OCCASIONALLY YES.
+
+   HE DID THE EXCEPTION CASE ON 15 SEPTEMBER, two pickleball sessions plus a light leg day, and
+   the app still read "No lift planned" underneath a day it had correctly marked as trained.
+
+   WHAT THIS BLOCK CHANGES AND WHAT IT REFUSES TO CHANGE.
+   Changes the WORDING ONLY, in state and at the three render sites. The stored strings on Tue,
+   Wed and Thu stop asserting. "No lift planned. Double likely" becomes "Gym open, your call",
+   and the long note stops describing the old 2-to-3-doubles weekday model as though it were a
+   schedule.
+
+   IT DOES NOT TOUCH state.gym.split's EXERCISES OR THE SPLIT ITSELF. Back day stays back and
+   biceps, chest day stays chest and triceps, NEVER combined, and Monday and Saturday remain the
+   only upper slots. Feel decides WHETHER he trains, never WHAT he trains.
+
+   IT DOES NOT TOUCH gymLoggedOn(). That mechanism is correct and was already right: a day with
+   a gym record renders as trained whatever the plan said. The defect was the plan text
+   underneath it, which is what this fixes. No new feature, no new field, no new surface.
+
+   Guarded by state.meta.mig405_gymfeel, NOT in the seed, so SEED_VERSION stays 13. Only touches
+   days that carry varDouble and ZERO exercises, so it can never blank a day with content. The
+   build 386 block that wrote the old strings is guarded by mig386_gymvarweek and has already
+   run, so it cannot overwrite this on a later load. Idempotent. */
+try{ if(profile==="ian" && state.meta && !state.meta.mig405_gymfeel && state.gym && Array.isArray(state.gym.split)){
+    var _NOTE405="WHETHER YOU LIFT IS YOUR CALL ON THE DAY. Nothing is scheduled here, and that is not the same as no gym. Ian's rule, 16.09.2026, in his own words: gym is mostly on how he feels and on how many times he plays pickleball. NO pickleball, likely lift. ONE session, likely lift. TWO sessions, most likely not, BUT OCCASIONALLY YES, and 15 September was exactly that, two sessions plus a light leg day. This is a likelihood and not a gate, so nothing here should ever be read as the app saying you are not training. THE SPLIT IS UNAFFECTED: back day is back and biceps, chest day is chest and triceps, never combined, and Monday and Saturday are the only upper slots. Feel decides WHETHER you train, never WHAT you train.";
+    var _n405=0;
+    for(var _i405=0;_i405<state.gym.split.length;_i405++){
+      var _d405=state.gym.split[_i405];
+      if(!_d405 || !_d405.varDouble) continue;
+      if((_d405.exercises||[]).length) continue;   /* never touch a day that carries content */
+      _d405.focus="Gym open, your call";
+      _d405.lockNote="Your call today. Two pickleball sessions and you probably skip it, one or none and you probably lift.";
+      _d405.note=_NOTE405;
+      _n405++;
+    }
+    if(_n405){ state.meta.mig405_gymfeel=true; save(true); }
+} }catch(e){ try{ console.warn("mig405 gym feel did not apply:",e&&e.message); }catch(_){} }
+
 /* build 225: focus timer removed, nothing to clear here anymore. */
   /* build 372: LAST THING BEFORE THE SAVE. Every migration above has run, deepMergeDefaults
      has run, so this is the only point in the file where the state is actually final. */
@@ -21331,7 +21380,7 @@ function gymToday(parent){ try{ healthCard(parent); }catch(e){} const day=daySpl
     const nc=card("a-blue"); const nb=nc._body;
     const did=gymLoggedOn(TODAY);
     const ntop=el("div","between"); const nleft=el("div");
-    nleft.appendChild(el("h3",null,did?"Gym logged today":(day.varDouble?"No lift planned":cleanFocus(day.focus)||"No gym today")));
+    nleft.appendChild(el("h3",null,did?"Gym logged today":(day.varDouble?"Gym open":cleanFocus(day.focus)||"No gym today")));
     const nsub=el("div","small muted");
     nsub.textContent="Today, "+DAYFULL[DOW]+". Pickleball: "+(day.play||"Off"); nleft.appendChild(nsub);
     ntop.appendChild(nleft); ntop.appendChild(el("span","pill b",did?"Trained":"No lift"));
@@ -21501,10 +21550,10 @@ function gymPage387(parent){
        missing, and if he HAS trained it says that first and does not argue with him.
        day.lockNote is his own one line version of this, already in state. */
     var ne=el("div","g7empty");
-    var nbig=trained?"Gym logged today":(day.varDouble?"No lift planned":"No gym today");
+    var nbig=trained?"Gym logged today":(day.varDouble?"Gym open":"No gym today");
     var nsm=trained
-      ? "You trained and this day carries no planned lift. That is not a miss: the rule is no gym on a day you play twice, so a single session day leaves the gym open."
-      : (day.lockNote||"Double likely. If you only play once today, the gym is open.");
+      ? "You trained and nothing was scheduled here. That is not a miss. Whether you lift is your call on the day, and you made it."
+      : (day.lockNote||"Your call today. Two pickleball sessions and you probably skip it, one or none and you probably lift.");
     /* his lockNote opens with the same sentence the headline just said, so do not say it
        twice. Strips the duplicate lead only, the rest of HIS line is untouched. */
     if(nsm.indexOf(nbig+". ")===0) nsm=nsm.slice(nbig.length+2);
@@ -22624,10 +22673,12 @@ function lockGymBubble(){
   var focus=String((d&&d.focus)||"");
   if(noGym||rest||nEx===0||/^\s*no gym/i.test(focus)){
     var why=String((d&&d.lockNote)||"")||(d&&d.play?("Pickleball: "+d.play):"");
-    /* build 386: on a VARIABLE DOUBLE day the honest label is that no lift is PLANNED, not that
-       there is no gym. Whether there is a gym is decided by how many times he plays, and the
-       app cannot know that in the morning. It says what it knows and stops there. */
-    if(d&&d.varDouble) return {lab:"No lift planned",sub:why?(name+". "+why):name};
+    /* build 386, REWORDED build 405: the honest label is that the gym is OPEN, not that no lift
+       is planned. "No lift planned" read as a statement that he is not training, and on
+       15.09.2026 he played twice and trained legs anyway. Whether he lifts is decided on the day
+       by feel and by how many times he plays, and the app cannot know that in the morning. It
+       says what is available and stops there. */
+    if(d&&d.varDouble) return {lab:"Gym open",sub:why?(name+". "+why):name};
     return {lab:"No gym today",sub:why?(name+". "+why):name};
   }
   var short=cleanFocus(focus).replace(/,\s*(hard|medium|light)\b.*$/i,"").replace(/[\s.,]+$/,"");
