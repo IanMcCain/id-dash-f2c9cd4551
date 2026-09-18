@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 411 (2026-09-18)">
+<meta name="build" content="v21 build 412 (2026-09-18)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -17882,6 +17882,47 @@ try{ if(state.meta && !state.meta.mig411_finance){
     state.meta.mig411_finance=true; save(true);
 } }catch(e){ try{ console.warn("mig411 finance did not apply:",e&&e.message); }catch(_){} }
 
+/* ===== v21 build 412: THE RENT, AS HE REMEMBERS IT AND LABELLED AS SUCH ====================
+   IAN, 18.09.2026. He first gave the chunks from memory, then revised the two big ones to a
+   RANGE: "In between 2300-2600". A range is him being LESS certain, not more, so it is held and
+   rendered as a range and no midpoint is ever taken. He has said twice that he will go over the
+   real amounts and dates later; when they arrive, low and high are replaced by a plain amount
+   and every hedge on this section disappears by itself.
+
+   THE TWO BIG ONES CARRY low AND high AND RENDER AS "$2,300 to $2,600". The third carries over:true
+   and renders as "Just over $1,000", because "just over 1,000" is what he said and rounding it
+   to $1,000 flat would quietly make it a different claim.
+
+   DATES ARE NOT INVENTED. The first is paid but he did not say when, so it has no date and says
+   so. The second is "late December or January" and the third "before summer", both his words,
+   held as free text in `when` rather than forced into an ISO date. Because none of them has a
+   real date, NOTHING IS PLACED ON THE MONTH CHART: recurringInMonths is deliberately left absent
+   so the fold in guard stays shut. A spike drawn on a guessed month would be a fabrication.
+
+   THE SHAPE IS THE POINT AND IT SURVIVES THE IMPRECISION. Two big payments and one small one,
+   and the second lands in the stretch his own seasonality note calls business building rather
+   than transacting. The page shows that shape and computes nothing off it: no annual total, no
+   monthly average, no remaining balance.
+
+   GUARDS. state.meta.mig412_rent, NOT in the seed, so SEED_VERSION stays 13. Create if absent
+   only, so the real figures overwrite nothing when he supplies them. Idempotent. */
+try{ if(state.meta && !state.meta.mig412_rent){
+    if(state.finance && typeof state.finance==="object" && !state.finance.recurring){
+      state.finance.recurring=[{
+        name:"Apartment",
+        sch:"rent",
+        approx:true,
+        source:"Ian, 18.09.2026, from memory. Real amounts and dates to follow.",
+        payments:[
+          { seq:1, low:2300, high:2600, approx:true, paid:true, when:"already paid, date not on record" },
+          { seq:2, low:2300, high:2600, approx:true, when:"late December or January" },
+          { seq:3, amount:1000, approx:true, over:true, when:"before summer" }
+        ]
+      }];
+    }
+    state.meta.mig412_rent=true; save(true);
+} }catch(e){ try{ console.warn("mig412 rent did not apply:",e&&e.message); }catch(_){} }
+
 /* ===== v21 build 399: ARCHIVE THE FALL CUP. IT NEVER HAPPENED. ============================
    IAN, 14.09.2026: "I never did that fall cup."
 
@@ -22939,6 +22980,8 @@ function fnMonthsWithRecurring(months,f){
     if(!f||f.recurringInMonths!==false||!f.recurring||!f.recurring.length) return months;
     var add={};
     f.recurring.forEach(function(rr){ (rr&&rr.payments||[]).forEach(function(pp){
+      /* A payment with no real date cannot be placed on a month. It is skipped rather than
+         guessed at, so the chart never draws a spike on a month nobody confirmed. */
       if(!pp||!pp.date) return; var k=String(pp.date).slice(0,7);
       add[k]=(add[k]||0)+(Number(pp.amount)||0); }); });
     return (months||[]).map(function(m){
@@ -23133,7 +23176,13 @@ function fnRefCats(v){
       var r=el("div","fnacc"); var Lf=el("div"); Lf.style.minWidth="0";
       Lf.appendChild(el("div","fnname",String(x.label||k)));
       var bits=[]; if(x.line) bits.push("line "+x.line);
-      bits.push(Math.round(Number(x.pct)||0)+"% allowed");
+      /* v21 build 412: HOME OFFICE IS NOT A PERCENTAGE AND SAYING "100% allowed" MISREADS IT.
+         Ian confirmed on 18.09.2026 that he works from the apartment, so the simplified method
+         applies: $5 a square foot, up to 300 square feet, $1,500 maximum. The rule and the cap
+         are shown. NO FIGURE IS COMPUTED, because nobody has measured the space, and a number
+         here would be invented. It arrives when he measures. */
+      if(k==="homeoffice") bits.push("$5 a square foot, up to 300, $1,500 max");
+      else bits.push(Math.round(Number(x.pct)||0)+"% allowed");
       Lf.appendChild(el("div","fnsch",bits.join("  \u00b7  ")));
       r.appendChild(Lf); L.appendChild(r);
     });
@@ -23153,6 +23202,16 @@ function fnRefMiles(v){
     L2.appendChild(el("div","fnname","1 July onward"));
     r2.appendChild(L2); r2.appendChild(el("div","fnamt",(MILE_RATE.h2*100).toFixed(0)+"\u00a2"));
     b.appendChild(r2);
+    /* v21 build 412: THE SUBSTANTIATION RULE IS NOT ON THIS SCREEN, AND THAT IS THE POINT.
+       An earlier cut of this build printed the listed property rule and the sample period
+       method here. Ian read the point, accepted it and said he will use a tracking app, so
+       putting the rule on his phone now is our reasoning shown back to him, which is exactly
+       the class of thing stripped in builds 397, 398, 400 and 407. It is gone.
+       NO PERCENTAGE METHOD EXISTS ANYWHERE IN THIS CODE, not even unused. There is no business
+       use field, no odometer pair and no calculation from a share of total miles.
+       THE WHOLE CALCULATION IS TRACKED MILES TIMES THESE TWO RATES, which is what the populated
+       mileage slot already does: milesH1 at 72.5 cents and milesH2 at 76 cents, or a supplied
+       amount where the app gives one. Nothing renders until real miles land. */
     h.appendChild(c);
   },ICO.compass,"violet");
 
@@ -23289,32 +23348,82 @@ function buildFinance(v){
      otherwise be wrecked by a number that is not monthly.
      THE PAGE DOES NOT EDITORIALISE. It shows the dates and the amounts and stops. Whether the
      buffer covers the December chunk is his read to make, not ours to announce. */
+  /* v21 build 412: APPROXIMATE FIGURES ARE RENDERED AS APPROXIMATE, EVERY TIME THEY APPEAR.
+     Ian gave the rent amounts from memory, prefaced "if I remember right", and said he will go
+     over the real amounts and dates another time. A figure he might repeat to somebody must not
+     look settled while it is a recollection, so approximation is carried on the AMOUNT ITSELF,
+     not tucked into a footnote a scroll away: an approximate payment renders as "About $2,600"
+     and the one he described as "just over 1,000" renders as "Just over $1,000". The section
+     also says once, in plain words, that these came from memory.
+     DATES ARE LEFT OPEN RATHER THAN INVENTED. He gave "late December or January" and "before
+     summer", so those strings are shown as he said them. A payment with no real date is never
+     given one, never sorted as if it had one, and never placed on the month chart, because a
+     spike drawn on a guessed month is a fabrication dressed as a chart.
+     NOTHING PRECISE IS COMPUTED OFF THEM. No annual total, no monthly average, no remaining
+     balance. The shape is the point: two big payments and one small one, with the second landing
+     in his slowest earning stretch, and the shape survives without arithmetic. */
   if(f.recurring&&f.recurring.length){
     var _pays=[];
     f.recurring.forEach(function(rr){
-      (rr&&rr.payments||[]).forEach(function(pp){
+      (rr&&rr.payments||[]).forEach(function(pp,_ix){
         if(!pp) return;
-        _pays.push({name:String(rr.name||"Recurring"),sch:rr.sch,date:pp.date||"",amount:Number(pp.amount)||0,paid:pp.paid===true});
+        _pays.push({name:String(rr.name||"Recurring"),sch:rr.sch,date:pp.date||"",
+          when:String(pp.when||""),seq:(pp.seq!=null?Number(pp.seq):_ix),
+          amount:Number(pp.amount)||0,
+          low:(pp.low!=null?Number(pp.low):null),high:(pp.high!=null?Number(pp.high):null),
+          paid:pp.paid===true,
+          approx:pp.approx===true||rr.approx===true,over:pp.over===true});
       });
     });
     if(_pays.length){
-      _pays.sort(function(a,z){ return String(a.date).localeCompare(String(z.date)); });
+      /* Dated payments sort by date. Undated ones keep the order they were recorded in, which is
+         the order he described them, and never borrow a neighbour's date to sort against. */
+      _pays.sort(function(a,z){
+        if(a.date&&z.date) return String(a.date).localeCompare(String(z.date));
+        if(a.date&&!z.date) return -1;
+        if(!a.date&&z.date) return 1;
+        return a.seq-z.seq;
+      });
+      var _anyApprox=false; _pays.forEach(function(p){ if(p.approx) p.approx&&(_anyApprox=true); });
+      /* v21 build 412: A RANGE IS RENDERED AS A RANGE. Ian revised the rent from a single
+         approximate figure to "in between 2300-2600", which is him being LESS certain rather
+         than more, so the page must not quietly recover the precision he just gave up. No
+         midpoint is taken, no average, no annual total. The range is the honest artefact and it
+         looks like one. A single approximate figure still reads "About", and "just over 1,000"
+         stays "Just over $1,000" because rounding that to a flat $1,000 would be a different
+         claim from the one he made. When the real amounts arrive they replace low and high with
+         a plain amount and every one of these prefixes disappears on its own. */
+      var _amt=function(p){
+        if(p.low!=null&&p.high!=null&&p.high!==p.low) return fnMoney(p.low)+" to "+fnMoney(p.high);
+        var m=fnMoney(p.low!=null?p.low:p.amount);
+        return p.over?("Just over "+m):p.approx?("About "+m):m;
+      };
       var _next=null;
-      try{ for(var _i=0;_i<_pays.length;_i++){ if(!_pays[_i].paid && daysUntil(_pays[_i].date)>=0){ _next=_pays[_i]; break; } } }catch(e){}
-      pkCollapse(v,"fin_recur","Rent and other set payments",
-        _next?("next "+fnMoney(_next.amount)+"  \u00b7  "+fmtShort(_next.date)):(_pays.length+(_pays.length===1?" payment":" payments")),
-        true,function(h){
-        var c=card(); var b=c._body; var L=el("div");
+      try{ for(var _i=0;_i<_pays.length;_i++){ var _p=_pays[_i];
+        if(_p.paid) continue;
+        if(_p.date && daysUntil(_p.date)<0) continue;
+        _next=_p; break; } }catch(e){}
+      var _cue="";
+      if(_next){ var _a=_amt(_next);
+        if(/^[A-Z][a-z]+ /.test(_a)) _a=_a.charAt(0).toLowerCase()+_a.slice(1);
+        _cue="next "+_a; var _w=_next.date?fmtShort(_next.date):_next.when;
+        if(_w) _cue+="  \u00b7  "+_w; }
+      else _cue=_pays.length+(_pays.length===1?" payment":" payments");
+      pkCollapse(v,"fin_recur","Rent and other set payments",_cue,true,function(h){
+        var c=card(); var b=c._body;
+        if(_anyApprox) b.appendChild(el("div","fnsch","Amounts and dates are from memory, not from a record yet"));
+        var L=el("div"); L.style.marginTop=_anyApprox?"10px":"0";
         _pays.forEach(function(p){
           var r=el("div","fnacc"); var Lf=el("div"); Lf.style.minWidth="0";
           Lf.appendChild(el("div","fnname",p.name));
           var bits=[];
           if(p.date) bits.push(fmtLongDate(p.date));
+          else if(p.when) bits.push(p.when);
           if(p.paid) bits.push("paid");
           if(p.sch){ var sc=schedC(p.sch); if(sc&&sc.line) bits.push("line "+sc.line); }
           if(bits.length) Lf.appendChild(el("div","fnsch",bits.join("  \u00b7  ")));
           r.appendChild(Lf);
-          r.appendChild(el("div","fnamt",fnMoney(p.amount)));
+          r.appendChild(el("div","fnamt",_amt(p)));
           L.appendChild(r);
         });
         b.appendChild(L);
