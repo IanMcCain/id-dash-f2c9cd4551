@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 406 (2026-09-18)">
+<meta name="build" content="v21 build 407 (2026-09-18)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -18202,6 +18202,90 @@ try{ if(profile==="ian" && state.meta && !state.meta.mig405_gymfeel && state.gym
     }
     if(_n405){ state.meta.mig405_gymfeel=true; save(true); }
 } }catch(e){ try{ console.warn("mig405 gym feel did not apply:",e&&e.message); }catch(_){} }
+
+/* ===== v21 build 407: THE CMA NOTE. A LABEL IS NOT A LESSON. ==============================
+
+   WHAT WAS ON HIS SCREEN. The "Note" disclosure on the CMA card, real estate page, read:
+
+     "THIS NUMBER MOVED FOUR TIMES ON 4 SEPTEMBER 2026. Treat it as volatile and check the
+      CMA file before quoting it to anyone. Sequence: 249900 on 17 Aug, 244900, 239900, 249900."
+
+   That is an instruction from us to ourselves, rendered at him. Three separate problems in
+   one 174 character field: the ALL CAPS shouting, an instruction to go and read another file
+   before he is allowed to use his own number, and an audit fact about our own process.
+
+   HIS RULE, GIVEN TWICE. A label is a label, not a place to teach him something. Our
+   reasoning, caveats and uncertainty are ours to carry, not his to read. He screenshotted an
+   exercise name carrying an instruction and said "take this completely off." Same class as
+   the build 397 Settings paddle prose, the build 398 gear.gripType field path and the build
+   400 Solara next steps caveat.
+
+   WHAT THE FACT WAS WORTH, JUDGED FIELD BY FIELD RATHER THAN KEPT OR BINNED WHOLE.
+     "moved four times"   ALREADY ON THE CARD as its own row, "Price moves  4", read from
+                          cma.moveCount. Saying it again in capitals is not information, it
+                          is emphasis on something he can already see.
+     "it is volatile"     ALREADY ON THE CARD as its own row, "Volatile  Yes", from
+                          cma.volatile, and "Last moved  2026-09-04" from cma.movesOn.
+     "check the CMA file
+      before quoting it"  OURS. An instruction about how he is permitted to use his own
+                          record. This is the part he objected to, twice, in other places.
+     THE SEQUENCE         HIS, and it is the only thing in the field that is not already
+                          rendered somewhere else on the same card. It earns its place, so
+                          it stays, written as information instead of as a warning.
+
+   SO THE NOTE IS NOW THE PRICE HISTORY AND NOTHING ELSE. No caps, no instruction, no audit.
+
+   NOTHING IS DELETED. The original string is kept verbatim at cma.noteSource with its reason
+   and date attached, following the build 397 pattern where state.pickleball.paddle kept every
+   word and simply stopped being a render source. re391Cma renders a NAMED list of cma fields
+   and noteSource is not in it, so the archive cannot reach a surface.
+
+   IDEMPOTENT AND NON CLOBBERING. It rewrites only if the field still holds the exact string
+   above, so a later hand edit by Ian or by another lane is left alone rather than reverted.
+
+   WHAT ELSE THE SWEEP FOUND, AND WHY ONLY THIS ONE IS FIXED HERE. Every field the real estate
+   page can render was checked on a real post 406 profile, on all 34 deals rather than on what
+   today happens to show: deal title, sub, price, close, flag, priceNote and note, plus the
+   eleven named cma fields, plus todos, people and goals. Two other short strings matched the
+   pattern and NEITHER IS A RENDER SOURCE, verified rather than assumed: realEstate.peopleNote
+   is written by mig379 and read by nothing, and people[].agent is documented INTERNAL ONLY at
+   two places in this file and is read by nothing. They are left exactly as they are.
+   SEVENTEEN deal.note fields, from 410 to 30,845 characters, DO render behind the "Full note"
+   disclosure and DO carry embedded internal prose, build numbers and lane instructions. That
+   is a real finding and it is REPORTED, NOT FIXED HERE. Those are long authored records where
+   the instructions sit among genuine client facts, so rewriting them is a large data edit with
+   a real chance of destroying something true, and it is not one small app fix. Queued for Ian.
+
+   Guarded once by state.meta.mig407_cmanote, which is NOT in the seed, so SEED_VERSION stays
+   at 13. No renderer is touched by this build. */
+try{ if(profile==="ian" && state.meta && !state.meta.mig407_cmanote && state.realEstate && Array.isArray(state.realEstate.deals)){
+    var _OLD407="THIS NUMBER MOVED FOUR TIMES ON 4 SEPTEMBER 2026. Treat it as volatile and check the "
+      +"CMA file before quoting it to anyone. Sequence: 249900 on 17 Aug, 244900, 239900, 249900.";
+    var _NEW407="Price history: $249,900 on 17 August, then $244,900, then $239,900, then back to "
+      +"$249,900 on 4 September.";
+    var _n407=0;
+    for(var _i407=0;_i407<state.realEstate.deals.length;_i407++){
+      var _d407=state.realEstate.deals[_i407];
+      if(!_d407 || !_d407.cma || typeof _d407.cma!=="object") continue;
+      if(String(_d407.cma.note||"")!==_OLD407) continue;   /* a hand edit is left alone */
+      if(!_d407.cma.noteSource){
+        _d407.cma.noteSource={
+          text:_OLD407,
+          supersededOn:"2026-09-18",
+          build:"v21 build 407",
+          stillLive:false,
+          why:"Rendered at Ian behind the CMA Note disclosure. It shouted, it instructed him to "
+            +"check the CMA file before quoting his own number, and it repeated the move count "
+            +"and the volatility, both of which the same card already renders as their own rows. "
+            +"KEPT VERBATIM AND NOT DELETED. cma.noteSource is not in the field list re391Cma "
+            +"renders, so this cannot reach a surface."
+        };
+      }
+      _d407.cma.note=_NEW407;
+      _n407++;
+    }
+    if(_n407){ state.meta.mig407_cmanote=true; save(true); }
+} }catch(e){ try{ console.warn("mig407 cma note did not apply:",e&&e.message); }catch(_){} }
 
 /* build 225: focus timer removed, nothing to clear here anymore. */
   /* build 372: LAST THING BEFORE THE SAVE. Every migration above has run, deepMergeDefaults
