@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 409 (2026-09-18)">
+<meta name="build" content="v21 build 410 (2026-09-18)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -22858,12 +22858,15 @@ function finData(){
     return n?f:null;
   }catch(e){ return null; }
 }
+/* v21 build 410: THE TAB IS PERMANENT. Ian, 18.09.2026: "Fully setup the app to include the
+   section on the pages, it should be a major tab." Build 409 hid the label until state.finance
+   existed and bounced the page to Home if it was somehow selected. He has overridden that, so
+   Finances is now a first class tab alongside Home, Real Estate, Gym, Pickleball and Settings
+   and it is always on the bar. The body.finance-off rule is left in the stylesheet rather than
+   deleted; nothing sets the class any more, and leaving it costs nothing while deleting a rule
+   another lane may reach for does not. */
 function applyFinanceTab(){
-  try{
-    var off=!finData();
-    document.body.classList.toggle("finance-off",off);
-    if(off){ var r=document.getElementById("t-finance"); if(r&&r.checked){ selectTab("home"); } }
-  }catch(e){}
+  try{ document.body.classList.remove("finance-off"); }catch(e){}
 }
 function fnMoney(n){ n=Number(n)||0; var s=fmtMoney(Math.abs(n)); return (n<0?"-":"")+s; }
 function fnMonthLabel(m){ try{ var a=String(m).split("-"); return new Date(a[0],a[1]-1,1).toLocaleDateString("en-US",{month:"short"}); }catch(e){ return String(m||""); } }
@@ -22981,21 +22984,124 @@ function fnDeductRing(body,f){
     body.appendChild(k); }
 }
 
-function buildFinance(v){
-  var f=finData(); if(!f) return;   /* absent is not zero. No data, no header, no page. */
+/* v21 build 410: THE NO DATA STATE IS A REFERENCE PAGE, NOT AN EMPTY FORM.
 
-  /* Balances. Three numbers say this better than any chart would, so there is no chart. */
+   THE PROBLEM WITH EVERY OBVIOUS ANSWER. Ian has told us twice: no dashed boxes, no empty
+   states begging to be filled, no input surfaces. A tab that is permanently on the bar cannot
+   render nothing, and it must not render a placeholder that reads as broken or as a form. A
+   greyed sample figure is worse still: a fake number on a finance page is the single worst
+   thing to put in front of him, so there is not one anywhere below, not even dimmed.
+
+   WHAT IT DOES INSTEAD. Everything on this page before the data lands is ALREADY TRUE AND
+   ALREADY USEFUL. The three accounts are the three real accounts named in the data contract and
+   matching the Statements folders. The Schedule C table is the same SCHED_C the populated page
+   uses, with its line numbers and allowed percentages. The mileage rates are Ian's own figures.
+   The six things the IRS wants on a meal are the six things. So the empty tab is a REFERENCE
+   VIEW that gains numbers later, rather than a shell apologising for itself, and no placeholder
+   character is needed in most of it because there is no number shaped hole to fill.
+
+   WHERE A NUMBER WILL GO, NOTHING GOES. The balance rows carry the account and its kind and
+   simply have no amount column yet. No rule, no box, no dash, no "add your data".
+
+   NO ORIENTATION LINE, DELIBERATELY. There is no sentence saying this fills in when Rocket
+   Money connects. That is our plumbing described to him, the same class as the build 397
+   paddle prose, the 398 field path and the 400 caveat, all stripped on his instruction. The
+   page does not read as broken, so it does not need explaining.
+
+   ZERO WRITE SURFACES, as everywhere else in this app. */
+function fnScaffold(v){
+  var c0=card(); var b0=c0._body;
+  b0.appendChild(el("div","g7kicker","Finances"));
+  b0.appendChild(el("div","g7title",String(new Date().getFullYear())));
+  v.appendChild(c0);
+
+  var ca=card(); var ba=ca._body;
+  ba.appendChild(el("div","fnsch","Accounts"));
+  [["American Express","business"],["Discover","personal"],["FNBO","personal"]].forEach(function(a){
+    var r=el("div","fnacc"); var L=el("div"); L.style.minWidth="0";
+    L.appendChild(el("div","fnname",a[0]));
+    L.appendChild(el("div","fnsch",a[1]));
+    r.appendChild(L); ba.appendChild(r);
+  });
+  v.appendChild(ca);
+
+  pkCollapse(v,"fin_cats","Where it goes","Schedule C lines",false,function(h){
+    var c=card(); var b=c._body; var L=el("div");
+    Object.keys(SCHED_C).forEach(function(k){
+      var x=SCHED_C[k]; if(!x) return;
+      var r=el("div","fnacc"); var Lf=el("div"); Lf.style.minWidth="0";
+      Lf.appendChild(el("div","fnname",String(x.label||k)));
+      var bits=[]; if(x.line) bits.push("line "+x.line);
+      bits.push(Math.round(Number(x.pct)||0)+"% allowed");
+      Lf.appendChild(el("div","fnsch",bits.join("  \u00b7  ")));
+      r.appendChild(Lf); L.appendChild(r);
+    });
+    b.appendChild(L);
+    h.appendChild(c);
+  },ICO.chart,"violet");
+
+  pkCollapse(v,"fin_miles","Mileage",String(new Date().getFullYear())+" rates",false,function(h){
+    var c=card(); var b=c._body;
+    var r1=el("div","fnacc"); var L1=el("div");
+    L1.appendChild(el("div","fnname","1 January to 30 June"));
+    r1.appendChild(L1); r1.appendChild(el("div","fnamt",(MILE_RATE.h1*100).toFixed(1)+"\u00a2"));
+    b.appendChild(r1);
+    var r2=el("div","fnacc"); var L2=el("div");
+    L2.appendChild(el("div","fnname","1 July onward"));
+    r2.appendChild(L2); r2.appendChild(el("div","fnamt",(MILE_RATE.h2*100).toFixed(0)+"\u00a2"));
+    b.appendChild(r2);
+    h.appendChild(c);
+  },ICO.compass,"violet");
+
+  pkCollapse(v,"fin_why","Needs a purpose","what a meal has to carry",false,function(h){
+    var c=card(); var b=c._body; var L=el("div");
+    ["Amount","Date","Place","Who was there","Their business relationship","The business purpose"].forEach(function(t){
+      var r=el("div","fnacc"); var Lf=el("div"); Lf.appendChild(el("div","fnname",t)); r.appendChild(Lf); L.appendChild(r);
+    });
+    b.appendChild(L);
+    b.appendChild(el("div","fnsch","The first three come off the statement. The last three only exist in memory."));
+    h.appendChild(c);
+  },ICO.clipboard,"violet");
+}
+
+function buildFinance(v){
+  var f=finData();
+  if(!f){ safe(v,function(){ fnScaffold(v); },"Finance scaffold"); return; }
+
+  /* Balances. Three numbers say this better than any chart would, so there is no chart.
+     v21 build 410: THE 30 PERCENT SET ASIDE. Ian moves 30 percent to a separate tax account and
+     he normally does it the moment he is paid; a bulk sweep is the exception, September being
+     one. So a gross balance must never be shown as what he has. An account carrying kind "tax"
+     is rendered in its own group and is never summed with the rest, and where the record says
+     the tax account is not connected to Rocket Money the page says so once, because an
+     unconnected sweep leaves the feed looking like a loss rather than a transfer. NOTHING IS
+     ASSUMED EITHER WAY: per paycheck is the default, no lag is inferred, and no 30 percent is
+     deducted here from any figure. Every branch fires only on a field a later lane actually
+     writes, so today none of it renders. */
   if(f.accounts&&f.accounts.length){
     var c0=card(); var b0=c0._body;
-    f.accounts.forEach(function(a){
+    var _spend=[],_tax=[];
+    f.accounts.forEach(function(a){ (String(a&&a.kind)==="tax"?_tax:_spend).push(a); });
+    var _row=function(host,a){
       var r=el("div","fnacc");
       var L=el("div"); L.style.minWidth="0";
       L.appendChild(el("div","fnname",String(a.name||a.id||"Account")));
-      L.appendChild(el("div","fnsch",(a.kind==="business"?"business":"personal")+(a.last4?("  \u00b7  \u2022\u2022\u2022\u2022 "+a.last4):"")));
+      L.appendChild(el("div","fnsch",(a.kind==="business"?"business":a.kind==="tax"?"tax set aside":"personal")+(a.last4?("  \u00b7  \u2022\u2022\u2022\u2022 "+a.last4):"")));
       r.appendChild(L);
       r.appendChild(el("div","fnamt",fnMoney(a.balance)));
-      b0.appendChild(r);
-    });
+      host.appendChild(r);
+    };
+    _spend.forEach(function(a){ _row(b0,a); });
+    if(_tax.length){
+      b0.appendChild(el("div","fnsch","Set aside for tax, not spendable"));
+      _tax.forEach(function(a){ _row(b0,a); });
+    }
+    if(f.taxSetAside&&f.taxSetAside.connected===false){
+      b0.appendChild(el("div","fnsch","The tax account is not in this feed, so a transfer out of it reads as spend."));
+    }
+    if(f.taxSetAside&&f.taxSetAside.unsweptPeriods&&f.taxSetAside.unsweptPeriods.length){
+      b0.appendChild(el("div","fnsch","Not yet swept: "+f.taxSetAside.unsweptPeriods.join(", ")));
+    }
     if(f.asOf) b0.appendChild(el("div","fnsch","as of "+fmtLongDate(f.asOf)));
     v.appendChild(c0);
   }
