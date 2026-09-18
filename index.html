@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 408 (2026-09-18)">
+<meta name="build" content="v21 build 409 (2026-09-18)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -247,8 +247,8 @@ header{position:fixed;top:0;left:0;right:0;z-index:50;height:calc(var(--hh) + va
 main{position:relative;padding:calc(var(--hh) + var(--sat) + 10px) 14px calc(var(--bh) + var(--sab) + 26px);max-width:560px;margin:0 auto}
 .tabpage{display:none}
 @keyframes slidein{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
-#t-home:checked~main #p-home,#t-stats:checked~main #p-stats,#t-re:checked~main #p-re,#t-gym:checked~main #p-gym,#t-pickle:checked~main #p-pickle,#t-solara:checked~main #p-solara,#t-settings:checked~main #p-settings{display:block;animation:slidein .24s cubic-bezier(.22,.61,.36,1)}
-#t-home:checked~header .htt-home,#t-stats:checked~header .htt-stats,#t-re:checked~header .htt-re,#t-gym:checked~header .htt-gym,#t-pickle:checked~header .htt-pickle,#t-solara:checked~header .htt-solara,#t-settings:checked~header .htt-settings{display:block}
+#t-home:checked~main #p-home,#t-stats:checked~main #p-stats,#t-re:checked~main #p-re,#t-gym:checked~main #p-gym,#t-pickle:checked~main #p-pickle,#t-solara:checked~main #p-solara,#t-finance:checked~main #p-finance,#t-settings:checked~main #p-settings{display:block;animation:slidein .24s cubic-bezier(.22,.61,.36,1)}
+#t-home:checked~header .htt-home,#t-stats:checked~header .htt-stats,#t-re:checked~header .htt-re,#t-gym:checked~header .htt-gym,#t-pickle:checked~header .htt-pickle,#t-solara:checked~header .htt-solara,#t-finance:checked~header .htt-finance,#t-settings:checked~header .htt-settings{display:block}
 #t-home:checked~#t-home:checked~.tabbar label[for=t-home],#t-stats:checked~.tabbar label[for=t-stats],#t-re:checked~.tabbar label[for=t-re],#t-gym:checked~.tabbar label[for=t-gym]{color:var(--white)}
 #t-home:checked~#t-home:checked~.tabbar label[for=t-home] .ti,#t-stats:checked~.tabbar label[for=t-stats] .ti,#t-re:checked~.tabbar label[for=t-re] .ti,#t-gym:checked~.tabbar label[for=t-gym] .ti .ti{transform:translateY(-1px) scale(1.06)}
 #t-home:checked~#t-home:checked~.tabbar label[for=t-home]::before,#t-stats:checked~.tabbar label[for=t-stats]::before,#t-re:checked~.tabbar label[for=t-re]::before,#t-gym:checked~.tabbar label[for=t-gym]::before{content:"";position:absolute;top:0;width:24px;height:3px;border-radius:0 0 4px 4px;background:linear-gradient(90deg,var(--accent),var(--accent2))}
@@ -822,12 +822,13 @@ header{ background:rgba(0,0,0,.82); border-bottom:1px solid rgba(255,255,255,.07
 <input class="tabctl" type="radio" name="tab" id="t-gym">
 <input class="tabctl" type="radio" name="tab" id="t-pickle">
 <input class="tabctl" type="radio" name="tab" id="t-solara">
+<input class="tabctl" type="radio" name="tab" id="t-finance">
 <input class="tabctl" type="radio" name="tab" id="t-settings">
 
 <header>
   <div class="brand"><div class="logo">IM</div>
     <div class="htitle">
-      <span class="htt htt-home">Today</span><span class="htt htt-stats">Stats</span><span class="htt htt-re">Real Estate</span><span class="htt htt-gym">Gym</span><span class="htt htt-pickle">Pickleball</span><span class="htt htt-solara">Solara</span><span class="htt htt-settings">Settings</span>
+      <span class="htt htt-home">Today</span><span class="htt htt-stats">Stats</span><span class="htt htt-re">Real Estate</span><span class="htt htt-gym">Gym</span><span class="htt htt-pickle">Pickleball</span><span class="htt htt-solara">Solara</span><span class="htt htt-finance">Finances</span><span class="htt htt-settings">Settings</span>
     </div>
   </div>
   <label class="gear" for="t-settings" aria-label="Settings"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9.2a2.8 2.8 0 1 0 0 5.6 2.8 2.8 0 0 0 0-5.6ZM19 12c0-.5 0-1-.1-1.4l1.7-1.3-1.7-3-2 .8a7 7 0 0 0-2.4-1.4L14.2 3.6H9.8l-.3 2.1a7 7 0 0 0-2.4 1.4l-2-.8-1.7 3 1.7 1.3a8 8 0 0 0 0 2.8l-1.7 1.3 1.7 3 2-.8a7 7 0 0 0 2.4 1.4l.3 2.1h4.4l.3-2.1a7 7 0 0 0 2.4-1.4l2 .8 1.7-3-1.7-1.3c.1-.4.1-.9.1-1.4Z"/></svg></label>
@@ -840,6 +841,7 @@ header{ background:rgba(0,0,0,.82); border-bottom:1px solid rgba(255,255,255,.07
   <section class="tabpage" id="p-gym"></section>
   <section class="tabpage" id="p-pickle"></section>
   <section class="tabpage" id="p-solara"></section>
+  <section class="tabpage" id="p-finance"></section>
   <section class="tabpage" id="p-settings"></section>
 </main>
 
@@ -852,6 +854,9 @@ header{ background:rgba(0,0,0,.82); border-bottom:1px solid rgba(255,255,255,.07
        before this label came out. The radio and the p-stats section stay in the DOM so nothing that
        references them breaks. See BRAIN/Personal/Context/APP_REMOVED_FEATURES.md section 3. -->
   <label for="t-pickle"><span class="ti"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9.9 3.5c3.6 0 6.5 2.8 6.5 6.3 0 3.4-2.9 6.2-6.5 6.2S3.4 13.2 3.4 9.8c0-3.5 2.9-6.3 6.5-6.3ZM9.9 16v3.1a1.4 1.4 0 0 0 2.8 0V15M18.9 15.4a2.2 2.2 0 1 0 0 4.4 2.2 2.2 0 0 0 0-4.4Z"/></svg></span><span class="tl" id="tl-pickle">Pickle</span></label>
+  <!-- v21 build 409: Finances, the fifth tab. The label is HIDDEN by body.finance-off until
+       state.finance holds something, so an empty section is never on screen. -->
+  <label for="t-finance"><span class="ti"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2.8" y="5.4" width="18.4" height="13.2" rx="2.6"/><path d="M2.8 10h18.4M6.4 14.6h3.4"/></svg></span><span class="tl">Finances</span></label>
   <!-- build 225: Solara is no longer a TAB. Ian's call 08.04.2026: it becomes a card on Home that
        opens the full page. The page itself is untouched and still reachable via selectTab("solara"),
        so nothing about Solara was reduced, only its nav slot was. That takes the bar to four tabs plus
@@ -22777,7 +22782,324 @@ function buildSettings(v){
 /* ===== render + profile chrome ===== */
 /* build 225: "p-stats" removed from this map, so buildStats no longer runs on every render.
    buildStats is retained in place and marked RETIRED rather than deleted. */
-const IAN_PAGES={ "p-home":buildIanHome,"p-re":buildIanRe,"p-gym":buildGym,"p-pickle":buildPickle,"p-solara":buildSolara,"p-settings":buildSettings };
+
+/* ===== v21 build 409: FINANCES ============================================================
+   IAN, 18.09.2026: "Setup the app and all the files/folders for it right now please, I want
+   some graphics and actual useful information."
+
+   IT IS BUILT EMPTY AND IT IS BUILT READY. state.finance does not exist yet and nothing in
+   this build creates it, so the FIELD DIFF FOR BUILD 409 IS ZERO. The data arrives when he
+   connects Rocket Money and a later lane writes state.finance. Until then finData() returns
+   null, buildFinance renders nothing at all, and applyFinanceTab hides the tab label, so the
+   app on his phone today is visually identical to build 408.
+
+   WHY THE TAB HIDES RATHER THAN SHOWING AN EMPTY PAGE. He has said twice: no dashed boxes,
+   no empty states waiting for data, no input surfaces. A visible tab leading to a blank page
+   is an empty state with extra steps. Build 406 established that absent is not zero and that
+   the fix is to suppress the HEADER, not to draw one over nothing. This is that rule applied
+   one level up, to the tab itself.
+
+   ZERO WRITE SURFACES. There is no input, no button that mutates state, no onclick anywhere
+   on this page except the collapse headers, which only flip PK_OPEN in memory. He fills in
+   nothing, ever. The "needs a purpose" list is a READ ONLY reminder of what to go and attach
+   in Rocket Money; it does not accept the answer here.
+
+   THE DATA CONTRACT IS WRITTEN DOWN ONCE, in WORK/Personal/Finance/00 READ ME FIRST.md, and
+   every field this file reads is named there. A lane adding data reads that file, not this one.
+
+   NOTHING IS DERIVED THAT WOULD BE A GUESS. Commission income is read from finance.closings
+   and is never computed from deal prices, because the commission model has a broker cut and a
+   three way source split and producing a dollar figure from it would be inventing a number.
+   Where closings are absent the closed files already in state.realEstate are shown as VOLUME
+   and labelled volume, because that is a fact the app already holds.
+
+   THE SCHEDULE C MAP IS A LABELLING AID, NOT A TAX OPINION. It carries the line number and the
+   allowed percentage so a category reads as what it will be on the return. The percentages are
+   the figures Ian supplied on 18.09.2026. */
+var SCHED_C={
+  advertising:{line:"8",label:"Advertising",pct:100},
+  auto:{line:"9",label:"Car and truck",pct:100},
+  commissions:{line:"10",label:"Commissions and fees",pct:100},
+  insurance:{line:"15",label:"Insurance, E and O",pct:100},
+  legal:{line:"17",label:"Legal and professional",pct:100},
+  office:{line:"18",label:"Office expense",pct:100},
+  rent:{line:"20",label:"Rent or lease",pct:100},
+  repairs:{line:"21",label:"Repairs and maintenance",pct:100},
+  supplies:{line:"22",label:"Supplies",pct:100},
+  dues:{line:"23",label:"Taxes and licenses, MLS and license",pct:100},
+  travel:{line:"24a",label:"Travel",pct:100},
+  meals:{line:"24b",label:"Business meals",pct:50},
+  utilities:{line:"25",label:"Phone and utilities, business share",pct:100},
+  software:{line:"27a",label:"Software and subscriptions",pct:100},
+  education:{line:"27a",label:"Continuing education",pct:100},
+  gifts:{line:"27a",label:"Client gifts, $25 a person cap",pct:100},
+  homeoffice:{line:"30",label:"Home office, simplified",pct:100},
+  health:{line:"S1-17",label:"Health insurance premiums",pct:100},
+  entertainment:{line:"",label:"Entertainment, not deductible",pct:0},
+  personal:{line:"",label:"Personal",pct:0}
+};
+function schedC(k){ return SCHED_C[String(k||"").toLowerCase()]||{line:"",label:String(k||"Uncategorised"),pct:0}; }
+/* Mileage rates Ian supplied 18.09.2026. Kept as data so a later lane corrects one number
+   rather than hunting a literal through a renderer. */
+var MILE_RATE={h1:0.725,h2:0.76};
+
+/* The one gate. Every renderer below is downstream of this returning non null. */
+function finData(){
+  try{
+    var f=state.finance; if(!f||typeof f!=="object") return null;
+    var n=0;
+    if(f.accounts&&f.accounts.length) n++;
+    if(f.months&&f.months.length) n++;
+    if(f.categories&&f.categories.length) n++;
+    if(f.needsPurpose&&f.needsPurpose.length) n++;
+    if(f.closings&&f.closings.length) n++;
+    if(f.mileage&&(f.mileage.miles>0||f.mileage.amount>0)) n++;
+    if(f.deductible&&f.deductible.ytd>0) n++;
+    return n?f:null;
+  }catch(e){ return null; }
+}
+function applyFinanceTab(){
+  try{
+    var off=!finData();
+    document.body.classList.toggle("finance-off",off);
+    if(off){ var r=document.getElementById("t-finance"); if(r&&r.checked){ selectTab("home"); } }
+  }catch(e){}
+}
+function fnMoney(n){ n=Number(n)||0; var s=fmtMoney(Math.abs(n)); return (n<0?"-":"")+s; }
+function fnMonthLabel(m){ try{ var a=String(m).split("-"); return new Date(a[0],a[1]-1,1).toLocaleDateString("en-US",{month:"short"}); }catch(e){ return String(m||""); } }
+
+/* CHART 1. MONEY IN AND OUT BY MONTH.
+   The one chart Ian named, and the reason is the shape: his income is lumpy and closing driven
+   while his spend is close to flat, and that contrast is invisible in a table and obvious in a
+   drawing. Expenses are bars because they are a steady baseline; income is a line with dots
+   because the spikes are the point and a second set of bars would hide them behind the first.
+   THREE ANCHORED AXIS LABELS, never one per column: build 390 established that a 16px column
+   clips a date label at this width. */
+function fnMonthChart(body,months){
+  var ms=(months||[]).slice(-12); if(ms.length<2) return;
+  var W=332,H=168,PAD=4,TOP=10,BASE=126;
+  var max=0; ms.forEach(function(m){ max=Math.max(max,Number(m.expense)||0,Number(m.income)||0); });
+  if(max<=0) return;
+  var slot=(W-PAD*2)/ms.length, bw=Math.max(7,Math.min(20,slot*0.58));
+  var y=function(val){ return BASE-(Math.max(0,Number(val)||0)/max)*(BASE-TOP); };
+  var cx=function(i){ return PAD+slot*i+slot/2; };
+  var g='<svg viewBox="0 0 '+W+' '+H+'" width="100%" style="display:block;overflow:visible" xmlns="http://www.w3.org/2000/svg">';
+  [0,0.5,1].forEach(function(f){ var yy=BASE-(BASE-TOP)*f;
+    g+='<line x1="'+PAD+'" y1="'+yy.toFixed(1)+'" x2="'+(W-PAD)+'" y2="'+yy.toFixed(1)+'" style="stroke:var(--line);opacity:'+(f?0.28:0.6)+'" stroke-width="1"/>'; });
+  ms.forEach(function(m,i){ var v=Number(m.expense)||0; if(v<=0) return; var yy=y(v);
+    g+='<rect x="'+(cx(i)-bw/2).toFixed(1)+'" y="'+yy.toFixed(1)+'" width="'+bw.toFixed(1)+'" height="'+Math.max(1,BASE-yy).toFixed(1)+'" rx="3" style="fill:var(--sec2,#da8fff);fill-opacity:.42"/>'; });
+  var pts=[]; ms.forEach(function(m,i){ pts.push(cx(i).toFixed(1)+","+y(m.income).toFixed(1)); });
+  g+='<polyline points="'+pts.join(" ")+'" style="fill:none;stroke:var(--green);opacity:.95" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>';
+  ms.forEach(function(m,i){ g+='<circle cx="'+cx(i).toFixed(1)+'" cy="'+y(m.income).toFixed(1)+'" r="3" style="fill:var(--green)"/>'; });
+  var mid=Math.floor((ms.length-1)/2);
+  [[0,"start"],[mid,"middle"],[ms.length-1,"end"]].forEach(function(p){ var i=p[0];
+    var x=i===0?PAD:(i===ms.length-1?(W-PAD):cx(i));
+    g+='<text x="'+x.toFixed(1)+'" y="'+(BASE+18)+'" style="fill:var(--gray2);font-size:11px;font-weight:700" text-anchor="'+p[1]+'">'+fnMonthLabel(ms[i].m)+'</text>'; });
+  g+='<text x="'+PAD+'" y="'+(TOP-1)+'" style="fill:var(--dim);font-size:10.5px;font-weight:700" text-anchor="start">'+fmtMoneyShort(max)+'</text>';
+  g+='</svg>';
+  var h=el("div"); h.innerHTML=g; body.appendChild(h);
+  var k=el("div","fnkey");
+  var a=el("span"); var ab=el("b"); ab.style.background="var(--green)"; a.appendChild(ab); a.appendChild(document.createTextNode("Money in")); k.appendChild(a);
+  var b2=el("span"); var bb=el("b"); bb.style.background="var(--sec2,#da8fff)"; bb.style.opacity=".6"; b2.appendChild(bb); b2.appendChild(document.createTextNode("Money out")); k.appendChild(b2);
+  body.appendChild(k);
+}
+
+/* CHART 2. WHERE IT GOES.
+   The split he asked for, deductible against not, is drawn ONCE as a single stacked bar at the
+   top because that is the number he actually wants at a glance. The per category list below
+   carries the detail, each with its own share bar and its Schedule C line, so a category reads
+   as what it will be on the return rather than as a Rocket Money consumer label. */
+function fnCategories(body,cats){
+  var cs=(cats||[]).filter(function(c){ return c&&(Number(c.amount)||0)>0; });
+  if(!cs.length) return;
+  cs.sort(function(a,b){ return (Number(b.amount)||0)-(Number(a.amount)||0); });
+  var total=0,ded=0;
+  cs.forEach(function(c){ var a=Number(c.amount)||0; var sc=schedC(c.sch||c.key);
+    var d=(c.deductible!=null)?(Number(c.deductible)||0):(a*sc.pct/100);
+    total+=a; ded+=d; c._a=a; c._d=d; c._sc=sc; });
+  if(total<=0) return;
+  var bar=el("div","fnsplit");
+  var s1=el("span"); s1.style.width=(ded/total*100).toFixed(2)+"%"; s1.style.background="var(--sec,#bf5af0)";
+  var s2=el("span"); s2.style.width=((total-ded)/total*100).toFixed(2)+"%"; s2.style.background="var(--dim)"; s2.style.opacity=".55";
+  bar.appendChild(s1); bar.appendChild(s2); body.appendChild(bar);
+  var k=el("div","fnkey");
+  var ka=el("span"); var kab=el("b"); kab.style.background="var(--sec,#bf5af0)"; ka.appendChild(kab); ka.appendChild(document.createTextNode("Deductible "+fnMoney(ded))); k.appendChild(ka);
+  var kb=el("span"); var kbb=el("b"); kbb.style.background="var(--dim)"; kb.appendChild(kbb); kb.appendChild(document.createTextNode("Not "+fnMoney(total-ded))); k.appendChild(kb);
+  body.appendChild(k);
+  var list=el("div"); list.style.marginTop="14px";
+  cs.forEach(function(c){
+    var row=el("div","fnrow");
+    var top=el("div","fntop");
+    var nm=el("div","fnname",c._sc.label); top.appendChild(nm);
+    var am=el("div","fnamt",fnMoney(c._a)); top.appendChild(am);
+    row.appendChild(top);
+    var bits=[];
+    if(c._sc.line) bits.push("Schedule C line "+c._sc.line);
+    if(c._sc.pct>0&&c._sc.pct<100) bits.push(c._sc.pct+"% allowed, "+fnMoney(c._d));
+    else if(c._sc.pct===0) bits.push("not deductible");
+    if(bits.length) row.appendChild(el("div","fnsch",bits.join("  \u00b7  ")));
+    var tr=el("div","fntrack"); var fi=el("i");
+    fi.style.width=Math.max(1.5,c._a/total*100).toFixed(2)+"%";
+    fi.style.background=c._sc.pct===0?"var(--dim)":(c._sc.pct<100?"var(--amber)":"var(--sec,#bf5af0)");
+    tr.appendChild(fi); row.appendChild(tr);
+    list.appendChild(row);
+  });
+  body.appendChild(list);
+}
+
+/* CHART 3. DEDUCTIBLE SO FAR.
+   A ring rather than a bar because he asked for a progress visual, and SEGMENTED rather than
+   plain because the composition is the only thing a ring adds over the number in the middle.
+   Mileage is drawn first and is usually the largest segment, which is the point: it is the
+   deduction that cannot be reconstructed in April. A plain ring here would have been a chart
+   saying less than the number it surrounds, so the segments are what earn it its place. */
+function fnDeductRing(body,f){
+  var d=f.deductible||{}; var ytd=Number(d.ytd)||0; if(ytd<=0) return;
+  var by=d.byLine||{}; var segs=[];
+  Object.keys(by).forEach(function(k){ var v=Number(by[k])||0; if(v>0) segs.push({k:k,v:v,label:schedC(k).label}); });
+  segs.sort(function(a,b){ return b.v-a.v; });
+  var sum=0; segs.forEach(function(s){ sum+=s.v; });
+  var R=58,C=2*Math.PI*R,VB=160,cx=80,cy=80;
+  var pal=["var(--sec,#bf5af0)","var(--sec2,#da8fff)","var(--amber)","var(--teal2)","var(--slate2)","var(--cyan2)"];
+  var g='<svg viewBox="0 0 '+VB+' '+VB+'" width="100%" style="display:block;margin:6px auto 0;max-width:200px" xmlns="http://www.w3.org/2000/svg">';
+  g+='<circle cx="'+cx+'" cy="'+cy+'" r="'+R+'" style="fill:none;stroke:var(--card2)" stroke-width="13"/>';
+  if(sum>0){ var acc=0;
+    segs.forEach(function(s,i){ var frac=s.v/sum; var len=C*frac;
+      g+='<circle cx="'+cx+'" cy="'+cy+'" r="'+R+'" style="fill:none;stroke:'+pal[i%pal.length]+'" stroke-width="13" stroke-linecap="butt" '
+        +'stroke-dasharray="'+len.toFixed(2)+' '+(C-len).toFixed(2)+'" stroke-dashoffset="'+(-acc).toFixed(2)+'" transform="rotate(-90 '+cx+' '+cy+')"/>';
+      acc+=len; });
+  } else {
+    g+='<circle cx="'+cx+'" cy="'+cy+'" r="'+R+'" style="fill:none;stroke:var(--sec,#bf5af0)" stroke-width="13" transform="rotate(-90 '+cx+' '+cy+')"/>';
+  }
+  g+='<text x="'+cx+'" y="'+(cy+2)+'" text-anchor="middle" style="fill:var(--white);font-size:22px;font-weight:800;letter-spacing:-.02em">'+fmtMoneyShort(ytd)+'</text>';
+  g+='<text x="'+cx+'" y="'+(cy+20)+'" text-anchor="middle" style="fill:var(--gray2);font-size:10.5px;font-weight:700">deductible</text>';
+  g+='</svg>';
+  var h=el("div"); h.innerHTML=g; body.appendChild(h);
+  if(segs.length){ var k=el("div","fnkey");
+    segs.forEach(function(s,i){ var sp=el("span"); var b=el("b"); b.style.background=pal[i%pal.length];
+      sp.appendChild(b); sp.appendChild(document.createTextNode(s.label+"  "+fnMoney(s.v))); k.appendChild(sp); });
+    body.appendChild(k); }
+}
+
+function buildFinance(v){
+  var f=finData(); if(!f) return;   /* absent is not zero. No data, no header, no page. */
+
+  /* Balances. Three numbers say this better than any chart would, so there is no chart. */
+  if(f.accounts&&f.accounts.length){
+    var c0=card(); var b0=c0._body;
+    f.accounts.forEach(function(a){
+      var r=el("div","fnacc");
+      var L=el("div"); L.style.minWidth="0";
+      L.appendChild(el("div","fnname",String(a.name||a.id||"Account")));
+      L.appendChild(el("div","fnsch",(a.kind==="business"?"business":"personal")+(a.last4?("  \u00b7  \u2022\u2022\u2022\u2022 "+a.last4):"")));
+      r.appendChild(L);
+      r.appendChild(el("div","fnamt",fnMoney(a.balance)));
+      b0.appendChild(r);
+    });
+    if(f.asOf) b0.appendChild(el("div","fnsch","as of "+fmtLongDate(f.asOf)));
+    v.appendChild(c0);
+  }
+
+  if(f.months&&f.months.length>1){
+    pkCollapse(v,"fin_flow","Money in and out","by month",true,function(h){
+      var c=card(); safe(c._body,function(){ fnMonthChart(c._body,f.months); },"Finance flow"); h.appendChild(c);
+    },ICO.trend,"violet");
+  }
+
+  if(f.categories&&f.categories.length){
+    pkCollapse(v,"fin_cats","Where it goes","deductible and not, by Schedule C line",true,function(h){
+      var c=card(); safe(c._body,function(){ fnCategories(c._body,f.categories); },"Finance categories"); h.appendChild(c);
+    },ICO.chart,"violet");
+  }
+
+  if(f.deductible&&Number(f.deductible.ytd)>0){
+    pkCollapse(v,"fin_ded","Deductible so far",String(f.taxYear||new Date().getFullYear()),false,function(h){
+      var c=card(); safe(c._body,function(){ fnDeductRing(c._body,f); },"Finance deductible"); h.appendChild(c);
+    },ICO.target,"violet");
+  }
+
+  /* Mileage has its own slot because it is likely his largest deduction and it is the one that
+     cannot be rebuilt later from a statement. It renders only once a tracking app has produced
+     miles; there is no prompt here asking him to enter any. */
+  if(f.mileage&&(Number(f.mileage.miles)>0||Number(f.mileage.amount)>0)){
+    pkCollapse(v,"fin_miles","Mileage","",false,function(h){
+      var m=f.mileage; var c=card(); var b=c._body;
+      var amt=Number(m.amount)||((Number(m.milesH1)||0)*MILE_RATE.h1+(Number(m.milesH2)||0)*MILE_RATE.h2);
+      b.appendChild(el("div","fnbig",fnMoney(amt)));
+      var mi=Number(m.miles)||((Number(m.milesH1)||0)+(Number(m.milesH2)||0));
+      var bits=[];
+      if(mi>0) bits.push(Math.round(mi).toLocaleString("en-US")+" miles");
+      if(Number(m.milesH1)>0) bits.push(Math.round(m.milesH1).toLocaleString("en-US")+" at "+(MILE_RATE.h1*100).toFixed(1)+"\u00a2");
+      if(Number(m.milesH2)>0) bits.push(Math.round(m.milesH2).toLocaleString("en-US")+" at "+(MILE_RATE.h2*100).toFixed(0)+"\u00a2");
+      if(bits.length) b.appendChild(el("div","fnlab",bits.join("  \u00b7  ")));
+      if(m.source) b.appendChild(el("div","fnsch","from "+String(m.source)));
+      h.appendChild(c);
+    },ICO.compass,"violet");
+  }
+
+  /* Needs a purpose. READ ONLY. This tells him which charges are missing the who and the why
+     while he can still remember them. The IRS wants six things on a meal and they are named
+     in the subtitle so the list does not have to repeat them on every row. */
+  if(f.needsPurpose&&f.needsPurpose.length){
+    var np=f.needsPurpose;
+    pkCollapse(v,"fin_why","Needs a purpose",np.length+(np.length===1?" charge":" charges"),true,function(h){
+      var c=card(); var b=c._body;
+      b.appendChild(el("div","fnsch","A meal needs amount, date, place, who was there, their business relationship, and the purpose."));
+      var list=el("div"); list.style.marginTop="10px";
+      np.forEach(function(t){
+        var row=el("div","fnrow");
+        var top=el("div","fntop");
+        top.appendChild(el("div","fnname",String(t.merchant||t.name||"Charge")));
+        top.appendChild(el("div","fnamt",fnMoney(t.amount)));
+        row.appendChild(top);
+        var bits=[];
+        if(t.date) bits.push(fmtShort(t.date));
+        if(t.account) bits.push(String(t.account));
+        if(t.missing) bits.push(String(t.missing));
+        else if(t.why) bits.push(String(t.why));
+        if(bits.length) row.appendChild(el("div","fnsch",bits.join("  \u00b7  ")));
+        list.appendChild(row);
+      });
+      b.appendChild(list); h.appendChild(c);
+    },ICO.clipboard,"violet");
+  }
+
+  /* Closings. Income is closing driven, so it is listed as closings rather than as a monthly
+     figure. Where finance.closings is absent the closed files already in state are shown, and
+     they are labelled VOLUME because that is what they are. No commission is computed here. */
+  var cl=(f.closings&&f.closings.length)?f.closings:null;
+  var derived=null;
+  if(!cl){ try{ derived=(state.realEstate&&state.realEstate.deals||[]).filter(function(d){ return d&&d.stage==="Closed"; }); }catch(e){ derived=null; } }
+  if(cl||(derived&&derived.length)){
+    var n=cl?cl.length:derived.length;
+    pkCollapse(v,"fin_close","Closings",n+(n===1?" file":" files"),false,function(h){
+      var c=card(); var b=c._body;
+      if(cl){
+        var tot=0; cl.forEach(function(x){ tot+=Number(x.net!=null?x.net:x.gross)||0; });
+        b.appendChild(el("div","fnbig",fnMoney(tot)));
+        b.appendChild(el("div","fnlab","commission this year"));
+        var L=el("div"); L.style.marginTop="12px";
+        cl.forEach(function(x){
+          var row=el("div","fnrow"); var top=el("div","fntop");
+          top.appendChild(el("div","fnname",String(x.address||x.title||"Closing")));
+          top.appendChild(el("div","fnamt",fnMoney(x.net!=null?x.net:x.gross)));
+          row.appendChild(top);
+          if(x.date) row.appendChild(el("div","fnsch",fmtLongDate(x.date)));
+          L.appendChild(row);
+        });
+        b.appendChild(L);
+      } else {
+        var vol=0; derived.forEach(function(d){ try{ vol+=dealVolume(d)||0; }catch(e){} });
+        b.appendChild(el("div","fnbig",fnMoney(vol)));
+        b.appendChild(el("div","fnlab","closed volume across "+derived.length+(derived.length===1?" file":" files")));
+        b.appendChild(el("div","fnsch","Volume, not income. Commission appears here once it is recorded."));
+      }
+      h.appendChild(c);
+    },ICO.property,"violet");
+  }
+}
+
+const IAN_PAGES={ "p-home":buildIanHome,"p-re":buildIanRe,"p-gym":buildGym,"p-pickle":buildPickle,"p-solara":buildSolara,"p-finance":buildFinance,"p-settings":buildSettings };
 function applyProfileChrome(){
   const T = {home:"Today",stats:"Stats",re:"Real Estate",gym:"Gym",more:"More",pickle:"Pickleball",settings:"Settings"};
   const TL = {home:"Today",stats:"Stats",re:"Real Est",gym:"Gym",more:"More"};
@@ -22788,7 +23110,7 @@ function buildPage(id,fn){ const host=document.getElementById(id); if(!host) ret
 /* build 176: the Settings Solara toggle now shows/hides the Solara TAB. When off, hide the nav label and
    bounce off the page if it happens to be active. */
 function applySolaraTab(){ try{ var off=hidden("solara"); document.body.classList.toggle("solara-off",off); if(off){ var r=document.getElementById("t-solara"); if(r&&r.checked){ selectTab("home"); } } }catch(e){} }
-function render(){ applyProfileChrome(); const set=IAN_PAGES; for(const id in set) buildPage(id,set[id]); applySolaraTab(); refocus(); animateVisible(); }
+function render(){ applyProfileChrome(); const set=IAN_PAGES; for(const id in set) buildPage(id,set[id]); applySolaraTab(); applyFinanceTab(); refocus(); animateVisible(); }
 function refocus(){ if(!pendingFocus) return; const ph=pendingFocus; pendingFocus=null; try{ const inp=document.querySelector('.tabpage input[data-add="'+ph.replace(/"/g,'\\"')+'"]'); if(inp) inp.focus(); }catch(e){} }
 function selectTab(which){ /* build 371: leaving Solara resets its sub view, so the page always
      opens on its menu rather than deep inside a garment group from a previous visit. */
@@ -23475,11 +23797,39 @@ body.solara-off .tabbar label[for=t-solara]{display:none}
   --pk1:#2ee66f; --pk2:#8af2ac;      /* neon green */
   --gy1:#ff5a5a; --gy2:#ff9a9a;      /* red */
   --misc1:#ff8a34; --misc2:#ffc182;  /* orange / yellow, for unrelated items */
+  --fi1:#bf5af0; --fi2:#da8fff;      /* v21 build 409: Finances. Violet, the one hue no
+                                        other tab owns. Red is Gym, green is Pickleball and
+                                        both blues are Real Estate and Home. */
 }
 /* Per-section page tokens (override the older teal/violet/amber assignments) */
 #p-re{--sec:var(--re1);--sec2:var(--re2)}
 #p-pickle{--sec:var(--pk1);--sec2:var(--pk2)}
 #p-gym{--sec:var(--gy1);--sec2:var(--gy2)}
+#p-finance{--sec:var(--fi1);--sec2:var(--fi2)}
+
+/* v21 build 409: Finances. Every width below resolves inside the 332px a .cbody gives at a
+   390px viewport. No fixed pixel width is used on anything that carries data. */
+#t-finance:checked~.tabbar label[for=t-finance],#t-finance:checked~.tabbar label[for=t-finance] .tl{color:var(--fi1)}
+#t-finance:checked~.tabbar label[for=t-finance]::before{background:linear-gradient(90deg,var(--fi1),var(--fi2))}
+body.finance-off .tabbar label[for=t-finance]{display:none}
+.fnsplit{display:flex;height:16px;border-radius:999px;overflow:hidden;background:var(--card2);margin:12px 0 0}
+.fnsplit span{display:block;min-width:0}
+.fnrow{padding:11px 0 12px;border-bottom:1px solid var(--line)}
+.fnrow:last-child{border-bottom:none;padding-bottom:2px}
+.fnrow:first-child{padding-top:3px}
+.fntop{display:flex;align-items:baseline;justify-content:space-between;gap:10px}
+.fnname{font-size:15px;font-weight:600;line-height:1.3;color:var(--white);overflow-wrap:anywhere;min-width:0}
+.fnamt{font-size:15px;font-weight:700;line-height:1.3;color:var(--white);font-variant-numeric:tabular-nums;white-space:nowrap}
+.fnsch{font-size:12.5px;line-height:1.45;color:var(--gray2);margin:3px 0 0;overflow-wrap:anywhere}
+.fntrack{height:7px;border-radius:999px;background:var(--card2);margin:8px 0 0;overflow:hidden}
+.fntrack i{display:block;height:100%;border-radius:999px}
+.fnkey{display:flex;flex-wrap:wrap;gap:6px 14px;margin:12px 0 0}
+.fnkey span{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--gray2)}
+.fnkey b{width:9px;height:9px;border-radius:3px;display:inline-block}
+.fnbig{font-size:30px;font-weight:800;letter-spacing:-.03em;line-height:1.05;color:var(--white);font-variant-numeric:tabular-nums}
+.fnlab{font-size:13px;line-height:1.45;color:var(--gray2);margin:4px 0 0}
+.fnacc{display:flex;align-items:baseline;justify-content:space-between;gap:10px;padding:9px 0}
+.fnacc+.fnacc{border-top:1px solid var(--line)}
 #p-home,#p-stats,
 
 /* Tab bar active color per section (overrides rr-b69 accent + pk-tab-b73 violet) */
