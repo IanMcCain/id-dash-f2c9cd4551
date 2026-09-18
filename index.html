@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 405 (2026-09-16)">
+<meta name="build" content="v21 build 406 (2026-09-18)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -21143,13 +21143,92 @@ function homeSphereNudge(parent){
    rewritten in this build. Rewriting it means deciding which of its numbers survive, and
    that is a question for Ian, not a side effect of a layout pass. It is the first thing to
    put to him after this ships. */
+/* ===== v21 build 406: THE REAL ESTATE PAGE GOES BACK TO SECTIONS YOU OPEN ==================
+   IAN, 18.09.2026: "I'm not a fan of how the real estate page is setup. It's way too much and
+   not organized. I liked how it was set up before, in sections that you can open, and
+   organized. Not fully open like how it is."
+
+   WHAT WAS WRONG. Build 391 rebuilt this page as six renderers called one after another, all
+   of them fully expanded. Every client, every closed file, the CMA and the whole goals card
+   rendered at once into a single scroll. The CONTENT 391 produced is right and none of it is
+   touched here. The DISCLOSURE is what he objected to, twice now, and undifferentiated density
+   is the specific complaint both times.
+
+   WHAT THIS BUILD IS. Presentation only. The six 391 renderers are called with exactly the same
+   arguments they were called with before; they are simply called into a pkCollapse body instead
+   of straight into the page. NO renderer is edited, NO field is read differently, NO data is
+   written. The field diff for this build is expected to be ZERO and was verified as zero.
+
+   WHY pkCollapse AND NOT A NEW CONTROL. It is the disclosure primitive the pre 391 page and the
+   build 387 gym page both already use, it remembers its own open state in PK_OPEN for the
+   session, and it renders the chevron and the accent tile. He said he liked how it was before,
+   so the answer is the control he already had, not a new one.
+
+   THE HEADER STAYS OUT OF A SECTION ON PURPOSE. re391Head is four lines, it is the page
+   identity block and the at a glance count, and putting the summary behind a tap would mean
+   opening a section to find out whether he needs to open a section.
+
+   CURRENT CLIENTS IS THE ONE THAT OPENS BY DEFAULT. It is the working list, it is what the app
+   is for on a daily open, and the stage grouping is the part of 391 that actually answered
+   "organized". Everything else is collapsed.
+
+   ABSENT IS NOT ZERO. The CMA and Closed sections are not rendered at all when the record holds
+   nothing for them, rather than drawing a header over an empty body. re391Cma and re391Closed
+   already return early in that case; the guards here stop the empty HEADER.
+
+   SECTION SUBTITLES ARE COMPUTED, NEVER HARDCODED, so a header says what is inside it before he
+   opens it. Every count comes off the same arrays the renderers read.
+
+   NOT CHANGED, DELIBERATELY. reGoalsCard is passed through whole. objectiveCard stays off.
+   reViewLanding390 below is protected dead code and is untouched. There are no write surfaces on
+   this page and none is added. */
 function reViewLanding(v){
   safe(v,()=>re391Head(v),"RE header");
-  safe(v,()=>re391Cma(v),"RE CMA");
-  safe(v,()=>re391Clients(v),"RE clients");
-  safe(v,()=>re391Closed(v),"RE closed");
-  safe(v,()=>reGoalsCard(v),"RE goals");
-  safe(v,()=>re391More(v),"RE more");
+  var _RE406=state.realEstate||{};
+  var _d406=_RE406.deals||[];
+  var _open406=_d406.filter(function(x){ return x&&x.stage!=="Closed"; });
+  var _cl406=_d406.filter(function(x){ return x&&x.stage==="Closed"; });
+  var _nm406={}; _open406.forEach(function(x){ if(x&&x.title) _nm406[x.title]=1; });
+  var _nNames406=Object.keys(_nm406).length;
+  var _st406={}; _open406.forEach(function(x){ if(x&&x.stage) _st406[x.stage]=1; });
+  var _nStage406=Object.keys(_st406).length;
+  var _cma406=_d406.filter(function(x){ return x&&x.cma&&typeof x.cma==="object"; });
+  var _ev406=_d406.filter(function(x){ return x&&x.priceNote&&!(x.cma&&typeof x.cma==="object"); });
+
+  var _todo406=0,_wait406=0,_ov406=0;
+  try{ _todo406=(_RE406.todos||[]).filter(function(t){ return t&&!t.done&&todoList(t)==="todo"; }).length; }catch(e){}
+  try{ var _tc406=reTodoCounts()||{}; _wait406=_tc406.waiting||0; }catch(e){}
+  try{ _ov406=sphereOverdue().length; }catch(e){}
+
+  pkCollapse(v,"re_clients","Current clients",
+    _nNames406+(_nNames406===1?" client":" clients")+"  \u00b7  "+_open406.length+(_open406.length===1?" open file":" open files")
+      +(_nStage406?("  \u00b7  "+_nStage406+(_nStage406===1?" stage":" stages")):""),
+    true,function(hh){ safe(hh,function(){ re391Clients(hh); },"RE clients"); },ICO.people,"blue");
+
+  if(_cma406.length||_ev406.length){
+    var _cs406="";
+    if(_cma406.length===1){ var _m406=_cma406[0].cma||{}; _cs406=String(_m406.file||_cma406[0].title||"one CMA"); }
+    else if(_cma406.length>1){ _cs406=_cma406.length+" CMAs"; }
+    if(_ev406.length) _cs406=(_cs406?(_cs406+"  \u00b7  "):"")+_ev406.length+(_ev406.length===1?" file":" files")+" with pricing evidence";
+    pkCollapse(v,"re_cma","CMA and pricing",_cs406,false,
+      function(hh){ safe(hh,function(){ re391Cma(hh); },"RE CMA"); },ICO.property,"blue");
+  }
+
+  if(_cl406.length){
+    var _cv406=0; try{ _cv406=_cl406.reduce(function(a,x){ return a+dealVolume(x); },0); }catch(e){}
+    pkCollapse(v,"re_closed","Closed files",
+      _cl406.length+" closed"+(_cv406?("  \u00b7  "+fmtMoney(_cv406)+" volume"):""),
+      false,function(hh){ safe(hh,function(){ re391Closed(hh); },"RE closed"); },ICO.check,"blue");
+  }
+
+  pkCollapse(v,"re_goals","Goals and money","production, take home, and what is at risk",false,
+    function(hh){ safe(hh,function(){ reGoalsCard(hh); },"RE goals"); },ICO.trend,"blue");
+
+  pkCollapse(v,"re_more","Pipeline, actions and sphere",
+    _todo406+(_todo406===1?" action":" actions")
+      +(_wait406?("  \u00b7  "+_wait406+" waiting"):"")
+      +(_ov406?("  \u00b7  "+_ov406+" to reach out"):""),
+    false,function(hh){ safe(hh,function(){ re391More(hh); },"RE more"); },ICO.tools,"blue");
 }
 function reViewLanding390(v){
   safe(v,()=>reGoalsCard(v),"RE goals");
