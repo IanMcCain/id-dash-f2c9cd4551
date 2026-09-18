@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 410 (2026-09-18)">
+<meta name="build" content="v21 build 411 (2026-09-18)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -17834,6 +17834,54 @@ try{ if(state.meta && !state.meta.mig400_solaracaveat){
     state.meta.mig400_solaracaveat=true; save(true);
 } }catch(e){ try{ console.warn("mig400 solara caveat did not apply:",e&&e.message); }catch(_){} }
 
+/* ===== v21 build 411: THE REAL ACCOUNT STRUCTURE AND THE FIRST REAL BALANCES ================
+   SOURCE. Ian read his Rocket Money screen on 18.09.2026 and gave the figures directly. This is
+   a SNAPSHOT, not a feed, and the page labels it with its date and its source, because showing
+   a static number as current is the same class of error as showing a gross balance as spendable.
+
+   WHAT ROCKET MONEY GETS WRONG AND WE MUST NOT COPY. Its own screen sums the two checking
+   accounts to $10,436. That folds his operating money together with the buffer he deliberately
+   set aside for the slow part of the year, and it is exactly the overstatement this section
+   exists to prevent. They are written as SEPARATE POOLS with different kinds and no code path
+   anywhere adds them together.
+
+   THE TAX ACCOUNT IS CONFIRMED ABSENT. His tax guy holds it and it is not connected, so
+   taxSetAside.connected is false as a FACT rather than as a placeholder, and a sweep out of
+   ...8909 will appear as spend with nothing arriving. The page says so in one line.
+
+   CARDS ARE OWED, NOT HELD, and they are not accounts. The Amex Gold is the business card and
+   the only one that matters for tax; it reads $0 because it is new. The FNBO debit is NOT listed
+   as a pool because it pulls straight from ...8909, so its spend is checking outflow and giving
+   it its own balance would double count it.
+
+   NOT WRITTEN, DELIBERATELY. No subscriptions array and no rent figure. Both renderers ship in
+   this build and are ready. The subscription list is known to be partial and has not been read
+   off Rocket Money, and the rent amount and dates are not on any channel this lane can reach:
+   every folder under WORK/Personal/Finance is empty. Inventing either would be the worst thing
+   that can go on a finance page, so neither section renders until real data exists.
+
+   GUARDS. state.meta.mig411_finance, NOT in the seed, so SEED_VERSION stays 13. Create if absent
+   only, so a later correction to any figure survives a reload. Idempotent. */
+try{ if(state.meta && !state.meta.mig411_finance){
+    if(!state.finance || typeof state.finance!=="object"){
+      state.finance={
+        asOf:"2026-09-18",
+        source:"Rocket Money",
+        taxYear:2026,
+        taxSetAside:{ connected:false },
+        accounts:[
+          { id:"fnbo8909", name:"Free Checking", bank:"First National Bank of Omaha", kind:"checking", balance:9436, last4:"8909" },
+          { id:"fnbo1177", name:"Free Checking", bank:"First National Bank of Omaha", kind:"buffer",   balance:1000, last4:"1177" }
+        ],
+        cards:[
+          { id:"amexgold", name:"American Express Gold", kind:"business", balance:0,    last4:"1000" },
+          { id:"discover", name:"Discover it",           kind:"personal", balance:2107, last4:"9013" }
+        ]
+      };
+    }
+    state.meta.mig411_finance=true; save(true);
+} }catch(e){ try{ console.warn("mig411 finance did not apply:",e&&e.message); }catch(_){} }
+
 /* ===== v21 build 399: ARCHIVE THE FALL CUP. IT NEVER HAPPENED. ============================
    IAN, 14.09.2026: "I never did that fall cup."
 
@@ -22878,7 +22926,29 @@ function fnMonthLabel(m){ try{ var a=String(m).split("-"); return new Date(a[0],
    because the spikes are the point and a second set of bars would hide them behind the first.
    THREE ANCHORED AXIS LABELS, never one per column: build 390 established that a 16px column
    clips a date label at this width. */
-function fnMonthChart(body,months){
+/* v21 build 411: RENT REACHES THIS CHART AS THE SPIKE IT IS.
+   The chart's whole value was spiky income against flat spend. Now spend has spikes too, and
+   the OVERLAP is the story: his largest bill lands in late December or January, inside the
+   stretch his own seasonality note calls business building rather than transacting.
+   DOUBLE COUNTING IS GUARDED, NOT ASSUMED. A recurring payment is folded into a month's expense
+   ONLY when the record explicitly says months[] does not already contain it, by setting
+   recurringInMonths to false. Absent flag means fold nothing, because adding a payment that is
+   already in the totals would overstate the spike and quietly corrupt the one chart he named. */
+function fnMonthsWithRecurring(months,f){
+  try{
+    if(!f||f.recurringInMonths!==false||!f.recurring||!f.recurring.length) return months;
+    var add={};
+    f.recurring.forEach(function(rr){ (rr&&rr.payments||[]).forEach(function(pp){
+      if(!pp||!pp.date) return; var k=String(pp.date).slice(0,7);
+      add[k]=(add[k]||0)+(Number(pp.amount)||0); }); });
+    return (months||[]).map(function(m){
+      var extra=add[String(m&&m.m)]||0;
+      return extra?{m:m.m,income:m.income,expense:(Number(m.expense)||0)+extra}:m;
+    });
+  }catch(e){ return months; }
+}
+function fnMonthChart(body,months,f){
+  months=fnMonthsWithRecurring(months,f);
   var ms=(months||[]).slice(-12); if(ms.length<2) return;
   var W=332,H=168,PAD=4,TOP=10,BASE=126;
   var max=0; ms.forEach(function(m){ max=Math.max(max,Number(m.expense)||0,Number(m.income)||0); });
@@ -23015,9 +23085,14 @@ function fnScaffold(v){
   b0.appendChild(el("div","g7title",String(new Date().getFullYear())));
   v.appendChild(c0);
 
+  /* v21 build 411: CARDS AND ACCOUNTS ARE DIFFERENT THINGS AND BUILD 410 RAN THEM TOGETHER.
+     Ian gave the real structure on 18.09.2026: three cards, and three accounts of which he can
+     only see one. Build 410 listed the three CARDS under a heading that said Accounts, which is
+     wrong on the word and wrong on the shape. Two cards now, and the money pools are their own
+     card below. Both are structure he stated, nothing here is inferred. */
   var ca=card(); var ba=ca._body;
-  ba.appendChild(el("div","fnsch","Accounts"));
-  [["American Express","business"],["Discover","personal"],["FNBO","personal"]].forEach(function(a){
+  ba.appendChild(el("div","fnsch","Cards"));
+  [["American Express","business"],["Discover","personal credit"],["FNBO","debit, pulls from main checking"]].forEach(function(a){
     var r=el("div","fnacc"); var L=el("div"); L.style.minWidth="0";
     L.appendChild(el("div","fnname",a[0]));
     L.appendChild(el("div","fnsch",a[1]));
@@ -23025,6 +23100,32 @@ function fnScaffold(v){
   });
   v.appendChild(ca);
 
+  /* THE THREE POOLS, AND WHY THEY ARE NEVER ONE NUMBER. Main checking is what he has to spend.
+     The extra checking is money he deliberately took out of circulation to carry the slow part
+     of the year, so showing it as available defeats the reason it exists. The tax account is
+     held in trust by his tax guy and is not his money at all. A combined total would overstate
+     him on two axes at once, so no total is drawn here or anywhere below. The subtitles are his
+     own framing rather than labels invented for him. */
+  var cb=card(); var bb=cb._body;
+  bb.appendChild(el("div","fnsch","Accounts"));
+  [["Main checking","the cards pull from here"],
+   ["Extra checking","for the slow part of the year"],
+   ["Tax account","held by your tax guy"]].forEach(function(a){
+    var r=el("div","fnacc"); var L=el("div"); L.style.minWidth="0";
+    L.appendChild(el("div","fnname",a[0]));
+    L.appendChild(el("div","fnsch",a[1]));
+    r.appendChild(L); bb.appendChild(r);
+  });
+  v.appendChild(cb);
+
+  fnRefCats(v); fnRefMiles(v); fnRefMeals(v);
+}
+
+/* v21 build 411: THE REFERENCE SECTIONS ARE NOT AN EMPTY STATE, so they do not disappear the
+   moment data arrives. The Schedule C table, the two mileage rates and the six things the IRS
+   wants on a meal are true all year. Each renders only where its data backed counterpart is
+   absent, so a real category breakdown replaces the table rather than sitting beside it. */
+function fnRefCats(v){
   pkCollapse(v,"fin_cats","Where it goes","Schedule C lines",false,function(h){
     var c=card(); var b=c._body; var L=el("div");
     Object.keys(SCHED_C).forEach(function(k){
@@ -23040,6 +23141,8 @@ function fnScaffold(v){
     h.appendChild(c);
   },ICO.chart,"violet");
 
+}
+function fnRefMiles(v){
   pkCollapse(v,"fin_miles","Mileage",String(new Date().getFullYear())+" rates",false,function(h){
     var c=card(); var b=c._body;
     var r1=el("div","fnacc"); var L1=el("div");
@@ -23053,6 +23156,8 @@ function fnScaffold(v){
     h.appendChild(c);
   },ICO.compass,"violet");
 
+}
+function fnRefMeals(v){
   pkCollapse(v,"fin_why","Needs a purpose","what a meal has to carry",false,function(h){
     var c=card(); var b=c._body; var L=el("div");
     ["Amount","Date","Place","Who was there","Their business relationship","The business purpose"].forEach(function(t){
@@ -23078,37 +23183,214 @@ function buildFinance(v){
      ASSUMED EITHER WAY: per paycheck is the default, no lag is inferred, and no 30 percent is
      deducted here from any figure. Every branch fires only on a field a later lane actually
      writes, so today none of it renders. */
-  if(f.accounts&&f.accounts.length){
+  /* v21 build 411: THREE POOLS, NEVER ONE NUMBER, AND CARDS ARE NOT ACCOUNTS.
+     THE RULE. What Ian has is MAIN CHECKING. Not the sum. The extra checking is a buffer he
+     deliberately removed from circulation to carry the slow part of the year, which his own
+     seasonality note says runs from mid August with September to December being business
+     building rather than transacting; rendering it as available money defeats the whole point of
+     it existing. The tax account is held in trust by his tax guy and is not his money on any
+     reading. A single combined balance would overstate him on two separate axes at once, so this
+     renderer draws NO TOTAL, here or anywhere, and there is no code path that adds these up.
+     THE FNBO DEBIT IS NOT A SEPARATE POOL. It pulls from main checking, so debit spend is
+     checking outflow and counting both would double count it. The card list says so once.
+     WHAT HE CAN SEE IS NOT ASSUMED. The tax account is certain to be invisible to him; whether
+     the extra checking is too was NOT confirmed, so visibility is read per account from a
+     visible:false field and nothing is inferred when the field is absent.
+     kind VALUES. "checking" or "main" is the operating pool, "buffer" or "extra" is the set
+     aside, "tax" is the trust money. Anything else, including the 410 era "business" and
+     "personal", is a CARD and renders in the cards group, so no earlier record is orphaned.
+     Every branch fires only on fields a later lane writes. None of it renders today. */
+  if((f.accounts&&f.accounts.length)||(f.cards&&f.cards.length)){
     var c0=card(); var b0=c0._body;
-    var _spend=[],_tax=[];
-    f.accounts.forEach(function(a){ (String(a&&a.kind)==="tax"?_tax:_spend).push(a); });
-    var _row=function(host,a){
+    var _row=function(host,a,sub){
       var r=el("div","fnacc");
       var L=el("div"); L.style.minWidth="0";
       L.appendChild(el("div","fnname",String(a.name||a.id||"Account")));
-      L.appendChild(el("div","fnsch",(a.kind==="business"?"business":a.kind==="tax"?"tax set aside":"personal")+(a.last4?("  \u00b7  \u2022\u2022\u2022\u2022 "+a.last4):"")));
+      var bits=[]; if(sub) bits.push(sub);
+      if(a.visible===false) bits.push("you cannot see this one");
+      if(a.last4) bits.push("\u2022\u2022\u2022\u2022 "+a.last4);
+      if(bits.length) L.appendChild(el("div","fnsch",bits.join("  \u00b7  ")));
       r.appendChild(L);
-      r.appendChild(el("div","fnamt",fnMoney(a.balance)));
+      if(a.balance!=null) r.appendChild(el("div","fnamt",fnMoney(a.balance)));
       host.appendChild(r);
     };
-    _spend.forEach(function(a){ _row(b0,a); });
-    if(_tax.length){
-      b0.appendChild(el("div","fnsch","Set aside for tax, not spendable"));
-      _tax.forEach(function(a){ _row(b0,a); });
+    var _k=function(a){ return String((a&&a.kind)||"").toLowerCase(); };
+    var _all=(f.accounts||[]).concat(f.cards||[]);
+    var _main=[],_buf=[],_tax=[],_cards=[];
+    _all.forEach(function(a){
+      var k=_k(a);
+      if(k==="checking"||k==="main") _main.push(a);
+      else if(k==="buffer"||k==="extra") _buf.push(a);
+      else if(k==="tax") _tax.push(a);
+      else _cards.push(a);
+    });
+
+    if(_cards.length){
+      b0.appendChild(el("div","fnsch","Cards, balances owed"));
+      _cards.forEach(function(a){
+        var k=_k(a);
+        _row(b0,a,k==="business"?"business":k==="debit"?"debit, pulls from main checking":"personal credit");
+      });
     }
+
+    if(_main.length){
+      if(_cards.length) b0.appendChild(el("div","fnsch","Main checking"));
+      _main.forEach(function(a){ _row(b0,a,"the cards pull from here"); });
+      /* v21 build 411: THE NET POSITION, AND IT EXISTS TO MAKE THE PAGE LESS FLATTERING.
+         Main checking alone overstates him, because a card balance is money already spent and
+         not yet paid. Rocket Money's own screen makes the opposite error and sums the two
+         checking accounts to $10,436, folding his operating money together with the buffer.
+         This line goes the other way: it subtracts what is owed from the operating account and
+         shows the remainder. THE BUFFER IS NEVER IN THIS SUM and the line says so, so the one
+         figure that could be mistaken for everything he has is the smallest honest one rather
+         than the largest. Renders only when both a main balance and a card balance exist. */
+      var _mb=0,_cb=0,_haveM=false,_haveC=false;
+      _main.forEach(function(a){ if(a&&a.balance!=null){ _mb+=Number(a.balance)||0; _haveM=true; } });
+      _cards.forEach(function(a){ if(a&&a.balance!=null){ _cb+=Number(a.balance)||0; _haveC=true; } });
+      if(_haveM&&_haveC&&_cb>0){
+        b0.appendChild(el("div","fnsch","Less "+fnMoney(_cb)+" owed on cards leaves "+fnMoney(_mb-_cb)));
+        if(_buf.length) b0.appendChild(el("div","fnsch","The buffer is not counted in that"));
+      }
+    }
+
+    if(_buf.length){
+      b0.appendChild(el("div","fnsch","Set aside for the slow part of the year, not spending money"));
+      _buf.forEach(function(a){ _row(b0,a,"you put this aside on purpose"); });
+    }
+
+    if(_tax.length){
+      b0.appendChild(el("div","fnsch","Set aside for tax, not yours to spend"));
+      _tax.forEach(function(a){ _row(b0,a,"held by your tax guy"); });
+    }
+
     if(f.taxSetAside&&f.taxSetAside.connected===false){
-      b0.appendChild(el("div","fnsch","The tax account is not in this feed, so a transfer out of it reads as spend."));
+      b0.appendChild(el("div","fnsch","Your tax guy holds the tax account, so it is not in this feed and a transfer into it reads as spend."));
     }
     if(f.taxSetAside&&f.taxSetAside.unsweptPeriods&&f.taxSetAside.unsweptPeriods.length){
       b0.appendChild(el("div","fnsch","Not yet swept: "+f.taxSetAside.unsweptPeriods.join(", ")));
     }
-    if(f.asOf) b0.appendChild(el("div","fnsch","as of "+fmtLongDate(f.asOf)));
+    /* A STATIC READ IS NOT A LIVE FEED AND MUST NOT LOOK LIKE ONE. These figures came off a
+       screen Ian read on a date. Saying when they were true is the difference between a balance
+       and a claim. */
+    if(f.asOf) b0.appendChild(el("div","fnsch",(f.source?("Snapshot from "+String(f.source)+", "):"Snapshot, ")+fmtLongDate(f.asOf)));
     v.appendChild(c0);
   }
 
+  /* ===== RECURRING, BUT NOT MONTHLY. THIS IS THE COLLISION THE PAGE EXISTS TO SHOW.
+     Ian, 18.09.2026: the apartment is paid at three points in the year, one big chunk already
+     paid, another big chunk in late December or January, and a small one before summer.
+     WHY IT IS NEVER AVERAGED. His income is spiky and seasonal, the market drops off from mid
+     August and September to December is business building rather than transacting. His largest
+     single bill therefore lands in the middle of his lowest earning stretch. Dividing rent by
+     twelve would erase precisely that, which is the one thing a finance page can tell him that
+     he cannot see on a statement. So it is held as DATED PAYMENTS and rendered as dated
+     payments, the next one first.
+     IT IS NOT A SUBSCRIPTION and it is deliberately kept out of that monthly total, which would
+     otherwise be wrecked by a number that is not monthly.
+     THE PAGE DOES NOT EDITORIALISE. It shows the dates and the amounts and stops. Whether the
+     buffer covers the December chunk is his read to make, not ours to announce. */
+  if(f.recurring&&f.recurring.length){
+    var _pays=[];
+    f.recurring.forEach(function(rr){
+      (rr&&rr.payments||[]).forEach(function(pp){
+        if(!pp) return;
+        _pays.push({name:String(rr.name||"Recurring"),sch:rr.sch,date:pp.date||"",amount:Number(pp.amount)||0,paid:pp.paid===true});
+      });
+    });
+    if(_pays.length){
+      _pays.sort(function(a,z){ return String(a.date).localeCompare(String(z.date)); });
+      var _next=null;
+      try{ for(var _i=0;_i<_pays.length;_i++){ if(!_pays[_i].paid && daysUntil(_pays[_i].date)>=0){ _next=_pays[_i]; break; } } }catch(e){}
+      pkCollapse(v,"fin_recur","Rent and other set payments",
+        _next?("next "+fnMoney(_next.amount)+"  \u00b7  "+fmtShort(_next.date)):(_pays.length+(_pays.length===1?" payment":" payments")),
+        true,function(h){
+        var c=card(); var b=c._body; var L=el("div");
+        _pays.forEach(function(p){
+          var r=el("div","fnacc"); var Lf=el("div"); Lf.style.minWidth="0";
+          Lf.appendChild(el("div","fnname",p.name));
+          var bits=[];
+          if(p.date) bits.push(fmtLongDate(p.date));
+          if(p.paid) bits.push("paid");
+          if(p.sch){ var sc=schedC(p.sch); if(sc&&sc.line) bits.push("line "+sc.line); }
+          if(bits.length) Lf.appendChild(el("div","fnsch",bits.join("  \u00b7  ")));
+          r.appendChild(Lf);
+          r.appendChild(el("div","fnamt",fnMoney(p.amount)));
+          L.appendChild(r);
+        });
+        b.appendChild(L);
+        h.appendChild(c);
+      },ICO.home,"violet");
+    }
+  }
+
+  /* ===== SUBSCRIPTIONS. Ian, 18.09.2026: "like I know how many I have, what I have, how much
+     they cost, when they cost me, and then a total per month basis."
+     THE MONTHLY TOTAL IS THE HEADLINE because it is the number he asked for last and the one
+     that answers what this is costing him. An annual plan is normalised to a twelfth for that
+     total and BOTH figures appear on its row, because a total built from annual charges at face
+     value would lie while a row showing only the twelfth would not match his statement. Sorted
+     by monthly cost descending, which is what makes an expensive one visible.
+     THE LIST IS KNOWN TO BE PARTIAL. Ian, 18.09.2026: "There's a few subscriptions Rocket Money
+     doesn't have yet so I'll try to go over most this weekend." A total presented as complete
+     when it is not is worse than no total, so when subscriptionsPartial is true the headline
+     label says the total is from what is on record rather than claiming to be everything. The
+     figure is still shown, because a scoped total is useful now and grows on its own as he adds
+     to the list; nothing here needs rebuilding when he does.
+     "WHEN THEY COST ME" IS A DATE COLUMN AND A SPLIT LINE, NOT A CHART. A 31 column strip at
+     390px gives about 11px a day and build 390 already established that a column that narrow
+     clips its label; with a dozen subscriptions it would also be mostly empty. The billing day
+     on each row plus one line splitting the total across the month says it legibly.
+     DEDUCTIBLE ONES ARE MARKED against the same SCHED_C table the rest of the page uses.
+     RENT IS NOT IN HERE. It is not a subscription and it is not monthly.
+     ZERO WRITE SURFACES AND NO CANCEL CONTROL. We do not act inside Rocket Money and this page
+     must not imply that we can. */
+  if(f.subscriptions&&f.subscriptions.length){
+    var _subs=f.subscriptions.slice().map(function(x){
+      var amt=Number(x&&x.amount)||0;
+      var cyc=String((x&&x.cycle)||"monthly").toLowerCase();
+      var per=(cyc==="annual"||cyc==="yearly")?(amt/12):(cyc==="weekly")?(amt*52/12):(cyc==="quarterly")?(amt/3):amt;
+      return {x:x,amt:amt,cyc:cyc,per:per};
+    }).sort(function(a,z){ return z.per-a.per; });
+    var _tot=0; _subs.forEach(function(o){ _tot+=o.per; });
+    var _early=0,_late=0,_noday=0;
+    _subs.forEach(function(o){ var d=Number(o.x&&o.x.day)||0; if(!d) _noday+=o.per; else if(d<=15) _early+=o.per; else _late+=o.per; });
+    var _partial=(f.subscriptionsPartial===true);
+    pkCollapse(v,"fin_subs","Subscriptions",
+      _subs.length+(_subs.length===1?" on record":" on record"),true,function(h){
+      var c=card(); var b=c._body;
+      b.appendChild(el("div","fnbig",fnMoney(_tot)));
+      b.appendChild(el("div","fnlab",_partial?"a month, from the ones on record":"a month"));
+      if(_early>0||_late>0){
+        b.appendChild(el("div","fnsch",fnMoney(_early)+" on or before the 15th, "+fnMoney(_late)+" after"));
+        if(_noday>0) b.appendChild(el("div","fnsch",fnMoney(_noday)+" with no billing day on record"));
+      }
+      var L=el("div"); L.style.marginTop="12px";
+      _subs.forEach(function(o){
+        var x=o.x;
+        var r=el("div","fnacc"); var Lf=el("div"); Lf.style.minWidth="0";
+        Lf.appendChild(el("div","fnname",String(x.name||"Subscription")));
+        var bits=[];
+        if(Number(x.day)>0) bits.push("bills on the "+Math.round(x.day));
+        if(o.cyc!=="monthly") bits.push(fnMoney(o.amt)+" "+o.cyc);
+        if(x.sch){ var sc=schedC(x.sch); if(sc&&sc.line) bits.push("line "+sc.line); }
+        if(bits.length) Lf.appendChild(el("div","fnsch",bits.join("  \u00b7  ")));
+        r.appendChild(Lf);
+        r.appendChild(el("div","fnamt",fnMoney(o.per)));
+        L.appendChild(r);
+      });
+      b.appendChild(L);
+      h.appendChild(c);
+    },ICO.bolt,"violet");
+  }
+
+  /* The permanently true reference, each only where real data has not replaced it. */
+  if(!(f.categories&&f.categories.length)) safe(v,function(){ fnRefCats(v); },"Finance Sched C");
+  if(!(f.mileage&&(Number(f.mileage.miles)>0||Number(f.mileage.amount)>0))) safe(v,function(){ fnRefMiles(v); },"Finance mileage");
+  if(!(f.needsPurpose&&f.needsPurpose.length)) safe(v,function(){ fnRefMeals(v); },"Finance meals");
+
   if(f.months&&f.months.length>1){
     pkCollapse(v,"fin_flow","Money in and out","by month",true,function(h){
-      var c=card(); safe(c._body,function(){ fnMonthChart(c._body,f.months); },"Finance flow"); h.appendChild(c);
+      var c=card(); safe(c._body,function(){ fnMonthChart(c._body,f.months,f); },"Finance flow"); h.appendChild(c);
     },ICO.trend,"violet");
   }
 
