@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 407 (2026-09-18)">
+<meta name="build" content="v21 build 408 (2026-09-18)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -18286,6 +18286,46 @@ try{ if(profile==="ian" && state.meta && !state.meta.mig407_cmanote && state.rea
     }
     if(_n407){ state.meta.mig407_cmanote=true; save(true); }
 } }catch(e){ try{ console.warn("mig407 cma note did not apply:",e&&e.message); }catch(_){} }
+
+/* v21 build 408: WILLIS GOES LIVE 24 SEPTEMBER 2026.
+
+   THE FACT. Chris told the sellers in writing on 16 September that the relist is the 24th. It is
+   confirmed to the client, so it is a real date rather than a target, and it is safe to state.
+
+   WHAT WAS THERE. The close field read "Relist AFTER 11 SEPTEMBER 2026 at the earliest. No date
+   set. Price $619,900." Verified against a settled 28 August profile, not assumed. That string was
+   written by build 353 on 30 August and was wrong twice over by today: the floor it names has
+   passed, and a date now exists.
+
+   WRITTEN AS INFORMATION, NOT AS OUR WORKING. No capitals, no instruction to ourselves, no trail of
+   how the date moved, and no restatement of the price, which already has its own field. The phrasing
+   matches the idiom the other deals already use, "Going live, date TBD" on re-barkers and plain
+   month day year everywhere else. A label is a label, not a place to teach him something. Same rule
+   applied in builds 397, 398 and 407.
+
+   NOT TOUCHED. deal.note is left exactly as it is, all 10,879 characters of it. It opens in capitals
+   and is one of the seventeen long note fields, which is a known live defect held behind
+   q178975486518245 pending Ian. Fixing it here would jump a hold. The price field, the stage and
+   every other deal are untouched.
+
+   THE TWO HISTORICAL WRITERS CANNOT FIGHT THIS. Build 353 at line 14065 and build 359 at line 14297
+   both set this field, and both are gated on the close containing "3 September". Neither the old
+   string nor the new one contains it, so both stay inert. They are left as written; rewriting a
+   past migration would rewrite history.
+
+   GUARDS. state.meta.mig408_willis0924, NOT in the seed, so SEED_VERSION stays 13. Keyed on the deal
+   id and idempotent: it writes only when the field does not already carry the new date, so a later
+   correction by Ian or another lane is never stamped back over. */
+try{ if(profile==="ian" && state.meta && !state.meta.mig408_willis0924 && state.realEstate && Array.isArray(state.realEstate.deals)){
+    var _W408="Going live September 24, 2026";
+    var _n408=false, _ds408=state.realEstate.deals;
+    for(var _i408=0;_i408<_ds408.length;_i408++){
+      var _d408=_ds408[_i408];
+      if(!_d408 || _d408.id!=="re-cynthia-willis") continue;
+      if(String(_d408.close||"").indexOf("September 24, 2026")<0){ _d408.close=_W408; _n408=true; }
+    }
+    if(_n408){ state.meta.mig408_willis0924=true; save(true); }
+} }catch(e){ try{ console.warn("mig408 willis 09-24 did not apply:",e&&e.message); }catch(_){} }
 
 /* build 225: focus timer removed, nothing to clear here anymore. */
   /* build 372: LAST THING BEFORE THE SAVE. Every migration above has run, deepMergeDefaults
