@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 415 (2026-09-19)">
+<meta name="build" content="v21 build 416 (2026-09-19)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -23388,6 +23388,200 @@ function fnMonthly(v,f){
   },ICO.home,"violet");
 }
 
+/* ===== v21 build 416: TWO GRAPHS, CHOSEN FROM SIX, BOTH DARK UNTIL THEIR DATA IS HONEST =====
+   Ian asked for graphs and named Rocket Money, Monarch and the Origin screenshot. Six candidates
+   were worked up and ranked by usefulness to him rather than by novelty. Two are built here.
+
+   THE RULE THAT SORTED THE LIST: the strongest candidates show TIME, DEPLETION or CONCENTRATION.
+   Anything that merely restates a balance stays a number.
+
+   BUILT. (1) Operating trend, a sparkline of the operating account only. (2) Rent timing rail, a
+   year rail with the rent obligations placed on it.
+
+   REJECTED. Cash runway is not a graph, it is a number, and a trailing average burn would be
+   materially misleading for him: his income drops after mid August, a rent lump lands in the
+   slow period, and the buffer is smaller than that lump, so a July reading would promise runway
+   right before the ground moves. It needs a forward cash model, so it waits. A spend heatmap is
+   defensible but decorative here: the gym heatmap works because training FREQUENCY is the fact,
+   whereas knowing he spent money on a Tuesday says little, and a green or red intensity scale
+   would collide with the semantic colours this page already reserves. Monthly outflow and
+   category spend are worth building once the feed exists, and category spend only if he ends up
+   with enough categories that comparison beats a plain list.
+
+   BOTH BUILT GRAPHS RENDER NOTHING TODAY AND THAT IS THE POINT. Neither will draw a single pixel
+   from data that is not there. */
+
+/* ---------- OPERATING TREND ----------
+   NOT the current balance, which is already three rows above. The question is whether $9,436 is
+   sitting at the end of a steady decline, a recent recovery, a volatile patch or a seasonal
+   drawdown, and no single number can carry that.
+   THE OPERATING ACCOUNT ONLY. The buffer is deliberately outside circulation and the card
+   balances are owed, so neither is ever folded into this line.
+   MINIMUM EVIDENCE, ENFORCED. Two points are a line segment, not a trend. Five observed points
+   is the floor, and a window longer than thirty days needs at least fourteen before a shape is
+   worth believing. Under that, nothing draws.
+   DERIVED IS NOT OBSERVED. Balances back-solved from a transaction ledger are legitimate but
+   they are not measurements, so a derived run renders as a thinner dashed segment and the card
+   says where the numbers came from. The distinction is carried by LINE STYLE, never by colour,
+   because colour on this page already means financial state. */
+function fnSparkline(v,f){
+  var S=(f&&f.balanceSeries)||[];
+  S=S.filter(function(p){ return p&&p.d&&isFinite(Number(p.v)); })
+     .slice().sort(function(a,z){ return String(a.d).localeCompare(String(z.d)); });
+  if(S.length<5) return;
+  var spanDays=0;
+  try{ spanDays=Math.abs(Math.round((Date.parse(S[S.length-1].d)-Date.parse(S[0].d))/86400000)); }catch(e){}
+  if(spanDays>30&&S.length<14) return;
+
+  var W=332,H=48,PAD=3;
+  var vals=S.map(function(p){ return Number(p.v); });
+  var lo=Math.min.apply(null,vals), hi=Math.max.apply(null,vals);
+  var rng=(hi-lo)||1;
+  var x=function(i){ return PAD+(i/(S.length-1))*(W-PAD*2); };
+  var y=function(val){ return PAD+(1-((val-lo)/rng))*(H-PAD*2); };
+
+  var anyDerived=false,anyObserved=false;
+  S.forEach(function(p){ if(p.derived===true) anyDerived=true; else anyObserved=true; });
+
+  var c=card(); var b=c._body;
+  var last=vals[vals.length-1], first=vals[0], delta=last-first;
+  var top=el("div"); top.style.cssText="display:flex;align-items:baseline;justify-content:space-between;gap:10px";
+  var L=el("div"); L.style.minWidth="0";
+  L.appendChild(el("div","fnbig",fnMoney(last)));
+  if(anyDerived&&!anyObserved) L.appendChild(el("div","fnsch","From transactions"));
+  top.appendChild(L);
+  var R=el("div"); R.style.cssText="text-align:right;flex:0 0 auto";
+  var dv=el("div","fnamt",(delta>=0?"+":"")+fnMoney(delta));
+  fnTone(dv,delta>=0?"good":"due"); R.appendChild(dv);
+  R.appendChild(el("div","fnsch",spanDays+" days"));
+  top.appendChild(R);
+  b.appendChild(top);
+
+  /* One polyline per contiguous run of the same provenance, so a mixed series shows exactly
+     where the observed record begins. */
+  var svg=document.createElementNS("http://www.w3.org/2000/svg","svg");
+  svg.setAttribute("viewBox","0 0 "+W+" "+H);
+  svg.setAttribute("width","100%"); svg.setAttribute("height",String(H));
+  svg.style.cssText="display:block;margin-top:12px;overflow:visible";
+  var run=[],runDerived=(S[0].derived===true);
+  var flush=function(endIx){
+    if(run.length<2) return;
+    var pl=document.createElementNS("http://www.w3.org/2000/svg","polyline");
+    pl.setAttribute("points",run.join(" "));
+    pl.setAttribute("fill","none");
+    pl.setAttribute("stroke","var(--sec2,var(--accent2))");
+    pl.setAttribute("stroke-width",runDerived?"1.4":"2");
+    pl.setAttribute("stroke-linecap","round");
+    pl.setAttribute("stroke-linejoin","round");
+    if(runDerived) pl.setAttribute("stroke-dasharray","3 3");
+    svg.appendChild(pl);
+  };
+  for(var i=0;i<S.length;i++){
+    var d=(S[i].derived===true);
+    if(i>0&&d!==runDerived){ run.push(x(i)+","+y(vals[i])); flush(i); run=[x(i)+","+y(vals[i])]; runDerived=d; }
+    else run.push(x(i)+","+y(vals[i]));
+  }
+  flush(S.length);
+  b.appendChild(svg);
+  if(anyDerived&&anyObserved){
+    var lg=el("div","fnsch"); lg.style.marginTop="8px"; lg.textContent="Dashed is derived"; b.appendChild(lg);
+  }
+  pkCollapseWrap(v,"fin_trend","Operating trend",fnMoney(last),c,ICO.trend);
+}
+
+/* ---------- RENT TIMING RAIL ----------
+   A row of three amounts tells him what he owes. A rail tells him WHEN, and that the obligation
+   lands irregularly, which matters because his income is seasonal.
+   IT DOES NOT DRAW UNTIL EVERY VISIBLE PAYMENT CAN BE PLACED HONESTLY. An x position means time,
+   so a payment with no date cannot go anywhere, and one with a stated window must not be reduced
+   to a point: "late December or January" is a BAND, and putting a dot at the middle of it would
+   invent a precision he never gave. Today one of the three payments has no date at all, so the
+   rail stays dark while the rent rows above it carry on as normal.
+   A BAND IS A TIME SPAN, NOT AN AMOUNT AND NOT PROGRESS. It is drawn as a low capsule sitting ON
+   the rail at the same weight as the rail itself, so it reads as a stretch of the year rather
+   than as a bar being filled. Paid green, upcoming red, the months neutral. */
+function fnRentRail(v,f){
+  if(!f||!f.recurring||!f.recurring.length) return;
+  var Y=new Date().getFullYear();
+  var items=[],ok=true;
+  f.recurring.forEach(function(rr){
+    (rr&&rr.payments||[]).forEach(function(pp){
+      if(!pp) return;
+      var a=null,z=null;
+      if(pp.date){ a=Date.parse(pp.date); z=a; }
+      else if(pp.from&&pp.to){ a=Date.parse(pp.from); z=Date.parse(pp.to); }
+      if(a==null||isNaN(a)||z==null||isNaN(z)){ ok=false; return; }
+      items.push({a:a,z:z,paid:pp.paid===true});
+    });
+  });
+  if(!ok||!items.length) return;
+
+  /* A ROLLING TWELVE MONTHS FROM THIS MONTH, NOT THE CALENDAR YEAR. A calendar rail silently
+     lies about anything past 31 December: the payment he expects before next summer is in 2027,
+     and clamping it to the right hand edge would draw it sitting in December. A rolling window
+     also matches what he is actually looking at, which is what is coming, not what the year
+     looked like. Anything outside the window is DROPPED rather than clamped. */
+  var _now=new Date();
+  var y0=new Date(_now.getFullYear(),_now.getMonth(),1).getTime();
+  var y1=new Date(_now.getFullYear(),_now.getMonth()+12,1).getTime();
+  var W=332,H=34,PAD=6,RY=20;
+  var span=y1-y0; if(!(span>0)) return;
+  var px=function(t){ var r=(t-y0)/span; return PAD+r*(W-PAD*2); };
+
+  var c=card(); var b=c._body;
+  var svg=document.createElementNS("http://www.w3.org/2000/svg","svg");
+  svg.setAttribute("viewBox","0 0 "+W+" "+H);
+  svg.setAttribute("width","100%"); svg.setAttribute("height",String(H));
+  svg.style.cssText="display:block;overflow:visible";
+  var rail=document.createElementNS("http://www.w3.org/2000/svg","line");
+  rail.setAttribute("x1",String(PAD)); rail.setAttribute("x2",String(W-PAD));
+  rail.setAttribute("y1",String(RY)); rail.setAttribute("y2",String(RY));
+  rail.setAttribute("stroke","var(--line)"); rail.setAttribute("stroke-width","2");
+  rail.setAttribute("stroke-linecap","round");
+  svg.appendChild(rail);
+  var MON=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  [0,3,6,9,12].forEach(function(off,ix){
+    var dt=new Date(_now.getFullYear(),_now.getMonth()+off,1);
+    var t=document.createElementNS("http://www.w3.org/2000/svg","text");
+    t.setAttribute("x",String(px(dt.getTime())));
+    t.setAttribute("y","9");
+    t.setAttribute("text-anchor",ix===0?"start":ix===4?"end":"middle");
+    t.setAttribute("fill","var(--gray2)");
+    t.setAttribute("font-size","10");
+    t.textContent=MON[dt.getMonth()];
+    svg.appendChild(t);
+  });
+  var drawn=0;
+  items.forEach(function(it){
+    if(it.z<y0||it.a>y1) return;   /* outside the window: dropped, never clamped */
+    drawn++;
+    var col=it.paid?"var(--green)":"var(--red)";
+    var xa=px(Math.max(it.a,y0)), xz=px(Math.min(it.z,y1));
+    if(xz-xa<3){
+      var dot=document.createElementNS("http://www.w3.org/2000/svg","circle");
+      dot.setAttribute("cx",String(xa)); dot.setAttribute("cy",String(RY));
+      dot.setAttribute("r","4"); dot.setAttribute("fill",col);
+      svg.appendChild(dot);
+    } else {
+      var band=document.createElementNS("http://www.w3.org/2000/svg","line");
+      band.setAttribute("x1",String(xa)); band.setAttribute("x2",String(xz));
+      band.setAttribute("y1",String(RY)); band.setAttribute("y2",String(RY));
+      band.setAttribute("stroke",col); band.setAttribute("stroke-width","6");
+      band.setAttribute("stroke-linecap","round");
+      svg.appendChild(band);
+    }
+  });
+  if(!drawn) return;   /* nothing lands in the next twelve months, so no rail */
+  b.appendChild(svg);
+  pkCollapseWrap(v,"fin_rail","Rent timing","Next twelve months",c,ICO.home);
+}
+
+/* pkCollapse takes a builder; these two need to decide whether they render at all before a
+   header is drawn, so this wraps an already built card in the same disclosure. */
+function pkCollapseWrap(v,key,title,sub,builtCard,icon){
+  pkCollapse(v,key,title,sub,false,function(h){ h.appendChild(builtCard); },icon,"violet");
+}
+
 /* ===== GOALS. THE SLOT EXISTS, NOTHING RENDERS WITHOUT A TARGET =============================
    IAN, 19.09.2026: "Only add things that are guaranteed for Arizona, tournament fee." So a goal
    is the ENTRY FEE and nothing else. No flights, no hotel, no food: he is going with Dylan so
@@ -23470,6 +23664,8 @@ function buildFinance(v){
 
   safe(v,function(){ fnBalances(v,f); },"Balances");
   safe(v,function(){ fnMonthly(v,f); },"Monthly payments");
+  safe(v,function(){ fnSparkline(v,f); },"Operating trend");
+  safe(v,function(){ fnRentRail(v,f); },"Rent rail");
   safe(v,function(){ fnGoals(v,f); },"Goals");
 
   if(f.months&&f.months.length>1){
