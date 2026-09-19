@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 416 (2026-09-19)">
+<meta name="build" content="v21 build 417 (2026-09-19)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -19267,7 +19267,7 @@ const RE_GROUPS=[["Under Contract","Under contract / pending"],["Coming Soon","C
 let reStageOpen={ "Under Contract":true,"Coming Soon":true,"Active":true,"Building":true,"Closed":false,"Prospecting":false,"Just Sold":false,"Follow up":false,"Other":false };
 let reDealOpen={};
 let reToolOpen={"Workout routine":true};
-let reView="landing";
+let reView="pipeline";   /* build 417: the ROOT of the real estate page is the pipeline view, the page Ian has always used. It was "landing", which is why a COLD OPEN of the bottom tab reached build 406's landing while Home reached the pipeline. Two entry points, two different pages, one of which he asked to have removed. */
 function stagePill(stage){ return el("span","stpill c-"+(STAGE_COL[stage]||"blue"),stage); }
 function dealEditors(parent,d){
   /* v21 build 40: the Stage selector is clearly labeled and separated from the commission tag
@@ -20656,7 +20656,7 @@ function reNavCard(parent,icon,title,summary,view){
 }
 function reBack(parent,label){
   const w=el("div","backrow"); const btn=el("button","btn ghost sm re-back"); btn.textContent="\u2039 "+(label||"Real Estate");
-  btn.onclick=()=>{ reView="landing"; try{window.scrollTo(0,0);}catch(e){} render(); }; w.appendChild(btn); parent.appendChild(w);
+  btn.onclick=()=>{ reView="pipeline"; try{window.scrollTo(0,0);}catch(e){} render(); };  /* build 417: back goes to the pipeline root. This was the SECOND door into the retired landing and it was not in the brief: pressing back from Tools, To-dos or Sphere used to drop him on the page he says should not exist. */ w.appendChild(btn); parent.appendChild(w);
 }
 function pipelineSummaryPipe(parent){
   /* v21 build 41: the Overview tiles now cover EVERY stage so the tile counts reconcile with the full deal
@@ -20935,7 +20935,11 @@ function re391Closed(parent){
     re391Discs(r,[["Closing",when?"":(d.close||"")],["Full note",d.note||""]]);
   });
   parent.appendChild(c); }
-function re391More(parent){
+function re391More(parent,hidePipeline){
+  /* build 417: hidePipeline is a NEW OPTIONAL SECOND ARGUMENT and it is the only change to
+     this function. It defaults to falsy, so the retired landing's own call is byte identical.
+     The pipeline root passes true, because a row that navigates to the page you are already
+     on is not navigation. */
   var RE=state.realEstate||{};
   var deals=RE.deals||[];
   var pipe=deals.filter(function(d){ return !reIsProspect(d); });
@@ -20946,7 +20950,7 @@ function re391More(parent){
   var c=card(); var b=c._body;
   b.appendChild(el("div","g7kicker","More"));
   var l=re391List(b);
-  re391Nav(l,"Pipeline",pipe.length+(pipe.length===1?" deal":" deals")+"  \u00b7  "+fmtMoney(pipe.reduce(function(a,d){return a+dealVolume(d);},0))+" volume","pipeline");
+  if(!hidePipeline) re391Nav(l,"Pipeline",pipe.length+(pipe.length===1?" deal":" deals")+"  \u00b7  "+fmtMoney(pipe.reduce(function(a,d){return a+dealVolume(d);},0))+" volume","pipeline");
   re391Nav(l,"Things I have to do",openTodos+(openTodos===1?" action":" actions")+(dueSoon?("  \u00b7  "+dueSoon+" due in 7 days"):"")+(tc.waiting?("  \u00b7  "+tc.waiting+" waiting"):""),"todo");
   var spCue=(sp.length?(sp.length+" in sphere"):"")+((sp.length&&ov)?"  \u00b7  ":"")+(ov?(ov+" to reach out"):"");
   re391Nav(l,"Sphere and prospects",spCue||null,"sphere");
@@ -20960,7 +20964,25 @@ function buildIanRe(v){
   if(reView==="todo") return reViewTodo(v);
   if(reView==="tools") return reViewTools(v);
   if(reView==="sphere") return reViewSphere(v);
-  return reViewLanding(v);
+  /* ===== build 417: reViewLanding IS RETIRED FROM THE DISPATCH ==========================
+     Ian, 19.09.2026: "This whole page with the image on it shouldn't even exist, it should
+     just be the regular real estate page I've been using the entire time... The page that
+     opens when you push real estate at the bottom should not even exist."
+
+     WHAT THE IMAGE WAS. Five pkCollapse headers each carrying an SVG in a tinted rounded
+     square. Measured on a cold open: the landing drew 5 icons and 0 section labels, the
+     pipeline view drew 0 icons and 2 section labels.
+
+     NOTHING IS DELETED. reViewLanding, re391Head, re391Cma, re391Clients, re391Closed and
+     re391More all stay in this file, and re391More is still called, from the pipeline root
+     below. reViewLanding now joins reViewLanding390 as protected dead code: reachable by
+     nothing, deleted by nobody, so the 406 work can be read and restored without a rebuild.
+
+     EVERY DESTINATION SURVIVES, AND THAT NEEDED CHECKING RATHER THAN ASSUMING. Tools was
+     reachable from NOWHERE ELSE: re391More inside the landing was its only entry point, and
+     reGoalsCard had become landing-only too. Retiring the landing without moving both would
+     have stranded them. They are on the pipeline root now. */
+  return reViewPipeline(v);
 }
 function fmtMoneyShort(n){ n=n||0; if(n>=1e6){ var m=n/1e6; return "$"+(m>=10?String(Math.round(m)):m.toFixed(1))+"M"; } if(n>=1e3) return "$"+Math.round(n/1e3)+"K"; return "$"+Math.round(n); }
 /* build 392: accOverride is a NEW OPTIONAL SECOND ARGUMENT and it is the only change to this
@@ -21428,8 +21450,16 @@ function reViewLanding(v){
     if(_cma406.length===1){ var _m406=_cma406[0].cma||{}; _cs406=String(_m406.file||_cma406[0].title||"one CMA"); }
     else if(_cma406.length>1){ _cs406=_cma406.length+" CMAs"; }
     if(_ev406.length) _cs406=(_cs406?(_cs406+"  \u00b7  "):"")+_ev406.length+(_ev406.length===1?" file":" files")+" with pricing evidence";
+    /* ===== build 417: CMA AND PRICING IS REMOVED FROM THE RENDER =======================
+       Ian, 19.09.2026: "Take out the CMA and pricing page." Cut EXPLICITLY here rather than
+       left to disappear with the retired landing, because a call that only stops running
+       because its caller went dead comes back the moment anyone revives the caller.
+       re391Cma was called from exactly one place in the whole file and this was it.
+       NOTHING IS DELETED. re391Cma is still defined, and the 4946 Pratt CMA is untouched in
+       state at deals[].cma on re-belknap-sell, every field of it, including the build 407
+       cma.noteSource archive. It is simply no longer a render source, the build 397 pattern.
     pkCollapse(v,"re_cma","CMA and pricing",_cs406,false,
-      function(hh){ safe(hh,function(){ re391Cma(hh); },"RE CMA"); },ICO.property,"blue");
+      function(hh){ safe(hh,function(){ re391Cma(hh); },"RE CMA"); },ICO.property,"blue"); */
   }
 
   if(_cl406.length){
@@ -21470,11 +21500,28 @@ function reViewLanding390(v){
   sect(v,"Your pipeline data","import");
   { const ic=card(); const ib=el("button","btn ghost block","Import my pipeline"); ib.style.marginTop="0"; ib.onclick=()=>{ const pf=document.getElementById("pipelineFile"); if(pf)pf.click(); }; const ih=el("div","small dim"); ih.style.marginTop="9px"; ih.textContent="Load real_estate_pipeline.json to replace your pipeline with your deals and follow ups. Your other data stays."; ic._body.appendChild(ib); ic._body.appendChild(ih); v.appendChild(ic); }
 }
+/* ===== build 417: THIS IS THE REAL ESTATE PAGE NOW, NOT A SUB VIEW OF ONE ===============
+   THE BACK ROW IS GONE because this is the root. A back button on the root pointed at the
+   page it already was.
+
+   THE TOP OF THE PAGE IS UNTOUCHED AND THAT IS DELIBERATE. Overview, By stage and the
+   grouped pipeline are byte identical. Ian named this page as the one he has always used in
+   the same message that praised the pickleball page, so sect() is something he LIKES and is
+   not the thing to fix. Converting a page he is happy with into a different idiom is how we
+   end up in another round of this.
+
+   TWO BLOCKS ARE ADDED, and only because retiring the landing would otherwise strand them.
+   Goals and money is reGoalsCard, passed through WHOLE, not one figure touched. More is
+   re391More, which is where Tools lives and Tools had no other entry point anywhere in the
+   app. Both use sect(), the idiom already on this page. */
 function reViewPipeline(v){
-  reBack(v,"Real Estate");
   safe(v,()=>pipelineSummaryPipe(v),"Pipeline stats");
   sect(v,"By stage","tap a stage to expand");
   safe(v,()=>rePipelineGroupedPipe(v),"Pipeline");
+  sect(v,"Goals and money","production and take home");
+  safe(v,()=>reGoalsCard(v),"RE goals");
+  sect(v,"More","actions, sphere, tools");
+  safe(v,()=>re391More(v,true),"RE more");
 }
 function reViewTodo(v){
   reBack(v,"Real Estate");
@@ -23231,16 +23278,29 @@ function fnShortDate(iso){
 }
 
 /* ---------- ACCOUNTS, THEN POSITION. ONE CARD, NOT TWO. ---------- */
-function fnBalances(v,f){
+/* build 417: PART is a NEW OPTIONAL THIRD ARGUMENT. Called with no part this behaves exactly
+   as it did, one card with the position rows under a hairline, so nothing that calls it the
+   old way changes. buildFinance now calls it twice, once for each half, so Position gets its
+   own box instead of sharing one with the account list. Not one figure, rule or colour state
+   below is altered; only which container the rows land in. */
+function fnBalances(v,f,part){
   var accts=(f&&f.accounts)||[], cards=(f&&f.cards)||[];
   if(!accts.length&&!cards.length) return;
+  var wantAcc=(part!=="position"), wantPos=(part!=="accounts");
   var c=card(); var b=c._body;
   var main=0,buf=0,owed=0,haveMain=false,haveBuf=false,haveOwed=false;
 
   /* ONE GRAMMAR FOR EVERY SUBLABEL: what kind of account, then the last four. Nothing else. */
+  /* build 417 CORRECTION, caught by looking at the rendered page rather than at the counters.
+     The FIRST version of this split guarded the whole accts loop with wantAcc. On the position
+     pass the loop then never ran, so main, buf, haveMain and haveBuf were never computed and
+     Position rendered "Card debt" alone with Operating and Buffer silently missing. Only the ROW
+     RENDER may be guarded. The totals must be accumulated on every pass, exactly as the cards
+     loop below already does. A container count and a label list both looked correct while two
+     real figures were gone from the screen. */
   accts.forEach(function(a){
     var k=String(a.kind||"").toLowerCase();
-    fnRow(b,a.name||a.id||"Account",(a.balance!=null?fnMoney(a.balance):null),
+    if(wantAcc) fnRow(b,a.name||a.id||"Account",(a.balance!=null?fnMoney(a.balance):null),
       fnKindWord(k)+(a.last4?("  \u00b7  "+a.last4):""),"good",false);
     if(a.balance!=null){
       if(k==="checking"||k==="main"){ main+=Number(a.balance)||0; haveMain=true; }
@@ -23248,7 +23308,7 @@ function fnBalances(v,f){
     }
   });
   cards.forEach(function(a){
-    fnRow(b,a.name||a.id||"Card",(a.balance!=null?fnMoney(a.balance):null),
+    if(wantAcc) fnRow(b,a.name||a.id||"Card",(a.balance!=null?fnMoney(a.balance):null),
       fnKindWord(a.kind)+(a.last4?("  \u00b7  "+a.last4):""),"due",false);
     if(a.balance!=null){ owed+=Number(a.balance)||0; haveOwed=true; }
   });
@@ -23258,13 +23318,17 @@ function fnBalances(v,f){
      Three rows put every figure on one right edge and survive a bigger number later.
      NO GRAND TOTAL AND NO NET ROW. The two checking accounts mean different things and are never
      added. The two cards may be added to each other because they are the same kind of money. */
-  if(haveMain||haveBuf||haveOwed){
-    var t=el("div"); t.style.cssText="margin-top:14px;padding-top:12px;border-top:1px solid var(--line)";
+  if(wantPos&&(haveMain||haveBuf||haveOwed)){
+    /* Its own box when the caller asked for this half on its own, otherwise the original
+       hairline inside the one card. */
+    var t=el("div");
+    if(part!=="position") t.style.cssText="margin-top:14px;padding-top:12px;border-top:1px solid var(--line)";
     if(haveMain) fnRow(t,"Operating",fnMoney(main),null,"good",false);
     if(haveBuf)  fnRow(t,"Buffer",fnMoney(buf),null,"good",false);
     if(haveOwed) fnRow(t,"Card debt",fnMoney(owed),null,"due",false);
     b.appendChild(t);
   }
+  if(!b.firstChild) return;
   v.appendChild(c);
 }
 
@@ -23652,6 +23716,38 @@ function fnTax(v,f){
 }
 
 /* ---------- THE PAGE ---------- */
+/* ===== build 417: SECTION SEPARATION COMES BACK TO THE FINANCE PAGE ======================
+   IAN, 19.09.2026: "You took away the build of every section, there should be lining of
+   boxes or sub-sections separating everything" and "Every page should be organized and
+   sectioned off independently like the pickleball page does so well."
+
+   WHAT HE IS REJECTING IS A RULE WE ADOPTED ON PURPOSE. Build 414 wrote: "the most common
+   way a second attempt fails is that the designer replaces clutter with CARDS... Sections
+   are not nested inside extra cards, and the header is a plain block." That produced a page
+   with 5 cards and ZERO section labels, measured, against the pickleball page he praises at
+   87 cards and 89 sub headers. The restraint argument was ours. He has now ruled on it.
+
+   WHAT IS KEPT FROM 414, because he did not reject it: shape identifies the object, colour
+   identifies state, number carries magnitude, text only names it. And the rule that a
+   section with no financial fact has ZERO footprint, which fnSect enforces by BUILDING THE
+   GROUP FIRST and emitting the label only if the group actually produced something. An
+   empty labelled section is worse than no section.
+
+   THE FOUR WORD CAP IS ENFORCED BY CODE, NOT AIMED AT. fnSect routes every sub label
+   through fnSub, which returns null rather than truncating, so a future lane cannot slip a
+   sentence in under a label.
+
+   BOTH GRAPHS ARE UNTOUCHED. fnSparkline still refuses to draw under five points and
+   fnRentRail still stays dark until every rent payment carries a real date; because they
+   return early, fnSect emits no label for them either, so neither gains a heading it cannot
+   fill. */
+function fnSect(v,title,sub,fn){
+  var probe=el("div");
+  try{ fn(probe); }catch(e){ try{ console.error("[dash] finance section",title,e); }catch(_){} }
+  if(!probe.firstChild) return;
+  sect(v,title,fnSub(sub));
+  while(probe.firstChild) v.appendChild(probe.firstChild);
+}
 function buildFinance(v){
   var f=finData()||{};
   /* The header is a plain block, not a card. The year is context, not a financial fact, so it
@@ -23662,26 +23758,29 @@ function buildFinance(v){
   if(f.asOf) head.appendChild(el("div","fnsch",fnShortDate(f.asOf)+" snapshot"));
   v.appendChild(head);
 
-  safe(v,function(){ fnBalances(v,f); },"Balances");
-  safe(v,function(){ fnMonthly(v,f); },"Monthly payments");
-  safe(v,function(){ fnSparkline(v,f); },"Operating trend");
-  safe(v,function(){ fnRentRail(v,f); },"Rent rail");
-  safe(v,function(){ fnGoals(v,f); },"Goals");
+  fnSect(v,"Accounts","what you hold",function(h){ fnBalances(h,f,"accounts"); });
+  fnSect(v,"Position","operating, buffer, debt",function(h){ fnBalances(h,f,"position"); });
+  fnSect(v,"Monthly payments","what leaves monthly",function(h){ fnMonthly(h,f); });
+  fnSect(v,"Operating trend","recent months",function(h){ fnSparkline(h,f); });
+  fnSect(v,"Rent schedule","every payment dated",function(h){ fnRentRail(h,f); });
+  fnSect(v,"Goals",null,function(h){ fnGoals(h,f); });
 
   if(f.months&&f.months.length>1){
+    sect(v,"Money in and out",fnSub("month by month"));
     pkCollapse(v,"fin_flow","Money in and out",null,false,function(h){
       var c=card(); safe(c._body,function(){ fnMonthChart(c._body,f.months,f); },"Finance flow"); h.appendChild(c);
     },ICO.trend,"violet");
   }
   if(f.closings&&f.closings.length){
     var cl=f.closings, tot=0; cl.forEach(function(x){ tot+=Number(x.net!=null?x.net:x.gross)||0; });
+    sect(v,"Closings",fnSub("what has paid"));
     pkCollapse(v,"fin_close","Closings",fnMoney(tot),false,function(h){
       var c=card(); var b=c._body;
       cl.forEach(function(x){ fnRow(b,x.address||x.title||"Closing",fnMoney(x.net!=null?x.net:x.gross),(x.date?fnShortDate(x.date):null),"good",false); });
       h.appendChild(c);
     },ICO.property,"violet");
   }
-  safe(v,function(){ fnTax(v,f); },"Tax");
+  fnSect(v,"Tax","set aside and owed",function(h){ fnTax(h,f); });
 }
 const IAN_PAGES={ "p-home":buildIanHome,"p-re":buildIanRe,"p-gym":buildGym,"p-pickle":buildPickle,"p-solara":buildSolara,"p-finance":buildFinance,"p-settings":buildSettings };
 function applyProfileChrome(){
@@ -24622,12 +24721,16 @@ section,.card,.sectlabel{scroll-margin-top:calc(var(--hh) + var(--sat) + 8px)}
 /* v21 build 142: restrained visual polish for the three daily-use areas, the Gym page (workout, nutrition,
    daily checklist) and the Real Estate page. Cosmetic and additive ONLY, uses each page's existing --sec accent
    (Gym amber, Real Estate teal), mobile first. Touches no JS, no data, no checkmarks, no logging. */
-#p-gym .card, #p-re .card{ box-shadow:0 1px 3px rgba(0,0,0,.30); border-color:var(--line); }
+#p-gym .card, #p-re .card, #p-finance .card{ box-shadow:0 1px 3px rgba(0,0,0,.30); border-color:var(--line); }
 #p-gym .cbody, #p-re .cbody{ padding:17px 16px 18px; }
-#p-gym .card:not(:last-child), #p-re .card:not(:last-child){ margin-bottom:15px; }
-#p-gym .sectlabel, #p-re .sectlabel{ font-size:13px; gap:9px; }
-#p-gym .sectlabel::before, #p-re .sectlabel::before{ content:""; display:inline-block; width:4px; height:16px; border-radius:3px; background:linear-gradient(180deg, var(--sec), var(--sec2)); flex:0 0 auto; }
-#p-gym .sectlabel .sub, #p-re .sectlabel .sub{ font-size:11px; font-weight:700; }
+#p-gym .card:not(:last-child), #p-re .card:not(:last-child), #p-finance .card:not(:last-child){ margin-bottom:15px; }
+#p-gym .sectlabel, #p-re .sectlabel, #p-finance .sectlabel{ font-size:13px; gap:9px; }
+/* build 417: the coloured rule that separates one section from the next. It already ran on
+   Gym and Real Estate and it is the "lining" Ian asked for; Finance is added to the same
+   selector rather than given a second near identical one. #p-finance already carries its own
+   --sec and --sec2 from build 409, so the bar picks up the finance accent with no new colour. */
+#p-gym .sectlabel::before, #p-re .sectlabel::before, #p-finance .sectlabel::before{ content:""; display:inline-block; width:4px; height:16px; border-radius:3px; background:linear-gradient(180deg, var(--sec), var(--sec2)); flex:0 0 auto; }
+#p-gym .sectlabel .sub, #p-re .sectlabel .sub, #p-finance .sectlabel .sub{ font-size:11px; font-weight:700; }
 #p-gym .card h3, #p-re .card h3{ font-size:16px; letter-spacing:-.01em; }
 #p-gym .kpi .n, #p-re .kpi .n{ font-variant-numeric:tabular-nums; }
 #p-gym .collapse-head, #p-re .collapse-head{ padding:15px 16px; }
