@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 412 (2026-09-18)">
+<meta name="build" content="v21 build 414 (2026-09-19)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -23122,480 +23122,295 @@ function fnDeductRing(body,f){
    page does not read as broken, so it does not need explaining.
 
    ZERO WRITE SURFACES, as everywhere else in this app. */
-function fnScaffold(v){
-  var c0=card(); var b0=c0._body;
-  b0.appendChild(el("div","g7kicker","Finances"));
-  b0.appendChild(el("div","g7title",String(new Date().getFullYear())));
-  v.appendChild(c0);
+/* ===== v21 build 413: THE FINANCE PAGE, REBUILT TO IAN'S SPEC ==============================
+   IAN, 19.09.2026: "it's made sloppy, dumb information added that's unnecessary, stuff
+   organized poorly, displayed poorly."
 
-  /* v21 build 411: CARDS AND ACCOUNTS ARE DIFFERENT THINGS AND BUILD 410 RAN THEM TOGETHER.
-     Ian gave the real structure on 18.09.2026: three cards, and three accounts of which he can
-     only see one. Build 410 listed the three CARDS under a heading that said Accounts, which is
-     wrong on the word and wrong on the shape. Two cards now, and the money pools are their own
-     card below. Both are structure he stated, nothing here is inferred. */
-  var ca=card(); var ba=ca._body;
-  ba.appendChild(el("div","fnsch","Cards"));
-  [["American Express","business"],["Discover","personal credit"],["FNBO","debit, pulls from main checking"]].forEach(function(a){
-    var r=el("div","fnacc"); var L=el("div"); L.style.minWidth="0";
-    L.appendChild(el("div","fnname",a[0]));
-    L.appendChild(el("div","fnsch",a[1]));
-    r.appendChild(L); ba.appendChild(r);
-  });
-  v.appendChild(ca);
+   HE IS RIGHT AND THE FAULT IS OURS. The page was carrying our design justifications as body
+   text: "Less $2,107 owed on cards leaves $7,329", "The buffer is not counted in that", "Set
+   aside for the slow part of the year, not spending money", "you put this aside on purpose",
+   "Your tax guy holds the tax account, so it is not in this feed and a transfer into it reads
+   as spend", "the cards pull from here". Every one of those is us explaining a decision to him.
+   Same class as builds 397, 398, 400, 407 and the mileage rule stripped in 412. Fifth time.
 
-  /* THE THREE POOLS, AND WHY THEY ARE NEVER ONE NUMBER. Main checking is what he has to spend.
-     The extra checking is money he deliberately took out of circulation to carry the slow part
-     of the year, so showing it as available defeats the reason it exists. The tax account is
-     held in trust by his tax guy and is not his money at all. A combined total would overstate
-     him on two axes at once, so no total is drawn here or anywhere below. The subtitles are his
-     own framing rather than labels invented for him. */
-  var cb=card(); var bb=cb._body;
-  bb.appendChild(el("div","fnsch","Accounts"));
-  [["Main checking","the cards pull from here"],
-   ["Extra checking","for the slow part of the year"],
-   ["Tax account","held by your tax guy"]].forEach(function(a){
-    var r=el("div","fnacc"); var L=el("div"); L.style.minWidth="0";
-    L.appendChild(el("div","fnname",a[0]));
-    L.appendChild(el("div","fnsch",a[1]));
-    r.appendChild(L); bb.appendChild(r);
-  });
-  v.appendChild(cb);
+   HIS SPEC, APPLIED LITERALLY.
+   1. "Needs a purpose" is DELETED. Not hidden, not collapsed. Gone.
+   2. THIS IS A FINANCE PAGE, NOT A TAX PAGE. His words. Money first: balances, rent,
+      subscriptions, flow, closings. Tax is ONE collapsed subsection at the bottom holding the
+      Schedule C table and the mileage rates.
+   3. The rent section is "Rent and monthly payments".
+   4. Paid items minimise. A paid row drops to a dim single line at the bottom of its list.
+   5. Colour through that section. Paid green, not yet hit red. Subscriptions are autopay, so
+      they go green on their billing day BY DATE, and he is never asked to confirm anything.
+   6. BALANCES ARE THE STRICTEST PART. Cards red, banks green, and sub information is one to
+      four words or it does not exist. A sentence is not allowed under a balance.
+   7. Totals, done simply.
 
-  fnRefCats(v); fnRefMiles(v); fnRefMeals(v);
+   THE FOUR WORD RULE IS ENFORCED, NOT AIMED AT. fnSub() takes a string and refuses to render
+   anything over four words, so a future lane cannot quietly reintroduce a sentence here.
+
+   UNCERTAINTY SURVIVES THE RULE WITHOUT A SENTENCE. The rent figures are his recollection and
+   he must still be able to tell them from a recorded number. That is carried by the FORM of the
+   amount rather than by prose: a tilde and a range, "~$2,300 to $2,600", against an exact
+   "$9,436". Zero words spent. When he gives real figures the tilde and the range disappear on
+   their own because the data stops carrying low and high. */
+
+/* ===== v21 build 414: THE FINANCE PAGE, REDESIGNED AGAINST A FIVE ROUND DESIGN REVIEW =======
+   Ian rejected build 412 as "sloppy, dumb information added that's unnecessary, stuff organized
+   poorly, displayed poorly", and he was right: the page was carrying our own design
+   justifications as body text. He then asked for the visual direction to be worked out properly
+   against Rocket Money, Monarch and an Origin reference he sent.
+
+   THE ONE RULE THAT DECIDES EVERYTHING BELOW, from that review:
+   SHAPE IDENTIFIES THE OBJECT. COLOUR IDENTIFIES THE STATE. NUMBER CARRIES MAGNITUDE. TEXT ONLY
+   NAMES IT. Under that rule the four word cap stops being a restriction and becomes a
+   consequence, because there is nothing left for a sentence to do.
+
+   AND THE SECOND RULE, WHICH IS WHAT ACTUALLY SHRANK THIS PAGE:
+   IF A SECTION HAS NO FINANCIAL FACT TO COMMUNICATE, IT DOES NOT EXIST ON THE SCREEN. Not
+   greyed, not disabled, not collapsed, not "coming soon". Navigation follows the data, not the
+   planned feature list. So Budget, Goals, Savings and Subscriptions have ZERO footprint today:
+   there are no budget limits, no goal targets, no approved goal names and no subscription
+   records. They appear by themselves the day real numbers arrive.
+
+   THE TRAP NAMED IN THE REVIEW AND AVOIDED HERE: the most common way a second attempt fails is
+   that the designer replaces clutter with CARDS. Fewer words, more containers, and the screen
+   feels busier than before. Hierarchy here comes from spacing, type and alignment. Sections are
+   not nested inside extra cards, and the header is a plain block rather than a card around two
+   words.
+
+   PROVENANCE IS NOT AN APOLOGY, WHICH SOLVES THE PROBLEM 412 COULD NOT. A remembered figure is
+   marked by the FORM of the number, an almost equal sign and a range, plus one provenance line
+   naming where the figures came from. That reads as "this is where this came from", not as the
+   app hedging. It is the same device as the snapshot date on the balances.
+
+   WHAT WAS TAKEN, AND WHAT WAS DELIBERATELY NOT. Taken: Monarch's paid versus upcoming colour
+   states, Rocket Money's next-first ordering, Origin's economy of text. Not taken: any launchpad
+   for actions, a net worth or grand total at the top, rings, tiles, coloured icon circles, and
+   Origin's ornament. Zero write surfaces, and no cancel control of any kind. */
+
+function fnSub(t){
+  /* The four word rule, enforced rather than aimed at. Returns null instead of truncating,
+     because half a sentence is worse than none, and a future lane cannot slip prose past it. */
+  t=String(t||"").trim(); if(!t) return null;
+  var w=t.split(/\s+/).filter(function(x){ return /[A-Za-z0-9]/.test(x); });
+  return w.length<=4?t:null;
+}
+function fnTone(node,state){
+  try{
+    if(state==="good") node.style.color="var(--green)";
+    else if(state==="due") node.style.color="var(--red)";
+  }catch(e){}
+  return node;
+}
+function fnRow(host,name,amountText,subText,state,dim){
+  var r=el("div","fnacc");
+  var L=el("div"); L.style.minWidth="0";
+  L.appendChild(el("div","fnname",String(name||"")));
+  var sub=fnSub(subText);
+  if(sub) L.appendChild(el("div","fnsch",sub));
+  r.appendChild(L);
+  if(amountText!=null) r.appendChild(fnTone(el("div","fnamt",String(amountText)),state));
+  if(dim) r.style.opacity=".5";
+  host.appendChild(r);
+  return r;
+}
+function fnKindWord(k){
+  k=String(k||"").toLowerCase();
+  if(k==="checking"||k==="main") return "Checking";
+  if(k==="buffer"||k==="extra") return "Savings";
+  if(k==="tax") return "Tax";
+  if(k==="business") return "Business";
+  if(k==="debit") return "Debit";
+  return "Credit";
+}
+function fnShortDate(iso){
+  try{ var a=String(iso).split("-");
+    var M=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+    return M[Number(a[1])-1]+" "+Number(a[2])+", "+a[0]; }catch(e){ return ""; }
 }
 
-/* v21 build 411: THE REFERENCE SECTIONS ARE NOT AN EMPTY STATE, so they do not disappear the
-   moment data arrives. The Schedule C table, the two mileage rates and the six things the IRS
-   wants on a meal are true all year. Each renders only where its data backed counterpart is
-   absent, so a real category breakdown replaces the table rather than sitting beside it. */
-function fnRefCats(v){
-  pkCollapse(v,"fin_cats","Where it goes","Schedule C lines",false,function(h){
-    var c=card(); var b=c._body; var L=el("div");
-    Object.keys(SCHED_C).forEach(function(k){
-      var x=SCHED_C[k]; if(!x) return;
-      var r=el("div","fnacc"); var Lf=el("div"); Lf.style.minWidth="0";
-      Lf.appendChild(el("div","fnname",String(x.label||k)));
-      var bits=[]; if(x.line) bits.push("line "+x.line);
-      /* v21 build 412: HOME OFFICE IS NOT A PERCENTAGE AND SAYING "100% allowed" MISREADS IT.
-         Ian confirmed on 18.09.2026 that he works from the apartment, so the simplified method
-         applies: $5 a square foot, up to 300 square feet, $1,500 maximum. The rule and the cap
-         are shown. NO FIGURE IS COMPUTED, because nobody has measured the space, and a number
-         here would be invented. It arrives when he measures. */
-      if(k==="homeoffice") bits.push("$5 a square foot, up to 300, $1,500 max");
-      else bits.push(Math.round(Number(x.pct)||0)+"% allowed");
-      Lf.appendChild(el("div","fnsch",bits.join("  \u00b7  ")));
-      r.appendChild(Lf); L.appendChild(r);
+/* ---------- ACCOUNTS, THEN POSITION. ONE CARD, NOT TWO. ---------- */
+function fnBalances(v,f){
+  var accts=(f&&f.accounts)||[], cards=(f&&f.cards)||[];
+  if(!accts.length&&!cards.length) return;
+  var c=card(); var b=c._body;
+  var main=0,buf=0,owed=0,haveMain=false,haveBuf=false,haveOwed=false;
+
+  /* ONE GRAMMAR FOR EVERY SUBLABEL: what kind of account, then the last four. Nothing else. */
+  accts.forEach(function(a){
+    var k=String(a.kind||"").toLowerCase();
+    fnRow(b,a.name||a.id||"Account",(a.balance!=null?fnMoney(a.balance):null),
+      fnKindWord(k)+(a.last4?("  \u00b7  "+a.last4):""),"good",false);
+    if(a.balance!=null){
+      if(k==="checking"||k==="main"){ main+=Number(a.balance)||0; haveMain=true; }
+      else if(k==="buffer"||k==="extra"){ buf+=Number(a.balance)||0; haveBuf=true; }
+    }
+  });
+  cards.forEach(function(a){
+    fnRow(b,a.name||a.id||"Card",(a.balance!=null?fnMoney(a.balance):null),
+      fnKindWord(a.kind)+(a.last4?("  \u00b7  "+a.last4):""),"due",false);
+    if(a.balance!=null){ owed+=Number(a.balance)||0; haveOwed=true; }
+  });
+
+  /* POSITION. Three rows, never three columns: at 358px three columns of tabular figures leave
+     almost no tolerance and force the eye to scan sideways matching each number to its label.
+     Three rows put every figure on one right edge and survive a bigger number later.
+     NO GRAND TOTAL AND NO NET ROW. The two checking accounts mean different things and are never
+     added. The two cards may be added to each other because they are the same kind of money. */
+  if(haveMain||haveBuf||haveOwed){
+    var t=el("div"); t.style.cssText="margin-top:14px;padding-top:12px;border-top:1px solid var(--line)";
+    if(haveMain) fnRow(t,"Operating",fnMoney(main),null,"good",false);
+    if(haveBuf)  fnRow(t,"Buffer",fnMoney(buf),null,"good",false);
+    if(haveOwed) fnRow(t,"Card debt",fnMoney(owed),null,"due",false);
+    b.appendChild(t);
+  }
+  v.appendChild(c);
+}
+
+/* ---------- RENT AND MONTHLY PAYMENTS ---------- */
+function fnRentAmount(p){
+  /* The form of the number carries the provenance. An almost equal sign plus a range for a
+     remembered figure, a greater than for "just over", an exact figure for a recorded one. */
+  if(p.low!=null&&p.high!=null&&p.high!==p.low) return "\u2248"+fnMoney(p.low)+" to "+fnMoney(p.high);
+  var base=(p.low!=null?p.low:p.amount);
+  if(p.over) return ">"+fnMoney(base);
+  if(p.approx) return "\u2248"+fnMoney(base);
+  return fnMoney(base);
+}
+function fnRent(v,f){
+  if(!f||!f.recurring||!f.recurring.length) return;
+  var pays=[],anyApprox=false;
+  f.recurring.forEach(function(rr){
+    (rr&&rr.payments||[]).forEach(function(pp,ix){
+      if(!pp) return;
+      var ap=pp.approx===true||rr.approx===true;
+      if(ap) anyApprox=true;
+      pays.push({name:String(rr.name||"Payment"),date:pp.date||"",when:String(pp.when||""),
+        seq:(pp.seq!=null?Number(pp.seq):ix),amount:Number(pp.amount)||0,
+        low:(pp.low!=null?Number(pp.low):null),high:(pp.high!=null?Number(pp.high):null),
+        paid:pp.paid===true,approx:ap,over:pp.over===true});
     });
-    b.appendChild(L);
-    h.appendChild(c);
-  },ICO.chart,"violet");
-
-}
-function fnRefMiles(v){
-  pkCollapse(v,"fin_miles","Mileage",String(new Date().getFullYear())+" rates",false,function(h){
+  });
+  if(!pays.length) return;
+  pays.sort(function(a,z){
+    if(a.date&&z.date) return String(a.date).localeCompare(String(z.date));
+    if(a.date&&!z.date) return -1;
+    if(!a.date&&z.date) return 1;
+    return a.seq-z.seq;
+  });
+  var due=pays.filter(function(p){ return !p.paid; });
+  var done=pays.filter(function(p){ return p.paid; });
+  var next=due[0]||null;
+  /* NEXT FIRST, not chronological. The obligation that has not happened is the one worth a
+     glance; the header carries it so a closed section still says something. */
+  var cue=next?(fnRentAmount(next)+(next.date?("  \u00b7  "+fnShortDate(next.date)):(next.when?("  \u00b7  "+next.when):""))):null;
+  pkCollapse(v,"fin_recur","Rent and monthly payments",cue,true,function(h){
     var c=card(); var b=c._body;
-    var r1=el("div","fnacc"); var L1=el("div");
-    L1.appendChild(el("div","fnname","1 January to 30 June"));
-    r1.appendChild(L1); r1.appendChild(el("div","fnamt",(MILE_RATE.h1*100).toFixed(1)+"\u00a2"));
-    b.appendChild(r1);
-    var r2=el("div","fnacc"); var L2=el("div");
-    L2.appendChild(el("div","fnname","1 July onward"));
-    r2.appendChild(L2); r2.appendChild(el("div","fnamt",(MILE_RATE.h2*100).toFixed(0)+"\u00a2"));
-    b.appendChild(r2);
-    /* v21 build 412: THE SUBSTANTIATION RULE IS NOT ON THIS SCREEN, AND THAT IS THE POINT.
-       An earlier cut of this build printed the listed property rule and the sample period
-       method here. Ian read the point, accepted it and said he will use a tracking app, so
-       putting the rule on his phone now is our reasoning shown back to him, which is exactly
-       the class of thing stripped in builds 397, 398, 400 and 407. It is gone.
-       NO PERCENTAGE METHOD EXISTS ANYWHERE IN THIS CODE, not even unused. There is no business
-       use field, no odometer pair and no calculation from a share of total miles.
-       THE WHOLE CALCULATION IS TRACKED MILES TIMES THESE TWO RATES, which is what the populated
-       mileage slot already does: milesH1 at 72.5 cents and milesH2 at 76 cents, or a supplied
-       amount where the app gives one. Nothing renders until real miles land. */
-    h.appendChild(c);
-  },ICO.compass,"violet");
-
-}
-function fnRefMeals(v){
-  pkCollapse(v,"fin_why","Needs a purpose","what a meal has to carry",false,function(h){
-    var c=card(); var b=c._body; var L=el("div");
-    ["Amount","Date","Place","Who was there","Their business relationship","The business purpose"].forEach(function(t){
-      var r=el("div","fnacc"); var Lf=el("div"); Lf.appendChild(el("div","fnname",t)); r.appendChild(Lf); L.appendChild(r);
+    due.forEach(function(p){
+      fnRow(b,p.name,fnRentAmount(p),(p.date?fnShortDate(p.date):p.when),"due",false);
     });
-    b.appendChild(L);
-    b.appendChild(el("div","fnsch","The first three come off the statement. The last three only exist in memory."));
+    /* Paid minimises to a dim line. He does not need to look at it. */
+    done.forEach(function(p){ fnRow(b,p.name,fnRentAmount(p),"Paid","good",true); });
+    /* ONE provenance line for the section rather than repeating it on all three rows. Same
+       device as the snapshot date on the balances, and it is where the figures came from
+       rather than an apology for them. */
+    if(anyApprox) b.appendChild(el("div","fnsch","From memory"));
     h.appendChild(c);
-  },ICO.clipboard,"violet");
+  },ICO.home,"violet");
 }
 
-function buildFinance(v){
-  var f=finData();
-  if(!f){ safe(v,function(){ fnScaffold(v); },"Finance scaffold"); return; }
-
-  /* Balances. Three numbers say this better than any chart would, so there is no chart.
-     v21 build 410: THE 30 PERCENT SET ASIDE. Ian moves 30 percent to a separate tax account and
-     he normally does it the moment he is paid; a bulk sweep is the exception, September being
-     one. So a gross balance must never be shown as what he has. An account carrying kind "tax"
-     is rendered in its own group and is never summed with the rest, and where the record says
-     the tax account is not connected to Rocket Money the page says so once, because an
-     unconnected sweep leaves the feed looking like a loss rather than a transfer. NOTHING IS
-     ASSUMED EITHER WAY: per paycheck is the default, no lag is inferred, and no 30 percent is
-     deducted here from any figure. Every branch fires only on a field a later lane actually
-     writes, so today none of it renders. */
-  /* v21 build 411: THREE POOLS, NEVER ONE NUMBER, AND CARDS ARE NOT ACCOUNTS.
-     THE RULE. What Ian has is MAIN CHECKING. Not the sum. The extra checking is a buffer he
-     deliberately removed from circulation to carry the slow part of the year, which his own
-     seasonality note says runs from mid August with September to December being business
-     building rather than transacting; rendering it as available money defeats the whole point of
-     it existing. The tax account is held in trust by his tax guy and is not his money on any
-     reading. A single combined balance would overstate him on two separate axes at once, so this
-     renderer draws NO TOTAL, here or anywhere, and there is no code path that adds these up.
-     THE FNBO DEBIT IS NOT A SEPARATE POOL. It pulls from main checking, so debit spend is
-     checking outflow and counting both would double count it. The card list says so once.
-     WHAT HE CAN SEE IS NOT ASSUMED. The tax account is certain to be invisible to him; whether
-     the extra checking is too was NOT confirmed, so visibility is read per account from a
-     visible:false field and nothing is inferred when the field is absent.
-     kind VALUES. "checking" or "main" is the operating pool, "buffer" or "extra" is the set
-     aside, "tax" is the trust money. Anything else, including the 410 era "business" and
-     "personal", is a CARD and renders in the cards group, so no earlier record is orphaned.
-     Every branch fires only on fields a later lane writes. None of it renders today. */
-  if((f.accounts&&f.accounts.length)||(f.cards&&f.cards.length)){
-    var c0=card(); var b0=c0._body;
-    var _row=function(host,a,sub){
-      var r=el("div","fnacc");
-      var L=el("div"); L.style.minWidth="0";
-      L.appendChild(el("div","fnname",String(a.name||a.id||"Account")));
-      var bits=[]; if(sub) bits.push(sub);
-      if(a.visible===false) bits.push("you cannot see this one");
-      if(a.last4) bits.push("\u2022\u2022\u2022\u2022 "+a.last4);
-      if(bits.length) L.appendChild(el("div","fnsch",bits.join("  \u00b7  ")));
-      r.appendChild(L);
-      if(a.balance!=null) r.appendChild(el("div","fnamt",fnMoney(a.balance)));
-      host.appendChild(r);
-    };
-    var _k=function(a){ return String((a&&a.kind)||"").toLowerCase(); };
-    var _all=(f.accounts||[]).concat(f.cards||[]);
-    var _main=[],_buf=[],_tax=[],_cards=[];
-    _all.forEach(function(a){
-      var k=_k(a);
-      if(k==="checking"||k==="main") _main.push(a);
-      else if(k==="buffer"||k==="extra") _buf.push(a);
-      else if(k==="tax") _tax.push(a);
-      else _cards.push(a);
+/* ---------- SUBSCRIPTIONS. Renders only once a list exists. ---------- */
+function fnSubs(v,f){
+  if(!f||!f.subscriptions||!f.subscriptions.length) return;
+  var dom=new Date().getDate();
+  var subs=f.subscriptions.slice().map(function(x){
+    var amt=Number(x&&x.amount)||0;
+    var cyc=String((x&&x.cycle)||"monthly").toLowerCase();
+    var per=(cyc==="annual"||cyc==="yearly")?(amt/12):(cyc==="weekly")?(amt*52/12):(cyc==="quarterly")?(amt/3):amt;
+    return {x:x,amt:amt,cyc:cyc,per:per,day:Number(x&&x.day)||0};
+  }).sort(function(a,z){ return z.per-a.per; });
+  var tot=0; subs.forEach(function(o){ tot+=o.per; });
+  pkCollapse(v,"fin_subs","Subscriptions",fnMoney(tot)+" a month",true,function(h){
+    var c=card(); var b=c._body;
+    subs.forEach(function(o){
+      /* AUTOPAY GOES GREEN ON ITS BILLING DAY, BY DATE. He is never asked to confirm anything. */
+      var state=(o.day>0&&dom>=o.day)?"good":"due";
+      var bits=[];
+      if(o.day>0) bits.push("The "+o.day+(o.day===1?"st":o.day===2?"nd":o.day===3?"rd":"th"));
+      if(o.cyc!=="monthly") bits.push(o.cyc);
+      fnRow(b,o.x.name||"Subscription",fnMoney(o.per),bits.join("  \u00b7  "),state,false);
     });
+    if(f.subscriptionsPartial===true) b.appendChild(el("div","fnsch","On record so far"));
+    h.appendChild(c);
+  },ICO.bolt,"violet");
+}
 
-    if(_cards.length){
-      b0.appendChild(el("div","fnsch","Cards, balances owed"));
-      _cards.forEach(function(a){
-        var k=_k(a);
-        _row(b0,a,k==="business"?"business":k==="debit"?"debit, pulls from main checking":"personal credit");
-      });
-    }
-
-    if(_main.length){
-      if(_cards.length) b0.appendChild(el("div","fnsch","Main checking"));
-      _main.forEach(function(a){ _row(b0,a,"the cards pull from here"); });
-      /* v21 build 411: THE NET POSITION, AND IT EXISTS TO MAKE THE PAGE LESS FLATTERING.
-         Main checking alone overstates him, because a card balance is money already spent and
-         not yet paid. Rocket Money's own screen makes the opposite error and sums the two
-         checking accounts to $10,436, folding his operating money together with the buffer.
-         This line goes the other way: it subtracts what is owed from the operating account and
-         shows the remainder. THE BUFFER IS NEVER IN THIS SUM and the line says so, so the one
-         figure that could be mistaken for everything he has is the smallest honest one rather
-         than the largest. Renders only when both a main balance and a card balance exist. */
-      var _mb=0,_cb=0,_haveM=false,_haveC=false;
-      _main.forEach(function(a){ if(a&&a.balance!=null){ _mb+=Number(a.balance)||0; _haveM=true; } });
-      _cards.forEach(function(a){ if(a&&a.balance!=null){ _cb+=Number(a.balance)||0; _haveC=true; } });
-      if(_haveM&&_haveC&&_cb>0){
-        b0.appendChild(el("div","fnsch","Less "+fnMoney(_cb)+" owed on cards leaves "+fnMoney(_mb-_cb)));
-        if(_buf.length) b0.appendChild(el("div","fnsch","The buffer is not counted in that"));
-      }
-    }
-
-    if(_buf.length){
-      b0.appendChild(el("div","fnsch","Set aside for the slow part of the year, not spending money"));
-      _buf.forEach(function(a){ _row(b0,a,"you put this aside on purpose"); });
-    }
-
-    if(_tax.length){
-      b0.appendChild(el("div","fnsch","Set aside for tax, not yours to spend"));
-      _tax.forEach(function(a){ _row(b0,a,"held by your tax guy"); });
-    }
-
-    if(f.taxSetAside&&f.taxSetAside.connected===false){
-      b0.appendChild(el("div","fnsch","Your tax guy holds the tax account, so it is not in this feed and a transfer into it reads as spend."));
-    }
-    if(f.taxSetAside&&f.taxSetAside.unsweptPeriods&&f.taxSetAside.unsweptPeriods.length){
-      b0.appendChild(el("div","fnsch","Not yet swept: "+f.taxSetAside.unsweptPeriods.join(", ")));
-    }
-    /* A STATIC READ IS NOT A LIVE FEED AND MUST NOT LOOK LIKE ONE. These figures came off a
-       screen Ian read on a date. Saying when they were true is the difference between a balance
-       and a claim. */
-    if(f.asOf) b0.appendChild(el("div","fnsch",(f.source?("Snapshot from "+String(f.source)+", "):"Snapshot, ")+fmtLongDate(f.asOf)));
-    v.appendChild(c0);
-  }
-
-  /* ===== RECURRING, BUT NOT MONTHLY. THIS IS THE COLLISION THE PAGE EXISTS TO SHOW.
-     Ian, 18.09.2026: the apartment is paid at three points in the year, one big chunk already
-     paid, another big chunk in late December or January, and a small one before summer.
-     WHY IT IS NEVER AVERAGED. His income is spiky and seasonal, the market drops off from mid
-     August and September to December is business building rather than transacting. His largest
-     single bill therefore lands in the middle of his lowest earning stretch. Dividing rent by
-     twelve would erase precisely that, which is the one thing a finance page can tell him that
-     he cannot see on a statement. So it is held as DATED PAYMENTS and rendered as dated
-     payments, the next one first.
-     IT IS NOT A SUBSCRIPTION and it is deliberately kept out of that monthly total, which would
-     otherwise be wrecked by a number that is not monthly.
-     THE PAGE DOES NOT EDITORIALISE. It shows the dates and the amounts and stops. Whether the
-     buffer covers the December chunk is his read to make, not ours to announce. */
-  /* v21 build 412: APPROXIMATE FIGURES ARE RENDERED AS APPROXIMATE, EVERY TIME THEY APPEAR.
-     Ian gave the rent amounts from memory, prefaced "if I remember right", and said he will go
-     over the real amounts and dates another time. A figure he might repeat to somebody must not
-     look settled while it is a recollection, so approximation is carried on the AMOUNT ITSELF,
-     not tucked into a footnote a scroll away: an approximate payment renders as "About $2,600"
-     and the one he described as "just over 1,000" renders as "Just over $1,000". The section
-     also says once, in plain words, that these came from memory.
-     DATES ARE LEFT OPEN RATHER THAN INVENTED. He gave "late December or January" and "before
-     summer", so those strings are shown as he said them. A payment with no real date is never
-     given one, never sorted as if it had one, and never placed on the month chart, because a
-     spike drawn on a guessed month is a fabrication dressed as a chart.
-     NOTHING PRECISE IS COMPUTED OFF THEM. No annual total, no monthly average, no remaining
-     balance. The shape is the point: two big payments and one small one, with the second landing
-     in his slowest earning stretch, and the shape survives without arithmetic. */
-  if(f.recurring&&f.recurring.length){
-    var _pays=[];
-    f.recurring.forEach(function(rr){
-      (rr&&rr.payments||[]).forEach(function(pp,_ix){
-        if(!pp) return;
-        _pays.push({name:String(rr.name||"Recurring"),sch:rr.sch,date:pp.date||"",
-          when:String(pp.when||""),seq:(pp.seq!=null?Number(pp.seq):_ix),
-          amount:Number(pp.amount)||0,
-          low:(pp.low!=null?Number(pp.low):null),high:(pp.high!=null?Number(pp.high):null),
-          paid:pp.paid===true,
-          approx:pp.approx===true||rr.approx===true,over:pp.over===true});
-      });
-    });
-    if(_pays.length){
-      /* Dated payments sort by date. Undated ones keep the order they were recorded in, which is
-         the order he described them, and never borrow a neighbour's date to sort against. */
-      _pays.sort(function(a,z){
-        if(a.date&&z.date) return String(a.date).localeCompare(String(z.date));
-        if(a.date&&!z.date) return -1;
-        if(!a.date&&z.date) return 1;
-        return a.seq-z.seq;
-      });
-      var _anyApprox=false; _pays.forEach(function(p){ if(p.approx) p.approx&&(_anyApprox=true); });
-      /* v21 build 412: A RANGE IS RENDERED AS A RANGE. Ian revised the rent from a single
-         approximate figure to "in between 2300-2600", which is him being LESS certain rather
-         than more, so the page must not quietly recover the precision he just gave up. No
-         midpoint is taken, no average, no annual total. The range is the honest artefact and it
-         looks like one. A single approximate figure still reads "About", and "just over 1,000"
-         stays "Just over $1,000" because rounding that to a flat $1,000 would be a different
-         claim from the one he made. When the real amounts arrive they replace low and high with
-         a plain amount and every one of these prefixes disappears on its own. */
-      var _amt=function(p){
-        if(p.low!=null&&p.high!=null&&p.high!==p.low) return fnMoney(p.low)+" to "+fnMoney(p.high);
-        var m=fnMoney(p.low!=null?p.low:p.amount);
-        return p.over?("Just over "+m):p.approx?("About "+m):m;
-      };
-      var _next=null;
-      try{ for(var _i=0;_i<_pays.length;_i++){ var _p=_pays[_i];
-        if(_p.paid) continue;
-        if(_p.date && daysUntil(_p.date)<0) continue;
-        _next=_p; break; } }catch(e){}
-      var _cue="";
-      if(_next){ var _a=_amt(_next);
-        if(/^[A-Z][a-z]+ /.test(_a)) _a=_a.charAt(0).toLowerCase()+_a.slice(1);
-        _cue="next "+_a; var _w=_next.date?fmtShort(_next.date):_next.when;
-        if(_w) _cue+="  \u00b7  "+_w; }
-      else _cue=_pays.length+(_pays.length===1?" payment":" payments");
-      pkCollapse(v,"fin_recur","Rent and other set payments",_cue,true,function(h){
-        var c=card(); var b=c._body;
-        if(_anyApprox) b.appendChild(el("div","fnsch","Amounts and dates are from memory, not from a record yet"));
-        var L=el("div"); L.style.marginTop=_anyApprox?"10px":"0";
-        _pays.forEach(function(p){
-          var r=el("div","fnacc"); var Lf=el("div"); Lf.style.minWidth="0";
-          Lf.appendChild(el("div","fnname",p.name));
-          var bits=[];
-          if(p.date) bits.push(fmtLongDate(p.date));
-          else if(p.when) bits.push(p.when);
-          if(p.paid) bits.push("paid");
-          if(p.sch){ var sc=schedC(p.sch); if(sc&&sc.line) bits.push("line "+sc.line); }
-          if(bits.length) Lf.appendChild(el("div","fnsch",bits.join("  \u00b7  ")));
-          r.appendChild(Lf);
-          r.appendChild(el("div","fnamt",_amt(p)));
-          L.appendChild(r);
-        });
-        b.appendChild(L);
-        h.appendChild(c);
-      },ICO.home,"violet");
-    }
-  }
-
-  /* ===== SUBSCRIPTIONS. Ian, 18.09.2026: "like I know how many I have, what I have, how much
-     they cost, when they cost me, and then a total per month basis."
-     THE MONTHLY TOTAL IS THE HEADLINE because it is the number he asked for last and the one
-     that answers what this is costing him. An annual plan is normalised to a twelfth for that
-     total and BOTH figures appear on its row, because a total built from annual charges at face
-     value would lie while a row showing only the twelfth would not match his statement. Sorted
-     by monthly cost descending, which is what makes an expensive one visible.
-     THE LIST IS KNOWN TO BE PARTIAL. Ian, 18.09.2026: "There's a few subscriptions Rocket Money
-     doesn't have yet so I'll try to go over most this weekend." A total presented as complete
-     when it is not is worse than no total, so when subscriptionsPartial is true the headline
-     label says the total is from what is on record rather than claiming to be everything. The
-     figure is still shown, because a scoped total is useful now and grows on its own as he adds
-     to the list; nothing here needs rebuilding when he does.
-     "WHEN THEY COST ME" IS A DATE COLUMN AND A SPLIT LINE, NOT A CHART. A 31 column strip at
-     390px gives about 11px a day and build 390 already established that a column that narrow
-     clips its label; with a dozen subscriptions it would also be mostly empty. The billing day
-     on each row plus one line splitting the total across the month says it legibly.
-     DEDUCTIBLE ONES ARE MARKED against the same SCHED_C table the rest of the page uses.
-     RENT IS NOT IN HERE. It is not a subscription and it is not monthly.
-     ZERO WRITE SURFACES AND NO CANCEL CONTROL. We do not act inside Rocket Money and this page
-     must not imply that we can. */
-  if(f.subscriptions&&f.subscriptions.length){
-    var _subs=f.subscriptions.slice().map(function(x){
-      var amt=Number(x&&x.amount)||0;
-      var cyc=String((x&&x.cycle)||"monthly").toLowerCase();
-      var per=(cyc==="annual"||cyc==="yearly")?(amt/12):(cyc==="weekly")?(amt*52/12):(cyc==="quarterly")?(amt/3):amt;
-      return {x:x,amt:amt,cyc:cyc,per:per};
-    }).sort(function(a,z){ return z.per-a.per; });
-    var _tot=0; _subs.forEach(function(o){ _tot+=o.per; });
-    var _early=0,_late=0,_noday=0;
-    _subs.forEach(function(o){ var d=Number(o.x&&o.x.day)||0; if(!d) _noday+=o.per; else if(d<=15) _early+=o.per; else _late+=o.per; });
-    var _partial=(f.subscriptionsPartial===true);
-    pkCollapse(v,"fin_subs","Subscriptions",
-      _subs.length+(_subs.length===1?" on record":" on record"),true,function(h){
-      var c=card(); var b=c._body;
-      b.appendChild(el("div","fnbig",fnMoney(_tot)));
-      b.appendChild(el("div","fnlab",_partial?"a month, from the ones on record":"a month"));
-      if(_early>0||_late>0){
-        b.appendChild(el("div","fnsch",fnMoney(_early)+" on or before the 15th, "+fnMoney(_late)+" after"));
-        if(_noday>0) b.appendChild(el("div","fnsch",fnMoney(_noday)+" with no billing day on record"));
-      }
-      var L=el("div"); L.style.marginTop="12px";
-      _subs.forEach(function(o){
-        var x=o.x;
-        var r=el("div","fnacc"); var Lf=el("div"); Lf.style.minWidth="0";
-        Lf.appendChild(el("div","fnname",String(x.name||"Subscription")));
-        var bits=[];
-        if(Number(x.day)>0) bits.push("bills on the "+Math.round(x.day));
-        if(o.cyc!=="monthly") bits.push(fnMoney(o.amt)+" "+o.cyc);
-        if(x.sch){ var sc=schedC(x.sch); if(sc&&sc.line) bits.push("line "+sc.line); }
-        if(bits.length) Lf.appendChild(el("div","fnsch",bits.join("  \u00b7  ")));
-        r.appendChild(Lf);
-        r.appendChild(el("div","fnamt",fnMoney(o.per)));
-        L.appendChild(r);
+/* ---------- TAX. ONE COLLAPSED SUBSECTION, NOT THE SPINE OF THE PAGE ---------- */
+function fnTax(v,f){
+  /* A collapsed header does not need a number when there is no useful summary number, so this
+     one carries none rather than inventing one. */
+  pkCollapse(v,"fin_tax","Tax",null,false,function(h){
+    var c=card(); var b=c._body;
+    if(f&&f.deductible&&Number(f.deductible.ytd)>0) safe(b,function(){ fnDeductRing(b,f); },"Finance deductible");
+    if(f&&f.categories&&f.categories.length){ safe(b,function(){ fnCategories(b,f.categories); },"Finance categories"); }
+    else {
+      b.appendChild(el("div","fnsch","Schedule C"));
+      var L=el("div"); L.style.marginTop="6px";
+      Object.keys(SCHED_C).forEach(function(k){
+        var x=SCHED_C[k]; if(!x) return;
+        /* Home office is a cap, not a percentage, and "100% allowed" misreads it. */
+        var right=(k==="homeoffice")?"$5 a sq ft":(Math.round(Number(x.pct)||0)+"%");
+        fnRow(L,String(x.label||k),right,(x.line?("Line "+x.line):null),null,false);
       });
       b.appendChild(L);
-      h.appendChild(c);
-    },ICO.bolt,"violet");
-  }
+    }
+    var m=(f&&f.mileage)||null;
+    var M=el("div"); M.style.marginTop="14px";
+    M.appendChild(el("div","fnsch","Mileage"));
+    var L2=el("div"); L2.style.marginTop="6px";
+    if(m&&(Number(m.miles)>0||Number(m.amount)>0)){
+      var amt=Number(m.amount)||((Number(m.milesH1)||0)*MILE_RATE.h1+(Number(m.milesH2)||0)*MILE_RATE.h2);
+      var mi=Number(m.miles)||((Number(m.milesH1)||0)+(Number(m.milesH2)||0));
+      fnRow(L2,"Deduction",fnMoney(amt),(mi>0?(Math.round(mi).toLocaleString("en-US")+" miles"):null),"good",false);
+    }
+    fnRow(L2,"Jan to Jun",(MILE_RATE.h1*100).toFixed(1)+"\u00a2",null,null,false);
+    fnRow(L2,"Jul onward",(MILE_RATE.h2*100).toFixed(0)+"\u00a2",null,null,false);
+    M.appendChild(L2); b.appendChild(M);
+    h.appendChild(c);
+  },ICO.target,"violet");
+}
 
-  /* The permanently true reference, each only where real data has not replaced it. */
-  if(!(f.categories&&f.categories.length)) safe(v,function(){ fnRefCats(v); },"Finance Sched C");
-  if(!(f.mileage&&(Number(f.mileage.miles)>0||Number(f.mileage.amount)>0))) safe(v,function(){ fnRefMiles(v); },"Finance mileage");
-  if(!(f.needsPurpose&&f.needsPurpose.length)) safe(v,function(){ fnRefMeals(v); },"Finance meals");
+/* ---------- THE PAGE ---------- */
+function buildFinance(v){
+  var f=finData()||{};
+  /* The header is a plain block, not a card. The year is context, not a financial fact, so it
+     does not get the largest type on the screen; the snapshot date rides here as provenance for
+     everything below it, rather than floating between two financial sections. */
+  var head=el("div"); head.style.cssText="padding:2px 2px 14px";
+  head.appendChild(el("div","g7title","Finances"));
+  if(f.asOf) head.appendChild(el("div","fnsch",fnShortDate(f.asOf)+" snapshot"));
+  v.appendChild(head);
+
+  safe(v,function(){ fnBalances(v,f); },"Balances");
+  safe(v,function(){ fnRent(v,f); },"Rent");
+  safe(v,function(){ fnSubs(v,f); },"Subscriptions");
 
   if(f.months&&f.months.length>1){
-    pkCollapse(v,"fin_flow","Money in and out","by month",true,function(h){
+    pkCollapse(v,"fin_flow","Money in and out",null,false,function(h){
       var c=card(); safe(c._body,function(){ fnMonthChart(c._body,f.months,f); },"Finance flow"); h.appendChild(c);
     },ICO.trend,"violet");
   }
-
-  if(f.categories&&f.categories.length){
-    pkCollapse(v,"fin_cats","Where it goes","deductible and not, by Schedule C line",true,function(h){
-      var c=card(); safe(c._body,function(){ fnCategories(c._body,f.categories); },"Finance categories"); h.appendChild(c);
-    },ICO.chart,"violet");
-  }
-
-  if(f.deductible&&Number(f.deductible.ytd)>0){
-    pkCollapse(v,"fin_ded","Deductible so far",String(f.taxYear||new Date().getFullYear()),false,function(h){
-      var c=card(); safe(c._body,function(){ fnDeductRing(c._body,f); },"Finance deductible"); h.appendChild(c);
-    },ICO.target,"violet");
-  }
-
-  /* Mileage has its own slot because it is likely his largest deduction and it is the one that
-     cannot be rebuilt later from a statement. It renders only once a tracking app has produced
-     miles; there is no prompt here asking him to enter any. */
-  if(f.mileage&&(Number(f.mileage.miles)>0||Number(f.mileage.amount)>0)){
-    pkCollapse(v,"fin_miles","Mileage","",false,function(h){
-      var m=f.mileage; var c=card(); var b=c._body;
-      var amt=Number(m.amount)||((Number(m.milesH1)||0)*MILE_RATE.h1+(Number(m.milesH2)||0)*MILE_RATE.h2);
-      b.appendChild(el("div","fnbig",fnMoney(amt)));
-      var mi=Number(m.miles)||((Number(m.milesH1)||0)+(Number(m.milesH2)||0));
-      var bits=[];
-      if(mi>0) bits.push(Math.round(mi).toLocaleString("en-US")+" miles");
-      if(Number(m.milesH1)>0) bits.push(Math.round(m.milesH1).toLocaleString("en-US")+" at "+(MILE_RATE.h1*100).toFixed(1)+"\u00a2");
-      if(Number(m.milesH2)>0) bits.push(Math.round(m.milesH2).toLocaleString("en-US")+" at "+(MILE_RATE.h2*100).toFixed(0)+"\u00a2");
-      if(bits.length) b.appendChild(el("div","fnlab",bits.join("  \u00b7  ")));
-      if(m.source) b.appendChild(el("div","fnsch","from "+String(m.source)));
-      h.appendChild(c);
-    },ICO.compass,"violet");
-  }
-
-  /* Needs a purpose. READ ONLY. This tells him which charges are missing the who and the why
-     while he can still remember them. The IRS wants six things on a meal and they are named
-     in the subtitle so the list does not have to repeat them on every row. */
-  if(f.needsPurpose&&f.needsPurpose.length){
-    var np=f.needsPurpose;
-    pkCollapse(v,"fin_why","Needs a purpose",np.length+(np.length===1?" charge":" charges"),true,function(h){
+  if(f.closings&&f.closings.length){
+    var cl=f.closings, tot=0; cl.forEach(function(x){ tot+=Number(x.net!=null?x.net:x.gross)||0; });
+    pkCollapse(v,"fin_close","Closings",fnMoney(tot),false,function(h){
       var c=card(); var b=c._body;
-      b.appendChild(el("div","fnsch","A meal needs amount, date, place, who was there, their business relationship, and the purpose."));
-      var list=el("div"); list.style.marginTop="10px";
-      np.forEach(function(t){
-        var row=el("div","fnrow");
-        var top=el("div","fntop");
-        top.appendChild(el("div","fnname",String(t.merchant||t.name||"Charge")));
-        top.appendChild(el("div","fnamt",fnMoney(t.amount)));
-        row.appendChild(top);
-        var bits=[];
-        if(t.date) bits.push(fmtShort(t.date));
-        if(t.account) bits.push(String(t.account));
-        if(t.missing) bits.push(String(t.missing));
-        else if(t.why) bits.push(String(t.why));
-        if(bits.length) row.appendChild(el("div","fnsch",bits.join("  \u00b7  ")));
-        list.appendChild(row);
-      });
-      b.appendChild(list); h.appendChild(c);
-    },ICO.clipboard,"violet");
-  }
-
-  /* Closings. Income is closing driven, so it is listed as closings rather than as a monthly
-     figure. Where finance.closings is absent the closed files already in state are shown, and
-     they are labelled VOLUME because that is what they are. No commission is computed here. */
-  var cl=(f.closings&&f.closings.length)?f.closings:null;
-  var derived=null;
-  if(!cl){ try{ derived=(state.realEstate&&state.realEstate.deals||[]).filter(function(d){ return d&&d.stage==="Closed"; }); }catch(e){ derived=null; } }
-  if(cl||(derived&&derived.length)){
-    var n=cl?cl.length:derived.length;
-    pkCollapse(v,"fin_close","Closings",n+(n===1?" file":" files"),false,function(h){
-      var c=card(); var b=c._body;
-      if(cl){
-        var tot=0; cl.forEach(function(x){ tot+=Number(x.net!=null?x.net:x.gross)||0; });
-        b.appendChild(el("div","fnbig",fnMoney(tot)));
-        b.appendChild(el("div","fnlab","commission this year"));
-        var L=el("div"); L.style.marginTop="12px";
-        cl.forEach(function(x){
-          var row=el("div","fnrow"); var top=el("div","fntop");
-          top.appendChild(el("div","fnname",String(x.address||x.title||"Closing")));
-          top.appendChild(el("div","fnamt",fnMoney(x.net!=null?x.net:x.gross)));
-          row.appendChild(top);
-          if(x.date) row.appendChild(el("div","fnsch",fmtLongDate(x.date)));
-          L.appendChild(row);
-        });
-        b.appendChild(L);
-      } else {
-        var vol=0; derived.forEach(function(d){ try{ vol+=dealVolume(d)||0; }catch(e){} });
-        b.appendChild(el("div","fnbig",fnMoney(vol)));
-        b.appendChild(el("div","fnlab","closed volume across "+derived.length+(derived.length===1?" file":" files")));
-        b.appendChild(el("div","fnsch","Volume, not income. Commission appears here once it is recorded."));
-      }
+      cl.forEach(function(x){ fnRow(b,x.address||x.title||"Closing",fnMoney(x.net!=null?x.net:x.gross),(x.date?fnShortDate(x.date):null),"good",false); });
       h.appendChild(c);
     },ICO.property,"violet");
   }
+  safe(v,function(){ fnTax(v,f); },"Tax");
 }
-
 const IAN_PAGES={ "p-home":buildIanHome,"p-re":buildIanRe,"p-gym":buildGym,"p-pickle":buildPickle,"p-solara":buildSolara,"p-finance":buildFinance,"p-settings":buildSettings };
 function applyProfileChrome(){
   const T = {home:"Today",stats:"Stats",re:"Real Estate",gym:"Gym",more:"More",pickle:"Pickleball",settings:"Settings"};
