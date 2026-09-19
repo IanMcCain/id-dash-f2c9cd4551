@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 414 (2026-09-19)">
+<meta name="build" content="v21 build 415 (2026-09-19)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -23278,10 +23278,55 @@ function fnRentAmount(p){
   if(p.approx) return "\u2248"+fnMoney(base);
   return fnMoney(base);
 }
-function fnRent(v,f){
-  if(!f||!f.recurring||!f.recurring.length) return;
+
+/* ===== v21 build 415: ONE SECTION FOR EVERYTHING THAT LEAVES ON A SCHEDULE ==================
+   IAN, 19.09.2026: "In that monthly payments section it'll need to include all of my
+   subscriptions, car monthly payment etc". So Subscriptions stops being its own section and
+   everything recurring lives here: rent, every subscription, a car payment once he has one.
+
+   THE MIXED CADENCE PROBLEM, AND WHAT I CHOSE. Rent is three irregular lumps a year and the
+   subscriptions are monthly. One blended number would either divide the rent by twelve, which
+   erases the whole point of the rent being lumpy, or add a lump to a monthly figure, which is
+   simply wrong. So this section carries TWO TOTALS THAT ARE NEVER ADDED TOGETHER:
+
+     the monthly total, which is every fixed monthly item, and rides in the section header
+     because it is the answer to "what leaves every month";
+     the dated lumps, listed individually with their own amounts and their own dates, under
+     their own group, next one first.
+
+   NOTHING DIVIDES A LUMP BY TWELVE AND NOTHING ADDS A LUMP TO THE MONTHLY FIGURE. There is no
+   code path that can produce a blended number. An annual figure is not computed either.
+
+   COLOUR RUNS ACROSS THE WHOLE SECTION. Paid is green, upcoming is red, and a subscription goes
+   green on its billing day by date, so he is never asked to confirm a payment. */
+function fnOrd(n){
+  /* The naive form printed "The 22th". Tens 11 to 13 always take "th"; everything else goes by
+     the last digit. */
+  n=Number(n)||0; var t=n%100;
+  if(t>=11&&t<=13) return "th";
+  var d=n%10;
+  return d===1?"st":d===2?"nd":d===3?"rd":"th";
+}
+function fnMonthly(v,f){
+  if(!f) return;
+  var dom=new Date().getDate();
+
+  /* EVERY MONTH. Subscriptions and any other fixed monthly item, for example a car payment,
+     read from the same shape so a new kind of payment needs no new renderer. */
+  var recur=[];
+  (f.subscriptions||[]).forEach(function(x){ recur.push(x); });
+  (f.monthly||[]).forEach(function(x){ recur.push(x); });
+  recur=recur.map(function(x){
+    var amt=Number(x&&x.amount)||0;
+    var cyc=String((x&&x.cycle)||"monthly").toLowerCase();
+    var per=(cyc==="annual"||cyc==="yearly")?(amt/12):(cyc==="weekly")?(amt*52/12):(cyc==="quarterly")?(amt/3):amt;
+    return {x:x,amt:amt,cyc:cyc,per:per,day:Number(x&&x.day)||0};
+  }).sort(function(a,z){ return z.per-a.per; });
+  var monthlyTotal=0; recur.forEach(function(o){ monthlyTotal+=o.per; });
+
+  /* DATED. The rent lumps, and anything else that lands on a date rather than every month. */
   var pays=[],anyApprox=false;
-  f.recurring.forEach(function(rr){
+  (f.recurring||[]).forEach(function(rr){
     (rr&&rr.payments||[]).forEach(function(pp,ix){
       if(!pp) return;
       var ap=pp.approx===true||rr.approx===true;
@@ -23292,7 +23337,7 @@ function fnRent(v,f){
         paid:pp.paid===true,approx:ap,over:pp.over===true});
     });
   });
-  if(!pays.length) return;
+  if(!recur.length&&!pays.length) return;
   pays.sort(function(a,z){
     if(a.date&&z.date) return String(a.date).localeCompare(String(z.date));
     if(a.date&&!z.date) return -1;
@@ -23302,48 +23347,79 @@ function fnRent(v,f){
   var due=pays.filter(function(p){ return !p.paid; });
   var done=pays.filter(function(p){ return p.paid; });
   var next=due[0]||null;
-  /* NEXT FIRST, not chronological. The obligation that has not happened is the one worth a
-     glance; the header carries it so a closed section still says something. */
-  var cue=next?(fnRentAmount(next)+(next.date?("  \u00b7  "+fnShortDate(next.date)):(next.when?("  \u00b7  "+next.when):""))):null;
+
+  /* The header carries the monthly total where one exists, because that is the recurring
+     question. With no monthly items it falls back to the next dated lump rather than showing
+     a zero that would read as "nothing leaves". */
+  var cue=null;
+  if(monthlyTotal>0) cue=fnMoney(monthlyTotal)+" a month";
+  else if(next) cue=fnRentAmount(next)+(next.date?("  \u00b7  "+fnShortDate(next.date)):(next.when?("  \u00b7  "+next.when):""));
+
   pkCollapse(v,"fin_recur","Rent and monthly payments",cue,true,function(h){
     var c=card(); var b=c._body;
-    due.forEach(function(p){
-      fnRow(b,p.name,fnRentAmount(p),(p.date?fnShortDate(p.date):p.when),"due",false);
-    });
-    /* Paid minimises to a dim line. He does not need to look at it. */
-    done.forEach(function(p){ fnRow(b,p.name,fnRentAmount(p),"Paid","good",true); });
-    /* ONE provenance line for the section rather than repeating it on all three rows. Same
-       device as the snapshot date on the balances, and it is where the figures came from
-       rather than an apology for them. */
-    if(anyApprox) b.appendChild(el("div","fnsch","From memory"));
+    var both=(recur.length&&pays.length);
+    if(recur.length){
+      if(both) b.appendChild(el("div","fnsch","Every month"));
+      var L1=el("div"); L1.style.marginTop=both?"6px":"0";
+      recur.forEach(function(o){
+        var state=(o.day>0&&dom>=o.day)?"good":"due";
+        var bits=[];
+        if(o.day>0) bits.push("The "+o.day+fnOrd(o.day));
+        if(o.cyc!=="monthly") bits.push(o.cyc);
+        fnRow(L1,o.x.name||"Payment",fnMoney(o.per),bits.join("  \u00b7  "),state,false);
+      });
+      b.appendChild(L1);
+      if(f.subscriptionsPartial===true) b.appendChild(el("div","fnsch","On record so far"));
+    }
+    if(pays.length){
+      var D=el("div"); D.style.marginTop=recur.length?"16px":"0";
+      if(both) D.appendChild(el("div","fnsch","Dated"));
+      var L2=el("div"); L2.style.marginTop=both?"6px":"0";
+      due.forEach(function(p){
+        fnRow(L2,p.name,fnRentAmount(p),(p.date?fnShortDate(p.date):p.when),"due",false);
+      });
+      done.forEach(function(p){ fnRow(L2,p.name,fnRentAmount(p),"Paid","good",true); });
+      D.appendChild(L2);
+      /* One provenance line, the same device as the snapshot date on the balances. */
+      if(anyApprox) D.appendChild(el("div","fnsch","From memory"));
+      b.appendChild(D);
+    }
     h.appendChild(c);
   },ICO.home,"violet");
 }
 
-/* ---------- SUBSCRIPTIONS. Renders only once a list exists. ---------- */
-function fnSubs(v,f){
-  if(!f||!f.subscriptions||!f.subscriptions.length) return;
-  var dom=new Date().getDate();
-  var subs=f.subscriptions.slice().map(function(x){
-    var amt=Number(x&&x.amount)||0;
-    var cyc=String((x&&x.cycle)||"monthly").toLowerCase();
-    var per=(cyc==="annual"||cyc==="yearly")?(amt/12):(cyc==="weekly")?(amt*52/12):(cyc==="quarterly")?(amt/3):amt;
-    return {x:x,amt:amt,cyc:cyc,per:per,day:Number(x&&x.day)||0};
-  }).sort(function(a,z){ return z.per-a.per; });
-  var tot=0; subs.forEach(function(o){ tot+=o.per; });
-  pkCollapse(v,"fin_subs","Subscriptions",fnMoney(tot)+" a month",true,function(h){
+/* ===== GOALS. THE SLOT EXISTS, NOTHING RENDERS WITHOUT A TARGET =============================
+   IAN, 19.09.2026: "Only add things that are guaranteed for Arizona, tournament fee." So a goal
+   is the ENTRY FEE and nothing else. No flights, no hotel, no food: he is going with Dylan so
+   some costs may be shared and with Bianca whom he will likely cover, and none of that is
+   settled, so none of it is a guaranteed cost and none of it is invented here.
+
+   THE ARIZONA FEE AMOUNT IS NOT KNOWN AND IS NOT ESTIMATED. A goal renders only when it carries
+   a real target above zero, so today this section has zero footprint.
+
+   A TRIP HIS PARENTS PAY FOR IS NOT A GOAL. It is not his expense, so it is not a target, and
+   the January trip that was raised as one has been dropped by name on his instruction.
+
+   THE CAR IS NOT A GOAL EITHER. His current car is the trade in and covers the down payment,
+   so what he actually faces is fees once and then a monthly payment. That belongs in the
+   monthly payments section above, as an f.monthly entry, and no figure exists for it yet.
+
+   A ring is drawn only when the denominator is real. With a target the row can carry progress;
+   without one there is no honest arc to draw, so there is no row at all. */
+function fnGoals(v,f){
+  if(!f||!f.goals||!f.goals.length) return;
+  var gs=f.goals.filter(function(g){ return g&&Number(g.target)>0; });
+  if(!gs.length) return;
+  var n=gs.length;
+  pkCollapse(v,"fin_goals","Goals",String(n),false,function(h){
     var c=card(); var b=c._body;
-    subs.forEach(function(o){
-      /* AUTOPAY GOES GREEN ON ITS BILLING DAY, BY DATE. He is never asked to confirm anything. */
-      var state=(o.day>0&&dom>=o.day)?"good":"due";
-      var bits=[];
-      if(o.day>0) bits.push("The "+o.day+(o.day===1?"st":o.day===2?"nd":o.day===3?"rd":"th"));
-      if(o.cyc!=="monthly") bits.push(o.cyc);
-      fnRow(b,o.x.name||"Subscription",fnMoney(o.per),bits.join("  \u00b7  "),state,false);
+    gs.forEach(function(g){
+      var saved=Number(g.saved)||0, target=Number(g.target)||0;
+      var pct=target>0?Math.round(Math.min(100,(saved/target)*100)):0;
+      fnRow(b,String(g.name||"Goal"),fnMoney(saved),"Of "+fnMoney(target),(pct>=100?"good":"due"),false);
     });
-    if(f.subscriptionsPartial===true) b.appendChild(el("div","fnsch","On record so far"));
     h.appendChild(c);
-  },ICO.bolt,"violet");
+  },ICO.target,"violet");
 }
 
 /* ---------- TAX. ONE COLLAPSED SUBSECTION, NOT THE SPINE OF THE PAGE ---------- */
@@ -23393,8 +23469,8 @@ function buildFinance(v){
   v.appendChild(head);
 
   safe(v,function(){ fnBalances(v,f); },"Balances");
-  safe(v,function(){ fnRent(v,f); },"Rent");
-  safe(v,function(){ fnSubs(v,f); },"Subscriptions");
+  safe(v,function(){ fnMonthly(v,f); },"Monthly payments");
+  safe(v,function(){ fnGoals(v,f); },"Goals");
 
   if(f.months&&f.months.length>1){
     pkCollapse(v,"fin_flow","Money in and out",null,false,function(h){
