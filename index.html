@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 421 (2026-09-20)">
+<meta name="build" content="v21 build 422 (2026-09-20)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -18325,6 +18325,52 @@ try{ if(state.meta && !state.meta.mig420_savings && state.finance && typeof stat
     }
 } }catch(e){ try{ console.warn("mig420 savings did not apply:",e&&e.message); }catch(_){} }
 
+/* ===== v21 build 422: A SCALE FOR EACH CARD =============================================
+   DISCOVER, IAN'S OWN SPEC: "For the discover card you can do a 3 part graph however you
+   like: current balance, recommended max balance, and then the max I can spend on the card
+   which is $3600." He remembered the limit correctly.
+   THE RECOMMENDED MAX IS 30 PERCENT OF THE LIMIT, $1,080. That is the conventional
+   utilisation threshold above which a balance starts costing a credit score, and it matters
+   right now because he is planning a car purchase with financing. utilTarget is stored as
+   0.30 and the figure is COMPUTED from the limit, so a limit change moves the mark with it
+   and there is no second number to drift.
+   HE IS AT 63 PERCENT, WELL PAST THE MARK, AND THE PAGE SHOWS THAT PLAINLY. No softening, no
+   advice line, no suggestion about what to do. The mark is on the scale and the balance is
+   past it, which is the whole message.
+
+   AMEX. "Amex is unlimited but since I use it for work only I won't use it a ton. I could set
+   a recommended monthly limit for that as well, at probably like $400-500 a month or whatever
+   you recommend." RECOMMENDED $400, and it is stored as a RECOMMENDATION AWAITING HIS
+   CONFIRMATION, the same device as the $2,000 Arizona target, not as a rule he agreed to.
+   The reasoning is recorded here and NOT rendered at him: the Gold is pay in full, so the only
+   sane limit is what he can clear each month; his known business spend is about $149.21 of
+   deductible subscriptions plus variable gas, marketing and client meals; $400 is the bottom
+   of his own range, which is the right end while he is $1,710 to $2,190 short to mid January;
+   and it can rise when cash does. There is no LIMIT on this card, so the scale is the
+   recommendation itself, not a credit ceiling.
+
+   GUARDS. state.meta.mig422_cardscales, NOT in the seed, SEED_VERSION stays 13. Runs only
+   while the fields are absent, so a later correction is never reverted. Idempotent. */
+try{ if(state.meta && !state.meta.mig422_cardscales && state.finance && typeof state.finance==="object"){
+    var _FC=state.finance;
+    var _touched=false;
+    (_FC.cards||[]).forEach(function(c){
+      if(!c) return;
+      if(c.id==="discover" && c.utilTarget==null){
+        c.utilTarget=0.30;
+        c.utilTargetSource="The conventional 30 percent utilisation threshold. The figure on the page is computed from the limit, not stored.";
+        _touched=true;
+      }
+      if(c.id==="amexgold" && c.monthlyLimit==null){
+        c.monthlyLimit=400;
+        c.monthlyLimitProvisional=true;
+        c.monthlyLimitSource="Recommended, awaiting his confirmation. He said $400 to $500 or whatever is recommended; $400 is the bottom of his own range, which is the right end while cash is short. The card is pay in full and has no credit limit, so this is a spending recommendation, not a ceiling.";
+        _touched=true;
+      }
+    });
+    if(_touched){ state.meta.mig422_cardscales=true; save(true); }
+} }catch(e){ try{ console.warn("mig422 card scales did not apply:",e&&e.message); }catch(_){} }
+
 /* ===== v21 build 399: ARCHIVE THE FALL CUP. IT NEVER HAPPENED. ============================
    IAN, 14.09.2026: "I never did that fall cup."
 
@@ -23709,6 +23755,63 @@ function fnBarRow(host,name,amountText,frac,tone,sub){
   host.appendChild(w);
   return w;
 }
+/* ===== v21 build 422: RINGS. =============================================================
+   IAN, and he has now asked twice: "For the finance graphs and designs you can add some
+   circles. For example the $2,000 goal you can have it at 0% full right now, an empty
+   circle, and the closer it gets, the closer to full it gets." It matches the Origin
+   reference he sent days ago, a green arc with the percentage in the middle.
+
+   THE EMPTY CIRCLE IS THE DESIGN HERE, AND THAT IS A REAL DISTINCTION FROM THE BARS. The
+   build 189 rule says a zero length bar draws NOTHING, because a stub reads as a rendering
+   fault. A ring is the opposite: the TRACK IS A CLOSED CIRCLE that is always drawn, so zero
+   has a shape of its own and an empty ring is unmistakably empty rather than missing. He
+   described that state specifically and wants to see it.
+
+   AT ZERO THE ARC ELEMENT IS OMITTED ENTIRELY rather than drawn with zero length. A round
+   line cap on a zero length arc paints a DOT at twelve o'clock, which would read as a tiny
+   amount saved when nothing is. The circle outline and the centred 0% carry it instead.
+
+   RINGS ARE FOR PROPORTIONS OF A WHOLE. BARS ARE FOR COMPARING MAGNITUDES. That split is the
+   whole rule and it decides every case below, including the ones that stay bars. */
+function fnRing(pct,size,tone,centre,label){
+  size=Number(size)||120;
+  var sw=Math.max(8,Math.round(size*0.085));
+  var cx=size/2, r=(size-sw)/2, circ=2*Math.PI*r;
+  var p=Number(pct); if(!isFinite(p)||p<0) p=0; if(p>1) p=1;
+  var stroke=(tone==="good")?"var(--green)":(tone==="due")?"var(--red)":"var(--fi2)";
+  var g='<svg viewBox="0 0 '+size+' '+size+'" width="'+size+'" height="'+size+'" style="display:block" xmlns="http://www.w3.org/2000/svg">';
+  /* the track, always closed, always drawn. This is what makes an empty ring legible. */
+  g+='<circle cx="'+cx+'" cy="'+cx+'" r="'+r.toFixed(2)+'" fill="none" stroke="var(--line)" stroke-width="'+sw+'"/>';
+  if(p>0){
+    g+='<circle cx="'+cx+'" cy="'+cx+'" r="'+r.toFixed(2)+'" fill="none" stroke="'+stroke+'" stroke-width="'+sw+'"'
+      +' stroke-linecap="round" stroke-dasharray="'+(circ*p).toFixed(2)+' '+circ.toFixed(2)+'"'
+      +' transform="rotate(-90 '+cx+' '+cx+')"/>';
+  }
+  g+='</svg>';
+  var w=el("div"); w.style.cssText="position:relative;width:"+size+"px;height:"+size+"px;flex:0 0 auto";
+  w.innerHTML=g;
+  var mid=el("div");
+  mid.style.cssText="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;text-align:center";
+  var big=el("div");
+  big.style.cssText="font-size:"+Math.round(size*0.23)+"px;font-weight:800;letter-spacing:-.02em;font-variant-numeric:tabular-nums;color:var(--white);line-height:1";
+  big.textContent=String(centre==null?(Math.round(p*100)+"%"):centre);
+  mid.appendChild(big);
+  if(label){ var sm=el("div"); sm.style.cssText="font-size:11px;font-weight:700;color:var(--gray2);line-height:1.2";
+    sm.textContent=String(label); mid.appendChild(sm); }
+  w.appendChild(mid);
+  return w;
+}
+/* A ring plus its two lines of caption, centred, used wherever a proportion is shown. */
+function fnRingBlock(host,pct,size,tone,title,value,centre,label){
+  var w=el("div"); w.style.cssText="flex:1 1 0;min-width:0;display:flex;flex-direction:column;align-items:center;gap:9px";
+  w.appendChild(fnRing(pct,size,tone,centre,label));
+  var t=el("div"); t.style.cssText="text-align:center;min-width:0";
+  var n=el("div","fnname"); n.textContent=String(title||""); n.style.fontSize="14px"; t.appendChild(n);
+  if(value){ var v=el("div","fnsch"); v.style.margin="2px 0 0"; v.textContent=String(value); t.appendChild(v); }
+  w.appendChild(t);
+  host.appendChild(w);
+  return w;
+}
 /* A track is one or more segments across the full width. Segments are given as fractions of
    the whole and are drawn in order. A zero fraction draws nothing at all rather than a stub,
    which is the build 189 rule: a stub reads as a rendering fault, not as zero. */
@@ -23724,6 +23827,31 @@ function fnTrack(segs){
     t.appendChild(seg);
   });
   return t;
+}
+/* A SCALE IS A TRACK WITH NAMED POINTS ON IT, which is what a three part comparison needs and
+   what a ring cannot do. A ring shows ONE proportion of ONE whole. Current, recommended and
+   limit are three points on a single axis, and the useful fact is WHERE the balance sits
+   relative to the other two. That is a position on a line. It is not a proportion, and drawn
+   as a ring the recommended mark would have nowhere to live. */
+function fnScale(total,fill,tone,marks){
+  total=Number(total)||0;
+  var w=el("div"); w.style.cssText="position:relative;margin-top:9px;height:10px;border-radius:5px;background:var(--line);overflow:hidden";
+  if(total>0&&Number(fill)>0){
+    var f=Math.max(0,Math.min(1,Number(fill)/total));
+    var bar=el("div");
+    var col=(tone==="good")?"background:var(--green)":(tone==="due")?"background:var(--red)":"background-image:linear-gradient(90deg,var(--fi1),var(--fi2))";
+    bar.style.cssText="position:absolute;left:0;top:0;bottom:0;width:"+(f*100).toFixed(2)+"%;"+col;
+    w.appendChild(bar);
+  }
+  (marks||[]).forEach(function(m){
+    if(!m||!(total>0)) return;
+    var at=Math.max(0,Math.min(1,Number(m.at)/total));
+    if(at<=0||at>=1) return;
+    var t=el("div");
+    t.style.cssText="position:absolute;top:-2px;bottom:-2px;left:"+(at*100).toFixed(2)+"%;width:2px;background:var(--white);opacity:.85";
+    w.appendChild(t);
+  });
+  return w;
 }
 function fnLegend(host,items){
   var l=el("div","fnsch"); l.style.marginTop="8px";
@@ -24070,6 +24198,41 @@ function fnBalances(v,f,part){
       if(a.available!=null&&a.limit!=null) _sb.push("Available "+fnMoney(a.available)+" of "+fnMoney(a.limit)+".");
       if(_sb.length) _pw.appendChild(el("div","fnsch",_sb.join(" ")));
       b.appendChild(_pw);
+    }
+    /* build 422: THE SCALE FOR THIS CARD, under the card it belongs to. Discover gets three
+       points on one axis. Amex has no credit limit, so its scale is the recommended monthly
+       spend and it starts empty at a $0 balance, which is the honest picture of a card he has
+       not used yet. Neither draws unless the record carries the figures. */
+    if(wantAcc){
+      var _lim=Number(a.limit)||0, _bal=Number(a.balance)||0;
+      if(_lim>0){
+        var _rec=Math.round(_lim*(Number(a.utilTarget)>0?Number(a.utilTarget):0.30));
+        var _past=_bal>_rec;
+        var _sw=el("div"); _sw.style.marginTop="8px";
+        _sw.appendChild(fnScale(_lim,_bal,(_past?"due":"good"),[{at:_rec}]));
+        var _sl=el("div","fnsch"); _sl.style.marginTop="7px";
+        _sl.textContent="Now "+fnMoneyC(_bal)+".   Recommended max "+fnMoney(_rec)
+          +".   Limit "+fnMoney(_lim)+".";
+        _sw.appendChild(_sl);
+        var _sp=el("div","fnsch"); _sp.style.marginTop="3px";
+        _sp.textContent=Math.round((_bal/_lim)*100)+"% of the limit, against a recommended "
+          +Math.round((Number(a.utilTarget)>0?Number(a.utilTarget):0.30)*100)+"%.";
+        _sw.appendChild(_sp);
+        b.appendChild(_sw);
+      }
+      else if(Number(a.monthlyLimit)>0){
+        var _ml=Number(a.monthlyLimit);
+        var _mw=el("div"); _mw.style.marginTop="8px";
+        _mw.appendChild(fnScale(_ml,_bal,(_bal>_ml?"due":"good"),[]));
+        var _mt=el("div","fnsch"); _mt.style.marginTop="7px";
+        _mt.textContent=fnMoneyC(_bal)+" of a recommended "+fnMoney(_ml)+" a month"
+          +(a.monthlyLimitProvisional===true?", awaiting your confirmation":"")+".";
+        _mw.appendChild(_mt);
+        var _mn=el("div","fnsch"); _mn.style.marginTop="3px";
+        _mn.textContent="No credit limit on this card, so this is a spending recommendation and not a ceiling.";
+        _mw.appendChild(_mn);
+        b.appendChild(_mw);
+      }
     }
     if(a.balance!=null){ owed+=Number(a.balance)||0; haveOwed=true; }
   });
@@ -24721,39 +24884,31 @@ function fnSubCharts(v,f){
     });
     v.appendChild(c1);
 
-    /* 2. DEDUCTIBLE SHARE. Two segments of one total, so one track, not two bars. */
-    if(ded>0){
-      var c2=card(); var b2=c2._body;
-      b2.appendChild(el("div","g7kicker","Deductible share"));
-      var r2=el("div","fnacc"); r2.style.cssText="padding:0;border:0";
-      var l2=el("div"); l2.appendChild(el("div","fnname","Business"));
-      l2.appendChild(el("div","fnsch",fnSub("of "+fnMoneyC(tot))));
-      r2.appendChild(l2);
-      r2.appendChild(el("div","fnamt",fnMoneyC(ded)));
-      b2.appendChild(r2);
-      b2.appendChild(fnTrack([{frac:ded/tot},{frac:(tot-ded)/tot,fade:true}]));
-      fnLegend(b2,[Math.round((ded/tot)*100)+"% deductible",fnMoneyC(tot-ded)+" is not"]);
-      v.appendChild(c2);
-    }
-
-    /* 3. CUT AGAINST KEPT. The result of the pass he just did, and the one chart here that is
-       about a change rather than a state, so green carries its existing meaning. */
+    /* 2 AND 3 ARE RINGS NOW, AND THEY ARE THE TWO CASES THAT EARN ONE. Both are a share of a
+       single known whole: $149.21 of $241.12, and $103.65 of $344.77. That is the canonical
+       ring, a part against a total where the percentage is the point. They were split bar
+       tracks, which said the same thing less clearly, and a bar invites comparison with the
+       bars above it that are ranking magnitudes and mean something different.
+       SIDE BY SIDE IN ONE CARD, because at 390px two rings fit across and reading them
+       together is the useful act: what of this is deductible, and what of it did he cut.
+       COLOUR KEEPS ITS EXISTING MEANING. Cut is money saved, so green. Deductible is neither
+       held nor owed, so it takes the finance accent rather than borrowing a state colour. */
     var canc=(f.cancelled||[]);
     var cut=0; canc.forEach(function(x){ cut+=Number(x&&x.amount)||0; });
     cut=Math.round(cut*100)/100;
-    if(cut>0){
-      var before=Math.round((tot+cut)*100)/100;
-      var c3=card(); var b3=c3._body;
-      b3.appendChild(el("div","g7kicker","Cut and kept"));
-      var r3=el("div","fnacc"); r3.style.cssText="padding:0;border:0";
-      var l3=el("div"); l3.appendChild(el("div","fnname","Cut"));
-      l3.appendChild(el("div","fnsch",fnSub("of "+fnMoneyC(before))));
-      r3.appendChild(l3);
-      r3.appendChild(fnTone(el("div","fnamt",fnMoneyC(cut)),"good"));
-      b3.appendChild(r3);
-      b3.appendChild(fnTrack([{frac:cut/before,tone:"good"},{frac:tot/before}]));
-      fnLegend(b3,[Math.round((cut/before)*100)+"% cut",fnMoneyC(tot)+" kept",fnMoneyC(cut*12)+" a year"]);
-      v.appendChild(c3);
+    var before=Math.round((tot+cut)*100)/100;
+    if(ded>0||cut>0){
+      var c2=card(); var b2=c2._body;
+      b2.appendChild(el("div","g7kicker","Shares"));
+      var rowW=el("div"); rowW.style.cssText="display:flex;gap:14px;align-items:flex-start;margin-top:10px";
+      if(ded>0) fnRingBlock(rowW,ded/tot,118,null,"Deductible",fnMoneyC(ded)+" of "+fnMoneyC(tot));
+      if(cut>0) fnRingBlock(rowW,cut/before,118,"good","Cut",fnMoneyC(cut)+" of "+fnMoneyC(before));
+      b2.appendChild(rowW);
+      var bits=[];
+      if(ded>0) bits.push(fnMoneyC(tot-ded)+" is not deductible.");
+      if(cut>0) bits.push(fnMoneyC(cut*12)+" a year saved, "+fnMoneyC(tot)+" a month kept.");
+      if(bits.length) b2.appendChild(el("div","fnsch",bits.join(" ")));
+      v.appendChild(c2);
     }
   }catch(e){ try{ console.error("[dash] sub charts",e); }catch(_){} }
 }
@@ -24762,6 +24917,78 @@ function fnSubCharts(v,f){
    figure is the balance above it. IT DRAWS AT ZERO ON PURPOSE. Today the balance is exactly
    the floor, so saved is $0, and a section that hid itself until the first deposit would
    disappear precisely when he went looking for it. */
+/* ===== v21 build 422: UPCOMING PAYMENTS. IT DRAWS NOTHING TODAY AND THAT IS CORRECT ======
+   IAN: "Important stuff like upcoming payments if there's one coming up soon is shown in
+   large or something but neatly designed."
+
+   THE COMPONENT IS BUILT AND IT IS EMPTY, BECAUSE THE APP HOLDS ALMOST NO BILLING DATES. The
+   only two real dates anywhere in state.finance are the LAST charges on the two subscriptions
+   he cancelled, which are in the past and are not upcoming anything. Methodist has no dates,
+   only "late December or January" and "before summer" in his own words, and not one of the
+   seven live subscriptions carries a billing day. INVENTING A DUE DATE TO MAKE THIS VISIBLE
+   WOULD BE THE WORST THING ON A FINANCE PAGE, so it stays dark until real dates arrive and
+   then lights up by itself with no further build.
+
+   SOON IS FOURTEEN DAYS, and that is a choice worth defending. The app already uses seven
+   days for real estate to-dos, but those are tasks he can do in an afternoon. These are
+   PAYMENTS he may need to have the cash for, he is paid irregularly by commission, and a
+   fortnight is roughly the gap between closings. Seven days would often be a warning he could
+   not act on.
+
+   WHAT IT READS, SO A LATER LANE KNOWS WHERE TO PUT A DATE: recurring[].payments[].date, an
+   ISO date on a dated lump; subscriptions[].day and monthly[].day, a day of the month, from
+   which the next occurrence is computed; and cards[].dueDate, an ISO date. Any one of those
+   switches it on for that item alone. */
+function fnUpcoming(v,f){
+  try{
+    if(!f) return;
+    var SOON=14;
+    var out=[];
+    var addDays=function(iso){ try{ return daysUntil(iso); }catch(e){ return null; } };
+    (f.recurring||[]).forEach(function(rr){
+      (rr&&rr.payments||[]).forEach(function(pp){
+        if(!pp||pp.paid===true||!pp.date) return;
+        var d=addDays(pp.date); if(d==null||d<0||d>SOON) return;
+        out.push({name:rr.name||"Payment",amt:Number(pp.amount)||Number(pp.low)||0,days:d,date:pp.date});
+      });
+    });
+    var byDay=function(x){
+      if(!x||!(Number(x.day)>0)) return;
+      var now=new Date(), dom=now.getDate(), day=Number(x.day);
+      var t=new Date(now.getFullYear(),now.getMonth()+(day<dom?1:0),day);
+      var d=Math.round((t-new Date(now.getFullYear(),now.getMonth(),dom))/86400000);
+      if(d<0||d>SOON) return;
+      out.push({name:x.name||"Payment",amt:Number(x.amount)||0,days:d,date:null});
+    };
+    (f.subscriptions||[]).forEach(byDay);
+    (f.monthly||[]).forEach(byDay);
+    (f.cards||[]).forEach(function(c){
+      if(!c||!c.dueDate) return;
+      var d=addDays(c.dueDate); if(d==null||d<0||d>SOON) return;
+      out.push({name:(c.name||"Card")+" payment",amt:Number(c.balance)||0,days:d,date:c.dueDate});
+    });
+    if(!out.length) return;   /* nothing due soon, or no dates on record. Draw nothing. */
+    out.sort(function(a,z){ return a.days-z.days; });
+    var top=out[0];
+    var c=card("a-red"); var b=c._body;
+    /* BIG NUMBER, MINIMAL WORDS. The amount is the thing he needs to see from across a room. */
+    var big=el("div");
+    big.style.cssText="font-size:34px;font-weight:800;letter-spacing:-.02em;line-height:1.05;font-variant-numeric:tabular-nums;color:var(--red)";
+    big.textContent=fnMoneyAuto(top.amt);
+    b.appendChild(big);
+    var sub=el("div","fnsch"); sub.style.marginTop="5px";
+    sub.textContent=top.name+", "+(top.days===0?"today":top.days===1?"tomorrow":("in "+top.days+" days"));
+    b.appendChild(sub);
+    if(out.length>1){
+      var L=el("div"); L.style.marginTop="12px";
+      out.slice(1).forEach(function(x){
+        fnRow(L,x.name,fnMoneyAuto(x.amt),(x.days===0?"today":x.days===1?"tomorrow":("in "+x.days+" days")),"due",false);
+      });
+      b.appendChild(L);
+    }
+    v.appendChild(c);
+  }catch(e){ try{ console.error("[dash] upcoming",e); }catch(_){} }
+}
 function fnSavings(v,f){
   try{
     var sv=(f&&f.savings)||null; if(!sv) return;
@@ -24776,18 +25003,26 @@ function fnSavings(v,f){
     fnRow(L,"Balance",fnMoneyAuto(bal),null,"good",false);
     fnRow(L,"Floor",fnMoneyAuto(floor),"never spent",null,false);
     if(Number(sv.target)>0) fnRow(L,"Target",fnMoneyAuto(Number(sv.target)),(sv.targetProvisional===true?"awaiting your confirmation":null),null,false);
-    b.appendChild(L);
-    /* THE PROGRESS BAR, AND IT DRAWS AT ZERO. There is a real target now, so the denominator
-       is real, and $0 of $2,000 is a legitimate zero rather than an empty state. The TRACK is
-       drawn and the FILL is absent, which is exactly what none of it saved looks like. No
-       stub bar: build 189 established that a stub reads as a rendering fault, not as zero.
-       NO PROJECTED DATE. Reaching a target needs a deposit rate and there is no deposit rate,
-       so nothing here forecasts when. */
+    /* THE RING, AND IT IS THE THING HE ASKED FOR TWICE. "You can have it at 0% full right
+       now, an empty circle, and the closer it gets, the closer to full it gets."
+       IT SITS ABOVE THE NUMBERS, not below them, because it is the headline of this section
+       and the rows are the detail. Percentage in the centre, the Origin pattern he liked.
+       AT ZERO THE CIRCLE IS DRAWN AND THE ARC IS OMITTED. That is the state he described and
+       it is legible precisely because a ring has a closed shape at zero where a bar has none.
+       NO PROJECTED DATE anywhere near it. Reaching a target needs a deposit rate and there is
+       no deposit rate, so nothing here forecasts when. */
     if(Number(sv.target)>0){
       var tgt=Number(sv.target);
-      b.appendChild(fnTrack([{frac:(saved>0?saved/tgt:0),tone:"good"}]));
-      fnLegend(b,[fnMoneyAuto(saved)+" of "+fnMoneyAuto(tgt),Math.round((saved>0?saved/tgt:0)*100)+"% there"]);
+      var frac=(saved>0?saved/tgt:0);
+      var ringW=el("div"); ringW.style.cssText="display:flex;justify-content:center;padding:4px 0 14px";
+      ringW.appendChild(fnRing(frac,146,"good",null,null));
+      b.appendChild(ringW);
+      var cap=el("div","fnsch");
+      cap.style.cssText="text-align:center;margin:0 0 14px";
+      cap.textContent=fnMoneyAuto(saved)+" of "+fnMoneyAuto(tgt);
+      b.appendChild(cap);
     }
+    b.appendChild(L);
     var notes=[];
     if(sv.purpose) notes.push("For "+sv.purpose+".");
     notes.push("The "+fnMoneyAuto(floor)+" floor acts as zero, so "+fnMoneyAuto(floor*2)+" in the account would read as "+fnMoneyAuto(floor)+" saved. It is never spent, not even for the trip.");
@@ -24849,7 +25084,13 @@ function fnRunway(v,f){
        comparison is what a bar does better than a figure. The track is the HIGH committed
        figure, so the whole width is the worst case. Green is what he actually holds, solid
        red is the shortfall that exists even at the low estimate, and faded red is the rest of
-       the range. The range is drawn as a range rather than collapsed to a midpoint. */
+       the range. The range is drawn as a range rather than collapsed to a midpoint.
+       build 422: THIS ONE DELIBERATELY DOES NOT BECOME A RING, and the reason is the rule.
+       A ring is a proportion of a whole, and it reads as progress TOWARD the whole. There is
+       no whole here: the denominator is a RANGE, not a fixed figure, and he is not trying to
+       reach it. A ring at 66 percent would say he is two thirds of the way to something good
+       when what it actually means is that his money covers two thirds of what he owes. The
+       shortfall is the subject and a bar with a red overhang says that; a ring hides it. */
     if(needHi>0){
       var gOp=Math.min(op,needLo)/needHi;
       var gShort=Math.max(0,(needLo-op))/needHi;
@@ -24915,6 +25156,10 @@ function buildFinance(v){
   }
   v.appendChild(head);
 
+  /* build 422: FIRST ON THE PAGE WHEN IT HAS ANYTHING TO SAY, and absent entirely when it
+     does not. fnSect emits no heading for a section that produced nothing, so on a day with
+     no payment due inside a fortnight the page opens on Accounts exactly as it does today. */
+  fnSect(v,"Due soon","the next fourteen days",function(h){ fnUpcoming(h,f); });
   fnSect(v,"Accounts","what you hold",function(h){ fnBalances(h,f,"accounts"); });
   fnSect(v,"Position","operating, buffer, debt",function(h){ fnBalances(h,f,"position"); });
   fnSect(v,"Savings","the Arizona fund",function(h){ fnSavings(h,f); });
