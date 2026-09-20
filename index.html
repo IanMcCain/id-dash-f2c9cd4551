@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 418 (2026-09-20)">
+<meta name="build" content="v21 build 419 (2026-09-20)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -18059,6 +18059,205 @@ try{ if(state.meta && !state.meta.mig418b_rentspend && state.finance && typeof s
     }
 } }catch(e){ try{ console.warn("mig418b rent and spend did not apply:",e&&e.message); }catch(_){} }
 
+/* ===== v21 build 419: THE REAL SUBSCRIPTION LIST REPLACES THE ESTIMATE ==================
+   Ian gave the guaranteed list on 20.09.2026 and then added one more. SEVEN items,
+   $241.12 a month, RECORDED rather than estimated, so the $250 estimate and its provenance
+   marker both come off. The sum is verified in the patch script that wrote this block and
+   again in the harness: 100.00 + 65.02 + 35.00 + 14.21 + 9.99 + 9.00 + 7.90 = 241.12.
+
+   THE MARCUS MOVIE CLUB IS THE ONE FIGURE THAT IS NOT HIS. He said "I think it was like
+   $9-12 dollars a month" and asked for it to be looked up. The published monthly rate is
+   $9.99, which sits inside his range, so it is stored as the PUBLISHED RATE and labelled
+   that way rather than as something he stated. HE HAS NOT SAID WHICH PLAN HE IS ON: there
+   is also an annual at $109.89, twelve months for the price of eleven, and on that plan the
+   monthly figure is wrong and the charge is a single yearly one. annualAlt carries it so the
+   alternative is on the record rather than in a comment nobody reads.
+   AND THE THING THAT LOOKS LIKE CORROBORATION AND IS NOT. His Discover shows a pending
+   MARCUS THEATRES $25.68 from 19 September. That is a ticket or concessions purchase. It is
+   NOT the membership fee and the two must never be added or reconciled against each other.
+   They now sit on the same page under similar names, which is exactly how that mistake gets
+   made, so the page says which is which.
+
+   THE CARD PAYMENTS ARE DELIBERATELY ABSENT. Ian listed "Amex card payment (ranges)" and
+   "Discover card payment (ranges)" alongside the subscriptions. They are DEBT SERVICE, not
+   subscriptions, and he gave no amounts. Blending a variable payment into a fixed monthly
+   total destroys the total, and inventing a figure to stand in for it would be worse. The
+   Discover balance, its limit, its statement balance and its utilisation are all already on
+   this page as a BALANCE, which is the honest way to carry a debt whose payment is unknown.
+
+   DEDUCTIBILITY IS MARKED, NOT ASSERTED BEYOND WHAT HE SAID. GPRMLS and the Supra lockbox
+   are 100 percent business, MLS dues and realtor equipment, Schedule C line 23. That is the
+   $49.21 a month floor. CLAUDE IS MARKED BUSINESS WITH NO PERCENTAGE, because he uses it for
+   real estate work but has never said it is exclusively business, and pctUnconfirmed says so
+   in the data rather than letting a later lane read silence as 100. Rocket Money is MIXED for
+   the same reason with no percentage at all. Amazon Prime, APC and the Marcus membership are
+   personal and carry no deduction.
+
+   THE CANCELLATIONS ARE A RESULT AND THE PAGE SHOWS THEM AS ONE, with one honest split:
+   Adobe $12.65 and Audible $9.00 are DONE, $21.65 a month realised. Russell Speeders $33.00
+   IS NOT. Its online cancellation is broken and he has to go in person this week, so it is
+   still live and still charging him. It is NOT counted as saved. The full $54.65 is shown as
+   what it becomes once that is done, which is a different claim from what he has saved.
+   NO REMINDER AND NO TO DO IS BUILT. He fills nothing in.
+
+   GUARDS. state.meta.mig419_subs, NOT in the seed, SEED_VERSION stays 13. It only runs while
+   the $250 estimate is still there, so a later correction is never reverted. The estimate is
+   ARCHIVED to state.archive.monthlySubsEstimate419, not deleted. Idempotent. */
+try{ if(state.meta && !state.meta.mig419_subs && state.finance && typeof state.finance==="object"){
+    var _F9=state.finance;
+    var _mon=_F9.monthly||[];
+    var _est=null,_ix=-1;
+    for(var _i9=0;_i9<_mon.length;_i9++){ if(_mon[_i9]&&_mon[_i9].name==="Subscriptions"){ _est=_mon[_i9]; _ix=_i9; break; } }
+    if(_est && _est.estimate===true){
+      if(!state.archive||typeof state.archive!=="object") state.archive={};
+      if(!state.archive.monthlySubsEstimate419){
+        state.archive.monthlySubsEstimate419={ item:_est, archivedOn:"2026-09-20",
+          why:"Replaced by the real seven item list at $241.12. His estimate was $250, which was close. Kept verbatim rather than deleted." };
+      }
+      _mon.splice(_ix,1);
+      if(!Array.isArray(_F9.subscriptions)) _F9.subscriptions=[];
+      if(!_F9.subscriptions.length){
+        _F9.subscriptions=[
+          { name:"Claude",            amount:100.00, tag:"Business", deduct:{ business:true, schedC:"software", pctUnconfirmed:true } },
+          { name:"APC",               amount:65.02,  tag:"Pickleball", deduct:{ business:false } },
+          { name:"GPRMLS",            amount:35.00,  tag:"Business", deduct:{ business:true, pct:100, schedC:"dues" } },
+          { name:"Supra",             amount:14.21,  tag:"Business", deduct:{ business:true, pct:100, schedC:"dues" } },
+          { name:"Marcus Movie Club", amount:9.99,   rateSource:"published", planUnconfirmed:true, annualAlt:109.89, deduct:{ business:false } },
+          { name:"Rocket Money",      amount:9.00,   tag:"Mixed", deduct:{ business:true, mixed:true } },
+          { name:"Amazon Prime",      amount:7.90,   deduct:{ business:false } }
+        ];
+      }
+      if(!Array.isArray(_F9.cancelled)) _F9.cancelled=[
+        { name:"Adobe Premium",    amount:12.65, done:true,  why:"sold the camera" },
+        { name:"Audible",          amount:9.00,  done:true },
+        { name:"Russell Speeders", amount:33.00, done:false, why:"online cancellation is broken, in person this week" }
+      ];
+      state.meta.mig419_subs=true; save(true);
+    }
+} }catch(e){ try{ console.warn("mig419 subscriptions did not apply:",e&&e.message); }catch(_){} }
+
+/* ===== v21 build 419b: PET INSURANCE, THE MARCUS PLAN, AND THE DEDUCTIBLE ANSWER ========
+   THREE THINGS FROM IAN ON 20.09.2026, AND ONE ARITHMETIC CONFLICT THAT HAD TO BE RESOLVED
+   RATHER THAN COPIED.
+
+   1. MARCUS IS CONFIRMED MONTHLY. "I don't have the annual membership just monthly." The
+      $9.99 stops being a published rate we looked up and becomes his own statement, so
+      rateSource, planUnconfirmed and annualAlt all come off and the provenance line about
+      them disappears by itself. The clarification that the pending MARCUS THEATRES charge on
+      the card is a purchase and not this membership STAYS, because the two names still sit on
+      the same page and that confusion is still available.
+
+   2. PET INSURANCE, $49.00, HIS SECOND LARGEST AFTER CLAUDE. Active, and he is cancelling it
+      once a vet claim is reimbursed. Not counted as saved.
+
+   3. THE DEDUCTIBLE QUESTION IS CLOSED BY HIM. "I'll likely write these off or try to write
+      these off for taxes: GPRMLS, Claude, Supra. My justification for Claude would be that I
+      almost entirely use it for real estate purposes." So Claude goes to 100 percent ON HIS
+      STATED BASIS and pctUnconfirmed comes off. His justification is recorded in the data at
+      deduct.basis and is NOT rendered as prose at him, because it is his own reasoning being
+      read back to him. Floor moves from $49.21 to $149.21 a month, $1,790.52 a year.
+
+   THE CONFLICT, AND WHY THE PAGE DOES NOT SAY $208.12. The brief gives $241.12 + $49.00 =
+   $290.12, which is right, and then says both pending cancellations take it to $208.12, which
+   is $290.12 - $33 - $49. THAT ONLY WORKS IF THE $33 IS INSIDE THE $290.12, AND IT IS NOT:
+   $241.12 was the seven item list and Russell Speeders was never in it. Two consistent
+   readings existed and this build takes the one that describes what actually leaves his
+   account:
+     EVERYTHING BEING CHARGED TODAY IS IN THE LIST, nine items, $323.12. Russell Speeders and
+     pet insurance are both ACTIVE and both still charging, so both are live rows carrying a
+     Cancelling tag, not entries in a cancelled block. A list of what leaves every month that
+     omits $33 he is still paying is not a list of what leaves every month.
+     ONCE BOTH CANCELLATIONS COMPLETE IT IS $241.12, which is the same arithmetic the brief
+     intended, reached from a total that actually contains both.
+   state.finance.cancelled now holds only what is DONE, Adobe and Audible, $21.65 realised.
+
+   THE TWO PENDING CANCELLATIONS ARE BLOCKED ON DIFFERENT THINGS and the record says which.
+   Russell Speeders is blocked on a broken cancellation page and a trip in person. Pet
+   insurance is deliberately still running until a vet claim is reimbursed. NEITHER IS A TO DO
+   AND NEITHER GETS A REMINDER. He fills nothing in.
+
+   GUARDS. state.meta.mig419b_pet, NOT in the seed, SEED_VERSION stays 13. Runs only while the
+   list is still the seven item one, so a later correction is never reverted. Idempotent. */
+try{ if(state.meta && !state.meta.mig419b_pet && state.finance && typeof state.finance==="object"){
+    var _FP=state.finance;
+    var _subs=_FP.subscriptions||[];
+    if(_subs.length===7){
+      var _find=function(nm){ for(var i=0;i<_subs.length;i++){ if(_subs[i]&&_subs[i].name===nm) return _subs[i]; } return null; };
+      var _mc=_find("Marcus Movie Club");
+      if(_mc){ delete _mc.rateSource; delete _mc.planUnconfirmed; delete _mc.annualAlt;
+        _mc.confirmedBy="Ian, 20.09.2026: I do not have the annual membership just monthly."; }
+      var _cl=_find("Claude");
+      if(_cl&&_cl.deduct){ delete _cl.deduct.pctUnconfirmed; _cl.deduct.pct=100;
+        _cl.deduct.basis="Ian, 20.09.2026: I almost entirely use it for real estate purposes. His own justification, recorded and not rendered back at him."; }
+      _subs.push({ name:"Pet insurance", amount:49.00, tag:"Cancelling", cancelling:true,
+        blockedOn:"waiting on a vet claim reimbursement, then it goes", deduct:{ business:false } });
+      /* Russell Speeders moves OUT of the cancelled block and INTO the live list, because he
+         is still being charged for it. Moved, not duplicated: it is removed from cancelled in
+         the same pass, and cancelled is left holding only what is genuinely done. */
+      var _canc=_FP.cancelled||[];
+      var _rs=null;
+      for(var _j=0;_j<_canc.length;_j++){ if(_canc[_j]&&_canc[_j].name==="Russell Speeders"){ _rs=_canc[_j]; _canc.splice(_j,1); break; } }
+      if(_rs){
+        _subs.push({ name:"Russell Speeders", amount:Number(_rs.amount)||33.00, tag:"Cancelling", cancelling:true,
+          blockedOn:"their online cancellation is broken, so it has to be done in person", deduct:{ business:false } });
+      }
+      state.meta.mig419b_pet=true; save(true);
+    }
+} }catch(e){ try{ console.warn("mig419b pet and deductible did not apply:",e&&e.message); }catch(_){} }
+
+/* ===== v21 build 419c: BOTH PENDING CANCELLATIONS ARE ENDING, SO THEY LEAVE THE LIST =====
+   IAN, 20.09.2026, on both: "Take pet insurance off as an active, they charged me on the
+   16th and I will cancel it within the next few days, I won't have it October 16th" and
+   "Same with Russell Speeders I'm cancelling it this week, I got charged September 7th, I
+   will not still have it October 7th."
+
+   THAT IS A DIFFERENT CLAIM FROM "I INTEND TO CANCEL IT" AND IT CHANGES THE ARITHMETIC. Both
+   are paid through their current period and neither will be charged again, so NO FURTHER
+   CASH LEAVES FOR EITHER. They stop being live rows and join the cancelled group, and the
+   go forward figure is the seven remaining items.
+
+   THE ARITHMETIC IN THE BRIEF WAS WRONG IN THE SAME PLACE TWICE, AND THIS BUILD CORRECTS IT
+   RATHER THAN IMPLEMENTING IT. The brief says $290.12 - $49.00 - $33.00 = $208.12. The
+   subtraction is right and the starting figure is not: $290.12 was the EIGHT item list, the
+   seven originals plus pet insurance, and RUSSELL SPEEDERS WAS NEVER INSIDE IT. It sat in
+   the cancelled block from the build before. So taking $33 off $290.12 removes money that
+   was never in the total. THE SEVEN REMAINING ITEMS SUM TO $241.12, verified item by item in
+   the patch script that wrote this block and again in the harness:
+     100.00 + 65.02 + 35.00 + 14.21 + 9.99 + 9.00 + 7.90 = 241.12
+   The brief also said the active list "is now six", listed seven, and noticed that itself.
+   The count is SEVEN.
+   The internal check that settles it: the full list while both were still live was $323.12,
+   and $323.12 - $49.00 - $33.00 = $241.12. Same answer from the other direction.
+
+   THE SAVING IS NOW FOUR ITEMS AND IT IS A REAL RESULT. Adobe $12.65, Audible $9.00, Russell
+   Speeders $33.00, pet insurance $49.00, so $103.65 a month and $1,243.80 a year. Against a
+   pre-cut total of $344.77 that is about 30 percent of his subscription spend removed in one
+   pass, which is worth him seeing.
+
+   THE TWO DATES ARE THE ONLY BILLING DATES ANYWHERE IN THIS DATA. Last charges 7 and 16
+   September. They render on their own rows as a fact about those items and NOTHING IS BUILT
+   AROUND THEM: no calendar, no schedule, no reminder, and no inference about any other item.
+
+   GUARDS. state.meta.mig419c_ending, NOT in the seed, SEED_VERSION stays 13. Runs only while
+   the live list still holds nine, so a later correction is never reverted. Idempotent. */
+try{ if(state.meta && !state.meta.mig419c_ending && state.finance && typeof state.finance==="object"){
+    var _FE=state.finance;
+    var _sb=_FE.subscriptions||[];
+    if(_sb.length===9){
+      if(!Array.isArray(_FE.cancelled)) _FE.cancelled=[];
+      var _END={ "Pet insurance":{ last:"2026-09-16", none:"2026-10-16" },
+                 "Russell Speeders":{ last:"2026-09-07", none:"2026-10-07" } };
+      for(var _k=_sb.length-1;_k>=0;_k--){
+        var _it=_sb[_k]; if(!_it||!_END[_it.name]) continue;
+        _FE.cancelled.push({ name:_it.name, amount:Number(_it.amount)||0, done:true,
+          lastCharge:_END[_it.name].last, noChargeFrom:_END[_it.name].none,
+          why:_it.blockedOn||"", paidThrough:true });
+        _sb.splice(_k,1);
+      }
+      state.meta.mig419c_ending=true; save(true);
+    }
+} }catch(e){ try{ console.warn("mig419c ending did not apply:",e&&e.message); }catch(_){} }
+
 /* ===== v21 build 399: ARCHIVE THE FALL CUP. IT NEVER HAPPENED. ============================
    IAN, 14.09.2026: "I never did that fall cup."
 
@@ -23148,6 +23347,11 @@ function fnMoney(n){ n=Number(n)||0; var s=fmtMoney(Math.abs(n)); return (n<0?"-
    in the harness instead of only asserting that it started with a minus.
    USED ONLY WHERE THE CENTS ARE THE MAGNITUDE: the pending list and the statement balance. The
    balance rows keep whole dollars, which is the convention Ian has already approved. */
+/* build 419d: whole figures render whole, figures with cents keep them. The third time this
+   build has had to make that distinction, so it stops being written out at each call site.
+   $65.02 had been rendering as "$65" and $9.99 as "$10", which is the same fault that first
+   shipped the $1.08 refund as "-$1". */
+function fnMoneyAuto(n){ n=Number(n)||0; return (n%1===0)?fnMoney(n):fnMoneyC(n); }
 function fnMoneyC(n){
   n=Number(n)||0;
   var a=Math.abs(n);
@@ -23556,7 +23760,7 @@ function fnRentAmount(p){
      said he believes the second payment is EXACTLY the first figure again, so it renders as
      an exact figure and carries its provenance in the line below the list, not as an almost
      equal sign that would claim he was rounding. */
-  var M=function(n){ n=Number(n)||0; return (n%1===0)?fnMoney(n):fnMoneyC(n); };
+  var M=fnMoneyAuto;
   if(p.low!=null&&p.high!=null&&p.high!==p.low) return "\u2248"+M(p.low)+" to "+M(p.high);
   var base=(p.low!=null?p.low:p.amount);
   if(p.over) return ">"+M(base);
@@ -23614,10 +23818,24 @@ function fnMonthly(v,f){
     var cyc=String((x&&x.cycle)||"monthly").toLowerCase();
     var K=function(n){ return (cyc==="annual"||cyc==="yearly")?(n/12):(cyc==="weekly")?(n*52/12):(cyc==="quarterly")?(n/3):n; };
     return {x:x,amt:amt,cyc:cyc,per:K(amt),perHigh:K(hi),range:(hasR&&hi!==amt),
-            estimate:(x&&x.estimate===true),day:Number(x&&x.day)||0};
+            estimate:(x&&x.estimate===true),recorded:(x&&x.estimate!==true),day:Number(x&&x.day)||0};
   }).sort(function(a,z){ return z.perHigh-a.perHigh; });
-  var monthlyTotal=0,monthlyHigh=0,anyEstimate=false;
-  recur.forEach(function(o){ monthlyTotal+=o.per; monthlyHigh+=o.perHigh; if(o.estimate) anyEstimate=true; });
+  var monthlyTotal=0,monthlyHigh=0,anyEstimate=false,anyRecorded=false,subsTotal=0,dedFloor=0;
+  recur.forEach(function(o){
+    monthlyTotal+=o.per; monthlyHigh+=o.perHigh;
+    if(o.estimate) anyEstimate=true; else anyRecorded=true;
+  });
+  /* The subscription subtotal and the deductible floor are computed from the list itself, so
+     neither can drift from the rows above them when an item is added or cancelled. Only a
+     STATED percentage counts toward the floor: business:true with no pct is marked on its row
+     and deliberately contributes nothing here, because that is the question still with Ian. */
+  (f.subscriptions||[]).forEach(function(x){
+    if(!x) return;
+    subsTotal+=Number(x.amount)||0;
+    var d=x.deduct||{};
+    if(d.business===true&&Number(d.pct)>0) dedFloor+=(Number(x.amount)||0)*(Number(d.pct)/100);
+  });
+  subsTotal=Math.round(subsTotal*100)/100; dedFloor=Math.round(dedFloor*100)/100;
 
   /* DATED. The rent lumps, and anything else that lands on a date rather than every month. */
   var pays=[],anyApprox=false;
@@ -23663,15 +23881,92 @@ function fnMonthly(v,f){
         var bits=[];
         if(o.day>0) bits.push("The "+o.day+fnOrd(o.day));
         if(o.cyc!=="monthly") bits.push(o.cyc);
-        var amtTxt=o.range?(fnMoney(o.per)+" to "+fnMoney(o.perHigh)):fnMoney(o.per);
+        /* build 419: NO BILLING DATES EXIST. He gave none, so none is invented and bits is
+           empty for every subscription. The slot carries the one word tag instead: which
+           side of the business line the item sits on, or a naming aid where the name alone
+           is opaque. One word, so the four word cap is never in danger. */
+        if(o.x&&o.x.tag) bits.push(String(o.x.tag));
+        var amtTxt=o.range?(fnMoney(o.per)+" to "+fnMoney(o.perHigh)):fnMoneyAuto(o.per);
         fnRow(L1,o.x.name||"Payment",amtTxt,bits.join("  \u00b7  "),state,false);
       });
       b.appendChild(L1);
-      /* build 418: the same provenance device the dated lumps use. These are figures he gave
-         out loud, not transactions anyone has seen, and the page says so once rather than
-         hedging every row. The basis for each is on the record at monthly[].basis. */
-      if(anyEstimate) b.appendChild(el("div","fnsch","His own estimates, not recorded transactions. No transaction feed is connected yet."));
+      /* build 419: the provenance line is BUILT FROM THE FLAGS now. Saying "his own
+         estimates" over a list that is mostly recorded amounts would hedge seven real
+         figures to cover two, which is the same error as the rent line before build 418. */
+      var _mp=[];
+      if(anyEstimate&&anyRecorded) _mp.push("Gas and groceries are his own estimates. Everything else is a recorded amount.");
+      else if(anyEstimate) _mp.push("His own estimates, not recorded transactions.");
+      if(subsTotal>0) _mp.push("Subscriptions are "+fnMoneyC(subsTotal)+" of that, across "+((f.subscriptions||[]).length)+" items.");
+      /* build 419b: what is on its way out, computed off the cancelling flag rather than
+         written down, so the figure cannot drift when one of them is finally done. It is NOT
+         presented as a saving: he is still paying both. */
+      var _going=0,_goingN=[];
+      (f.subscriptions||[]).forEach(function(x){ if(x&&x.cancelling===true){ _going+=Number(x.amount)||0; _goingN.push(x.name); } });
+      _going=Math.round(_going*100)/100;
+      if(_going>0) _mp.push(fnMoneyC(_going)+" of that is on its way out, "+_goingN.join(" and ")
+        +", both still charging until they are done. Once they are it is "+fnMoneyC(subsTotal-_going)+" a month.");
+      if(dedFloor>0) _mp.push("Business deductible "+fnMoneyC(dedFloor)+" a month, "+fnMoneyC(dedFloor*12)+" a year.");
+      /* Why each pending cancellation has not happened, which is a fact about the item and
+         not an instruction to him. No reminder, no to do, no date. */
+      var _blk=[];
+      (f.subscriptions||[]).forEach(function(x){ if(x&&x.cancelling===true&&x.blockedOn) _blk.push(x.name+": "+x.blockedOn+"."); });
+      if(_blk.length) _mp.push(_blk.join(" "));
+      if(_mp.length) b.appendChild(el("div","fnsch",_mp.join(" ")));
+      /* build 419: two figures that are NOT his and one name collision, each said once.
+         The published rate is flagged as published, the unconfirmed plan is flagged as
+         unconfirmed with the alternative named, and the pending card charge under a nearly
+         identical name is separated from the membership fee explicitly. */
+      var _pubs=[];
+      (f.subscriptions||[]).forEach(function(x){
+        if(!x||x.rateSource!=="published") return;
+        var t=x.name+" is the published monthly rate, not a figure he gave.";
+        if(x.planUnconfirmed===true&&Number(x.annualAlt)>0)
+          t+=" He has not said which plan he is on: the annual is "+fnMoneyC(x.annualAlt)+" once a year instead.";
+        if(/marcus/i.test(String(x.name))) t+=" The Marcus charge pending on the card is a purchase, not this membership.";
+        _pubs.push(t);
+      });
+      if(_pubs.length) b.appendChild(el("div","fnsch",_pubs.join(" ")));
       if(f.subscriptionsPartial===true) b.appendChild(el("div","fnsch","On record so far"));
+      /* ===== build 419: WHAT HE HAS CUT, AND THE ONE HE HAS NOT ======================
+         He is actively cutting costs and two of these are done, so the saving is a real
+         result and it renders as one. RUSSELL SPEEDERS IS NOT SAVED. Its online cancellation
+         is broken, he has to go in person, and until he does it is live and charging him, so
+         it renders in the spend tone with the others dimmed, and the realised saving and the
+         eventual saving are two separate figures rather than one optimistic one.
+         NO REMINDER AND NO TO DO IS BUILT. He fills nothing in. */
+      var _canc=(f.cancelled||[]);
+      if(_canc.length){
+        var C=el("div"); C.style.marginTop="16px";
+        C.appendChild(el("div","fnsch","Cancelled"));
+        var CL=el("div"); CL.style.marginTop="6px";
+        var savedNow=0,savedAll=0,openOne=null;
+        _canc.slice().sort(function(a,z){ return (Number(z.amount)||0)-(Number(a.amount)||0); }).forEach(function(x){
+          if(!x) return;
+          var amt=Number(x.amount)||0;
+          savedAll+=amt;
+          /* build 419c: the two ending items are the ONLY billing dates in this whole data
+             set. Where one exists it names the last charge, four words exactly, and where one
+             does not the row says Cancelled and nothing is inferred for it. */
+          if(x.done===true){ savedNow+=amt;
+            fnRow(CL,x.name,fnMoneyC(amt),(x.lastCharge?("Last charge "+fnShortDate(x.lastCharge).replace(/,\s*\d{4}$/,"")):"Cancelled"),"good",true); }
+          else { openOne=x; fnRow(CL,x.name,fnMoneyC(amt),"Still active","due",false); }
+        });
+        C.appendChild(CL);
+        var _cs=[];
+        if(savedNow>0) _cs.push("Saved "+fnMoneyC(savedNow)+" a month, "+fnMoneyC(savedNow*12)+" a year.");
+        /* build 419c: WHY NONE OF THIS IS STILL IN THE RUNWAY. Both of the recent two are
+           paid through their current period, so no further cash leaves for either, which is
+           the reason they can come out of the go forward figure rather than being carried
+           until a cancellation date nobody has. */
+        var _pt=_canc.filter(function(x){ return x&&x.paidThrough===true&&x.noChargeFrom; });
+        if(_pt.length) _cs.push("Both are paid through their current period, so no further cash leaves for either: nothing on "
+          +_pt.map(function(x){ return fnShortDate(x.noChargeFrom).replace(/,\s*\d{4}$/,""); }).join(" or ")+".");
+        if(openOne) _cs.push(openOne.name+" is still live at "+fnMoneyC(Number(openOne.amount)||0)
+          +(openOne.why?(", "+openOne.why):"")+". It is not counted as saved. Once it is done the saving is "
+          +fnMoneyC(savedAll)+" a month, "+fnMoneyC(savedAll*12)+" a year.");
+        if(_cs.length) C.appendChild(el("div","fnsch",_cs.join(" ")));
+        b.appendChild(C);
+      }
     }
     if(pays.length){
       var D=el("div"); D.style.marginTop=recur.length?"16px":"0";
@@ -24023,8 +24318,21 @@ function fnRunway(v,f){
       if((k==="checking"||k==="main")&&a.balance!=null&&op===null) op=Number(a.balance);
     });
     if(op===null) return;
+    /* ===== build 419d: A REAL BUG, AND A BIG ONE. ====================================
+       This summed f.monthly ONLY. That was correct in build 418, when the subscriptions
+       were a single $250 estimate living in f.monthly. Build 419 moved them to their own
+       f.subscriptions array and THE RUNWAY QUIETLY STOPPED COUNTING THEM: it was totalling
+       gas and groceries alone, $620 to $740 a month instead of $861 to $981, and reporting
+       a four month shortfall of $750 to $1,230 when the real figure is $1,710 to $2,190.
+       It UNDERSTATED what he owes by about a thousand dollars and looked entirely plausible
+       doing it. Caught because the harness prints the rendered figure and the arithmetic was
+       checked against it independently, not because anything threw.
+       THE LESSON: when data moves between containers, every reader of the old container is
+       a caller that needs checking. fnMonthly was updated and fnRunway was not, because
+       fnMonthly is where the list is obviously rendered and fnRunway only borrows it.
+       It now reads the SAME two arrays fnMonthly reads, in the same order. */
     var lo=0,hi=0,anyEst=false;
-    (f.monthly||[]).forEach(function(x){
+    [].concat(f.monthly||[],f.subscriptions||[]).forEach(function(x){
       if(!x) return;
       var a=(x.low!=null?Number(x.low):Number(x.amount)||0);
       var z=(x.high!=null?Number(x.high):a);
@@ -24059,7 +24367,22 @@ function fnRunway(v,f){
     var notes=[];
     notes.push("Four months of living costs plus the next "+(lumpName||"dated")+" payment, against what is in operating today.");
     if(lump>0&&lumpWhen) notes.push("That payment has no date, only "+lumpWhen+", so this window moves with it.");
-    if(anyEst) notes.push("The monthly figures are his own estimates, not recorded transactions.");
+    if(anyEst) notes.push("Gas and groceries are his own estimates; the subscriptions are recorded amounts.");
+    /* build 419: TWO REASONS THIS IS A FLOOR AND NOT A CEILING, both named rather than left
+       for him to work out. Card payments are real obligations with no stated amount, so they
+       cannot be in here without inventing one. And one subscription he intends to cancel is
+       still being charged. Both push the real number up, never down. */
+    notes.push("Card payments are not in this: they are debt service, he gave no amounts, and a variable payment inside a fixed total destroys it. The Discover balance is above. That pushes the real number UP.");
+    /* build 419b: IT MOVES IN BOTH DIRECTIONS NOW AND SAYING ONLY ONE WOULD BE A HALF TRUTH.
+       The committed figure leaves out the card payments, which understates it, and it
+       includes two subscriptions he intends to cancel, which overstates it. Both are named
+       with their sizes so he can see which way each pushes. */
+    try{
+      var _go=0,_goN=[];
+      (f.subscriptions||[]).forEach(function(x){ if(x&&x.cancelling===true){ _go+=Number(x.amount)||0; _goN.push(x.name); } });
+      if(_go>0) notes.push("It does include "+fnMoneyC(_go)+" a month of subscriptions he is cancelling, "+_goN.join(" and ")
+        +", which is "+fnMoneyC(_go*MONTHS)+" across these four months. That pushes it DOWN once they are done.");
+    }catch(e){}
     notes.push("NO INCOME IS PROJECTED. Any commission that lands changes this, and none is assumed here.");
     b.appendChild(el("div","fnsch",notes.join(" ")));
     v.appendChild(c);
