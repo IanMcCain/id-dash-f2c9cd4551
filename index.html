@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 420 (2026-09-20)">
+<meta name="build" content="v21 build 421 (2026-09-20)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -18822,6 +18822,258 @@ try{ if(profile==="ian" && state.meta && !state.meta.mig408_willis0924 && state.
     }
     if(_n408){ state.meta.mig408_willis0924=true; save(true); }
 } }catch(e){ try{ console.warn("mig408 willis 09-24 did not apply:",e&&e.message); }catch(_){} }
+
+/* ===== v21 build NNN: IAN'S REAL ESTATE UPDATES, 20.09.2026 =========================
+   Eleven files updated or created from Ian directly on 20.09.2026. Guarded once by
+   state.meta.mig_re0920, NOT in the seed, so SEED_VERSION stays 13.
+
+   WHAT IS DELIBERATELY NOT SET, BECAUSE HE HAS NOT DECIDED IT AND INFERRING IT WOULD BE
+   INVENTING A NUMBER HE NEVER GAVE:
+     Mattox price     - $474,900 to $479,900 against $464,900 is still unresolved.
+     Winchester ianSplit - not written, and not needed: the 50/50 is carried by the Dual agency
+                        source and is documented in master context. See the Winchester block.
+     Belknap price    - $249,900 is settled analysis but the list price is his to set.
+     Vogel share      - no source or split is set, see the Vogel block.
+     Vogel buy side   - texts document sell only. Flagged, not created.
+     Theobald buy side- documented in August, never recorded. Flagged, not created.
+
+   ANSWERED TODAY AND THEREFORE NOW WRITTEN: Mattox is Chris's client so the existing 20 percent
+   is correct and source is corrected; Rachel Jenkins is 5.0 to 5.5 percent total both sides split
+   evenly; Winchester's $40,000 to $50,000 is the total pot BEFORE the split, and because the
+   50/50 is already on the record his share is computable at $22,550 to $24,600.
+   Every one of those is left genuinely empty rather than estimated.
+
+   A NOTE ON THE MATTOX MODEL, WRITTEN DOWN BECAUSE THE NUMBER WILL LOOK SLIGHTLY WRONG.
+   dealBrokerage() computes 15 percent OF THE GROSS IT IS GIVEN. Ian's actual arrangement is
+   that NP Dodge takes 15 percent of the ORIGINAL 3.6 percent, so the brokerage gives up
+   nothing and the whole half point lands on the agent side. The model cannot express that,
+   so with sellerRate 0.031 the app computes $2,502.72 where the true figure is $2,431.49,
+   an overstatement of $71.23 at a $474,900 sale. The gross is now right and the residual is
+   recorded here rather than papered over. */
+try{ if(profile==="ian" && state.meta && !state.meta.mig_re0920 && state.realEstate && Array.isArray(state.realEstate.deals)){
+  var _D=state.realEstate.deals;
+  var _MK="RE UPDATE 20.09.2026";
+  var _get=function(id){ for(var i=0;i<_D.length;i++){ if(_D[i]&&_D[i].id===id) return _D[i]; } return null; };
+  var _app=function(id,txt){ var d=_get(id); if(!d) return false;
+    var n=String(d.note||""); if(n.indexOf(_MK)>=0) return false;
+    d.note=(n?n.replace(/\s+$/,"")+" ":"")+txt; return true; };
+
+  /* 1. WILLIS. Relist is CONTINGENT, and the open house is PROPOSED not agreed. */
+  var _w=_get("re-cynthia-willis");
+  if(_w){
+    _w.close="Going live September 24, 2026 if all finishes are done";
+    _app("re-cynthia-willis", _MK+". RELIST DATE IS CONDITIONAL AND THE CONDITION IS THE RECORD: "
+      +"Thursday 24 September 2026 IF ALL FINISHES ARE DONE, Ian 20.09.2026. It is not a fixed date. "
+      +"PRICE HOLDS AT $619,900, confirmed by him again on 20.09.2026 after the 18.09 recheck. "
+      +"OPEN HOUSE SATURDAY IS PROPOSED, NOT AGREED. Ian texted the sellers 18.09.2026 14:18 "
+      +"\"I'd like to shoot for Saturday 12-2\" after Byron asked at 14:17 for one on the Saturday. "
+      +"NO SELLER EVER REPLIED TO THE 12-2, so it is his proposal sitting unanswered. "
+      +"AND 12-2 IS A DEPARTURE FROM HIS OWN STANDING RULE, which is that open houses run 12:00 to "
+      +"4:00 PM. Recorded as proposed so nobody reads it as booked.");
+  }
+
+  /* 2. MATTOX. Commission cut recorded. Split and price deliberately untouched. */
+  var _m=_get("re-mattox-sell");
+  if(_m){
+    _m.sellerRate=0.031;
+    _m.source="Chris's client";
+    _m.close="Lists early October 2026";
+    _app("re-mattox-sell", _MK+". COMMISSION CUT TO 3.1 PERCENT LISTING PLUS 2.4 PERCENT BUYER, "
+      +"5.5 percent total, agreed by Chris at 10:10 on 20 September 2026. Mattox pushed for it "
+      +"over the floor refinish overrun. THE BROKERAGE GIVES UP NOTHING: NP Dodge still takes 15 "
+      +"percent of the ORIGINAL 3.6 percent, so the whole half point comes off the agent side and "
+      +"the effective brokerage take rises from 15.00 to 17.42 percent of the money that actually "
+      +"arrives. IAN'S LOSS IS SALE PRICE x 0.1 PERCENT, which is $474.90 at a $474,900 sale, "
+      +"$2,906.39 falling to $2,431.49. MODEL LIMITATION, STATED NOT HIDDEN: sellerRate is now "
+      +"0.031 so the gross is right, but dealBrokerage takes 15 percent of that 3.1 rather than of "
+      +"the 3.6, so the app will read about $71 high. LISTS EARLY OCTOBER, his expectation. "
+      +"CLIENT OWNERSHIP IS NOW SETTLED AND THE RECORD WAS WRONG. Ian 20.09.2026: \"Mattox is my "
+      +"dad.\" source is corrected from Ian's own to Chris's client, so the 20 percent share this "
+      +"deal was already computing is CORRECT and stays. The $7,294 question is closed. The tell "
+      +"was that the entire client thread is Chris's. "
+      +"THE PRICE IS STILL NOT SET AND STAYS UNSET: $474,900 to $479,900 against $464,900 is "
+      +"unresolved and it is his call.");
+  }
+
+  /* 3. SPICER. Income modelled at zero. Commercial fact only. */
+  var _s=_get("re-allison-spicer-buy");
+  if(_s){
+    _s.ianSplit=0;
+    _s.risk="COMMISSION TO IAN IS NOT RELIABLE AND IS MODELLED AT ZERO. Per Ian 20.09.2026 he "
+      +"likely receives nothing from this deal, and if anything about 10 percent, not guaranteed. "
+      +"Income only. The transaction itself is unaffected and closing is not in question.";
+    _s.close="November 13, 2026";
+    _app("re-allison-spicer-buy", _MK+". IAN'S INCOME FROM THIS DEAL IS MODELLED AT ZERO, on his "
+      +"own instruction 20.09.2026: he likely receives nothing, and if anything about 10 percent, "
+      +"which is not guaranteed. ianSplit is set to 0 so the deal contributes nothing to pending "
+      +"income. AT 10 PERCENT IT WOULD BE $2,737.00 and at the previous 20 percent default it was "
+      +"computing $5,474.01, which was the entire pending income figure on the home screen. "
+      +"VOLUME, DEAL COUNT AND THE CLOSING ARE UNAFFECTED. The 13 November date is a builder "
+      +"calendar date from July with no update in ten weeks.");
+  }
+
+  /* 4. TESKES. On pace, date unconfirmed. */
+  var _t=_get("re-teskes");
+  if(_t){
+    _t.close="Est. finish early January 2027, date not confirmed";
+    _app("re-teskes", _MK+". UNDER BUILD AND MOVING ON PACE, Ian 20.09.2026. THE DATE IS THE PART "
+      +"HE IS NOT SURE OF: he said he is NOT certain the close date is accurate and is HOPING for "
+      +"early January. The early January figure is an estimate made in July 2026 when the "
+      +"foundation was dug, and nothing has confirmed it since. Marked unconfirmed rather than "
+      +"moved, because he did not give a new date. NOTE THE TWO EVENTS ARE DIFFERENT: the record "
+      +"holds a construction FINISH estimate, and commission is paid at CLOSING, which follows it.");
+  }
+
+  /* 5. WINCHESTER. Ghosting. Share deliberately unset. */
+  var _bw=_get("re-brandon-winchester");
+  if(_bw){
+    _bw.risk="GHOSTING as at 20.09.2026. Reliability has dropped and nobody is certain the deal "
+      +"proceeds, Ian's own read.";
+    _bw.close="May or June 2027 if it proceeds";
+    _app("re-brandon-winchester", _MK+". GHOSTING AND RELIABILITY HAS DROPPED, Ian 20.09.2026, and "
+      +"nobody is certain it goes through. If it does, May or June 2027. "
+      +"$40,000 TO $50,000 IS THE TOTAL POT BEFORE THE SPLIT WITH CHRIS, his words 20.09.2026, "
+      +"not his income and not both sides of the transaction. "
+      +"HIS FIGURE CHECKS OUT AGAINST THE RECORDED MODEL. A dual deal takes the brokerage cut on "
+      +"a FIXED 6 percent basis, 0.009 x price, whatever rate is charged, so the pot before the "
+      +"split is (0.05 minus 0.009) x price = 0.041 x price. That is $45,100 at $1,100,000 and "
+      +"$49,200 at $1,200,000, which sits inside his $40,000 to $50,000. "
+      +"THE 50/50 SPLIT IS ON THE RECORD, so his share is computable and is not being assumed "
+      +"from the Rachel Jenkins deal. Master context: dual deals are source Dual agency and Ian "
+      +"and Chris split the remainder 50/50, and Winchester take home is price x 0.0205. "
+      +"HIS SHARE IS $22,550 AT $1,100,000 AND $24,600 AT $1,200,000. Nothing is written to "
+      +"ianSplit because the Dual agency source already carries the 50/50 and the app computes it. "
+      +"ONE THING GENUINELY OPEN AND IT IS NOT THE SPLIT, IT IS THE BASIS: master context flags "
+      +"that Ian's own worked example, 5 percent is 2.5 percent each with the brokerage taking 15 "
+      +"percent of that, gives price x 0.02125 rather than x 0.0205, about $825 more at "
+      +"$1,100,000. That question is older than today and is not resolved here. "
+      +"The dual 5 percent override on this record is unchanged.");
+  }
+
+  /* 6. RACHEL JENKINS. New deal. Price left EMPTY on purpose, see the note. */
+  if(!_get("re-rachel-jenkins-build")){
+    _D.push({
+      id:"re-rachel-jenkins-build",
+      title:"Rachel Jenkins and partner",
+      sub:"Build side with Ryan Beachler, Rose Creek Homes",
+      stage:"Prospecting",
+      price:"$700,000",
+      priceNote:"About $700,000, Ian 20.09.2026. COMMISSION IS 5.0 TO 5.5 PERCENT TOTAL ACROSS BOTH "
+        +"SIDES, split evenly between Ian and Chris, his own words 20.09.2026. sellerRate is set to "
+        +"the LOW END, 0.050, so the figure the app shows is the conservative one. ORDER OF "
+        +"OPERATIONS: total commission first, then the NP Dodge 15 percent, then the even split. "
+        +"At 5.0 percent that is $35,000, less $5,250, halved to $14,875. At 5.5 percent it is "
+        +"$38,500, less $5,775, halved to $16,362.50. THE RATE IS NOW KNOWN. THE DEAL IS NOT.",
+      sellerRate:0.050,
+      ianSplit:0.50,
+      close:"About a year out, likely May or June 2027 if they proceed",
+      flag:"iffy",
+      note:"CREATED 20.09.2026 FROM IAN. She existed only as a people record, pp-rachel-jenkins, and "
+        +"had no deal. BUILDER MEETING ALREADY HELD, Thursday 17 September 2026 13:00, \"Meet the "
+        +"builder, Rachel Jenkins + partner with Ryan Beachler\", on the calendar and confirmed. "
+        +"Ian sent them two lender contacts after that meeting and is giving them time to work "
+        +"through pre approval before following up on lot options, his own words to Ryan on "
+        +"20.09.2026. Silver Leaf and Blondo Point are both live options and Ryan is pricing a "
+        +"Silver Leaf two storey; Silver Leaf allows the same size as the model but has heavier "
+        +"stone requirements. BUILDING AROUND $700,000, wants it done in about a year, likely May "
+        +"or June if they go. VERY EARLY AND IFFY, NO GUARANTEE, his words. "
+        +"COMMISSION IS SETTLED, THE DEAL IS NOT. No agent on the other side, so 5.0 to 5.5 percent "
+        +"TOTAL across both sides, split EVENLY with Chris, Ian 20.09.2026. The even split is "
+        +"carried by ianSplit 0.50 rather than by source, because a 50/50 with Chris is neither of "
+        +"the standard source buckets and source drives nothing else on the money here. "
+        +"sellerRate 0.050 is the LOW END of his range, chosen so the visible number is the "
+        +"conservative one; the high end is 0.055 and worth $1,487.50 more to him. "
+        +"NONE OF THAT MAKES THE DEAL ANY MORE LIKELY. It stays very early, iffy and not "
+        +"guaranteed, and May or June 2027 only if they proceed. "
+        +"SHE IS NOT RACHEL HARTLEY, who is a separate buyer side prospect of Chris's."
+    });
+  }
+
+  /* 7. JED. Paperwork dragging. $815,000 is the documented figure. */
+  var _j=_get("re-jed-lot185");
+  if(_j){
+    _j.risk="PAPERWORK IS DRAGGING as at 20.09.2026 and the deal is not guaranteed, Ian's read. "
+      +"His attorney has been through the contract, the agent has gone quiet since 16 September.";
+    _app("re-jed-lot185", _MK+". DRAGGING THEIR FEET ON THE PAPERWORK AND NOT GUARANTEED, Ian "
+      +"20.09.2026. COMMISSION CONFIRMED BY HIM AGAIN: he gets 20 percent of 3.6 percent after the "
+      +"NP Dodge cut, which is what this record already carries. "
+      +"ON THE PRICE, AND THE TWO HALVES OF THE RANGE ARE NOT EQUALLY SOLID. $815,000 IS THE "
+      +"DOCUMENTED FIGURE: Julie Tartaglia, 9 September 2026 20:13, \"Full blown. Added estimated "
+      +"PP $815k. To be finalized when specs and plans approved by both Buyer and Seller.\" "
+      +"$825,000 IS VERBAL ONLY and traces to Chris saying \"up to 825\" on 8 September. "
+      +"AND THE CAVEAT THAT MATTERS: on 16 September 2026 Julie said the contract price line will "
+      +"read TBD, so the $815,000 may not survive into the signed document at all. The range is "
+      +"left as it stands rather than collapsed.");
+  }
+
+  /* 8. BARKER. October is a guess and renders as one. */
+  var _b=_get("re-barkers");
+  if(_b){
+    _b.close="Likely lists October 2026";
+    _app("re-barkers", _MK+". LIKELY LISTS OCTOBER 2026, and he called it a guess, so it is "
+      +"recorded as a guess and not as a date.");
+  }
+
+  /* 9. VOGEL. New deal. Sell only. Price field empty, see the note. */
+  if(!_get("re-vogel-sell")){
+    _D.push({
+      id:"re-vogel-sell",
+      title:"John Vogel",
+      sub:"Sell side, 5621 Pine St, Omaha 68106",
+      address:"5621 Pine St, Omaha, NE 68106",
+      stage:"Prospecting",
+      price:"",
+      priceNote:"$334,900 POST ABATEMENT, $319,900 AS IS. CMA Revision 3, 15.09.2026. Tiers are "
+        +"$329,900 low, $334,900 recommended, $339,900 push, $344,900 arguable and not recommended. "
+        +"THE PRICE FIELD IS LEFT EMPTY ON PURPOSE: no source and no split are set on this record, "
+        +"so any price here would compute an income figure off a share nobody has confirmed.",
+      close:"Likely lists early October 2026. Seller wants to be out by November",
+      note:"CREATED 20.09.2026 FROM IAN. He was in no deal record at all despite a live CMA and a "
+        +"booked listing meeting. LISTING MEETING TUESDAY 22 SEPTEMBER 2026 13:00, \"Vogel Listing "
+        +"Meeting (Chris & Ian)\", on the calendar, both attending. "
+        +"HE IS A RESTART: John Vogel texted Chris on 15.09.2026 15:04, \"I'm curious if you'd like "
+        +"to restart our project of selling the house again\", then \"I'm motivated and ready to "
+        +"make it happen\" and \"If I could be out of here by November, that would be awesome.\" "
+        +"SELL IS DOCUMENTED. A BUY IS NOT, AND THAT IS FLAGGED RATHER THAN CREATED. Ian believes "
+        +"it is a buy AND a sell. The entire message record contains no mention of him buying "
+        +"anything, and the one line that points at his next move points the other way: he said he "
+        +"wanted to walk the house to know \"how much I need to put in storage for a bit\". "
+        +"NO BUY SIDE RECORD HAS BEEN CREATED. Confirm with him before one is. "
+        +"THE ABATEMENT IS THE OPEN ITEM AND IT IS WORTH $15,000: Revision 3 ASSUMES the asbestos "
+        +"abatement is done before listing, Ian says it was never scheduled. Post abatement is "
+        +"$334,900 and as is is $319,900. Tuesday settles it."
+    });
+  }
+
+  /* 10. BELKNAP. Timing from Ian. Price still his to set. */
+  var _bk=_get("re-belknap-sell");
+  if(_bk){
+    _bk.close="Earliest late October 2026, or early November";
+    _app("re-belknap-sell", _MK+". THEY HAVE MOVED INTO THEIR NEW HOME AND NEED TO SELL, Ian "
+      +"20.09.2026, and they need real time to prepare the house. EARLIEST IS LATE OCTOBER BEFORE "
+      +"HALLOWEEN, OR EARLY NOVEMBER BEFORE THANKSGIVING. THE PRICE IS STILL NOT SET AND THAT IS "
+      +"DELIBERATE: the CMA settles at $249,900 but the list price is his call and he has not made "
+      +"it, so the field stays empty and this deal contributes nothing to the pipeline total.");
+  }
+
+  /* 11. THEOBALD. Contact corrected, status recorded. deal.note NOT TOUCHED. */
+  var _th=_get("re-theobald-sell");
+  if(_th){
+    _th.title="Nancy Theobald";
+    _th.sub="Sell side, 5014 S 163 St, Omaha 68135. Contact is Nancy, Scott is on the deed";
+    _th.close="No updates since 4 September 2026";
+    _th.priceNote="Balanced list, CMA refresh 04.09.2026. CONTACT CORRECTED 20.09.2026: the client "
+      +"is NANCY Theobald, Scott is on the deed and every conversation on record is with her. "
+      +"A BUY SIDE MAY BE MISSING AND IS FLAGGED RATHER THAN CREATED: the original brief was sell "
+      +"AND buy, Chris 10 August 2026, \"switching into a new house next year\". No buy side "
+      +"record exists and none has been created. STATUS: no updates since 4 September 2026 and "
+      +"Nancy has not replied since 12 August 2026. deal.note is deliberately untouched, it is "
+      +"held behind q178975486518245 pending Ian.";
+  }
+
+  state.meta.mig_re0920=true; save(true);
+} }catch(e){ try{ console.warn("mig_re0920 did not apply:",e&&e.message); }catch(_){} }
+
 
 /* build 225: focus timer removed, nothing to clear here anymore. */
   /* build 372: LAST THING BEFORE THE SAVE. Every migration above has run, deepMergeDefaults
