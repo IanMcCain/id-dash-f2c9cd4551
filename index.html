@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 419 (2026-09-20)">
+<meta name="build" content="v21 build 420 (2026-09-20)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -18258,6 +18258,73 @@ try{ if(state.meta && !state.meta.mig419c_ending && state.finance && typeof stat
     }
 } }catch(e){ try{ console.warn("mig419c ending did not apply:",e&&e.message); }catch(_){} }
 
+/* ===== v21 build 420: THE SECOND CHECKING ACCOUNT BECOMES A SAVINGS ACCOUNT =============
+   IAN, 20.09.2026, and the spec is his, quoted so nobody re-derives it: "I want to turn that
+   second checking account into a type of savings account. Since I'm going to Arizona I'm
+   gonna need some money for the flights, hotel and food. I want the $1,000 to be a base
+   (never go under it even after taking out the Arizona money), so it acts as zero, and $2000
+   acts as $1,000 - so just subtract 1k from the total to get where we are at with savings.
+   And the way I'll do this is by putting a percentage of each payment into that saving."
+
+   SO THE FLOOR IS AN OFFSET, NOT A TARGET. saved = balance - floor. At $1,000 that is $0 and
+   at $2,000 it is $1,000, exactly as he described. TODAY IT IS EXACTLY $1,000, SO SAVED IS
+   ZERO, AND ZERO RENDERS AS ZERO. It is not an empty state and it is not hidden: a section
+   that vanishes the day he starts saving would be worse than one that says nothing yet.
+
+   THE BALANCE IS STILL THE BALANCE. The bank holds $1,000 and the Accounts row still says so.
+   Only the SAVED figure is offset. Nothing subtracts the floor from the account anywhere
+   else, and the floor is never counted as spendable.
+
+   THREE THINGS HE HAS NOT SAID, AND NONE OF THEM IS INVENTED:
+     THE DEPOSIT RULE, AND HE HAS WALKED THE PERCENTAGE BACK HIMSELF: "the amount will range
+     in however much I want to add, the more I get paid the more I will deposit most likely."
+     THAT IS NOT A RULE AND NOTHING IS ENCODED AS ONE. No percentage, and critically NO
+     PROJECTED COMPLETION DATE: a date to reach the target needs a deposit rate, and there is
+     no deposit rate. Progress is shown against the target. Nothing is forecast.
+     THE AMEX REWARDS, noted and NOT counted. "Since I have Amex I can use some rewards on
+     flights and stuff if I have any by then." He has $0 on that card and no points yet, and
+     we cannot see a points balance, so no value is computed, the target is not reduced, and
+     no points tracker is built. It is recorded as a possible offset and nothing more.
+     THE AMOUNT Arizona will actually cost. Not asked for, not guessed.
+
+   THE TARGET IS $2,000 AND IT IS MARKED AS PROVISIONAL, WHICH IS THE HONEST STATE. He wrote
+   "my goal would be to get $20 for Arizona which should be enough to cover everything." $20
+   does not cover flights, a hotel and food for a February trip that may carry two people and
+   $2,000 does, so it is read as a typo and stored as 2000 with targetProvisional set. The
+   page says it is awaiting his confirmation rather than presenting it as settled. IT IS NOT
+   QUIETLY CORRECTED: if the figure is wrong, one field changes and nothing else does.
+
+   THE KIND CHANGES FROM buffer TO savings AND THAT TOUCHES THE POSITION BLOCK. fnBalances
+   recognised buffer and extra; savings is added to the same branch and the Position row takes
+   its label from the kind, so it now reads Savings instead of Buffer. Renaming without
+   teaching the reader the new word would have dropped the row off Position entirely.
+
+   GUARDS. state.meta.mig420_savings, NOT in the seed, SEED_VERSION stays 13. Runs only while
+   the account is still kind buffer, so a later correction is never reverted. Idempotent. */
+try{ if(state.meta && !state.meta.mig420_savings && state.finance && typeof state.finance==="object"){
+    var _FS=state.finance;
+    var _sv=null;
+    (_FS.accounts||[]).forEach(function(a){ if(a&&a.id==="fnbo1177") _sv=a; });
+    if(_sv && String(_sv.kind)==="buffer"){
+      _sv.kind="savings";
+      _sv.floor=1000;
+      _FS.savings={
+        accountId:"fnbo1177",
+        floor:1000,
+        purpose:"Arizona travel: flights, hotel and food",
+        separateFrom:"the tournament entry fee, which is not this",
+        deposits:"whatever he decides each time, larger when he is paid more",
+        depositRuleKnown:false,
+        target:2000,
+        targetProvisional:true,
+        targetSource:"He wrote $20. Read as $2,000, which is a coherent figure for flights, hotel and food, and awaiting his confirmation.",
+        rewards:"Amex points may offset some of it if he has any by then. Not counted, not valued, and the target is not reduced for it.",
+        source:"Ian, 20.09.2026, his own spec. The floor acts as zero: $2,000 reads as $1,000 saved."
+      };
+      state.meta.mig420_savings=true; save(true);
+    }
+} }catch(e){ try{ console.warn("mig420 savings did not apply:",e&&e.message); }catch(_){} }
+
 /* ===== v21 build 399: ARCHIVE THE FALL CUP. IT NEVER HAPPENED. ============================
    IAN, 14.09.2026: "I never did that fall cup."
 
@@ -23351,6 +23418,67 @@ function fnMoney(n){ n=Number(n)||0; var s=fmtMoney(Math.abs(n)); return (n<0?"-
    build has had to make that distinction, so it stops being written out at each call site.
    $65.02 had been rendering as "$65" and $9.99 as "$10", which is the same fault that first
    shipped the $1.08 refund as "-$1". */
+/* ===== v21 build 420: THE GRAPHS. ========================================================
+   IAN HAS ASKED TWICE AND SEEN NOTHING. The honest reason was that the two charts already
+   built, the operating sparkline and the rent rail, both correctly refuse to draw: five
+   points are needed and there are two, and every rent payment needs a real date and none
+   has one. Those refusals are right and they stay. BUT THEY ARE NOT A REASON FOR THE PAGE TO
+   HAVE NO GRAPHICS, and treating them as one is how a page ends up with nothing on it for a
+   week. There is now real itemised data that can be drawn TODAY, so it is drawn today.
+
+   WHY HTML BARS AND NOT SVG. The month chart is SVG because it is a time series with axes.
+   These are labelled magnitudes, where the label matters as much as the bar, and SVG text at
+   390px is fragile and does not wrap. So a bar here is a row of real text plus a track,
+   reusing .fnacc for the row, which also means the type scale and the tabular figures match
+   the rest of the page for free.
+
+   COLOUR IS NOT DECORATION AND IS NOT FOUGHT. Green and red already mean held and owed on
+   this page, so a bar that is merely a magnitude uses the finance accent instead, and green
+   and red appear only where they carry their existing meaning: money saved, and money short.
+
+   NO CHART A SINGLE NUMBER WOULD SAY BETTER. Four are shipped and each earns it: seven
+   subscriptions ranked (a list of seven magnitudes is exactly what a bar chart is for), the
+   deductible share, what he cut against what he kept, and the runway where the point is that
+   operating does not reach the committed figure and the gap is the story.
+
+   ONE CANDIDATE WAS REJECTED AND IT IS WORTH SAYING WHY. A monthly outflow composition, gas
+   against groceries against subscriptions, cannot be drawn honestly: two of the three are
+   RANGES and one is exact, so any pie or stacked proportion would have to take midpoints,
+   which invents figures he never gave. The ranges are already on the rows above. */
+function fnBarRow(host,name,amountText,frac,tone,sub){
+  var w=el("div"); w.style.cssText="padding:9px 0";
+  var r=el("div","fnacc"); r.style.cssText="padding:0;border:0";
+  var L=el("div"); L.style.minWidth="0"; L.appendChild(el("div","fnname",String(name||"")));
+  var sb=fnSub(sub); if(sb) L.appendChild(el("div","fnsch",sb));
+  r.appendChild(L);
+  if(amountText!=null) r.appendChild(fnTone(el("div","fnamt",String(amountText)),tone));
+  w.appendChild(r);
+  w.appendChild(fnTrack([{frac:frac,tone:tone}]));
+  host.appendChild(w);
+  return w;
+}
+/* A track is one or more segments across the full width. Segments are given as fractions of
+   the whole and are drawn in order. A zero fraction draws nothing at all rather than a stub,
+   which is the build 189 rule: a stub reads as a rendering fault, not as zero. */
+function fnTrack(segs){
+  var t=el("div"); t.style.cssText="margin-top:7px;height:8px;border-radius:5px;background:var(--line);overflow:hidden;display:flex";
+  (segs||[]).forEach(function(sg){
+    var f=Math.max(0,Math.min(1,Number(sg&&sg.frac)||0));
+    if(f<=0) return;
+    var seg=el("div");
+    var col=(sg.tone==="good")?"var(--green)":(sg.tone==="due")?"var(--red)":"linear-gradient(90deg,var(--fi1),var(--fi2))";
+    seg.style.cssText="width:"+(f*100).toFixed(2)+"%;height:100%;"+((sg.tone==="good"||sg.tone==="due")?("background:"+col):("background-image:"+col))
+      +(sg.fade?";opacity:.45":"");
+    t.appendChild(seg);
+  });
+  return t;
+}
+function fnLegend(host,items){
+  var l=el("div","fnsch"); l.style.marginTop="8px";
+  l.textContent=(items||[]).join("   ");
+  host.appendChild(l);
+  return l;
+}
 function fnMoneyAuto(n){ n=Number(n)||0; return (n%1===0)?fnMoney(n):fnMoneyC(n); }
 function fnMoneyC(n){
   n=Number(n)||0;
@@ -23618,7 +23746,7 @@ function fnRow(host,name,amountText,subText,state,dim){
 function fnKindWord(k){
   k=String(k||"").toLowerCase();
   if(k==="checking"||k==="main") return "Checking";
-  if(k==="buffer"||k==="extra") return "Savings";
+  if(k==="buffer"||k==="extra"||k==="savings") return "Savings";
   if(k==="tax") return "Tax";
   if(k==="business") return "Business";
   if(k==="debit") return "Debit";
@@ -23641,6 +23769,7 @@ function fnBalances(v,f,part){
   if(!accts.length&&!cards.length) return;
   var wantAcc=(part!=="position"), wantPos=(part!=="accounts");
   var _limit=0; cards.forEach(function(x){ if(x&&Number(x.limit)>0) _limit+=Number(x.limit); });
+  var bufLabel="Buffer";
   var c=card(); var b=c._body;
   var main=0,buf=0,owed=0,haveMain=false,haveBuf=false,haveOwed=false;
 
@@ -23658,7 +23787,10 @@ function fnBalances(v,f,part){
       fnKindWord(k)+(a.last4?("  \u00b7  "+a.last4):""),"good",false);
     if(a.balance!=null){
       if(k==="checking"||k==="main"){ main+=Number(a.balance)||0; haveMain=true; }
-      else if(k==="buffer"||k==="extra"){ buf+=Number(a.balance)||0; haveBuf=true; }
+      /* build 420: savings joins buffer and extra. Renaming the kind without adding it here
+         would have silently dropped the row out of Position, which is how a rename becomes a
+         deletion. */
+      else if(k==="buffer"||k==="extra"||k==="savings"){ buf+=Number(a.balance)||0; haveBuf=true; bufLabel=(k==="savings"?"Savings":"Buffer"); }
     }
   });
   cards.forEach(function(a){
@@ -23701,7 +23833,7 @@ function fnBalances(v,f,part){
     var t=el("div");
     if(part!=="position") t.style.cssText="margin-top:14px;padding-top:12px;border-top:1px solid var(--line)";
     if(haveMain) fnRow(t,"Operating",fnMoney(main),null,"good",false);
-    if(haveBuf)  fnRow(t,"Buffer",fnMoney(buf),null,"good",false);
+    if(haveBuf)  fnRow(t,bufLabel,fnMoney(buf),null,"good",false);
     if(haveOwed) fnRow(t,"Card debt",fnMoney(owed),null,"due",false);
     /* ===== build 418: NET, AND IT OVERRIDES A BUILD 414 DECISION ON PURPOSE ============
        Build 414 wrote "NO GRAND TOTAL AND NO NET ROW". Ian has asked for the net position to
@@ -24309,6 +24441,112 @@ function fnTax(v,f){
 
    AND IT ONLY DRAWS WHEN IT CAN. No operating balance, no monthly figures, or no dated lump
    and the whole section has zero footprint, the build 414 rule this page already runs on. */
+/* THREE PICTURES OF THE SAME SEVEN ITEMS, each answering a different question: what is big,
+   what is deductible, and what he has already cut. All three read the live arrays, so an item
+   added or cancelled moves every one of them with no second place to update. */
+function fnSubCharts(v,f){
+  try{
+    var subs=(f&&f.subscriptions)||[];
+    if(!subs.length) return;
+    var tot=0,ded=0;
+    subs.forEach(function(x){
+      var a=Number(x&&x.amount)||0; tot+=a;
+      var d=(x&&x.deduct)||{};
+      if(d.business===true&&Number(d.pct)>0) ded+=a*(Number(d.pct)/100);
+    });
+    tot=Math.round(tot*100)/100; ded=Math.round(ded*100)/100;
+    if(tot<=0) return;
+    var sorted=subs.slice().sort(function(a,z){ return (Number(z.amount)||0)-(Number(a.amount)||0); });
+    var max=Number(sorted[0].amount)||0;
+
+    /* 1. BY COST. Seven real magnitudes, largest first, each bar against the largest rather
+       than against the total, because the question is which ones are big. */
+    var c1=card(); var b1=c1._body;
+    b1.appendChild(el("div","g7kicker","By cost"));
+    sorted.forEach(function(x){
+      var a=Number(x.amount)||0;
+      fnBarRow(b1,x.name,fnMoneyAuto(a),(max>0?a/max:0),null,x.tag||null);
+    });
+    v.appendChild(c1);
+
+    /* 2. DEDUCTIBLE SHARE. Two segments of one total, so one track, not two bars. */
+    if(ded>0){
+      var c2=card(); var b2=c2._body;
+      b2.appendChild(el("div","g7kicker","Deductible share"));
+      var r2=el("div","fnacc"); r2.style.cssText="padding:0;border:0";
+      var l2=el("div"); l2.appendChild(el("div","fnname","Business"));
+      l2.appendChild(el("div","fnsch",fnSub("of "+fnMoneyC(tot))));
+      r2.appendChild(l2);
+      r2.appendChild(el("div","fnamt",fnMoneyC(ded)));
+      b2.appendChild(r2);
+      b2.appendChild(fnTrack([{frac:ded/tot},{frac:(tot-ded)/tot,fade:true}]));
+      fnLegend(b2,[Math.round((ded/tot)*100)+"% deductible",fnMoneyC(tot-ded)+" is not"]);
+      v.appendChild(c2);
+    }
+
+    /* 3. CUT AGAINST KEPT. The result of the pass he just did, and the one chart here that is
+       about a change rather than a state, so green carries its existing meaning. */
+    var canc=(f.cancelled||[]);
+    var cut=0; canc.forEach(function(x){ cut+=Number(x&&x.amount)||0; });
+    cut=Math.round(cut*100)/100;
+    if(cut>0){
+      var before=Math.round((tot+cut)*100)/100;
+      var c3=card(); var b3=c3._body;
+      b3.appendChild(el("div","g7kicker","Cut and kept"));
+      var r3=el("div","fnacc"); r3.style.cssText="padding:0;border:0";
+      var l3=el("div"); l3.appendChild(el("div","fnname","Cut"));
+      l3.appendChild(el("div","fnsch",fnSub("of "+fnMoneyC(before))));
+      r3.appendChild(l3);
+      r3.appendChild(fnTone(el("div","fnamt",fnMoneyC(cut)),"good"));
+      b3.appendChild(r3);
+      b3.appendChild(fnTrack([{frac:cut/before,tone:"good"},{frac:tot/before}]));
+      fnLegend(b3,[Math.round((cut/before)*100)+"% cut",fnMoneyC(tot)+" kept",fnMoneyC(cut*12)+" a year"]);
+      v.appendChild(c3);
+    }
+  }catch(e){ try{ console.error("[dash] sub charts",e); }catch(_){} }
+}
+
+/* THE SAVINGS ACCOUNT. His spec, rendered literally: the floor reads as zero and the saved
+   figure is the balance above it. IT DRAWS AT ZERO ON PURPOSE. Today the balance is exactly
+   the floor, so saved is $0, and a section that hid itself until the first deposit would
+   disappear precisely when he went looking for it. */
+function fnSavings(v,f){
+  try{
+    var sv=(f&&f.savings)||null; if(!sv) return;
+    var acct=null; (f.accounts||[]).forEach(function(a){ if(a&&a.id===sv.accountId) acct=a; });
+    if(!acct||acct.balance==null) return;
+    var bal=Number(acct.balance)||0, floor=Number(sv.floor)||0;
+    var saved=Math.round((bal-floor)*100)/100;
+    var c=card(); var b=c._body;
+    var L=el("div");
+    /* saved is the headline and it is green only when there is something to be green about */
+    fnRow(L,"Saved",fnMoneyAuto(saved),"above the floor",(saved>0?"good":null),false);
+    fnRow(L,"Balance",fnMoneyAuto(bal),null,"good",false);
+    fnRow(L,"Floor",fnMoneyAuto(floor),"never spent",null,false);
+    if(Number(sv.target)>0) fnRow(L,"Target",fnMoneyAuto(Number(sv.target)),(sv.targetProvisional===true?"awaiting your confirmation":null),null,false);
+    b.appendChild(L);
+    /* THE PROGRESS BAR, AND IT DRAWS AT ZERO. There is a real target now, so the denominator
+       is real, and $0 of $2,000 is a legitimate zero rather than an empty state. The TRACK is
+       drawn and the FILL is absent, which is exactly what none of it saved looks like. No
+       stub bar: build 189 established that a stub reads as a rendering fault, not as zero.
+       NO PROJECTED DATE. Reaching a target needs a deposit rate and there is no deposit rate,
+       so nothing here forecasts when. */
+    if(Number(sv.target)>0){
+      var tgt=Number(sv.target);
+      b.appendChild(fnTrack([{frac:(saved>0?saved/tgt:0),tone:"good"}]));
+      fnLegend(b,[fnMoneyAuto(saved)+" of "+fnMoneyAuto(tgt),Math.round((saved>0?saved/tgt:0)*100)+"% there"]);
+    }
+    var notes=[];
+    if(sv.purpose) notes.push("For "+sv.purpose+".");
+    notes.push("The "+fnMoneyAuto(floor)+" floor acts as zero, so "+fnMoneyAuto(floor*2)+" in the account would read as "+fnMoneyAuto(floor)+" saved. It is never spent, not even for the trip.");
+    if(sv.targetProvisional===true&&sv.targetSource) notes.push(String(sv.targetSource));
+    if(sv.deposits) notes.push("Deposits are "+sv.deposits+". There is no fixed rule, so nothing here projects when you get there.");
+    if(sv.rewards) notes.push(String(sv.rewards));
+    if(sv.separateFrom) notes.push("Separate from "+sv.separateFrom+".");
+    b.appendChild(el("div","fnsch",notes.join(" ")));
+    v.appendChild(c);
+  }catch(e){ try{ console.error("[dash] savings",e); }catch(_){} }
+}
 function fnRunway(v,f){
   try{
     if(!f) return;
@@ -24355,6 +24593,19 @@ function fnRunway(v,f){
     var gapLo=needLo-op, gapHi=needHi-op;
     var R=function(n){ return Math.round(n/10)*10; };   /* ranges from estimates are not exact to the dollar */
     var c=card(); var b=c._body;
+    /* THE PICTURE, above the numbers, because the point of this section is a comparison and a
+       comparison is what a bar does better than a figure. The track is the HIGH committed
+       figure, so the whole width is the worst case. Green is what he actually holds, solid
+       red is the shortfall that exists even at the low estimate, and faded red is the rest of
+       the range. The range is drawn as a range rather than collapsed to a midpoint. */
+    if(needHi>0){
+      var gOp=Math.min(op,needLo)/needHi;
+      var gShort=Math.max(0,(needLo-op))/needHi;
+      var gRange=Math.max(0,(needHi-needLo))/needHi;
+      b.appendChild(fnTrack([{frac:gOp,tone:"good"},{frac:gShort,tone:"due"},{frac:gRange,tone:"due",fade:true}]));
+      fnLegend(b,[fnMoneyC(op)+" operating",fnMoney(R(gapLo))+" to "+fnMoney(R(gapHi))+" short"]);
+      var sp=el("div"); sp.style.height="12px"; b.appendChild(sp);
+    }
     var L=el("div");
     fnRow(L,"Committed",fnMoney(R(needLo))+" to "+fnMoney(R(needHi)),"next four months",null,false);
     fnRow(L,"Operating",fnMoneyC(op),null,"good",false);
@@ -24414,7 +24665,9 @@ function buildFinance(v){
 
   fnSect(v,"Accounts","what you hold",function(h){ fnBalances(h,f,"accounts"); });
   fnSect(v,"Position","operating, buffer, debt",function(h){ fnBalances(h,f,"position"); });
+  fnSect(v,"Savings","the Arizona fund",function(h){ fnSavings(h,f); });
   fnSect(v,"Monthly payments","what leaves monthly",function(h){ fnMonthly(h,f); });
+  fnSect(v,"Subscriptions","seven items, ranked",function(h){ fnSubCharts(h,f); });
   fnSect(v,"Runway","known costs ahead",function(h){ fnRunway(h,f); });
   fnSect(v,"Operating trend","recent months",function(h){ fnSparkline(h,f); });
   fnSect(v,"Rent schedule","every payment dated",function(h){ fnRentRail(h,f); });
