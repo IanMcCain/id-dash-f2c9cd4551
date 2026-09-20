@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 424 (2026-09-20)">
+<meta name="build" content="v21 build 426 (2026-09-20)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -18371,6 +18371,157 @@ try{ if(state.meta && !state.meta.mig422_cardscales && state.finance && typeof s
     if(_touched){ state.meta.mig422_cardscales=true; save(true); }
 } }catch(e){ try{ console.warn("mig422 card scales did not apply:",e&&e.message); }catch(_){} }
 
+/* ===== v21 build 425: HE ANSWERED NEARLY EVERYTHING. WRITING IT IN. ====================
+
+   THE ARIZONA TARGET IS THE ONE THAT IS EASY TO GET WRONG BY A THOUSAND DOLLARS, so it is
+   spelled out. Ian: "Arizona target is 2k, (aka 3k because of the 1k base)". The target is
+   $2,000 SAVED, which is a $3,000 BALANCE. THE STORED FIGURE STAYS 2000 AND MUST NOT BECOME
+   3000. saved = balance - floor and frac = saved / target, so with target 2000 the ring reads
+   0 percent at a $1,000 balance, 50 percent at $2,000 and 100 percent at $3,000, which is
+   exactly what he described. Setting target to 3000 would make $3,000 read as 67 percent and
+   put the goal $1,000 out of reach. Checked at all three points in the patch script and again
+   in the harness. The page now also states the balance figure so he can reconcile against the
+   bank without doing the subtraction himself.
+   targetProvisional COMES OFF. He has confirmed it.
+
+   AMEX GOES TO $450, HIS OWN NUMBER, AND HIS REASONING CHECKS OUT. He said "$450 since I
+   probably spend $200 in gas, and then another like $150 in subscriptions for real estate
+   related things". His real estate subscriptions are $149.21 exactly, GPRMLS $35 plus Supra
+   $14.21 plus Claude $100, and gas at $50 a tank every 6 to 8 days is $190 to $250. So about
+   $350 is known and $100 is headroom for client meals and marketing. monthlyLimitProvisional
+   comes off.
+
+   THE HOME OFFICE IS NOW A MEASURED NUMBER RATHER THAN A RULE. "11 foot by 11 foot 5 inches",
+   so 11 x 11.41667 = 125.58 sq ft, and at the simplified $5 a square foot that is $627.92 a
+   year. WELL UNDER THE 300 SQ FT CAP, so the cap does not bind and no proration applies. The
+   dimensions are stored alongside the result so the arithmetic can be rechecked.
+
+   PRICES. Mattox takes the TOP of its band at $479,900, which was always his own decision,
+   and the band comes off. Belknap gets $249,900, its first real price. JED IS A PLACEHOLDER
+   AND IS MARKED AS ONE: "idk about price for Jed it can range but just put 825k for now."
+   Julie Tartaglia's contract line still reads TBD and the only documented figure from her is
+   $815,000, so priceProvisional is set and both facts stay on the record.
+
+   THE 22 AUGUST OPEN HOUSE LEAD IS ARCHIVED, NOT DELETED. "Forget about 22nd of August lead,
+   that is gone." The deal and the person record move verbatim to state.archive with the date
+   and his words attached, the same pattern as every other removal in this file.
+
+   GUARDS. state.meta.mig425_answers, NOT in the seed, SEED_VERSION stays 13. Idempotent. */
+try{ if(state.meta && !state.meta.mig425_answers && state.finance && state.realEstate){
+    var _F5=state.finance, _R5=state.realEstate;
+
+    /* 1. the Arizona target, confirmed */
+    if(_F5.savings && _F5.savings.targetProvisional===true){
+      _F5.savings.targetProvisional=false;
+      _F5.savings.target=2000;   /* SAVED, not a balance. Do not change this to 3000. */
+      _F5.savings.targetBalance=3000;
+      _F5.savings.targetSource="Ian, 20.09.2026, confirmed: \"Arizona target is 2k, (aka 3k because of the 1k base)\". The stored target is the SAVED figure, 2000. The balance that reaches it is 3000.";
+    }
+
+    /* 2. Amex at his own number */
+    (_F5.cards||[]).forEach(function(c){
+      if(c && c.id==="amexgold" && c.monthlyLimitProvisional===true){
+        c.monthlyLimit=450;
+        c.monthlyLimitProvisional=false;
+        c.monthlyLimitSource="Ian, 20.09.2026, his own number: about $200 gas plus about $150 of real estate subscriptions. Those subscriptions are $149.21 exactly, so roughly $350 is known and $100 is headroom for client meals and marketing.";
+      }
+    });
+
+    /* 3. the measured home office */
+    if(!_F5.homeOffice){
+      _F5.homeOffice={ widthFt:11, lengthFt:11, lengthIn:5, sqft:125.58, rate:5,
+        deduction:627.92, cap:300, method:"simplified",
+        source:"Ian, 20.09.2026, measured: 11 foot by 11 foot 5 inches. 11 x 11.41667 = 125.58 sq ft." };
+    }
+
+    /* 4. the prices */
+    (_R5.deals||[]).forEach(function(d){
+      if(!d) return;
+      if(d.id==="re-mattox-sell" && /474,900 to/.test(String(d.price||""))){
+        d.price="$479,900";
+        d.priceNote=String(d.priceNote||"").trim()+" SET AT THE TOP OF THE BAND 20.09.2026, Ian's own call. The band $474,900 to $479,900 is retired; $479,900 was always the recommendation and the tier below it was the only thing keeping it a band.";
+      }
+      if(d.id==="re-belknap-sell" && !String(d.price||"").trim()){
+        d.price="$249,900";
+        d.priceNote=String(d.priceNote||"").trim()+" LIST PRICE SET 20.09.2026 BY IAN at $249,900. This is the figure the CMA rev 4 recommended and the 51st percentile of the measured cohort.";
+      }
+      if(d.id==="re-jed-lot185" && /815,000 to/.test(String(d.price||""))){
+        d.price="$825,000";
+        d.priceProvisional=true;
+        d.priceNote=String(d.priceNote||"").trim()+" PLACEHOLDER, 20.09.2026. Ian: \"idk about price for Jed it can range but just put 825k for now.\" IT IS NOT A CONTRACT PRICE. Julie Tartaglia's contract line still reads TBD and the only documented figure from her is an estimated $815,000, which is why this is flagged rather than treated as agreed.";
+      }
+    });
+
+    /* 5. the 22 August lead, archived rather than deleted */
+    if(!state.archive || typeof state.archive!=="object") state.archive={};
+    if(!state.archive.openHouseLead0822){
+      var _dl=null,_di=-1,_pl=null,_pi=-1;
+      (_R5.deals||[]).forEach(function(d,i){ if(d&&d.id==="re-openhouse-lead-20260822"){ _dl=d; _di=i; } });
+      (_R5.people||[]).forEach(function(p,i){ if(p&&p.id==="p-openhouse-20260822"){ _pl=p; _pi=i; } });
+      if(_dl||_pl){
+        state.archive.openHouseLead0822={ deal:_dl, person:_pl, archivedOn:"2026-09-20",
+          why:"Ian, 20.09.2026: \"Forget about 22nd of August lead, that is gone.\" Kept verbatim rather than deleted, so if the name ever surfaces the record is still here." };
+        if(_di>=0) _R5.deals.splice(_di,1);
+        if(_pi>=0) _R5.people.splice(_pi,1);
+      }
+    }
+
+    state.meta.mig425_answers=true; save(true);
+} }catch(e){ try{ console.warn("mig425 answers did not apply:",e&&e.message); }catch(_){} }
+
+/* ===== v21 build 425: THE TWO MISSING ARM MOVEMENTS ====================================
+   IAN: "Biceps should be on back days, tricep should be on chest days." The split already
+   reads Back and biceps on Monday and Chest and triceps on Saturday, and neither day had the
+   arm movement its own title promised. This fills that gap and CHANGES NOTHING ELSE.
+
+   BOTH ARE HIS OWN EXERCISES RESTORED, NOT NEW ONES INVENTED. Machine curl, id zpcfoka, and
+   Rope pushdown, id trlite15, were both in the original programme and were archived by the
+   build 383 three day rebuild, which said at the time that direct arm work had no home in a
+   three day week and that restoring a curl was Ian's trade to make. He has now made it. The
+   ids are the originals, so every historic set still resolves.
+
+   NAMES ARE LABELS. The archived pushdown was called "Rope pushdown (light)"; light is a
+   loading instruction, not part of the name, so it moves to the cue field exactly as the calf
+   raise tempo did in build 387. Both names are one line at 390px.
+
+   BACK AND CHEST ARE NEVER COMBINED AND NOTHING HERE RISKS IT. Monday holds lat pulldown,
+   chest supported row and face pull, which are a pull, a pull and a rear delt movement: the
+   word chest appears in a row's name and in reverse pec deck, and neither is a chest
+   movement. The curl joins a pulling day and the pushdown joins the pressing day.
+
+   GUARDS. state.meta.mig425_arms, NOT in the seed. Each day is only touched if it does not
+   already carry the movement, so a later hand edit is never duplicated. Idempotent. */
+try{ if(profile==="ian" && state.meta && !state.meta.mig425_arms && state.gym && Array.isArray(state.gym.split)){
+    var _G5=state.gym;
+    var _day=function(k){ for(var i=0;i<_G5.split.length;i++){ if(_G5.split[i]&&_G5.split[i].day===k) return _G5.split[i]; } return null; };
+    var _has=function(d,id){ return !!(d&&(d.exercises||[]).filter(function(e){ return e&&e.id===id; }).length); };
+    var _n5=0;
+    var _mon=_day("Mon");
+    if(_mon && Array.isArray(_mon.exercises) && _mon.exercises.length && !_has(_mon,"zpcfoka")){
+      _mon.exercises.push({ id:"zpcfoka", name:"Machine curl", scheme:"3\u00d712/10/10" });
+      _n5++;
+    }
+    var _sat=_day("Sat");
+    if(_sat && Array.isArray(_sat.exercises) && _sat.exercises.length && !_has(_sat,"trlite15")){
+      /* after the press, before the abs block, so the pressing work stays together */
+      var _ix=0;
+      for(var j=0;j<_sat.exercises.length;j++){ if(_sat.exercises[j] && _sat.exercises[j].id==="35qmmjc"){ _ix=j+1; break; } }
+      _sat.exercises.splice(_ix,0,{ id:"trlite15", name:"Rope pushdown", scheme:"3\u00d715/12/12", cue:"light, elbows tucked" });
+      _n5++;
+    }
+    /* the archive keeps its entries and records that they came back, rather than losing the
+       history of why they left */
+    if(Array.isArray(_G5.archivedExercises)){
+      _G5.archivedExercises.forEach(function(a){
+        if(a && (a.id==="zpcfoka"||a.id==="trlite15") && !a.restoredOn){
+          a.restoredOn="2026-09-20";
+          a.restoredWhy="Ian asked for biceps on back days and triceps on chest days. Build 383 archived it and said restoring a curl was his trade to make; he made it.";
+        }
+      });
+    }
+    if(_n5){ state.meta.mig425_arms=true; save(true); }
+} }catch(e){ try{ console.warn("mig425 arms did not apply:",e&&e.message); }catch(_){} }
+
 /* ===== v21 build 399: ARCHIVE THE FALL CUP. IT NEVER HAPPENED. ============================
    IAN, 14.09.2026: "I never did that fall cup."
 
@@ -21564,6 +21715,9 @@ function re391Nav(list,name,cue,view){
 function re391Cue(d){
   var bits=[]; var sub=String(d.sub||"").trim();
   if(sub&&!re391Shouts(sub)) bits.push(sub);
+  /* build 425: a price that is a placeholder says so on the row, in two words, rather than
+     sitting next to real prices looking equally settled. */
+  if(d.priceProvisional===true) bits.push("price provisional");
   var cl=re391Short(d.close,38); if(cl) bits.push(cl);
   if(d.flag) bits.push(String(d.flag));
   return bits.length?bits.join("  \u00b7  "):null; }
@@ -24207,29 +24361,16 @@ function fnBalances(v,f,part){
   cards.forEach(function(a){
     if(wantAcc) fnRow(b,a.name||a.id||"Card",(a.balance!=null?fnMoney(a.balance):null),
       fnKindWord(a.kind)+(a.last4?("  \u00b7  "+a.last4):""),"due",false);
-    /* build 418: a card's pending items and its statement line sit under the card they
-       belong to, inside the Accounts box, so the approved four label six container shape is
-       unchanged. THE REFUND IS THE WHOLE POINT OF THIS BLOCK. A negative stored amount is
-       rendered with the minus intact AND in the green tone AND labelled Refund, because any
-       one of those alone could still read as money going out. NOTHING TOTALS THIS LIST: a
-       total is the one place a refund quietly becomes spend, and no total is needed here. */
-    if(wantAcc && Array.isArray(a.pending) && a.pending.length){
-      var _pw=el("div"); _pw.style.marginTop="10px";
-      _pw.appendChild(el("div","fnsch","Pending"));
-      var _pl=el("div"); _pl.style.marginTop="6px";
-      a.pending.forEach(function(t){
-        if(!t) return;
-        var amt=Number(t.amount)||0;
-        var isRefund=(t.refund===true)||(amt<0);
-        fnRow(_pl,t.name||"Pending",fnMoneyC(amt),(isRefund?"Refund":null),(isRefund?"good":"due"),false);
-      });
-      _pw.appendChild(_pl);
-      var _sb=[];
-      if(a.statementBalance!=null) _sb.push("Last statement "+fnMoneyC(a.statementBalance)+".");
-      if(a.available!=null&&a.limit!=null) _sb.push("Available "+fnMoney(a.available)+" of "+fnMoney(a.limit)+".");
-      if(_sb.length) _pw.appendChild(el("div","fnsch",_sb.join(" ")));
-      b.appendChild(_pw);
-    }
+    /* ===== build 426: THE PENDING CHARGES COME OFF THE PAGE ==========================
+       Ian, 20.09.2026: "Pending on the finance page for charges." He does not want them.
+       AND HE IS RIGHT THAT THEY WERE REDUNDANT: the Discover balance of $2,273.60 already
+       includes every pending item, so the list was the same money counted twice on one card,
+       once as a balance and once as three rows.
+       NOTHING IS DELETED. cards[].pending still holds all three, including the Lululemon
+       refund stored negative, and cards[].statementBalance and .available are untouched. They
+       are simply no longer a render source, the build 397 pattern. The statement line goes
+       with them because it lived in the same block; the limit and the balance are both still
+       on the page in the card scale caption directly below. */
     /* build 422: THE SCALE FOR THIS CARD, under the card it belongs to. Discover gets three
        points on one axis. Amex has no credit limit, so its scale is the recommended monthly
        spend and it starts empty at a $0 balance, which is the honest picture of a card he has
@@ -24380,8 +24521,20 @@ function fnMonthly(v,f){
 
   /* EVERY MONTH. Subscriptions and any other fixed monthly item, for example a car payment,
      read from the same shape so a new kind of payment needs no new renderer. */
+  /* ===== build 426: THE SEVEN SUBSCRIPTIONS ARE NOT LISTED HERE ANY MORE ==============
+     Ian, 20.09.2026: "it looks like you have two subscription sections and the image I am
+     sending you is one of them. It is also kind of confusing." He was right and it was two
+     lists of the same seven items: plain rows here, and ranked bars in the Subscriptions
+     section below.
+     THE RANKED BARS SURVIVE AND THIS LIST GOES, because the bars do work this list cannot.
+     Seven magnitudes side by side answer "what is actually big" at a glance, which is the
+     only question worth asking of a subscription list, and the rows answered it with seven
+     numbers he had to compare himself. Keeping the plainer one would have kept the redundancy
+     and lost the information.
+     THE TOTAL STAYS HERE, AS ONE ROW, because this section is "everything that leaves every
+     month" and a subscription total is part of that answer. One total here, the breakdown one
+     section below, which is a normal relationship and not two lists. */
   var recur=[];
-  (f.subscriptions||[]).forEach(function(x){ recur.push(x); });
   (f.monthly||[]).forEach(function(x){ recur.push(x); });
   /* build 418: A MONTHLY ITEM MAY BE A RANGE. Gas and groceries are ranges Ian gave out
      loud, not recorded transactions, and collapsing either to a midpoint would turn his
@@ -24414,6 +24567,15 @@ function fnMonthly(v,f){
     if(d.business===true&&Number(d.pct)>0) dedFloor+=(Number(x.amount)||0)*(Number(d.pct)/100);
   });
   subsTotal=Math.round(subsTotal*100)/100; dedFloor=Math.round(dedFloor*100)/100;
+  /* the one summary row, sorted into the list by size like everything else, so "sorted by
+     cost descending" stays true of the whole section */
+  if(subsTotal>0){
+    var _sn=(f.subscriptions||[]).length;
+    recur.push({x:{name:"Subscriptions",tag:_sn+" items"},amt:subsTotal,cyc:"monthly",
+      per:subsTotal,perHigh:subsTotal,range:false,estimate:false,recorded:true,day:0});
+    recur.sort(function(a,z){ return z.perHigh-a.perHigh; });
+    monthlyTotal+=subsTotal; monthlyHigh+=subsTotal; anyRecorded=true;
+  }
 
   /* DATED. The rent lumps, and anything else that lands on a date rather than every month. */
   var pays=[],anyApprox=false;
@@ -24472,23 +24634,10 @@ function fnMonthly(v,f){
          estimates" over a list that is mostly recorded amounts would hedge seven real
          figures to cover two, which is the same error as the rent line before build 418. */
       var _mp=[];
-      if(anyEstimate&&anyRecorded) _mp.push("Gas and groceries are his own estimates. Everything else is a recorded amount.");
-      else if(anyEstimate) _mp.push("His own estimates, not recorded transactions.");
-      if(subsTotal>0) _mp.push("Subscriptions are "+fnMoneyC(subsTotal)+" of that, across "+((f.subscriptions||[]).length)+" items.");
-      /* build 419b: what is on its way out, computed off the cancelling flag rather than
-         written down, so the figure cannot drift when one of them is finally done. It is NOT
-         presented as a saving: he is still paying both. */
-      var _going=0,_goingN=[];
-      (f.subscriptions||[]).forEach(function(x){ if(x&&x.cancelling===true){ _going+=Number(x.amount)||0; _goingN.push(x.name); } });
-      _going=Math.round(_going*100)/100;
-      if(_going>0) _mp.push(fnMoneyC(_going)+" of that is on its way out, "+_goingN.join(" and ")
-        +", both still charging until they are done. Once they are it is "+fnMoneyC(subsTotal-_going)+" a month.");
-      if(dedFloor>0) _mp.push("Business deductible "+fnMoneyC(dedFloor)+" a month, "+fnMoneyC(dedFloor*12)+" a year.");
-      /* Why each pending cancellation has not happened, which is a fact about the item and
-         not an instruction to him. No reminder, no to do, no date. */
-      var _blk=[];
-      (f.subscriptions||[]).forEach(function(x){ if(x&&x.cancelling===true&&x.blockedOn) _blk.push(x.name+": "+x.blockedOn+"."); });
-      if(_blk.length) _mp.push(_blk.join(" "));
+      /* build 426: the subscription provenance, the deductible total and the home office all
+         moved to the Subscriptions section, which owns them now. Only the estimate note that
+         belongs to gas and groceries stays here. */
+      if(anyEstimate) _mp.push("Gas and groceries are his own estimates, not recorded transactions.");
       if(_mp.length) b.appendChild(el("div","fnsch",_mp.join(" ")));
       /* build 419: two figures that are NOT his and one name collision, each said once.
          The published rate is flagged as published, the unconfirmed plan is flagged as
@@ -24505,46 +24654,15 @@ function fnMonthly(v,f){
       });
       if(_pubs.length) b.appendChild(el("div","fnsch",_pubs.join(" ")));
       if(f.subscriptionsPartial===true) b.appendChild(el("div","fnsch","On record so far"));
-      /* ===== build 419: WHAT HE HAS CUT, AND THE ONE HE HAS NOT ======================
-         He is actively cutting costs and two of these are done, so the saving is a real
-         result and it renders as one. RUSSELL SPEEDERS IS NOT SAVED. Its online cancellation
-         is broken, he has to go in person, and until he does it is live and charging him, so
-         it renders in the spend tone with the others dimmed, and the realised saving and the
-         eventual saving are two separate figures rather than one optimistic one.
-         NO REMINDER AND NO TO DO IS BUILT. He fills nothing in. */
-      var _canc=(f.cancelled||[]);
-      if(_canc.length){
-        var C=el("div"); C.style.marginTop="16px";
-        C.appendChild(el("div","fnsch","Cancelled"));
-        var CL=el("div"); CL.style.marginTop="6px";
-        var savedNow=0,savedAll=0,openOne=null;
-        _canc.slice().sort(function(a,z){ return (Number(z.amount)||0)-(Number(a.amount)||0); }).forEach(function(x){
-          if(!x) return;
-          var amt=Number(x.amount)||0;
-          savedAll+=amt;
-          /* build 419c: the two ending items are the ONLY billing dates in this whole data
-             set. Where one exists it names the last charge, four words exactly, and where one
-             does not the row says Cancelled and nothing is inferred for it. */
-          if(x.done===true){ savedNow+=amt;
-            fnRow(CL,x.name,fnMoneyC(amt),(x.lastCharge?("Last charge "+fnShortDate(x.lastCharge).replace(/,\s*\d{4}$/,"")):"Cancelled"),"good",true); }
-          else { openOne=x; fnRow(CL,x.name,fnMoneyC(amt),"Still active","due",false); }
-        });
-        C.appendChild(CL);
-        var _cs=[];
-        if(savedNow>0) _cs.push("Saved "+fnMoneyC(savedNow)+" a month, "+fnMoneyC(savedNow*12)+" a year.");
-        /* build 419c: WHY NONE OF THIS IS STILL IN THE RUNWAY. Both of the recent two are
-           paid through their current period, so no further cash leaves for either, which is
-           the reason they can come out of the go forward figure rather than being carried
-           until a cancellation date nobody has. */
-        var _pt=_canc.filter(function(x){ return x&&x.paidThrough===true&&x.noChargeFrom; });
-        if(_pt.length) _cs.push("Both are paid through their current period, so no further cash leaves for either: nothing on "
-          +_pt.map(function(x){ return fnShortDate(x.noChargeFrom).replace(/,\s*\d{4}$/,""); }).join(" or ")+".");
-        if(openOne) _cs.push(openOne.name+" is still live at "+fnMoneyC(Number(openOne.amount)||0)
-          +(openOne.why?(", "+openOne.why):"")+". It is not counted as saved. Once it is done the saving is "
-          +fnMoneyC(savedAll)+" a month, "+fnMoneyC(savedAll*12)+" a year.");
-        if(_cs.length) C.appendChild(el("div","fnsch",_cs.join(" ")));
-        b.appendChild(C);
-      }
+      /* ===== build 426: THE CANCELLED LIST COMES OFF THE PAGE =========================
+         Ian, 20.09.2026: "get rid of the cancelled subscriptions area, you can put that in
+         some background info, I do not need to see that." He has already made those four
+         decisions, and a list of things he has dealt with is not a daily check in item on a
+         page whose whole ordering rule is frequency of use.
+         NOTHING IS DELETED. state.finance.cancelled still holds Adobe, Audible, Russell
+         Speeders and pet insurance with their amounts and their last charge dates, so the
+         $103.65 a month saving remains computable by anything that wants it. It is simply no
+         longer a render source. */
     }
     if(pays.length){
       var D=el("div"); D.style.marginTop=recur.length?"16px":"0";
@@ -24814,8 +24932,17 @@ function fnTax(v,f){
       Object.keys(SCHED_C).forEach(function(k){
         var x=SCHED_C[k]; if(!x) return;
         /* Home office is a cap, not a percentage, and "100% allowed" misreads it. */
-        var right=(k==="homeoffice")?"$5 a sq ft":(Math.round(Number(x.pct)||0)+"%");
-        fnRow(L,String(x.label||k),right,(x.line?("Line "+x.line):null),null,false);
+        /* build 425: a measured room beats a rule. Once the dimensions exist this row shows
+           the real annual deduction instead of the rate it is computed from. */
+        var right=(Math.round(Number(x.pct)||0)+"%");
+        if(k==="homeoffice"){
+          var _hox=(f&&f.homeOffice)||null;
+          right=(_hox&&Number(_hox.deduction)>0)?(fnMoneyC(_hox.deduction)+" a year"):"$5 a sq ft";
+        }
+        var _sub=(x.line?("Line "+x.line):null);
+        if(k==="homeoffice"){ var _h2=(f&&f.homeOffice)||null;
+          if(_h2&&Number(_h2.sqft)>0) _sub=_h2.sqft+" sq ft"; }
+        fnRow(L,String(x.label||k),right,_sub,null,false);
       });
       b.appendChild(L);
     }
@@ -24915,30 +25042,36 @@ function fnSubCharts(v,f){
     });
     v.appendChild(c1);
 
-    /* 2 AND 3 ARE RINGS NOW, AND THEY ARE THE TWO CASES THAT EARN ONE. Both are a share of a
-       single known whole: $149.21 of $241.12, and $103.65 of $344.77. That is the canonical
-       ring, a part against a total where the percentage is the point. They were split bar
-       tracks, which said the same thing less clearly, and a bar invites comparison with the
-       bars above it that are ranking magnitudes and mean something different.
-       SIDE BY SIDE IN ONE CARD, because at 390px two rings fit across and reading them
-       together is the useful act: what of this is deductible, and what of it did he cut.
-       COLOUR KEEPS ITS EXISTING MEANING. Cut is money saved, so green. Deductible is neither
-       held nor owed, so it takes the finance accent rather than borrowing a state colour. */
-    var canc=(f.cancelled||[]);
-    var cut=0; canc.forEach(function(x){ cut+=Number(x&&x.amount)||0; });
-    cut=Math.round(cut*100)/100;
-    var before=Math.round((tot+cut)*100)/100;
-    if(ded>0||cut>0){
+    /* ===== build 426: THE CUT RING GOES WITH THE CANCELLED LIST IT CAME FROM ==========
+       The 30 percent ring was $103.65 of $344.77, a proportion of a total that included four
+       cancelled items he has just asked to stop seeing. A ring whose denominator is invisible
+       is an orphan: he would have had no way to check the 30 percent against anything on the
+       page, which is the exact confusion he objected to. It goes.
+       THE DEDUCTIBLE RING STAYS because it is about LIVE subscriptions, $149.21 of $241.12,
+       and both of those figures are on this page in the bars directly above it.
+       ONE RING IS DRAWN DELIBERATELY, NOT LEFT STRANDED. With a single ring the layout stops
+       being a two column row: it centres and takes the larger size, so it reads as the one
+       thing the card is for rather than as half of a pair with something missing. The kicker
+       names what it shows instead of saying "Shares" over one share.
+       NOTHING IS DELETED. state.finance.cancelled is untouched and the saving stays
+       computable; it simply has no surface. */
+    if(ded>0){
       var c2=card(); var b2=c2._body;
-      b2.appendChild(el("div","g7kicker","Shares"));
-      var rowW=el("div"); rowW.style.cssText="display:flex;gap:14px;align-items:flex-start;margin-top:10px";
-      if(ded>0) fnRingBlock(rowW,ded/tot,118,null,"Deductible",fnMoneyC(ded)+" of "+fnMoneyC(tot));
-      if(cut>0) fnRingBlock(rowW,cut/before,118,"good","Cut",fnMoneyC(cut)+" of "+fnMoneyC(before));
+      b2.appendChild(el("div","g7kicker","Deductible"));
+      var rowW=el("div"); rowW.style.cssText="display:flex;justify-content:center;margin-top:10px";
+      fnRingBlock(rowW,ded/tot,140,null,"Business",fnMoneyC(ded)+" of "+fnMoneyC(tot));
       b2.appendChild(rowW);
+      /* the subscription provenance lives here now, with the items it describes */
       var bits=[];
-      if(ded>0) bits.push(fnMoneyC(tot-ded)+" is not deductible.");
-      if(cut>0) bits.push(fnMoneyC(cut*12)+" a year saved, "+fnMoneyC(tot)+" a month kept.");
-      if(bits.length) b2.appendChild(el("div","fnsch",bits.join(" ")));
+      bits.push("Subscriptions are "+fnMoneyC(tot)+" a month across "+subs.length+" items, all recorded amounts.");
+      bits.push(fnMoneyC(tot-ded)+" of that is not deductible.");
+      bits.push("Business deductible "+fnMoneyC(ded)+" a month, "+fnMoneyC(ded*12)+" a year.");
+      try{
+        var _ho=f.homeOffice;
+        if(_ho&&Number(_ho.deduction)>0) bits.push("The home office adds "+fnMoneyC(_ho.deduction)
+          +" a year at "+_ho.sqft+" sq ft, so "+fnMoneyC(ded*12+Number(_ho.deduction))+" a year in all.");
+      }catch(e){}
+      b2.appendChild(el("div","fnsch",bits.join(" ")));
       v.appendChild(c2);
     }
   }catch(e){ try{ console.error("[dash] sub charts",e); }catch(_){} }
@@ -25057,6 +25190,10 @@ function fnSavings(v,f){
     var notes=[];
     if(sv.purpose) notes.push("For "+sv.purpose+".");
     notes.push("The "+fnMoneyAuto(floor)+" floor acts as zero, so "+fnMoneyAuto(floor*2)+" in the account would read as "+fnMoneyAuto(floor)+" saved. It is never spent, not even for the trip.");
+    /* build 425: the BALANCE that reaches the target, stated so he never has to do the
+       subtraction against his bank app. The target itself stays the SAVED figure. */
+    if(Number(sv.target)>0) notes.push("Reaching "+fnMoneyAuto(Number(sv.target))+" saved means "
+      +fnMoneyAuto(Number(sv.targetBalance)>0?Number(sv.targetBalance):(Number(sv.target)+floor))+" sitting in the account.");
     if(sv.targetProvisional===true&&sv.targetSource) notes.push(String(sv.targetSource));
     if(sv.deposits) notes.push("Deposits are "+sv.deposits+". There is no fixed rule, so nothing here projects when you get there.");
     if(sv.rewards) notes.push(String(sv.rewards));
