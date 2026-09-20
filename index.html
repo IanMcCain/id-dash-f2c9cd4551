@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 426 (2026-09-20)">
+<meta name="build" content="v21 build 427 (2026-09-20)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -19253,23 +19253,67 @@ try{ if(profile==="ian" && state.meta && !state.meta.mig_re0920 && state.realEst
       +"it, so the field stays empty and this deal contributes nothing to the pipeline total.");
   }
 
-  /* 11. THEOBALD. Contact corrected, status recorded. deal.note NOT TOUCHED. */
+  /* 11. THEOBALD. Status recorded. Contact name per BRAIN. deal.note NOT TOUCHED. */
   var _th=_get("re-theobald-sell");
   if(_th){
-    _th.title="Nancy Theobald";
-    _th.sub="Sell side, 5014 S 163 St, Omaha 68135. Contact is Nancy, Scott is on the deed";
+    _th.title="Scott Theobald";
+    _th.sub="Sell side, 5014 S 163 St, Omaha 68135";
     _th.close="No updates since 4 September 2026";
-    _th.priceNote="Balanced list, CMA refresh 04.09.2026. CONTACT CORRECTED 20.09.2026: the client "
-      +"is NANCY Theobald, Scott is on the deed and every conversation on record is with her. "
-      +"A BUY SIDE MAY BE MISSING AND IS FLAGGED RATHER THAN CREATED: the original brief was sell "
-      +"AND buy, Chris 10 August 2026, \"switching into a new house next year\". No buy side "
-      +"record exists and none has been created. STATUS: no updates since 4 September 2026 and "
-      +"Nancy has not replied since 12 August 2026. deal.note is deliberately untouched, it is "
-      +"held behind q178975486518245 pending Ian.";
+    _th.priceNote="Balanced list, CMA refresh 04.09.2026. A BUY SIDE MAY BE MISSING AND IS FLAGGED "
+      +"RATHER THAN CREATED: the original brief was sell AND buy, Chris 10 August 2026, "
+      +"\"switching into a new house next year\". No buy side record exists and none has been "
+      +"created. Status: no updates since 4 September 2026 and no seller reply since 12 August "
+      +"2026. deal.note is deliberately untouched, it is held behind q178975486518245 pending Ian.";
   }
 
   state.meta.mig_re0920=true; save(true);
 } }catch(e){ try{ console.warn("mig_re0920 did not apply:",e&&e.message); }catch(_){} }
+
+/* ===== v21: THEOBALD CONTACT REVERTED TO SCOTT THEOBALD =============================
+
+   WHY THIS EXISTS. A migration earlier today wrote a co-owner first name into the title
+   and a contact clause into the sub and priceNote of this deal. That contradicts a
+   standing instruction from Ian dated 08.24.2026 in Real_Estate/Context/01_MASTER_CONTEXT.md:
+   the Theobald contact is Scott Theobald, that other first name is NOT TO BE WRITTEN
+   ANYWHERE, Ian is NOT CERTAIN it is the Theobald first name at all, and the co-owner is to
+   be recorded as UNCONFIRMED and left BLANK until the walkthrough. It was taken from a
+   message thread without checking the master context, which is the exact failure that file
+   records: confident pattern reading off a name nobody has confirmed.
+
+   THE CO-OWNER STAYS BLANK. Not "unknown", not "unconfirmed" as a rendered value, blank.
+   Nothing on this record now names a second person, and the name appears nowhere in this
+   file, including in this comment.
+
+   NOTHING ON THE PAGE SAYS WHY. The correction is our working, not his information, so no
+   field carries a note about the change. This comment is the only record of it.
+
+   THE EARLIER MIGRATION IS NOT REWRITTEN WHOLESALE. Only its three name writes were
+   neutralised in place, so a fresh profile never receives the name at all. This block
+   exists for profiles where the old values already landed and that guard is already set.
+
+   deal.note IS NOT TOUCHED, here or anywhere. It remains held behind q178975486518245.
+
+   GUARDS. state.meta.mig_th_name, NOT in the seed, so SEED_VERSION stays 13. Runs once and
+   each field is written only while it does not already hold the correct value. */
+try{ if(profile==="ian" && state.meta && !state.meta.mig_th_name && state.realEstate && Array.isArray(state.realEstate.deals)){
+  var _thD=null, _thL=state.realEstate.deals;
+  for(var _ti=0;_ti<_thL.length;_ti++){ if(_thL[_ti] && _thL[_ti].id==="re-theobald-sell"){ _thD=_thL[_ti]; break; } }
+  if(_thD){
+    var _TT="Scott Theobald";
+    var _TS="Sell side, 5014 S 163 St, Omaha 68135";
+    var _TP="Balanced list, CMA refresh 04.09.2026. A BUY SIDE MAY BE MISSING AND IS FLAGGED "
+      +"RATHER THAN CREATED: the original brief was sell AND buy, Chris 10 August 2026, "
+      +"\"switching into a new house next year\". No buy side record exists and none has been "
+      +"created. Status: no updates since 4 September 2026 and no seller reply since 12 August "
+      +"2026. deal.note is deliberately untouched, it is held behind q178975486518245 pending Ian.";
+    var _chg=false;
+    if(_thD.title!==_TT){ _thD.title=_TT; _chg=true; }
+    if(_thD.sub!==_TS){ _thD.sub=_TS; _chg=true; }
+    if(_thD.priceNote!==_TP){ _thD.priceNote=_TP; _chg=true; }
+    state.meta.mig_th_name=true;
+    if(_chg) save(true);
+  }
+} }catch(e){ try{ console.warn("mig_th_name did not apply:",e&&e.message); }catch(_){} }
 
 
 /* build 225: focus timer removed, nothing to clear here anymore. */
