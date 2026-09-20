@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 423 (2026-09-20)">
+<meta name="build" content="v21 build 424 (2026-09-20)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -25187,20 +25187,49 @@ function buildFinance(v){
   }
   v.appendChild(head);
 
-  /* build 422: FIRST ON THE PAGE WHEN IT HAS ANYTHING TO SAY, and absent entirely when it
-     does not. fnSect emits no heading for a section that produced nothing, so on a day with
-     no payment due inside a fortnight the page opens on Accounts exactly as it does today. */
-  fnSect(v,"Due soon","the next fourteen days",function(h){ fnUpcoming(h,f); });
-  fnSect(v,"Accounts","what you hold",function(h){ fnBalances(h,f,"accounts"); });
-  fnSect(v,"Position","operating, buffer, debt",function(h){ fnBalances(h,f,"position"); });
+  /* ===== v21 build 424: THE PAGE IS ORDERED BY HOW OFTEN HE LOOKS AT A THING ==============
+     IAN: "I want that savings goal to be at the top above everything since it is for the trip,
+     it acts as the attention grab for me. Next will be the totals, bank accounts, cards etc,
+     then everything else after. Informational thing will be at the very bottom, since the point
+     of this page is for daily check ins and looking, information will only be used
+     occasionally."
+
+     SO THE SORT KEY IS FREQUENCY OF USE, NOT LOGICAL GROUPING, and that is a different and
+     better rule than the one this page had. The old order put Accounts first because that is
+     where a finance page conventionally starts. He opens this page for the trip.
+
+     THIS IS A REORDER AND NOTHING ELSE. Every call below is moved verbatim: same function, same
+     title, same sub label, same builder, same collapse keys. No restyle, no re-scope, no merge,
+     no split, no migration, so the field diff is ZERO by construction.
+
+     FOUR PLACEMENTS WERE MINE AND EACH USED HIS TEST. Due soon is SECOND, not first: it is the
+     most time critical thing the page can hold, but he said the goal goes above everything and
+     he meant it, so the goal keeps the top and the payment block sits directly under it. The
+     two chart sections that currently refuse to draw, Operating trend and Rent schedule, sit
+     with the other graphs because that is what they are, a look back and a schedule, neither of
+     which is a daily check. Money in and out and Closings are a review and a record, so they go
+     with the occasional material. Goals renders nothing today and is a planning surface rather
+     than a daily one, so it sits in the same group; when it lights up it is one line to move. */
+
+  /* 1. THE ATTENTION GRAB. Above everything, because it is why he opens the page. */
   fnSect(v,"Savings","the Arizona fund",function(h){ fnSavings(h,f); });
+
+  /* 2. TIME CRITICAL. Silent unless something is due inside a fortnight. */
+  fnSect(v,"Due soon","the next fourteen days",function(h){ fnUpcoming(h,f); });
+
+  /* 3. THE TOTALS, THEN THE ACCOUNTS AND CARDS THEY COME FROM. His order, his words. */
+  fnSect(v,"Position","operating, buffer, debt",function(h){ fnBalances(h,f,"position"); });
+  fnSect(v,"Accounts","what you hold",function(h){ fnBalances(h,f,"accounts"); });
+
+  /* 4. EVERYTHING ELSE. Runway first of these because it is the one he would check on a bad
+     week, then what leaves, then the graphs. */
+  fnSect(v,"Runway","known costs ahead",function(h){ fnRunway(h,f); });
   fnSect(v,"Monthly payments","what leaves monthly",function(h){ fnMonthly(h,f); });
   fnSect(v,"Subscriptions","seven items, ranked",function(h){ fnSubCharts(h,f); });
-  fnSect(v,"Runway","known costs ahead",function(h){ fnRunway(h,f); });
   fnSect(v,"Operating trend","recent months",function(h){ fnSparkline(h,f); });
   fnSect(v,"Rent schedule","every payment dated",function(h){ fnRentRail(h,f); });
-  fnSect(v,"Goals",null,function(h){ fnGoals(h,f); });
 
+  /* 5. OCCASIONAL. A review, a record, an empty planning surface, and the tax reference last. */
   if(f.months&&f.months.length>1){
     sect(v,"Money in and out",fnSub("month by month"));
     pkCollapse(v,"fin_flow","Money in and out",null,false,function(h){
@@ -25216,6 +25245,7 @@ function buildFinance(v){
       h.appendChild(c);
     },ICO.property,"violet");
   }
+  fnSect(v,"Goals",null,function(h){ fnGoals(h,f); });
   fnSect(v,"Tax","set aside and owed",function(h){ fnTax(h,f); });
 }
 const IAN_PAGES={ "p-home":buildIanHome,"p-re":buildIanRe,"p-gym":buildGym,"p-pickle":buildPickle,"p-solara":buildSolara,"p-finance":buildFinance,"p-settings":buildSettings };
