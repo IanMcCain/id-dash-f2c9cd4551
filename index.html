@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 427 (2026-09-20)">
+<meta name="build" content="v21 build 428 (2026-09-20)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -19314,6 +19314,226 @@ try{ if(profile==="ian" && state.meta && !state.meta.mig_th_name && state.realEs
     if(_chg) save(true);
   }
 } }catch(e){ try{ console.warn("mig_th_name did not apply:",e&&e.message); }catch(_){} }
+
+/* ===== v21: DEAL NOTES CLEANED. OUR WORKING OFF HIS SCREEN ==========================
+   Ian, 20.09.2026: "479,900 make sure the app is perfected", and he has objected to
+   reading our working on his page repeatedly. This block does four things.
+   1. ARCHIVES every note it touches, in full, byte for byte, into
+      state.archive.dealNotesPre428 and state.archive.peopleNotesPre428. Nothing is
+      deleted. The archive is not a render source.
+   2. STRIPS our working from the long notes by segment: build numbers, lane and queue
+      and todo ids, internal file paths, app internals such as the goal bars and the
+      field names, instructions addressed to ourselves, and ALL CAPS shouting. A short
+      substitution table rewrites the segments that wrapped a real client fact inside
+      our voice, so no client fact is lost.
+   3. REWRITES three records by hand where the note contradicted the price field:
+      Mattox, Barker and Theobald.
+   4. Takes the internal queue id off the Theobald priceNote.
+   GUARDS. state.meta.mig_notes0920, NOT in the seed, so SEED_VERSION stays 13.
+   Every write is value guarded, so a rerun is a no-op. Prices are NOT changed by this
+   block: Mattox stays $479,900, Barker stays $289,900, Theobald stays $319,900, which
+   the 04.09.2026 CMA supports as the balanced tier. */
+try{ if(profile==="ian" && state.meta && !state.meta.mig_notes0920 && state.realEstate && Array.isArray(state.realEstate.deals)){
+
+  var _NW=[
+   [/\bbuild \d{3}\b/i,1],[/\b(RE|APP|OPS|PK|SOL)-\d+\b/,1],[/\bq\d{10,}\b/i,1],
+   [/\bret-\d{8}-[a-z\-]+/i,1],[/\bmig\d+|mig_[a-z0-9_]+/i,1],[/\bGATING ITEM\b/i,1],
+   [/\bTODOS?\b (RET-|[A-Z]+-\d)/,1],
+   [/\bpriceNum\b|\bdealBrokerage\b|\bsellerRate\b|\bianSplit\b|\bdeal\.note\b|\bstate\./,1],
+   [/goals card|the 2026 in flight ceiling|in flight ceiling|production bar|deal bar/,1],
+   [/\bDISPATCH_INBOX\b|\bPENDING_TRIGGERS\b|\b01_MASTER_CONTEXT\b|\bANSWERED_AND_CLOSED\b|\bLEAD_CONTACTS\b|BRAIN says|\bBRAIN\b/,1],
+   [/another lane|this lane|a future session|next session|whoever next|handed on|not done by this lane/,1],
+   [/MODEL LIMITATION|the app will read|this record said|the record was wrong|the app carried|the app previously showed|it did not exist in the app/,1],
+   [/is FLAGGED RATHER THAN|flagged rather than (closed|created)|recorded so nobody|is not invented|none is invented|and none may be invented|is recorded as a guess and not/,1],
+   [/\bAUDIT\b[\s\S]{0,40}\bSTALE\b|THE OLD NOTE WAS STALE|which is a worse failure/,1],
+   [/\bsee trigger \d+|trigger \d+ names/,1],
+   [/DO NOT (QUOTE|ASK|RE-?RAISE|RE-?OPEN|FOLLOW UP|CORRECT|SCHEDULE|DERIVE|PUT A MARKER|CREATE)/,1],
+   [/do not (quote|re-?raise|re-?open|derive|invent|assume|merge|chase)/,1],
+   [/\bTodos?\b (ret-|[a-z]+-\d)/,1],
+   [/said plainly|worth stating before anyone is surprised|which is how it came to be|the tell was/,1]
+  ];
+  var _SUB=[
+   ["ianSplit is set to 0 so the deal contributes nothing","No income is modelled on this one."],
+   ["PAYMENT IS NOT YET RECEIVED, so paid is FALSE","Payment is not yet received."],
+   ["paid is FALSE, the build 275 outstanding state, and no actualNet is set because he gave timing","Payment is not yet received; he gave timing and not an amount."],
+   ["COMMISSION IS A MODEL DEFAULT, NOT A CONFIRMED FIGURE","The commission figure is a model default, not a confirmed figure."],
+   ["THIS RECORD CARRIES NO sellerRate OVERRIDE AND NO ianSplit OVERRIDE","Commission runs at the standard 3.6 percent with a 20 percent share."],
+   ["THE REPAIR SCOPE IS STILL THE BLOCKER on choosing between them","The repair scope is still the blocker on choosing between them."],
+   ["THE LOT IS NOT IN THIS NUMBER AND IS NOT DOUBLE COUNTED","The $200,000 lot is a separate closed record and is not included in this figure."],
+   ["STAGE IS PROSPECTING, NOT LEAD, per Ian's own definitions","They have explicit interest and a stated goal."],
+   ["Build $1,200,000 to $1,500,000, confirmed by Ian 08.09.2026, which replaces","Build $1,200,000 to $1,500,000, confirmed by Ian 08.09.2026."],
+   ["THE EVIDENCE IS ALREADY IN BRAIN: Trademark's own recorded deed","Trademark's own recorded deed at 4403 N 189 St, a 2 storey with 2,485 above grade and 4 bed 3.5 bath, sold at $626,000 on 8 March 2024."],
+   ["THE WORKING ASSUMPTION THAT $625,000 EXCLUDED LAND IS WRONG","The $625,000 already includes the lot at an average lot price."],
+   ["DO NOT TREAT HER AS AN ACTIVE NEAR TERM BUILD","She is not a near term build and the silence is not a stalled deal."],
+   ["Frahm is going to build with Ryan, and Ryan is confirmed as Ryan Beachler","Frahm is going to build with Ryan Beachler of Rose Creek Homes."],
+   ["Ryan is giving Scenic Group SOMETHING ANYWAY as a courtesy","Ryan is giving Scenic Group something anyway as a courtesy and the amount is unknown."],
+   ["sellerRate 0.050 is the LOW END of his range","The rate shown is 5.0 percent, the low end of his range; the high end is 5.5 percent."],
+   ["The even split is carried by ianSplit 0.50 rather than by source","The split with Chris is even, 50/50."],
+   ["The $249,900 on this record is IAN'S INTERNAL LIST DECISION from 08.17","The $249,900 is Ian's internal list decision from 08.17 and the clients have not heard it."],
+   ["ianSplit is 0, so the commission model runs and multiplies out to nothing","No income is modelled on the lot."],
+   ["NAME COLLISION, FLAGGED 10.09.2026, build 386.","Name collision, flagged 10.09.2026."],
+   ["NO PACING CHANGE from this: the production bar and the 20 deal bar both count","$2,736.15 of take home moves from pending into closed."],
+   ["NOTHING ELSE ON THIS RECORD CHANGED: the agreed $250,000 list","Agreed $250,000 list, 3 bedroom with a finished basement that has its own kitchen and 3/4 bath. Commission 3.6 percent, 80 percent share."],
+   ["FOLLOW UP IS SET, not left to drift: todo ret-20260910-thacker-cosigner","Follow up on the cosigner, due 10 September 2026."],
+   ["Todo ret-20260815-belknap-pof, due before the Sunday re showing","Proof of funds needed before the Sunday re showing, because they could write immediately after it."],
+   ["Second, Ian's own day 2 read was 'fine but not promising at all'","Ian's own day 2 read was 'fine but not promising at all'."],
+   ["NO DATE IS SET and none is invented.","No date is set."],
+   ["NO TIME WAS GIVEN and none is invented.","No time was given."],
+   ["NO DATE was given for the inspection and none is invented.","No date was given for the inspection."],
+   ["LIKELY LISTS OCTOBER 2026, and he called it a guess","Likely lists October 2026, his guess."],
+   ["The 25 August inspection sits inside both readings so nothing turns on it","The 25 August inspection sits inside both readings, so nothing turns on it."],
+   ["BRAIN's Blondo Point file records Ian's firsthand descriptions of the seven lots but NO dimensions","Ian's firsthand descriptions of the seven lots are on record but no dimensions, and none of it is independently verified."],
+   ["The volume call is a judgement: his \"does not affect me\" was about his pay","His \"does not affect me\" was about his pay, not about production."],
+   ["Todo ret-20260817-winchester-fu carries it with the ambiguity","Follow up on Winchester, with the ambiguity unresolved."],
+   ["Todo ret-20260815-bonks-cal is retired as answered.",""],
+   ["Todo ret-20260817-bonk-time.",""],
+   ["Todos ret-20260813-barker-receipts and ret-20260813-barker-basement.",""]
+  ];
+  var _PROT={};
+  ("NP CMA MLS AC TBD ETAL LLC INC ID OK USA US SW NW SE NE ST DR CIR AVE RD I A 2026 2025 2024 "
+  +"IAN CHRIS SCOTT MARK BRENT RYAN BRANDON SYDNEY ALLISON CRYSTAL AUSTIN MEGAN RICKY RACHEL "
+  +"MICHELLE JOHN CHAD LYNN MATT ASHLEY RONNIE BRUCE JED EVAN PATRICK CYNTHIA THEOBALD MATTOX BARKER "
+  +"BELKNAP WILLIS SPICER FRAHM WINCHESTER BONK BONKS TROESTER MILLER HERNANDEZ VOGEL TESKES TYSDAL "
+  +"SNYDER BRANDT PARSONS GILLIAM DOUGLAS THACKER JOHNSON JENKINS HARTLEY KIRK MONARREZ LANGFELT "
+  +"ONEIL O'NEEL BEACHLER MYERS DODGE MILLARD PRAIRIE POINTE ROSE CREEK IDEAL TRADEMARK PARAGON "
+  +"HORIZON AXIS DRIVE").split(" ").forEach(function(w){ if(w) _PROT[w]=1; });
+
+  function _segs(t){ var out=[],buf="",i=0,n=t.length;
+    while(i<n){ var c=t.charAt(i); buf+=c;
+      if(c==="."||c==="!"||c==="?"){
+        var p=i?t.charAt(i-1):" ", x=(i+1<n)?t.charAt(i+1):" ";
+        if(c==="." && p>="0"&&p<="9" && x>="0"&&x<="9"){ i++; continue; }
+        if(c==="." && /[A-Z]/.test(p) && (i<2 || !/[A-Za-z]/.test(t.charAt(i-2)))){ i++; continue; }
+        if(x===" "||x==="\n"||i+1>=n){ if(buf.trim())out.push(buf.trim()); buf=""; }
+      }
+      i++; }
+    if(buf.trim()) out.push(buf.trim());
+    return out; }
+  function _sub(s){ for(var i=0;i<_SUB.length;i++){ if(s.indexOf(_SUB[i][0])>=0) return {hit:true,rep:_SUB[i][1]}; } return {hit:false}; }
+  function _isWork(s){ for(var i=0;i<_NW.length;i++){ if(_NW[i][0].test(s)) return true; } return false; }
+  function _bare(t){ return t.replace(/[^A-Za-z]/g,""); }
+  function _shout(t){ var w=_bare(t); return w.length>=3 && w===w.toUpperCase() && !_PROT[w]; }
+  function _deshout(text){
+    var out=text.split(/(\s+)/), i=0;
+    while(i<out.length){
+      if(out[i].trim() && _shout(out[i])){
+        var j=i, run=[];
+        while(j<out.length){
+          if(out[j].trim()===""){ j++; continue; }
+          if(_shout(out[j]) || _bare(out[j])==="" || _PROT[_bare(out[j])]){ run.push(j); j++; }
+          else break; }
+        var words=[],k; for(k=0;k<run.length;k++){ if(_bare(out[run[k]])) words.push(run[k]); }
+        var cnt=0; for(k=0;k<words.length;k++){ if(_shout(out[words[k]])) cnt++; }
+        if(cnt>=3){ var first=true;
+          for(k=0;k<words.length;k++){ var q=words[k];
+            if(_shout(out[q])){ var w=out[q];
+              out[q]= first ? (w.charAt(0)+w.slice(1).toLowerCase()) : w.toLowerCase();
+              first=false; } }
+          i=j; continue; } }
+      i++; }
+    return out.join(""); }
+  function _clean(note){
+    var segs=_segs(note), keep=[];
+    for(var i=0;i<segs.length;i++){
+      var r=_sub(segs[i]);
+      if(r.hit){ if(r.rep) keep.push(r.rep); continue; }
+      if(!_isWork(segs[i])) keep.push(segs[i]); }
+    return _deshout(keep.join(" ")).replace(/\s+/g," ").trim(); }
+
+  /* ---- hand written replacements where the note fought the price field ---- */
+  var _HAND={
+   "re-mattox-sell":{
+    priceNote:"$479,900, Ian's call on 20 September 2026. Floors refinished before photos and a "
+      +"passing roof support it; floors not done is the condition risk.",
+    note:"Created 06.09.2026. Chris's client, 20 percent share, confirmed by Ian 20.09.2026. List "
+      +"price $479,900, Ian's own call on 20.09.2026. Condition is the open variable, not the price: "
+      +"Chris ran his own comps and graded the 2019 interior 6.1, and the house may no longer look "
+      +"like those photos. Floors refinished before photos and a passing roof support the figure. "
+      +"Nothing has been quoted to Mark Mattox; his thread ends 4 September on scheduling. Commission "
+      +"cut to 3.1 percent listing plus 2.4 percent buyer, 5.5 percent total, agreed by Chris at "
+      +"10:10 on 20 September 2026, after Mattox pushed for it over the floor refinish overrun. NP "
+      +"Dodge still takes 15 percent of the original 3.6 percent, so the whole half point comes off "
+      +"the agent side. Lists early October, his expectation."},
+   "re-barkers":{
+    priceNote:"$289,900, from the 05.09.2026 CMA at 10611 Parker St. Chris's own call is $280,000, "
+      +"to let the market push it higher. The two have not been reconciled.",
+    note:"10611 Parker St. Going live, date to be decided. Renovations underway since 07.23.2026 and "
+      +"the listing conversation follows completion. Price rebuilt 05.09.2026: tiers quick $279,900, "
+      +"recommended $289,900, top $294,900, supported $289,000 to $293,000, centre $291,000, ceiling "
+      +"$300,000. Walkthrough contingent. Chris, 15:41 on 6 September: \"Barker, im thinking 280. let "
+      +"the market push it higher?\" The price field holds the CMA figure because that is the one with "
+      +"a document behind it; Chris's $280,000 is a strategy call about letting the market bid it up "
+      +"and it is recorded as his. Timing from the same thread: probably two weeks out from listing. "
+      +"Paused by Ian 12.09.2026, \"giving them some space\", and restated 14.09.2026. Two things stay "
+      +"owed for whenever it resumes: the total renovation spend with receipts, and Ian's own measured "
+      +"basement figure from 10611 Parker. Likely lists October 2026, his guess."},
+   "re-theobald-sell":{
+    priceNote:"Balanced list from the 04.09.2026 CMA refresh, the authoritative document. Tiers: "
+      +"entry $309,900, balanced $319,900, patient $329,900, against a condition neutral centre of "
+      +"$330,000 at low confidence. A buy side may be missing: the original brief was sell and buy, "
+      +"Chris 10 August 2026, \"switching into a new house next year\", and no buy side record exists. "
+      +"No seller reply since 12 August 2026.",
+    note:"Prospect added 08.13.2026 from the Theobald comps handoff. Chris's client, 20 percent share. "
+      +"Verified county record: parcel 2027457696, owner THEOBALD SCOTT W ETAL, subdivision Prairie "
+      +"Pointe lot 99, tri level, built 1986, 1,638 sq ft above grade, 3 bed 2.5 bath, single "
+      +"fireplace, central air, block foundation, 0.17 acre, 60 by 126. Garage is built in at 462 sq "
+      +"ft, a tuck under, which is garage and not finishable living area. Basement 552 sq ft block, no "
+      +"finished area on record. 2026 assessed $270,000, up 27.5 percent from $211,800 in 2022. Last "
+      +"sold 22 March 1999 for $128,500, so about 27 years of ownership and no MLS listing since. "
+      +"School value area Millard West. Comp trap: S 163 St in 68135 runs through four subdivisions "
+      +"with medians from 1,552 to 2,974 above grade, so a street name comp set would have been wrong "
+      +"by well over $100,000. The comp pool is the 185 tri levels inside Prairie Pointe; the 151 "
+      +"split entries are a different product and are excluded. CMA refreshed 04.09.2026, stage "
+      +"corrected to Coming Soon 06.09.2026 on Ian's word. Tiers: entry $309,900, balanced $319,900, "
+      +"patient $329,900. Condition neutral centre $330,000, confidence low. $349,900 only if the "
+      +"walkthrough finds it updated to 5038's standard. The tiers are exposure bands, not day counts. "
+      +"The condition swing is worth $30,000 or more. Zero photographs of this house exist, so the "
+      +"walkthrough is the only condition evidence there will ever be, and it is Chris's to schedule. "
+      +"Pre inspection before going live is standing policy on every listing, Ian's words: push pre "
+      +"inspections before going live no matter what on all of our listings. Paused by Ian 12.09.2026, "
+      +"\"giving them some space\", and restated 14.09.2026. The 15 September list target is withdrawn."},
+   "re-ashley-gilliam":{
+    note:"Client Ashley Gilliam. 8020 S 200 St, Gretna. Ian was the listing agent, not the buyer "
+      +"side agent, corrected 07.09.2026 and confirmed by Ian direct. Sold $378,000, closed 22 April "
+      +"2026, 16 days on market, MLS 22605096."},
+   "re-rachel-jenkins-build":{
+    priceNote:"About $700,000, Ian 20.09.2026. Commission is 5.0 to 5.5 percent total across both "
+      +"sides, split evenly between Ian and Chris, his own words 20.09.2026. The figure shown uses "
+      +"the low end, 5.0 percent. Total commission first, then the NP Dodge 15 percent, then the even "
+      +"split: at 5.0 percent that is $35,000, less $5,250, halved to $14,875; at 5.5 percent it is "
+      +"$38,500, less $5,775, halved to $16,362.50. The rate is known, the deal is not."}
+  };
+
+  var _arc=[], _pArc=[], _touched=0;
+  var _dl=state.realEstate.deals;
+  for(var _i=0;_i<_dl.length;_i++){
+    var _d=_dl[_i]; if(!_d || typeof _d.note!=="string") continue;
+    var _hand=_HAND[_d.id]||{};
+    var _newNote = (typeof _hand.note==="string") ? _hand.note
+                 : (_d.note.length>600 ? _clean(_d.note) : _d.note);
+    var _newPN   = (typeof _hand.priceNote==="string") ? _hand.priceNote : _d.priceNote;
+    if(_newNote===_d.note && _newPN===_d.priceNote) continue;
+    _arc.push({id:_d.id,title:_d.title,at:"2026-09-20",note:_d.note,priceNote:_d.priceNote||""});
+    _d.note=_newNote;
+    if(typeof _newPN==="string") _d.priceNote=_newPN;
+    _touched++; }
+
+  var _PPL="Seller, 5014 S 163 St, Omaha 68135. Chris's client, confirmed by Ian 08.17.2026. Phone "
+    +"and email are not on file anywhere and are needed. The walkthrough is still unscheduled and it "
+    +"is Chris's to book. Zero photographs of this house exist, so the walkthrough is the only "
+    +"condition evidence there will ever be.";
+  var _pl=(state.realEstate.people||[]);
+  for(var _j=0;_j<_pl.length;_j++){
+    if(_pl[_j] && _pl[_j].id==="pp-scott-theobald" && _pl[_j].note!==_PPL){
+      _pArc.push({id:_pl[_j].id,at:"2026-09-20",note:_pl[_j].note});
+      _pl[_j].note=_PPL; } }
+
+  if(!state.archive || typeof state.archive!=="object") state.archive={};
+  if(_arc.length)  state.archive.dealNotesPre428=_arc;
+  if(_pArc.length) state.archive.peopleNotesPre428=_pArc;
+  state.meta.mig_notes0920=true;
+  if(_touched || _pArc.length) save(true);
+} }catch(e){ try{ console.warn("mig_notes0920 did not apply:",e&&e.message); }catch(_){} }
 
 
 /* build 225: focus timer removed, nothing to clear here anymore. */
