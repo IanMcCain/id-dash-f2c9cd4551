@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 422 (2026-09-20)">
+<meta name="build" content="v21 build 423 (2026-09-20)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -19689,7 +19689,35 @@ function dealSide(d){ var s=(d&&d.side)||""; if(s==="Buyer"||s==="Seller"||s==="
 /* v21 build 67: the default single-side SELLER rate is now 3.6% (was 3.75%). It is a per-deal value:
    d.sellerRate overrides the 0.036 default, and is set to 0.037 (3.7%) for Chad Troester and Cynthia Willis
    ONLY (applied by mig67_rates). Buyer side stays 2.4%. Dual deals use dualRate, not this. */
-function sellerRate(d){ return (d&&typeof d.sellerRate==="number")?d.sellerRate:0.036; }
+/* ===== v21 build 423: THE BROKERAGE CUT IS TAKEN ON THE STANDARD RATE, NOT THE NEGOTIATED ONE.
+   Approved by Ian directly, 20.09.2026: "We'll fix the model so that even if my percentage goes
+   down from the set amount it still takes 15% from the correct percentage (seller 3.6 buyer 2.4)."
+
+   THE BUG. dealBrokerage() took 15 percent of whatever gross it was handed, so a discounted rate
+   shrank the brokerage cut along with it. NP Dodge does not work that way. Its cut is computed on
+   the standard rate and the entire discount comes off the agent side. On Mattox at a negotiated
+   3.1 percent the old model read $2,502.72 where the correct figure is $2,431.49.
+
+   THE BASIS IS A FLOOR, NOT A REPLACEMENT, AND THAT DISTINCTION DECIDES THREE OTHER DEALS.
+   Ian's rule is about his rate going DOWN. Read literally as "always the standard rate", the
+   brokerage would also take LESS on every deal priced ABOVE standard, which is Chad Troester and
+   Cynthia Willis at 3.7 percent and Rachel Jenkins at 5.0 percent. That would hand the agent side
+   money the brokerage never gave up, and Troester is CLOSED, so it would move a historical figure
+   and the closed take home total with it. It also contradicts the principle the rule exists to
+   express, that the brokerage gives up nothing. So the basis is max(standard, actual): the cut
+   never falls below standard and still tracks the rate upward when the rate is higher.
+   ONLY MATTOX MOVES. Verified against all 36 deals before and after.
+
+   DUAL AGENCY IS UNTOUCHED. Dual deals already take the cut on a FIXED 6 percent basis,
+   0.009 x price, whatever rate is charged, which is the documented arrangement. Snyder at 4.5
+   percent and Winchester at 5 percent both compute identically before and after.
+
+   RATES ARE DATA NOW. RE_RATES holds the standard seller and buyer rates, the brokerage
+   percentage and the dual basis, so changing a rate is one number rather than a hunt through
+   literals. THIS IS A MODEL CHANGE, NOT A DATA CHANGE: no stored value is rewritten and there is
+   no migration. Every figure is recomputed from the same stored deals. SEED_VERSION stays 13. */
+var RE_RATES={ sellerStd:0.036, buyerStd:0.024, brokerage:0.15, dualBrokerageBasis:0.06, dualDefault:0.06 };
+function sellerRate(d){ return (d&&typeof d.sellerRate==="number")?d.sellerRate:RE_RATES.sellerStd; }
 function sourceShare(source,d){ if(d&&typeof d.ianSplit==="number") return d.ianSplit; return source==="Chris's client"?0.20 : source==="Dual agency"?0.50 : 0.90; }
 /* v21 build 42: dual agency commission is 5% TOTAL on the sale price, charged ONCE for the property,
    NOT seller 3.75% plus buyer 2.4%. Matt Snyder is entered as two side-entries (buyer and seller) for
@@ -19705,9 +19733,12 @@ function sourceShare(source,d){ if(d&&typeof d.ianSplit==="number") return d.ian
    takes 15% of a fixed 6% basis (0.15 x 0.06 x price = 0.009 x price), NOT 15% of the charged rate. Ian's
    dual take-home = (chargedRate x price - 0.009 x price) x 0.50. Single-side deals are unchanged: 3.75%
    seller or 2.4% buyer, broker 15% of that side commission, then the 90% own / 20% Chris split. */
-function dualRate(d){ return (d&&typeof d.dualRate==="number")?d.dualRate:0.06; }
-function dealGrossCommission(d){ if(dealSource(d)==="Dual agency"){ var _full=priceNum(d&&d.price)*dualRate(d); return (dealSide(d)==="Both")?_full:_full/2; } var _sd=dealSide(d); return priceNum(d&&d.price) * (_sd==="Buyer"?0.024:sellerRate(d)); }
-function dealBrokerage(d){ if(dealSource(d)==="Dual agency"){ var _fee=priceNum(d&&d.price)*0.15*0.06; return (dealSide(d)==="Both")?_fee:_fee/2; } return dealGrossCommission(d)*0.15; }
+function dualRate(d){ return (d&&typeof d.dualRate==="number")?d.dualRate:RE_RATES.dualDefault; }
+/* build 423: the rate the brokerage cut is computed ON, and the rate actually charged. */
+function dealStandardRate(d){ return dealSide(d)==="Buyer" ? RE_RATES.buyerStd : RE_RATES.sellerStd; }
+function dealActualRate(d){ return dealSide(d)==="Buyer" ? RE_RATES.buyerStd : sellerRate(d); }
+function dealGrossCommission(d){ if(dealSource(d)==="Dual agency"){ var _full=priceNum(d&&d.price)*dualRate(d); return (dealSide(d)==="Both")?_full:_full/2; } return priceNum(d&&d.price) * dealActualRate(d); }
+function dealBrokerage(d){ if(dealSource(d)==="Dual agency"){ var _fee=priceNum(d&&d.price)*RE_RATES.brokerage*RE_RATES.dualBrokerageBasis; return (dealSide(d)==="Both")?_fee:_fee/2; } var _basis=Math.max(dealStandardRate(d),dealActualRate(d)); return priceNum(d&&d.price) * _basis * RE_RATES.brokerage; }
 /* v21 build 233: AN ACTUAL PAID FIGURE ALWAYS BEATS THE MODEL. If a deal carries actualNet,
    that is what Ian was really paid and it is returned unchanged. The computed path is only a
    fallback for deals with no actual yet. This exists because the Spicer sale paid $2,770 against
