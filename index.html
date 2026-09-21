@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 433 (2026-09-21)">
+<meta name="build" content="v21 build 434 (2026-09-21)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -19637,6 +19637,103 @@ try{ if(!state.meta.mig433_vogelsplit && state.realEstate && Array.isArray(state
 } }catch(e){ try{ console.warn("mig433 vogel split did not apply:",e&&e.message); }catch(_){} }
 
 
+/* ===== v21 build 434, FIN-17, 21.09.2026. IAN ANSWERED THE THREE SPLIT QUESTIONS ========
+   All three came back from him directly. Two were already correct and one was not.
+
+   1. "IAN'S OWN" IS 0.80, NOT 0.90. His words: "Stick with that for now."
+      sourceShare() is EDITED ABOVE, not migrated, because it is a pure function and not
+      seeded state. The 0.90 was a code default nobody had ever confirmed.
+      WHO IT MOVES: re-ashley-gilliam ONLY, and it is CLOSED AND PAID.
+        gross      378,000 x 0.036        = 13,608.00
+        brokerage  13,608 x 0.15          =  2,041.20
+        post-brok                          = 11,566.80
+        old at 0.90                        = 10,410.12
+        NEW at 0.80                        =  9,253.44
+        DELTA                              = -1,156.68
+      THIS RESTATES WHAT HE WAS ACTUALLY PAID ON A CLOSED DEAL and the delta is flagged
+      rather than buried. re-austin-thacker already carried an explicit 0.80 and does not
+      move. re-austin-thacker-buy and re-hernandez-sell have no price so both are still $0,
+      but the default behind them is now right.
+
+   2. TESKES 0.35 IS CORRECT AND DELIBERATE. Ian: "I got the client but my dad did
+      everything else, that's a weird circumstance." Recorded on the record so no future
+      audit flags it again.
+
+   3. WINCHESTER LOT ZERO IS CORRECT. Ian: "Zero for me, just goes to team total sales
+      total." It counts toward TEAM VOLUME, not his income. Recorded for the same reason.
+
+   PLUS FOUR FACTS HE GAVE IN THE SAME PASS.
+   - PLANET FITNESS $16.05, billing on the 17th. Added to subscriptions.
+   - AUDIBLE IS STILL BILLING DESPITE BEING CANCELLED, at $9.48 not the $9.00 on record.
+     done:true is WRONG and becomes false. It is NOT added to the live subscription total,
+     per his instruction, because it should not be charging at all. It is money leaving and
+     it is his to chase.
+   - WILLIS: Chris has messaged Dale, who is a contractor. DALE FINISHING IS NOW THE GATE.
+   - THEOBALD: outreach moved by Ian himself to Monday 28 September.
+
+   NOT TOUCHED, DELIBERATELY: the bike loan and the Discover payment are NOT in this app's
+   monthly list and never were, so there is nothing here to remove. The inflated baseline
+   came from Rocket Money, not from this record.
+
+   Guarded once by state.meta.mig434_splits, NOT in the seed, SEED_VERSION STAYS 13. */
+try{ if(!state.meta.mig434_splits){
+  var _n434=0;
+  if(state.realEstate && Array.isArray(state.realEstate.deals)){
+    var _D434=state.realEstate.deals;
+    function _find434(id){ for(var i=0;i<_D434.length;i++){ if(_D434[i]&&_D434[i].id===id) return _D434[i]; } return null; }
+    var _t=_find434("re-teskes");
+    if(_t && String(_t.note||"").indexOf("weird circumstance")<0){
+      _t.note=String(_t.note||"")+" SPLIT CONFIRMED BY IAN 21.09.2026 AND IT IS CORRECT. The 0.35 is deliberate, not an error. His words: \"I got the client but my dad did everything else, that's a weird circumstance.\" Do not flag this as an anomaly again.";
+      _n434++;
+    }
+    var _w=_find434("re-winchester-lot");
+    if(_w && String(_w.note||"").indexOf("team total sales")<0){
+      _w.note=String(_w.note||"")+" ZERO SPLIT CONFIRMED BY IAN 21.09.2026 AND IT IS CORRECT. His words: \"Zero for me, just goes to team total sales total.\" It counts toward TEAM VOLUME and not toward his income. Do not flag this as an anomaly again.";
+      _n434++;
+    }
+    var _g=_find434("re-ashley-gilliam");
+    if(_g && String(_g.note||"").indexOf("restated 21.09.2026")<0){
+      _g.note=String(_g.note||"")+" TAKE HOME RESTATED 21.09.2026. Ian confirmed his own client share is 0.80, not the 0.90 code default this record had been computing on. Modelled net moves from $10,410.12 to $9,253.44, a delta of -$1,156.68. This is a CLOSED AND PAID deal, so the figure is a model estimate of what he received and not a confirmed payment. If the real figure is known, set actualNet.";
+      _n434++;
+    }
+    var _wi=_find434("re-cynthia-willis");
+    if(_wi && String(_wi.note||"").indexOf("Dale is a contractor")<0){
+      _wi.note=String(_wi.note||"")+" GATE UPDATE, IAN 21.09.2026. Chris has messaged Dale. Dale is a contractor. ONCE DALE IS DONE THEY GO LIVE. That is now the gate, ahead of the unsigned Florida disclosure.";
+      _n434++;
+    }
+    var _th=_find434("re-theobald-sell");
+    if(_th && String(_th.note||"").indexOf("28 September 2026")<0){
+      _th.note=String(_th.note||"")+" OUTREACH MOVED BY IAN HIMSELF 21.09.2026 to MONDAY 28 SEPTEMBER 2026. The earlier silence was explained: the clients were on vacation for two weeks and Chris called them two weeks ago.";
+      _n434++;
+    }
+  }
+  if(state.finance){
+    var _F434=state.finance;
+    if(Array.isArray(_F434.subscriptions)){
+      var _hasPF=false;
+      for(var j=0;j<_F434.subscriptions.length;j++){ if(_F434.subscriptions[j]&&_F434.subscriptions[j].name==="Planet Fitness") _hasPF=true; }
+      if(!_hasPF){
+        _F434.subscriptions.push({ name:"Planet Fitness", amount:16.05, billsOn:17, tag:"Fitness", deduct:{ business:false }, source:"Ian, 21.09.2026" });
+        _n434++;
+      }
+    }
+    if(Array.isArray(_F434.cancelled)){
+      for(var k=0;k<_F434.cancelled.length;k++){
+        var _c=_F434.cancelled[k];
+        if(_c && _c.name==="Audible" && _c.done!==false){
+          _c.done=false; _c.amount=9.48;
+          _c.why="CANCELLED BUT STILL BILLING. Ian, 21.09.2026: it is still charging $9.48, not the $9.00 previously on record. This is NOT counted in the live subscription total, because it should not be charging at all. It is money leaving and it is his to chase.";
+          _n434++;
+        }
+      }
+    }
+  }
+  state.meta.mig434_splits=true;
+  if(_n434) save(true); else save(true);
+  try{ console.log("mig434 applied, "+_n434+" leaf changes"); }catch(_){}
+} }catch(e){ try{ console.warn("mig434 did not apply:",e&&e.message); }catch(_){} }
+
+
 /* build 225: focus timer removed, nothing to clear here anymore. */
   /* build 372: LAST THING BEFORE THE SAVE. Every migration above has run, deepMergeDefaults
      has run, so this is the only point in the file where the state is actually final. */
@@ -20234,7 +20331,7 @@ function dealSide(d){ var s=(d&&d.side)||""; if(s==="Buyer"||s==="Seller"||s==="
    no migration. Every figure is recomputed from the same stored deals. SEED_VERSION stays 13. */
 var RE_RATES={ sellerStd:0.036, buyerStd:0.024, brokerage:0.15, dualBrokerageBasis:0.06, dualDefault:0.06 };
 function sellerRate(d){ return (d&&typeof d.sellerRate==="number")?d.sellerRate:RE_RATES.sellerStd; }
-function sourceShare(source,d){ if(d&&typeof d.ianSplit==="number") return d.ianSplit; return source==="Chris's client"?0.20 : source==="Dual agency"?0.50 : 0.90; }
+function sourceShare(source,d){ if(d&&typeof d.ianSplit==="number") return d.ianSplit; /* v21 build 434, 21.09.2026: IAN'S OWN IS 0.80, NOT 0.90. His words: "Stick with that for now." The 0.90 was a code default nobody had ever confirmed and it had leaked to four records. */ return source==="Chris's client"?0.20 : source==="Dual agency"?0.50 : 0.80; }
 /* v21 build 42: dual agency commission is 5% TOTAL on the sale price, charged ONCE for the property,
    NOT seller 3.75% plus buyer 2.4%. Matt Snyder is entered as two side-entries (buyer and seller) for
    volume and deal count, so each side-entry contributes HALF of the property's 5% gross, so the pair
