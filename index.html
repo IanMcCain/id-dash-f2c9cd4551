@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 434 (2026-09-21)">
+<meta name="build" content="v21 build 435 (2026-09-21)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -19732,6 +19732,108 @@ try{ if(!state.meta.mig434_splits){
   if(_n434) save(true); else save(true);
   try{ console.log("mig434 applied, "+_n434+" leaf changes"); }catch(_){}
 } }catch(e){ try{ console.warn("mig434 did not apply:",e&&e.message); }catch(_){} }
+
+
+/* ===== v21 build 435, FIN-18, 21.09.2026. ROCKET MONEY IS WRONG TWICE AND BOTH ARE WRITTEN
+   ========================================================================================
+   IAN: "The bike loan might be incorrect, I owed $2,500 and I've paid over $500 so far,
+   and 2370 of 3600 is accurate."
+
+   1. THE DISCOVER UTILISATION. He confirms balance about $2,370 against a $3,600 limit.
+      $2,370 / $3,600 = 65.8 percent. ROCKET MONEY SHOWS 84 PERCENT ON THE SAME PAGE AS THE
+      SAME $2,370 BALANCE, which is only reachable on a limit of about $2,821. Its balance
+      is right and its percentage is wrong.
+      THIS APP WAS NEVER WRONG HERE. It stores limit and balance and COMPUTES the figure, so
+      it has always read about 63 percent on its own $2,273.60. Nothing to correct in the
+      arithmetic. What is added is the confirmation and the reliability note.
+      THE $2,273.60 IS NOT OVERWRITTEN. It came from Discover's own app on 20 September,
+      which is a better source than either Rocket Money or a recollection, and the gap to
+      $2,370 is consistent with part of the recorded pending charges posting.
+      ABOVE 30 PERCENT EITHER WAY. 63 or 66, the threshold point stands and is not softened.
+
+   2. THE BIKE LOAN. Read directly off Rocket Money's own account page today:
+        balance $2,625, "No change in balance over the last 6 months",
+        HISTORY: ONE ROW, "Date Updated: April 4, 2026, $2,625", and "% Paid: 0%".
+      IT IS A MANUALLY ENTERED DEBT THAT HAS NEVER BEEN UPDATED SINCE 4 APRIL. Not a live
+      feed, not stale data from a broken connection, just a number somebody typed five and a
+      half months ago. The 0 percent paid is not a measurement, it is what a static figure
+      always reports.
+      THE ACCOUNT IS LITERALLY NAMED "Bike loan + insurance", so yes, it bundles insurance.
+      WHICH FIGURE IS RIGHT: IAN'S. He owed $2,500 and has paid over $500, so the balance is
+      UNDER $2,000. The earlier finding of only one $420 payment in nine months was matching
+      transactions against an account that has no feed to match against.
+      RECORDED AS A RANGE, NOT A POINT. "Over $500" gives an upper bound of $2,000 and no
+      lower bound, so no single figure is invented.
+      THE LOAN IS PAUSED and stays OUT of every burn figure. It is a balance, not a monthly.
+
+   3. NET WORTH. Rocket Money shows $297 from assets $5,288 less debts $4,990. Its debts
+      carry the stale $2,625. On Ian's figures net worth is AT LEAST ABOUT $918 and the
+      Rocket Money number understates it by AT LEAST $620.
+      ONE THING ROCKET MONEY GETS RIGHT THAT LOOKED WRONG: its assets show Savings $0 and
+      Cash $5,288, which looks like a missing account. It is not. $4,287.55 checking plus
+      $1,000 savings is $5,287.55. The savings is COUNTED and MISCATEGORISED, not missing.
+
+   Guarded once by state.meta.mig435_rmcheck, NOT in the seed, SEED_VERSION STAYS 13. */
+try{ if(!state.meta.mig435_rmcheck && state.finance){
+  var _F435=state.finance;
+  if(!_F435.externalDebts){
+    _F435.externalDebts=[{
+      name:"Bike loan + insurance",
+      holder:"not recorded",
+      status:"PAUSED",
+      statusWhy:"Ian paid extra and the payments have stopped. It is a BALANCE, not a monthly, and it is excluded from every burn figure.",
+      originalOwed:2500,
+      paidSoFar:"over 500",
+      balanceMax:2000,
+      balanceNote:"UNDER $2,000. Ian, 21.09.2026: owed $2,500, has paid over $500. No lower bound was given so no point figure is stored.",
+      bundlesInsurance:true,
+      bundlesInsuranceWhy:"The Rocket Money account is named 'Bike loan + insurance', so the figure is loan plus insurance, not loan alone.",
+      rocketMoneyShows:2625,
+      rocketMoneyStale:true,
+      rocketMoneyStaleWhy:"Manually entered, never updated. Its own history has ONE row, 'Date Updated: April 4, 2026, $2,625', and the page says 'No change in balance over the last 6 months'. Its 0 percent paid is a consequence of a static number, not a measurement. IAN'S FIGURE IS THE RIGHT ONE.",
+      source:"Ian 21.09.2026, plus Rocket Money account page read directly the same day"
+    }];
+  }
+  if(!_F435.netWorth){
+    _F435.netWorth={
+      asOf:"2026-09-21",
+      assets:5288,
+      assetsNote:"Rocket Money shows Cash $5,288 and Savings $0. That is MISCATEGORISATION, NOT A MISSING ACCOUNT: $4,287.55 checking plus $1,000 savings is $5,287.55.",
+      debtsKnown:2370,
+      debtsKnownNote:"Discover, Ian confirmed. Amex Gold is $0.",
+      debtsMax:4370,
+      value:"at least about $918",
+      valueNote:"Assets $5,288 less Discover $2,370 less a bike loan under $2,000. A RANGE, because the bike balance is bounded rather than known.",
+      rocketMoneyShows:297,
+      rocketMoneyUnderstatesBy:"at least about $620",
+      rocketMoneyWhy:"Its debt total carries the stale $2,625 bike figure from 4 April."
+    };
+  }
+  if(!_F435.sourceReliability){
+    _F435.sourceReliability={
+      rocketMoney:{
+        confirmedWrong:[
+          "Grocery categorisation.",
+          "Discover utilisation: shows 84 percent against a $2,370 balance and a $3,600 limit, which is 65.8 percent. Only reachable on a limit of about $2,821. Confirmed 21.09.2026.",
+          "Bike loan balance: $2,625 manually entered on 4 April 2026 and never updated. Confirmed 21.09.2026."
+        ],
+        rule:"PREFER THE BANK'S OWN APP OR IAN OVER ROCKET MONEY ON ANY FIGURE. It is useful for spotting subscriptions and categories. It is not a source of record for balances, percentages or loan payoff.",
+        asOf:"2026-09-21"
+      }
+    };
+  }
+  if(Array.isArray(_F435.cards)){
+    for(var i=0;i<_F435.cards.length;i++){
+      var c=_F435.cards[i];
+      if(c && c.id==="discover" && !c.ianConfirmed){
+        c.ianConfirmed={ asOf:"2026-09-21", balance:2370, limit:3600, util:"65.8 percent",
+          note:"Ian: '2370 of 3600 is accurate'. The stored $2,273.60 is from Discover's own app on 20.09 and is NOT overwritten, because it is the better source and the gap is consistent with pending charges posting. Utilisation is 63 to 66 percent depending which balance is used. ROCKET MONEY'S 84 PERCENT IS WRONG ON BOTH. Still above the 30 percent threshold either way." };
+      }
+    }
+  }
+  state.meta.mig435_rmcheck=true; save(true);
+  try{ console.log("mig435 applied"); }catch(_){}
+} }catch(e){ try{ console.warn("mig435 did not apply:",e&&e.message); }catch(_){} }
 
 
 /* build 225: focus timer removed, nothing to clear here anymore. */
