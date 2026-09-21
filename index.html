@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 438 (2026-09-21)">
+<meta name="build" content="v21 build 439 (2026-09-21)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -20091,6 +20091,146 @@ try{ if(!state.meta.mig438_winprob && state.realEstate && Array.isArray(state.re
   state.meta.mig438_winprob=true; save(true);
   try{ console.log("mig438 applied, "+_n8+" deals given winProb"); }catch(_){}
 } }catch(e){ try{ console.warn("mig438 did not apply:",e&&e.message); }catch(_){} }
+
+
+/* ===== v21 build 439, FIN-21, 21.09.2026. IAN ANSWERED EVERYTHING. NO PLACEHOLDERS LEFT ==
+   PROBABILITIES ARE NOW ALL HIS. Willis 98, Belknaps 95, Mattox 77, Vogel 70, Barker 58,
+   Rose Creek 55, Theobald 30. The lane's Barker placeholder and Vogel recommendation are
+   both REPLACED by his figures and winProbSource says IAN on every one.
+   ROSE CREEK IS SETTLED: his 55 means SELLS AND CLOSES THIS YEAR. The contingent buyer
+   timeline stays visible on the record but it is no longer an open question.
+
+   THE DISCOVER ANSWER RESOLVES THE BURN, AND IT MOVED THE NUMBER THE WRONG WAY.
+   IAN: "Discover is not a set amount, it's full statement balance so it ranges each month,
+   typically always above $1,000 and I aim to keep it below $2,000, my goal is $750-1,250
+   each month, but I've been going over recently."
+   HE PAYS THE FULL STATEMENT. So the payment SETTLES spend already made. Counting the card
+   transactions AND the card payment double counts, and the burn must count what he CHARGES.
+   FOUND IN ROCKET MONEY, the actual payments: 9/8 $1,005.91 and 6/9 $1,000.00. BOTH SIT
+   INSIDE HIS $750 TO $1,250 TARGET. The $1,720.63 figure is the CURRENT statement, not a
+   payment made, and it is the one he is going over on.
+   CONSEQUENCE, STATED PLAINLY BECAUSE IT IS NOT THE CONVENIENT ANSWER: the earlier working
+   deducted the $1,720.63 statement and produced about $1,486. Deducting the ACTUAL payment
+   of about $1,006 instead gives about $2,200. CORRECTING THIS RAISED THE BURN.
+
+   THE DISCOVER CEILING. IAN: "My set limit is $3,600 but for some reason it always ends up
+   saying I'm maxed out at 3300-3400, that's just the way Discover works."
+   EFFECTIVE CEILING $3,300 TO $3,400. Utilisation on $2,370: about 70 to 72 percent
+   effective, 66 percent on the $3,600 line. BOTH CARRIED, effective one labelled as binding.
+   This also finally explains Rocket Money's 84: it is closer to an effective ceiling than to
+   the credit line, though it still does not match either exactly.
+
+   WHAT WAS SEARCHED FOR IN ROCKET MONEY AND NOT FOUND, REPORTED HONESTLY.
+   1. THE GILLIAM COMMISSION, "April or May, a big transaction of like 8-10k". NOT FOUND.
+      Searched 1 April to 15 June. The largest deposit in that window is an NP Dodge RE Sale
+      payroll of $2,258.74. NO 8 TO 10k DEPOSIT EXISTS IN THAT RANGE as far as could be read.
+      POSSIBILITY, OFFERED AND NOT CONCLUDED: if commission arrives through payroll rather
+      than as a lump, there may be no single transaction of that size to find.
+      actualNet IS DELIBERATELY NOT SET. Pinning a guess to a paid deal is the exact error
+      this file has been correcting all day. The $10,410.12 stays a MODEL figure and says so.
+   2. THE BIKE LOAN PAYMENTS, 3 to 4 transfers to his mother. ONE CANDIDATE FOUND:
+      28 May, "Online Transfer To Acct Ending 7", $775.00. Acct ending 7 is the same account
+      as the 21 September $5,000 tax sweep, so it is plausibly his mother's.
+      THE OTHERS WERE NOT RETRIEVED. Rocket Money virtualises its transaction list inside a
+      scroll container and the automated passes could not page the full history.
+      SO THE BALANCE STAYS A RANGE on his own account of the payments, $1,650 to $1,800, and
+      is NOT revised on one unconfirmed $775.
+
+   SMALLER CORRECTIONS, all his:
+     THACKER: 80 percent is right AND it is his own client, but THE DEAL FELL THROUGH. He may
+              reach out next week. Recorded as fallen through, NOT active. The 21.09 flag is
+              answered and cleared.
+     MARCUS:  the ONE charge matching $9.99 is the subscription. THE OTHER THIRTEEN ARE
+              TICKETS. Classified accordingly.
+     FETCH:   not cancelled yet but he will not let it charge again. DISCONTINUE.
+     BELKNAP: the pre-inspection waiver was INTENTIONAL, professionals are fixing everything
+              that could come up. Reason recorded and THE RISK FLAG IS CLEARED.
+     THEOBALD buy side LEFT OPEN. VOGEL buy side, he finds out tomorrow. WILLIS, Chris is
+     handling it.
+
+   Guarded once by state.meta.mig439_final, NOT in the seed, SEED_VERSION STAYS 13. */
+try{ if(!state.meta.mig439_final){
+  var _n9=0;
+  if(state.realEstate && Array.isArray(state.realEstate.deals)){
+    var _DA=state.realEstate.deals;
+    function _fa(id){ for(var i=0;i<_DA.length;i++){ if(_DA[i]&&_DA[i].id===id) return _DA[i]; } return null; }
+    var _PR={ "re-cynthia-willis":0.98, "re-belknap-sell":0.95, "re-mattox-sell":0.77,
+              "re-vogel-sell":0.70, "re-barkers":0.58, "re-rose-creek":0.55, "re-theobald-sell":0.30 };
+    for(var k in _PR){ var _d=_fa(k); if(_d){ _d.winProb=_PR[k]; _d.winProbSource="IAN"; _d.winProbAsOf="2026-09-21"; _n9++; } }
+    var _rc=_fa("re-rose-creek");
+    if(_rc){ _rc.winProbMeans="SELLS AND CLOSES THIS YEAR. Confirmed by Ian 21.09.2026. The contingent buyer path, their home not live for about 30 days plus a 90 day close, stays on the record as a visible caveat but it is no longer an open question."; _n9++; }
+    var _v2=_fa("re-vogel-sell");
+    if(_v2){ delete _v2.recommendedProbability; _v2.buySide="He finds out tomorrow, 22.09.2026."; _n9++; }
+    var _b2=_fa("re-barkers");
+    if(_b2){ _b2.note=String(_b2.note||"")+" PROBABILITY 58 PERCENT, IAN'S OWN FIGURE, 21.09.2026. This replaces the lane's 55 percent placeholder, which existed only because he had said 'slightly higher' without a number."; _n9++; }
+    var _t2=_fa("re-austin-thacker");
+    if(_t2 && _t2.stage!=="Fell through"){
+      _t2.stage="Fell through"; _t2.fellThrough=true;
+      _t2.note=String(_t2.note||"")+" FLAG ANSWERED AND DEAL CLOSED OUT, IAN 21.09.2026. The explicit 0.80 IS correct and it IS his own client, so it is not a Gilliam style exception. BUT THE DEAL FELL THROUGH. He may reach out next week. Recorded as fallen through, not active.";
+      _n9++;
+    }
+    var _bk=_fa("re-belknap-sell");
+    if(_bk){ _bk.preInspectionWaived=true;
+      _bk.preInspectionWaivedWhy="INTENTIONAL, confirmed by Ian 21.09.2026. Professionals are fixing everything that could come up, so the waiver is a decision and not an oversight. THE RISK FLAG IS CLEARED. Do not re-raise it as a gap.";
+      _n9++; }
+    var _th2=_fa("re-theobald-sell");
+    if(_th2){ _th2.buySide="LEFT OPEN on Ian's instruction, 21.09.2026."; _n9++; }
+    var _wi2=_fa("re-cynthia-willis");
+    if(_wi2){ _wi2.owner="Chris is handling it. Ian, 21.09.2026."; _n9++; }
+    var _gl=_fa("re-ashley-gilliam");
+    if(_gl && String(_gl.note||"").indexOf("SEARCHED FOR 21.09.2026")<0){
+      _gl.note=String(_gl.note||"")+" ACTUAL NET SEARCHED FOR 21.09.2026 AND NOT FOUND. Ian recalled 'April or May, a big transaction of like 8-10k'. Rocket Money 1 April to 15 June shows no deposit of that size; the largest is an NP Dodge RE Sale payroll of $2,258.74. Possibility not conclusion: commission may arrive through payroll rather than as a lump. actualNet IS DELIBERATELY LEFT UNSET. The $10,410.12 remains a MODEL estimate at the confirmed 0.90 share, not a confirmed payment.";
+      _n9++;
+    }
+  }
+  if(state.finance){
+    var _F9=state.finance;
+    if(Array.isArray(_F9.cards)){
+      for(var i9=0;i9<_F9.cards.length;i9++){
+        var _c9=_F9.cards[i9];
+        if(_c9 && _c9.id==="discover"){
+          delete _c9.utilisationOpen;
+          _c9.paymentBehaviour={ mode:"FULL STATEMENT BALANCE EVERY MONTH", source:"Ian, 21.09.2026",
+            target:"$750 to $1,250 a month, his own goal. He says he has been going over recently.",
+            observedPayments:[{date:"2026-09-08",amount:1005.91},{date:"2026-06-09",amount:1000.00}],
+            observedNote:"Both sit INSIDE his target band. The $1,720.63 is the CURRENT statement, not a payment made.",
+            burnRule:"BECAUSE HE PAYS IN FULL, THE PAYMENT SETTLES SPEND ALREADY MADE. Counting the card transactions AND the card payment DOUBLE COUNTS. The burn counts what he CHARGES." };
+          _c9.effectiveCeiling={ low:3300, high:3400, creditLine:3600,
+            source:"Ian, 21.09.2026: 'My set limit is $3,600 but for some reason it always ends up saying I'm maxed out at 3300-3400, that's just the way Discover works.'",
+            utilOnEffective:"about 70 to 72 percent on a $2,370 balance. THIS IS THE ONE THAT BINDS HIM.",
+            utilOnCreditLine:"about 66 percent on $3,600.",
+            note:"This also explains Rocket Money's 84 better than anything else did: it is closer to an effective ceiling than to the credit line, though it still matches neither exactly." };
+          _n9++;
+        }
+      }
+    }
+    if(_F9.spendNotes){
+      _F9.spendNotes.marcusTheatres.classification="ONE charge matching $9.99 IS the subscription. THE OTHER THIRTEEN ARE TICKETS, discretionary entertainment.";
+      _F9.spendNotes.marcusTheatres.note="Confirmed by Ian 21.09.2026. The subscription is already a separate row in subscriptions at $9.99, so the ticket total is about $298.43 across 13 charges. Tickets STILL COUNT toward the burn.";
+      _F9.spendNotes.fetch.status="DISCONTINUE";
+      _F9.spendNotes.fetch.note="Ian, 21.09.2026: not cancelled yet but he will not let it charge again. The $48.88 charge against the $70 refund is NOT an error, they refund when he gets money back from things.";
+      _n9++;
+    }
+    if(!_F9.burnModel){
+      _F9.burnModel={ asOf:"2026-09-21", method:"Top down from the Rocket Money baseline, less what is not consumption.",
+        baseline:3800, baselineSource:"Ian, not independently verifiable on this machine.",
+        removed:[ {what:"Bike loan",amount:420,why:"PAUSED"},
+                  {what:"Court citation",amount:172.95,why:"ONE OFF"},
+                  {what:"Discover payment",amount:1005.91,why:"SETTLES spend already counted. Actual observed payment, NOT the $1,720.63 statement."},
+                  {what:"Methodist",amount:2557.50,why:"Already excluded. Sits in finance.recurring, not finance.monthly."} ],
+        result:"about $2,200 a month", range:"about $1,900 to $2,400, because his card spend ranges $750 to $1,720",
+        movedUpNote:"CORRECTING THE DISCOVER TREATMENT RAISED THE BURN. The earlier working deducted the $1,720.63 statement and got about $1,486. Deducting the ACTUAL $1,005.91 payment gives about $2,200. Stated plainly because it is not the convenient answer.",
+        excludesAlways:"Debt payments, transfers, the tax sweep, and identified one offs." };
+      _n9++;
+    }
+    if(_F9.sourceReliability && _F9.sourceReliability.rocketMoney){
+      _F9.sourceReliability.rocketMoney.couldNotRetrieve="Its transaction list virtualises inside a scroll container. Automated paging could not read the full history on 21.09.2026, which is why the Gilliam commission and three of the four bike payments were not found. NOT a reliability failure on its part, a retrieval limit on ours. Say so rather than implying the transactions do not exist.";
+      _n9++;
+    }
+  }
+  state.meta.mig439_final=true; save(true);
+  try{ console.log("mig439 applied, "+_n9+" leaf changes"); }catch(_){}
+} }catch(e){ try{ console.warn("mig439 did not apply:",e&&e.message); }catch(_){} }
 
 
 /* build 225: focus timer removed, nothing to clear here anymore. */
