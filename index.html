@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 436 (2026-09-21)">
+<meta name="build" content="v21 build 437 (2026-09-21)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -19986,6 +19986,67 @@ try{ if(!state.meta.mig436_corrections){
   state.meta.mig436_corrections=true; save(true);
   try{ console.log("mig436 applied, "+_n436+" leaf changes"); }catch(_){}
 } }catch(e){ try{ console.warn("mig436 did not apply:",e&&e.message); }catch(_){} }
+
+
+/* ===== v21 build 437, RE-20, 21.09.2026. VOGEL'S ABATEMENT IS DONE, AND STAGING =========
+   IAN: "John Vogel had the abatement done".
+
+   THIS CLOSES THE BIGGEST OPEN QUESTION ON THE FILE. The CMA priced two worlds, $334,900
+   post-abatement and $319,900 as-is, a $15,000 spread. POST-ABATEMENT NOW APPLIES.
+
+   THE PRICE IS SET TO $334,900 AND IT STOPS BEING ILLUSTRATIVE. This record has computed
+   $0 since it was created because the price field was empty, and every figure quoted for
+   Vogel has carried an "illustrative, not from the record" caveat. THAT CAVEAT IS NOW GONE.
+   Net $2,049.59 is a real modelled figure: 334,900 x 0.036 x 0.85 x 0.20.
+   WHY IT IS SAFE TO SET NOW AND WAS NOT BEFORE: the earlier refusal was because $334,900
+   was a recommendation against an unresolved environmental item. The item is resolved, so
+   the post-abatement number is the applicable one rather than one of two branches.
+
+   STAGE MOVES Prospecting -> Coming Soon. The listing meeting is tomorrow, 22 September.
+
+   STAGING RECORDED AS A FIELD ON FOUR DEALS, not buried in notes:
+     Vogel   FULL
+     Belknap FULL
+     Willis  ALREADY STAGED
+     Mattox  PARTIAL   <- FULL physical staging is standing policy, so partial is a
+                          DELIBERATE DEVIATION and Ian's decision. It is recorded as his
+                          call, NOT as a gap and NOT as something to fix.
+
+   PROBABILITY IS DELIBERATELY NOT CHANGED HERE. Ian asked for a recommendation with
+   reasoning, not a number set on his behalf. The recommendation is 77 percent and it is
+   written to recommendedProbability, clearly separate from any figure he owns.
+   The old 62 was 70 x 88, where the 70 was gated on an unbooked abatement. That gate is
+   gone. Stage 1 rises to about 88: what remains is the listing meeting converting into a
+   signed listing, and this is a RESTART of a sale he previously abandoned, so it is not 95.
+   Stage 2 stays 88 for an early October list. 88 x 88 = 77.
+
+   Guarded once by state.meta.mig437_vogel, NOT in the seed, SEED_VERSION STAYS 13. */
+try{ if(!state.meta.mig437_vogel && state.realEstate && Array.isArray(state.realEstate.deals)){
+  var _D7=state.realEstate.deals, _n7=0;
+  function _f7(id){ for(var i=0;i<_D7.length;i++){ if(_D7[i]&&_D7[i].id===id) return _D7[i]; } return null; }
+  var _v=_f7("re-vogel-sell");
+  if(_v){
+    if(!_v.price){ _v.price="$334,900"; _n7++; }
+    if(_v.stage!=="Coming Soon"){ _v.stage="Coming Soon"; _n7++; }
+    _v.staging="FULL";
+    _v.abatement={ status:"DONE", confirmedBy:"Ian, 21.09.2026", note:"Closes the $15,000 post-abatement against as-is spread. $334,900 post-abatement applies. $319,900 as-is is retired to a footnote." };
+    _v.recommendedProbability={ value:0.77, byLane:"RE-20", asOf:"2026-09-21",
+      note:"RECOMMENDATION, NOT IAN'S NUMBER. Was 62 = 70 x 88, where the 70 was gated on an unbooked abatement. That gate is gone. Stage 1 to about 88: what remains is the listing meeting on 22 September converting into a signed listing, and this is a RESTART of a sale he abandoned once, so not 95. Stage 2 stays 88 for an early October list. 88 x 88 = 77." };
+    if(String(_v.note||"").indexOf("ABATEMENT DONE")<0){
+      _v.note=String(_v.note||"")+" ABATEMENT DONE, confirmed by Ian 21.09.2026. PRICE SET TO $334,900, the CMA post-abatement recommendation, and it is no longer illustrative. Stage moved to Coming Soon. CMA tiers stand: $329,900 low, $334,900 recommended, $339,900 push, $344,900 arguable and not recommended. Staging FULL.";
+    }
+    _n7++;
+  }
+  var _m=_f7("re-mattox-sell");
+  if(_m){ _m.staging="PARTIAL";
+    _m.stagingNote="PARTIAL IS A DELIBERATE DEVIATION FROM STANDING POLICY AND IT IS IAN'S DECISION, 21.09.2026. Full physical staging is the norm on this team. This is recorded as his call, not as a gap and not as something to correct."; _n7++; }
+  var _b=_f7("re-belknap-sell");
+  if(_b){ _b.staging="FULL"; _b.stagingNote="Staging booked 3 and 4 October in the morning, on his calendar. Ian, 21.09.2026."; _n7++; }
+  var _w=_f7("re-cynthia-willis");
+  if(_w){ _w.staging="ALREADY STAGED"; _w.stagingNote="Already staged as at 21.09.2026."; _n7++; }
+  state.meta.mig437_vogel=true; save(true);
+  try{ console.log("mig437 applied, "+_n7+" leaf changes"); }catch(_){}
+} }catch(e){ try{ console.warn("mig437 did not apply:",e&&e.message); }catch(_){} }
 
 
 /* build 225: focus timer removed, nothing to clear here anymore. */
