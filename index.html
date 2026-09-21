@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 435 (2026-09-21)">
+<meta name="build" content="v21 build 436 (2026-09-21)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -19834,6 +19834,158 @@ try{ if(!state.meta.mig435_rmcheck && state.finance){
   state.meta.mig435_rmcheck=true; save(true);
   try{ console.log("mig435 applied"); }catch(_){}
 } }catch(e){ try{ console.warn("mig435 did not apply:",e&&e.message); }catch(_){} }
+
+
+/* ===== v21 build 436, FIN-19, 21.09.2026. FOUR CORRECTIONS, TWO OF THEM REVERSE BUILD 435
+   ========================================================================================
+   1. GILLIAM IS 90 PERCENT AND BUILD 434 WAS WRONG TO MOVE IT.
+      IAN: "Gilliam was my client and I got 90% of that".
+      THE DISTINCTION BUILD 434 MISSED: "Ian's own is 0.80, stick with that for now" set the
+      DEFAULT. It did not say every past deal was 0.80. GILLIAM IS A SPECIFIC EXCEPTION.
+      ianSplit is PINNED to 0.90 on the record, so it no longer depends on the default at
+      all and no future pass can "correct" it back. Net returns to $10,410.12 and the
+      $1,156.68 reduction is REVERSED.
+      THE 0.80 DEFAULT STAYS for anything with no explicit share. sourceShare is untouched.
+      THACKER IS FLAGGED, NOT CHANGED. It already carries an explicit 0.80. That is probably
+      right but nobody has confirmed it is his own client at 80 rather than another
+      exception, so it is recorded as needing one word from him.
+
+   2. THE 84 PERCENT UTILISATION IS NOT CONFIRMED WRONG, AND BUILD 435 OVERSTATED THE CASE.
+      IAN: "Discover doesn't let you spend the full amount". That is a real mechanism and it
+      deserved checking rather than dismissing.
+      CHECKED TODAY. Rocket Money's Discover page shows balance $2,365 and 84 percent and
+      DOES NOT PUBLISH THE LIMIT IT DIVIDES BY anywhere in its interface, and the figure is
+      not in the page data either. So its divisor cannot be read, only inferred.
+      THREE CANDIDATE LIMITS AND THEY DO NOT RECONCILE:
+        $3,600.00  the credit line, confirmed by Ian
+        $3,364.60  balance $2,273.60 plus available $1,091, BOTH FROM DISCOVER'S OWN APP
+        ~$2,815    implied by Rocket Money's own 84 percent on its own $2,365
+      THE ONE HARD NUMBER FROM DISCOVER ITSELF POINTS TO $3,364.60, NOT $2,815. So a reduced
+      spendable line is real and documented at $3,364.60, and that still gives 68 percent,
+      not 84. Rocket Money's divisor remains unexplained and unverifiable.
+      BOTH FIGURES ARE CARRIED, neither is asserted as the truth, and the threshold point is
+      unchanged: 63, 66, 68 or 84, it is above 30 percent on every candidate.
+
+   3. SUBSCRIPTIONS.
+      AUDIBLE IS NOW GENUINELY CANCELLED by Ian today. It stays OUT of the live total and
+      keeps its may-still-bill flag until a clear month passes.
+      MARCUS MOVIE CLUB $9.99 IS REAL AND THIS APP ALREADY HAD IT. Rocket Money does not
+      detect it, confirmed today: its Discover recurring list shows only APC, Claude and
+      Supra. THE APP IS RIGHT AND ROCKET MONEY IS MISSING ONE.
+      THE $308.42 ACROSS 14 MARCUS THEATRES CHARGES IS TICKET BUYING, NOT THE SUBSCRIPTION.
+      Ian: "Maybe 1 of them is the subscription because I just recently bought it."
+      Reclassified as DISCRETIONARY ENTERTAINMENT. IT STILL COUNTS TOWARD THE BURN. It was
+      already counted that way, so THE BURN DOES NOT MOVE.
+      FETCH IS THE PET INSURANCE and he is about to cancel it. The $48.88 charge against a
+      $70 refund is NOT AN ERROR: "They refund when I get money back from things."
+
+   4. THE BIKE LOAN, WITH HIS ACTUAL PAYMENTS. One large payment of $420 and a monthly of
+      about $144 a few months ago, so roughly $700 to $850 paid against $2,500.
+      REMAINING ABOUT $1,650 TO $1,800. Recorded as a RANGE because he did not give the
+      number of months. Build 435's "under $2,000" is superseded by a tighter range.
+      STILL PAUSED AND STILL OUT OF THE BURN.
+      NET WORTH becomes ABOUT $1,118 TO $1,268, against the $297 Rocket Money shows.
+
+   5. ROCKET MONEY TAX SWEEP DISTORTION, NOW CONFIRMED BY IAN AND PROMOTED TO STANDING.
+      "sometimes I deposit taxes and that counts as spend and other things." Recorded as a
+      recurring distortion rather than a one-off.
+
+   Guarded once by state.meta.mig436_corrections, NOT in the seed, SEED_VERSION STAYS 13. */
+try{ if(!state.meta.mig436_corrections){
+  var _n436=0;
+  if(state.realEstate && Array.isArray(state.realEstate.deals)){
+    var _D=state.realEstate.deals;
+    function _f436(id){ for(var i=0;i<_D.length;i++){ if(_D[i]&&_D[i].id===id) return _D[i]; } return null; }
+    var _g=_f436("re-ashley-gilliam");
+    if(_g && _g.ianSplit!==0.90){
+      _g.ianSplit=0.90;
+      _g.note=String(_g.note||"")+" SPLIT RESTORED TO 0.90 AND PINNED, 21.09.2026. Ian: \"Gilliam was my client and I got 90% of that.\" Build 434 moved this to the 0.80 default and that was WRONG: his \"stick with 0.80\" set the DEFAULT for unspecified deals, it did not restate past ones. THIS IS AN EXPLICIT EXCEPTION, pinned on the record so it no longer depends on the default. Net returns to $10,410.12. The $1,156.68 reduction is reversed.";
+      _n436++;
+    }
+    var _th=_f436("re-austin-thacker");
+    if(_th && String(_th.note||"").indexOf("FLAGGED 21.09.2026")<0){
+      _th.note=String(_th.note||"")+" SPLIT FLAGGED 21.09.2026, NOT CHANGED. It carries an explicit 0.80 and that is probably right, but nobody has confirmed whether it is his own client at the standard 80 or another exception like Gilliam. One word from Ian settles it. NOT altered on an assumption.";
+      _n436++;
+    }
+  }
+  if(state.finance){
+    var _F=state.finance;
+    if(Array.isArray(_F.externalDebts)){
+      for(var i2=0;i2<_F.externalDebts.length;i2++){
+        var _d=_F.externalDebts[i2];
+        if(_d && _d.name==="Bike loan + insurance"){
+          _d.paidSoFar="about $700 to $850";
+          _d.paidDetail="One large payment of $420 plus a monthly of about $144 a few months ago. Ian, 21.09.2026. The number of months was not given, so the total is a range.";
+          _d.balanceMax=1800; _d.balanceMin=1650;
+          _d.balanceNote="ABOUT $1,650 TO $1,800. Supersedes the 'under $2,000' recorded in build 435, which was the only bound available at the time.";
+          _n436++;
+        }
+      }
+    }
+    if(_F.netWorth){
+      _F.netWorth.debtsMax=4170; _F.netWorth.debtsMin=4020;
+      _F.netWorth.value="about $1,118 to $1,268";
+      _F.netWorth.valueNote="Assets $5,288 less Discover $2,370 less a bike loan of about $1,650 to $1,800. Supersedes the 'at least about $918' in build 435, which used the looser under-$2,000 bound.";
+      _F.netWorth.rocketMoneyUnderstatesBy="about $820 to $970";
+      _n436++;
+    }
+    if(Array.isArray(_F.cards)){
+      for(var i3=0;i3<_F.cards.length;i3++){
+        var _c=_F.cards[i3];
+        if(_c && _c.id==="discover"){
+          _c.utilisationOpen={
+            asOf:"2026-09-21",
+            status:"UNRESOLVED. Both figures are carried and neither is asserted.",
+            candidates:[
+              { limit:3600.00, util:"63 to 66 percent", basis:"The credit line. Confirmed by Ian." },
+              { limit:3364.60, util:"about 68 percent", basis:"Balance $2,273.60 plus available $1,091, BOTH FROM DISCOVER'S OWN APP on 20.09. This is the only documented reduced spendable line and it is NOT $2,815." },
+              { limit:2815, util:"84 percent", basis:"IMPLIED by Rocket Money's own 84 percent on its own $2,365 balance. Rocket Money does not publish the limit it divides by, in its interface or its page data, so this is inference and not a reading." }
+            ],
+            ianMechanism:"Ian: 'Discover doesn't let you spend the full amount'. A reduced spendable line is real and is documented at $3,364.60. It does not get to $2,815.",
+            threshold:"ABOVE 30 PERCENT ON EVERY CANDIDATE. The threshold point is unchanged and is not softened.",
+            toResolve:"The spendable limit as Discover itself states it. One screenshot of the Discover app settles it."
+          };
+          _n436++;
+        }
+      }
+    }
+    if(Array.isArray(_F.cancelled)){
+      for(var i4=0;i4<_F.cancelled.length;i4++){
+        var _a=_F.cancelled[i4];
+        if(_a && _a.name==="Audible"){
+          _a.done=true; _a.cancelledOn="2026-09-21";
+          _a.why="CANCELLED BY IAN 21.09.2026. It had been billing $9.48 despite an earlier cancellation, which is why it resurfaced. STILL FLAGGED: it may bill once more before it clears, so do not treat it as saved until a clean month passes. It stays OUT of the live subscription total.";
+          _n436++;
+        }
+      }
+    }
+    if(!_F.spendNotes){
+      _F.spendNotes={
+        marcusTheatres:{ amount:308.42, charges:14, classification:"DISCRETIONARY ENTERTAINMENT, NOT RECURRING",
+          note:"Ticket buying, not the subscription. Ian: 'Maybe 1 of them is the subscription because I just recently bought it.' The Marcus Movie Club $9.99 is a SEPARATE line in subscriptions. IT STILL COUNTS TOWARD THE BURN and was already counted, so the burn does not move.", asOf:"2026-09-21" },
+        fetch:{ name:"Fetch", what:"Pet insurance", status:"about to cancel",
+          note:"The $48.88 charge against a $70 refund is NOT AN ERROR. Ian: 'They refund when I get money back from things.'", asOf:"2026-09-21" }
+      };
+      _n436++;
+    }
+    if(_F.sourceReliability && _F.sourceReliability.rocketMoney){
+      var _rm=_F.sourceReliability.rocketMoney;
+      _rm.confirmedWrong=[
+        "Grocery categorisation.",
+        "Bike loan balance: $2,625 manually entered on 4 April 2026 and never updated. Its own history has ONE row and it says 'No change in balance over the last 6 months'. Confirmed 21.09.2026.",
+        "MISSES the Marcus Movie Club $9.99 entirely. Its Discover recurring list shows only APC, Claude and Supra. Confirmed 21.09.2026.",
+        "TAX SWEEPS COUNT AS SPEND. Ian, 21.09.2026: 'sometimes I deposit taxes and that counts as spend and other things.' A RECURRING DISTORTION, not a one-off, and it inflates every spend total it touches."
+      ];
+      _rm.notWrongAfterAll=[
+        "The Discover 84 percent was called an error in build 435 and that was PREMATURE. Ian raised a real mechanism, a reduced spendable limit. Rocket Money's divisor is still unverifiable and still does not match Discover's own available figure, but it is NOT established as wrong. See finance.cards discover.utilisationOpen."
+      ];
+      _rm.rule="PREFER THE BANK'S OWN APP OR IAN OVER ROCKET MONEY ON ANY BALANCE, PERCENTAGE OR PAYOFF FIGURE. It is useful for spotting subscriptions and categories, and it misses at least one of those too. Treat its spend totals as inflated by tax sweeps and transfers.";
+      _n436++;
+    }
+  }
+  state.meta.mig436_corrections=true; save(true);
+  try{ console.log("mig436 applied, "+_n436+" leaf changes"); }catch(_){}
+} }catch(e){ try{ console.warn("mig436 did not apply:",e&&e.message); }catch(_){} }
 
 
 /* build 225: focus timer removed, nothing to clear here anymore. */
