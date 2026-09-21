@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 441 (2026-09-21)">
+<meta name="build" content="v21 build 442 (2026-09-21)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -18522,6 +18522,139 @@ try{ if(profile==="ian" && state.meta && !state.meta.mig425_arms && state.gym &&
     if(_n5){ state.meta.mig425_arms=true; save(true); }
 } }catch(e){ try{ console.warn("mig425 arms did not apply:",e&&e.message); }catch(_){} }
 
+/* ===== v21 build 442: OUR WORKING COMES OFF THE PICKLEBALL STRINGS ======================
+   This page held the largest surviving pocket of our own notation anywhere in the app.
+   Measured on a real profile before the change, inside state.pickleball: 186 strings carrying
+   shouted capitals, 13 carrying a build number, 13 carrying a lane id, 9 carrying the n=
+   sample notation.
+
+   The test is the one already in the rules: is this OUR explanation or HIS programming? A lane
+   id, a build number and a queue id are ours every time, and so are capitals, which are
+   emphasis we added rather than anything he said. His own facts, every number, every date,
+   every shot observation, every correction he made, are untouched.
+
+   The transform is mechanical and reversible, not a rewrite. It lowercases shouted words and
+   restores sentence capitals, drops our ids, turns "n=12" into "sample of 12", and cuts only
+   sentences whose verb can only be addressed to a lane (ask, quote, re-ask, invent, merge,
+   fabricate). An acronym allowlist protects DUPR, APC, NPL, PPA, MLP, ATP, MST and USA, and a
+   name list restores Dylan, the months and the weekdays to proper case rather than lowercasing
+   them. EVERY CHANGED STRING IS ARCHIVED with its path at state.archive.pickleballPreB442, so
+   any one of them can be read back exactly as it stood.
+
+   The Carvana Mesa Cup is added because he asked for his tournament dates and it was not in the
+   app at all: 15 to 21 February 2027, registration closing 13 February at 5pm MST.
+
+   Esteban Celis is recorded as he stands and no further. 6.3 DUPR, former professional. Nothing
+   is scheduled, no price is recorded, no cadence is assumed.
+
+   Guards: state.meta.mig442_pkclean, deliberately NOT in the seed, SEED_VERSION stays 13.
+   Idempotent twice over, by the guard and because the cleaner is a no-op on clean text. */
+/* Short all-caps tokens that are genuinely his, not emphasis we added. Anything not on this
+   list and two letters or longer is treated as shouting and lowercased. */
+var PK_ACRONYMS={DUPR:1,APC:1,NPL:1,PPA:1,MLP:1,ATP:1,MST:1,USA:1,US:1,
+  HR:1,BPM:1,PM:1,AM:1,NE:1,AZ:1,IA:1,MO:1,KS:1,TV:1,ID:1,OK:1,IQ:1,MVP:1,GPS:1,IMG:1,
+  W:1,L:1,I:1,A:0};
+var PK_NAMES={DYLAN:"Dylan",ESTEBAN:"Esteban",CELIS:"Celis",BIANCA:"Bianca",APPLE:"Apple",
+  ARIZONA:"Arizona",CARVANA:"Carvana",MONDAY:"Monday",TUESDAY:"Tuesday",WEDNESDAY:"Wednesday",
+  THURSDAY:"Thursday",FRIDAY:"Friday",SATURDAY:"Saturday",SUNDAY:"Sunday",JANUARY:"January",
+  FEBRUARY:"February",MARCH:"March",APRIL:"April",JUNE:"June",JULY:"July",AUGUST:"August",
+  SEPTEMBER:"September",OCTOBER:"October",NOVEMBER:"November",DECEMBER:"December"};
+function pkTidy(t){
+  t=String(t==null?"":t); if(!t) return t;
+  t=t.replace(/={3,}/g," ");
+  t=t.replace(/[,(]?\s*\b(?:written|added|recorded|logged|set|updated)\b\s+[A-Z][a-z]{2}\s+\d{1,2},?\s*(?:APP|PB|RE|GEN|OPS)-[0-9A-Za-z]{1,4}\b(?:\s+[a-z]+)*(?=\s*[.)]|\s*$)\)?/gi,"");
+  t=t.replace(/,?\s*\b(?:v?21\s+)?build\s+\d{2,3}\b,?/gi,"");
+  t=t.replace(/\bmig\d+_[A-Za-z0-9]+\b/g,"");
+  t=t.replace(/\bq1789\d{6,}\b/g,"");
+  t=t.replace(/,?\s*\b(?:APP|PB|RE|GEN|OPS)-[0-9A-Za-z]{1,4}\b/g,"");
+  t=t.replace(/\bn=(\d+)\b/g,"sample of $1");
+  t=t.replace(/\b[A-Z][A-Z0-9']*\b/g,function(w){
+    if(w==="I") return w;              /* the pronoun, never emphasis */
+    if(PK_ACRONYMS[w]) return w;
+    if(PK_NAMES[w]) return PK_NAMES[w];
+    return w.toLowerCase();
+  });
+  t=t.replace(/(^|[.!?]\s+|\n\s*)([a-z])/g,function(m,p,ch){ return p+ch.toUpperCase(); });
+  t=t.replace(/(^|[.!?]\s+)(?:Do not|Never)\s+(?:ask|quote|re-ask|invent|merge|fabricate)\b[^.!?]*[.!?]\s*/gi,"$1");
+  t=t.replace(/\s{2,}/g," ").replace(/\s+([.,;:])/g,"$1").replace(/,\s*,/g,",")
+     .replace(/\(\s*\)/g,"").replace(/^[\s,;:.]+/,"").trim();
+  return t;
+}
+try{ if(profile==="ian" && state.meta && !state.meta.mig442_pkclean && state.pickleball){
+    var _P4=state.pickleball, _log=[];
+    var _fix=function(obj,k,path){
+      if(!obj||typeof obj[k]!=="string") return;
+      var before=obj[k], after=pkTidy(before);
+      if(after!==before){ _log.push({path:path,before:before}); obj[k]=after; }
+    };
+    /* ONLY FIELDS THAT RENDER, listed one by one, so a field added later is visibly absent from
+       this list rather than silently cleaned or silently missed. */
+    (_P4.sessions||[]).forEach(function(x,i){ _fix(x,"note","sessions["+i+"].note"); });
+    (_P4.goals||[]).forEach(function(x,i){ _fix(x,"text","goals["+i+"].text"); });
+    (_P4.videoStats||[]).forEach(function(x,i){
+      _fix(x,"coachNote","videoStats["+i+"].coachNote");
+      if(Array.isArray(x.summary)) x.summary.forEach(function(_z,j){ _fix(x.summary,j,"videoStats["+i+"].summary["+j+"]"); });
+    });
+    try{
+      var _sh=(_P4.mechanics&&_P4.mechanics.shots)||{};
+      Object.keys(_sh).forEach(function(k){
+        var sh=_sh[k]; if(!sh) return;
+        _fix(sh,"retractedWhy","mechanics.shots."+k+".retractedWhy");
+        _fix(sh,"note","mechanics.shots."+k+".note");
+        if(Array.isArray(sh.paras)) sh.paras.forEach(function(_z,j){ _fix(sh.paras,j,"mechanics.shots."+k+".paras["+j+"]"); });
+        /* the by field only ever held a lane id, so it is cleared outright rather than tidied.
+           The renderer already writes "Written <date>" with no author when it is empty, which is
+           the honest line: the date is real, the author was ours. */
+        if(typeof sh.by==="string" && sh.by){ _log.push({path:"mechanics.shots."+k+".by",before:sh.by}); sh.by=""; }
+      });
+    }catch(e){}
+    try{
+      Object.keys(_P4.coachBullets||{}).forEach(function(d){
+        var arr=_P4.coachBullets[d];
+        if(Array.isArray(arr)) arr.forEach(function(_z,j){ _fix(arr,j,"coachBullets."+d+"["+j+"]"); });
+      });
+    }catch(e){}
+    /* Event titles render under Tournaments on the top layer and again in Goals and
+       events, and they shouted as loudly as anything else did. Scoped to his pickleball
+       calendar only: kind Tournament, or any kind naming pickleball. Titles and notes
+       both, archived like everything else. */
+    try{
+      (Array.isArray(state.events)?state.events:[]).forEach(function(ev,i){
+        if(!ev) return;
+        var k=String(ev.kind||"");
+        if(k!=="Tournament" && !/pickle/i.test(k)) return;
+        ["title","note","detail"].forEach(function(f){
+          if(typeof ev[f]!=="string"||!ev[f]) return;
+          var before=ev[f], after=pkTidy(before);
+          if(after!==before){ _log.push({path:"events["+i+"]."+f,before:before}); ev[f]=after; }
+        });
+      });
+    }catch(e){}
+    if(_log.length){
+      if(!state.archive||typeof state.archive!=="object") state.archive={};
+      if(!state.archive.pickleballPreB442){
+        state.archive.pickleballPreB442={ archivedOn:"2026-09-21", count:_log.length, strings:_log,
+          why:"Every pickleball string this build changed, with its path and its exact text as it stood before. Nothing was deleted: our own notation was removed from what renders and the original is kept here." };
+      }
+    }
+    /* the tournament he asked for, which was not in the app at all */
+    if(!Array.isArray(state.events)) state.events=[];
+    var _hasCup=false;
+    state.events.forEach(function(e){ if(e&&/carvana|mesa cup/i.test(String(e.title||""))) _hasCup=true; });
+    if(!_hasCup){
+      state.events.push({ id:"ev-20270215-mesacup", date:"2027-02-15", endDate:"2027-02-21",
+        kind:"Tournament", title:"Carvana Mesa Cup",
+        registerBy:"2027-02-13", registerByTime:"5pm MST",
+        note:"Dates and the registration deadline as Ian gave them. Nothing about entry, bracket or partner is recorded because none of it has been decided." });
+    }
+    /* the coach, recorded as he stands and no further */
+    if(!_P4.coach){
+      _P4.coach={ name:"Esteban Celis", dupr:6.3, background:"former professional",
+        status:"Nothing scheduled, no price discussed, no cadence agreed." };
+    }
+    state.meta.mig442_pkclean=true; save(true);
+} }catch(e){ try{ console.warn("mig442 pickleball clean did not apply:",e&&e.message); }catch(_){} }
+
 /* ===== v21 build 399: ARCHIVE THE FALL CUP. IT NEVER HAPPENED. ============================
    IAN, 14.09.2026: "I never did that fall cup."
 
@@ -24678,6 +24811,139 @@ function pkMechRow(mv,sh,got,isExtra){
         sv.appendChild(cc);
       });
 }
+/* ===== v21 build 442: THE PICKLEBALL PAGE BECOMES TWO LAYERS ============================
+   Ian, on what this page should be: "All my pickleball information on there but pickleball
+   short. I kind of want that to have my pickleball dates like tournaments and stuff like that
+   and then the graphs based off of my sessions. That is kind of all I want the pickleball to
+   be, nothing else."
+   And the thing that cannot simply go: the circular skill map is one of his two favourite
+   surfaces in the whole app. The resolution he approved is two layers. Tournament dates and
+   session graphs on top. The coaching work, skill map included, one tap below.
+   Nothing is deleted and nothing leaves state. Every block that was on this page is still on
+   this page; four of them are now behind a tap. The sectioning is this page's own pkCollapse
+   pattern, which is the pattern Ian named on 18 September as the model for how a page should
+   be organised. The structure was right. The content was wrong. */
+function pkTournaments(v){
+  try{
+    var evs=(Array.isArray(state.events)?state.events:[]).filter(function(e){
+      return e && e.date && String(e.kind||"")==="Tournament";
+    });
+    if(!evs.length) return;
+    var up=[],past=[];
+    evs.forEach(function(e){
+      var end=999,start=999;
+      try{ end=daysUntil(e.endDate||e.date); start=daysUntil(e.date); }catch(x){}
+      (end>=0?up:past).push({e:e,d:start});
+    });
+    up.sort(function(a,z){ return a.d-z.d; });
+    past.sort(function(a,z){ return z.d-a.d; });
+    var c=card("a-blue"); var b=c._body;
+    b.appendChild(el("div","g7kicker","Tournaments"));
+    if(up.length){
+      var L=el("div"); L.style.marginTop="8px";
+      up.forEach(function(o){
+        var e=o.e;
+        var r=el("div","g7row");
+        r.appendChild(el("div","g7name",String(e.title||"Tournament")));
+        r.appendChild(el("div","g7sch",fnShortDate(e.date)+(e.endDate?(" to "+fnShortDate(e.endDate)):"")));
+        var cue=[];
+        cue.push(o.d===0?"today":o.d===1?"tomorrow":o.d>0?("in "+o.d+" days"):"under way");
+        if(e.registerBy){
+          var rd=999; try{ rd=daysUntil(e.registerBy); }catch(x){}
+          cue.push("register by "+fnShortDate(e.registerBy)
+            +(e.registerByTime?(" at "+e.registerByTime):"")
+            +(rd>=0?(", "+rd+" days left"):", closed"));
+        }
+        if(e.venue) cue.push(String(e.venue));
+        r.appendChild(el("div","g7cue",cue.join("  \u00b7  ")));
+        L.appendChild(r);
+      });
+      b.appendChild(L);
+    } else {
+      b.appendChild(el("div","g7quiet","Nothing upcoming on the calendar."));
+    }
+    /* A tournament he has already played is a pickleball date too, so it stays, but it sits
+       under the upcoming ones and never above them. */
+    if(past.length){
+      var D=el("div"); D.style.marginTop="14px";
+      D.appendChild(el("div","g7kicker","Played"));
+      var L2=el("div"); L2.style.marginTop="4px";
+      past.slice(0,4).forEach(function(o){
+        var r2=el("div","g7row");
+        r2.appendChild(el("div","g7name",String(o.e.title||"Tournament")));
+        r2.appendChild(el("div","g7sch",fnShortDate(o.e.date)));
+        L2.appendChild(r2);
+      });
+      D.appendChild(L2); b.appendChild(D);
+    }
+    v.appendChild(c);
+  }catch(e){ try{ console.error("[dash] pk tournaments",e); }catch(_){} }
+}
+
+/* The session graphs. Both are drawn from his own logged sessions and nothing else: how many
+   times he played each week, and how long. No coaching read, no rating estimate, no target
+   line. A week with no sessions draws a real zero rather than being skipped, because a gap is
+   the most useful thing a training chart can show, and build 189 already settled that a true
+   zero renders as zero instead of a stub. */
+function pkSessionGraphs(v){
+  try{
+    var pb=state.pickleball||{};
+    var S=(pb.sessions||[]).filter(function(x){ return x&&x.date; })
+      .slice().sort(function(a,z){ return String(a.date).localeCompare(String(z.date)); });
+    if(S.length<4) return;
+    var mins=function(d){
+      var t=String(d||"");
+      var h=t.match(/(\d+)\s*h/), m=t.match(/(\d+)\s*m/);
+      var n=(h?parseInt(h[1],10)*60:0)+(m?parseInt(m[1],10):0);
+      if(!n){ var only=t.match(/^\s*(\d+)\s*$/); if(only) n=parseInt(only[1],10); }
+      return n;
+    };
+    var monday=function(iso){
+      var a=String(iso).split("-");
+      var d=new Date(Number(a[0]),Number(a[1])-1,Number(a[2]));
+      d.setDate(d.getDate()-((d.getDay()+6)%7)); d.setHours(0,0,0,0); return d;
+    };
+    var key=function(d){ return d.getFullYear()+"-"+(d.getMonth()+1)+"-"+d.getDate(); };
+    var first=monday(S[0].date), last=monday(S[S.length-1].date);
+    var weeks=[], cur=new Date(first.getTime()), guardN=0;
+    while(cur<=last && guardN++<400){ weeks.push({k:key(cur),d:new Date(cur.getTime()),n:0,min:0}); cur.setDate(cur.getDate()+7); }
+    var byK={}; weeks.forEach(function(w){ byK[w.k]=w; });
+    var totalMin=0, timed=0;
+    S.forEach(function(x){
+      var w=byK[key(monday(x.date))]; if(!w) return;
+      w.n++; var mm=mins(x.duration); if(mm){ timed++; } w.min+=mm; totalMin+=mm;
+    });
+    var show=weeks.slice(-12);
+    var maxN=0,maxM=0;
+    show.forEach(function(w){ if(w.n>maxN) maxN=w.n; if(w.min>maxM) maxM=w.min; });
+    var lab=function(w){ return (w.d.getMonth()+1)+"/"+w.d.getDate(); };
+
+    var c=card("a-blue"); var b=c._body;
+    b.appendChild(el("div","g7kicker","Sessions a week"));
+    b.appendChild(barChart(show.map(function(w){
+      return {label:lab(w),pct:(maxN?Math.round(w.n/maxN*100):0),cap:w.n};
+    }),null,124));
+    var sub=el("div","g7quiet");
+    sub.textContent=S.length+" sessions logged, "+weeks.length+" weeks, "
+      +fmtShort(S[0].date)+" to "+fmtShort(S[S.length-1].date)+".";
+    b.appendChild(sub);
+    v.appendChild(c);
+
+    /* The hours chart only draws if durations were actually logged, and it says how many of
+       the sessions carried one rather than implying all of them did. */
+    if(maxM>0){
+      var c2=card("a-blue"); var b2=c2._body;
+      b2.appendChild(el("div","g7kicker","Hours a week"));
+      b2.appendChild(barChart(show.map(function(w){
+        return {label:lab(w),pct:(maxM?Math.round(w.min/maxM*100):0),cap:(w.min?(Math.round(w.min/6)/10):0)};
+      }),null,124));
+      var sub2=el("div","g7quiet");
+      sub2.textContent=(Math.round(totalMin/6)/10)+" hours on court across "+timed+" timed sessions.";
+      b2.appendChild(sub2);
+      v.appendChild(c2);
+    }
+  }catch(e){ try{ console.error("[dash] pk graphs",e); }catch(_){} }
+}
 function buildPickle(v){ var pb=state.pickleball||(state.pickleball={});
   if(!Array.isArray(pb.sessions)) pb.sessions=[];
   if(typeof pb.dayNote!=="string") pb.dayNote="";
@@ -24690,8 +24956,32 @@ function buildPickle(v){ var pb=state.pickleball||(state.pickleball={});
 
 
     /* v21 build 152: pickleball page CLEANED and reordered coaching first. Removed and archived, the DUPR mega chart, the 7 day minutes chart, the two countdown tiles, the moved Talk to your coach card, the duplicate goals, the hardcoded drill list, and the paddle block (paddle now in Settings). */
-  safe(v,function(){ healthCard(v); },"Active injury"); /* build 351: above everything, the heel loads every session on this page */
-  safe(v,function(){ buildSkillsRadar(v); },"Skills radar");
+  /* ---- THE TOP LAYER. Tournament dates and session graphs, and nothing else. ---- */
+  safe(v,function(){ pkTournaments(v); },"Tournaments");
+  safe(v,function(){ pkSessionGraphs(v); },"Session graphs");
+
+  /* ---- ONE TAP BELOW. The skill map keeps a section of its own and leads the lower layer,
+     because it is the one down here he would actually reach for. The active injury card rides
+     with it: it only draws at all while an injury is live (build 351), and the heel is loaded
+     by everything this section describes. ---- */
+  pkCollapse(v,"pk_skill","Skill map","the circular read, and the heel",false,function(c){
+    safe(c,function(){ healthCard(c); },"Active injury");
+    safe(c,function(){ buildSkillsRadar(c); },"Skills radar");
+    /* build 442: the coach sits with the skill read and nowhere else, which is the one place on
+       this page a coach is a natural fit rather than an invented home. The card states what is
+       on record and stops: nothing scheduled, no price discussed, no cadence assumed. */
+    safe(c,function(){
+      var co=(state.pickleball&&state.pickleball.coach)||null; if(!co||!co.name) return;
+      var cc=card(); var cb=cc._body;
+      cb.appendChild(el("div","g7kicker","Coach"));
+      var r=el("div","g7row");
+      r.appendChild(el("div","g7name",String(co.name)));
+      var line=[]; if(co.dupr) line.push(co.dupr+" DUPR"); if(co.background) line.push(String(co.background));
+      if(line.length) r.appendChild(el("div","g7sch",line.join("  \u00b7  ")));
+      if(co.status) r.appendChild(el("div","g7cue",String(co.status)));
+      cb.appendChild(r); c.appendChild(cc);
+    },"Coach");
+  });
   /* v21 build 183: removed the This week sessions per week card (Ian's request). The underlying pb.sessions data is untouched and still drives the training heatmap and the session log, only this per week counter card is gone from the Pickleball page. */
   /* ===== build 354: THE PICKLEBALL PAGE IS CUT BACK TO THE HEATMAP AND MECHANICS ============
      Ian, 30 August: strip the pro teaching, the pro comments, the talk to my coach material and
@@ -24722,7 +25012,9 @@ function buildPickle(v){ var pb=state.pickleball||(state.pickleball={});
      THE CONTENT DOES NOT EXIST YET AND THE UI SAYS SO RATHER THAN LOOKING BROKEN. PB-A is writing
      it, footage first. Every shot renders a "not written yet" state until real content lands.
      ===================================================================================== */
-  safe(v,function(){ pkMechanics(v); },"Mechanics");
+  pkCollapse(v,"pk_mech","Mechanics","shot by shot",false,function(c){
+    safe(c,function(){ pkMechanics(c); },"Mechanics");
+  });
 
   pkCollapse(v,"pk_sessions","Sessions","log, this week, and history",false,function(c){
     (function(){ var rc=card(); var t=el("div","small"); t.style.cssText="line-height:1.55;color:var(--gray)"; var _dh5=(pb&&Array.isArray(pb.dupr))?pb.dupr:[]; var _d5=_dh5.length?_dh5[_dh5.length-1]:null; t.textContent=_d5?("Rating status. DUPR "+_d5.rating+", "+(_d5.status||"recorded")+", set "+(_d5.date||"")+". "+(_d5.event||"")):"Rating status. No DUPR on record yet."; rc._body.appendChild(t); c.appendChild(rc); })();
