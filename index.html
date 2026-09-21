@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 437 (2026-09-21)">
+<meta name="build" content="v21 build 438 (2026-09-21)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -20049,6 +20049,50 @@ try{ if(!state.meta.mig437_vogel && state.realEstate && Array.isArray(state.real
 } }catch(e){ try{ console.warn("mig437 did not apply:",e&&e.message); }catch(_){} }
 
 
+/* ===== v21 build 438, RE-20, 21.09.2026. PROBABILITIES ONTO THE DEAL RECORDS ============
+   IAN: "The deals in progress on the Finance page should be in order from most likely to
+   least likely".
+
+   WHERE THE NUMBERS LIVE, AND THIS IS THE POINT OF THE BUILD. They were nowhere in the app:
+   they existed only in the projection sheet. They are now a field on the DEAL RECORD,
+   winProb, NOT in state.finance. fnProjection reads that field directly, so the Finance
+   page sort and the sheet read the SAME value and cannot drift apart. Putting a copy in
+   state.finance would have created exactly the second source of truth that caused three
+   split errors today.
+
+   WHOSE NUMBERS THESE ARE IS CARRIED WITH THEM in winProbSource, because the sheet makes
+   that distinction and the app should not lose it.
+     Willis   0.98  IAN
+     Belknaps 0.95  IAN
+     Mattox   0.77  LANE estimate
+     Vogel    0.77  LANE RECOMMENDATION, not yet his. See build 437 recommendedProbability.
+     RoseCreek0.55  IAN, midpoint of his 50 to 60
+     Barkers  0.55  LANE PLACEHOLDER. He said "slightly higher" and gave no figure.
+     Theobald 0.30  IAN
+
+   THE SORT IS PROBABILITY DESCENDING WITH NET AS TIEBREAK. Rose Creek and Barkers are both
+   55 and Mattox and Vogel are both 77, so without a tiebreak those pairs would order at
+   random. Anything with NO probability sorts LAST rather than being treated as zero or one.
+   The percentage is printed on each row so the order explains itself.
+   THE 2027 GROUP IS UNCHANGED and still sits below, outside the window. It does not compete.
+   STILL NO TOTAL ON THAT BLOCK.
+
+   Guarded once by state.meta.mig438_winprob, NOT in the seed, SEED_VERSION STAYS 13. */
+try{ if(!state.meta.mig438_winprob && state.realEstate && Array.isArray(state.realEstate.deals)){
+  var _P={ "re-cynthia-willis":[0.98,"IAN"], "re-belknap-sell":[0.95,"IAN"],
+           "re-mattox-sell":[0.77,"LANE estimate"], "re-vogel-sell":[0.77,"LANE RECOMMENDATION, not yet confirmed by Ian"],
+           "re-rose-creek":[0.55,"IAN, midpoint of his 50 to 60"],
+           "re-barkers":[0.55,"LANE PLACEHOLDER, he gave no figure"], "re-theobald-sell":[0.30,"IAN"] };
+  var _DD=state.realEstate.deals, _n8=0;
+  for(var i8=0;i8<_DD.length;i8++){
+    var _d8=_DD[i8]; if(!_d8||!_P[_d8.id]) continue;
+    _d8.winProb=_P[_d8.id][0]; _d8.winProbSource=_P[_d8.id][1]; _d8.winProbAsOf="2026-09-21"; _n8++;
+  }
+  state.meta.mig438_winprob=true; save(true);
+  try{ console.log("mig438 applied, "+_n8+" deals given winProb"); }catch(_){}
+} }catch(e){ try{ console.warn("mig438 did not apply:",e&&e.message); }catch(_){} }
+
+
 /* build 225: focus timer removed, nothing to clear here anymore. */
   /* build 372: LAST THING BEFORE THE SAVE. Every migration above has run, deepMergeDefaults
      has run, so this is the only point in the file where the state is actually final. */
@@ -25986,7 +26030,20 @@ function fnProjection(v,f){
       live.push({ d:d, net:Math.round(n*100)/100, far:is27(d), contracted:contracted });
     });
     if(!live.length) return;
-    live.sort(function(a,z){ return z.net-a.net; });
+    /* v21 build 438, 21.09.2026. IAN: "The deals in progress on the Finance page should be in
+       order from most likely to least likely". SORT BY PROBABILITY DESCENDING, not by size.
+       winProb lives on the DEAL RECORD, not in state.finance, so this sort and the projection
+       sheet read the same field and cannot drift apart. Net is the tiebreak, so two deals at
+       the same percentage still order sensibly. Anything with no probability sorts last
+       rather than being assumed to be zero or one. */
+    live.forEach(function(x){ var w=x.d&&x.d.winProb; x.p=(typeof w==="number")?w:null; });
+    live.sort(function(a,z){
+      if(a.p===null&&z.p===null) return z.net-a.net;
+      if(a.p===null) return 1;
+      if(z.p===null) return -1;
+      if(z.p!==a.p) return z.p-a.p;
+      return z.net-a.net;
+    });
     var near=live.filter(function(x){ return !x.far; });
     var far=live.filter(function(x){ return x.far; });
     var clears=near.filter(function(x){ return gapHi>0 && x.net>=gapHi; });
@@ -26003,6 +26060,9 @@ function fnProjection(v,f){
     }
     var mk=function(host,x){
       var bits=[];
+      /* build 438: the percentage leads, so the ORDER EXPLAINS ITSELF and he is not left to
+         infer why the rows are in this sequence. */
+      if(x.p!==null&&x.p!==undefined) bits.push(Math.round(x.p*100)+"%");
       bits.push(x.contracted?"Under contract":String(x.d.stage||""));
       if(!x.far && gapHi>0 && x.net>=gapHi) bits.push("clears it");
       else if(!x.far && gapHi>0 && x.net>0 && x.net>=gapLo) bits.push("nearly clears");
