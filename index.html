@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 432 (2026-09-21)">
+<meta name="build" content="v21 build 433 (2026-09-21)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -19589,6 +19589,52 @@ try{ if(!state.meta.mig432_0921am && state.pickleball){
     state.meta.mig432_0921am=true; save(true);
   } else { state.meta.mig432_0921am=true; }
 } }catch(e){ try{ console.warn("mig432 0921 am did not apply:",e&&e.message); }catch(_){} }
+
+
+/* ===== v21 build 433, RE-16, 21.09.2026. THE VOGEL SPLIT WAS WRONG =====================
+   IAN, 21.09.2026: "Vogel is my dad's client, I only get 20%".
+
+   WHAT WAS WRONG. re-vogel-sell carried source "Ian's own". sourceShare() returns 0.90 for
+   anything that is not "Chris's client" or "Dual agency", so the record was computing at a
+   NINETY PERCENT share. It has no price yet, so it currently returns $0 and nothing on his
+   screen was wrong. THE MOMENT A PRICE LANDS IT WOULD HAVE BEEN WRONG BY ABOUT 4.5x.
+
+   THE SIZE OF IT, at the CMA's $334,900 post-abatement recommendation:
+     gross      334,900 x 0.036          = 12,056.40
+     brokerage  334,900 x 0.036 x 0.15   =  1,808.46
+     post-brok                            = 10,247.94
+     at 0.90 (what it would have done)    =  9,223.15   WRONG
+     at 0.20 (correct)                    =  2,049.59
+   A $7,173.56 error sitting armed behind an empty price field.
+
+   TWO FIELDS SET, AND THE SECOND ONE IS DELIBERATE BELT AND BRACES.
+     1. source -> "Chris's client". This is the semantically true fact: it is Chris's client.
+        On its own this is sufficient, because sourceShare derives 0.20 from it.
+     2. ianSplit -> 0.20, PINNED. Normally a derived value should not be duplicated, and
+        pinning creates a second source of truth that can drift from source. It is pinned
+        ANYWAY because THREE SPLIT ERRORS HAVE OCCURRED ON THIS PIPELINE IN ONE DAY: Mattox
+        recorded as Ian's own and corrected to Chris's, Spicer needing an explicit 0 split,
+        and now Vogel. When a field has failed three times in a day, surviving a future
+        mis-edit is worth more than model purity. If Ian would rather it derive, unpin it.
+
+   NO PRICE IS SET. The field stays EMPTY. The $334,900 is a CMA recommendation, not an
+   agreed list price, and the listing meeting is tomorrow. Inventing a price to make the
+   record compute is exactly the failure this build is correcting.
+
+   NOTHING ELSE IS TOUCHED. No other deal, no stage, no side, no price anywhere.
+   Guarded once by state.meta.mig433_vogelsplit, NOT in the seed, SEED_VERSION STAYS 13. */
+try{ if(!state.meta.mig433_vogelsplit && state.realEstate && Array.isArray(state.realEstate.deals)){
+  var _D433=state.realEstate.deals, _hit433=null;
+  for(var _i433=0;_i433<_D433.length;_i433++){
+    if(_D433[_i433] && _D433[_i433].id==="re-vogel-sell") _hit433=_D433[_i433];
+  }
+  if(_hit433){
+    _hit433.source="Chris's client";
+    _hit433.ianSplit=0.20;
+    if(typeof console!=="undefined"&&console.log){ try{ console.log("mig433: vogel split corrected to Chris's client / 0.20, price left empty"); }catch(_){} }
+  }
+  state.meta.mig433_vogelsplit=true; save(true);
+} }catch(e){ try{ console.warn("mig433 vogel split did not apply:",e&&e.message); }catch(_){} }
 
 
 /* build 225: focus timer removed, nothing to clear here anymore. */
