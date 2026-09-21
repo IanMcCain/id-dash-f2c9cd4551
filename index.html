@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 431 (2026-09-20)">
+<meta name="build" content="v21 build 432 (2026-09-21)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -19534,6 +19534,61 @@ try{ if(profile==="ian" && state.meta && !state.meta.mig_notes0920 && state.real
   state.meta.mig_notes0920=true;
   if(_touched || _pArc.length) save(true);
 } }catch(e){ try{ console.warn("mig_notes0920 did not apply:",e&&e.message); }catch(_){} }
+
+
+/* ===== v21 build 432, PB-16, 21.09.2026. MONDAY MORNING PICKLEBALL SESSION ============
+   ONE RECORD, ONE DATE, ONE SESSION. Monday 21 September, 7:38 to 8:44 AM, Omaha, 1:06:49.
+
+   GUARDED BY ID (pk-20260921-openplay), NEVER BY DATE. 14 September proved a date guard
+   writes the first record of a day and then silently refuses the second. This is a single
+   session day and the id guard is used anyway, because the cost is nothing and the date
+   guard has already caused one bug on this file.
+
+   ABSENT IS NOT ZERO. All six watch values were measured and NOT ONE is written as 0:
+   active 495, total 599, avg HR 115, max 150, min 60. Build 376 was caught writing avgHr:0
+   for a value it had, and a 0 and a missing field both fail a falsy check while only one
+   of them is correct.
+
+   HIS EFFORT RATING IS 7, "Hard", AND IT IS HIS, NOT THE WATCH'S. He defined the scale
+   himself on 14.09.2026: HOW HARD HE TRIED AND HOW WELL HE PLAYED. It is not exertion.
+   NO HEART RATE AGAINST EFFORT COMPARISON APPEARS ANYWHERE IN THIS RECORD OR MAY BE ADDED
+   TO IT LATER. Four earlier observation blocks tracked that correlation and all four were
+   watching an axis that does not exist.
+
+   result, score and opponent stay EMPTY. He gave none and nothing is inferred from
+   duration or heart rate.
+
+   THE NOTE IS HIS ACCOUNT AND NOTHING ELSE. No coaching, no diagnosis, no grading. The
+   speed-up hand position he named connects to the kitchen line back-step he named on
+   15.09, and that connection is recorded as an OBSERVATION in BRAIN, deliberately NOT in
+   the app, because the app is not a coaching surface. RULES.md P4a: no session quality
+   grading, ever.
+
+   FIRST NITRATE DOSE IS RECORDED AS A FACT WITH NO OUTCOME ATTACHED. He took salt,
+   potassium nitrate, creatine and MiO, and this is the first time he has taken nitrate.
+   HE GAVE NO SUBJECTIVE READ ON WHETHER IT DID ANYTHING AND NONE IS INVENTED. Do not
+   later attribute any part of this session to it in either direction.
+
+   Guarded once by state.meta.mig432_0921am, which is NOT in the seed, so SEED_VERSION
+   STAYS 13. state.gym.split is NOT touched. The pickleball PAGE is not touched. This is
+   a data append only. */
+try{ if(!state.meta.mig432_0921am && state.pickleball){
+  if(!Array.isArray(state.pickleball.sessions)) state.pickleball.sessions=[];
+  var _S432=state.pickleball.sessions, _have432=false;
+  for(var _i432=0;_i432<_S432.length;_i432++){
+    if(_S432[_i432] && _S432[_i432].id==="pk-20260921-openplay") _have432=true;
+  }
+  if(!_have432){
+    _S432.push({
+      id:"pk-20260921-openplay", date:"2026-09-21", kind:"Pickleball", venue:"Omaha",
+      duration:"1h 06m 49s", window:"7:38 to 8:44 AM, Omaha",
+      calories:599, activeCalories:495, avgHr:115, maxHr:150, minHr:60, effort:7,
+      result:"", score:"", opponent:"", copyOwned:true,
+      note:"Monday 21 September, Omaha, 7:38 to 8:44 AM, 1:06:49. From Apple Watch: active 495, total 599, avg HR 115, max 150, min 60. EFFORT 7, Hard, IS YOUR RATING, not the watch's, and on your own 14.09 definition: how hard you tried and how well you played. You slept in and started late, planned 6:45 and began 7:38. You took the morning drink, salt, potassium nitrate, creatine and MiO, and this was your FIRST time taking nitrate. Ensure also mentioned. You felt cold for about half the games and put that down to not playing consistently because of the vacation. Your read: played decent, fairly consistent. GOOD: drops good, drives pretty good, serves all good. TO WORK ON, your words: work on mechanics more, sticking to your mechanics instead of going out and trying new crazy stuff, and you were not putting your hand up correctly for the speed-up at the kitchen line."
+    });
+    state.meta.mig432_0921am=true; save(true);
+  } else { state.meta.mig432_0921am=true; }
+} }catch(e){ try{ console.warn("mig432 0921 am did not apply:",e&&e.message); }catch(_){} }
 
 
 /* build 225: focus timer removed, nothing to clear here anymore. */
