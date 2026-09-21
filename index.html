@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 430 (2026-09-20)">
+<meta name="build" content="v21 build 431 (2026-09-20)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -25512,14 +25512,13 @@ function fnProjection(v,f){
       b.appendChild(D);
     }
     var notes=[];
-    notes.push("NONE OF THESE IS CONTRACTED except where a row says so, and they are never added together. There is no total here on purpose: a total would say this much is coming, and none of it is.");
+    notes.push("None of these is contracted except where a row says so, and they are never added together.");
     if(far.length) notes.push("The 2027 ones cannot touch a shortfall that lands by mid January, however large they are.");
     var sp=live.filter(function(x){ return x.contracted; });
     if(sp.length&&sp.every(function(x){ return x.net<=0; }))
       notes.push("The only one under contract, "+sp[0].d.title+", nets nothing. The ones that would pay are all uncertain.");
     if(noPrice) notes.push(noPrice+" more "+(noPrice===1?"deal has":"deals have")+" no price yet, so nothing is computed for "+(noPrice===1?"it":"them")+".");
-    notes.push("Every figure is read live from the deal records, not copied here, so a price change moves this block by itself.");
-    b.appendChild(el("div","fnsch",notes.join(" ")));
+    b.appendChild(el("div","fnnote",notes.join(" ")));
     v.appendChild(c);
   }catch(e){ try{ console.error("[dash] projection",e); }catch(_){} }
 }
@@ -25568,7 +25567,7 @@ function fnSavings(v,f){
     if(sv.deposits) notes.push("Deposits are "+sv.deposits+". There is no fixed rule, so nothing here projects when you get there.");
     if(sv.rewards) notes.push(String(sv.rewards));
     if(sv.separateFrom) notes.push("Separate from "+sv.separateFrom+".");
-    b.appendChild(el("div","fnsch",notes.join(" ")));
+    b.appendChild(el("div","fnnote",notes.join(" ")));
     v.appendChild(c);
   }catch(e){ try{ console.error("[dash] savings",e); }catch(_){} }
 }
@@ -25691,7 +25690,7 @@ function fnRunway(v,f){
        for him to work out. Card payments are real obligations with no stated amount, so they
        cannot be in here without inventing one. And one subscription he intends to cancel is
        still being charged. Both push the real number up, never down. */
-    notes.push("Card payments are not in this: they are debt service, he gave no amounts, and a variable payment inside a fixed total destroys it. The Discover balance is above. That pushes the real number UP.");
+    notes.push("Card payments are not in this, and he gave no amounts for them. The Discover balance is above. That pushes the real number up.");
     /* build 419b: IT MOVES IN BOTH DIRECTIONS NOW AND SAYING ONLY ONE WOULD BE A HALF TRUTH.
        The committed figure leaves out the card payments, which understates it, and it
        includes two subscriptions he intends to cancel, which overstates it. Both are named
@@ -25700,10 +25699,10 @@ function fnRunway(v,f){
       var _go=0,_goN=[];
       (f.subscriptions||[]).forEach(function(x){ if(x&&x.cancelling===true){ _go+=Number(x.amount)||0; _goN.push(x.name); } });
       if(_go>0) notes.push("It does include "+fnMoneyC(_go)+" a month of subscriptions he is cancelling, "+_goN.join(" and ")
-        +", which is "+fnMoneyC(_go*MONTHS)+" across these four months. That pushes it DOWN once they are done.");
+        +", which is "+fnMoneyC(_go*MONTHS)+" across these four months. That pushes it down once they are done.");
     }catch(e){}
-    notes.push("NO INCOME IS PROJECTED. Any commission that lands changes this, and none is assumed here.");
-    b.appendChild(el("div","fnsch",notes.join(" ")));
+    notes.push("No income is projected. Any commission that lands changes this.");
+    b.appendChild(el("div","fnnote",notes.join(" ")));
     v.appendChild(c);
   }catch(e){ try{ console.error("[dash] runway",e); }catch(_){} }
 }
@@ -26516,6 +26515,7 @@ body.finance-off .tabbar label[for=t-finance]{display:none}
 .fntop{display:flex;align-items:baseline;justify-content:space-between;gap:10px}
 .fnname{font-size:15px;font-weight:600;line-height:1.3;color:var(--white);overflow-wrap:anywhere;min-width:0}
 .fnamt{font-size:15px;font-weight:700;line-height:1.3;color:var(--white);font-variant-numeric:tabular-nums;white-space:nowrap}
+.fnnote{font-size:12.5px;line-height:1.45;color:var(--gray2);margin:10px 0 0;overflow-wrap:anywhere}
 .fnsch{font-size:12.5px;line-height:1.45;color:var(--gray2);margin:3px 0 0;overflow-wrap:anywhere}
 .fntrack{height:7px;border-radius:999px;background:var(--card2);margin:8px 0 0;overflow:hidden}
 .fntrack i{display:block;height:100%;border-radius:999px}
