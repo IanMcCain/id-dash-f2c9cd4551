@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 439 (2026-09-21)">
+<meta name="build" content="v21 build 440 (2026-09-21)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -20232,6 +20232,80 @@ try{ if(!state.meta.mig439_final){
   try{ console.log("mig439 applied, "+_n9+" leaf changes"); }catch(_){}
 } }catch(e){ try{ console.warn("mig439 did not apply:",e&&e.message); }catch(_){} }
 
+/* ===== v21 build 440, 21.09.2026. THE TAX SET ASIDE LANDS IN STATE ========================
+   IAN: "Okay and after 30% goes to taxes?"
+
+   THIS MIGRATION WRITES ONE FIELD. state.finance.taxSetAside=0.30. Everything else about this
+   build is render code and derived functions, which need no migration because they compute from
+   what is already there. The field exists so the rate is EDITABLE without a deploy: taxSetAsideRate()
+   prefers it and falls back to RE_RATES.taxSetAside, so if his accountant moves him off 30% the
+   change is one number in his own data.
+
+   IT DOES NOT TOUCH A SINGLE COMMISSION FIGURE, and that is deliberate. dealIanNet stays exactly
+   what it was on build 439 and every actualNet stays exactly as typed. Post tax is derived at
+   render time. If this migration were ever run twice, or reverted, no money figure would move.
+
+   Guarded by state.meta.mig440_tax, NOT in the seed, SEED_VERSION STAYS 13. */
+try{ if(!state.meta.mig440_tax){
+  var _n40=0;
+  state.finance=state.finance||{};
+  if(typeof state.finance.taxSetAside!=="number"){ state.finance.taxSetAside=0.30; _n40++; }
+  /* The provenance of the rate, kept with the rate, because a bare 0.30 in a data file invites a
+     future lane to "correct" it to a bracket it read somewhere. This is his own sweep rule. */
+  if(!state.finance.taxSetAsideWhy){
+    state.finance.taxSetAsideWhy="Ian, 21.09.2026. He sets aside 30% of every commission for tax, normally the moment he is paid. This is his own practice, not a computed bracket. The FNBO operating balance the runway reads is already past this sweep, and the monthly burn is real spending, so both are after tax dollars. Commission figures in this app are PRE tax and anything compared against the runway must be multiplied by taxKeepRate() first.";
+    _n40++;
+  }
+  /* ===== GILLIAM. THE DEPOSIT IS FOUND AND IT IS PINNED AS A DEPOSIT, NOT AS A CONCLUSION =====
+     IAN, 21.09.2026: "April 23rd Nebraska Real Estate $10,513.46 (this is before taxes and
+     before my dad took 10% I believe, so this might be 100% of the Gilliam transaction)."
+     The deal closed 22 April 2026. The deposit is dated 23 April 2026. One day apart.
+
+     THE ARITHMETIC, because he asked for it and it is the whole reason this is not ambiguous:
+       Sale price $378,000, seller side, 3.6%, broker 15%.
+       Gross commission            $13,608.00
+       Broker cut, 15%             $ 2,041.20
+       After broker                $11,566.80   <- this is 100% of the side
+       At his pinned 0.90 share    $10,410.12   <- what the model produced
+       THE ACTUAL DEPOSIT          $10,513.46
+
+     THE DEPOSIT IS 90.893% OF THE AFTER BROKER POOL. It is 0.99% ABOVE the modelled 90% share
+     and 9.11% BELOW the full 100%. If his father's 10% were still to come out, the deposit
+     would have been $11,566.80 and it was not, by more than a thousand dollars. So the weight
+     of the evidence says THE 10% WAS ALREADY TAKEN and $10,513.46 is his money.
+
+     WHAT IS STILL GENUINELY OPEN, and it is not resolved here. The deposit does not match the
+     model exactly either. It is $103.34 OVER. A search across every standard commission rate,
+     broker cut, split and flat transaction fee found NO clean combination that produces
+     $10,513.46 on a $378,000 sale, so the $103.34 is unexplained by this model. It could be a
+     rate a hair above 3.6% (3.6357% would do it exactly), a title company adjustment, or a
+     figure at closing this app does not carry.
+
+     WHY actualNet IS THE RIGHT FIELD ANYWAY. actualNet means "the money that actually arrived",
+     and $10,513.46 is a bank fact whichever interpretation is correct. dealIanNet now returns
+     it instead of computing, which is exactly what the override is for. If the second reading
+     turns out to be right, the correction is a single edit to this one number.
+
+     THE ALTERNATIVE IS CARRIED ON THE RECORD, NOT DISCARDED. If his father did take 10% after
+     the deposit, his true keep is $9,462.11 and the closed take-home total is overstated by
+     $1,051.35. THE ONE THING THAT WOULD SETTLE IT is an outbound of about $1,051.35 to Chris
+     between 23 April and the end of May. That search could NOT be run: the Rocket Money session
+     has expired and this lane will not enter credentials. It is recorded as unresolved rather
+     than guessed. */
+  if(Array.isArray(state.realEstate&&state.realEstate.deals)){
+    var _D40=state.realEstate.deals, _g40=null;
+    for(var _i40=0;_i40<_D40.length;_i40++){ if(_D40[_i40]&&_D40[_i40].id==="re-ashley-gilliam") _g40=_D40[_i40]; }
+    if(_g40 && typeof _g40.actualNet!=="number"){
+      _g40.actualNet=10513.46; _n40++;
+      _g40.actualNetSource="Bank deposit 23.04.2026, payer \"Nebraska Real Estate\", $10,513.46. Reported by Ian 21.09.2026. NOT independently confirmed in Rocket Money: the session had expired and this lane does not enter credentials.";
+      _g40.actualNetOpen="UNRESOLVED, AND DELIBERATELY SO. Ian: \"this is before taxes and before my dad took 10% I believe, so this might be 100% of the Gilliam transaction.\" The arithmetic argues against that reading: $10,513.46 is 90.893% of the $11,566.80 after-broker pool, only 0.99% above the modelled 90% share and 9.11% below 100%, so the 10% appears to have been taken already. It is 0.99% ABOVE the model and no standard rate, broker cut, split or flat fee reproduces $10,513.46 exactly on $378,000, so $103.34 of it is unexplained. IF the 10% is still to come out, his true keep is $9,462.11 and the closed take-home total is overstated by $1,051.35. DO NOT resolve this by assumption. The test is an outbound of about $1,051.35 to Chris between 23.04.2026 and 31.05.2026.";
+      _n40++;
+    }
+  }
+  state.meta.mig440_tax=true; save(true);
+  try{ console.log("mig440 applied, "+_n40+" leaf changes"); }catch(_){}
+} }catch(e){ try{ console.warn("mig440 did not apply:",e&&e.message); }catch(_){} }
+
 
 /* build 225: focus timer removed, nothing to clear here anymore. */
   /* build 372: LAST THING BEFORE THE SAVE. Every migration above has run, deepMergeDefaults
@@ -20828,7 +20902,32 @@ function dealSide(d){ var s=(d&&d.side)||""; if(s==="Buyer"||s==="Seller"||s==="
    percentage and the dual basis, so changing a rate is one number rather than a hunt through
    literals. THIS IS A MODEL CHANGE, NOT A DATA CHANGE: no stored value is rewritten and there is
    no migration. Every figure is recomputed from the same stored deals. SEED_VERSION stays 13. */
-var RE_RATES={ sellerStd:0.036, buyerStd:0.024, brokerage:0.15, dualBrokerageBasis:0.06, dualDefault:0.06 };
+var RE_RATES={ sellerStd:0.036, buyerStd:0.024, brokerage:0.15, dualBrokerageBasis:0.06, dualDefault:0.06, taxSetAside:0.30 };
+/* ===== v21 build 440, 21.09.2026. THE TAX SET ASIDE. IAN: "Okay and after 30% goes to taxes?" ====
+   HE CAUGHT A REAL ERROR AND IT RAN THROUGH THE WHOLE APP. Every commission figure this file
+   produces is PRE TAX. He is self employed, there is no withholding, and he sweeps 30% aside the
+   moment he is paid. Meanwhile the operating balance the runway reads, $4,287.55 off FNBO, is
+   POST sweep, and the monthly burn is real spending. So the projection block was putting a pre tax
+   commission next to a post tax obligation and asking whether it cleared it. It overstated every
+   deal by 1/0.7, which is 43%.
+
+   THE RATE IS DATA, IN ONE PLACE, EXACTLY LIKE THE COMMISSION RATES ABOVE. RE_RATES.taxSetAside is
+   the default and state.finance.taxSetAside overrides it, so if his accountant moves him to 25% or
+   35% it is ONE number and every surface in the app follows. Nothing anywhere multiplies by a
+   literal 0.70. If you are about to type 0.7, call taxKeepRate() instead.
+
+   WHAT IS NOT CONVERTED, AND WHY, because a blanket conversion would be its own error:
+     PRODUCTION and VOLUME are the price of property sold. They are not income and tax is not a
+     concept that applies to them. Untouched.
+     GROSS COMMISSION and BROKERAGE are what the transaction generated and what the broker took.
+     They are pre tax by definition and stating them post tax would be meaningless. Untouched.
+     dealIanNet STAYS PRE TAX. It is the contractual figure, it is what a settlement statement
+     shows, and it is what actualNet is typed against. Post tax is DERIVED from it, never stored,
+     so there is no second number to keep in sync and no way for the two to drift. */
+function taxSetAsideRate(){ var _f=(typeof state!=="undefined"&&state&&state.finance)||null; var _r=_f&&_f.taxSetAside; return (typeof _r==="number"&&_r>=0&&_r<1)?_r:RE_RATES.taxSetAside; }
+function taxKeepRate(){ return 1-taxSetAsideRate(); }
+function taxPctWord(){ return Math.round(taxSetAsideRate()*100)+"%"; }
+function postTax(n){ return (Number(n)||0)*taxKeepRate(); }
 function sellerRate(d){ return (d&&typeof d.sellerRate==="number")?d.sellerRate:RE_RATES.sellerStd; }
 function sourceShare(source,d){ if(d&&typeof d.ianSplit==="number") return d.ianSplit; /* v21 build 434, 21.09.2026: IAN'S OWN IS 0.80, NOT 0.90. His words: "Stick with that for now." The 0.90 was a code default nobody had ever confirmed and it had leaked to four records. */ return source==="Chris's client"?0.20 : source==="Dual agency"?0.50 : 0.80; }
 /* v21 build 42: dual agency commission is 5% TOTAL on the sale price, charged ONCE for the property,
@@ -20857,6 +20956,8 @@ function dealBrokerage(d){ if(dealSource(d)==="Dual agency"){ var _fee=priceNum(
    a modelled $2,906.39 and the cause could not be identified from one closing. Setting an actual
    is how a known number survives any later change to the model. */
 function dealIanNet(d){ if(d&&typeof d.actualNet==="number") return d.actualNet; return (dealGrossCommission(d)-dealBrokerage(d)) * sourceShare(dealSource(d),d); }
+/* v21 build 440: what he actually KEEPS. Derived, never stored. See the RE_RATES block above. */
+function dealIanPostTax(d){ return postTax(dealIanNet(d)); }
 function dealNetIsActual(d){ return !!(d&&typeof d.actualNet==="number"); }
 /* ===== v21 build 275: EARNED IS NOT RECEIVED, AND THE APP HAD NO WAY TO SAY SO =================
    Ian, 08.11.2026: he has not been paid on Troester or Miller, he has several deals in that state,
@@ -21152,7 +21253,9 @@ function dealEditors(parent,d){
   const sideLab=el("div","small muted","Side Ian represents"); sideLab.style.marginTop="10px"; parent.appendChild(sideLab);
   parent.appendChild(chipRowKV([["Seller side","Seller"],["Buyer side","Buyer"],["Both sides","Both"]], dealSide(d), v=>{ d.side=v; save(); render(); }));
   if(dealSource(d)==="Dual agency"){ const rLab=el("div","small muted","Dual commission rate, aim 6%, as low as 5% to make a deal"); rLab.style.marginTop="10px"; parent.appendChild(rLab); parent.appendChild(chipRowKV([["5%",0.05],["6%",0.06]], dualRate(d), function(v){ d.dualRate=v; save(); render(); })); const rNote=el("div","small dim"); rNote.style.marginTop="4px"; rNote.textContent="Current rate "+(+(dualRate(d)*100).toFixed(2))+"%"+(dualRate(d)<0.05?" (locked one-time exception)":""); parent.appendChild(rNote); }
-  const inc=el("div","small dim"); inc.style.marginTop="9px"; inc.style.lineHeight="1.55"; /* v21 build 285: NO PRICE MEANS NO NUMBER. Ian, 08.13.2026. priceNum returns 0 for an empty price, so this line used to render a confident "Est. your take home $0" on every prospect with no price yet, which reads as a derived figure rather than a missing one. The deal ROW already guarded this with if(_tn>0); the editor did not. Say the price is missing, and name the split that WOULD apply so a wrong source is visible before a price is ever typed. */ if(priceNum(d&&d.price)<=0 && !dealNetIsActual(d)){ inc.innerHTML="No price on record, so no income estimate. It fills in at your <b>"+Math.round(sourceShare(dealSource(d),d)*100)+"%</b> split ("+dealSource(d)+")."; } else if(dealSource(d)==="Dual agency"){ inc.innerHTML="Est. your take home <b>"+fmtMoney(dealIanNet(d))+"</b>. Dual agency at "+(+(dualRate(d)*100).toFixed(2))+"% on the property, charged once. Broker takes 15% of a 6% basis, then your 50/50 with Chris. Counts twice for volume and deal count."; } else { inc.innerHTML="Est. your take home <b>"+fmtMoney(dealIanNet(d))+"</b>. Gross commission this side "+fmtMoney(dealGrossCommission(d))+", after the 15% broker cut and your "+Math.round(sourceShare(dealSource(d),d)*100)+"% split."; } parent.appendChild(inc);
+  const inc=el("div","small dim"); inc.style.marginTop="9px"; inc.style.lineHeight="1.55"; /* v21 build 285: NO PRICE MEANS NO NUMBER. Ian, 08.13.2026. priceNum returns 0 for an empty price, so this line used to render a confident "Est. your take home $0" on every prospect with no price yet, which reads as a derived figure rather than a missing one. The deal ROW already guarded this with if(_tn>0); the editor did not. Say the price is missing, and name the split that WOULD apply so a wrong source is visible before a price is ever typed. */ if(priceNum(d&&d.price)<=0 && !dealNetIsActual(d)){ inc.innerHTML="No price on record, so no income estimate. It fills in at your <b>"+Math.round(sourceShare(dealSource(d),d)*100)+"%</b> split ("+dealSource(d)+")."; } else if(dealSource(d)==="Dual agency"){ /* build 440: the editor is where the chain is spelled out, so the tax sweep joins the end of
+     the chain rather than being left off it. Gross, broker cut, split, THEN tax. */
+    inc.innerHTML="Est. your commission <b>"+fmtMoney(dealIanNet(d))+"</b>, of which you keep <b>"+fmtMoney(dealIanPostTax(d))+"</b> after setting aside "+taxPctWord()+" for tax. Dual agency at "+(+(dualRate(d)*100).toFixed(2))+"% on the property, charged once. Broker takes 15% of a 6% basis, then your 50/50 with Chris. Counts twice for volume and deal count."; } else { inc.innerHTML="Est. your commission <b>"+fmtMoney(dealIanNet(d))+"</b>, of which you keep <b>"+fmtMoney(dealIanPostTax(d))+"</b> after setting aside "+taxPctWord()+" for tax. Gross commission this side "+fmtMoney(dealGrossCommission(d))+", after the 15% broker cut and your "+Math.round(sourceShare(dealSource(d),d)*100)+"% split."; } parent.appendChild(inc);
   
 }
 function dealRow(parent,d){
@@ -21162,7 +21265,15 @@ function dealRow(parent,d){
      Everything that used to be crammed into it, the address, the side, the qualifier, now renders
      on d.sub, which is the SAME .dsub line the close date and the take home already use. This is a
      data placement change, not a new layout: the Barkers row was already correct and is the model. */
-  const left=el("div","dl"); left.appendChild(el("div","dn",d.title)); if(d.sub)left.appendChild(el("div","dsub",d.sub)); if(d.close)left.appendChild(el("div","dsub",d.close)); var _tn=dealIanNet(d); if(_tn>0){ var _th=el("div","dsub"); /* build 275: say UNPAID on the row itself. A closed deal showing a take home figure with no qualifier reads as money he has. */ _th.textContent="Est. take home "+fmtMoney(_tn)+(dealIsUnpaid(d)?"  UNPAID":(dealIsPaid(d)?"  received":"")); _th.style.color=dealIsUnpaid(d)?"var(--gray2,#8a8a99)":"var(--sec2,var(--accent2))"; _th.style.fontWeight="700"; left.appendChild(_th); } var _urg=(d.stage==="Closed"||d.stage==="Just Sold")?"":closeUrgency(d.close); if(_urg){ var _u=el("div","dsub"); _u.textContent=_urg; _u.style.color=(_urg==="overdue"||_urg==="due today")?"var(--danger,#ff6363)":"var(--gray2,#8a8a99)"; _u.style.fontWeight="700"; left.appendChild(_u); } /* build 295: an OPTIONAL risk line. Only a deal carrying d.risk renders one, so every other row is byte identical. It sits under the detail lines in the warning colour because the one deal that has it is Under Contract and already counted, and a paragraph inside a two thousand character note does not carry that. */ if(d.risk){ var _rk=el("div","dsub"); _rk.textContent="AT RISK. "+d.risk; _rk.style.cssText="color:var(--danger,#ff6363);font-weight:800;white-space:normal;line-height:1.45;margin-top:4px"; left.appendChild(_rk); } row.appendChild(left);
+  const left=el("div","dl"); left.appendChild(el("div","dn",d.title)); if(d.sub)left.appendChild(el("div","dsub",d.sub)); if(d.close)left.appendChild(el("div","dsub",d.close)); var _tn=dealIanNet(d); if(_tn>0){ var _th=el("div","dsub"); /* build 275: say UNPAID on the row itself. A closed deal showing a take home figure with no qualifier reads as money he has. */ /* build 440: the row said "take home" about a pre tax figure. It now names the commission and
+       the amount that survives the tax sweep, in that order, on the one line the row has. */
+    _th.textContent="Est. "+fmtMoney(_tn)+", keep "+fmtMoney(postTax(_tn))+" after tax"+(dealIsUnpaid(d)?"  UNPAID":(dealIsPaid(d)?"  received":"")); _th.style.color=dealIsUnpaid(d)?"var(--gray2,#8a8a99)":"var(--sec2,var(--accent2))"; _th.style.fontWeight="700"; left.appendChild(_th); } var _urg=(d.stage==="Closed"||d.stage==="Just Sold")?"":closeUrgency(d.close); if(_urg){ var _u=el("div","dsub"); _u.textContent=_urg; _u.style.color=(_urg==="overdue"||_urg==="due today")?"var(--danger,#ff6363)":"var(--gray2,#8a8a99)"; _u.style.fontWeight="700"; left.appendChild(_u); } /* build 295: an OPTIONAL risk line. Only a deal carrying d.risk renders one, so every other row is byte identical. It sits under the detail lines in the warning colour because the one deal that has it is Under Contract and already counted, and a paragraph inside a two thousand character note does not carry that. */ /* build 440: an OPEN QUESTION on a figure that has already been pinned. Gilliam carries a real
+       bank deposit in actualNet, but Ian is not sure whether his father's 10% came out before or
+       after it. A pinned number with an unresolved meaning must SAY SO on the row, or the pin
+       quietly becomes a conclusion nobody decided to make. */
+    if(d.actualNetOpen){ var _ao=el("div","dsub"); _ao.textContent="OPEN QUESTION ON THIS FIGURE. "+d.actualNetOpen;
+      _ao.style.cssText="color:var(--warn,#e8b04b);font-weight:800;white-space:normal;line-height:1.45;margin-top:4px"; left.appendChild(_ao); }
+    if(d.risk){ var _rk=el("div","dsub"); _rk.textContent="AT RISK. "+d.risk; _rk.style.cssText="color:var(--danger,#ff6363);font-weight:800;white-space:normal;line-height:1.45;margin-top:4px"; left.appendChild(_rk); } row.appendChild(left);
   /* build 267: a qualifier on a price is a MARKER, not part of the number. It renders under the
      figure on the right, in the same .dsub style as the rest of the detail text, so the price cell
      holds a price and nothing else. A row with no qualifier renders exactly as it did before. */
@@ -22850,9 +22961,19 @@ function reGoalsCard(parent,accOverride){
   b.appendChild(mk("Deals",'<b>'+dealsDone+'</b> <span>of '+DEALS_GOAL+'</span>',DEALS_GOAL?dealsDone/DEALS_GOAL:0,"teal2"));
   const incClosed=sumIanNet(closed); const incUc=sumIanNet(uc);
   const incLine=el("div"); incLine.style.cssText="margin-top:13px;display:flex;justify-content:space-between;align-items:baseline";
-  incLine.appendChild(el("div","goal-lab","Est. take-home"));
+  /* v21 build 440: THE LABEL WAS THE LIE. "Est. take-home" against a pre tax commission claims
+     the one thing that is not true of it. He sweeps 30% for tax the moment he is paid, so this
+     figure is his COMMISSION and the take home is 70% of it. The headline keeps the gross,
+     because that is what the deals actually generated and what every settlement statement will
+     say, and the line underneath says what he kept. Both, not one. */
+  incLine.appendChild(el("div","goal-lab","Est. commission"));
   const incVal=el("div","goal-val"); incVal.innerHTML='<b>'+fmtMoney(incClosed)+'</b> <span>closed'+(incUc?', '+fmtMoney(incUc)+' pending':'')+'</span>'; incLine.appendChild(incVal);
   b.appendChild(incLine);
+  { var _ptLine=el("div"); _ptLine.style.cssText="margin-top:5px;display:flex;justify-content:space-between;align-items:baseline";
+    _ptLine.appendChild(el("div","small dim","Yours after "+taxPctWord()+" tax"));
+    var _ptVal=el("div","small"); _ptVal.style.fontWeight="800"; _ptVal.style.color="var(--sec2,var(--accent2))";
+    _ptVal.innerHTML='<b>'+fmtMoney(postTax(incClosed))+'</b>'+(incUc?' <span class="dim">, '+fmtMoney(postTax(incUc))+' pending</span>':'');
+    _ptLine.appendChild(_ptVal); b.appendChild(_ptLine); }
   /* v21 build 275: EARNED IS NOT RECEIVED. The line above is driven purely by stage and it says
      "closed", which reads as cash in hand and is not. This splits it into what he has actually
      been paid, what is closed and outstanding, and what has no payment status on record. The third
@@ -22865,8 +22986,13 @@ function reGoalsCard(parent,accOverride){
      deal closes. Do not remove it on the grounds that it currently renders one row. */
   { var _pd=sumPaid(closed), _un=sumUnpaid(closed), _uk=sumUnknownPay(closed);
     var _pay=el("div"); _pay.style.cssText="margin-top:9px;padding:9px 10px;border-radius:9px;background:rgba(255,255,255,.04);line-height:1.6";
+    /* build 440: "Received" is the strongest cash claim on this page and it was gross. The
+       amount that landed in the account is right, but roughly a third of it left again for tax
+       within the day, so the row names both rather than letting the larger one stand alone. */
     var _r1=el("div","between"); _r1.appendChild(el("div","small dim","Received"));
     var _r1v=el("div","small"); _r1v.style.fontWeight="800"; _r1v.style.color="var(--sec2,var(--accent2))"; _r1v.textContent=fmtMoney(_pd); _r1.appendChild(_r1v); _pay.appendChild(_r1);
+    if(_pd>0){ var _r1b=el("div","between"); _r1b.appendChild(el("div","small dim","Kept after "+taxPctWord()+" tax"));
+      var _r1bv=el("div","small"); _r1bv.style.fontWeight="700"; _r1bv.textContent=fmtMoney(postTax(_pd)); _r1b.appendChild(_r1bv); _pay.appendChild(_r1b); }
     if(_un>0){ var _r2=el("div","between"); _r2.appendChild(el("div","small dim","Closed, awaiting payment"));
       var _r2v=el("div","small"); _r2v.style.fontWeight="700"; _r2v.textContent=fmtMoney(_un); _r2.appendChild(_r2v); _pay.appendChild(_r2); }
     if(_uk>0){ var _r3=el("div","between"); _r3.appendChild(el("div","small dim","Closed, payment not on record"));
@@ -26167,7 +26293,9 @@ function fnProjection(v,f){
       var n=0; try{ n=dealIanNet(d); }catch(e){ n=0; }
       var contracted=(d.stage==="Under Contract");
       if(!(px>0)&&!contracted){ noPrice++; return; }
-      live.push({ d:d, net:Math.round(n*100)/100, far:is27(d), contracted:contracted });
+      /* v21 build 440: keep is what survives the tax sweep and it is the ONLY figure allowed to
+         touch gapLo/gapHi. Both are carried on the row so the card can show both. */
+      live.push({ d:d, net:Math.round(n*100)/100, keep:Math.round(postTax(n)*100)/100, far:is27(d), contracted:contracted });
     });
     if(!live.length) return;
     /* v21 build 438, 21.09.2026. IAN: "The deals in progress on the Finance page should be in
@@ -26186,7 +26314,12 @@ function fnProjection(v,f){
     });
     var near=live.filter(function(x){ return !x.far; });
     var far=live.filter(function(x){ return x.far; });
-    var clears=near.filter(function(x){ return gapHi>0 && x.net>=gapHi; });
+    /* v21 build 440: COMPARE LIKE WITH LIKE. This used to test x.net, the pre tax commission,
+       against gapHi, which is built from real spending and a bank balance that is already past
+       the tax sweep. Now it tests x.keep. Some deals that used to say "clears it" no longer do,
+       and that is the correction, not a regression. */
+    var clears=near.filter(function(x){ return gapHi>0 && x.keep>=gapHi; });
+    var clearsLo=near.filter(function(x){ return gapLo>0 && x.keep>=gapLo; });
 
     var c=card(); var b=c._body;
     b.appendChild(el("div","g7kicker","If one of these closes"));
@@ -26194,9 +26327,27 @@ function fnProjection(v,f){
     if(clears.length){
       var head=el("div");
       head.style.cssText="margin-top:8px;font-size:15px;font-weight:700;line-height:1.45;color:var(--white)";
-      head.textContent="Any one of "+clears.slice(0,5).map(function(x){ return x.d.title||x.d.id; }).join(", ")
-        +" clears the "+fnMoney(Math.round(gapLo/10)*10)+" to "+fnMoney(Math.round(gapHi/10)*10)+" shortfall on its own.";
+      head.textContent="After "+taxPctWord()+" tax, any one of "+clears.slice(0,5).map(function(x){ return x.d.title||x.d.id; }).join(", ")
+        +" still clears the "+fnMoney(Math.round(gapLo/10)*10)+" to "+fnMoney(Math.round(gapHi/10)*10)+" shortfall on its own.";
       b.appendChild(head);
+    } else if(gapHi>0 && near.length){
+      /* build 440: SAY IT PLAINLY WHEN NOTHING CLEARS. The old card only ever spoke when there
+         was good news, so an empty clears list rendered as silence and read as "no comment"
+         rather than "no". A shortfall that no single deal covers is the single most important
+         thing on this card and it gets the headline. */
+      var head0=el("div");
+      head0.style.cssText="margin-top:8px;font-size:15px;font-weight:700;line-height:1.45;color:var(--danger,#ff6363)";
+      var _best=null; near.forEach(function(x){ if(!_best||x.keep>_best.keep) _best=x; });
+      head0.textContent="After "+taxPctWord()+" tax, NO SINGLE DEAL clears the "
+        +fnMoney(Math.round(gapLo/10)*10)+" to "+fnMoney(Math.round(gapHi/10)*10)+" shortfall on its own."
+        +(_best&&_best.keep>0?(" The largest, "+(_best.d.title||_best.d.id)+", keeps "+fnMoneyC(_best.keep)+"."):"");
+      b.appendChild(head0);
+      if(clearsLo.length){
+        var head1=el("div","fnnote"); head1.style.marginTop="6px";
+        head1.textContent=clearsLo.map(function(x){ return x.d.title||x.d.id; }).join(", ")
+          +(clearsLo.length===1?" clears":" each clear")+" the low end of "+fnMoney(Math.round(gapLo/10)*10)+" but not the high end.";
+        b.appendChild(head1);
+      }
     }
     var mk=function(host,x){
       var bits=[];
@@ -26204,14 +26355,78 @@ function fnProjection(v,f){
          infer why the rows are in this sequence. */
       if(x.p!==null&&x.p!==undefined) bits.push(Math.round(x.p*100)+"%");
       bits.push(x.contracted?"Under contract":String(x.d.stage||""));
-      if(!x.far && gapHi>0 && x.net>=gapHi) bits.push("clears it");
-      else if(!x.far && gapHi>0 && x.net>0 && x.net>=gapLo) bits.push("nearly clears");
-      var r=fnRow(host,x.d.title||x.d.id,fnMoneyC(x.net),bits.join(", "),null,false);
+      /* build 440: BOTH FIGURES ON EVERY ROW. The headline amount is what he KEEPS, because that
+         is the number the badge beside it is judged against and putting the other one there is
+         how this card was wrong in the first place. The commission is not hidden, it is named
+         one line down as the thing the keep figure comes from. */
+      if(x.net>0) bits.push(fnMoneyC(x.net)+" before tax");
+      if(!x.far && gapHi>0 && x.keep>=gapHi) bits.push("clears it");
+      else if(!x.far && gapHi>0 && x.keep>0 && x.keep>=gapLo) bits.push("nearly clears");
+      var r=fnRow(host,x.d.title||x.d.id,fnMoneyC(x.keep),bits.join(", "),null,false);
       /* accent, not green: this is not money he has */
-      try{ var amt=r.querySelector(".fnamt"); if(amt) amt.style.color=(x.net>0?"var(--fi2)":"var(--gray2)"); }catch(e){}
+      try{ var amt=r.querySelector(".fnamt"); if(amt) amt.style.color=(x.keep>0?"var(--fi2)":"var(--gray2)"); }catch(e){}
       return r;
     };
+    /* ===== v21 build 440: THE CONFIDENCE BAND. IAN READ THE WEIGHTED FIGURE AS A FLOOR ========
+       HE ASKED WHETHER $8,766 IS "THE LOWEST I WILL RECEIVE". IT IS NOT, AND THAT MISREADING IS
+       THE MOST DAMAGING THING THIS CARD COULD DO. A probability weighted expectation is an
+       AVERAGE over outcomes that will never happen. He will not receive $8,766. He will receive
+       the sum of whichever deals actually close, and if none of them close he receives nothing.
+       The true floor is ZERO and it is stated here in those words.
+
+       FOUR NUMBERS, NOT ONE, because a single number invites exactly the reading he gave it:
+         NEAR CERTAIN  deals at 90% or better, added up. The closest thing to a floor that is
+                       honest, and it is still not a floor.
+         LIKELY        deals at 75% or better. One tier of ambition beyond near certain.
+         EXPECTED      every deal weighted by its own probability. An average, labelled as one.
+         BEST CASE     all of them. Real, and unlikely.
+       The two cuts are CONVENTIONS, not findings, and the card says so rather than presenting
+       them as thresholds that mean something in the world.
+
+       EVERY FIGURE HERE IS POST TAX, like the rows above it, so the band can be read straight
+       against the shortfall without a second conversion in his head. */
     if(near.length){
+      var BAND_SURE=0.90, BAND_LIKELY=0.75;
+      var _withP=near.filter(function(x){ return x.p!==null&&x.p!==undefined&&x.keep>0; });
+      if(_withP.length){
+        var sumKeep=function(arr){ return arr.reduce(function(a,x){ return a+x.keep; },0); };
+        var tSure=_withP.filter(function(x){ return x.p>=BAND_SURE; });
+        var tLikely=_withP.filter(function(x){ return x.p>=BAND_LIKELY; });
+        var vSure=sumKeep(tSure), vLikely=sumKeep(tLikely), vAll=sumKeep(_withP);
+        var vExp=_withP.reduce(function(a,x){ return a+x.keep*x.p; },0);
+        var BD=el("div"); BD.style.marginTop="16px";
+        BD.appendChild(el("div","fnsch","If several close"));
+        var BL=el("div"); BL.style.marginTop="6px";
+        var bandRow=function(label,val,sub,tone){ fnRow(BL,label,fnMoneyC(val),sub,tone||null,false); };
+        /* THE FLOOR IS NAMED FIRST, so the smallest number on the card is the true one and he
+           cannot mistake any of the others for it. */
+        bandRow("Floor",0,"if none of them close",null);
+        if(tSure.length) bandRow("Near certain",vSure,tSure.map(function(x){ return x.d.title||x.d.id; }).join(" + ")+", "+Math.round(BAND_SURE*100)+"%+","good");
+        if(tLikely.length>tSure.length) bandRow("Likely",vLikely,"adding everything "+Math.round(BAND_LIKELY*100)+"%+",null);
+        bandRow("Expected",vExp,"AN AVERAGE, NOT A MINIMUM",null);
+        bandRow("Best case",vAll,"all "+_withP.length+", unlikely",null);
+        BD.appendChild(BL);
+        var bn=el("div","fnnote"); bn.style.marginTop="8px";
+        bn.textContent="Expected is every deal multiplied by its own chance and added up. It is an average over outcomes that will not happen, so you will not receive it. You will receive whatever actually closes, and the lowest that can be is nothing. All figures are after "+taxPctWord()+" tax. The 90% and 75% cuts are conventions for grouping, not findings.";
+        BD.appendChild(bn);
+        /* AGAINST THE SHORTFALL, tier by tier, because "does this cover it" is the only question
+           he is actually asking and making him compare two lists himself is how it gets misread. */
+        if(gapHi>0){
+          var vs=el("div"); vs.style.marginTop="10px";
+          var line=function(nm,val){
+            var ok=val>=gapHi, part=(val>=gapLo&&val<gapHi);
+            var r=el("div","fnnote"); r.style.marginTop="3px";
+            r.textContent=nm+" "+fnMoneyC(val)+" vs the "+fnMoney(Math.round(gapLo/10)*10)+" to "+fnMoney(Math.round(gapHi/10)*10)+" shortfall: "+(ok?"covers it":(part?"covers the low end only":"does NOT cover it"));
+            r.style.color=ok?"var(--sec2,var(--accent2))":(part?"var(--warn,#e8b04b)":"var(--danger,#ff6363)");
+            r.style.fontWeight="700"; vs.appendChild(r);
+          };
+          if(tSure.length) line("Near certain",vSure);
+          if(tLikely.length>tSure.length) line("Likely",vLikely);
+          line("Expected",vExp);
+          BD.appendChild(vs);
+        }
+        b.appendChild(BD);
+      }
       var L=el("div"); L.style.marginTop="12px";
       near.forEach(function(x){ mk(L,x); });
       b.appendChild(L);
@@ -26225,6 +26440,9 @@ function fnProjection(v,f){
       b.appendChild(D);
     }
     var notes=[];
+    /* build 440: the amounts changed meaning, so the card says so rather than letting him
+       discover that every figure got smaller and wonder what broke. */
+    notes.push("Amounts are what you keep after setting aside "+taxPctWord()+" for tax. The commission before tax is on each row.");
     notes.push("None of these is contracted except where a row says so, and they are never added together.");
     if(far.length) notes.push("The 2027 ones cannot touch a shortfall that lands by mid January, however large they are.");
     var sp=live.filter(function(x){ return x.contracted; });
