@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 442 (2026-09-21)">
+<meta name="build" content="v21 build 443 (2026-09-22)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -18655,6 +18655,57 @@ try{ if(profile==="ian" && state.meta && !state.meta.mig442_pkclean && state.pic
     state.meta.mig442_pkclean=true; save(true);
 } }catch(e){ try{ console.warn("mig442 pickleball clean did not apply:",e&&e.message); }catch(_){} }
 
+/* ===== v21 build 443: SESSION OF 22 SEPTEMBER 2026 =====================================
+   Watch data transcribed from Ian's screenshot. 7:02 to 8:49 AM in Omaha, 1:47:01, 956 active
+   calories and 1,123 total, average heart rate 128, max 154, min 84.
+
+   THE EFFORT FIELD IS THE WHOLE POINT OF THIS BUILD, so read this before touching it.
+   Apple's watch reports an "Effort" of 8, "Hard". That is EXERTION: how hard his body worked.
+   Ian's effort rating means something else entirely: how hard he tried and how well he played.
+   They are different axes and they do not convert. Four separate observation blocks have already
+   been spent trying to reconcile one against heart rate, which is reconciling against an axis
+   that does not exist.
+
+   So Apple's 8 is stored as watchEffort, plainly labelled as the watch's, and Ian's own rating
+   is ABSENT because he has not given one. There is no `effort` key on this session at all, which
+   means pkEffort() returns null, the load strip hatches the bar and its tooltip says "effort not
+   recorded", and pkInsights leaves it out of the effort trend. That is the correct behaviour and
+   it already existed; this session simply uses it. Nothing anywhere computes, displays or hints
+   at a relationship between the two numbers, and nothing should be added that does.
+
+   pkEffort() also parses "effort N of 10" out of a note as a fallback, so this note deliberately
+   contains no such phrase. If a later session writes Apple's exertion into its note prose, that
+   fallback will read it as Ian's rating. Write it to watchEffort instead.
+
+   No calendar event and no note on one: pickleball events carry notes only for tournaments, and
+   this is not a tournament. No gym inference anywhere: one session rather than two makes a gym
+   day more likely in general, and the app does not assert a plan for a given weekday.
+   DUPR stays 3.226. Guard: state.meta.mig443_pk0922, not in the seed, SEED_VERSION stays 13. */
+try{ if(profile==="ian" && state.meta && !state.meta.mig443_pk0922 && state.pickleball){
+    var _P43=state.pickleball;
+    if(!Array.isArray(_P43.sessions)) _P43.sessions=[];
+    var _has43=false;
+    _P43.sessions.forEach(function(s){ if(s&&(s.id==="pk-20260922-am"||(s.date==="2026-09-22"&&/7:02/.test(String(s.window||""))))) _has43=true; });
+    if(!_has43){
+      _P43.sessions.push({
+        id:"pk-20260922-am", date:"2026-09-22", kind:"Drills and open play", venue:"Omaha",
+        duration:"1h 47m 01s", window:"7:02 to 8:49 AM, Omaha",
+        calories:1123, activeCalories:956, avgHr:128, maxHr:154, minHr:84,
+        drillMinutes:60,
+        /* the watch's reading, kept apart from Ian's rating on purpose */
+        watchEffort:8, watchEffortLabel:"Hard", watchEffortSource:"Apple Watch",
+        /* no effort key: Ian has not rated this session */
+        result:"", score:"", opponent:"", copyOwned:true,
+        note:"Drilled for about an hour, mostly dinks with some drops, then open play. Played quite well overall.",
+        wentWell:["Drops and dinks were really good, and they held up in open play, not just in drilling."],
+        struggled:["Could not return their speed ups.",
+                   "When they got a good return off his own speed up, he could not hit it back well."]
+      });
+      _P43.sessions.sort(function(a,z){ return String(a.date).localeCompare(String(z.date)); });
+    }
+    state.meta.mig443_pk0922=true; save(true);
+} }catch(e){ try{ console.warn("mig443 session did not apply:",e&&e.message); }catch(_){} }
+
 /* ===== v21 build 399: ARCHIVE THE FALL CUP. IT NEVER HAPPENED. ============================
    IAN, 14.09.2026: "I never did that fall cup."
 
@@ -24260,7 +24311,38 @@ function pkSessionItem(parent,s){
   var kindline=el("div","small"); kindline.style.cssText="color:var(--sec2,#8af2ac);font-weight:700"; kindline.textContent=(s.kind||"Play"); det.appendChild(kindline);
   if(s.score||s.opponent){ var mr=el("div","small"); mr.style.cssText="color:var(--gray);font-weight:700;margin-top:5px"; mr.textContent=[s.score?("Score "+s.score):"",s.opponent?("vs "+s.opponent):""].filter(Boolean).join("  \u00B7  "); det.appendChild(mr); }
   var stats=[]; if(s.duration) stats.push(s.duration); if(s.calories) stats.push((s.calories.toLocaleString?s.calories.toLocaleString():s.calories)+" cal"); if(s.avgHr) stats.push("avg "+s.avgHr+" bpm"); if(s.maxHr) stats.push("max "+s.maxHr); var _e=pkEffort(s); if(_e!=null) stats.push("effort "+_e+"/10"); if(stats.length){ var sl=el("div","small"); sl.style.cssText="color:var(--gray);font-weight:600;margin-top:6px;line-height:1.5"; sl.textContent=stats.join("  \u00B7  "); det.appendChild(sl); }
+  /* build 443: the watch's exertion reading, on its own line and named as the watch's.
+     It is NOT Ian's effort rating and the two are never shown as one figure. When the watch
+     gave a number and Ian has not rated the session, the card says so rather than leaving a
+     gap for the watch number to be read into. */
+  if(s.watchEffort!=null){
+    var wl=el("div","small"); wl.style.cssText="color:var(--gray2);font-weight:600;margin-top:5px;line-height:1.5";
+    wl.textContent=(s.watchEffortSource||"Watch")+" exertion "+s.watchEffort
+      +(s.watchEffortLabel?(", "+s.watchEffortLabel):"");
+    det.appendChild(wl);
+    if(_e==null){
+      var yr=el("div","small dim"); yr.style.cssText="margin-top:3px;line-height:1.5";
+      yr.textContent="Your own rating: not recorded.";
+      det.appendChild(yr);
+    }
+  }
   if(s.note){ var n=el("div","small dim"); n.style.cssText="margin-top:6px;line-height:1.5"; n.textContent=s.note; det.appendChild(n); }
+  /* build 443: what went well and what did not, kept as separate lines rather than run
+     together in the note, because the two things he struggled with are different problems
+     and reading them as one loses the distinction. */
+  (function(){
+    var blk=function(label,arr,col){
+      if(!Array.isArray(arr)||!arr.length) return;
+      var h=el("div","small"); h.style.cssText="color:"+col+";font-weight:700;margin-top:8px"; h.textContent=label;
+      det.appendChild(h);
+      arr.forEach(function(x){
+        var li=el("div","small dim"); li.style.cssText="margin-top:3px;line-height:1.5;padding-left:10px";
+        li.textContent="\u00B7  "+String(x); det.appendChild(li);
+      });
+    };
+    blk("Went well",s.wentWell,"var(--green)");
+    blk("Struggled with",s.struggled,"var(--gray)");
+  })();
   
   b.appendChild(det);
   c.onclick=function(){ var willOpen=(det.style.display==="none"); det.style.display=willOpen?"block":"none"; chev.style.transform="rotate("+(willOpen?"180deg":"0deg")+")"; PK_OPEN[key]=willOpen; };
