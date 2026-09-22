@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 443 (2026-09-22)">
+<meta name="build" content="v21 build 444 (2026-09-22)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -18549,37 +18549,10 @@ try{ if(profile==="ian" && state.meta && !state.meta.mig425_arms && state.gym &&
 
    Guards: state.meta.mig442_pkclean, deliberately NOT in the seed, SEED_VERSION stays 13.
    Idempotent twice over, by the guard and because the cleaner is a no-op on clean text. */
-/* Short all-caps tokens that are genuinely his, not emphasis we added. Anything not on this
-   list and two letters or longer is treated as shouting and lowercased. */
-var PK_ACRONYMS={DUPR:1,APC:1,NPL:1,PPA:1,MLP:1,ATP:1,MST:1,USA:1,US:1,
-  HR:1,BPM:1,PM:1,AM:1,NE:1,AZ:1,IA:1,MO:1,KS:1,TV:1,ID:1,OK:1,IQ:1,MVP:1,GPS:1,IMG:1,
-  W:1,L:1,I:1,A:0};
-var PK_NAMES={DYLAN:"Dylan",ESTEBAN:"Esteban",CELIS:"Celis",BIANCA:"Bianca",APPLE:"Apple",
-  ARIZONA:"Arizona",CARVANA:"Carvana",MONDAY:"Monday",TUESDAY:"Tuesday",WEDNESDAY:"Wednesday",
-  THURSDAY:"Thursday",FRIDAY:"Friday",SATURDAY:"Saturday",SUNDAY:"Sunday",JANUARY:"January",
-  FEBRUARY:"February",MARCH:"March",APRIL:"April",JUNE:"June",JULY:"July",AUGUST:"August",
-  SEPTEMBER:"September",OCTOBER:"October",NOVEMBER:"November",DECEMBER:"December"};
-function pkTidy(t){
-  t=String(t==null?"":t); if(!t) return t;
-  t=t.replace(/={3,}/g," ");
-  t=t.replace(/[,(]?\s*\b(?:written|added|recorded|logged|set|updated)\b\s+[A-Z][a-z]{2}\s+\d{1,2},?\s*(?:APP|PB|RE|GEN|OPS)-[0-9A-Za-z]{1,4}\b(?:\s+[a-z]+)*(?=\s*[.)]|\s*$)\)?/gi,"");
-  t=t.replace(/,?\s*\b(?:v?21\s+)?build\s+\d{2,3}\b,?/gi,"");
-  t=t.replace(/\bmig\d+_[A-Za-z0-9]+\b/g,"");
-  t=t.replace(/\bq1789\d{6,}\b/g,"");
-  t=t.replace(/,?\s*\b(?:APP|PB|RE|GEN|OPS)-[0-9A-Za-z]{1,4}\b/g,"");
-  t=t.replace(/\bn=(\d+)\b/g,"sample of $1");
-  t=t.replace(/\b[A-Z][A-Z0-9']*\b/g,function(w){
-    if(w==="I") return w;              /* the pronoun, never emphasis */
-    if(PK_ACRONYMS[w]) return w;
-    if(PK_NAMES[w]) return PK_NAMES[w];
-    return w.toLowerCase();
-  });
-  t=t.replace(/(^|[.!?]\s+|\n\s*)([a-z])/g,function(m,p,ch){ return p+ch.toUpperCase(); });
-  t=t.replace(/(^|[.!?]\s+)(?:Do not|Never)\s+(?:ask|quote|re-ask|invent|merge|fabricate)\b[^.!?]*[.!?]\s*/gi,"$1");
-  t=t.replace(/\s{2,}/g," ").replace(/\s+([.,;:])/g,"$1").replace(/,\s*,/g,",")
-     .replace(/\(\s*\)/g,"").replace(/^[\s,;:.]+/,"").trim();
-  return t;
-}
+/* build 444: PK_ACRONYMS, PK_NAMES and pkTidy used to be declared here, inside loadProfile.
+   They moved to the outer scope, immediately above convergeState, because convergeState is
+   defined outside this function and could not see them. The mig442 block below still calls
+   pkTidy and still resolves: inner scope sees outer. Nothing about its behaviour changed. */
 try{ if(profile==="ian" && state.meta && !state.meta.mig442_pkclean && state.pickleball){
     var _P4=state.pickleball, _log=[];
     var _fix=function(obj,k,path){
@@ -20534,6 +20507,132 @@ try{ if(!state.meta.mig440_tax){
    deepMergeDefaults has restored seed items, so on the first load they will retire items the
    old early position never saw. Those deletions are the fix working, not damage: every one of
    them is an id that is already sitting in archive.todosDone with the reason it left. */
+/* Short all-caps tokens that are genuinely his, not emphasis we added. Anything not on this
+   list and two letters or longer is treated as shouting and lowercased. */
+var PK_ACRONYMS={DUPR:1,APC:1,NPL:1,PPA:1,MLP:1,ATP:1,MST:1,USA:1,US:1,
+  HR:1,BPM:1,PM:1,AM:1,NE:1,AZ:1,IA:1,MO:1,KS:1,TV:1,ID:1,OK:1,IQ:1,MVP:1,GPS:1,IMG:1,
+  W:1,L:1,I:1,A:0};
+var PK_NAMES={DYLAN:"Dylan",ESTEBAN:"Esteban",CELIS:"Celis",BIANCA:"Bianca",APPLE:"Apple",
+  ARIZONA:"Arizona",CARVANA:"Carvana",MONDAY:"Monday",TUESDAY:"Tuesday",WEDNESDAY:"Wednesday",
+  THURSDAY:"Thursday",FRIDAY:"Friday",SATURDAY:"Saturday",SUNDAY:"Sunday",JANUARY:"January",
+  FEBRUARY:"February",MARCH:"March",APRIL:"April",JUNE:"June",JULY:"July",AUGUST:"August",
+  SEPTEMBER:"September",OCTOBER:"October",NOVEMBER:"November",DECEMBER:"December"};
+/* A string only enters the pipeline if it carries something of ours. Without this, the
+   sentence-capitaliser rewrote bare values like "final" as "Final", which is a data change
+   wearing a typography fix as a disguise. */
+var PK_DIRTY=/[A-Z]{2,}|\bbuild\s+\d{2,3}\b|\bmig\d+_|\b(?:APP|PB|RE|GEN|OPS)-[0-9A-Za-z]{1,4}\b|\bn=\d+\b|={3,}/;
+function pkDropCaps(w){
+  if(w==="I") return w;
+  if(PK_ACRONYMS[w]) return w;
+  if(PK_NAMES[w]) return PK_NAMES[w];
+  return w.toLowerCase();
+}
+function pkTidy(t){
+  t=String(t==null?"":t); if(!t) return t;
+  if(!PK_DIRTY.test(t)) return t;
+  t=t.replace(/={3,}/g," ");
+  t=t.replace(/[,(]?\s*\b(?:written|added|recorded|logged|set|updated)\b\s+[A-Z][a-z]{2}\s+\d{1,2},?\s*(?:APP|PB|RE|GEN|OPS)-[0-9A-Za-z]{1,4}\b(?:\s+[a-z]+)*(?=\s*[.)]|\s*$)\)?/gi,"");
+  t=t.replace(/,?\s*\b(?:v?21\s+)?build\s+\d{2,3}\b,?/gi,"");
+  t=t.replace(/\bmig\d+_[A-Za-z0-9]+\b/g,"");
+  t=t.replace(/\bq1789\d{6,}\b/g,"");
+  t=t.replace(/,?\s*\b(?:APP|PB|RE|GEN|OPS)-[0-9A-Za-z]{1,4}\b/g,"");
+  t=t.replace(/\bn=(\d+)\b/g,"sample of $1");
+  /* Emphasis arrives in runs. Two or more all-caps tokens in a row is shouting, and a lone
+     "A" inside such a run comes down with it. An ISOLATED single capital is left alone,
+     because it is almost always an initial: "Rakesh D" must not become "Rakesh d". */
+  t=t.replace(/\b[A-Z][A-Z0-9']*(?:[ ,]+[A-Z][A-Z0-9']*)+\b/g,function(run){
+    return run.replace(/[A-Z][A-Z0-9']*/g,pkDropCaps);
+  });
+  t=t.replace(/\b[A-Z][A-Z0-9']+\b/g,pkDropCaps);
+  t=t.replace(/(^|[.!?]\s+|\n\s*)([a-z])/g,function(m,p,ch){ return p+ch.toUpperCase(); });
+  t=t.replace(/(^|[.!?]\s+)(?:Do not|Never)\s+(?:ask|quote|re-ask|invent|merge|fabricate)\b[^.!?]*[.!?]\s*/gi,"$1");
+  t=t.replace(/\s{2,}/g," ").replace(/\s+([.,;:])/g,"$1").replace(/,\s*,/g,",")
+     .replace(/\(\s*\)/g,"").replace(/^[\s,;:.]+/,"").trim();
+  return t;
+}
+/* ===== v21 build 444: THE PICKLEBALL TIDY BECOMES A CONVERGE PASS =======================
+   THE DEFECT. Build 442's cleaner was written as a guarded one-shot migration and anchored just
+   after mig425, at line 18655 of that build. Fifteen migration blocks are defined BELOW it, from
+   mig399 through mig440, and every one of them runs AFTER it. They wrote uncleaned text straight
+   past a cleaner that had already finished and set its guard, so it never looked again. Nine
+   lines were still shouting on Ian's pickleball page, mostly the September session notes.
+
+   BUILD 372 ALREADY DIAGNOSED THIS EXACT FAILURE, in the comment fifty lines below this one:
+   "File order is execution order, and all three cleanup sweeps sat EARLIER in the file than the
+   writers they existed to defeat. Two of them said in their own comments that they ran last.
+   Neither did." Build 442 made it a fourth time, and its comment said the same untrue thing.
+
+   THE FIX IS NOT TO MOVE IT LOWER. Moving it lower fixes today's nine lines and leaves the
+   ordering bug intact: the next migration written below the new anchor slips past it again, and
+   nothing catches that. The fix is to stop treating this as a migration at all. It is a SWEEP,
+   and the app already has exactly one correct home for a sweep, built in 372 for this reason:
+   convergeState(), which runs as the last thing in loadProfile, after every migration and after
+   deepMergeDefaults, on every load path including profile switch and import.
+
+   SO THE ORDERING BUG IS CLOSED BY CONSTRUCTION, not by a better anchor. A migration added
+   anywhere in the file, above or below, still runs before convergeState, so its text is seen.
+   There is no position in the migration chain from which text can escape this pass.
+
+   AND IT IS NO LONGER ONE-SHOT. state.meta.mig444_pktidy records that the sweep exists and when
+   it last changed something; it does NOT gate the sweep. Gating is precisely what made 442 blind.
+   The sweep runs every load and is naturally idempotent, because pkTidy returns clean text
+   unchanged, so a converged profile does no work and writes nothing.
+
+   IT WALKS THE TREE RATHER THAN A HAND LIST. Build 442 named the fields one by one and missed
+   sessions[].agent, soloPlan.tiers[], paddle, videoRec titles and notes, research text, the
+   coachRec replacement reasons, gamePlan.text and dupr[].previous. A hand list is a list of what
+   someone remembered. This walks state.pickleball and skips what must not be touched: URLs and
+   anything that looks like one, and identifier fields. Everything else is prose by default, which
+   is the right default when the failure mode is missing something.
+
+   NO SAVE OF ITS OWN, per the convergeState contract: the caller saves on the next line.
+   Originals are archived to state.archive.pickleballTidied, keyed by path, alongside build 442's
+   own archive which is left exactly as it is. */
+/* Keys the sweep must not touch. URLs and identifiers because tidying prose would corrupt
+   them, and dupr because that subtree is the rating RECORD, not our writing: its status and
+   previous fields are values other code reads, and the brief is explicit that DUPR stays
+   3.226 and is not re-derived. */
+var PK_TIDY_SKIP=/^(url|href|link|src|image|img|id|ids|key|slug|mergedFrom|sourceRecords|dupr)$/i;
+function pkTidySweep(){
+  try{
+    if(!state||!state.pickleball) return 0;
+    var changed=[], seen=0;
+    var walk=function(node,path,depth){
+      if(depth>8||node==null) return;
+      if(typeof node==="string") return;
+      var keys=Array.isArray(node)?node.map(function(_x,i){return i;}):Object.keys(node);
+      keys.forEach(function(k){
+        var v=node[k];
+        if(!Array.isArray(node) && PK_TIDY_SKIP.test(String(k))) return;
+        if(typeof v==="string"){
+          if(!v || /^(https?:|data:|\/\/|www\.)/i.test(v)) return;
+          seen++;
+          var after=pkTidy(v);
+          if(after!==v){ changed.push({path:path+"."+k,before:v}); node[k]=after; }
+        } else if(v && typeof v==="object"){
+          walk(v,path+"."+k,depth+1);
+        }
+      });
+    };
+    walk(state.pickleball,"pickleball",0);
+    if(changed.length){
+      if(!state.archive||typeof state.archive!=="object") state.archive={};
+      var A=state.archive.pickleballTidied;
+      if(!A||typeof A!=="object"){
+        A=state.archive.pickleballTidied={ why:"Originals of every pickleball string the converge sweep has tidied, keyed by path. Build 442's own archive at pickleballPreB442 is separate and untouched.", strings:[] };
+      }
+      if(!Array.isArray(A.strings)) A.strings=[];
+      var have={}; A.strings.forEach(function(r){ have[r.path]=1; });
+      changed.forEach(function(r){ if(!have[r.path] && A.strings.length<600){ A.strings.push(r); have[r.path]=1; } });
+      A.count=A.strings.length;
+      A.lastRun="2026-09-22";
+      if(!state.meta) state.meta={};
+      state.meta.mig444_pktidy=true;
+      try{ console.log("pkTidySweep tidied "+changed.length+" of "+seen+" strings"); }catch(_){}
+    }
+    return changed.length;
+  }catch(e){ try{ console.warn("pkTidySweep did not run:",e&&e.message); }catch(_){} return 0; }
+}
 function convergeState(){
   try{
     if(!state.meta) state.meta={};
@@ -20579,6 +20678,19 @@ function convergeState(){
       }
     }
   }catch(e){ try{ console.warn("converge drills:",e&&e.message); }catch(_){} }
+
+  /* build 444: THE PICKLEBALL STRING TIDY RUNS HERE, LAST, AND THIS IS THE WHOLE FIX.
+     Build 442 ran it as a guarded migration anchored mid-chain, with fifteen migrations
+     defined below it that then wrote uncleaned text straight past a cleaner which had
+     already finished and set its guard. convergeState is the one place in the file that is
+     after every migration BY CONSTRUCTION, so no migration written later can slip text past
+     this pass wherever in the file it lands. It is deliberately NOT gated on a guard: being
+     gated is exactly what made the last one blind. It is idempotent instead, because pkTidy
+     returns clean text unchanged, so a converged profile does no work and writes nothing.
+     It runs after the drill cap rather than before it, so that the array indices in the
+     paths it archives still resolve once the cap has removed what it removes.
+     No save of its own, per this function's contract: the caller saves on the next line. */
+  try{ pkTidySweep(); }catch(_){}
 }
 
 /* v21 build 291: THE DEFAULT PAYMENT STATE FOR A NEWLY CLOSED DEAL IS OUTSTANDING.
