@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 444 (2026-09-22)">
+<meta name="build" content="v21 build 445 (2026-09-23)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -18679,6 +18679,76 @@ try{ if(profile==="ian" && state.meta && !state.meta.mig443_pk0922 && state.pick
     state.meta.mig443_pk0922=true; save(true);
 } }catch(e){ try{ console.warn("mig443 session did not apply:",e&&e.message); }catch(_){} }
 
+/* ===== v21 build 445: TUESDAY EVENING AND WEDNESDAY MORNING ============================
+   Two sessions, both transcribed from Ian's watch screenshots.
+
+   TUESDAY 22 SEPTEMBER IS A DOUBLE, AND THE EVENING IS A SECOND SESSION, NOT A CORRECTION.
+   Build 443 logged the morning, 7:02 to 8:49 AM, 1:47:01, as its own record. This adds the
+   evening, 4:36 to 5:31 PM, 0:55:23. Both stand. Nothing is merged and pk-20260922-am is not
+   touched: 1:47:01 plus 0:55:23 is 2:42:24 across two sessions, and the page derives that
+   total from the records rather than storing it, so it cannot drift away from them.
+   Ian gave no note on the evening session, so it has none. An empty note is the honest
+   record of a session he has not commented on.
+
+   WEDNESDAY 23 SEPTEMBER, 7:06 to 8:33 AM, 1:27:05. His words: "Did open play for 35 minutes,
+   then drilled cross court dinks, resets, then drive-drop for the rest of the time. Very
+   helpful." The three drilling blocks are kept as three, in his order, because cross-court
+   dinks, resets and drive-drop are distinct skills and "drills" loses which ones he did.
+
+   THE EFFORT RULE, UNCHANGED FROM BUILD 443. Apple reports exertion, 7 on Tuesday evening and
+   8 on Wednesday, both labelled "Hard". That is how hard his body worked. Ian's rating means
+   how hard he tried and how well he played, and he has given neither. Both sessions carry
+   watchEffort and NO effort key, so pkEffort returns null, the load strip hatches both bars,
+   and each card says his own rating is not recorded. Neither note contains the phrase
+   "effort N of 10", which pkEffort parses out of note prose as a fallback.
+
+   No calendar event and no note on one: neither is a tournament. No gym inference: two
+   sessions on Tuesday make a gym day less likely in general, and the app does not assert a
+   plan for a weekday. DUPR stays 3.226. The effort key on the 60 historical sessions is
+   untouched and remains Ian's decision.
+
+   Guard: state.meta.mig445_pk0923, not in the seed, SEED_VERSION stays 13. Idempotent on id. */
+try{ if(profile==="ian" && state.meta && !state.meta.mig445_pk0923 && state.pickleball){
+    var _P45=state.pickleball;
+    if(!Array.isArray(_P45.sessions)) _P45.sessions=[];
+    var _add45=function(rec){
+      var dup=false;
+      _P45.sessions.forEach(function(s){ if(s&&s.id===rec.id) dup=true; });
+      if(!dup) _P45.sessions.push(rec);
+    };
+    _add45({
+      id:"pk-20260922-pm", date:"2026-09-22", kind:"Pickleball", venue:"Omaha",
+      duration:"55m 23s", window:"4:36 to 5:31 PM, Omaha",
+      calories:513, activeCalories:427, avgHr:119, maxHr:152, minHr:84,
+      watchEffort:7, watchEffortLabel:"Hard", watchEffortSource:"Apple Watch",
+      /* no effort key: Ian has not rated this session */
+      /* no note: he gave none, and an invented one would be worse than none */
+      result:"", score:"", opponent:"", copyOwned:true
+    });
+    _add45({
+      id:"pk-20260923-am", date:"2026-09-23", kind:"Open play and drills", venue:"Omaha",
+      duration:"1h 27m 05s", window:"7:06 to 8:33 AM, Omaha",
+      calories:870, activeCalories:733, avgHr:122, maxHr:154, minHr:77,
+      openPlayMinutes:35,
+      watchEffort:8, watchEffortLabel:"Hard", watchEffortSource:"Apple Watch",
+      /* no effort key: Ian has not rated this session */
+      blocks:[
+        {label:"Open play",         detail:"35 minutes"},
+        {label:"Cross-court dinks", detail:"drilled"},
+        {label:"Resets",            detail:"drilled"},
+        {label:"Drive-drop",        detail:"drilled, for the rest of the time"}
+      ],
+      note:"Very helpful.",
+      result:"", score:"", opponent:"", copyOwned:true
+    });
+    /* Sorted by DATE only, exactly as build 443 did. Array.sort is stable, so two sessions on
+       the same day keep the order they were written in, which for 22 September is morning then
+       evening. A tiebreaker on id would have reordered the existing 14 and 15 September doubles
+       for no reason. */
+    _P45.sessions.sort(function(a,z){ return String(a.date).localeCompare(String(z.date)); });
+    state.meta.mig445_pk0923=true; save(true);
+} }catch(e){ try{ console.warn("mig445 sessions did not apply:",e&&e.message); }catch(_){} }
+
 /* ===== v21 build 399: ARCHIVE THE FALL CUP. IT NEVER HAPPENED. ============================
    IAN, 14.09.2026: "I never did that fall cup."
 
@@ -24438,6 +24508,41 @@ function pkSessionItem(parent,s){
       det.appendChild(yr);
     }
   }
+  /* build 445: a day with more than one session says so, and says the day's total. DERIVED from
+     the records rather than stored on them, so it cannot drift away from the sessions it
+     describes, and so the 14 and 15 September doubles already on file get the same line without
+     anything being written to them. It makes no claim about which session came first: the window
+     on each card already says morning or evening. */
+  (function(){
+    try{
+      var sameDay=pkSorted().filter(function(x){ return x && x.date===s.date; });
+      if(sameDay.length<2) return;
+      var tot=sameDay.reduce(function(a,x){ return a+pkParseMin(x.duration); },0);
+      if(!(tot>0)) return;
+      var hh=Math.floor(tot/60), mm=Math.round(tot-hh*60);
+      if(mm===60){ hh++; mm=0; }
+      var d=el("div","small");
+      d.style.cssText="color:var(--sec2,#8af2ac);font-weight:700;margin-top:5px";
+      d.textContent=(sameDay.length===2?"Double that day":sameDay.length+" sessions that day")
+        +"  \u00b7  "+(hh>0?(hh+"h "+(mm<10?"0":"")+mm+"m"):(mm+"m"))+" on court across "
+        +sameDay.length+" sessions";
+      det.appendChild(d);
+    }catch(e){}
+  })();
+  /* build 445: how the session ran, in his order. Three drilling blocks stay three, because
+     cross-court dinks, resets and drive-drop are different skills and "drills" loses which. */
+  (function(){
+    if(!Array.isArray(s.blocks)||!s.blocks.length) return;
+    var h=el("div","small"); h.style.cssText="color:var(--gray);font-weight:700;margin-top:8px";
+    h.textContent="How it ran"; det.appendChild(h);
+    s.blocks.forEach(function(bk,i){
+      var li=el("div","small dim"); li.style.cssText="margin-top:3px;line-height:1.5;padding-left:10px";
+      var lab=(bk&&bk.label)?String(bk.label):String(bk||"");
+      var dt=(bk&&bk.detail)?String(bk.detail):"";
+      li.textContent=(i+1)+".  "+lab+(dt?("  \u00b7  "+dt):"");
+      det.appendChild(li);
+    });
+  })();
   if(s.note){ var n=el("div","small dim"); n.style.cssText="margin-top:6px;line-height:1.5"; n.textContent=s.note; det.appendChild(n); }
   /* build 443: what went well and what did not, kept as separate lines rather than run
      together in the note, because the two things he struggled with are different problems
