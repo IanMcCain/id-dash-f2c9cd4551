@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 445 (2026-09-23)">
+<meta name="build" content="v21 build 446 (2026-09-24)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -18749,6 +18749,64 @@ try{ if(profile==="ian" && state.meta && !state.meta.mig445_pk0923 && state.pick
     state.meta.mig445_pk0923=true; save(true);
 } }catch(e){ try{ console.warn("mig445 sessions did not apply:",e&&e.message); }catch(_){} }
 
+/* ===== v21 build 446: THURSDAY 24 SEPTEMBER ===========================================
+   7:08 to 8:43 AM, Omaha, 1:34:44. 818 active calories and 966 total, average heart rate 126,
+   max 169, min 68. His words: drilled the first 30 minutes, dinks and hands, then intermediate
+   plus doubles for the rest, majority of players 3.5 to 3.9, none above 4.0 or below 3.5, and
+   "we were all pretty even".
+
+   THE OPPOSITION BAND IS A STRUCTURED FIELD, NOT PROSE, because this is the first session where
+   he has given one and the point of having it is to compare it against later ones. A sentence
+   cannot be compared. What it records is WHO WAS ON THE COURT and nothing else. It does not
+   derive a level for Ian, an implied DUPR, or a claim that he played at 3.5 to 3.9. His read,
+   "we were all pretty even", is stored and rendered as HIS WORDS in quotes, because it is a
+   feeling about one morning. DUPR stays 3.226, measured, and nothing here touches it.
+
+   THE MAX OF 169 IS STORED AND NOT COMMENTED ON, which is what was asked and is also the right
+   call on the facts: it is his highest since 8 September and the highest in a fortnight, but it
+   is not his highest on record. 184 on 27 July, 181 on 6 July, 179 twice, 177 twice, 176 twice
+   and 175 on 8 September all sit above it. A card that called it a record would be wrong.
+
+   ONE LINE LINKS THE DRILLING TO TUESDAY, and it is deliberately flat. On 22 September hands
+   battles were the only weakness he named. Here he drilled hands. That is worth noticing and it
+   is not worth congratulating: one block is not evidence in either direction, and the card says
+   exactly that rather than implying a trend.
+
+   THE EFFORT RULE, UNCHANGED. Apple reports 9, "All Out". That is exertion. Ian's rating means
+   how hard he tried and how well he played and he has not given one, so there is no effort key,
+   pkEffort returns null, the bar hatches and the card says his own rating is not recorded.
+   Nothing infers a rating from the watch, the 169, or the calories, and no prose here contains
+   the phrase pkEffort parses out of notes.
+
+   No calendar event, not a tournament. No gym inference. Guard state.meta.mig446_pk0924, not in
+   the seed, SEED_VERSION stays 13, idempotent on id. */
+try{ if(profile==="ian" && state.meta && !state.meta.mig446_pk0924 && state.pickleball){
+    var _P46=state.pickleball;
+    if(!Array.isArray(_P46.sessions)) _P46.sessions=[];
+    var _dup46=false;
+    _P46.sessions.forEach(function(s){ if(s&&s.id==="pk-20260924-am") _dup46=true; });
+    if(!_dup46){
+      _P46.sessions.push({
+        id:"pk-20260924-am", date:"2026-09-24", kind:"Drills and doubles", venue:"Omaha",
+        duration:"1h 34m 44s", window:"7:08 to 8:43 AM, Omaha",
+        calories:966, activeCalories:818, avgHr:126, maxHr:169, minHr:68,
+        drillMinutes:30,
+        watchEffort:9, watchEffortLabel:"All Out", watchEffortSource:"Apple Watch",
+        /* no effort key: Ian has not rated this session */
+        blocks:[
+          {label:"Drilling",              detail:"first 30 minutes, dinks and hands"},
+          {label:"Intermediate+ doubles", detail:"the rest of the session"}
+        ],
+        opposition:{ majorityLow:3.5, majorityHigh:3.9, floor:3.5, ceiling:4.0,
+                     hisRead:"we were all pretty even", source:"Ian's own read on the day" },
+        context:"Hands was the one weakness he named on 22 September. He drilled hands here. One block is not evidence either way.",
+        result:"", score:"", opponent:"", copyOwned:true
+      });
+      _P46.sessions.sort(function(a,z){ return String(a.date).localeCompare(String(z.date)); });
+    }
+    state.meta.mig446_pk0924=true; save(true);
+} }catch(e){ try{ console.warn("mig446 session did not apply:",e&&e.message); }catch(_){} }
+
 /* ===== v21 build 399: ARCHIVE THE FALL CUP. IT NEVER HAPPENED. ============================
    IAN, 14.09.2026: "I never did that fall cup."
 
@@ -24543,6 +24601,33 @@ function pkSessionItem(parent,s){
       det.appendChild(li);
     });
   })();
+  /* build 446: the opposition band, as a structured field rather than a sentence. Ian gave one
+     for the first time on 24 September and it is the kind of thing that is worth comparing
+     across sessions later, which prose cannot do. His own read of the night is rendered in
+     QUOTES and attributed to him, because "we were all pretty even" is a feeling about a
+     morning, not a rating. Nothing here derives a level, an implied DUPR, or a claim that he
+     played at the band's level: he has rejected inflated self-ratings before and this is the
+     exact shape that error takes. The band describes who was on the court, full stop. */
+  (function(){
+    var o=s.opposition; if(!o||typeof o!=="object") return;
+    var h=el("div","small"); h.style.cssText="color:var(--gray);font-weight:700;margin-top:8px";
+    h.textContent="Opposition"; det.appendChild(h);
+    /* One decimal place, always. 4.0 is how he said it and how every rating in this sport
+       is written; plain "4" reads as a different number. */
+    var band=function(v){ var n=Number(v); return isNaN(n)?String(v):n.toFixed(1); };
+    var bits=[];
+    if(o.majorityLow!=null&&o.majorityHigh!=null) bits.push("majority "+band(o.majorityLow)+" to "+band(o.majorityHigh));
+    if(o.floor!=null) bits.push("floor "+band(o.floor));
+    if(o.ceiling!=null) bits.push("ceiling "+band(o.ceiling));
+    if(bits.length){
+      var r=el("div","small dim"); r.style.cssText="margin-top:3px;line-height:1.5;padding-left:10px";
+      r.textContent=bits.join("  \u00b7  "); det.appendChild(r);
+    }
+    if(o.hisRead){
+      var q=el("div","small dim"); q.style.cssText="margin-top:3px;line-height:1.5;padding-left:10px";
+      q.textContent="His read: \""+String(o.hisRead)+"\""; det.appendChild(q);
+    }
+  })();
   if(s.note){ var n=el("div","small dim"); n.style.cssText="margin-top:6px;line-height:1.5"; n.textContent=s.note; det.appendChild(n); }
   /* build 443: what went well and what did not, kept as separate lines rather than run
      together in the note, because the two things he struggled with are different problems
@@ -24560,6 +24645,14 @@ function pkSessionItem(parent,s){
     blk("Went well",s.wentWell,"var(--green)");
     blk("Struggled with",s.struggled,"var(--gray)");
   })();
+  /* build 446: a flat line connecting this session to something already on record. It sits
+     last, it is written in the dim style, and it draws no conclusion on purpose: noticing
+     that he drilled the weakness he named two days earlier is useful, calling it progress
+     off one block would not be. */
+  if(s.context){
+    var cx=el("div","small dim"); cx.style.cssText="margin-top:9px;line-height:1.5;color:var(--gray2)";
+    cx.textContent=String(s.context); det.appendChild(cx);
+  }
   
   b.appendChild(det);
   c.onclick=function(){ var willOpen=(det.style.display==="none"); det.style.display=willOpen?"block":"none"; chev.style.transform="rotate("+(willOpen?"180deg":"0deg")+")"; PK_OPEN[key]=willOpen; };
