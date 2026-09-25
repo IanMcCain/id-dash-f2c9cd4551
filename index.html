@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 447 (2026-09-25)">
+<meta name="build" content="v21 build 448 (2026-09-25)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -18888,6 +18888,7 @@ try{ if(profile==="ian" && state.meta && !state.meta.mig447_pk0925 && state.pick
     state.meta.mig447_pk0925=true; save(true);
 } }catch(e){ try{ console.warn("mig447 session did not apply:",e&&e.message); }catch(_){} }
 
+
 /* ===== v21 build 399: ARCHIVE THE FALL CUP. IT NEVER HAPPENED. ============================
    IAN, 14.09.2026: "I never did that fall cup."
 
@@ -20674,6 +20675,214 @@ try{ if(!state.meta.mig440_tax){
 
 
 /* build 225: focus timer removed, nothing to clear here anymore. */
+
+/* ===== v21 build 448: THE WRITE QUEUE DRAIN, 25.09.2026 ================================
+   Thirteen actionable entries, the oldest 304 hours. Every one was read before anything was
+   written, and current state was read before the queue, because a queue entry is a POINTER and
+   the record wins when the two disagree. Four entries turned out to be superseded by things
+   that happened after they were filed, and are closed without shipping rather than applied over
+   a newer correct value. Five are HELD on Ian and are not touched. Four are left open with a
+   reason.
+
+   WHAT IS WRITTEN HERE, all of it from Ian 24 and 25 September:
+   (1) re-vogel-sell price $334,900 -> $329,900. This settles a question the queue has carried
+       since 18.09: our CMA said $334,900 recommended, Chris and Ian settled $329,900 in the
+       Messages thread on 21.09 with Ian calling $334,900 "a push", and the record has been
+       carrying the higher number since build 437 with no established authority. Ian's word
+       settles it and this is his word.
+   (2) re-vogel-sell winProb 0.70 -> 0.999, and re-mattox-sell 0.77 -> 0.97. His numbers.
+       99.9 IS NOT 100 AND THE RENDERER HAS BEEN FIXED SO IT NO LONGER SAYS SO, see below.
+   (3) re-cynthia-willis goes live 25 SEPTEMBER 2026, on his instruction today. This is the
+       FOURTH date this listing has carried and the record now says so in full rather than
+       quietly replacing one date with another: 30 July, then 17 September, then 24 September,
+       then 1 October given yesterday, then today. The 1 October came from his own words on
+       24.09, "Cynthia is going live next Thursday, not quite ready", and today's instruction
+       supersedes it. Price stays $619,900, untouched. Stage stays Coming Soon.
+   (4) The dead JULY 30 sentence comes out of the Willis note. It has been sitting in a rendered
+       field for two months saying the listing goes live on a day that is long past.
+   (5) re-hernandez-sell gets the band Ian gave, $420,000 to $430,000, low 400s, as a priceNote
+       and NOT as a price. No single figure, no close date, and no probability, because he gave
+       none and "a possibility" is not a number. The six month old CMA is marked THIN and not a
+       current valuation, in the field that renders next to the price.
+   (6) re-austin-thacker records Ian's words verbatim, "not really but kind of". No probability
+       and no price are assigned from that, and the stage is not touched.
+
+   THE PERCENTAGE RENDERER IS FIXED IN THE SAME BUILD, AND IT HAD TO BE. fnProjection rounded
+   the probability to a whole percent, so a winProb of 0.999 would have rendered as "100%". The
+   quoted form of the old line is deliberately NOT written here: the patch script guards on that
+   exact string to prove the line is gone, and a comment repeating it verbatim trips the guard.
+   It did, on the first run of this build, which is the guard working. The queue entry
+   that carried these numbers said in terms: "Both are HIS numbers, do not round 99.9 to 100."
+   Storing 0.999 and drawing 100 percent would have satisfied the letter of that and broken it
+   completely. Whole percentages still print whole; only a value that is not whole gets a
+   decimal, so nothing else on that list changes shape.
+
+   Every string this build replaces is archived to state.archive.reQueueDrainB448 with its
+   deal, its field and its exact previous text. Guard state.meta.mig448_qdrain, not in the seed,
+   SEED_VERSION stays 13. */
+try{ if(profile==="ian" && state.meta && !state.meta.mig448_qdrain
+     && state.realEstate && Array.isArray(state.realEstate.deals)){
+    var _D48=state.realEstate.deals, _log48=[];
+    var _f48=function(id){ for(var i=0;i<_D48.length;i++){ if(_D48[i]&&_D48[i].id===id) return _D48[i]; } return null; };
+    var _set48=function(d,k,v,why){
+      if(!d) return;
+      if(d[k]===v) return;
+      _log48.push({ deal:d.id, field:k, before:(d[k]===undefined?null:d[k]), why:why });
+      d[k]=v;
+    };
+
+    /* (1) and (2) Vogel */
+    var _vg=_f48("re-vogel-sell");
+    if(_vg){
+      _set48(_vg,"price","$329,900","Settled by Ian 25.09.2026. Supersedes $334,900, which he called a push on 21.09.");
+      _set48(_vg,"priceNote",
+        "$329,900, settled by Ian 25.09.2026. This supersedes the $334,900 that had been on the record since build 437, which he called a push on 21.09.2026 in the thread with Chris. The CMA revision 3 of 15.09.2026 recommended $334,900 post abatement with tiers $329,900 low, $334,900 recommended, $339,900 push; the abatement is done, so the as-is $319,900 is retired. His figure sits at the low tier and it is his call to make.",
+        "Replaced because it still said the price field was left empty on purpose, which stopped being true in build 437.");
+      _set48(_vg,"winProb",0.999,"Ian 24.09.2026, up from 0.70. 99.9 and not 100.");
+      _set48(_vg,"winProbSource","IAN","");
+      _set48(_vg,"winProbAsOf","2026-09-24","");
+    }
+
+    /* (2) Mattox probability only. Price band, stage and the 8 October date are NOT touched. */
+    var _mx=_f48("re-mattox-sell");
+    if(_mx){
+      _set48(_mx,"winProb",0.97,"Ian 24.09.2026, up from 0.77.");
+      _set48(_mx,"winProbSource","IAN","");
+      _set48(_mx,"winProbAsOf","2026-09-24","");
+    }
+
+    /* (3) and (4) Willis */
+    var _cw=_f48("re-cynthia-willis");
+    if(_cw){
+      _set48(_cw,"close","Goes live 25 September 2026",
+        "Ian's instruction 25.09.2026. Supersedes 1 October, which was his own 24.09 words, and 24 September before that.");
+      if(typeof _cw.note==="string"){
+        /* THE DEAD JULY 30 SENTENCE IS LEFT IN PLACE ON PURPOSE, and this is a correction to my
+           own first attempt at this build. Removing it looked right and was not: a migration
+           further up guards on that exact sentence and re-appends its whole block whenever the
+           sentence is missing, so the line came back on the next load, underneath the history
+           paragraph that had just corrected it. Same trap as the venue costs paragraph. The
+           record keeps the old sentence and the history below names it as dead, which is honest
+           and stable. Rewriting text that other code keys on is the thing not to do. */
+        var _hist="  LIST DATE HISTORY, AND IT SUPERSEDES EVERY DATE WRITTEN ABOVE, including the GOES LIVE (active) on JULY 30, 2026 sentence in this note, which is long dead and is only still here because a migration re-writes it whenever it is removed. Kept in full so no date quietly replaces another. 30 July 2026, confirmed 07.20 and long dead. 17 September, Ian 12.09 and firmed 14.09. 24 September, after Chris told the sellers in writing on 16.09 that it moved, following Dale's downspout and grade findings. 1 October, Ian 24.09.2026, \"Cynthia is going live next Thursday, not quite ready\". 25 SEPTEMBER 2026, Ian 25.09.2026, which is the current date and supersedes the 1 October he gave the day before. Price $619,900 has not moved through any of it.";
+        if(_cw.note.indexOf("LIST DATE HISTORY")<0) _cw.note=_cw.note+_hist;
+      }
+    }
+
+    /* (5) Hernandez: a band, never a figure */
+    var _hz=_f48("re-hernandez-sell");
+    if(_hz){
+      _set48(_hz,"priceNote",
+        "BAND ONLY, from Ian 24.09.2026: low 400s, most likely $420,000 to $430,000. No single list figure is set, because he gave a band and not a number. THE CMA IS THIN AND IS NOT A CURRENT VALUATION: one was run about six months ago and Ian calls it quick and small, so it must not be presented as the basis for a list price. No close date and no probability, because he gave neither and \"a possibility, no date\" is not one.",
+        "New. The record carried no price context at all.");
+    }
+
+    /* (6) Thacker: his words, and nothing derived from them */
+    var _th=_f48("re-austin-thacker");
+    if(_th && typeof _th.note==="string" && _th.note.indexOf("not really but kind of")<0){
+      _log48.push({ deal:_th.id, field:"note", before:_th.note,
+        why:"Appended Ian's verbatim words of 24.09.2026." });
+      _th.note=_th.note+"  IAN 24.09.2026, VERBATIM: \"not really but kind of\". Recorded as low and uncommitted, in his words. NO probability and NO price are assigned from that, because he gave neither, and this record does not enter the weighted year end total by design.";
+    }
+
+    if(_log48.length){
+      if(!state.archive||typeof state.archive!=="object") state.archive={};
+      if(!state.archive.reQueueDrainB448){
+        state.archive.reQueueDrainB448={ drainedOn:"2026-09-25", count:_log48.length, changes:_log48,
+          why:"Every real estate field build 448 changed while draining the write queue, with its previous value and the reason. Nothing was deleted." };
+      }
+    }
+    state.meta.mig448_qdrain=true; save(true);
+    try{ console.log("mig448 applied, "+_log48.length+" field changes"); }catch(_){}
+} }catch(e){ try{ console.warn("mig448 did not apply:",e&&e.message); }catch(_){} }
+
+/* ===== v21 build 448: THE TIDY SWEEP IS TURNED OFF, AND THE DAMAGE IT DID IS REPAIRED =====
+   THIS IS MY OWN DEFECT, SHIPPED IN BUILD 442 AND MADE PERMANENT IN 444, AND IT HAS BEEN
+   GROWING STATE ON EVERY SINGLE APP OPEN FOR FOUR DAYS.
+
+   WHAT WAS HAPPENING, measured rather than guessed. state.pickleball.paddle grew by exactly 389
+   characters per load: 1,267 then 1,656 then 2,045 then 2,434. One session note grew by 2,022
+   characters per load. On the fourth consecutive load the sweep still reported "tidied 29 of
+   1308 strings", when an idempotent pass on settled state should tidy zero.
+
+   THE MECHANISM. Several old migrations are idempotent by CONTENT rather than by a meta guard.
+   They read like this one, which is the paddle field's venue costs paragraph:
+       if(state.pickleball.paddle.indexOf("VENUE COSTS")<0){ paddle = paddle + " VENUE COSTS..." }
+   Its only guard is the presence of its own shouted sentinel. The sweep lowercases shouting, so
+   it destroyed the sentinel, so the guard stopped matching, so the block was appended again on
+   the next load, and the sweep lowercased that too. Append, erase the guard, append, forever.
+   There are several such guards in the file: "Gear log 07.21", "OVERGRIP IS OFF", "See the
+   Mechanics lab for how to play it.", among others. Every one of them is a sentinel built out of
+   exactly the capitals and build numbers the sweep was written to remove.
+
+   SO A CONTENT-MUTATING SWEEP IS THE WRONG DESIGN HERE, not a sweep with a bug. Any pass that
+   rewrites stored text will break any guard that keys on stored text, and the two cannot both be
+   right. THE CORRECT FIX IS TO TIDY AT RENDER TIME and never touch the record: the page draws
+   clean text, every content guard keeps matching, and state never moves. That is a real piece of
+   work across every pickleball render site and it is NOT being done in a queue drain build at
+   the end of a long session. It is written up as the next build.
+
+   WHAT THIS BUILD DOES INSTEAD, and it is the smallest thing that stops the bleeding:
+   1. pkTidySweep stops mutating. It is kept, not deleted, with this note attached, so the next
+      build starts from the reasoning rather than rediscovering it.
+   2. The already-duplicated text is repaired below.
+   THE HONEST COST: with the sweep off, each broken guard fires ONE more time, writes its raw
+   shouted block, and then matches itself forever after, so state converges. A handful of shouted
+   passages come back on the pickleball page. That is worse to read and better to trust than a
+   record that grows every time he opens the app. */
+function pkTidySweepDisabledB448(){ return 0; }
+
+/* THE REPAIR. Every affected field is the same shape: a block appended to itself N times at the
+   end. This collapses an exact repeated tail, largest first, and keeps one copy. It only ever
+   removes text that is byte-identical to the text immediately before it, so it cannot delete
+   anything that was written once. Originals are archived whole. */
+function pkDedupeTail(t){
+  t=String(t==null?"":t);
+  var guard=0;
+  for(;;){
+    if(guard++>40) break;
+    var cut=-1;
+    for(var k=Math.floor(t.length/2); k>=60; k--){
+      if(t.slice(t.length-k)===t.slice(t.length-2*k, t.length-k)){ cut=k; break; }
+    }
+    if(cut<0) break;
+    t=t.slice(0, t.length-cut);
+  }
+  return t;
+}
+try{ if(profile==="ian" && state.meta && !state.meta.mig448_dedupe && state.pickleball){
+    var _log4d=[], _seen4d=0;
+    var _SKIP4D=/^(url|href|link|src|image|img|id|ids|key|slug|mergedFrom|sourceRecords|dupr)$/i;
+    var _walk4d=function(node,path,depth){
+      if(depth>8||node==null||typeof node!=="object") return;
+      var keys=Array.isArray(node)?node.map(function(_x,i){return i;}):Object.keys(node);
+      keys.forEach(function(k){
+        if(!Array.isArray(node) && _SKIP4D.test(String(k))) return;
+        var v=node[k];
+        if(typeof v==="string"){
+          if(v.length<200) return;
+          _seen4d++;
+          var after=pkDedupeTail(v);
+          if(after!==v && after.length>=120){
+            _log4d.push({path:path+"."+k, removed:v.length-after.length, before:v});
+            node[k]=after;
+          }
+        } else if(v&&typeof v==="object"){ _walk4d(v,path+"."+k,depth+1); }
+      });
+    };
+    _walk4d(state.pickleball,"pickleball",0);
+    if(_log4d.length){
+      if(!state.archive||typeof state.archive!=="object") state.archive={};
+      if(!state.archive.pickleballDedupeB448){
+        state.archive.pickleballDedupeB448={ repairedOn:"2026-09-25", fields:_log4d.length,
+          charsRemoved:_log4d.reduce(function(a,r){return a+r.removed;},0), changes:_log4d,
+          why:"Duplicate blocks appended by content-guarded migrations whose sentinels the build 442 tidy sweep had erased. Only byte-identical repeated tails were collapsed, and the full previous text of every field is here." };
+      }
+    }
+    state.meta.mig448_dedupe=true; save(true);
+    try{ console.log("mig448 dedupe: "+_log4d.length+" of "+_seen4d+" long strings repaired"); }catch(_){}
+} }catch(e){ try{ console.warn("mig448 dedupe did not apply:",e&&e.message); }catch(_){} }
+
   /* build 372: LAST THING BEFORE THE SAVE. Every migration above has run, deepMergeDefaults
      has run, so this is the only point in the file where the state is actually final. */
   try{ convergeState(); }catch(e){}
@@ -20899,7 +21108,14 @@ function convergeState(){
      It runs after the drill cap rather than before it, so that the array indices in the
      paths it archives still resolve once the cap has removed what it removes.
      No save of its own, per this function's contract: the caller saves on the next line. */
-  try{ pkTidySweep(); }catch(_){}
+  /* build 448: THIS CALL IS DELIBERATELY DEAD. pkTidySweep rewrote stored text, and several
+     old migrations are idempotent by CONTENT rather than by a meta guard, keying on their
+     own shouted sentinels. Rewriting the text erased the sentinels, so those blocks appended
+     again on every load: the paddle field grew 389 characters per open and one session note
+     grew 2,022. The full post mortem is on pkTidySweepDisabledB448 in the migration chain.
+     Do not simply re-enable this. The fix is to tidy at RENDER time and leave the record
+     alone, which is the next build. */
+  try{ pkTidySweepDisabledB448(); }catch(_){}
 }
 
 /* v21 build 291: THE DEFAULT PAYMENT STATE FOR A NEWLY CLOSED DEAL IS OUTSTANDING.
@@ -27158,7 +27374,17 @@ function fnProjection(v,f){
       var bits=[];
       /* build 438: the percentage leads, so the ORDER EXPLAINS ITSELF and he is not left to
          infer why the rows are in this sequence. */
-      if(x.p!==null&&x.p!==undefined) bits.push(Math.round(x.p*100)+"%");
+      /* build 448: 99.9 IS NOT 100. Ian gave Vogel 99.9 percent on 24.09.2026 and the queue
+         entry carrying it said in terms "do not round 99.9 to 100". This line did exactly
+         that: Math.round(0.999*100) is 100, so storing his number and drawing a different
+         one would have satisfied the letter of the instruction and broken it completely.
+         A whole percentage still prints whole, so nothing else on this list changes shape;
+         only a value that is not whole keeps a decimal. */
+      if(x.p!==null&&x.p!==undefined){
+        var _pc=x.p*100;
+        var _pw=Math.round(_pc);
+        bits.push((Math.abs(_pc-_pw)<0.05 ? _pw : Math.round(_pc*10)/10)+"%");
+      }
       bits.push(x.contracted?"Under contract":String(x.d.stage||""));
       /* build 440: BOTH FIGURES ON EVERY ROW. The headline amount is what he KEEPS, because that
          is the number the badge beside it is judged against and putting the other one there is
