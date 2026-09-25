@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 446 (2026-09-24)">
+<meta name="build" content="v21 build 447 (2026-09-25)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -18807,6 +18807,87 @@ try{ if(profile==="ian" && state.meta && !state.meta.mig446_pk0924 && state.pick
     state.meta.mig446_pk0924=true; save(true);
 } }catch(e){ try{ console.warn("mig446 session did not apply:",e&&e.message); }catch(_){} }
 
+/* ===== v21 build 447: FRIDAY 25 SEPTEMBER, AND THE FIRST CANCELLED CLASS =================
+   6:56 to 8:08 AM, Omaha, 1:11:57. 512 active calories and 625 total, average heart rate 113,
+   max 149, min 74. Open play only, a little over an hour, no drilling.
+
+   THE ESTEBAN CLASS WAS CANCELLED, AND THE REASON MATTERS. A private class was on the books for
+   this morning, the first one that ever has been. Esteban had a family thing and did not come.
+   That is HIS cancellation for a family reason: it was not declined by Ian, not called off by
+   us, and it has not been rescheduled. Those are four different states and the record says which
+   one this is. The coach record is updated to match, because since build 442 it has read
+   "Nothing scheduled", and that stopped being true the moment a class went on the books. The
+   previous wording is archived rather than overwritten silently.
+
+   HIS READ STAYS WORDS. He did not play very well and he also was not super focused, both his
+   own account. It is stored as hisRead and rendered in quotes and attributed, the same way the
+   opposition band's read is. It is NOT converted into a number, and it is NOT set against the
+   average heart rate of 113: the watch measures exertion, his read is about how he played, and
+   putting them together is the axis confusion this app has already spent four observation blocks
+   on.
+
+   THE OVERGRIP IS FLAGGED, NOT CONCLUDED. He said his overgrip is way old and needs replacing,
+   unprompted, on a morning he also said he was unfocused. The card lists it under "He flagged",
+   which is the honest claim: he named it. The app cannot separate a worn grip from a lack of
+   focus in a single session of open play and does not pretend to. Worth noting for whoever picks
+   this up later, and worth keeping OFF the card: the grip has form here. The 2 August change,
+   when he took the overgrip off, is the recorded mechanical cause behind both the hands
+   improvement and the long drives. Grip state has moved his ball before. One session is still
+   not evidence.
+
+   THE EFFORT RULE, UNCHANGED. Apple reports 6, "Moderate". That is exertion. There is no effort
+   key, so pkEffort returns null, the bar hatches, and the card says his own rating is not
+   recorded. No prose here contains the phrase pkEffort parses out of notes.
+
+   No calendar event, not a tournament. No gym inference. DUPR stays 3.226. Guard
+   state.meta.mig447_pk0925, not in the seed, SEED_VERSION stays 13, idempotent on id. */
+try{ if(profile==="ian" && state.meta && !state.meta.mig447_pk0925 && state.pickleball){
+    var _P47=state.pickleball;
+    if(!Array.isArray(_P47.sessions)) _P47.sessions=[];
+    var _dup47=false;
+    _P47.sessions.forEach(function(s){ if(s&&s.id==="pk-20260925-am") _dup47=true; });
+    if(!_dup47){
+      _P47.sessions.push({
+        id:"pk-20260925-am", date:"2026-09-25", kind:"Open play", venue:"Omaha",
+        duration:"1h 11m 57s", window:"6:56 to 8:08 AM, Omaha",
+        calories:625, activeCalories:512, avgHr:113, maxHr:149, minHr:74,
+        watchEffort:6, watchEffortLabel:"Moderate", watchEffortSource:"Apple Watch",
+        /* no effort key: Ian has not rated this session */
+        blocks:[
+          {label:"Open play", detail:"a little over an hour, no drilling"}
+        ],
+        hisRead:"I didn't play very well, but I also wasn't super focused.",
+        flagged:[
+          {label:"Overgrip", detail:"Way old and needs replacing. He raised it himself, on a morning he also said he was unfocused, and nothing here treats it as the cause."}
+        ],
+        context:"The private class with Esteban was cancelled. He had a family thing and did not come. It was not declined and it has not been rescheduled, and it was the first class that had been on the books.",
+        result:"", score:"", opponent:"", copyOwned:true
+      });
+      _P47.sessions.sort(function(a,z){ return String(a.date).localeCompare(String(z.date)); });
+    }
+    /* the coach record catches up with the fact that a class existed */
+    if(_P47.coach){
+      var _prev47=_P47.coach.status;
+      if(_prev47 && _prev47.indexOf("cancelled")<0){
+        if(!state.archive||typeof state.archive!=="object") state.archive={};
+        if(!state.archive.coachStatusPreB447){
+          state.archive.coachStatusPreB447={ before:_prev47, changedOn:"2026-09-25",
+            why:"Replaced because it said nothing was scheduled, and a private class had since gone on the books for 25 September and was cancelled by Esteban on the day." };
+        }
+      }
+      _P47.coach.status="A private class was booked for 25 September and Esteban cancelled on the day, a family reason. Nothing rescheduled yet, and no price has been discussed.";
+      _P47.coach.firstBooked="2026-09-25";
+      if(!Array.isArray(_P47.coach.history)) _P47.coach.history=[];
+      var _seen47=false;
+      _P47.coach.history.forEach(function(h){ if(h&&h.date==="2026-09-25") _seen47=true; });
+      if(!_seen47){
+        _P47.coach.history.push({ date:"2026-09-25", what:"Private class booked",
+          outcome:"Cancelled by Esteban on the day, family reason. Not rescheduled." });
+      }
+    }
+    state.meta.mig447_pk0925=true; save(true);
+} }catch(e){ try{ console.warn("mig447 session did not apply:",e&&e.message); }catch(_){} }
+
 /* ===== v21 build 399: ARCHIVE THE FALL CUP. IT NEVER HAPPENED. ============================
    IAN, 14.09.2026: "I never did that fall cup."
 
@@ -24629,6 +24710,31 @@ function pkSessionItem(parent,s){
     }
   })();
   if(s.note){ var n=el("div","small dim"); n.style.cssText="margin-top:6px;line-height:1.5"; n.textContent=s.note; det.appendChild(n); }
+  /* build 447: his own read of the session, in quotes and attributed, exactly as the opposition
+     band's hisRead is handled. It stays words. It is not converted into a number, and nothing
+     on this card sets it beside the heart rate: the watch measures exertion, his read is about
+     how he played, and those are different axes. */
+  if(s.hisRead){
+    var hr9=el("div","small dim"); hr9.style.cssText="margin-top:6px;line-height:1.5";
+    hr9.textContent="His read: \""+String(s.hisRead)+"\"";
+    det.appendChild(hr9);
+  }
+  /* build 447: things HE named that might have been a factor. The heading says he flagged them,
+     because that is all that is known: a worn overgrip is a thing he noticed on a morning he
+     also said he was not focused, and the app has no way to separate those and does not try.
+     Nothing here is written as a cause. */
+  (function(){
+    if(!Array.isArray(s.flagged)||!s.flagged.length) return;
+    var h=el("div","small"); h.style.cssText="color:var(--gray);font-weight:700;margin-top:8px";
+    h.textContent="He flagged"; det.appendChild(h);
+    s.flagged.forEach(function(f){
+      var li=el("div","small dim"); li.style.cssText="margin-top:3px;line-height:1.5;padding-left:10px";
+      var lab=(f&&f.label)?String(f.label):String(f||"");
+      var dt=(f&&f.detail)?String(f.detail):"";
+      li.textContent="\u00b7  "+lab+(dt?("  \u00b7  "+dt):"");
+      det.appendChild(li);
+    });
+  })();
   /* build 443: what went well and what did not, kept as separate lines rather than run
      together in the note, because the two things he struggled with are different problems
      and reading them as one loses the distinction. */
