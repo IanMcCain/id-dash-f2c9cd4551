@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 448 (2026-09-25)">
+<meta name="build" content="v21 build 449 (2026-09-25)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -20675,6 +20675,120 @@ try{ if(!state.meta.mig440_tax){
 
 
 /* build 225: focus timer removed, nothing to clear here anymore. */
+
+
+/* ===== v21 build 449: THE HISTORICAL EFFORT KEYS, AND FOUR LEANING DATES ================
+   IAN, 25.09.2026, AUTHORISING THE CLEAR: "Pickleball sessions, I don't know exactly what you're
+   asking, but just clear it. I don't want anything or any false information."
+
+   THE PROBLEM HE IS ANSWERING. Since build 443 a session's effort key has meant HIS rating, how
+   hard he tried and how well he played. The 52 historical sessions that carry one were written
+   before that distinction existed, and most of them hold the WATCH'S exertion instead. The two
+   are different axes and four observation blocks have already been spent trying to reconcile one
+   against heart rate.
+
+   EVERY SESSION WAS CLASSIFIED FROM ITS OWN NOTE, not from its date, and the note is the record
+   of how the number was entered:
+     HIS, 12 sessions. The note says in terms "Effort N is your rating, not the watch's", written
+       at logging time, and reasons about the rating as a separate axis from heart rate in the
+       same sentence. 8 September onward. These KEEP their effort key.
+     WATCH, 24 sessions. The note reads "Effort N of 10, Label. From Apple Watch" and gives the
+       watch summary alongside. These move to watchEffort with the label the note gives and a
+       source of Apple Watch, exactly as the recent sessions store it, and lose the effort key.
+       Data with a correct home is not discarded.
+     UNKNOWN, 16 sessions. Nothing in the note says whose number it is. These are CLEARED and NOT
+       moved to watchEffort, because guessing it was the watch would be inventing provenance,
+       which is the false information he is objecting to.
+
+   EVERY VALUE IS ARCHIVED FIRST at state.archive.effortClearedB449, with the session, the number,
+   the classification and the reason. Nothing is destroyed and any of it can be read back.
+
+   WHAT THE PAGE DOES AFTERWARDS, and this is the point of the exercise: pkEffort returns null for
+   40 of the 65 sessions, so the load strip hatches them and their tooltips read "effort not
+   recorded", and pkInsights computes its effort trend from the 12 real ratings only. The card
+   shows the watch figure where there is one, named as the watch's.
+
+   FOUR DATES, ALL LEANING, NONE SET. Ian 25.09.2026: "Mattox probably pushed closer to the 15th,
+   possibly the 8th, but probably the 15th. Vogel we're definitely going to push for the 8th
+   because he's almost ready. But neither of them are for sure set yet, that's just the leaning.
+   We don't know for sure when we're going to stage both. Third and fourth for staging, but none
+   of that is set." Every one of these is written as a LEAN and none as a commitment, and nothing
+   goes on the calendar. The photography constraint is recorded because it is the real gate:
+   photos run 2 to 3 days before go live and his mother is the photographer, so a Thursday
+   listing means photos on about the Tuesday, subject to her. */
+try{ if(profile==="ian" && state.meta && !state.meta.mig449_effort && state.pickleball){
+    var _S49=(state.pickleball.sessions||[]), _arc49=[], _k49=0, _m49=0, _c49=0;
+    var _HIS49=/is your rating|is his rating|not the watch|how hard (you|he) tried/i;
+    var _WATCH49=/from apple watch|apple fitness|watch summary/i;
+    var _LAB49=function(n){
+      var m=String(n||"").match(/\b(all out|hard|moderate|easy|light)\b/i);
+      if(!m) return "";
+      var w=m[1].toLowerCase();
+      return w==="all out"?"All Out":w.charAt(0).toUpperCase()+w.slice(1);
+    };
+    _S49.forEach(function(s){
+      if(!s||typeof s.effort!=="number") return;
+      var note=String(s.note||"");
+      var cls=_HIS49.test(note)?"HIS":(_WATCH49.test(note)?"WATCH":"UNKNOWN");
+      if(cls==="HIS"){ _k49++; return; }
+      _arc49.push({ id:s.id, date:s.date, effort:s.effort, classified:cls,
+        why:(cls==="WATCH")
+          ? "The note gives the figure alongside the Apple Watch summary, so it is the watch's exertion. Moved to watchEffort and removed from effort."
+          : "Nothing in the note says whose number this is, so it was cleared rather than guessed. Ian: no false information." });
+      if(cls==="WATCH"){
+        if(s.watchEffort==null){
+          s.watchEffort=s.effort;
+          var lab=_LAB49(note); if(lab) s.watchEffortLabel=lab;
+          s.watchEffortSource="Apple Watch";
+        }
+        _m49++;
+      } else { _c49++; }
+      delete s.effort;
+    });
+    if(_arc49.length){
+      if(!state.archive||typeof state.archive!=="object") state.archive={};
+      if(!state.archive.effortClearedB449){
+        state.archive.effortClearedB449={ clearedOn:"2026-09-25", kept:_k49, movedToWatch:_m49,
+          cleared:_c49, total:_arc49.length, values:_arc49,
+          why:"Every historical effort value removed from the effort key on 25.09.2026 on Ian's instruction, with its classification. Kept means the note says it was his own rating. Nothing was destroyed." };
+      }
+    }
+    try{ console.log("mig449 effort: kept "+_k49+", moved "+_m49+", cleared "+_c49); }catch(_){}
+
+    /* ---- the four leaning dates ---- */
+    var _D49=(state.realEstate&&state.realEstate.deals)||[];
+    var _f49=function(id){ for(var i=0;i<_D49.length;i++){ if(_D49[i]&&_D49[i].id===id) return _D49[i]; } return null; };
+    var _lean49=[];
+    var _put49=function(d,k,v){ if(!d) return; if(d[k]===v) return; _lean49.push({deal:d.id,field:k,before:(d[k]===undefined?null:d[k])}); d[k]=v; };
+    var _PHOTO49="Photos run 2 to 3 days before go live, so a Thursday listing means photos on about the Tuesday. THE GATE IS HIS MOTHER'S AVAILABILITY, she is the photographer, and no photo date is fixed until she is. Ian, 25.09.2026.";
+    var _mx49=_f49("re-mattox-sell");
+    if(_mx49){
+      _put49(_mx49,"close","LEANING 15 October 2026, not set");
+      if(typeof _mx49.note==="string" && _mx49.note.indexOf("LEANING 15 OCTOBER")<0){
+        _put49(_mx49,"note",_mx49.note+"  LEANING 15 OCTOBER 2026, NOT SET. Ian 25.09.2026, verbatim: \"Mattox probably pushed closer to the 15th, possibly the 8th, but probably the 15th.\" A lean, not a commitment. The 8 October Chris agreed with the seller in writing on 23.09 stands on the record and is now the less likely of the two. Nothing is on the calendar and nothing should be until Ian sets it. "+_PHOTO49);
+      }
+      _put49(_mx49,"stagingNote","PARTIAL is Ian's deliberate call, 21.09.2026, and is not a gap. STAGING DATE IS A LEAN ONLY: Ian 25.09.2026, \"we don't know for sure when we're going to stage both, third and fourth for staging, but none of that is set.\"");
+    }
+    var _vg49=_f49("re-vogel-sell");
+    if(_vg49){
+      _put49(_vg49,"close","PUSHING FOR 8 October 2026, not set");
+      if(typeof _vg49.note==="string" && _vg49.note.indexOf("PUSHING FOR 8 OCTOBER")<0){
+        _put49(_vg49,"note",_vg49.note+"  PUSHING FOR 8 OCTOBER 2026, NOT SET. Ian 25.09.2026, verbatim: \"Vogel we're definitely going to push for the 8th because he's almost ready. But neither of them are for sure set yet, that's just the leaning.\" A lean, not a commitment, and not on the calendar. "+_PHOTO49);
+      }
+    }
+    var _bk49=_f49("re-belknap-sell");
+    if(_bk49){
+      _put49(_bk49,"stagingNote","STAGING DATE IS A LEAN, NOT A BOOKING. Ian 25.09.2026: \"we don't know for sure when we're going to stage both, third and fourth for staging, but none of that is set.\" This previously read as booked for 3 and 4 October; the calendar entries stand and were not touched, but the record no longer calls them settled.");
+    }
+    if(_lean49.length){
+      if(!state.archive||typeof state.archive!=="object") state.archive={};
+      if(!state.archive.leaningDatesB449){
+        state.archive.leaningDatesB449={ setOn:"2026-09-25", count:_lean49.length, changes:_lean49,
+          why:"Previous values of every deal field build 449 rewrote as a lean rather than a commitment." };
+      }
+    }
+    state.meta.mig449_effort=true; save(true);
+} }catch(e){ try{ console.warn("mig449 did not apply:",e&&e.message); }catch(_){} }
 
 /* ===== v21 build 448: THE WRITE QUEUE DRAIN, 25.09.2026 ================================
    Thirteen actionable entries, the oldest 304 hours. Every one was read before anything was
