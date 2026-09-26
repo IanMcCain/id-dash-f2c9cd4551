@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 449 (2026-09-25)">
+<meta name="build" content="v21 build 450 (2026-09-26)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -1997,10 +1997,17 @@ function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]
   } }catch(e){}
   /* v21 build 111: (a) Cynthia Willis goes LIVE July 30 2026, verified as 10218 Spyglass Dr against the 07.05.2026 CMA on
      file. Note appended and a calendar item added. (b) Venue economics recorded so the agents stop treating venue as free. */
-  try{ if(state.realEstate&&Array.isArray(state.realEstate.deals)){ var _wc=false; state.realEstate.deals.forEach(function(d){ if(d&&d.id==="re-cynthia-willis"&&typeof d.note==="string"&&d.note.indexOf("GOES LIVE")<0){ d.note=d.note+" GOES LIVE (active) on JULY 30, 2026, confirmed by Ian 07.20.2026. Verified as 10218 Spyglass Dr against the 07.05.2026 CMA on file (CMA Willis Spyglass Dr plus Troester re run). Prep the listing go live: photos, copy, syndication check, and a just listed push."; _wc=true; } }); if(_wc) save(true); } }catch(e){}
+  /* build 450: GUARDED ON META, NOT ON ITS OWN OUTPUT. This block used to check only whether
+   the note already contained "GOES LIVE". Deleting that dead sentence therefore switched the
+   block back on and it rewrote itself on the next load, which is why build 448 labelled the
+   line instead of removing it. A migration must never be idempotent by the string it wrote. */
+  try{ if(state.realEstate&&Array.isArray(state.realEstate.deals)&&state.meta&&!state.meta.mig111_willislive){ var _wc=false; state.realEstate.deals.forEach(function(d){ if(d&&d.id==="re-cynthia-willis"&&typeof d.note==="string"&&d.note.indexOf("GOES LIVE")<0){ d.note=d.note+" GOES LIVE (active) on JULY 30, 2026, confirmed by Ian 07.20.2026. Verified as 10218 Spyglass Dr against the 07.05.2026 CMA on file (CMA Willis Spyglass Dr plus Troester re run). Prep the listing go live: photos, copy, syndication check, and a just listed push."; _wc=true; } }); state.meta.mig111_willislive=true; if(_wc) save(true); } }catch(e){}
   try{ if(profile==="ian"){ if(!Array.isArray(state.events)) state.events=[]; if(!state.events.some(function(e){return e&&e.id==="ev-20260730-willis-live";})){ state.events.push({id:"ev-20260730-willis-live",title:"Cynthia Willis listing goes live, 10218 Spyglass Dr",date:"2026-07-30",kind:"Real estate"}); save(true); } } }catch(e){}
   /* venue economics, appended to the pickleball paddle notes box once so it travels with his gear context */
-  try{ if(state.pickleball&&typeof state.pickleball.paddle==="string"&&state.pickleball.paddle.indexOf("VENUE COSTS")<0){ state.pickleball.paddle=state.pickleball.paddle+" VENUE COSTS (07.20.2026): Ace is 70 a month UNLIMITED and already paid for, it is closer, and he knows people who go consistently, so Ace stays primary. Midwest would be roughly 50 a month ON TOP, about 600 a year, so use DROP IN rates there instead and concentrate visits Jan to Apr 2027 near tryouts. Only reconsider a Midwest membership in early 2027 if he has committed to trying out."; save(true); } }catch(e){}
+  /* build 450: GUARDED ON META for the same reason. This is the block that grew the paddle
+   field by 389 characters on every app open once the build 442 tidy pass lowercased its
+   sentinel. See the build 448 post mortem. */
+  try{ if(state.pickleball&&typeof state.pickleball.paddle==="string"&&state.meta&&!state.meta.mig111_venue&&state.pickleball.paddle.indexOf("VENUE COSTS")<0){ state.meta.mig111_venue=true; state.pickleball.paddle=state.pickleball.paddle+" VENUE COSTS (07.20.2026): Ace is 70 a month UNLIMITED and already paid for, it is closer, and he knows people who go consistently, so Ace stays primary. Midwest would be roughly 50 a month ON TOP, about 600 a year, so use DROP IN rates there instead and concentrate visits Jan to Apr 2027 near tryouts. Only reconsider a Midwest membership in early 2027 if he has committed to trying out."; save(true); } }catch(e){}
   /* v21 build 110: venue strategy. Ace stays his main club, but Midwest Pickleball Club is the Nebraska Pro League home,
      so build a regular presence there ahead of April 2027 tryouts. Add only, idempotent. */
   try{ if(state.pickleball){ if(!Array.isArray(state.pickleball.goals)) state.pickleball.goals=[]; if(!state.pickleball.goals.some(function(g){return g&&g.id==="pk-goal-midwest";})){ state.pickleball.goals.push({id:"pk-goal-midwest",text:"Midwest presence, cost aware version. Ace stays primary, it is unlimited and already paid for, so keep most of your 5 to 6 sessions there. Visit Midwest on DROP IN rates only, targeting events, open play and anything NPL related like Rising Stars. Concentrate the real presence in Jan to Apr 2027 when it actually matters. Only reconsider a Midwest membership in early 2027 IF you have decided you are genuinely going for tryouts. 600 a year is real money for a maybe.",done:false}); save(true); } } }catch(e){}
@@ -2640,11 +2647,16 @@ function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]
      note with Ian's recap; keep all Apple Watch stats (1h 38m 31s, 1039/882 cal, avg 127 / max 166 HR). Flag-less
      and presence-checked: writes only while a field still differs, so it is idempotent across reloads. effort stays a
      numeric field so pkEffort/pkStats feed it straight into the Coach "what your coach sees" effort signal. */
-  try{ if(state.pickleball&&Array.isArray(state.pickleball.sessions)){
+  /* build 450: GUARDED ON META. This block re-asserted effort 8 on the 12 July session every
+   load, which put back a value mig449 had cleared as unattributable. Third instance of the
+   same defect in this file: a migration whose only stopping condition is the value it wrote.
+   The note is still maintained here; the EFFORT is not, because whose number it is was never
+   established and Ian asked for no false information. */
+  try{ if(state.pickleball&&Array.isArray(state.pickleball.sessions)&&state.meta&&!state.meta.mig450_willis){
       var _PKNOTE="High intensity. Drilled serves and drives 20 min, then cross-court dinks and serve-receives 40 min, then doubles the rest. Felt on point: serves solid, drives solid, just some random errors.";
       var _pk712=state.pickleball.sessions.filter(function(x){ return x&&(x.id==="pk-20260712-openplay"||x.date==="2026-07-12"); });
       var _pk712chg=false;
-      _pk712.forEach(function(x){ if(x.effort!==8){ x.effort=8; _pk712chg=true; } if(x.note!==_PKNOTE){ x.note=_PKNOTE; _pk712chg=true; } });
+      _pk712.forEach(function(x){ if(x.note!==_PKNOTE){ x.note=_PKNOTE; _pk712chg=true; } });
       if(_pk712chg) save(true);
     }
   }catch(e){}
@@ -20676,6 +20688,108 @@ try{ if(!state.meta.mig440_tax){
 
 /* build 225: focus timer removed, nothing to clear here anymore. */
 
+
+
+/* ===== v21 build 450: WILLIS IS LIVE, AND THE RE-APPENDER IS KILLED PROPERLY ============
+   The listing went live on Friday 25 September and the app still showed Coming Soon with a
+   go live window of mid to late August and a note ending 30 July. That is the single most wrong
+   thing on the page and it has been wrong since the day it listed.
+
+   WHY THE 30 JULY LINE KEPT COMING BACK, and why build 448 settled for labelling it instead of
+   removing it. The build 111 block at line 2000 is guarded by its own CONTENT:
+       if(d.note.indexOf("GOES LIVE")<0){ d.note = d.note + " GOES LIVE (active) on JULY 30..." }
+   Delete the sentence and the guard stops matching, so it writes itself back on the next load.
+   Build 448 left it in place and named it dead, which was honest and was not a fix.
+   THIS BUILD FIXES IT AT THE SOURCE: that block and its twin, the venue costs paragraph that
+   grew state by 389 characters an open, are now guarded on state.meta instead of on their own
+   text. A meta guard cannot be erased by editing the text it wrote. Both guards are set here as
+   well, so neither block ever runs again on a profile that already has their content.
+
+   THE RULE THIS ESTABLISHES, and it is the general form of the build 442 defect: A MIGRATION
+   MUST NOT BE IDEMPOTENT BY ITS OWN OUTPUT. If the only thing stopping it running twice is a
+   string it wrote, then anything that edits that string, a tidy pass, a correction, Ian himself,
+   turns the migration back on. Guard on meta, always.
+
+   WILLIS, AS OF 25 SEPTEMBER 2026: stage Active, live 25 September, $619,900 untouched,
+   probability 0.98 which is Ian's own figure and has not moved. ONE DEAL, re-cynthia-willis,
+   sellers Byron and Cynthia Willis at 10218 Spyglass Dr. There is no second Willis record and
+   the verification asserts there is not.
+
+   Guard: state.meta.mig450_willis, not in the seed, SEED_VERSION stays 13. */
+try{ if(profile==="ian" && state.meta){
+    /* 1. turn the two content-guarded blocks off for good */
+    state.meta.mig111_willislive=true;
+    state.meta.mig111_venue=true;
+
+    var _arc50=[];
+    var _rec50=function(what,before){ _arc50.push({field:what,before:before}); };
+
+    var _D50=(state.realEstate&&state.realEstate.deals)||[];
+    var _w50=null;
+    for(var i=0;i<_D50.length;i++){ if(_D50[i]&&_D50[i].id==="re-cynthia-willis"){ _w50=_D50[i]; break; } }
+    if(_w50){
+      if(_w50.stage!=="Active"){ _rec50("stage",_w50.stage); _w50.stage="Active"; }
+      var _c50="Live 25 September 2026";
+      if(_w50.close!==_c50){ _rec50("close",_w50.close); _w50.close=_c50; }
+      if(_w50.winProb!==0.98){ _rec50("winProb",_w50.winProb); _w50.winProb=0.98; }
+      _w50.winProbSource="IAN";
+      _w50.listDate="2026-09-25";
+      _w50.sellers="Byron and Cynthia Willis";
+      /* the dead text comes out, and it stays out now that the block above is meta guarded */
+      if(typeof _w50.note==="string"){
+        var _n50=_w50.note;
+        _n50=_n50.replace(/\s*GOES LIVE \(active\) on JULY 30, 2026, confirmed by Ian 07\.20\.2026\.\s*/gi," ");
+        _n50=_n50.replace(/\s*Tentative go live,? approx(?:imately)? mid to late Aug(?:ust)?[^.]*\.?\s*/gi," ");
+        _n50=_n50.replace(/\s*, including the GOES LIVE \(active\) on JULY 30, 2026 sentence in this note, which is long dead and is only still here because a migration re-writes it whenever it is removed\./gi,".");
+        _n50=_n50.replace(/\s{2,}/g," ").trim();
+        if(_n50!==_w50.note){ _rec50("note",_w50.note); _w50.note=_n50; }
+        if(_w50.note.indexOf("LISTED AND LIVE")<0){
+          _w50.note=_w50.note+"  LISTED AND LIVE. 10218 Spyglass Dr went ACTIVE on Friday 25 September 2026 at $619,900. Sellers are Byron and Cynthia Willis and this is the only Willis record; there is no separate deal. Ian, 25.09.2026: \"we changed our mind and are going to list today.\" The 30 July, 17 September, 24 September and 1 October dates this record carried before it are all dead and have been removed rather than left to be read.";
+        }
+      }
+      if(typeof _w50.close==="string" && /mid to late Aug/i.test(_w50.close)){
+        _rec50("close-second-pass",_w50.close); _w50.close=_c50;
+      }
+    }
+
+    /* 2. the 12 July session. mig449 classified its effort as UNKNOWN and cleared it, and an
+       unguarded block three thousand lines up put it straight back on the next load. That
+       block is now meta guarded and the value is cleared again here. Its heart rate,
+       calories and note are untouched. */
+    try{
+      var _S50=(state.pickleball&&state.pickleball.sessions)||[];
+      _S50.forEach(function(x){
+        if(x&&x.id==="pk-20260712-openplay"&&typeof x.effort==="number"){
+          _rec50("pk-20260712-openplay.effort",x.effort); delete x.effort;
+        }
+      });
+    }catch(e){}
+
+    /* 3. the paddle field, in case the venue block got one more copy in before the guard landed */
+    if(state.pickleball && typeof state.pickleball.paddle==="string"){
+      var _p50=state.pickleball.paddle, _g50=0;
+      for(;;){
+        if(_g50++>40) break;
+        var _cut=-1;
+        for(var k=Math.floor(_p50.length/2); k>=60; k--){
+          if(_p50.slice(_p50.length-k)===_p50.slice(_p50.length-2*k,_p50.length-k)){ _cut=k; break; }
+        }
+        if(_cut<0) break;
+        _p50=_p50.slice(0,_p50.length-_cut);
+      }
+      if(_p50!==state.pickleball.paddle){ _rec50("pickleball.paddle",state.pickleball.paddle); state.pickleball.paddle=_p50; }
+    }
+
+    if(_arc50.length){
+      if(!state.archive||typeof state.archive!=="object") state.archive={};
+      if(!state.archive.willisLiveB450){
+        state.archive.willisLiveB450={ setOn:"2026-09-26", count:_arc50.length, changes:_arc50,
+          why:"Previous values of everything build 450 changed on re-cynthia-willis, plus any paddle repair. The listing went live 25 September 2026 and the record had not caught up." };
+      }
+    }
+    state.meta.mig450_willis=true; save(true);
+    try{ console.log("mig450 willis: "+_arc50.length+" fields changed"); }catch(_){}
+} }catch(e){ try{ console.warn("mig450 did not apply:",e&&e.message); }catch(_){} }
 
 /* ===== v21 build 449: THE HISTORICAL EFFORT KEYS, AND FOUR LEANING DATES ================
    IAN, 25.09.2026, AUTHORISING THE CLEAR: "Pickleball sessions, I don't know exactly what you're
