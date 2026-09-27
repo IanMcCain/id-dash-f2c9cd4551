@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 453 (2026-09-27)">
+<meta name="build" content="v21 build 454 (2026-09-27)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -20692,6 +20692,94 @@ try{ if(!state.meta.mig440_tax){
 
 
 
+
+/* ===== v21 build 454: PROBABILITIES FROM IAN, 27.09.2026, PLUS TWO CORRECTIONS ==========
+   FRAHM IS 50 PERCENT BUT NEXT YEAR, so it must NOT enter the 2026 figure. The app already has
+   the mechanism: is27() reads the close string for 2027 or later and fnProjection carries it as
+   "far", outside the window. So both Frahm records get 0.50 AND a close that says 2027, which is
+   what keeps them out of this year's number. No date is invented: "next year" is all he said.
+   HARTLEY AND THACKER ARE DELIBERATELY LEFT WITHOUT A PROBABILITY. Hartley because he was asked
+   and does not know; Thacker because he has been asked twice and his standing answer is "not
+   really but kind of". Both are recorded as ASKED AND ANSWERED so no lane asks again.
+   Guard state.meta.mig454_probs, end of chain, SEED_VERSION stays 13. */
+try{ if(profile==="ian" && state.meta && !state.meta.mig454_probs && state.realEstate){
+    var _D=state.realEstate.deals||[], _L=[];
+    var _f=function(id){ for(var i=0;i<_D.length;i++){ if(_D[i]&&_D[i].id===id) return _D[i]; } return null; };
+    var _s=function(d,k,v){ if(!d||d[k]===v) return; _L.push({deal:d.id,field:k,before:(d[k]===undefined?null:d[k])}); d[k]=v; };
+    var _ap=function(d,txt,sent){ if(!d||typeof d.note!=="string"||d.note.indexOf(sent)>=0) return;
+      _L.push({deal:d.id,field:"note",before:d.note}); d.note=d.note+"  "+txt; };
+    var _P=function(id,p){ var d=_f(id); if(!d) return; _s(d,"winProb",p); _s(d,"winProbSource","IAN"); _s(d,"winProbAsOf","2026-09-27"); return d; };
+
+    _P("re-tysdal",0.35);
+    _P("re-hernandez-sell",0.55);
+    _P("re-rachel-jenkins-build",0.65);
+
+    var _jd=_P("re-jed-lot185",0.5);
+    if(_jd){ _s(_jd,"winProbProvisional",true);
+      _s(_jd,"winProbNote","PROVISIONAL 50 percent. Ian 27.09.2026. He is going to check his dad's for updates and if there is good news this goes UP. It is not a settled figure and the next lane should expect it to move.");
+      _ap(_jd,"IAN 27.09.2026: 50 percent, PROVISIONAL. He is checking his dad's for updates and good news moves it up.","IAN 27.09.2026: 50 percent, PROVISIONAL"); }
+
+    ["re-frahm-sell","re-frahm-build"].forEach(function(id){
+      var d=_P(id,0.5);
+      if(!d) return;
+      _s(d,"projectionYear",2027);
+      if(!/20(2[7-9]|[3-9]\d)/.test(String(d.close||""))){
+        _s(d,"close","NEXT YEAR, 2027. No date set.");
+      }
+      _ap(d,"IAN 27.09.2026: 50 percent, but NEXT YEAR. This does NOT belong in the 2026 total and the close field says 2027 so the projection carries it outside the window. He gave no date and none is derived.","IAN 27.09.2026: 50 percent, but NEXT YEAR");
+    });
+
+    var _ht=_f("re-hartley-buy");
+    if(_ht){
+      if(_ht.winProb!==undefined){ _L.push({deal:_ht.id,field:"winProb",before:_ht.winProb}); delete _ht.winProb; }
+      _s(_ht,"probAsked",true);
+      _s(_ht,"probNote","ASKED AND HE DOES NOT KNOW. Ian 27.09.2026. NO probability is set and none should be guessed. DO NOT ASK AGAIN: he has answered, and the answer is that he has no idea.");
+      _ap(_ht,"IAN 27.09.2026: asked for a probability and he has no idea. None is set. Do not ask again.","asked for a probability and he has no idea");
+    }
+    var _tk=_f("re-austin-thacker");
+    if(_tk){
+      _s(_tk,"probAsked",true);
+      _s(_tk,"probNote","ASKED TWICE AND STILL UNANSWERED. His standing answer is \"not really but kind of\", recorded verbatim on 24.09.2026. NO probability is set, none is inferred from that phrase, and DO NOT ASK A THIRD TIME.");
+    }
+
+    /* ---- THE $5,000. I HAD THIS BACKWARDS AND HE CORRECTED ME. ---- */
+    var _F=state.finance;
+    if(_F){
+      /* A COLLISION FOUND WHILE FIXING THIS, and it is why the sweep line never drew. mig418
+         writes state.finance.taxSetAside as an OBJECT carrying {connected, lastSweep}. mig440
+         writes the SAME KEY as the NUMBER 0.30, the tax rate. mig440 sits lower in the file so it
+         wins, the object is destroyed on every load, and f.taxSetAside.lastSweep has been
+         undefined ever since build 440 shipped. The render guard therefore never fired. The sweep
+         record moves to its own key, state.finance.taxSweep, which nothing else writes. */
+      _L.push({deal:"finance",field:"taxSweep",before:JSON.stringify(_F.taxSweep||null)});
+      _F.taxSweep={
+        amount:5000, purpose:"taxes", by:"his mother",
+        leftChecking:true, leftCheckingOn:"2026-09-21", arrivedInDestination:false,
+        collisionNote:"Previously stored on state.finance.taxSetAside, which mig440 overwrites with the number 0.30, so it was unreachable. Moved here in build 454.",
+        correction:"CORRECTED 27.09.2026, AND THE ERROR WAS MINE. The app read this as money that had not moved. Ian, verbatim: \"I didn't say it did not move. I said it did move, just not into my account yet, but it did move out of my checking.\" THE $5,000 LEFT CHECKING ON 21 SEPTEMBER. The feed was right and my reading of it was wrong. It has simply not landed in the destination account yet, which is a different thing."
+      };
+      _L.push({deal:"finance",field:"cashNote",before:(_F.cashNote===undefined?null:_F.cashNote)});
+      _F.cashNote="THE $5,002 IN CHECKING IS GENUINELY HIS. The $5,000 tax sweep left checking on 21 September 2026, so it is already out and must NOT be subtracted again. HE IS NOT DOWN TO $2. Corrected 27.09.2026 after the app had it backwards.";
+    }
+
+    /* ---- MEAL SUGGESTIONS: NO. Third time it has been raised, so it is closed in the data. ---- */
+    if(!state.meta.closedRequests||typeof state.meta.closedRequests!=="object") state.meta.closedRequests={};
+    state.meta.closedRequests.mealSuggestions={ answer:"NO", closedOn:"2026-09-27",
+      words:"I do not want meal suggestions built.",
+      why:"Declined by Ian. This is the THIRD time it has been raised and it is now closed in the data so it stops being suggested. Do not propose meal suggestions, meal plans or menu ideas anywhere in this app." };
+    _L.push({deal:"meta.closedRequests",field:"mealSuggestions",before:null});
+
+    if(_L.length){
+      if(!state.archive||typeof state.archive!=="object") state.archive={};
+      if(!state.archive.probsB454){
+        state.archive.probsB454={ setOn:"2026-09-27", count:_L.length, changes:_L,
+          why:"Previous value of everything build 454 changed: Ian's probabilities of 27.09.2026, the $5,000 correction, and the meal suggestion decision." };
+      }
+    }
+    state.meta.mig454_probs=true; save(true);
+    try{ console.log("mig454: "+_L.length+" changes"); }catch(_){}
+} }catch(e){ try{ console.warn("mig454 did not apply:",e&&e.message); }catch(_){} }
+
 /* ===== v21 build 452: IAN'S BLOCK OF 27.09.2026, PLUS THE BROKERAGE RULE CONFIRMED ======
    THE FORMULA. Ian: "The broker takes 15% of each side no matter what. If we're buy side they
    take 15% of 2.4. If we're sell side they take 15% of 3.6. Even if we charge a total of 5%,
@@ -27330,8 +27418,11 @@ function fnBalances(v,f,part){
        $5,000 drop with no explanation, which reads as spend. */
     try{
       var _ts=(f&&f.taxSetAside)||null;
-      var _sw=_ts&&_ts.lastSweep;
-      if(_sw&&Number(_sw.amount)>0&&_ts.connected===false){
+      /* build 454: read the new key first. See the collision note in mig454. */
+      var _sw=(f&&f.taxSweep)||(_ts&&typeof _ts==="object"&&_ts.lastSweep)||null;
+      /* build 454: the sweep LEFT CHECKING on 21 September. Ian corrected the app, which had read it
+       as money that had not moved. The line draws whenever there is a sweep, and says where it is. */
+      if(_sw&&Number(_sw.amount)>0){
         var _sl=el("div","fnsch"); _sl.style.marginTop="10px";
         _sl.textContent=fnMoney(_sw.amount)+" left this account on "+fnShortDate(_sw.date)
           +" for "+(_sw.purpose||"taxes")+". The tax account is not connected, so it leaves here and arrives nowhere the app can see. It is not spend.";
