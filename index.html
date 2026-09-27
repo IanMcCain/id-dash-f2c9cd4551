@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 456 (2026-09-27)">
+<meta name="build" content="v21 build 457 (2026-09-27)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -21698,6 +21698,173 @@ try{ if(!state.meta.mig453_gymtypes && state.gym){
   state.meta.mig453_gymtypes=true; save(true);
 } }catch(e){ try{ console.warn("mig453 did not apply:",e&&e.message); }catch(_){} }
 
+
+/* ===== v21 build 457: WRONG FACTS, CORRECTED AT SOURCE ==========================
+   Ian, 27.09.2026, after a full screenshot audit. Every item below was rendering
+   something that is no longer true, or true only of a superseded decision.
+
+   NOTHING IS DELETED. Every superseded string is copied to state.archive.truth457
+   with the reason and the date before it is replaced.
+
+   THE GRIP, AND WHY ALL THREE STRINGS MOVE TOGETHER. The Home card, the mechanics
+   cue and the gear experiment each carried the same conclusion from a different
+   angle: thin overgrip, small handle, question closed. He has since said the
+   opposite, and his reason is concrete: the Coral Pro handle is SMALLER than the
+   Perseus was, so he wants a THICK grip to build it back up, and the tackiest and
+   most sweat-handling one he can get because he sweats heavily. Fixing the card and
+   leaving the page arguing the old answer would be worse than doing nothing, so the
+   paragraph, the cue and the experiment status all change in this one block.
+   THE EXPERIMENT IS REOPENED, NOT REWRITTEN. gear.grip.states and the wear, moisture
+   and break-in findings are left exactly as they were, because they are a true record
+   of what was tested in August. Only the STATUS changes, from a closed three state
+   experiment to an open question with a new requirement.
+
+   Guarded once by state.meta.mig457_truth, which is NOT in the seed. */
+try{ if(!state.meta.mig457_truth){
+  if(!state.archive) state.archive={};
+  var _A57=state.archive.truth457=state.archive.truth457||{archivedOn:"2026-09-27",build:"v21 build 457",items:[]};
+  var _park=function(where,before,why){ _A57.items.push({where:where,before:before,why:why}); };
+  /* declared UP HERE, not inside section 3. Sections 4, 5 and 6 all use _find, and if
+     section 3 had thrown before assigning it they would each have died on an undefined
+     call inside their own catch, silently skipping three fixes. */
+  var _D=(state.realEstate||{}).deals||[];
+  var _find=function(id){ for(var i=0;i<_D.length;i++){ if(_D[i]&&_D[i].id===id) return _D[i]; } return null; };
+
+  /* ---- 1. THE GRIP, ALL THREE STRINGS ---- */
+  try{
+    var _g=((state.pickleball||{}).mechanics||{}).shots||{};
+    if(_g.grip){
+      if(Array.isArray(_g.grip.paras)&&_g.grip.paras.length){
+        _park("pickleball.mechanics.shots.grip.paras[0]",_g.grip.paras[0],
+          "REVERSED BY IAN 27.09.2026. It said thin, ordinary tack, and a preference for a smaller handle, and called the question settled.");
+        _g.grip.paras[0]="Equipment grip: he wants a THICK grip. The Coral Pro handle is smaller than the Perseus was, so the wrap is what builds it back up to the size he wants. It also has to be the tackiest, best sweat-handling overgrip he can get, because he sweats heavily and tack is the first thing sweat kills. The thin overgrip answer from August no longer applies. The paddle under it is a Six Zero Coral Pro 16mm Hybrid since 2 September 2026.";
+      }
+      if(Array.isArray(_g.grip.cues)&&_g.grip.cues.length>3){
+        _park("pickleball.mechanics.shots.grip.cues[3]",_g.grip.cues[3],
+          "Said the overgrip question was closed. It is open again on his own word, 27.09.2026.");
+        _g.grip.cues[3]="Overgrip question is open again: thick, tackiest, best with sweat";
+      }
+      _g.grip.updated="2026-09-27";
+    }
+    var _gg=((state.pickleball||{}).gear||{}).grip;
+    if(_gg){
+      _park("pickleball.gear.grip.status","closed three state wear experiment",
+        "The August experiment answered a thin-versus-bulky-versus-bare question. It did not answer the one he is asking now, which is about THICKNESS and SWEAT on a smaller handle.");
+      _gg.status="OPEN";
+      /* MERGE, DO NOT REPLACE. current already carried the August wear record (state,
+         since, wear, note) and a wholesale assignment silently dropped all four. The old
+         object is parked first and the new facts are added alongside it. */
+      _park("pickleball.gear.grip.current",JSON.parse(JSON.stringify(_gg.current||{})),
+        "The August wear record. Kept because it is true of that grip; the new requirement is added beside it, not over it.");
+      _gg.current=_gg.current||{};
+      var _newCur={
+        asOf:"2026-09-27", from:"Ian",
+        wants:"A THICK overgrip, and the tackiest, best sweat-handling one available.",
+        why:"The Six Zero Coral Pro handle is smaller than the Joola Perseus IV was, so the wrap has to build the handle back up. He sweats heavily, so tack that survives sweat matters more than tack out of the packet.",
+        replaces:"The August finding that a thin overgrip was settled. That record stands as what was true then and is not edited."
+      };
+      for(var _ck in _newCur){ if(Object.prototype.hasOwnProperty.call(_newCur,_ck)) _gg.current[_ck]=_newCur[_ck]; }
+    }
+  }catch(e){ try{ console.warn("mig457 grip:",e&&e.message); }catch(_){} }
+
+  /* ---- 2. ESTEBAN'S RATE ---- */
+  try{
+    var _c=(state.pickleball||{}).coach;
+    if(_c){
+      _park("pickleball.coach.price",_c.price||_c.rate||"(none)",
+        "The card said no price had been discussed. His rate is $75 an hour.");
+      _c.rate="$75/hr";
+      _c.rateSource="Ian, 27.09.2026.";
+      /* the sentence is on coach.STATUS, not coach.note. The first pass targeted note,
+         matched nothing, and the page went on saying no price had been discussed. */
+      ["status","note"].forEach(function(k){
+        if(typeof _c[k]!=="string") return;
+        if(!/no price has been discussed/i.test(_c[k])) return;
+        _park("pickleball.coach."+k,_c[k],"Said no price had been discussed. His rate is $75 an hour.");
+        _c[k]=_c[k].replace(/,?\s*and no price has been discussed\.?/i,".")
+                   .replace(/\s*No price has been discussed\.?/i,"")
+                   .replace(/\s{2,}/g," ").trim()+" His rate is $75 an hour.";
+      });
+    }
+  }catch(e){ try{ console.warn("mig457 coach:",e&&e.message); }catch(_){} }
+
+  /* ---- 3. PAUSED BECOMES A REAL FIELD. Barker IS. Theobald is NOT. ---- */
+  try{
+    var _bk=_find("re-barkers"), _th=_find("re-theobald-sell");
+    if(_bk){ _bk.paused=true; _bk.pausedOn="2026-09-12"; _bk.pausedWhy="Ian is giving them some space."; }
+    if(_th){
+      _th.paused=false;
+      if(typeof _th.note==="string" && /Paused by Ian/i.test(_th.note)){
+        _park("realEstate.deals[re-theobald-sell].note",_th.note,
+          "Carried a paused sentence copied from the Barker record. Ian, 27.09.2026: Theobald is NOT paused, Barker is.");
+        _th.note=_th.note.replace(/\s*Paused by Ian 12\.09\.2026,[^.]*\.\s*(and restated 14\.09\.2026\.)?/i," ").replace(/\s{2,}/g," ").trim();
+      }
+    }
+  }catch(e){ try{ console.warn("mig457 paused:",e&&e.message); }catch(_){} }
+
+  /* ---- 4. WILLIS IS LIVE. The caption denied its own price. ---- */
+  try{
+    var _w=_find("re-cynthia-willis");
+    if(_w && _w.priceNote){
+      _park("realEstate.deals[re-cynthia-willis].priceNote",_w.priceNote,
+        "Said working figure, not a final list price, on a listing that went live at $619,900 on 25 September.");
+      delete _w.priceNote;
+      _w.priceLine="Live since 25 September 2026.";
+    }
+  }catch(e){ try{ console.warn("mig457 willis:",e&&e.message); }catch(_){} }
+
+  /* ---- 5. SHORT CARD LINES. The full reasoning STAYS in the data and comes off
+             the card face. Ian: that belongs in the document, not on a card. ---- */
+  try{
+    var _LINES=[
+      ["re-vogel-sell","priceLine","Ian's call, 25 September 2026."],
+      ["re-theobald-sell","priceLine","Balanced tier, CMA 4 September 2026."],
+      ["re-belknap-sell","priceLine","Ian's call, 20 September 2026."],
+      ["re-mattox-sell","priceLine","Ian's call, 20 September 2026."],
+      ["re-allison-spicer-buy","riskLine","Income to Ian is modeled at zero. Closing is not in question."],
+      ["re-brandon-winchester","riskLine","Ghosting since 20 September. Not certain to proceed."]
+    ];
+    for(var i=0;i<_LINES.length;i++){
+      var d=_find(_LINES[i][0]); if(!d) continue;
+      d[_LINES[i][1]]=_LINES[i][2];
+    }
+    var _bw=_find("re-brandon-winchester"); if(_bw) _bw.estConditional=true;
+  }catch(e){ try{ console.warn("mig457 lines:",e&&e.message); }catch(_){} }
+
+  /* ---- 6. THE THACKER COSIGNER FOLLOW UP, on a deal that fell through ---- */
+  try{
+    var _T=(state.realEstate||{}).todos;
+    if(Array.isArray(_T)){
+      for(var j=_T.length-1;j>=0;j--){
+        if(_T[j] && /found a cosigner/i.test(String(_T[j].text||""))){
+          _park("realEstate.todos[]",_T[j],"Chased a cosigner on re-austin-thacker, which is staged Fell through. Removed 27.09.2026 on Ian's instruction.");
+          _T.splice(j,1);
+        }
+      }
+    }
+  }catch(e){ try{ console.warn("mig457 thacker:",e&&e.message); }catch(_){} }
+
+  /* ---- 7. SOLARA IS PARKED, NOT POSTPONED, AND NOT SHOUTED ---- */
+  try{
+    var _S=state.solara;
+    if(_S && typeof _S.status==="string" && /POSTPONED/i.test(_S.status)){
+      _park("solara.status",_S.status,"Shouted, and the word is his: parked, not postponed.");
+      _S.status="Parked until next year";
+    }
+    if(_S && Array.isArray(_S.milestones)){
+      for(var m=0;m<_S.milestones.length;m++){
+        var _ml=_S.milestones[m];
+        if(_ml && typeof _ml.label==="string" && /POSTPONED/.test(_ml.label)){
+          _park("solara.milestones["+m+"].label",_ml.label,"Shouted POSTPONED.");
+          _ml.label=_ml.label.replace(/POSTPONED/g,"parked");
+        }
+      }
+    }
+  }catch(e){ try{ console.warn("mig457 solara:",e&&e.message); }catch(_){} }
+
+  state.meta.mig457_truth=true; save(true);
+} }catch(e){ try{ console.warn("mig457 did not apply:",e&&e.message); }catch(_){} }
+
   /* build 372: LAST THING BEFORE THE SAVE. Every migration above has run, deepMergeDefaults
      has run, so this is the only point in the file where the state is actually final. */
   try{ convergeState(); }catch(e){}
@@ -21776,7 +21943,12 @@ function pkTidy(t){
   if(!PK_DIRTY.test(t)) return t;
   t=t.replace(/={3,}/g," ");
   t=t.replace(/[,(]?\s*\b(?:written|added|recorded|logged|set|updated)\b\s+[A-Z][a-z]{2}\s+\d{1,2},?\s*(?:APP|PB|RE|GEN|OPS)-[0-9A-Za-z]{1,4}\b(?:\s+[a-z]+)*(?=\s*[.)]|\s*$)\)?/gi,"");
+  /* build 457: stripping the build number mid sentence used to leave the preposition that
+     introduced it, which is how the Vogel card rendered "had been on the record SINCE WHICH he
+     called a push on 21.09.2026". The connector now goes with it. */
+  t=t.replace(/\b(since|from|in|on|at)\s+(?:v?21\s+)?build\s+\d{2,3}\b,?/gi,"");
   t=t.replace(/,?\s*\b(?:v?21\s+)?build\s+\d{2,3}\b,?/gi,"");
+  t=t.replace(/\b(since|from|in|on|at)\s+which\b/gi,"which");
   t=t.replace(/\bmig\d+_[A-Za-z0-9]+\b/g,"");
   t=t.replace(/\bq1789\d{6,}\b/g,"");
   t=t.replace(/,?\s*\b(?:APP|PB|RE|GEN|OPS)-[0-9A-Za-z]{1,4}\b/g,"");
@@ -22830,17 +23002,17 @@ function dealRow(parent,d){
      data placement change, not a new layout: the Barkers row was already correct and is the model. */
   const left=el("div","dl"); left.appendChild(el("div","dn",d.title)); if(d.sub)left.appendChild(el("div","dsub",reTidy(d.sub))); if(d.close&&!d.paused)left.appendChild(el("div","dsub",reTidy(d.close))); var _tn=dealIanNet(d); if(_tn>0){ var _th=el("div","dsub"); /* build 275: say UNPAID on the row itself. A closed deal showing a take home figure with no qualifier reads as money he has. */ /* build 440: the row said "take home" about a pre tax figure. It now names the commission and
        the amount that survives the tax sweep, in that order, on the one line the row has. */
-    _th.textContent="Est. "+fmtMoney(_tn)+", keep "+fmtMoney(postTax(_tn))+" after tax"+(dealIsUnpaid(d)?"  UNPAID":(dealIsPaid(d)?"  received":"")); _th.style.color=dealIsUnpaid(d)?"var(--gray2,#8a8a99)":"var(--sec2,var(--accent2))"; _th.style.fontWeight="700"; left.appendChild(_th); } var _urg=(d.stage==="Closed"||d.stage==="Just Sold")?"":closeUrgency(d.close); if(_urg){ var _u=el("div","dsub"); _u.textContent=_urg; _u.style.color=(_urg==="overdue"||_urg==="due today")?"var(--danger,#ff6363)":"var(--gray2,#8a8a99)"; _u.style.fontWeight="700"; left.appendChild(_u); } /* build 295: an OPTIONAL risk line. Only a deal carrying d.risk renders one, so every other row is byte identical. It sits under the detail lines in the warning colour because the one deal that has it is Under Contract and already counted, and a paragraph inside a two thousand character note does not carry that. */ /* build 440: an OPEN QUESTION on a figure that has already been pinned. Gilliam carries a real
+    _th.textContent=(d.estConditional?"If it proceeds, est. ":"Est. ")+fmtMoney(_tn)+", keep "+fmtMoney(postTax(_tn))+" after tax"+(dealIsUnpaid(d)?"  UNPAID":(dealIsPaid(d)?"  received":"")); _th.style.color=dealIsUnpaid(d)?"var(--gray2,#8a8a99)":"var(--sec2,var(--accent2))"; _th.style.fontWeight="700"; left.appendChild(_th); } var _urg=(d.stage==="Closed"||d.stage==="Just Sold")?"":closeUrgency(d.close); if(_urg){ var _u=el("div","dsub"); _u.textContent=_urg; _u.style.color=(_urg==="overdue"||_urg==="due today")?"var(--danger,#ff6363)":"var(--gray2,#8a8a99)"; _u.style.fontWeight="700"; left.appendChild(_u); } /* build 295: an OPTIONAL risk line. Only a deal carrying d.risk renders one, so every other row is byte identical. It sits under the detail lines in the warning colour because the one deal that has it is Under Contract and already counted, and a paragraph inside a two thousand character note does not carry that. */ /* build 440: an OPEN QUESTION on a figure that has already been pinned. Gilliam carries a real
        bank deposit in actualNet, but Ian is not sure whether his father's 10% came out before or
        after it. A pinned number with an unresolved meaning must SAY SO on the row, or the pin
        quietly becomes a conclusion nobody decided to make. */
     if(d.actualNetOpen){ var _ao=el("div","dsub"); _ao.textContent="OPEN QUESTION ON THIS FIGURE. "+d.actualNetOpen;
       _ao.style.cssText="color:var(--warn,#e8b04b);font-weight:800;white-space:normal;line-height:1.45;margin-top:4px"; left.appendChild(_ao); }
-    if(d.risk){ var _rk=el("div","dsub"); _rk.textContent="At risk. "+reTidy(d.risk); _rk.style.cssText="color:var(--danger,#ff6363);font-weight:800;white-space:normal;line-height:1.45;margin-top:4px"; left.appendChild(_rk); } row.appendChild(left);
+    if(d.risk){ var _rk=el("div","dsub"); _rk.textContent="At risk. "+reTidy(d.riskLine||d.risk); _rk.style.cssText="color:var(--danger,#ff6363);font-weight:800;white-space:normal;line-height:1.45;margin-top:4px"; left.appendChild(_rk); } row.appendChild(left);
   /* build 267: a qualifier on a price is a MARKER, not part of the number. It renders under the
      figure on the right, in the same .dsub style as the rest of the detail text, so the price cell
      holds a price and nothing else. A row with no qualifier renders exactly as it did before. */
-  const right=el("div","dr"); if(d.price){ right.appendChild(el("div","dp",d.price)); if(d.priceNote) right.appendChild(el("div","dsub",reTidy(d.priceNote))); } right.appendChild(stagePill(d.stage));
+  const right=el("div","dr"); if(d.price){ right.appendChild(el("div","dp",d.price)); var _pn=d.priceLine||d.priceNote; if(_pn) right.appendChild(el("div","dsub",reTidy(_pn))); } right.appendChild(stagePill(d.stage));
   /* ===== build 374: THE STALE STAGE FLAG, and this is the actual fix ====================
      Ian found Crystal Johnson and Belknap buy still reading Under Contract days after both
      had closed, and said "idk why that's still wrong". THE ANSWER IS THAT NOTHING WAS EVER
@@ -23168,7 +23340,10 @@ function buildIanHome(v){ const workout=daySplit(DOW); const reTop=firstUndone((
   (function(){ var _ev=(state.events||[]).filter(function(e){ return e&&daysUntil(e.date)===0; }).length;
     var _txt="Today, "+cleanFocus(workout.focus)+"."+(_ev?(" "+_ev+" thing"+(_ev===1?"":"s")+" on your schedule."):"");
     b.appendChild(el("div","focus",_txt)); })();
-  if(state.meta&&state.meta.lastReset===TODAY){ const rn=el("div","small"); rn.style.color="var(--sec2,var(--accent2))"; rn.style.fontWeight="700"; rn.style.marginTop="9px"; rn.textContent="New day. Yesterday's log was archived and daily items reset."; b.appendChild(rn); }
+  /* build 457: the "New day, yesterday's log was archived and daily items reset" line is
+     DELETED, not reworded. Ian, 27.09.2026: that is our plumbing talking to itself. He does
+     not need to know the log archived; the archive either worked or it did not, and either
+     way it is not news. Nothing replaces it. */
   v.appendChild(hero);
   if(!(state.settings&&state.settings.bannerDismissed)){ const bn=el("div","banner"); bn.appendChild(el("div",null,"For full interactivity and saving, open this file in Safari. An in app preview can limit some taps.")); const x=el("button","bx","\u00D7"); x.onclick=()=>{ if(!state.settings)state.settings={}; state.settings.bannerDismissed=true; save(); render(); }; bn.appendChild(x); v.appendChild(bn); }
   /* quick actions (build 176: Command Center removed, Quick actions sits at the top of Home) */
@@ -23465,7 +23640,10 @@ function buildIanHome(v){ const workout=daySplit(DOW); const reTop=firstUndone((
       /* build 214: the count is gym OR pickleball, and a week with no records says n/a rather than
          zero. Both stated on screen, because a number whose rule is not visible gets misread. */
       if(_firstRec){ var _fn=el("div","small dim"); _fn.style.cssText="margin-top:8px;line-height:1.45";
-        _fn.textContent="Pickleball only. Every court session counts, so a day with two counts twice. Four weeks: two back, this week with today ringed, and the week ahead. This week counts against the FULL week, not days elapsed, so a low number mid week is the calendar rather than a miss. The week ahead has no count because it has not happened. Weeks with no records at all are not drawn rather than shown as zero; tracking starts "+fmtShort(_firstRec)+", so they are not zero weeks.";
+        /* build 457: was a long paragraph explaining our own counting rule, including the
+           shouted "FULL week". THE CHART IS UNTOUCHED, it is one of his two favourites. Only
+           the explanation under it is cut, to the one fact a reader cannot infer. */
+        _fn.textContent="Pickleball only. A day with two sessions counts twice.";
         b.appendChild(_fn); }
       hh.appendChild(cardEl);
     },ICO.chart,"blue"); }; /* build 392: "green" to "blue". COLLAPSE CHROME ONLY, see the header above. */
@@ -23594,7 +23772,12 @@ function buildIanHome(v){ const workout=daySplit(DOW); const reTop=firstUndone((
      nothing, so it cannot affect set persistence. Renders nothing on a rest day. */
   var secWorkout=function(){ safe(v,function(){
     var day=daySplit(DOW); var exs=(day&&day.exercises)||[];
-    if(!exs.length){ QUIET.push("gym is a rest day"); return; } /* build 212: was a bare return, so a rest day looked identical to a bug */
+    /* build 457: this pushed "gym is a rest day" into the Quiet line, which ASSERTS A PLAN
+       FOR A WEEKDAY and contradicted both the lock screen and the day type page, which say he
+       picks. It now says nothing about the gym at all. The build 212 concern it was added for,
+       a rest day looking identical to a bug, no longer applies: there are no rest days in the
+       data to mistake for one. */
+    if(!exs.length){ return; }
     var log=(state.gym&&state.gym.logs&&state.gym.logs[TODAY])||{done:{}};
     var doneN=exs.filter(function(e){ return log.done&&log.done[e.id]; }).length;
     sect(v,"Today's workout","tap to open the gym");
@@ -23890,7 +24073,12 @@ function buildIanHome(v){ const workout=daySplit(DOW); const reTop=firstUndone((
       }catch(_e){}
       var _wk=0;
       for(var j=0;j<7;j++){ var dd=new Date(_mon); dd.setDate(dd.getDate()+j); if(_keys[todayKey(dd)]) _wk++; }
-      tiles.push({k:"Gym", v:String(_wk), u:_wk===1?"day":"days", sub:"this week, target 3",
+      /* build 457: the target is gone and so is the zero. His stated target is four or five
+         and NOTHING IS SUPPOSED TO COUNT AGAINST IT. A "0 days, target 3" tile did both: it
+         carried a retired number from the old three lift plan and scored him against it before
+         the week had happened. With no gym logged the tile now reports the last gym day, which
+         is a fact rather than a verdict. */
+      tiles.push({k:"Gym", v:_wk?String(_wk):"\u2014", u:_wk?(_wk===1?"day":"days"):"", sub:_wk?"this week":"no gym logged this week",
                   col:"var(--gy1,#ff9f0a)", go:function(){ selectTab("gym"); }});
     }catch(e){}
     /* solara: the one fact that changes */
@@ -24198,7 +24386,7 @@ function pipelineSummaryPipe(parent){
     statTile({label:"Closed",color:"green",value:closed.length,unit:closed.length===1?"deal":"deals",sub:fmtMoney(vol(closed))+" volume"}),
     statTile({label:"Under contract",color:"blue",value:uc.length,unit:"pending",sub:fmtMoney(vol(uc))+" pending"}),
     statTile({label:"Active",color:"orange",value:act.length,unit:act.length===1?"listing":"listings",sub:fmtMoney(vol(act))}),
-    statTile({label:"Coming soon",color:"purple",value:cs.length,unit:"this week",sub:"Listing soon"}),
+    statTile({label:"Coming soon",color:"purple",value:cs.length,unit:cs.length===1?"listing":"listings",sub:"No dates confirmed"}),
     statTile({label:"Building",color:"violet",value:bld.length,unit:bld.length===1?"build":"builds",sub:fmtMoney(vol(bld))}),
     statTile({label:"Prospects",color:"pink",value:prospects.length,unit:prospects.length===1?"lead":"leads",sub:"Prospecting and buyers"})
   ];
@@ -24608,7 +24796,7 @@ function reGoalsCard(parent,accOverride){
     const ar=el("div","small"); ar.style.cssText="margin-top:7px;padding:9px 10px;border-radius:9px;background:rgba(255,99,99,.10);border:1px solid rgba(255,99,99,.35);line-height:1.5";
     const arDeals=atRisk.reduce((a,d)=>a+dealCountWeight(d),0);
     ar.innerHTML='<b style="color:var(--danger,#ff6363)">'+fmtMoneyShort(vol(atRisk))+' and '+arDeals+' deal'+(arDeals===1?"":"s")
-      +' of that is AT RISK</b>, already counted above and not yet safe: '
+      +' of that is at risk</b>, already counted above and not yet safe: '
       +atRisk.map(d=>d.title).join(", ")+'.';
     b.appendChild(ar);
   }
@@ -29348,7 +29536,9 @@ function autoLogCard(area){
 .g7leadlab{font-size:12.5px;font-weight:700;line-height:1.2;color:var(--sec2,var(--accent2));margin:16px 0 4px}
 /* The carry marker. A word, not a badge with a border: the page already has enough
    edges and this has to sit next to a movement name without competing with it. */
-.g7tag{display:inline-block;font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--sec2,var(--accent2));margin-left:8px;vertical-align:1px;white-space:nowrap}
+/* build 457: text-transform:uppercase made this render as COURT, the only shouted
+   string left on the gym page, and it was mine. Same marker, said quietly. */
+.g7tag{display:inline-block;font-size:11px;font-weight:800;letter-spacing:.04em;color:var(--sec2,var(--accent2));margin-left:8px;vertical-align:1px;white-space:nowrap}
 .g7pairs{font-size:13px;font-weight:600;line-height:1.4;color:var(--gray2);margin:0 0 2px}
 .g7trains{font-size:13.5px;line-height:1.55;color:var(--gray);margin:10px 0 0}
 .g7carry{font-size:13px;line-height:1.55;color:var(--gray2);margin:9px 0 0;overflow-wrap:break-word}
