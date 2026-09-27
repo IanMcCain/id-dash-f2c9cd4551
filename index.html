@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 451 (2026-09-27)">
+<meta name="build" content="v21 build 452 (2026-09-27)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -20691,6 +20691,107 @@ try{ if(!state.meta.mig440_tax){
 
 
 
+
+/* ===== v21 build 452: IAN'S BLOCK OF 27.09.2026, PLUS THE BROKERAGE RULE CONFIRMED ======
+   THE FORMULA. Ian: "The broker takes 15% of each side no matter what. If we're buy side they
+   take 15% of 2.4. If we're sell side they take 15% of 3.6. Even if we charge a total of 5%,
+   they're still going to take 15% of 6%."
+   THE CODE ALREADY DOES THIS AND HAS SINCE BUILD 386. dealBrokerage() computes
+   Math.max(dealStandardRate(d), dealActualRate(d)) and multiplies by RE_RATES.brokerage, so a
+   discounted side still pays the brokerage on the standard 3.6 or 2.4. Nothing in the formula
+   changes here. What changes is that the rule is now recorded as CONFIRMED BY HIM rather than as
+   an inference the app was carrying, and the verification asserts it numerically on Mattox, the
+   one live deal with a discounted side rate.
+
+   Guard state.meta.mig452_block, end of chain, SEED_VERSION stays 13. */
+try{ if(profile==="ian" && state.meta && !state.meta.mig452_block && state.realEstate){
+    var _D=state.realEstate.deals||[], _L=[];
+    var _f=function(id){ for(var i=0;i<_D.length;i++){ if(_D[i]&&_D[i].id===id) return _D[i]; } return null; };
+    var _s=function(d,k,v){ if(!d||d[k]===v) return; _L.push({deal:d.id,field:k,before:(d[k]===undefined?null:d[k])}); d[k]=v; };
+    var _ap=function(d,txt,sent){ if(!d||typeof d.note!=="string"||d.note.indexOf(sent)>=0) return;
+      _L.push({deal:d.id,field:"note",before:d.note}); d.note=d.note+"  "+txt; };
+
+    /* the brokerage rule, recorded as his */
+    var _CR=state.realEstate.commissionRules;
+    if(_CR){
+      _CR.brokerageBasis="ALWAYS THE STANDARD SIDE RATE, NEVER A DISCOUNTED ONE. The brokerage takes 15 percent of 3.6 on a sell side and 15 percent of 2.4 on a buy side, whatever the client is actually charged. Charging 5 or 5.5 percent total does not reduce it: they still take 15 percent of 6. Ian, 27.09.2026, verbatim: \"Even if we charge a total of 5%, they're still going to take 15% of 6%.\" Implemented as max(standard, actual) in dealBrokerage since build 386 and confirmed by him now.";
+      /* THE UNREPRESENTED CLIENT RULE, which is what the Jenkins split actually is */
+      if(!Array.isArray(_CR.cases)) _CR.cases=[];
+      var _has=false; _CR.cases.forEach(function(c){ if(c&&/unrepresented/i.test(String(c.name||""))) _has=true; });
+      if(!_has){
+        _CR.cases.push({ name:"UNREPRESENTED CLIENT ON A BUILD. Ian and Chris split it evenly.",
+          formula:"total rate x price x 0.85 x 0.50",
+          why:"Ian, 27.09.2026 on Rachel Jenkins: \"she doesn't have a buyer's or seller's agent, so it's us representing her.\" When a client arrives with no agent of their own on a build, the pair represent her together and it splits FIFTY FIFTY with Chris at 5 or 5.5 percent, not at Ian's usual share." });
+      }
+    }
+
+    /* Rachel Jenkins, 50/50 */
+    var _rj=_f("re-rachel-jenkins-build");
+    if(_rj){ _s(_rj,"ianSplit",0.5);
+      _s(_rj,"ianSplitSource","FIFTY FIFTY with Chris, not 0.80. Ian 27.09.2026: she has no agent of her own, so the two of them represent her together. The rule is recorded in commissionRules under the unrepresented client case.");
+      _ap(_rj,"IAN 27.09.2026: FIFTY FIFTY WITH CHRIS. Verbatim: \"she doesn't have a buyer's or seller's agent, so it's us representing her.\" A client with no agent on a build like this splits evenly with Chris at 5 or 5.5 percent.","FIFTY FIFTY WITH CHRIS"); }
+
+    /* Hernandez: his client, sell side, discount UNSET */
+    var _hz=_f("re-hernandez-sell");
+    if(_hz){ _s(_hz,"source","Ian's own"); _s(_hz,"side","Seller");
+      _s(_hz,"discount","UNSET");
+      _s(_hz,"discountNote","LIKELY SOME DISCOUNT AND NOTHING HAS BEEN DISCUSSED. They are his girlfriend's parents, so Ian 27.09.2026 says he would probably give something, but no figure exists and none is modelled. The money on this record computes at the standard rate until he sets one.");
+      _ap(_hz,"IAN 27.09.2026: his own client, SELL side. Verbatim: \"The only one I think could happen at any moment... they've discussed selling and made some steps, but they're very flaky.\" His girlfriend's parents, so he would likely discount, but nothing has been discussed and no discount is modelled.","IAN 27.09.2026: his own client, SELL side"); }
+
+    /* Spicer: probably buy side, unconfirmed */
+    var _sp=_f("re-sydney-spicer-sell");
+    if(_sp){ _s(_sp,"side","Buyer"); _s(_sp,"sideConfirmed",false);
+      _ap(_sp,"IAN 27.09.2026: PROBABLY BUY SIDE AND HE IS NOT SURE. Verbatim: \"If it's buy side then it wouldn't be live because they're buying.\" Recorded as buy side, UNCONFIRMED, and the record id still says sell because the id is not the claim, the side field is.","PROBABLY BUY SIDE AND HE IS NOT SURE"); }
+
+    /* Jed Lot 185: conditional 20 percent */
+    var _jd=_f("re-jed-lot185");
+    if(_jd){ _s(_jd,"ianSplitConditional","CONDITIONAL AND UNCONFIRMED. IF this is the lot where the agent is looking at building with Ryan, Ian gets 20 percent. HE IS NOT CERTAIN. The record ALREADY carries ianSplit 0.2 and has since before today, so the money is already modelled at 20 percent; that is left exactly as it was rather than changed on an uncertain reading, and this field marks the 20 percent as resting on a condition he has not confirmed. Ian 27.09.2026.");
+      _s(_jd,"ianSplitConfirmed",false);
+      _ap(_jd,"IAN 27.09.2026: CONDITIONAL AND UNCONFIRMED. If this is the lot where the agent is looking at building with Ryan, his share is 20 percent, and he is not certain it is. The 20 percent already on this record is unchanged, because removing a split he may well be owed would be as wrong as inventing one.","IAN 27.09.2026: CONDITIONAL"); }
+
+    /* Winchester: ghost, and the timeline if it wakes up */
+    var _bw=_f("re-brandon-winchester");
+    if(_bw){ _s(_bw,"ifResumed","If they resumed now the build would finish around March to May. Ian 27.09.2026. This is a duration, not a start date, and no start date exists.");
+      _ap(_bw,"IAN 27.09.2026: still gone ghost. IF THEY RESUMED NOW they would finish around March to May 2027. That is a build duration from a restart that has not happened, not a close date.","IF THEY RESUMED NOW"); }
+
+    /* Teske: 35 percent, confirmed unchanged */
+    var _tk=_f("re-teskes");
+    if(_tk){ _s(_tk,"winProb",0.35); _s(_tk,"winProbSource","IAN");
+      _s(_tk,"winProbAsOf","2026-09-27");
+      _ap(_tk,"IAN 27.09.2026: finish still likely early, 35 percent. Confirmed unchanged.","finish still likely early, 35 percent"); }
+
+    /* Rose Creek: no live activity */
+    var _rc=_f("re-rose-creek");
+    if(_rc){ _s(_rc,"activityNote","NO LIVE ACTIVITY on the two storey. People come through occasionally and nothing is close to certain. Ian 27.09.2026.");
+      _ap(_rc,"IAN 27.09.2026: NO LIVE ACTIVITY on the two storey. People come through occasionally, nothing close to certain.","NO LIVE ACTIVITY on the two storey"); }
+
+    /* STAGING: both houses together, days undecided. This RETRACTS what build 451 wrote. */
+    var _STAGE="STAGING: IAN AND CHRIS DO BOTH HOUSES TOGETHER, and WHICH HOUSE ON WHICH DAY IS UNDECIDED. They need to discuss it, so no day is assigned to either property. Ian 27.09.2026, and this RETRACTS the build 451 line that said one day Belknap and one day Mattox. NO MODEL DUTY COLLISION: they stage in the mornings before showings or the open house, then one of them works the open house.";
+    var _bl=_f("re-belknap-sell"), _mx=_f("re-mattox-sell");
+    if(_bl) _s(_bl,"stagingNote",_STAGE+" The Belknap basement is NOT being staged, so Dillon's sump pump work does not collide. That question stays closed.");
+    if(_mx){ _s(_mx,"stagingNote","PARTIAL is Ian's deliberate call, 21.09.2026, and is not a gap. "+_STAGE);
+      _s(_mx,"photosNote","THE 5 OCTOBER PHOTO DATE IS NOT VERIFIED. Ian 27.09.2026, verbatim: \"I don't remember verifying it with my mom... I think that's just the day we put in as an example.\" Treat it as an example and not a booking wherever it appears. Staging, photos and prep happen in the WEEK OF the list and the photographer is his mother.");
+      _ap(_mx,"IAN 27.09.2026: THE 5 OCTOBER PHOTOS ARE NOT VERIFIED. His words: \"I don't remember verifying it with my mom, I think that's just the day we put in as an example.\" Unconfirmed everywhere it appears.","THE 5 OCTOBER PHOTOS ARE NOT VERIFIED"); }
+    /* and the calendar marker itself is flagged rather than moved or deleted */
+    (state.events||[]).forEach(function(e){
+      if(!e||!/Mattox/i.test(String(e.title||""))||!/pic|photo|video/i.test(String(e.title||""))) return;
+      if(String(e.title).indexOf("NOT VERIFIED")<0){
+        _L.push({deal:"event "+e.id,field:"title",before:e.title});
+        e.title=String(e.title)+" (NOT VERIFIED)";
+      }
+    });
+
+    if(_L.length){
+      if(!state.archive||typeof state.archive!=="object") state.archive={};
+      if(!state.archive.blockB452){
+        state.archive.blockB452={ setOn:"2026-09-27", count:_L.length, changes:_L,
+          why:"Previous value of everything build 452 changed on Ian's block of 27.09.2026." };
+      }
+    }
+    state.meta.mig452_block=true; save(true);
+    try{ console.log("mig452: "+_L.length+" changes"); }catch(_){}
+} }catch(e){ try{ console.warn("mig452 did not apply:",e&&e.message); }catch(_){} }
+
 /* ===== v21 build 451: IAN'S CORRECTIONS, 27.09.2026. MONEY FIRST. ======================
    Every figure here is his. Nothing is derived and nothing is rounded into a number he did not
    give. Guard state.meta.mig451_corr, end of the chain, SEED_VERSION stays 13. */
@@ -22063,6 +22164,13 @@ function dualRate(d){ return (d&&typeof d.dualRate==="number")?d.dualRate:RE_RAT
 function dealStandardRate(d){ return dealSide(d)==="Buyer" ? RE_RATES.buyerStd : RE_RATES.sellerStd; }
 function dealActualRate(d){ return dealSide(d)==="Buyer" ? RE_RATES.buyerStd : sellerRate(d); }
 function dealGrossCommission(d){ if(dealSource(d)==="Dual agency"){ var _full=priceNum(d&&d.price)*dualRate(d); return (dealSide(d)==="Both")?_full:_full/2; } return priceNum(d&&d.price) * dealActualRate(d); }
+/* v21 build 452, CONFIRMED BY IAN 27.09.2026 and unchanged in behaviour. The brokerage takes 15
+   percent of the STANDARD side rate, never of a discounted one. His words: "The broker takes 15%
+   of each side no matter what. If we are buy side they take 15% of 2.4. If we are sell side they
+   take 15% of 3.6. Even if we charge a total of 5%, they are still going to take 15% of 6%."
+   That is the Math.max below, which has been here since build 386. A discount to the client comes
+   out of Ian and Chris, never out of the brokerage. Mattox is the live proof: sellerRate 0.031
+   against a 0.036 standard, and the brokerage is still computed on 0.036. */
 function dealBrokerage(d){ if(dealSource(d)==="Dual agency"){ var _fee=priceNum(d&&d.price)*RE_RATES.brokerage*RE_RATES.dualBrokerageBasis; return (dealSide(d)==="Both")?_fee:_fee/2; } var _basis=Math.max(dealStandardRate(d),dealActualRate(d)); return priceNum(d&&d.price) * _basis * RE_RATES.brokerage; }
 /* v21 build 233: AN ACTUAL PAID FIGURE ALWAYS BEATS THE MODEL. If a deal carries actualNet,
    that is what Ian was really paid and it is returned unchanged. The computed path is only a
