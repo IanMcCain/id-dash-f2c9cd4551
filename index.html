@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 452 (2026-09-27)">
+<meta name="build" content="v21 build 453 (2026-09-27)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -21357,6 +21357,166 @@ try{ if(profile==="ian" && state.meta && !state.meta.mig448_dedupe && state.pick
     try{ console.log("mig448 dedupe: "+_log4d.length+" of "+_seen4d+" long strings repaired"); }catch(_){}
 } }catch(e){ try{ console.warn("mig448 dedupe did not apply:",e&&e.message); }catch(_){} }
 
+/* ===== v21 build 453: THE GYM BECOMES A LIBRARY OF DAY TYPES, NOT A SCHEDULE =========
+   Ian, 27.09.2026, verbatim: "I just want you to have like a set list of workout style days
+   for me, like chest day, back day, leg day, rest day, stretch day, just all the type of days
+   I should have in a week. And then I can pick for myself which one I want to do each day,
+   and then I'll obviously know not to double up on any of them. That'll be all on me and I'll
+   pick all the days. I would say four, maybe five workouts a week, the rest could be like
+   rest/stretch days. And obviously with pickleball-style workouts included in each thing, but
+   not solely being pickleball related, but I want to actually hopefully impact my pickleball
+   play."
+
+   THE APP STOPS DECIDING. There is no schedule, no suggestion of what to do today, no streak,
+   no "you have not done legs this week". He picks. The page is a reference he reads.
+
+   WHY gym.split IS NEUTRALISED AND NOT JUST LEFT BEHIND THE NEW PAGE. daySplit(DOW) is read by
+   lockGymBubble, autoObjective, weekWorkoutSpark, summaryForDate and buildIanHome. Leaving the
+   weekday map in place would have left the LOCK SCREEN saying "Back and biceps" on a Monday
+   while the gym page said "you pick", which is the weekday assertion he has corrected twice
+   wearing a different hat. Every day is therefore set to the SAME neutral shape that Tue, Wed
+   and Thu have carried since build 386 and that every consumer already handles: focus "Gym
+   open, your call", no exercises, varDouble true. lockGymBubble's existing branch for that
+   shape returns "Gym open", which names the date and asserts nothing.
+
+   NOTHING IS DELETED. The entire previous split, planVersion and weekShape are copied whole to
+   state.archive.gymSplit452 with the reason and the date. gym.logs is UNTOUCHED and every
+   historic set keeps its exercise id, because ids are not being reissued: the day types below
+   reuse the SAME exercise ids the split carried wherever the movement is the same one.
+
+   THE PAIRING RULE IS ABSOLUTE AND IT IS ENCODED IN THE DATA, not just in a label. Back day is
+   back AND BICEPS. Chest day is chest AND TRICEPS. They are never merged into one upper day.
+   He has corrected this before. If a day ever needs to be shorter, CUT MOVEMENTS WITHIN IT.
+   DO NOT COMBINE TWO DAYS.
+
+   SIX TYPES. Five are his own words. The sixth, Shoulders and core, is added with a reason he
+   can check: his pairing puts triceps on chest day and biceps on back day, which leaves DELTS,
+   THE CUFF AND THE TRUNK with no home, and those are precisely what a hands battle at the
+   kitchen runs on. It is the most court-transferring day of the six and the lightest to run.
+
+   THE PICKLEBALL CARRY, AND WHY EACH ONE IS THERE. He asked for court transfer in every day
+   without any day becoming a drill session, so each type carries one or two movements marked
+   as the carry and the rest is ordinary strength work.
+     Hands battles are his named weakness, and fast hands at the kitchen are WRISTS, FOREARMS,
+     GRIP AND TRUNK STIFFNESS, not arm size. So: farmer carry and wrist curl on back day,
+     reverse wrist curl on chest day, Pallof and chop on shoulders and core.
+     He plays 5 to 10 sessions a week, so lower body is DURABILITY AND REPEATED ACCELERATION,
+     not maximal load. So: lateral lunge, split squat, a paused calf raise for deceleration,
+     and the repeated acceleration finisher. No maximal work anywhere in the leg day.
+     Single arm presses and rows are on the pressing and pulling days because a one sided load
+     is trunk anti-rotation under load, which is the same quality the chop trains lighter.
+
+   THE THREE HAND SPEED MOVES STAY ON STRETCH DAY. Ian pinned them 08.06.2026 and the pin says
+   do not relocate them again without him saying so. They were NOT moved onto the shoulders and
+   core day even though they would fit there.
+
+   EQUIPMENT: everything here is Planet Fitness kit per gym.notes. No barbell, no rack, no bench
+   press, dumbbells inside the 60 to 75 lb ceiling, and cables only where his program already
+   uses them (chop, face pull, lateral raise) so the station is known to exist.
+
+   Guarded once by state.meta.mig453_gymtypes, which is NOT in the seed. */
+try{ if(!state.meta.mig453_gymtypes && state.gym){
+  var _GT=state.gym;
+  if(!state.archive) state.archive={};
+  if(!state.archive.gymSplit452){
+    state.archive.gymSplit452={
+      archivedOn:"2026-09-27", build:"v21 build 453",
+      why:"REPLACED BY gym.dayTypes on Ian's instruction 27.09.2026. He asked for a library of day types he picks from, not a weekday schedule. Kept whole so nothing is reconstructed from memory. gym.logs was not touched and still resolves against these ids.",
+      split:JSON.parse(JSON.stringify(_GT.split||[])),
+      planVersion:_GT.planVersion||"", weekShape:JSON.parse(JSON.stringify(_GT.weekShape||{}))
+    };
+  }
+
+  var CARRY="carry";
+  _GT.dayTypes=[
+    {id:"dt-chest", name:"Chest day", pairs:"Chest and triceps", kind:"lift",
+     trains:"Horizontal press, chest, front delts and triceps.",
+     carryLine:"A one sided press makes the trunk resist rotation under load, and the reverse wrist curl protects the elbow and wrist under paddle volume.",
+     items:[
+      {id:"5igu8kh",name:"DB or machine chest press",scheme:"4\u00d710/8/6/4"},
+      {id:"0x81lyf",name:"Incline DB or machine press",scheme:"3\u00d712/10/10"},
+      {id:"cea7roe",name:"Pec deck or cable fly",scheme:"3\u00d715/12/12"},
+      {id:"trlite15",name:"Rope pushdown",scheme:"3\u00d715/12/12",cue:"light, elbows tucked"},
+      {id:"dt-sa-press",name:"Single arm cable or DB press",scheme:"3\u00d710 per side",tag:CARRY,cue:"stay square, do not let the hips turn"},
+      {id:"dt-revwrist",name:"Reverse wrist curl",scheme:"2\u00d715",tag:CARRY}
+     ]},
+    {id:"dt-back", name:"Back day", pairs:"Back and biceps", kind:"lift",
+     trains:"Vertical pull, horizontal pull, lats, mid back and biceps.",
+     carryLine:"Carries and wrist curls are the grip and forearm work behind fast hands. The row is where the back day earns its counter off a speed-up.",
+     items:[
+      {id:"qb4fypm",name:"Lat pulldown",scheme:"4\u00d712/10/8/8"},
+      {id:"q33svaw",name:"Chest supported machine row",scheme:"3\u00d712/10/10"},
+      {id:"mach-curl",name:"Machine or DB curl",scheme:"3\u00d712/10/10"},
+      {id:"sat-hammer",name:"Hammer curl",scheme:"3\u00d715/12/12"},
+      {id:"dt-farmer",name:"DB farmer carry",scheme:"3 rounds, 40 yards",tag:CARRY,cue:"heavy, shoulders down, ribs stacked"},
+      {id:"dt-wristcurl",name:"Wrist curl",scheme:"2\u00d715",tag:CARRY}
+     ]},
+    {id:"dt-leg", name:"Leg day", pairs:"Lower body", kind:"lift",
+     trains:"Quads, hamstrings, glutes, calves and repeated acceleration.",
+     carryLine:"This is durability and repeated acceleration, not maximal load, because the court already supplies the volume. Lateral lunge is the side to side, the paused calf raise is deceleration.",
+     items:[
+      {id:"0kix437",name:"Leg press",scheme:"4\u00d78 heavy",cue:"controlled down, fast up"},
+      {id:"d1-bulgarian",name:"Smith machine Bulgarian split squat",scheme:"3\u00d78 per leg"},
+      {id:"pkl-latlunge",name:"Smith machine lateral lunge",scheme:"3\u00d710 per side",tag:CARRY},
+      {id:"7hpsmgb",name:"Seated leg curl",scheme:"4\u00d710/8/8/8"},
+      {id:"jdkpi57",name:"Hip abductor machine",scheme:"3\u00d715/12/12",tag:CARRY},
+      {id:"315bifh",name:"Standing calf raise",scheme:"4\u00d712",cue:"3 second lowering phase, pause at the bottom",tag:CARRY},
+      {id:"d1-finisher",name:"Repeated acceleration finisher",scheme:"8 to 10 reps of 8 s hard, 12 s easy. 3 to 4 rounds",tag:CARRY}
+     ]},
+    {id:"dt-shoulders", name:"Shoulders and core", pairs:"Delts, cuff and trunk", kind:"lift",
+     trains:"Side delts, rear delts, rotator cuff, rotation and anti-rotation.",
+     carryLine:"The most court-transferring day and the lightest to run. Cuff health for paddle volume, chop for drives and drops, Pallof for the trunk stiffness a hands battle runs on.",
+     items:[
+      {id:"ui81mo6",name:"Cable lateral raise",scheme:"3\u00d715/12/12"},
+      {id:"h4iq5eo",name:"Face pull or reverse pec deck",scheme:"3\u00d720/15/15",tag:CARRY},
+      {id:"d2-extrot",name:"Cable external rotation",scheme:"3\u00d715 per side",tag:CARRY},
+      {id:"pkl-cablechop",name:"Cable chop, low to high, both sides",scheme:"3\u00d712 per side",tag:CARRY},
+      {id:"dt-pallof",name:"Pallof press",scheme:"3\u00d712 per side",tag:CARRY,cue:"resist the turn, do not create one"}
+     ]},
+    {id:"dt-stretch", name:"Stretch day", pairs:"Mobility and hand speed", kind:"easy",
+     trains:"Walking, full body mobility, and the three hand speed moves.",
+     carryLine:"The hand speed block lives here because you pinned it here on 06.08.2026. It was not moved.",
+     items:[
+      {id:"ukmmcmj",name:"Easy walk",scheme:"20 to 40 min"},
+      {id:"7wfhzi3",name:"Full body stretch and mobility",scheme:"10 to 15 min"},
+      {id:"hs-wrist-fast",name:"Wrist flexion and extension, LIGHT and FAST",scheme:"3\u00d720 fast, very light DB",tag:CARRY},
+      {id:"hs-pronation",name:"DB pronation and supination, light and fast",scheme:"3\u00d715 per side, light",tag:CARRY},
+      {id:"hs-gripfast",name:"Fast open and close grip squeezes",scheme:"3\u00d720 quick reps",tag:CARRY}
+     ]},
+    {id:"dt-rest", name:"Rest day", pairs:"Nothing planned", kind:"rest",
+     trains:"Nothing. Eat, sleep, play if you want to.",
+     carryLine:"Recovery is the carry. You play 5 to 10 sessions a week and drill 3 to 4 mornings, so the rest day is what protects the court volume.",
+     items:[]}
+  ];
+
+  _GT.weekTarget="Four, maybe five workouts a week. The rest are rest or stretch days.";
+  _GT.weekTargetSource="Ian, 27.09.2026, his own words. It is his target, not a rule the app enforces, and nothing on this page counts against it.";
+  _GT.secondaryLoad="You play 5 to 10 sessions a week and drill 3 to 4 mornings, so the gym is the secondary load and must not cost you court time.";
+  _GT.pairingRule="Back day is back and biceps. Chest day is chest and triceps. They are never merged into one upper day. If a day needs to be shorter, cut movements inside it.";
+  /* SAY WHAT IT IS, NOT WHAT IT REFUSES TO DO. This line previously read "The app does
+     not suggest one, does not track a streak, and does not tell you what you have
+     missed", which put the words streak and missed on his screen in order to promise
+     their absence, and narrated our own design decision back at him. Absence is proved
+     by the page, not announced on it. */
+  _GT.pickWho="Pick whichever one you want today. Nothing here is scheduled.";
+
+  /* NEUTRALISE THE WEEKDAY MAP. Same shape Tue, Wed and Thu have carried since build 386. */
+  (_GT.split||[]).forEach(function(d){
+    if(!d) return;
+    d.focus="Gym open, your call";
+    d.exercises=[];
+    d.varDouble=true;
+    d.noGym=false;
+    d.rest=false;
+    d.lockNote="You pick the day. Nothing is scheduled.";
+    d.note="NOTHING IS SCHEDULED FOR ANY DAY OF THE WEEK. You pick from the day types on the gym page, and you know not to double up. Your own words, 27.09.2026. Four or five workouts a week is your target, and the rest are rest or stretch days.";
+  });
+  _GT.planVersion="day type library, 27.09.2026, shipped build 453. No weekday is assigned a workout anywhere in the app.";
+  if(_GT.weekShape) _GT.weekShape.retired="SUPERSEDED 27.09.2026. This described a weekday shape and rule1 asserted which days were gym days. Nothing reads it any more. Kept, not deleted.";
+
+  state.meta.mig453_gymtypes=true; save(true);
+} }catch(e){ try{ console.warn("mig453 did not apply:",e&&e.message); }catch(_){} }
+
   /* build 372: LAST THING BEFORE THE SAVE. Every migration above has run, deepMergeDefaults
      has run, so this is the only point in the file where the state is actually final. */
   try{ convergeState(); }catch(e){}
@@ -24805,7 +24965,10 @@ function buildGym(v){ var _gymTop=el("div"); _gymTop.style.height="14px"; v.appe
   /* v21 build 387: the day switcher and the selected day, drawn first and drawn whole.
      objectiveCard and the "Workout routine" collapse wrapper both came off here; the
      reasoning is written out in full above gymPage387(). */
-  safe(v,()=>gymPage387(v),"Gym day");
+  /* v21 build 453: the day type library replaces the seven day switcher. gymPage387 is
+     retired in place below, not deleted. It was a WEEKDAY surface and the weekday is
+     the thing that had to go. */
+  safe(v,()=>gymTypesPage(v),"Day types");
   /* build 212: sublabel said "meals, supplements are in the Daily checklist" while the meals card
      itself was removed at build 178 because Ian never used it. A label advertising a surface that
      does not exist is how a future session concludes meals are missing and rebuilds them. Ian
@@ -24825,7 +24988,9 @@ function buildGym(v){ var _gymTop=el("div"); _gymTop.style.height="14px"; v.appe
      archiving it, so nobody rebuilds it from scratch.
      DO NOT RE-ADD THIS as a missing capability in an audit. Same standing as meal planning, which was
      closed twice before it stuck. See RULES.md P1a and the filter Ian set on 08.04.2026. */
-  sect(v,"Daily checklist","habits, water, and supplements, one place"); safe(v,()=>dailyChecklistModule(v),"Daily checklist");
+  /* build 453: sub-label trimmed to the four word cap. It read "habits, water, and
+     supplements, one place", which is six. */
+  sect(v,"Daily checklist","habits, water, supplements"); safe(v,()=>dailyChecklistModule(v),"Daily checklist");
   /* build 225: PLACED FROM THE RETIRED STATS TAB. The seven day habit consistency chart was the only
      habit number with no other home in the app, so it moves to the page that owns habits rather than
      being dropped with the tab. The streak it used to sit beside is already on the checklist ring. */
@@ -25002,6 +25167,13 @@ function gymToday(parent){ try{ healthCard(parent); }catch(e){} const day=daySpl
    (Friday, seven rows), a no lift day (Tue/Wed/Thu, no exercises at all), and a
    planned rest day. Each gets its own branch with its own written statement, because
    an empty state that looks like a bug is worse than the overflow this build fixes. */
+/* RETIRED 27.09.2026 (build 453). gymPage387, g7switcher, g7key and g7row below are NO
+   LONGER CALLED. The page they drew was organised by DAY OF THE WEEK, and Ian's 27.09
+   instruction removes the weekday from the app entirely: he picks a day type, the app
+   never assigns one to a weekday. Kept in place, not deleted, per the nutritionModule
+   convention. The .g7row / .g7name / .g7sch / .g7cue CSS family they introduced is
+   still very much live and is what the new page and the daily checklist both render
+   with. DO NOT WIRE gymPage387 BACK UP. */
 let g7sel=null;   /* null means FOLLOW TODAY. A weekday index means he has tapped away. */
 let g7note=false; /* the "Why this day" disclosure, closed on arrival and on every day change */
 
@@ -25225,6 +25397,116 @@ function dispItem(name,meta){
   if(meta){ var m=el("span","meta"); m.textContent=meta; tx.appendChild(m); }
   row.appendChild(tx); return row;
 }
+/* ===== v21 build 453: THE GYM PAGE IS A LIBRARY, NOT A SCHEDULE ==================
+   Ian, 27.09.2026: "a set list of workout style days for me ... and then I can pick for
+   myself which one I want to do each day ... That'll be all on me and I'll pick all the
+   days."
+
+   WHAT IS DELIBERATELY ABSENT FROM THIS PAGE, and none of it is an oversight:
+     NO DAY OF THE WEEK. Not in a heading, not in a switcher, not in a label. The seven
+     day switcher from build 387 is retired below for exactly this reason: it was a
+     weekday surface, and a weekday surface is the thing he has corrected twice.
+     NO SUGGESTION. Nothing says what to do today.
+     NO STREAK, NO COUNT, NO GAP. Nothing says he has not done legs this week. His
+     stated target of four or five is printed as HIS target and nothing measures it.
+     NO WRITE SURFACE. No tick, no box, no input, no logger. Same as build 362.
+
+   SECTIONING MATCHES THE PICKLEBALL PAGE because he named it as the model for good
+   organisation. gymCollapse is pkCollapse's shape with its own open-state store, so
+   opening a day type here cannot change what is open over there.
+
+   ORDER IS LIFTS, THEN EASY, THEN REST. Not a priority and not a sequence to follow.
+   It is simply the order he listed them in, with rest last because it is the one that
+   needs no reading. */
+var GYM_OPEN={};
+function gymCollapse(parent,key,title,sub,openDefault,build){
+  var open=(key in GYM_OPEN)?GYM_OPEN[key]:!!openDefault;
+  var hc=card("a-blue"); hc.style.cursor="pointer"; hc.style.marginBottom="0"; var hb=hc._body;
+  var row=el("div"); row.style.cssText="display:flex;align-items:center;gap:11px";
+  var left=el("div"); left.style.flex="1"; left.style.minWidth="0";
+  var t=el("div"); t.style.cssText="font-weight:800;font-size:17px;letter-spacing:-.02em"; t.textContent=title; left.appendChild(t);
+  if(sub){ var s2=el("div","small dim"); s2.style.marginTop="2px"; s2.textContent=sub; left.appendChild(s2); }
+  row.appendChild(left);
+  var chev=el("div"); chev.textContent="\u25BE";
+  chev.style.cssText="font-size:16px;color:var(--sec2,var(--accent2));transition:transform .15s ease;transform:rotate("+(open?"180deg":"0deg")+")";
+  row.appendChild(chev); hb.appendChild(row);
+  var wrap=el("div"); wrap.style.marginBottom="16px"; wrap.appendChild(hc);
+  var body=el("div"); body.style.display=open?"block":"none"; body.style.marginTop="8px";
+  try{ build(body); }catch(e){ try{ console.error("[dash] gymCollapse",key,e); }catch(_){}
+    var er=card(); er._body.appendChild(el("div","small dim","This section could not load.")); body.appendChild(er); }
+  wrap.appendChild(body); parent.appendChild(wrap);
+  hc.onclick=function(){ var willOpen=(body.style.display==="none");
+    body.style.display=willOpen?"block":"none";
+    chev.style.transform="rotate("+(willOpen?"180deg":"0deg")+")";
+    GYM_OPEN[key]=willOpen; };
+}
+
+/* One movement. Name, then the sets and reps, then the cue. The carry marker sits on
+   the name line because it describes the movement, not the prescription. */
+function gymTypeRow(list,it){
+  var r=el("div","g7row");
+  /* THE CARRY MARKER GOES ON THE SCHEME LINE, NOT THE NAME. Inside the name it
+     concatenated into the rendered string ("Reverse wrist curlcourt") because an inline
+     span has no word break in innerText, which would have put a made up word into the
+     one field that is supposed to be a clean label. On the scheme line it sits beside
+     the prescription where it belongs and the name stays exactly the movement. */
+  r.appendChild(el("div","g7name",it.name||""));
+  var carry=(it.tag==="carry");
+  if(it.scheme||carry){
+    var s=el("div","g7sch");
+    if(it.scheme) s.appendChild(document.createTextNode(it.scheme));
+    /* A REAL SPACE, not just a CSS margin. An inline span contributes no word break to
+       innerText, so margin alone rendered "3\u00d710 per sidecourt" to anything reading the
+       text layer, including a screen reader. The margin does the spacing, this does the
+       separation. */
+    if(carry){ s.appendChild(document.createTextNode(" ")); var tg=el("span","g7tag","court"); s.appendChild(tg); }
+    r.appendChild(s);
+  }
+  if(it.cue) r.appendChild(el("div","g7cue",it.cue));
+  list.appendChild(r);
+}
+
+function gymTypesPage(parent){
+  try{ healthCard(parent); }catch(e){}
+  var G=state.gym||{}, types=G.dayTypes||[];
+
+  /* THE ONLY PROSE ON THE PAGE, and every line of it is his. */
+  var lead=card("a-blue"), lb=lead._body;
+  lb.appendChild(el("div","g7title","Your day types"));
+  lb.appendChild(el("div","g7lead",G.pickWho||"You pick the day."));
+  if(G.weekTarget){ lb.appendChild(el("div","g7leadlab","Your target"));
+    lb.appendChild(el("div","g7lead",G.weekTarget)); }
+  if(G.secondaryLoad){ lb.appendChild(el("div","g7leadlab","The gym is second"));
+    lb.appendChild(el("div","g7lead",G.secondaryLoad)); }
+  if(G.pairingRule){ lb.appendChild(el("div","g7leadlab","Never combined"));
+    lb.appendChild(el("div","g7lead",G.pairingRule)); }
+  parent.appendChild(lead);
+
+  if(!types.length){ var q=card(); q._body.appendChild(el("div","g7quiet","No day types are set.")); parent.appendChild(q); return; }
+
+  types.forEach(function(t){
+    var n=(t.items||[]).length;
+    /* FOUR WORD CAP ON THE SUB-LABEL, counted not estimated. */
+    var sub=t.pairs||"";
+    gymCollapse(parent,"gt_"+t.id,t.name,sub,false,function(body){
+      var c=card(), b=c._body;
+      if(t.trains) b.appendChild(el("div","g7trains",t.trains));
+      if(n){
+        var list=el("div","g7list");
+        (t.items||[]).forEach(function(it){ gymTypeRow(list,it); });
+        b.appendChild(list);
+      } else {
+        b.appendChild(el("div","g7quiet","Nothing to do. That is the point of it."));
+      }
+      if(t.carryLine){
+        b.appendChild(el("div","g7leadlab","What it gives the court"));
+        b.appendChild(el("div","g7carry",t.carryLine));
+      }
+      body.appendChild(c);
+    });
+  });
+}
+
 /* ===== v21 build 390: THE DAILY CHECKLIST, BROUGHT TO THE BUILD 387 STANDARD ====
    Ian, 14.09.2026: "Make sure all pages get the correct full redesign." The gym day
    card above this one is the reference, and this module sat directly underneath it in
@@ -28861,6 +29143,20 @@ function autoLogCard(area){
 /* The buy list is real information but it is not today's business, so it recedes by
    weight and colour rather than by a blanket opacity that also dims its own caption. */
 .g7dimrow .g7name{color:var(--gray2);font-weight:500}
+
+/* ----- build 453: the day type library ---------------------------------------
+   Sectioning matches the pickleball page, which Ian named as the model. Inside a
+   section the rows are the same .g7row family the rest of the app already uses, so
+   nothing new had to be invented to hold a movement. */
+.g7lead{font-size:14px;line-height:1.55;color:var(--gray);margin:2px 0 0;overflow-wrap:break-word}
+.g7lead+.g7lead{margin-top:10px}
+.g7leadlab{font-size:12.5px;font-weight:700;line-height:1.2;color:var(--sec2,var(--accent2));margin:16px 0 4px}
+/* The carry marker. A word, not a badge with a border: the page already has enough
+   edges and this has to sit next to a movement name without competing with it. */
+.g7tag{display:inline-block;font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--sec2,var(--accent2));margin-left:8px;vertical-align:1px;white-space:nowrap}
+.g7pairs{font-size:13px;font-weight:600;line-height:1.4;color:var(--gray2);margin:0 0 2px}
+.g7trains{font-size:13.5px;line-height:1.55;color:var(--gray);margin:10px 0 0}
+.g7carry{font-size:13px;line-height:1.55;color:var(--gray2);margin:9px 0 0;overflow-wrap:break-word}
 .g7back{-webkit-appearance:none;appearance:none;background:none;border:0;padding:8px 2px;margin:2px 0 0;cursor:pointer;font:inherit;font-size:13.5px;font-weight:700;color:var(--sec2,var(--accent2));display:block;text-align:left}
 
 /* ----- build 391: the ONE new class in the real estate redesign ----------------
