@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 450 (2026-09-26)">
+<meta name="build" content="v21 build 451 (2026-09-27)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -20690,6 +20690,151 @@ try{ if(!state.meta.mig440_tax){
 
 
 
+
+/* ===== v21 build 451: IAN'S CORRECTIONS, 27.09.2026. MONEY FIRST. ======================
+   Every figure here is his. Nothing is derived and nothing is rounded into a number he did not
+   give. Guard state.meta.mig451_corr, end of the chain, SEED_VERSION stays 13. */
+try{ if(profile==="ian" && state.meta && !state.meta.mig451_corr && state.realEstate){
+    var _D51=state.realEstate.deals||[], _L51=[];
+    var _f51=function(id){ for(var i=0;i<_D51.length;i++){ if(_D51[i]&&_D51[i].id===id) return _D51[i]; } return null; };
+    var _s51=function(d,k,v){ if(!d) return; if(d[k]===v) return; _L51.push({deal:d.id,field:k,before:(d[k]===undefined?null:d[k])}); d[k]=v; };
+    var _app51=function(d,txt,sentinel){ if(!d||typeof d.note!=="string") return; if(d.note.indexOf(sentinel)>=0) return;
+      _L51.push({deal:d.id,field:"note",before:d.note}); d.note=d.note+"  "+txt; };
+
+    /* 1. WILLIS IS CHRIS'S CLIENT. The 26.09 record saying Owner: Ian, not Chris, was wrong.
+          Ian is at 20 percent and the money must keep computing at 20 percent. */
+    var _w=_f51("re-cynthia-willis");
+    if(_w){
+      _s51(_w,"ianSplit",0.2);
+      _s51(_w,"owner","Chris's client. Ian is at 20 percent.");
+      _app51(_w,"CORRECTION, IAN 27.09.2026: this is CHRIS'S client and Ian is at 20 percent. The 26.09 listing live record that said the owner was Ian and not Chris was wrong and is retracted here. The money computes at 20 percent.","CORRECTION, IAN 27.09.2026: this is CHRIS'S client");
+    }
+
+    /* 2. "IAN'S OWN" IS 0.80. Gilliam at 0.90 was the exception and is NOT touched. */
+    var _CR=state.realEstate.commissionRules;
+    if(_CR){
+      _L51.push({deal:"commissionRules",field:"ianOwnShare",before:(_CR.ianOwnShare===undefined?null:_CR.ianOwnShare)});
+      _CR.ianOwnShare=0.8;
+      _CR.ianOwnShareNote="Ian's own is 0.80. Confirmed by Ian 27.09.2026. Ashley Gilliam at 0.90 is the one exception on record and stays at 0.90.";
+      ["unverified","UNVERIFIED"].forEach(function(k){ if(_CR[k]!==undefined) delete _CR[k]; });
+      var _strip=function(o){ if(!o||typeof o!=="object") return;
+        Object.keys(o).forEach(function(k){ var v=o[k];
+          if(typeof v==="string" && /UNVERIFIED/i.test(v)){
+            var nv=v.replace(/\s*\(?UNVERIFIED[^.)]*\)?\.?/gi," ").replace(/\s{2,}/g," ").trim();
+            if(nv!==v){ _L51.push({deal:"commissionRules",field:k,before:v}); o[k]=nv; }
+          } else if(v&&typeof v==="object"){ _strip(v); }
+        });
+      };
+      _strip(_CR);
+    }
+    /* backfill the two live records that had no split. Gilliam untouched by name. */
+    [["re-austin-thacker-buy",0.8],["re-hernandez-sell",0.8]].forEach(function(p){
+      var d=_f51(p[0]); if(d && d.ianSplit===undefined){ _s51(d,"ianSplit",p[1]);
+        _s51(d,"ianSplitSource","Default for Ian's own, 0.80, confirmed by Ian 27.09.2026."); }
+    });
+
+    /* 3. WINCHESTER. He earns nothing on the LOT ONLY; the BUILD does pay him, so the
+          $22,550 and $24,600 figures stand. They have gone ghost, so the probability comes
+          DOWN, and he gave no number, so none is invented. */
+    var _bw=_f51("re-brandon-winchester");
+    if(_bw){
+      _s51(_bw,"probNote","GONE GHOST, PROBABILITY REDUCED. Ian 27.09.2026. He gave no figure, so none is set: winProb is deliberately left unset rather than guessed. The build commission stands, it is the LOT ONLY that pays Ian nothing.");
+      _app51(_bw,"IAN 27.09.2026: they have gone ghost, so the probability is reduced. He did not give a number and none has been invented. The BUILD does pay him, so the $22,550 and $24,600 figures stand; it is the lot only that earns him nothing.","IAN 27.09.2026: they have gone ghost");
+      if(_bw.winProb!==undefined){ _L51.push({deal:_bw.id,field:"winProb",before:_bw.winProb}); delete _bw.winProb; }
+    }
+    var _wl=_f51("re-winchester-lot");
+    if(_wl){ _s51(_wl,"ianSplit",0); _s51(_wl,"ianSplitSource","LOT ONLY earns Ian nothing. Ian 27.09.2026."); }
+
+    /* 4. HERNANDEZ: price 420,000, stage PROSPECT. */
+    var _hz=_f51("re-hernandez-sell");
+    if(_hz){ _s51(_hz,"price","$420,000"); _s51(_hz,"stage","Prospect");
+      _s51(_hz,"priceNote","$420,000, from Ian 27.09.2026. Previously held as a band of low 400s, most likely $420,000 to $430,000; he has now given the figure. The six month old CMA is thin and is not a current valuation."); }
+
+    /* 5. THEOBALD IS NOT PAUSED. BARKER STAYS PAUSED. */
+    var _th=_f51("re-theobald-sell");
+    if(_th){
+      _s51(_th,"paused",false);
+      _s51(_th,"pausedNote","NOT PAUSED. Ian 27.09.2026 lifted the pause that had stood since 12.09. Any earlier text on this record calling it paused is superseded by this field.");
+      _app51(_th,"IAN 27.09.2026: THEOBALD IS NOT PAUSED. The pause recorded on 12.09 and restated 14.09 is lifted. Read the paused field, not the prose above it.","IAN 27.09.2026: THEOBALD IS NOT PAUSED");
+    }
+    var _bk=_f51("re-barkers");
+    if(_bk){
+      _s51(_bk,"paused",true);
+      _s51(_bk,"pausedNote","PAUSED, and still paused as at 27.09.2026. A paused deal shows no list date and does not count in the pipeline. Two things remain owed for whenever it resumes and must not be deleted: the re-derivation, and Ian's own basement measurement from 10611 Parker.");
+    }
+    /* every other deal is explicitly NOT paused, so the field is never absent-and-ambiguous */
+    _D51.forEach(function(d){ if(d && d.paused===undefined) d.paused=false; });
+
+    /* 6. CRYSTAL JOHNSON PAYS IAN NOTHING. His words, so nobody asks again. */
+    var _cj=_f51("re-crystal-johnson");
+    if(_cj){
+      _s51(_cj,"ianSplit",0);
+      _s51(_cj,"ianSplitSource","PAYS IAN NOTHING. Ian, 27.09.2026, verbatim: \"like I told you I don't get paid for Crystal Johnson.\" Recorded so it is not asked again.");
+      _s51(_cj,"noIncome",true);
+      _app51(_cj,"IAN 27.09.2026, VERBATIM: \"like I told you I don't get paid for Crystal Johnson.\" His share is zero and this deal must never render as money owed to him.","like I told you I don't get paid for Crystal Johnson");
+    }
+
+    /* ---- DATES. All leaning, none fixed. ---- */
+    var _vg=_f51("re-vogel-sell");
+    if(_vg){ _s51(_vg,"close","LEANING 8 October 2026, 15th at the latest, not set");
+      _app51(_vg,"IAN 27.09.2026: staging soon, list likely the 8th and the 15th at the latest. A lean, not a booking.","IAN 27.09.2026: staging soon"); }
+    var _mx=_f51("re-mattox-sell");
+    if(_mx){ _s51(_mx,"close","LEANING 15 October 2026, possibly the 8th, not set"); }
+
+    /* THE PREP RULE WAS WRONG. Staging, photos and that work happen in the WEEK OF the list,
+       not a fixed 2 to 3 days out. Correct it everywhere it was written. */
+    var _PREP="STAGING, PHOTOS AND PREP HAPPEN IN THE WEEK OF THE LIST, not a fixed number of days before it. Ian 27.09.2026, correcting the 2 to 3 day rule this app had written down. The photographer is his mother and her availability is the real constraint.";
+    [_vg,_mx,_bk].forEach(function(d){ if(!d||typeof d.note!=="string") return;
+      var n=d.note.replace(/Photos run 2 to 3 days before go live, so a Thursday listing means photos on about the Tuesday\.\s*/gi,"");
+      if(n!==d.note){ _L51.push({deal:d.id,field:"note",before:d.note}); d.note=n; }
+      if(d.note.indexOf("WEEK OF THE LIST")<0){ _L51.push({deal:d.id,field:"note",before:d.note}); d.note=d.note+"  "+_PREP; }
+    });
+    var _bl=_f51("re-belknap-sell");
+    if(_bl){
+      _s51(_bl,"stagingNote","STAGING IS A LEAN, NOT A BOOKING, and the two days are two DIFFERENT properties: one day is Belknap and the other is Mattox, not both days on one house. Ian 27.09.2026. THE BELKNAP BASEMENT IS NOT BEING STAGED, so Dillon's sump pump work does not collide with staging. That question is closed.");
+      _app51(_bl,"IAN 27.09.2026: the basement is NOT being staged, so Dillon's sump pump work does not collide with the staging days. Question closed.","the basement is NOT being staged");
+    }
+    if(_mx) _s51(_mx,"stagingNote","PARTIAL is Ian's deliberate call, 21.09.2026, and is not a gap. THE STAGING DAYS ARE A LEAN AND THEY ARE TWO DIFFERENT PROPERTIES: one day Belknap, one day Mattox. Ian 27.09.2026, and none of it is set.");
+
+    /* ---- THE VEHICLE AND MILEAGE LOG. His largest deduction and the app had no representation
+       of it at all. Standard mileage method, which is HIS CHOICE and is recorded as chosen, not
+       assumed. Two rates because the rate changed mid year. ---- */
+    if(!state.finance||typeof state.finance!=="object") state.finance={};
+    if(!state.finance.vehicle){
+      state.finance.vehicle={
+        make:"Honda",
+        method:"Standard mileage",
+        methodChosenBy:"Ian, 25.09.2026. Chosen, not assumed, and it is the larger deduction for him.",
+        odometer:115496, odometerOn:"2026-09-25",
+        rates:[{from:"2026-01-01",to:"2026-06-30",centsPerMile:72.5},
+               {from:"2026-07-01",to:"2026-12-31",centsPerMile:76}],
+        note:"Odometer 115,496 read on 25 September 2026. NO BUSINESS MILEAGE IS RECORDED YET, so no deduction is computed: a total odometer reading is not a business figure and splitting it would be inventing one. What this needs next from Ian is business miles, by period, because the rate changed on 1 July.",
+        logs:[]
+      };
+      _L51.push({deal:"finance.vehicle",field:"created",before:null});
+    }
+
+    /* ---- THE LEAGUE EVENTS. Notes only on tournaments, a pattern he has approved before. ---- */
+    var _ev51=0;
+    (state.events||[]).forEach(function(e){
+      if(!e||String(e.kind||"")==="Tournament") return;
+      if(!/league/i.test(String(e.title||""))) return;
+      if(typeof e.note==="string" && e.note){
+        _L51.push({deal:"event "+e.id,field:"note",before:e.note}); delete e.note; _ev51++;
+      }
+    });
+    try{ console.log("mig451: "+_L51.length+" changes, "+_ev51+" league notes stripped"); }catch(_){}
+
+    if(_L51.length){
+      if(!state.archive||typeof state.archive!=="object") state.archive={};
+      if(!state.archive.correctionsB451){
+        state.archive.correctionsB451={ setOn:"2026-09-27", count:_L51.length, changes:_L51,
+          why:"Previous value of everything build 451 changed on Ian's corrections of 27.09.2026. Nothing was deleted without being recorded here." };
+      }
+    }
+    state.meta.mig451_corr=true; save(true);
+} }catch(e){ try{ console.warn("mig451 did not apply:",e&&e.message); }catch(_){} }
+
 /* ===== v21 build 450: WILLIS IS LIVE, AND THE RE-APPENDER IS KILLED PROPERLY ============
    The listing went live on Friday 25 September and the app still showed Coming Soon with a
    go live window of mid to late August and a note ending 30 July. That is the single most wrong
@@ -21155,10 +21300,21 @@ try{ if(profile==="ian" && state.meta && !state.meta.mig448_dedupe && state.pick
    them is an id that is already sitting in archive.todosDone with the reason it left. */
 /* Short all-caps tokens that are genuinely his, not emphasis we added. Anything not on this
    list and two letters or longer is treated as shouting and lowercased. */
-var PK_ACRONYMS={DUPR:1,APC:1,NPL:1,PPA:1,MLP:1,ATP:1,MST:1,USA:1,US:1,
+var PK_ACRONYMS={CMA:1,MLS:1,GPRMLS:1,LLC:1,HOA:1,DOM:1,NP:1,RE:1,AVP:1,FNBO:1,
+  DUPR:1,APC:1,NPL:1,PPA:1,MLP:1,ATP:1,MST:1,USA:1,US:1,
   HR:1,BPM:1,PM:1,AM:1,NE:1,AZ:1,IA:1,MO:1,KS:1,TV:1,ID:1,OK:1,IQ:1,MVP:1,GPS:1,IMG:1,
   W:1,L:1,I:1,A:0};
-var PK_NAMES={DYLAN:"Dylan",ESTEBAN:"Esteban",CELIS:"Celis",BIANCA:"Bianca",APPLE:"Apple",
+/* build 451: the real estate names and acronyms, added so the render time tidy can run over
+   deal text without lowercasing a client, a street or a document type. */
+var PK_NAMES={IAN:"Ian",CHRIS:"Chris",BYRON:"Byron",CYNTHIA:"Cynthia",MATTOX:"Mattox",
+  BELKNAP:"Belknap",BELKNAPS:"Belknaps",VOGEL:"Vogel",THEOBALD:"Theobald",BARKER:"Barker",
+  BARKERS:"Barkers",HERNANDEZ:"Hernandez",THACKER:"Thacker",WINCHESTER:"Winchester",
+  JOHNSON:"Johnson",CRYSTAL:"Crystal",GILLIAM:"Gilliam",SPICER:"Spicer",TESKE:"Teske",
+  TESKES:"Teskes",TYSDAL:"Tysdal",SNYDER:"Snyder",BRANDT:"Brandt",PARSONS:"Parsons",
+  MILLER:"Miller",TROESTER:"Troester",BEACHLER:"Beachler",JENKINS:"Jenkins",RYAN:"Ryan",
+  DILLON:"Dillon",DALE:"Dale",OMAHA:"Omaha",NEBRASKA:"Nebraska",SPYGLASS:"Spyglass",
+  PRATT:"Pratt",BURKE:"Burke",PARKER:"Parker",PINE:"Pine",MARK:"Mark",SCOTT:"Scott",
+  DYLAN:"Dylan",ESTEBAN:"Esteban",CELIS:"Celis",BIANCA:"Bianca",APPLE:"Apple",
   ARIZONA:"Arizona",CARVANA:"Carvana",MONDAY:"Monday",TUESDAY:"Tuesday",WEDNESDAY:"Wednesday",
   THURSDAY:"Thursday",FRIDAY:"Friday",SATURDAY:"Saturday",SUNDAY:"Sunday",JANUARY:"January",
   FEBRUARY:"February",MARCH:"March",APRIL:"April",JUNE:"June",JULY:"July",AUGUST:"August",
@@ -21279,6 +21435,15 @@ function pkTidySweep(){
     return changed.length;
   }catch(e){ try{ console.warn("pkTidySweep did not run:",e&&e.message); }catch(_){} return 0; }
 }
+/* ===== v21 build 451: THE REAL ESTATE TIDY, AT RENDER TIME ==========================
+   Build 442 tidied by rewriting stored text and that was the wrong design: it erased the
+   sentinels other migrations guard on, so blocks re-appended forever and state grew on every
+   open. Build 448 turned it off and wrote down the correct fix. This is that fix.
+   reTidy() TOUCHES NOTHING. It is called on the way to the DOM, so the record keeps its
+   build numbers and its sentinels and every content guard keeps matching, while Ian reads
+   clean text. It is also free to be wrong in a way the old sweep was not: a bad tidy here
+   shows up as odd wording on one screen, not as corrupted data. */
+function reTidy(t){ try{ return pkTidy(String(t==null?"":t)); }catch(e){ return t; } }
 function convergeState(){
   try{
     if(!state.meta) state.meta={};
@@ -22214,7 +22379,7 @@ function dealRow(parent,d){
      Everything that used to be crammed into it, the address, the side, the qualifier, now renders
      on d.sub, which is the SAME .dsub line the close date and the take home already use. This is a
      data placement change, not a new layout: the Barkers row was already correct and is the model. */
-  const left=el("div","dl"); left.appendChild(el("div","dn",d.title)); if(d.sub)left.appendChild(el("div","dsub",d.sub)); if(d.close)left.appendChild(el("div","dsub",d.close)); var _tn=dealIanNet(d); if(_tn>0){ var _th=el("div","dsub"); /* build 275: say UNPAID on the row itself. A closed deal showing a take home figure with no qualifier reads as money he has. */ /* build 440: the row said "take home" about a pre tax figure. It now names the commission and
+  const left=el("div","dl"); left.appendChild(el("div","dn",d.title)); if(d.sub)left.appendChild(el("div","dsub",reTidy(d.sub))); if(d.close&&!d.paused)left.appendChild(el("div","dsub",reTidy(d.close))); var _tn=dealIanNet(d); if(_tn>0){ var _th=el("div","dsub"); /* build 275: say UNPAID on the row itself. A closed deal showing a take home figure with no qualifier reads as money he has. */ /* build 440: the row said "take home" about a pre tax figure. It now names the commission and
        the amount that survives the tax sweep, in that order, on the one line the row has. */
     _th.textContent="Est. "+fmtMoney(_tn)+", keep "+fmtMoney(postTax(_tn))+" after tax"+(dealIsUnpaid(d)?"  UNPAID":(dealIsPaid(d)?"  received":"")); _th.style.color=dealIsUnpaid(d)?"var(--gray2,#8a8a99)":"var(--sec2,var(--accent2))"; _th.style.fontWeight="700"; left.appendChild(_th); } var _urg=(d.stage==="Closed"||d.stage==="Just Sold")?"":closeUrgency(d.close); if(_urg){ var _u=el("div","dsub"); _u.textContent=_urg; _u.style.color=(_urg==="overdue"||_urg==="due today")?"var(--danger,#ff6363)":"var(--gray2,#8a8a99)"; _u.style.fontWeight="700"; left.appendChild(_u); } /* build 295: an OPTIONAL risk line. Only a deal carrying d.risk renders one, so every other row is byte identical. It sits under the detail lines in the warning colour because the one deal that has it is Under Contract and already counted, and a paragraph inside a two thousand character note does not carry that. */ /* build 440: an OPEN QUESTION on a figure that has already been pinned. Gilliam carries a real
        bank deposit in actualNet, but Ian is not sure whether his father's 10% came out before or
@@ -22222,11 +22387,11 @@ function dealRow(parent,d){
        quietly becomes a conclusion nobody decided to make. */
     if(d.actualNetOpen){ var _ao=el("div","dsub"); _ao.textContent="OPEN QUESTION ON THIS FIGURE. "+d.actualNetOpen;
       _ao.style.cssText="color:var(--warn,#e8b04b);font-weight:800;white-space:normal;line-height:1.45;margin-top:4px"; left.appendChild(_ao); }
-    if(d.risk){ var _rk=el("div","dsub"); _rk.textContent="AT RISK. "+d.risk; _rk.style.cssText="color:var(--danger,#ff6363);font-weight:800;white-space:normal;line-height:1.45;margin-top:4px"; left.appendChild(_rk); } row.appendChild(left);
+    if(d.risk){ var _rk=el("div","dsub"); _rk.textContent="At risk. "+reTidy(d.risk); _rk.style.cssText="color:var(--danger,#ff6363);font-weight:800;white-space:normal;line-height:1.45;margin-top:4px"; left.appendChild(_rk); } row.appendChild(left);
   /* build 267: a qualifier on a price is a MARKER, not part of the number. It renders under the
      figure on the right, in the same .dsub style as the rest of the detail text, so the price cell
      holds a price and nothing else. A row with no qualifier renders exactly as it did before. */
-  const right=el("div","dr"); if(d.price){ right.appendChild(el("div","dp",d.price)); if(d.priceNote) right.appendChild(el("div","dsub",d.priceNote)); } right.appendChild(stagePill(d.stage));
+  const right=el("div","dr"); if(d.price){ right.appendChild(el("div","dp",d.price)); if(d.priceNote) right.appendChild(el("div","dsub",reTidy(d.priceNote))); } right.appendChild(stagePill(d.stage));
   /* ===== build 374: THE STALE STAGE FLAG, and this is the actual fix ====================
      Ian found Crystal Johnson and Belknap buy still reading Under Contract days after both
      had closed, and said "idk why that's still wrong". THE ANSWER IS THAT NOTHING WAS EVER
@@ -23749,7 +23914,7 @@ function re391ClientRow(list,d,dim){
   re391Discs(r,[
     ["Timing",(d.close&&!re391Short(d.close,38))?d.close:""],
     ["On the price",(d.priceNote&&!re391Short(d.priceNote,46))?d.priceNote:""],
-    ["Full note",d.note||""]
+    ["Full note",reTidy(d.note||"")]
   ]);
   return r; }
 function re391Head(parent){
@@ -23838,7 +24003,7 @@ function re391Closed(parent){
     var when=re391Short(re391Paren(d.close),46);
     var cue=[]; if(when) cue.push(when); if(d.paid===true) cue.push("Paid");
     var r=re391Row(l,d.title||"",d.price||null,cue.length?cue.join("  \u00b7  "):null,true);
-    re391Discs(r,[["Closing",when?"":(d.close||"")],["Full note",d.note||""]]);
+    re391Discs(r,[["Closing",when?"":(d.paused?"Paused":(d.close||""))],["Full note",reTidy(d.note||"")]]);
   });
   parent.appendChild(c); }
 function re391More(parent,hidePipeline){
