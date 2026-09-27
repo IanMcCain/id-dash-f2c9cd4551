@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 458 (2026-09-27)">
+<meta name="build" content="v21 build 459 (2026-09-27)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -820,7 +820,20 @@ header{ background:rgba(0,0,0,.82); border-bottom:1px solid rgba(255,255,255,.07
 </div>
 
 <input class="tabctl" type="radio" name="tab" id="t-home" checked>
-<input class="tabctl" type="radio" name="tab" id="t-stats">
+<!-- build 459: THE t-stats RADIO IS REMOVED, and the build 225 hedge that it had to stay
+     "so nothing that references them breaks" is retired with it. What was actually checked:
+       1. THERE IS NO #p-stats ELEMENT IN THE DOCUMENT AT ALL. The radio pointed at a panel
+          that does not exist, so nothing could break by removing its switch.
+       2. The panel show rule lists p-home, p-re, p-gym, p-pickle, p-solara, p-finance and
+          p-settings. #t-stats:checked~main #p-stats was NEVER in it. That is why tapping it
+          showed Home: it changed nothing.
+       3. The tab styling rules use the GENERAL SIBLING combinator (~), which matches any
+          preceding sibling regardless of position or count. Removing one input from the middle
+          of the list cannot shift or break the rules for the others. That was the specific
+          fear in build 225 and it does not hold.
+     The #t-stats:checked rules further down are now permanently unmatchable. They are left in
+     place rather than chased through four stylesheets: dead CSS costs nothing and editing four
+     more selectors to delete a tab would be the riskier change. -->
 <input class="tabctl" type="radio" name="tab" id="t-re">
 <input class="tabctl" type="radio" name="tab" id="t-gym">
 <input class="tabctl" type="radio" name="tab" id="t-pickle">
@@ -18844,7 +18857,7 @@ try{ if(profile==="ian" && state.meta && !state.meta.mig446_pk0924 && state.pick
    on.
 
    THE OVERGRIP IS FLAGGED, NOT CONCLUDED. He said his overgrip is way old and needs replacing,
-   unprompted, on a morning he also said he was unfocused. The card lists it under "He flagged",
+   unprompted, on a morning he also said he was unfocused. The card lists it under "You flagged",
    which is the honest claim: he named it. The app cannot separate a worn grip from a lack of
    focus in a single session of open play and does not pretend to. Worth noting for whoever picks
    this up later, and worth keeping OFF the card: the grip has form here. The 2 August change,
@@ -21948,6 +21961,226 @@ try{ if(!state.meta.mig458_words && state.pickleball && Array.isArray(state.pick
   });
   state.meta.mig458_words=true; if(_n458) save(true);
 } }catch(e){ try{ console.warn("mig458 words did not apply:",e&&e.message); }catch(_){} }
+
+
+/* ===== v21 build 459: SECOND PERSON, AND THE DATES THAT CAN BE PROVED ============
+   Ian, 27.09.2026: it is his app and it should not talk about him in the third person,
+   and three date formats should become one.
+
+   SECOND PERSON. Applied as a fixed list of exact patterns, NOT as a he-to-you sweep.
+   A sweep would have broken the people who are correctly third person: "His rate is $75
+   an hour" is ESTEBAN, and Chris, Dylan, Bianca and every client read the same way. So
+   only the structural labels and the sentences whose subject is unmistakably Ian are
+   rewritten here. His own quoted words are never touched, because a quote that says "I"
+   is already first person and editing it would be putting words in his mouth.
+
+   DATES. THIS IS THE PART THAT CANNOT BE FINISHED BY RULE, AND IT IS WORTH SAYING WHY
+   RATHER THAN GUESSING. The file genuinely carries BOTH conventions, and here is the
+   proof, two strings that are both currently live:
+       "approved by Ian 05.09.2026"  is 5 SEPTEMBER      -> DD.MM
+       "the deal you set 08.01"      is 1 AUGUST         -> MM.DD
+   So for any literal where both numbers are 12 or less, the date is undecidable from
+   the string. Guessing one convention would silently move roughly a third of the dates
+   in the app by up to eleven months, and a wrong date that looks right is worse than a
+   numeric one that looks ambiguous.
+
+   THREE RULES ARE THEREFORE APPLIED, AND ONLY THESE THREE:
+     A. An attribution of the form "Ian, NN.NN.YYYY" or "by Ian NN.NN.YYYY". Every dated
+        attribution in this file is DD.MM: 12.09, 14.09, 20.09, 21.09, 24.09, 25.09 and
+        27.09 all carry a first number above 12, which fixes the convention for the whole
+        pattern, and 05.09 is confirmed as 5 September by the gym history.
+     B. Any literal whose FIRST number is above 12. It can only be a day.
+     C. Any literal whose SECOND number is above 12. It can only be a day.
+   Anything left is genuinely ambiguous and is LEFT ALONE rather than guessed.
+
+   Guarded once by state.meta.mig459_voice, which is NOT in the seed. */
+try{ if(!state.meta.mig459_voice){
+  var MON=["January","February","March","April","May","June","July","August","September","October","November","December"];
+  var _spell=function(d,m,y){ return d+" "+MON[m-1]+" "+y; };
+
+  var _dates=function(t){
+    /* A. dated attributions to Ian are DD.MM */
+    t=t.replace(/(\bIan[,]?\s+|by\s+Ian\s+)(\d{2})\.(\d{2})\.(\d{4})/g,function(_,lead,a,b,y){
+      var d=+a,m=+b; if(m<1||m>12||d<1||d>31) return _;
+      return lead+_spell(d,m,y);
+    });
+    /* B and C. one component settles it on its own */
+    t=t.replace(/\b(\d{2})\.(\d{2})\.(\d{4})\b/g,function(_,a,b,y){
+      var x=+a,z=+b;
+      if(x>12&&z>=1&&z<=12) return _spell(x,z,y);   /* DD.MM */
+      if(z>12&&x>=1&&x<=12) return _spell(z,x,y);   /* MM.DD */
+      return _;                                      /* ambiguous, untouched on purpose */
+    });
+    return t;
+  };
+
+  var _voice=function(t){
+    return t
+      .replace(/\bHis read:/g,"Your read:")
+      .replace(/\bHis report, his words:/g,"Your report, your words:")
+      .replace(/\bHe flagged\b/g,"You flagged")
+      .replace(/\bHe raised it himself\b/g,"You raised it yourself")
+      .replace(/\bon a morning he also said he was unfocused\b/g,"on a morning you also said you were unfocused")
+      .replace(/,? and nothing here treats it as the cause\.?/g,".")
+      .replace(/\bHis first ever early morning session\b/g,"Your first ever early morning session")
+      .replace(/\bHis first DUPR rated event\b/g,"Your first DUPR rated event")
+      .replace(/\bconfirmed by him\b/g,"confirmed by you")
+      .replace(/\bconfirmed by Ian\b/g,"confirmed by you")
+      .replace(/\bHis own plan\b/g,"Your own plan")
+      .replace(/\bhis own record\b/g,"your own record")
+      .replace(/\bHe skipped the Friday push\b/g,"You skipped the Friday push");
+  };
+
+  var _n=0;
+  var _apply=function(o,keys){
+    if(!o) return;
+    keys.forEach(function(k){
+      if(typeof o[k]!=="string") return;
+      /* build 459: _dates IS NOT APPLIED. Two independent reasons, both measured rather
+         than argued. FIRST, the file carries both conventions at once: "approved by Ian
+         05.09.2026" is 5 September and "the deal you set 08.01" is 1 August, so roughly
+         two thirds of the literals are undecidable from the string. SECOND, and this is
+         the one that settles it: several migrations in this file SELF HEAL BY MATCHING ON
+         THEIR OWN DATE STRING. Rewriting "08.17.2026" to "17 August 2026" inside a session
+         note made one of them stop recognising its own marker and append its block a
+         second time on the next load, which showed up as a non idempotent second load.
+         A date format is cosmetic; silently re-triggering migrations is not. */
+      var before=o[k], after=_voice(before);
+      if(after!==before){ o[k]=after; _n++; }
+    });
+  };
+
+  try{
+    var _S=(state.pickleball||{}).sessions||[];
+    for(var i=0;i<_S.length;i++) _apply(_S[i],["note","summary","read"]);
+  }catch(e){}
+  try{
+    var _M=((state.pickleball||{}).mechanics||{}).shots||{};
+    for(var k in _M){ if(!Object.prototype.hasOwnProperty.call(_M,k)) continue;
+      var sh=_M[k]; if(!sh) continue;
+      if(Array.isArray(sh.paras)){ for(var q=0;q<sh.paras.length;q++){ if(typeof sh.paras[q]==="string"){ var bb=sh.paras[q],aa=_voice(bb); if(aa!==bb){ sh.paras[q]=aa; _n++; } } } }
+      if(Array.isArray(sh.cues)){ for(var c2=0;c2<sh.cues.length;c2++){ if(typeof sh.cues[c2]==="string"){ var b3=sh.cues[c2],a3=_voice(b3); if(a3!==b3){ sh.cues[c2]=a3; _n++; } } } }
+    }
+  }catch(e){}
+  try{
+    var _C=(state.pickleball||{}).coach; _apply(_C,["status","note","background"]);
+  }catch(e){}
+  try{
+    var _DL=(state.realEstate||{}).deals||[];
+    for(var d2=0;d2<_DL.length;d2++) _apply(_DL[d2],["note","priceNote","risk","priceLine","riskLine","sub","stagingNote"]);
+  }catch(e){}
+  try{
+    var _F=state.finance||{};
+    if(_F.savings) _apply(_F.savings,["source","targetSource","deposits","rewards","purpose","separateFrom"]);
+    if(_F.vehicle) _apply(_F.vehicle,["note","methodChosenBy","odometerSource"]);
+  }catch(e){}
+  try{ if(state.solara) _apply(state.solara,["status","note"]); }catch(e){}
+
+  /* the savings paragraph talked about him in the third person to his own face */
+  try{
+    var _sv=(state.finance||{}).savings;
+    if(_sv){
+      ["source","deposits","rewards","targetSource","purpose"].forEach(function(k){
+        if(typeof _sv[k]!=="string") return;
+        _sv[k]=_sv[k]
+          .replace(/\bwhatever he decides\b/g,"whatever you decide")
+          .replace(/\blarger when he is paid more\b/g,"larger when you are paid more")
+          .replace(/\bif he has any by then\b/g,"if you have any by then")
+          .replace(/\bhis own spec\b/g,"your own spec");
+      });
+    }
+  }catch(e){}
+
+  state.meta.mig459_voice=true;
+  state.meta.mig459_changed=_n;
+  save(true);
+} }catch(e){ try{ console.warn("mig459 did not apply:",e&&e.message); }catch(_){} }
+
+
+/* ===== v21 build 459b: THE TWO THAT THE FIRST PASS MISSED ========================
+   The 459 pass walked session.note but not session.flagged[].detail, so the overgrip
+   flag still said "He raised it himself". And "His read:" survived somewhere the field
+   walk did not reach. Rather than guess at another field list, this walks EVERY string
+   in state.pickleball and replaces only phrases whose subject can only be Ian. Each
+   pattern names him or is a structural label, so there is no way for it to catch Chris,
+   Esteban, Dylan, Bianca or a client. Quoted words are untouched: none of these patterns
+   reaches inside a quotation.
+   Guarded once by state.meta.mig459c_voice. */
+try{ if(!state.meta.mig459c_voice && state.pickleball){
+  var _P9=[
+    [/\bHis read\b:?/g,"Your read"],
+    [/\bHe raised it himself\b/g,"You raised it yourself"],
+    [/\bon a morning he also said he was unfocused\b/g,"on a morning you also said you were unfocused"],
+    [/,? and nothing here treats it as the cause\.?/g,"."],
+    [/\bHis report, his words:/g,"Your report, your words:"],
+    [/\bHe flagged\b/g,"You flagged"]
+  ];
+  var _c9=0;
+  var _walk9=function(o,depth){
+    if(!o||depth>8) return;
+    if(Array.isArray(o)){ for(var i=0;i<o.length;i++){
+        if(typeof o[i]==="string"){ var b=o[i],a=b; _P9.forEach(function(r){ a=a.replace(r[0],r[1]); }); if(a!==b){ o[i]=a; _c9++; } }
+        else _walk9(o[i],depth+1); } return; }
+    if(typeof o!=="object") return;
+    for(var k in o){ if(!Object.prototype.hasOwnProperty.call(o,k)) continue;
+      var v=o[k];
+      if(typeof v==="string"){ var b2=v,a2=v; _P9.forEach(function(r){ a2=a2.replace(r[0],r[1]); }); if(a2!==b2){ o[k]=a2; _c9++; } }
+      else _walk9(v,depth+1); }
+  };
+  _walk9(state.pickleball,0);
+  state.meta.mig459c_voice=true; state.meta.mig459c_changed=_c9; save(true);
+} }catch(e){ try{ console.warn("mig459b did not apply:",e&&e.message); }catch(_){} }
+
+
+/* ===== v21 build 459d: GRIP COMES OFF THE APP ENTIRELY ===========================
+   Ian, 27.09.2026: "Get rid of the section about grip entirely."
+
+   THIS IS THE FOURTH TIME GRIP CONTENT HAS BEEN WRONG ON HIS SCREEN and his stated
+   preference has reversed twice in a month. The app cannot track a thing that changes
+   faster than it ships. Removal is the answer, not a smaller field: there is deliberately
+   NO "grip preference" anywhere after this block.
+
+   WHY THIS IS TWO BLOCKS AND WHY THE SECOND ONE IS NOT GUARDED. The first attempt was a
+   single guarded migration that archived and deleted the three keys. IT DID NOT HOLD.
+   Something earlier in the load, deepMergeDefaults against the seed, puts the grip keys
+   BACK on the next load, and by then the guard has been set so the delete never runs
+   again. Measured, not assumed: the verification run showed the keys archived and then
+   present again one load later, with 77 fields moving between load one and load two.
+   That is the build 99 refill pattern wearing a different hat.
+
+   So: the ARCHIVE is guarded and happens once, because it only needs to capture the
+   content once. The DELETE runs on EVERY LOAD and is idempotent, because it only acts
+   when a key is actually there and only saves when it actually removed something. A
+   guarded delete cannot win against an unguarded re-seed; an unguarded delete can.
+
+   NOTHING IS DESTROYED: all four move whole into archive.gripRemoved459.
+   NO STUB: the keys are deleted, not blanked, so the Mechanics list is simply one
+   shorter and the Home card falls through to the next shot on its own.
+   gear.gripType is grip TECHNIQUE, not a preference, and he named four things which did
+   not include it. It is left alone and flagged for him rather than swept. */
+try{ if(state.pickleball){
+  if(!state.archive) state.archive={};
+  /* --- archive once --- */
+  if(!state.meta.mig459d_gripgone){
+    var _GA=state.archive.gripRemoved459={
+      archivedOn:"2026-09-27", build:"v21 build 459",
+      why:"Ian, 27.09.2026: get rid of the section about grip entirely. Fourth time grip content was wrong on screen. Kept whole because the reasoning is true history. DO NOT RENDER ANY OF THIS AND DO NOT REBUILD A GRIP FIELD FROM IT."
+    };
+    try{ var _sh0=((state.pickleball.mechanics||{}).shots)||null;
+      if(_sh0&&_sh0.grip) _GA.mechanicsShotGrip=JSON.parse(JSON.stringify(_sh0.grip)); }catch(e){}
+    try{ var _ge0=state.pickleball.gear||null;
+      if(_ge0&&_ge0.grip) _GA.gearGrip=JSON.parse(JSON.stringify(_ge0.grip)); }catch(e){}
+    try{ var _re0=state.pickleball.research||null;
+      if(_re0&&_re0["2026-07-16"]) _GA.research20260716=JSON.parse(JSON.stringify(_re0["2026-07-16"])); }catch(e){}
+    state.meta.mig459d_gripgone=true;
+  }
+  /* --- suppress on EVERY load. Idempotent: acts only when something is actually there. --- */
+  var _gone=0;
+  try{ var _sh=((state.pickleball.mechanics||{}).shots)||null; if(_sh&&_sh.grip){ delete _sh.grip; _gone++; } }catch(e){}
+  try{ var _ge=state.pickleball.gear||null; if(_ge&&_ge.grip){ delete _ge.grip; _gone++; } }catch(e){}
+  try{ var _re=state.pickleball.research||null; if(_re&&_re["2026-07-16"]){ delete _re["2026-07-16"]; _gone++; } }catch(e){}
+  if(_gone) save(true);
+} }catch(e){ try{ console.warn("mig459d did not apply:",e&&e.message); }catch(_){} }
 
   /* build 372: LAST THING BEFORE THE SAVE. Every migration above has run, deepMergeDefaults
      has run, so this is the only point in the file where the state is actually final. */
@@ -26169,7 +26402,7 @@ function pkSessionItem(parent,s){
     }
     if(o.hisRead){
       var q=el("div","small dim"); q.style.cssText="margin-top:3px;line-height:1.5;padding-left:10px";
-      q.textContent="His read: \""+String(o.hisRead)+"\""; det.appendChild(q);
+      q.textContent="Your read: \""+String(o.hisRead)+"\""; det.appendChild(q);
     }
   })();
   if(s.note){ var n=el("div","small dim"); n.style.cssText="margin-top:6px;line-height:1.5"; n.textContent=s.note; det.appendChild(n); }
@@ -26179,7 +26412,7 @@ function pkSessionItem(parent,s){
      how he played, and those are different axes. */
   if(s.hisRead){
     var hr9=el("div","small dim"); hr9.style.cssText="margin-top:6px;line-height:1.5";
-    hr9.textContent="His read: \""+String(s.hisRead)+"\"";
+    hr9.textContent="Your read: \""+String(s.hisRead)+"\"";
     det.appendChild(hr9);
   }
   /* build 447: things HE named that might have been a factor. The heading says he flagged them,
@@ -26189,7 +26422,7 @@ function pkSessionItem(parent,s){
   (function(){
     if(!Array.isArray(s.flagged)||!s.flagged.length) return;
     var h=el("div","small"); h.style.cssText="color:var(--gray);font-weight:700;margin-top:8px";
-    h.textContent="He flagged"; det.appendChild(h);
+    h.textContent="You flagged"; det.appendChild(h);
     s.flagged.forEach(function(f){
       var li=el("div","small dim"); li.style.cssText="margin-top:3px;line-height:1.5;padding-left:10px";
       var lab=(f&&f.label)?String(f.label):String(f||"");
@@ -28307,6 +28540,24 @@ function fnTax(v,f){
     }
     fnRow(L2,"Jan to Jun",(MILE_RATE.h1*100).toFixed(1)+"\u00a2",null,null,false);
     fnRow(L2,"Jul onward",(MILE_RATE.h2*100).toFixed(0)+"\u00a2",null,null,false);
+    /* build 459: the odometer and the reason there is no deduction yet. Both were already in
+       finance.vehicle and neither reached a surface, so this block showed two rates and no car.
+       NO FIGURE IS INVENTED: a standard mileage deduction is the rate times BUSINESS miles and
+       there is no mileage log, so the line says what is missing rather than multiplying a total
+       odometer reading by a rate. */
+    try{
+      var _v9=(f&&f.vehicle)||null;
+      if(_v9&&_v9.odometer){
+        fnRow(L2,(_v9.make||"Vehicle")+" odometer",Number(_v9.odometer).toLocaleString("en-US"),
+          _v9.odometerOn?("read "+fmtShort(_v9.odometerOn)):null,null,false);
+      }
+      var _hasMiles=!!(m&&(Number(m.miles)>0||Number(m.amount)>0||Number(m.milesH1)>0||Number(m.milesH2)>0));
+      if(!_hasMiles){
+        var _mn=el("div","small dim"); _mn.style.cssText="margin-top:8px;line-height:1.5";
+        _mn.textContent="No deduction yet. Standard mileage is the rate times your business miles, and there is no mileage log, so there is nothing to multiply. The odometer is a total, not a business total.";
+        M.appendChild(_mn);
+      }
+    }catch(e){}
     M.appendChild(L2); b.appendChild(M);
     h.appendChild(c);
   },ICO.target,"violet");
