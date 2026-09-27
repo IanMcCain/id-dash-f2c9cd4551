@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 454 (2026-09-27)">
+<meta name="build" content="v21 build 456 (2026-09-27)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -247,7 +247,7 @@ header{position:fixed;top:0;left:0;right:0;z-index:50;height:calc(var(--hh) + va
 main{position:relative;padding:calc(var(--hh) + var(--sat) + 10px) 14px calc(var(--bh) + var(--sab) + 26px);max-width:560px;margin:0 auto}
 .tabpage{display:none}
 @keyframes slidein{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
-#t-home:checked~main #p-home,#t-stats:checked~main #p-stats,#t-re:checked~main #p-re,#t-gym:checked~main #p-gym,#t-pickle:checked~main #p-pickle,#t-solara:checked~main #p-solara,#t-finance:checked~main #p-finance,#t-settings:checked~main #p-settings{display:block;animation:slidein .24s cubic-bezier(.22,.61,.36,1)}
+#t-home:checked~main #p-home,#t-re:checked~main #p-re,#t-gym:checked~main #p-gym,#t-pickle:checked~main #p-pickle,#t-solara:checked~main #p-solara,#t-finance:checked~main #p-finance,#t-settings:checked~main #p-settings{display:block;animation:slidein .24s cubic-bezier(.22,.61,.36,1)}
 #t-home:checked~header .htt-home,#t-stats:checked~header .htt-stats,#t-re:checked~header .htt-re,#t-gym:checked~header .htt-gym,#t-pickle:checked~header .htt-pickle,#t-solara:checked~header .htt-solara,#t-finance:checked~header .htt-finance,#t-settings:checked~header .htt-settings{display:block}
 #t-home:checked~#t-home:checked~.tabbar label[for=t-home],#t-stats:checked~.tabbar label[for=t-stats],#t-re:checked~.tabbar label[for=t-re],#t-gym:checked~.tabbar label[for=t-gym]{color:var(--white)}
 #t-home:checked~#t-home:checked~.tabbar label[for=t-home] .ti,#t-stats:checked~.tabbar label[for=t-stats] .ti,#t-re:checked~.tabbar label[for=t-re] .ti,#t-gym:checked~.tabbar label[for=t-gym] .ti .ti{transform:translateY(-1px) scale(1.06)}
@@ -836,7 +836,10 @@ header{ background:rgba(0,0,0,.82); border-bottom:1px solid rgba(255,255,255,.07
 
 <main>
   <section class="tabpage" id="p-home"></section>
-  <section class="tabpage" id="p-stats"></section>
+  <!-- build 455: THE STATS PAGE IS RETIRED. It rendered zero characters and had no tab entry,
+       so it was reachable by nothing and showed nothing. The empty section is gone. buildStats()
+       is left defined and uncalled rather than deleted, so nothing that referenced it breaks and
+       the history stays readable. -->
   <section class="tabpage" id="p-re"></section>
   <section class="tabpage" id="p-gym"></section>
   <section class="tabpage" id="p-pickle"></section>
@@ -17127,9 +17130,8 @@ try{ if(!state.meta.mig386_re && state.realEstate){
         {name:"ORDINARY SINGLE SIDE. The default, and almost everything is this.",
          formula:"side rate x price x 0.85 x source share",
          detail:"Seller side 3.6 percent by default, buyer side 2.4 percent. Source share: Chris's "
-           +"client 0.20, Ian's own 0.90 as the app default. THE 80/20 FOR IAN'S OWN CLIENTS IS "
-           +"STILL UNVERIFIED and that flag stays. A rate or a split stated on a deal always beats "
-           +"the default."},
+           +"client 0.20, Ian's own 0.80, confirmed by him on 27.09.2026. Ashley Gilliam at 0.90 is the "
+           +"one exception on record. A rate or a split stated on a deal always beats the default."},
         {name:"DUAL AGENCY. Both sides of one transaction.",
          formula:"(charged rate x price) minus (0.009 x price), then 50/50",
          detail:"The brokerage takes 15 percent of a FIXED 6 percent basis on dual deals, not 15 "
@@ -20693,6 +20695,97 @@ try{ if(!state.meta.mig440_tax){
 
 
 
+/* ===== v21 build 456: THE ROSE CREEK DEADLINE, AND THREE UNCONFIRMED LIST DATES =========
+   Chris, on the call: "If the 2-story doesn't sell in the next two weeks it's going off the market
+   and getting turned into a model home, so we're gonna push heavy in order to hopefully sell it
+   soon." THAT IS A REAL DATE, so it is stored as one: offMarketOn 2026-10-11, roughly two weeks
+   from the call. It is the only active listing that could close this year and the runway is two
+   weeks, which the record now says out loud instead of leaving it as "no live activity".
+   WHAT HAPPENS AT THE DEADLINE IS MODELLED, NOT DESCRIBED: modelHomeAfter is set, so on 12 October
+   it stops being a sellable side. It must drop out of the pipeline and out of the 20 side count at
+   that point, and the field is what a later build reads to do that.
+   THE MODEL DUTY KNOCK ON IS FLAGGED AND DELIBERATELY NOT RESOLVED: they staff it every weekend,
+   and if it becomes a model home that character changes. That is Ian and Chris's call.
+   AND THE THREE LIST DATES ARE NOT SETTLED. Chris: "We don't know for sure on Belknap, Mattox and
+   Vogel list dates. That's what we're going to talk about in our meeting tomorrow." Everything the
+   app holds on those is a LEAN: Vogel 8 October, Mattox the 15th, Belknap staging the 3rd and 4th.
+   The decision point is Monday's meeting and that is recorded on each one.
+   Guard state.meta.mig456_dates, end of chain, SEED_VERSION stays 13. */
+try{ if(profile==="ian" && state.meta && !state.meta.mig456_dates && state.realEstate){
+    var _D6=state.realEstate.deals||[], _L6=[];
+    var _f6=function(id){ for(var i=0;i<_D6.length;i++){ if(_D6[i]&&_D6[i].id===id) return _D6[i]; } return null; };
+    var _s6=function(d,k,v){ if(!d||d[k]===v) return; _L6.push({deal:d.id,field:k,before:(d[k]===undefined?null:d[k])}); d[k]=v; };
+    var _ap6=function(d,txt,sent){ if(!d||typeof d.note!=="string"||d.note.indexOf(sent)>=0) return;
+      _L6.push({deal:d.id,field:"note",before:d.note}); d.note=d.note+"  "+txt; };
+
+    var _rc=_f6("re-rose-creek");
+    if(_rc){
+      _s6(_rc,"offMarketOn","2026-10-11");
+      _s6(_rc,"offMarketReason","Goes OFF MARKET and becomes a MODEL HOME if it has not sold. Chris on the call, 27.09.2026: \"If the 2-story doesn't sell in the next two weeks it's going off the market and getting turned into a model home, so we're gonna push heavy in order to hopefully sell it soon.\" The 11th is roughly two weeks from that call; he gave a duration, not a day, so treat the date as the end of the runway and not a fixture.");
+      _s6(_rc,"modelHomeAfter",true);
+      _s6(_rc,"sellableUntil","2026-10-11");
+      _s6(_rc,"pipelineDropsAfter","2026-10-11");
+      _s6(_rc,"activityNote","NO LIVE ACTIVITY and TWO WEEKS OF RUNWAY. People come through occasionally and nothing is close to certain, and it is the only active listing that could still close this year. Pushing heavy is the plan. If nothing lands by 11 October it comes off market, stops being a sellable side, and must leave the pipeline and the 20 side count.");
+      _s6(_rc,"modelDutyFlag","THEY STAFF IT EVERY WEEKEND FOR MODEL DUTY. If it becomes a model home that character changes. FLAGGED AND NOT RESOLVED: what weekend duty looks like after that is Ian and Chris's call, not the app's.");
+      _ap6(_rc,"DEADLINE, CHRIS 27.09.2026: if the two storey has not sold in about two weeks, so by roughly 11 OCTOBER 2026, it comes off market and becomes a model home. At that point it stops being a sellable side and drops out of the pipeline and the 20 side count. They are pushing heavy until then. Knock on, flagged and not resolved: they staff it every weekend for model duty and that character changes if it becomes a model.","DEADLINE, CHRIS 27.09.2026");
+    }
+
+    /* the three list dates, unconfirmed, decided at Monday's meeting */
+    var _MEET="DECISION POINT IS THE MONDAY MEETING. Chris 27.09.2026: \"We don't know for sure on Belknap, Mattox and Vogel list dates. That's what we're going to talk about in our meeting tomorrow.\" Until then everything held here is a LEAN and nothing is a plan.";
+    [["re-vogel-sell","LEAN ONLY: 8 October, 15th at the latest. UNCONFIRMED."],
+     ["re-mattox-sell","LEAN ONLY: the 15th, possibly the 8th. UNCONFIRMED."],
+     ["re-belknap-sell","LEAN ONLY: staging the 3rd and 4th, list date not set. UNCONFIRMED."]].forEach(function(p){
+      var d=_f6(p[0]); if(!d) return;
+      _s6(d,"listDateConfirmed",false);
+      _s6(d,"listDateNote",p[1]+" "+_MEET);
+      if(typeof d.close==="string" && d.close.indexOf("UNCONFIRMED")<0 && d.close.indexOf("Live ")!==0){
+        _s6(d,"close",d.close+", UNCONFIRMED");
+      }
+      _ap6(d,_MEET,"DECISION POINT IS THE MONDAY MEETING");
+    });
+
+    if(_L6.length){
+      if(!state.archive||typeof state.archive!=="object") state.archive={};
+      if(!state.archive.datesB456){
+        state.archive.datesB456={ setOn:"2026-09-27", count:_L6.length, changes:_L6,
+          why:"Previous value of everything build 456 changed: the Rose Creek off market deadline and the three unconfirmed list dates from the call with Chris." };
+      }
+    }
+    state.meta.mig456_dates=true; save(true);
+    try{ console.log("mig456: "+_L6.length+" changes"); }catch(_){}
+} }catch(e){ try{ console.warn("mig456 did not apply:",e&&e.message); }catch(_){} }
+
+/* ===== v21 build 455: THE STORED COMMISSION PROSE, AND WHY THE SEED FIX WAS NOT ENOUGH ==
+   The 0.90 sentence lives in TWO places: the seed text, which this build corrected, and the copy
+   already written into Ian's state, which the seed never touches again. Only the second one is
+   what he reads. Guard state.meta.mig455_prose, end of chain, SEED_VERSION stays 13. */
+try{ if(profile==="ian" && state.meta && !state.meta.mig455_prose
+     && state.realEstate && state.realEstate.commissionRules){
+    var _CR5=state.realEstate.commissionRules, _L5=[];
+    var _fix5=function(o,k){
+      if(!o||typeof o[k]!=="string") return;
+      var v=o[k], n=v;
+      n=n.replace(/Ian's own 0\.90 as the app default\.?/gi,"Ian's own 0.80, confirmed by him on 27.09.2026, with Ashley Gilliam at 0.90 as the one exception on record.");
+      n=n.replace(/\s*THE 80\/20 FOR IAN'S OWN CLIENTS IS STILL UNVERIFIED and that flag stays\.?/gi,"");
+      n=n.replace(/\s*[^.]*\bstill unverified\b[^.]*\.?/gi,"");
+      n=n.replace(/\s{2,}/g," ").trim();
+      if(n!==v){ _L5.push({field:k,before:v}); o[k]=n; }
+    };
+    ["order","asOf","ianOwnShareNote","brokerageBasis"].forEach(function(k){ _fix5(_CR5,k); });
+    (Array.isArray(_CR5.cases)?_CR5.cases:[]).forEach(function(c){
+      ["name","formula","detail","why"].forEach(function(k){ _fix5(c,k); });
+    });
+    if(_L5.length){
+      if(!state.archive||typeof state.archive!=="object") state.archive={};
+      if(!state.archive.commissionProseB455){
+        state.archive.commissionProseB455={ setOn:"2026-09-27", count:_L5.length, changes:_L5,
+          why:"The dead 0.90 default and the unverified flag, removed from the stored commission rules. The value has been 0.80 since build 434 and confirmed by Ian on 27.09.2026." };
+      }
+    }
+    state.meta.mig455_prose=true; save(true);
+    try{ console.log("mig455 prose: "+_L5.length+" strings"); }catch(_){}
+} }catch(e){ try{ console.warn("mig455 did not apply:",e&&e.message); }catch(_){} }
+
 /* ===== v21 build 454: PROBABILITIES FROM IAN, 27.09.2026, PLUS TWO CORRECTIONS ==========
    FRAHM IS 50 PERCENT BUT NEXT YEAR, so it must NOT enter the 2026 figure. The app already has
    the mechanism: is27() reads the close string for 2027 or later and fnProjection carries it as
@@ -23293,7 +23386,7 @@ function buildIanHome(v){ const workout=daySplit(DOW); const reTop=firstUndone((
           /* build 207: depth for length. Only when this day has a real pickleball duration. */
           if(kindCls && pkMin[k]){ var _b=_hmBand(pkMin[k]);
             if(_b<100){ cell.className+=" dur"; try{ cell.style.setProperty("--hmdim",((100-_b)/100).toFixed(2)); }catch(e){} } }
-          cell.title=k+(kindCls?" pickleball, "+(pkLbl[k]||"play"):"")+(pkMin[k]?", "+Math.round(pkMin[k])+" min":"")+(hasGy?" gym":"")+(future?" upcoming":"");
+          cell.title=k+(kindCls?" pickleball, "+(pkLbl[k]||"play"):"")+(pkMin[k]?", "+Math.round(pkMin[k])+" min":"")+(future?" upcoming":"");
           /* ===== v21 build 380: THE COUNT COUNTS SESSIONS, NOT DAYS ==========================
              Build 377 set the target to 12 a week. This line counted once per DAY, so the
              maximum reachable number was 7 and the hit threshold at n>=12 could never fire.
@@ -23312,7 +23405,11 @@ function buildIanHome(v){ const workout=daySplit(DOW); const reTop=firstUndone((
              field, no new data, nothing added to state.
              NOTHING VISUAL CHANGES. The cell classes, the colours, the depth bands and the
              gymdot are all untouched. This is the weekly number and the hit threshold only. */
-          n += (pkCnt[k]||0) + (hasGy?1:0);
+          /* build 455: GYM IS OUT OF THE SESSION MAP. Ian, with the heatmap on screen: "take gym out of
+             our session mapping." A gym day was counting as a session, so a week with three lifts
+             read three sessions higher than the court reality. The map is PICKLEBALL ONLY now.
+             Gym data is untouched and keeps its own page; it simply stops being counted here. */
+          n += (pkCnt[k]||0);
           cells.appendChild(cell);
         }
         row.appendChild(cells);
@@ -23337,14 +23434,18 @@ function buildIanHome(v){ const workout=daySplit(DOW); const reTop=firstUndone((
            off an input he changed. The SEPARATE question, whether the unit should be sessions
            or days, is on HOLD for Ian as queue entry q17888449477794 and is NOT touched here.
            The unit stays SESSIONS, exactly as build 380 left it. */
-        var _hmT=11;
+        /* build 455: the target follows the count. It was 11 because it was 3 gym plus 8 to 9 court.
+     With gym out, the denominator is the COURT half of his own plan, 8 to 9 a week, and 8 is the
+     bottom of that range, so 8 is the threshold. Changing the numerator without the denominator
+     would have made every week look like a failure. */
+  var _hmT=8;
         var cnt;
         if(_isAhead){
           cnt=el("div","hmn ahead"); cnt.textContent="ahead";
           row.title="The week ahead. Nothing has happened yet, so there is no count.";
         } else if(_isCur){
           cnt=el("div","hmn"+(n>=_hmT?" hit":" wip")); cnt.textContent=n+"/"+_hmT;
-          row.title="This week so far, "+n+" SESSIONS of an "+_hmT+" a week target, 3 gym plus 8 to 9 court. Target moved 12 to 11 on 09.09.2026 when the gym went from four days to three. A day with two pickleball sessions counts two. Counted against the full week, not days elapsed.";
+          row.title="This week so far, "+n+" PICKLEBALL sessions of an "+_hmT+" a week target. Gym is not counted here and has its own page: Ian took it out of the session map on 27.09.2026. The target is the court half of his plan, 8 to 9 a week, and 8 is the bottom of it. A day with two pickleball sessions counts two. Counted against the full week, not days elapsed.";
         } else {
           cnt=el("div","hmn"+(n>=_hmT?" hit":"")); cnt.textContent=n+"/"+_hmT;
         }
@@ -23356,7 +23457,7 @@ function buildIanHome(v){ const workout=daySplit(DOW); const reTop=firstUndone((
         '<span><i style="background:#38bdf8"></i>Drills</span>'+'<span><i style="background:linear-gradient(135deg,#38bdf8 0 50%,#2ee66f 50% 100%)"></i>Drills and play</span>'+
         '<span><i style="background:#a78bfa"></i>League</span>'+
         '<span><i style="background:#ffd60a"></i>Tournament</span>'+
-        '<span><i style="background:var(--gy1)"></i>Gym</span>'+
+        
         '<span><i style="border:1px dashed #33333f;background:transparent"></i>Upcoming</span>'+
         /* build 207: the depth scale, so the shading is a legend entry rather than something to work out */
         '<span style="display:flex;align-items:center;gap:4px"><i style="background:#2ee66f;position:relative"><b style="position:absolute;inset:0;background:rgba(14,14,18,.54);border-radius:inherit"></b></i><i style="background:#2ee66f;position:relative"><b style="position:absolute;inset:0;background:rgba(14,14,18,.18);border-radius:inherit"></b></i><i style="background:#2ee66f"></i>Shorter to longer session</span>';
@@ -23364,7 +23465,7 @@ function buildIanHome(v){ const workout=daySplit(DOW); const reTop=firstUndone((
       /* build 214: the count is gym OR pickleball, and a week with no records says n/a rather than
          zero. Both stated on screen, because a number whose rule is not visible gets misread. */
       if(_firstRec){ var _fn=el("div","small dim"); _fn.style.cssText="margin-top:8px;line-height:1.45";
-        _fn.textContent="Every session counts, so a day with two counts twice and a gym day counts once. Four weeks: two back, this week with today ringed, and the week ahead. This week counts against the FULL week, not days elapsed, so a low number mid week is the calendar rather than a miss. The week ahead has no count because it has not happened. Weeks with no records at all are not drawn rather than shown as zero; tracking starts "+fmtShort(_firstRec)+", so they are not zero weeks.";
+        _fn.textContent="Pickleball only. Every court session counts, so a day with two counts twice. Four weeks: two back, this week with today ringed, and the week ahead. This week counts against the FULL week, not days elapsed, so a low number mid week is the calendar rather than a miss. The week ahead has no count because it has not happened. Weeks with no records at all are not drawn rather than shown as zero; tracking starts "+fmtShort(_firstRec)+", so they are not zero weeks.";
         b.appendChild(_fn); }
       hh.appendChild(cardEl);
     },ICO.chart,"blue"); }; /* build 392: "green" to "blue". COLLAPSE CHROME ONLY, see the header above. */
@@ -24976,12 +25077,15 @@ function reCommissionRules(parent){
   var c=card("a-teal"); var b=c._body;
   b.appendChild(el("div","small muted","Commission rules, as at "+(R.asOf||"")));
   var ord=el("div","small"); ord.style.cssText="margin-top:8px;line-height:1.55;color:var(--gray)";
-  ord.textContent=R.order||""; b.appendChild(ord);
+  /* build 455: tidied on the way to the screen, never in the record. This renderer was the
+     surviving leak: the shouted order-of-operations paragraph and the case names still carried
+     build numbers and capitals because build 451 only wrapped the deal card fields. */
+  ord.textContent=reTidy(R.order||""); b.appendChild(ord);
   (R.cases||[]).forEach(function(x){
     var w=el("div"); w.style.cssText="margin-top:11px;padding:9px 10px;border-radius:9px;background:rgba(255,255,255,.04);line-height:1.55";
-    var h=el("div"); h.style.cssText="font-weight:800;font-size:13px;letter-spacing:-.01em"; h.textContent=x.name||""; w.appendChild(h);
-    var f=el("div","small"); f.style.cssText="margin-top:4px;font-weight:700;color:var(--sec2,var(--accent2))"; f.textContent=x.formula||""; w.appendChild(f);
-    var d=el("div","small dim"); d.style.marginTop="5px"; d.textContent=x.detail||""; w.appendChild(d);
+    var h=el("div"); h.style.cssText="font-weight:800;font-size:13px;letter-spacing:-.01em"; h.textContent=reTidy(x.name||""); w.appendChild(h);
+    var f=el("div","small"); f.style.cssText="margin-top:4px;font-weight:700;color:var(--sec2,var(--accent2))"; f.textContent=x.formula||"";  /* build 455: NOT tidied. A formula is notation, not prose, and lowercasing it would be wrong. */ w.appendChild(f);
+    var d=el("div","small dim"); d.style.marginTop="5px"; d.textContent=reTidy(x.detail||""); w.appendChild(d);
     b.appendChild(w);
   });
   if(R.openForIan){ var o=el("div","small"); o.style.cssText="margin-top:11px;padding:9px 10px;border-radius:9px;background:rgba(255,99,99,.10);border:1px solid rgba(255,99,99,.35);line-height:1.5";
