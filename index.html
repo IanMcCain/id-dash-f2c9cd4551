@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 460 (2026-09-28)">
+<meta name="build" content="v21 build 461 (2026-09-28)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -22273,6 +22273,126 @@ try{ if(profile==="ian" && state.meta && !state.meta.mig460_pk0928 && state.pick
     }
     state.meta.mig460_pk0928=true; save(true);
 } }catch(e){ try{ console.warn("mig460 did not apply:",e&&e.message); }catch(_){} }
+
+
+/* ===== v21 build 461: THE LIST DATES ARE SET, AND THEY FLIPPED ==========================
+   Ian after the meeting, 28.09.2026: "Mattox for sure we want to do the 8th, so staging this
+   weekend. Belknaps want to do the 8th but they had a friend who showed interest in buying their
+   house without us, which sucks, but if that doesn't go through it'll likely be the 8th as well.
+   And Vogel we want to push for the 15th and won't stage them this weekend, maybe the weekend
+   before Thursday the 15th."
+
+   THE TWO DATES SWAPPED. The app has been holding Vogel on the 8th and Mattox on the 15th since
+   build 451. It is now Mattox on the 8th and Vogel on the 15th. A swap is the easiest correction
+   to half-apply, so this build strips every 8 October string off Vogel and every 15 October
+   string off Mattox rather than only setting the new values, and the verification greps both
+   records for the old date afterwards.
+
+   THE BELKNAP RISK IS THE IMPORTANT PART AND IT IS NOT A SCHEDULING NOTE. The sellers have a
+   friend who showed interest in buying the house directly. If that goes through Ian and Chris
+   likely earn NOTHING. That is a live risk to the whole deal, so it is stored as one on the deal
+   record, not as a line in a note.
+   THE 95 PERCENT IS NOT SUPPORTABLE WHILE THAT IS LIVE, AND NO NEW NUMBER IS INVENTED. winProb
+   stays 0.95 exactly as Ian set it on 21.09, with winProbNeedsRevisit set and the reason attached,
+   because replacing his figure with one of ours would be the same error in the other direction.
+   KNOCK ON, FLAGGED AND NOT ACTED ON: staging is booked 3 and 4 October, and staging a house that
+   may sell privately is wasted work and real money. Nothing is cancelled. That is his call.
+
+   Guard state.meta.mig461_dates, end of chain, SEED_VERSION stays 13. */
+try{ if(profile==="ian" && state.meta && !state.meta.mig461_dates && state.realEstate){
+    var _D=state.realEstate.deals||[], _L=[];
+    var _f=function(id){ for(var i=0;i<_D.length;i++){ if(_D[i]&&_D[i].id===id) return _D[i]; } return null; };
+    var _s=function(d,k,v){ if(!d||d[k]===v) return; _L.push({deal:d.id,field:k,before:(d[k]===undefined?null:d[k])}); d[k]=v; };
+    var _ap=function(d,txt,sent){ if(!d||typeof d.note!=="string"||d.note.indexOf(sent)>=0) return;
+      _L.push({deal:d.id,field:"note",before:d.note}); d.note=d.note+"  "+txt; };
+    /* strip a stale date from every string field on a deal, so a swap cannot be half applied */
+    var _purge=function(d,re,why){
+      if(!d) return;
+      Object.keys(d).forEach(function(k){
+        if(typeof d[k]!=="string") return;
+        var v=d[k], n=v.replace(re,why).replace(/\s{2,}/g," ").trim();
+        if(n!==v){ _L.push({deal:d.id,field:k,before:v}); d[k]=n; }
+      });
+    };
+
+    /* ---- MATTOX: the 8th, confirmed, staging this weekend ---- */
+    var _mx=_f("re-mattox-sell");
+    if(_mx){
+      _purge(_mx,/LEANING 15 October 2026[^.]*\.?/gi,"");
+      _purge(_mx,/leaning[^.]{0,40}15th[^.]*\.?/gi,"");
+      /* build 452 appended his lean verbatim, "probably pushed closer to the 15th, possibly the
+         8th, but probably the 15th". It was true then and it is the opposite of the settled date
+         now, so it goes rather than sitting under the confirmation contradicting it. */
+      _purge(_mx,/[^.]{0,80}probably pushed closer to the 15th[^.]{0,120}\.?/gi,"");
+      _purge(_mx,/[^.]{0,60}\b15th\b[^.]{0,120}\.?/gi,"");
+      _s(_mx,"close","Lists 8 October 2026");
+      _s(_mx,"listDateConfirmed",true);
+      _s(_mx,"listDateNote","8 OCTOBER 2026, CONFIRMED at the meeting on 28.09.2026. Ian: \"Mattox for sure we want to do the 8th, so staging this weekend.\" This REVERSES what the app held before today; the two dates have swapped places.");
+      _s(_mx,"stagingOn","2026-10-03");
+      _s(_mx,"stagingNote","STAGING THIS WEEKEND, 3 and 4 October 2026, confirmed by the 28.09 meeting. PARTIAL staging remains Ian's deliberate call from 21.09 and is not a gap.");
+      /* the photo flag comes off: the 8th makes photos on the 5th correct, which is what it was for */
+      _s(_mx,"photosOn","2026-10-05");
+      _s(_mx,"photosNote","Photos 5 October 2026. THE UNVERIFIED FLAG IS REMOVED: with the list date confirmed as the 8th, photos on the 5th are exactly the two to three days out that the date was always chosen for. The photographer is his mother.");
+      _purge(_mx,/\s*\(NOT VERIFIED\)/g,"");
+      _purge(_mx,/[^.]{0,120}NOT VERIFIED[^.]{0,200}\.?/g,"");
+      _purge(_mx,/THE 5 OCTOBER PHOTO DATE IS NOT VERIFIED[^.]*\./gi,"");
+      _ap(_mx,"IAN 28.09.2026, AFTER THE MEETING: 8 OCTOBER, CONFIRMED. Staging this weekend, 3 and 4 October. This REVERSES what the app held before today: the Mattox and Vogel list dates have swapped places.","IAN 28.09.2026, AFTER THE MEETING: 8 OCTOBER, CONFIRMED");
+    }
+
+    /* ---- VOGEL: the 15th, not staging this weekend ---- */
+    var _vg=_f("re-vogel-sell");
+    if(_vg){
+      _purge(_vg,/LEANING 8 October 2026[^.]*\.?/gi,"");
+      _purge(_vg,/PUSHING FOR 8 October 2026[^.]*\.?/gi,"");
+      _purge(_vg,/[^.]{0,60}\b8th\b[^.]{0,60}\.?/gi,"");
+      _s(_vg,"close","Lists 15 October 2026");
+      _s(_vg,"listDateConfirmed",true);
+      _s(_vg,"listDateNote","15 OCTOBER 2026, set at the meeting on 28.09.2026. Ian: \"Vogel we want to push for the 15th and won't stage them this weekend, maybe the weekend before Thursday the 15th.\" This REVERSES what the app held before today; the two dates have swapped places.");
+      _s(_vg,"stagingOn",null);
+      _s(_vg,"stagingNote","NOT STAGING THIS WEEKEND. Likely the weekend before the 15th, so 10 and 11 October, and Ian said MAYBE, so no staging date is booked and none is written as one.");
+      _s(_vg,"close","Lists 15 October 2026 or later, NOT confirmed");
+      _s(_vg,"listDateConfirmed",false);
+      _s(_vg,"condition",{
+        issue:"POSSIBLE LEAK. Ian 28.09.2026: \"John Vogel may have a leak, so his definitely won't be till the 15th or later.\"",
+        confirmed:false,
+        unknowns:"SOURCE, LOCATION AND SEVERITY ARE ALL UNKNOWN and none of them is inferred. He said MAY HAVE.",
+        whyItMovedTheDate:"The date moved for a CONDITION reason, not a scheduling preference. That is a different kind of delay and the record says which.",
+        nearbyUnknowns:"It lands next to two gaps already on this house: the BASEMENT was never photographed in the 33 image set, and the ASBESTOS SCOPE was item one for the walkthrough. A leak in a basement nobody has seen is a different problem from a leak at a window.",
+        priceReadingOne:"FIX BEFORE LAUNCH, NOT REPRICE. The CMA's own findings to price table says active moisture, foundation or roof issues are fixed before launch rather than repriced. Nobody should reach for a price cut as the first move.",
+        priceReadingTwo:"BUT THE PREMISE MAY BE WEAKENED. The $329,900 was set on a walkthrough that found nothing major. If the leak turns out to be structural or roof, that premise no longer holds and the number needs re testing.",
+        bothReadingsStand:"Both readings are recorded and NEITHER is picked. Which one applies depends on what the leak turns out to be, and that is not known."
+      });
+      _s(_vg,"priceNeedsRevisit",true);
+      _s(_vg,"winProbNeedsRevisit",true);
+      _s(_vg,"revisitWhy","PRICE AND PROBABILITY BOTH NEED REVISITING ONCE THE LEAK IS IDENTIFIED, and NEITHER has been changed here. The price stays $329,900 and the probability stays 0.999, exactly as Ian set them, because moving either on an unconfirmed leak would be inventing a number.");
+      _ap(_vg,"IAN 28.09.2026: POSSIBLE LEAK, so the list date is the 15th OR LATER and is not confirmed. Source, location and severity are all unknown. The CMA's findings to price table says active moisture, foundation or roof issues are FIXED BEFORE LAUNCH rather than repriced, so a price cut is not the first move. The other reading also stands: $329,900 was set on a walkthrough that found nothing major, and if this is structural or roof that premise is weakened and the number needs re testing. Both are recorded and neither is picked. It sits near two existing unknowns, the unphotographed basement and the asbestos scope.","IAN 28.09.2026: POSSIBLE LEAK");
+      _ap(_vg,"IAN 28.09.2026, AFTER THE MEETING: 15 OCTOBER. Not staging this weekend; likely the weekend before, 10 and 11 October, and he said maybe, so nothing is booked. This REVERSES what the app held before today: the Vogel and Mattox list dates have swapped places.","IAN 28.09.2026, AFTER THE MEETING: 15 OCTOBER");
+    }
+
+    /* ---- BELKNAP: the 8th, conditional, and a live risk to the whole deal ---- */
+    var _bk=_f("re-belknap-sell");
+    if(_bk){
+      _s(_bk,"close","Wants 8 October 2026, CONDITIONAL");
+      _s(_bk,"listDateConfirmed",false);
+      _s(_bk,"listDateNote","THEY WANT THE 8TH AND IT IS CONDITIONAL, not confirmed. Ian 28.09.2026: \"Belknaps want to do the 8th but they had a friend who showed interest in buying their house without us, which sucks, but if that doesn't go through it'll likely be the 8th as well.\" The 8th depends on the private sale NOT happening.");
+      _s(_bk,"risk","A PRIVATE SALE MAY TAKE THIS DEAL ENTIRELY. The sellers have a friend who showed interest in buying the house directly, without Ian and Chris. If that goes through they likely earn NOTHING on it. This is a live risk to the whole deal and not a scheduling note. Ian, 28.09.2026.");
+      _s(_bk,"riskLive",true);
+      _s(_bk,"winProbNeedsRevisit",true);
+      _s(_bk,"winProbRevisitWhy","95 PERCENT IS NOT SUPPORTABLE WHILE A PRIVATE SALE IS LIVE. The figure is left exactly as Ian set it on 21.09.2026 and NO new number has been invented, because replacing his figure with one of ours is the same error in the other direction. It needs one word from him.");
+      _s(_bk,"stagingRisk","STAGING IS BOOKED 3 AND 4 OCTOBER AND MAY BE WASTED. Staging a house that could sell privately is real work and real money spent on a deal that may not exist. FLAGGED, NOT CANCELLED: nothing has been changed and the decision is Ian's.");
+      _ap(_bk,"IAN 28.09.2026, AFTER THE MEETING: they want the 8th, CONDITIONAL. A friend of the sellers has shown interest in buying the house directly, without Ian and Chris, and if that goes through they likely earn nothing. The 95 percent probability is left as he set it but needs revisiting. Staging is still booked for 3 and 4 October and may be wasted; flagged, not cancelled.","IAN 28.09.2026, AFTER THE MEETING: they want the 8th, CONDITIONAL");
+    }
+
+    if(_L.length){
+      if(!state.archive||typeof state.archive!=="object") state.archive={};
+      if(!state.archive.datesB461){
+        state.archive.datesB461={ setOn:"2026-09-28", count:_L.length, changes:_L,
+          why:"Previous value of everything build 461 changed when the list dates were settled at the meeting and swapped, plus the Belknap private sale risk." };
+      }
+    }
+    state.meta.mig461_dates=true; save(true);
+    try{ console.log("mig461: "+_L.length+" changes"); }catch(_){}
+} }catch(e){ try{ console.warn("mig461 did not apply:",e&&e.message); }catch(_){} }
 
   /* build 372: LAST THING BEFORE THE SAVE. Every migration above has run, deepMergeDefaults
      has run, so this is the only point in the file where the state is actually final. */
