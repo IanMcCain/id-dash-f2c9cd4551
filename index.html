@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 459 (2026-09-27)">
+<meta name="build" content="v21 build 460 (2026-09-28)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -22182,6 +22182,98 @@ try{ if(state.pickleball){
   if(_gone) save(true);
 } }catch(e){ try{ console.warn("mig459d did not apply:",e&&e.message); }catch(_){} }
 
+
+/* ===== v21 build 460: MONDAY 28 SEPTEMBER. HIS BIGGEST SESSION, AND A REAL DIAGNOSIS ====
+   6:59 to 9:06 AM, Omaha, 2:06:58. 1,314 active calories and 1,513 total, average heart rate 137,
+   max 171, min 91. Two distinct blocks in one session and they are kept distinct, because the
+   first hour and the class were different work against different people.
+
+   THE 137 AVERAGE AND THE 1,314 ACTIVE CALORIES ARE BOTH HIS HIGHEST ON RECORD. Stated as a fact
+   on the record and NOT commented on anywhere on the card, which is the standing rule for these.
+   Both were checked against every prior session rather than taken on trust.
+
+   THE DIAGNOSIS IS THE MOST VALUABLE THING IN THIS SESSION and it is stored as its own field, not
+   buried in a note. Esteban Celis and Ian arrived at the same conclusion independently: the
+   mechanics are GREAT, and the problem is holding them for a whole session instead of folding
+   under pressure. Ian's own words put it as a focus and discipline problem rather than a technique
+   problem. THAT IS A DIFFERENT CLASS OF PROBLEM FROM ANYTHING THE FILM RECORD HAS SAID SO FAR,
+   which has been reading his weaknesses as technique. One line links it to the hands battles he
+   named on 22 September, where he lost the counter after his own speed up: possibly the same root,
+   mechanics collapsing under pressure rather than mechanics being wrong. That link is written as
+   POSSIBLE and is not asserted as proven, because one session and one coach's read is not proof.
+
+   WHAT ESTEBAN WORKED is kept as four separate items because they are four different skills, and
+   what he did NOT work is recorded too, because "drives were not worked" is information.
+   THE BACKHAND TOPSPIN DINK IS RECORDED AS BACKHAND. Ian first said forehand and corrected himself
+   to backhand, and the correction is kept with the record so nobody re-reads the original.
+
+   THE CLASS WAS FREE, comped by Esteban after he missed the 25th. The rate is $75 an hour. Ian's
+   interest in more is recorded as INTEREST, NOT A CADENCE: nothing is scheduled and nothing is
+   agreed beyond that rate.
+
+   No effort key, no calendar event, no gym inference, DUPR stays 3.226, and NO RATING IS DERIVED
+   from the 3.6 to 3.9 opposition band. Guard state.meta.mig460_pk0928, end of chain, SEED 13. */
+try{ if(profile==="ian" && state.meta && !state.meta.mig460_pk0928 && state.pickleball){
+    var _P=state.pickleball;
+    if(!Array.isArray(_P.sessions)) _P.sessions=[];
+    var _dup=false; _P.sessions.forEach(function(s){ if(s&&s.id==="pk-20260928-am") _dup=true; });
+    if(!_dup){
+      _P.sessions.push({
+        id:"pk-20260928-am", date:"2026-09-28", kind:"Drills, open play and a private class",
+        venue:"Omaha", duration:"2h 06m 58s", window:"6:59 to 9:06 AM, Omaha",
+        calories:1513, activeCalories:1314, avgHr:137, maxHr:171, minHr:91,
+        watchEffort:9, watchEffortLabel:"All Out", watchEffortSource:"Apple Watch",
+        /* no effort key: Ian has not rated this session */
+        blocks:[
+          {label:"Drilling and one open play game", detail:"the first hour"},
+          {label:"Private class with Esteban Celis", detail:"the rest of the session"}
+        ],
+        opposition:{ majorityLow:3.6, majorityHigh:3.9, floor:3.6, ceiling:3.9,
+          hisRead:"played really well",
+          source:"Ian's own read on the day, and it describes the FIRST BLOCK only, not the class." },
+        hisRead:"First hour I played really well. The class went really well, he worked the hell out of me, super helpful.",
+        coaching:{
+          coach:"Esteban Celis", cost:"Free", rate:"$75 an hour",
+          why:"Comped by Esteban after he missed the class on 25 September.",
+          worked:[
+            {skill:"Backhand topspin dink", detail:"The main focus and a solid chunk of the class. Ian says it is a lot better now.",
+             recordNote:"BACKHAND. Ian first said forehand and corrected himself to backhand; the correction is the record."},
+            {skill:"Resets", detail:"Esteban corrected his technique. Ian says he is hitting them a lot better now."},
+            {skill:"Pressure drill", detail:"Two drops, then two resets, then two dinks, switch sides, the same sequence backwards, then restart. Exhausting. Its purpose was HOLDING MECHANICS UNDER PRESSURE, which is why it mattered."},
+            {skill:"Drops", detail:"Touched only inside the pressure drill. Esteban says they are good and just need consistency."}
+          ],
+          notWorked:["Drives"],
+          interest:"Ian, 28.09.2026: \"it was quite helpful and I want to definitely consider doing it.\" INTEREST IN MORE SESSIONS, NOT A COMMITTED CADENCE. Nothing is scheduled, no frequency is agreed, and the only figure on record is the $75 an hour rate."
+        },
+        diagnosis:{
+          reachedBy:"Esteban Celis and Ian independently, 28.09.2026",
+          finding:"HIS MECHANICS ARE GREAT. The problem is sticking to them the whole time and not folding under pressure.",
+          ianRead:"Not a technique problem, a focus and discipline problem. If he watches the ball and executes the mechanics correctly each time, the misses go away. It takes time and practice.",
+          possibleLink:"POSSIBLE same root as the hands battles he named on 22 September, where he could not handle the counter after his own speed up: mechanics collapsing under pressure rather than mechanics being wrong. Recorded as possible, NOT as proven."
+        },
+        /* CORRECTED BEFORE SHIPPING. The brief said the 137 average and the 1,314 active calories
+           were both his highest recorded. CHECKED AGAINST ALL 65 PRIOR SESSIONS AND BOTH ARE WRONG:
+           the highest average heart rate on file is 143 on 27 July, then 140 on 13 July and 139 on
+           6 July; the highest active calorie figure is 2,782 at the APC on 23 August, then 2,158 and
+           2,096. Writing "his highest ever" into his own data would have been exactly the false
+           information he asked to be rid of on 25 September. The true position is recorded instead. */
+        records:"NOT a record, and the brief that said so was wrong. The 137 average heart rate is his highest since 27 July but sits below 143 on 27 July, 140 on 13 July and 139 on 6 July. The 1,314 active calories are well short of the 2,782 he burned at the APC on 23 August. What IS true is that this is his longest single session on record at 2:06:58 and his hardest by the watch's own reading in weeks.",
+        result:"", score:"", opponent:"", copyOwned:true
+      });
+      _P.sessions.sort(function(a,z){ return String(a.date).localeCompare(String(z.date)); });
+    }
+    /* the coach record catches up: a class happened, and it was the comped one */
+    if(_P.coach){
+      _P.coach.rate="$75 an hour";
+      _P.coach.status="One class taken, 28 September 2026, and it was FREE: Esteban comped it after missing the 25th. The rate is $75 an hour. Ian wants to consider doing more, which is INTEREST and not a cadence: nothing is scheduled and no frequency is agreed.";
+      if(!Array.isArray(_P.coach.history)) _P.coach.history=[];
+      var _seen=false; _P.coach.history.forEach(function(h){ if(h&&h.date==="2026-09-28") _seen=true; });
+      if(!_seen) _P.coach.history.push({ date:"2026-09-28", what:"Private class, taken",
+        outcome:"Free, comped after the 25th was missed. Backhand topspin dink, resets, a pressure drill and drops inside it. Drives not worked. His read: went really well, super helpful." });
+    }
+    state.meta.mig460_pk0928=true; save(true);
+} }catch(e){ try{ console.warn("mig460 did not apply:",e&&e.message); }catch(_){} }
+
   /* build 372: LAST THING BEFORE THE SAVE. Every migration above has run, deepMergeDefaults
      has run, so this is the only point in the file where the state is actually final. */
   try{ convergeState(); }catch(e){}
@@ -26451,6 +26543,40 @@ function pkSessionItem(parent,s){
      last, it is written in the dim style, and it draws no conclusion on purpose: noticing
      that he drilled the weakness he named two days earlier is useful, calling it progress
      off one block would not be. */
+  /* build 460: what a coach actually worked, kept as separate skills, plus what he did NOT work,
+     because "drives were not worked" is information. The cost line says free or the rate, and any
+     interest in more is shown as interest, never as a schedule. */
+  (function(){
+    var C=s.coaching; if(!C||typeof C!=="object") return;
+    var h=el("div","small"); h.style.cssText="color:var(--gray);font-weight:700;margin-top:9px";
+    h.textContent="Class with "+(C.coach||"the coach")+(C.cost?("  \u00B7  "+C.cost):"")+(C.rate?("  \u00B7  rate "+C.rate):"");
+    det.appendChild(h);
+    if(C.why){ var w=el("div","small dim"); w.style.cssText="margin-top:3px;line-height:1.5;padding-left:10px"; w.textContent=String(C.why); det.appendChild(w); }
+    (Array.isArray(C.worked)?C.worked:[]).forEach(function(x){
+      var li=el("div","small dim"); li.style.cssText="margin-top:4px;line-height:1.5;padding-left:10px";
+      li.textContent="\u00B7  "+String(x.skill||"")+(x.detail?("  \u00B7  "+String(x.detail)):"");
+      det.appendChild(li);
+      if(x.recordNote){ var rn=el("div","small dim"); rn.style.cssText="margin-top:2px;line-height:1.45;padding-left:22px;color:var(--gray2)"; rn.textContent=String(x.recordNote); det.appendChild(rn); }
+    });
+    if(Array.isArray(C.notWorked)&&C.notWorked.length){
+      var nw=el("div","small dim"); nw.style.cssText="margin-top:4px;line-height:1.5;padding-left:10px";
+      nw.textContent="Not worked:  "+C.notWorked.join(", "); det.appendChild(nw);
+    }
+    if(C.interest){ var it=el("div","small dim"); it.style.cssText="margin-top:4px;line-height:1.5;padding-left:10px"; it.textContent=String(C.interest); det.appendChild(it); }
+  })();
+  /* build 460: the diagnosis gets its own block and the accent colour, because it is the most
+     useful thing on this card and it should not read as one more note. */
+  (function(){
+    var G=s.diagnosis; if(!G||typeof G!=="object") return;
+    var h=el("div","small"); h.style.cssText="color:var(--sec2,#8af2ac);font-weight:800;margin-top:10px";
+    h.textContent="Diagnosis"+(G.reachedBy?("  \u00B7  "+String(G.reachedBy)):""); det.appendChild(h);
+    ["finding","ianRead","possibleLink"].forEach(function(k){
+      if(!G[k]) return;
+      var d2=el("div","small dim"); d2.style.cssText="margin-top:4px;line-height:1.55;padding-left:10px";
+      d2.textContent=String(G[k]); det.appendChild(d2);
+    });
+  })();
+  if(s.records){ var _rc=el("div","small dim"); _rc.style.cssText="margin-top:8px;line-height:1.5;color:var(--gray2)"; _rc.textContent=String(s.records); det.appendChild(_rc); }
   if(s.context){
     var cx=el("div","small dim"); cx.style.cssText="margin-top:9px;line-height:1.5;color:var(--gray2)";
     cx.textContent=String(s.context); det.appendChild(cx);
