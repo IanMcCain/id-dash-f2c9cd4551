@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 462 (2026-09-29)">
+<meta name="build" content="v21 build 463 (2026-09-29)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -22463,6 +22463,210 @@ try{ if(profile==="ian" && state.meta && !state.meta.mig462_pk0929 && state.pick
     }
     state.meta.mig462_pk0929=true; save(true);
 } }catch(e){ try{ console.warn("mig462 did not apply:",e&&e.message); }catch(_){} }
+
+
+/* ===== v21 build 463: THE BELKNAP RISK IS DEAD, AND THREE DATES LAND IN ONE WEEK =========
+   Ian, 29.09.2026: "Whoever Belknap had coming to look at their house lowballed the hell out of
+   them and they're gonna go and work with us, so good for us. Mattox for sure the 8th, Belknaps
+   either the 8th or 15th, they were originally leaning the 8th, and Vogel 15th for sure."
+
+   THE RISK IS CLOSED AND WHY IT CLOSED IS RECORDED, which matters more than the fact that it
+   closed. A LOWBALL OFFER KILLED IT, NOT A CHANGE OF HEART. Those are different futures: a seller
+   who was talked round could be talked round again, a seller who was insulted by a number will
+   not go back to that buyer. The trail says which one this was.
+   riskLive, risk, winProbNeedsRevisit and the staging risk flag all come OFF. The 95 percent that
+   was flagged on 28.09 now stands unflagged, and it is the SAME 95 Ian set on 21.09: nothing was
+   ever changed, only flagged, so there is nothing to restore.
+
+   THE DATES. Mattox 8 October confirmed and unchanged. Vogel 15 October, now FIRM, so the "or
+   later" that the leak put there comes off; the leak itself is still unconfirmed and still on the
+   record, because a firm date is not a resolved leak. Belknap is the 8th or the 15th, originally
+   leaning the 8th, NOT confirmed. ALL THREE LIST INSIDE ONE WEEK, 8 to 15 October, which is worth
+   saying once on each record because three launches in eight days is the actual shape of it.
+
+   TWO EVENTS, RECORDED ON THE DEALS AND NOT ON THE CALENDAR, because a calendar lane is booking
+   them and two lanes writing the same event is how duplicates happen. Willis open house Saturday
+   3 October 12:00 to 2:00 PM. Willis video shoot Wednesday 30 September around 1:00 PM, shot by
+   ISRAEL, who is Ian's pickleball drilling partner and a videographer, and whose wife is a
+   realtor. That last part is why he goes in the contact record and not just in a note.
+
+   THE COLLISION IS FLAGGED AND NOT RESOLVED. Belknap staging is 3 and 4 October and the Willis
+   open house is Saturday the 3rd, 12 to 2. Both are on the same morning and afternoon. Nobody has
+   said who covers what and this build does not decide it.
+
+   Guard state.meta.mig463_belknap, end of chain, SEED_VERSION stays 13. */
+try{ if(profile==="ian" && state.meta && !state.meta.mig463_belknap && state.realEstate){
+    var _D=state.realEstate.deals||[], _L=[];
+    var _f=function(id){ for(var i=0;i<_D.length;i++){ if(_D[i]&&_D[i].id===id) return _D[i]; } return null; };
+    var _s=function(d,k,v){ if(!d||d[k]===v) return; _L.push({deal:d.id,field:k,before:(d[k]===undefined?null:d[k])}); d[k]=v; };
+    var _del=function(d,k){ if(!d||d[k]===undefined) return; _L.push({deal:d.id,field:k,before:d[k]}); delete d[k]; };
+    var _ap=function(d,txt,sent){ if(!d||typeof d.note!=="string"||d.note.indexOf(sent)>=0) return;
+      _L.push({deal:d.id,field:"note",before:d.note}); d.note=d.note+"  "+txt; };
+    var _WEEK="ALL THREE LIST INSIDE ONE WEEK, 8 to 15 October 2026: Mattox the 8th confirmed, Belknap the 8th or the 15th, Vogel the 15th confirmed. Three launches in eight days.";
+
+    /* ---- BELKNAP: the risk is dead ---- */
+    var _bk=_f("re-belknap-sell");
+    if(_bk){
+      _del(_bk,"risk"); _del(_bk,"riskLive");
+      _del(_bk,"winProbNeedsRevisit"); _del(_bk,"winProbRevisitWhy");
+      _del(_bk,"stagingRisk");
+      _s(_bk,"riskResolved","THE PRIVATE SALE IS DEAD. Ian 29.09.2026: \"Whoever Belknap had coming to look at their house lowballed the hell out of them and they're gonna go and work with us.\" IT DIED ON A LOWBALL OFFER, NOT ON A CHANGE OF HEART, and that distinction is the reason this is recorded rather than just deleted: a seller talked round can be talked round again, a seller insulted by a number does not go back. Resolved 29.09.2026.");
+      _s(_bk,"close","Lists 8 or 15 October 2026, leaning the 8th, not confirmed");
+      _s(_bk,"listDateConfirmed",false);
+      _s(_bk,"listDateNote","THE 8TH OR THE 15TH, originally leaning the 8th, NOT confirmed. Ian 29.09.2026. "+_WEEK);
+      _s(_bk,"stagingNote","Staging 3 and 4 October 2026. NO LONGER AT RISK of being wasted: the private sale is dead and the sellers are listing with Scenic Group. COLLISION, FLAGGED NOT RESOLVED: the Willis open house is Saturday 3 October 12:00 to 2:00 PM, the same day as the first staging day. Nobody has said who covers what.");
+      _ap(_bk,"IAN 29.09.2026: THE RISK IS DEAD AND IT IS GOOD NEWS. The friend who was going to buy privately lowballed them, so the sellers are listing with Scenic Group. The 95 percent stands unflagged and was never changed, only flagged. Staging on the 3rd and 4th is no longer possibly wasted work.","IAN 29.09.2026: THE RISK IS DEAD");
+    }
+
+    /* ---- MATTOX: unchanged, just the one-week note ---- */
+    var _mx=_f("re-mattox-sell");
+    if(_mx) _s(_mx,"weekNote",_WEEK);
+
+    /* ---- VOGEL: firm on the 15th, leak still open ---- */
+    var _vg=_f("re-vogel-sell");
+    if(_vg){
+      _s(_vg,"close","Lists 15 October 2026");
+      _s(_vg,"listDateConfirmed",true);
+      _s(_vg,"listDateNote","15 OCTOBER 2026, FIRM. Ian 29.09.2026: \"Vogel 15th for sure.\" The \"or later\" that the possible leak put on this date comes off. THE LEAK ITSELF IS STILL UNCONFIRMED AND STILL ON THE RECORD: a firm date is not a resolved leak, and the price and probability stay flagged for revisit until the leak is identified. "+_WEEK);
+      _s(_vg,"weekNote",_WEEK);
+      _ap(_vg,"IAN 29.09.2026: 15 OCTOBER, FIRM. The 'or later' comes off. The possible leak is still unconfirmed and the price and probability are still flagged for revisiting once it is identified.","IAN 29.09.2026: 15 OCTOBER, FIRM");
+    }
+
+    /* ---- THE TWO WILLIS EVENTS, on the deal, not the calendar ---- */
+    var _w=_f("re-cynthia-willis");
+    if(_w){
+      _s(_w,"openHouse",{ date:"2026-10-03", start:"12:00", end:"14:00",
+        note:"Saturday 3 October 2026, 12:00 to 2:00 PM. Recorded on the deal; a calendar lane is booking it, and two lanes writing one event is how duplicates happen. COLLISION FLAGGED: Belknap staging is 3 and 4 October and nobody has said who covers what." });
+      _s(_w,"videoShoot",{ date:"2026-09-30", time:"about 1:00 PM",
+        shotBy:"Israel",
+        who:"Ian's pickleball drilling partner and a videographer. His wife is a realtor.",
+        note:"Wednesday 30 September 2026, around 1:00 PM. Recorded on the deal; a calendar lane is booking it." });
+      _ap(_w,"IAN 29.09.2026: open house SATURDAY 3 OCTOBER, 12:00 to 2:00 PM. Video shoot WEDNESDAY 30 SEPTEMBER, around 1:00 PM, shot by Israel, who drills pickleball with Ian, is a videographer, and whose wife is a realtor. COLLISION FLAGGED, NOT RESOLVED: Belknap staging is 3 and 4 October and the open house is the 3rd.","IAN 29.09.2026: open house SATURDAY 3 OCTOBER");
+    }
+
+    /* ---- ISRAEL GOES IN THE CONTACT RECORD, because of the realtor wife ---- */
+    if(Array.isArray(state.realEstate.people)){
+      var _has=false;
+      state.realEstate.people.forEach(function(p){ if(p&&/israel/i.test(String(p.name||""))) _has=true; });
+      if(!_has){
+        state.realEstate.people.push({ id:"re-israel-video", name:"Israel",
+          role:"Videographer",
+          how:"Ian's pickleball drilling partner. Shot the Willis listing video on 30 September 2026.",
+          why:"HIS WIFE IS A REALTOR, which is why he is a contact record and not just a line on one deal. No contact details are on file and none have been invented.",
+          added:"2026-09-29" });
+        _L.push({deal:"realEstate.people",field:"re-israel-video",before:null});
+      }
+    }
+
+    /* ---- ACTIVE INTENT, NOT A TASK ---- */
+    _s(state.realEstate,"activeIntent","STILL TO WORK, and this is INTENT rather than a task list: Barker, Theobald and the Rose Creek two storey. Ian 29.09.2026: \"a few other people we want to hit on every now and then.\" Nothing here is scheduled, owed or overdue, and none of it should render as an open item or a chase. NOTE: Barker is still paused:true and Ian did NOT say to unpause it, so it has not been unpaused. If he meant to lift that pause, one word does it.");
+
+
+    /* ---- THE CONTENT SLATE, 29.09.2026. A TRACKED LIST, NOT A NOTE. ----
+       Ian laid out the whole thing: "I need to re-shoot the Blondo Point lots, so two videos from
+       Blondo Point lots. I want to shoot three good talking videos, that gives us five. Then we'll
+       need at least one video per home coming up, one for Barkers if they do it, one for Mattox,
+       one for Vogel, one for Belknaps, and then one for the Willises if they do it. I've already
+       done a post for Cynthia and I've done multiple for the two-story, I won't be doing any more."
+       EACH HOME VIDEO IS GATED ON ITS LISTING DATE, which is the reason this is a list with dates
+       on it rather than prose: a flat list does not age and these have deadlines. Each item carries
+       the deal it belongs to and that deal's list date, so it is read against the launch it serves.
+       MATTOX IS THE TIGHTEST, 8 October with staging this weekend.
+       HIS OWN COUNT IS KEPT IN HIS OWN FRAMING: two Blondo Point plus three talking is five, plus
+       three guaranteed homes is eight. Eight is the target he stated. Barker and Willis are extra
+       and conditional in his framing, and Willis is already booked, so the arithmetic is his, not
+       a recount by us.
+       CYNTHIA AND THE TWO STOREY ARE DONE AND ARE RECORDED AS DECISIONS, NOT GAPS. He has done one
+       post for Cynthia and several for the two storey and is explicitly doing no more. Nothing
+       should ever resurface either as an outstanding item. */
+    if(!state.realEstate.contentSlate){
+      state.realEstate.contentSlate={
+        setOn:"2026-09-29",
+        target:"EIGHT, in his framing: two Blondo Point lot videos plus three talking videos is five, plus one each for the three guaranteed homes is eight. Barker and Willis sit outside that count, Barker because it is conditional and Willis because it was already booked.",
+        items:[
+          {id:"cs-blondo-1", what:"Blondo Point lot video 1", type:"Lot", status:"To shoot", note:"RE-SHOOT. The existing footage is being replaced."},
+          {id:"cs-blondo-2", what:"Blondo Point lot video 2", type:"Lot", status:"To shoot", note:"RE-SHOOT."},
+          {id:"cs-talk-1", what:"Talking video 1", type:"Talking", status:"To shoot", note:"SCRIPTS ARE WRITTEN AND READY, drafted in ChatGPT. Four exist including the backup, for three videos."},
+          {id:"cs-talk-2", what:"Talking video 2", type:"Talking", status:"To shoot", note:"Script ready."},
+          {id:"cs-talk-3", what:"Talking video 3", type:"Talking", status:"To shoot", note:"Script ready."},
+          {id:"cs-home-mattox", what:"Mattox home video", type:"Home", status:"To shoot",
+           deal:"re-mattox-sell", gatedOn:"Lists 8 October 2026, confirmed", dueBy:"2026-10-08",
+           note:"THE TIGHTEST ONE. Lists the 8th and staging is this weekend, so this is the first deadline on the slate."},
+          {id:"cs-home-belknap", what:"Belknap home video", type:"Home", status:"To shoot",
+           deal:"re-belknap-sell", gatedOn:"Lists 8 or 15 October 2026, leaning the 8th, not confirmed", dueBy:"2026-10-08",
+           note:"Due by the earlier of the two possible dates, because the later one is not the one to plan against."},
+          {id:"cs-home-vogel", what:"Vogel home video", type:"Home", status:"To shoot",
+           deal:"re-vogel-sell", gatedOn:"Lists 15 October 2026, firm", dueBy:"2026-10-15"},
+          {id:"cs-home-willis", what:"Willis home video", type:"Home", status:"Booked",
+           deal:"re-cynthia-willis", bookedFor:"2026-09-30", bookedAt:"about 1:00 PM",
+           note:"BOOKED Wednesday 30 September at about 1:00 PM, shot by Israel."},
+          {id:"cs-home-barker", what:"Barker home video", type:"Home", status:"Conditional",
+           deal:"re-barkers", gatedOn:"ONLY IF THEY LIST. Barker is paused and there is no list date.",
+           note:"Conditional. Nothing to schedule and nothing overdue while the pause stands."}
+        ],
+        done:[
+          {what:"Cynthia post", status:"Done", note:"One post, already done. NOT an outstanding item and must never resurface as one."},
+          {what:"Rose Creek two storey", status:"Done, and closed by decision", note:"Several already done and IAN IS EXPLICITLY DOING NO MORE. This is a DECISION, not a gap. Do not suggest another."}
+        ],
+        cancelled:[
+          {what:"Talking video shoot", date:"2026-09-29", why:"Cancelled. They picked up a king bed for Vogel instead. NOTHING IS REBOOKED and no replacement day has been named."}
+        ],
+        calendarNote:"NO CALENDAR EVENTS were created for any of these. A calendar lane handles that, and Ian has not named days for anything except the Willis shoot, which is already booked."
+      };
+      _L.push({deal:"realEstate.contentSlate",field:"created",before:null});
+    }
+
+
+    /* ---- THE TWO STOREY OPEN HOUSE COMMITMENT, AND A PROPOSED COST, 29.09.2026 ----
+       Ian: "We will be doing open house at the two-story 12 to 4 every weekend, Saturday and
+       Sunday, as long as we are able to. If we are not able to, we will try and get another
+       realtor to host it. I might just ask Stephanie, Israel's wife, if she could host it, so like
+       100 bucks or something per day, if she sells it a few hundred more, and obviously if she
+       brings in a buyers agent she'll get the buyers commission."
+       THIS IS A STANDING WEEKLY TIME COST ON BOTH OF THEM, not a one-off, and it runs until the
+       house sells or comes off market. THAT DEADLINE IS THE POINT: the two storey goes off market
+       around 11 October if it has not sold, so THIS COMMITMENT HAS AT MOST TWO MORE WEEKENDS TO
+       RUN. It changes how much the Stephanie arrangement is worth setting up at all, and that is
+       said here rather than left for someone to work out.
+       THE STEPHANIE TERMS ARE PROPOSED AND NOT AGREED. He said "I might just ask". No figure is
+       fixed, nothing is committed, and the app must not render any of it as a cost he has taken on.
+       THE RELATIONSHIP IS WORTH SEEING WHOLE: Israel is Ian's pickleball drilling partner and a
+       videographer, shooting the Willis listing video on Wednesday. Stephanie is his wife. One
+       relationship now touching both content and coverage. */
+    if(!state.realEstate.openHouseCommitment){
+      state.realEstate.openHouseCommitment={
+        setOn:"2026-09-29",
+        property:"re-rose-creek",
+        pattern:"EVERY WEEKEND, Saturday and Sunday, 12:00 to 4:00 PM, for as long as they are able.",
+        cost:"A standing weekly time cost on both Ian and Chris, not a one-off.",
+        endsWhen:"When the house sells, or when it comes off market around 11 October 2026 and becomes a model home.",
+        runwayNote:"AT MOST TWO MORE WEEKENDS. The off market date is roughly 11 October, so this commitment has two weekends left at the outside. That is the number to weigh the Stephanie arrangement against.",
+        thisWeekend:{ saturday:"Chris at the two storey. Ian at Cynthia's open house, 12:00 to 2:00 PM.",
+                      sunday:"Ian at the two storey.",
+                      note:"This is the split for THIS weekend only." },
+        afterThisWeekend:"EXPECTED, NOT SCHEDULED. They will likely run open houses at the other listings too once those go live, so the split reallocates every weekend. Nothing beyond this weekend is assigned.",
+        fallback:{
+          who:"Stephanie", relationship:"Israel's wife. Israel is Ian's pickleball drilling partner and a videographer, and he is shooting the Willis listing video on 30 September. One relationship now touching both content and coverage.",
+          role:"Fallback host if neither Ian nor Chris can cover a day.",
+          status:"PROPOSED, NOT AGREED. Ian's words: \"I might just ask.\" Nothing is committed, no figure is fixed, and this must not render as a cost he has taken on.",
+          terms:["About $100 per day, and the 'or something' in his phrasing is part of the record.",
+                 "A few hundred more if she sells it.",
+                 "If she brings in a buyer's agent, she takes the buyer's commission."]
+        }
+      };
+      _L.push({deal:"realEstate.openHouseCommitment",field:"created",before:null});
+    }
+
+    if(_L.length){
+      if(!state.archive||typeof state.archive!=="object") state.archive={};
+      if(!state.archive.belknapClearB463){
+        state.archive.belknapClearB463={ setOn:"2026-09-29", count:_L.length, changes:_L,
+          why:"Previous value of everything build 463 changed when the Belknap private sale died and the three list dates firmed up." };
+      }
+    }
+    state.meta.mig463_belknap=true; save(true);
+    try{ console.log("mig463: "+_L.length+" changes"); }catch(_){}
+} }catch(e){ try{ console.warn("mig463 did not apply:",e&&e.message); }catch(_){} }
 
   /* build 372: LAST THING BEFORE THE SAVE. Every migration above has run, deepMergeDefaults
      has run, so this is the only point in the file where the state is actually final. */
