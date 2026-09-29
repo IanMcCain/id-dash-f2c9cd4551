@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 461 (2026-09-28)">
+<meta name="build" content="v21 build 462 (2026-09-29)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -22394,6 +22394,76 @@ try{ if(profile==="ian" && state.meta && !state.meta.mig461_dates && state.realE
     try{ console.log("mig461: "+_L.length+" changes"); }catch(_){}
 } }catch(e){ try{ console.warn("mig461 did not apply:",e&&e.message); }catch(_){} }
 
+
+/* ===== v21 build 462: TUESDAY 29 SEPTEMBER =============================================
+   7:04 to 9:06 AM, Omaha, 2:01:45. 1,350 active calories and 1,541 total, average heart rate 141,
+   max 169, min 85. Two blocks, an hour each, kept separate because the drilling hour and the
+   doubles hour were different work.
+
+   THE 141 AVERAGE IS HIS SECOND HIGHEST, BEHIND 143 ON 27 JULY, and that was checked against all
+   66 prior sessions before it was written. The brief said second highest and it is right this
+   time; the one before it said "highest ever" of two figures that were not, so it gets checked
+   either way rather than trusted either way.
+
+   HIS SELF ESTIMATE IS STORED AS A QUOTE AND NOTHING ELSE. He said "I'm like a 3.8 in my mind."
+   DUPR STAYS 3.226 AND IS NOT TOUCHED. The two are NOT reconciled, the gap is NOT commented on,
+   and nothing is derived from either. A self estimate is a note, not a rating: he rejected
+   inflated self ratings in July and asked for footage based grading against a written rubric, and
+   the way to respect that is to record what he said and leave it alone.
+
+   HIS OWN READ IS THE VALUABLE PART. Decision making improving, which balls to push and which
+   not, when to speed up and when not to, what kind of ball to hit. His words: "my game mind is
+   getting better." What he says he needs: consistency, fewer random mistakes, more playtime.
+   Drops were not bad and need consistency and accuracy. And he believes he would have played
+   better had he drilled drops before playing, which is an observation about WARM UP SPECIFICITY
+   and not about technique. It is recorded as his observation and NOT presented as proven.
+
+   ONE LINE ON THE PATTERN. Monday's class had Esteban diagnosing the mechanics as sound and
+   pressure as the problem. Today Ian reaches for consistency and random mistakes in his own
+   words. SAME THEME, MARKED AS A PATTERN AND NOT AS A CONCLUSION: two readings a day apart, one
+   of them a coach's and one his own, is a pattern worth watching and is not proof of anything.
+
+   Result: lost all of them and all close, and he called them good games. Recorded as he gave it.
+   No effort key, no calendar event, no gym inference, and NO RATING IS DERIVED from the
+   opposition band. Guard state.meta.mig462_pk0929, end of chain, SEED_VERSION stays 13. */
+try{ if(profile==="ian" && state.meta && !state.meta.mig462_pk0929 && state.pickleball){
+    var _P=state.pickleball;
+    if(!Array.isArray(_P.sessions)) _P.sessions=[];
+    var _dup=false; _P.sessions.forEach(function(s){ if(s&&s.id==="pk-20260929-am") _dup=true; });
+    if(!_dup){
+      _P.sessions.push({
+        id:"pk-20260929-am", date:"2026-09-29", kind:"Drills and doubles", venue:"Omaha",
+        duration:"2h 01m 45s", window:"7:04 to 9:06 AM, Omaha",
+        calories:1541, activeCalories:1350, avgHr:141, maxHr:169, minHr:85,
+        watchEffort:9, watchEffortLabel:"All Out", watchEffortSource:"Apple Watch",
+        /* no effort key: Ian has not rated this session */
+        blocks:[
+          {label:"Drilling", detail:"first hour. Dinks, cross-court games, speed ups, then skinny singles."},
+          {label:"Doubles", detail:"second hour"}
+        ],
+        blockRead:"The drilling hour was helpful for drives, for pace, and for playing under pressure. His words.",
+        opposition:{ majorityLow:3.6, majorityHigh:3.9, floor:3.6, ceiling:3.9,
+          estimates:"HIS OWN ESTIMATES, not measured ratings: a woman about 3.9, a man about 3.75 to 3.8, an older man about 3.6 to 3.7. His partner about 3.6.",
+          source:"Ian's own read on the day, and it describes the SECOND BLOCK only, the doubles hour." },
+        result:"Lost all of them, all close. He called them good games.",
+        hisRead:"My game mind is getting better.",
+        selfEstimate:{ words:"I'm like a 3.8 in my mind.", said:"2026-09-29",
+          handling:"HIS WORDS, RECORDED AND NOTHING MORE. This is a note, not a rating. DUPR stays 3.226, measured 23 August. The two are NOT reconciled, the gap is NOT commented on, and nothing is derived from either. He rejected inflated self ratings in July and asked for footage based grading against a written rubric." },
+        selfRead:{
+          improving:"DECISION MAKING. Which balls to push and which not to, when to speed up and when not to, what kind of ball to hit. His words: \"my game mind is getting better.\"",
+          needs:"Consistency, fewer random mistakes, and more playtime. His own list.",
+          drops:"Not bad. They need consistency and accuracy.",
+          warmupObservation:"HE BELIEVES HE WOULD HAVE PLAYED BETTER HAD HE DRILLED DROPS BEFORE PLAYING. That is about WARM UP SPECIFICITY, not technique. Recorded as his observation and NOT presented as proven.",
+          pattern:"PATTERN, NOT A CONCLUSION. Monday's class had Esteban diagnosing the mechanics as sound and pressure as the problem. Today Ian reaches for consistency and random mistakes in his own words. Same theme from a coach and from him a day apart, which is worth watching and is not proof."
+        },
+        records:"The 141 average heart rate is his SECOND HIGHEST on file, behind 143 on 27 July. Checked against all 66 prior sessions.",
+        score:"", opponent:"", copyOwned:true
+      });
+      _P.sessions.sort(function(a,z){ return String(a.date).localeCompare(String(z.date)); });
+    }
+    state.meta.mig462_pk0929=true; save(true);
+} }catch(e){ try{ console.warn("mig462 did not apply:",e&&e.message); }catch(_){} }
+
   /* build 372: LAST THING BEFORE THE SAVE. Every migration above has run, deepMergeDefaults
      has run, so this is the only point in the file where the state is actually final. */
   try{ convergeState(); }catch(e){}
@@ -26697,6 +26767,31 @@ function pkSessionItem(parent,s){
     });
   })();
   if(s.records){ var _rc=el("div","small dim"); _rc.style.cssText="margin-top:8px;line-height:1.5;color:var(--gray2)"; _rc.textContent=String(s.records); det.appendChild(_rc); }
+  /* build 462: his own read of the session, as structured lines rather than one paragraph, so the
+     thing he is improving and the thing he still needs do not blur together. */
+  (function(){
+    var Rd=s.selfRead; if(!Rd||typeof Rd!=="object") return;
+    var h=el("div","small"); h.style.cssText="color:var(--sec2,#8af2ac);font-weight:800;margin-top:10px";
+    h.textContent="His own read"; det.appendChild(h);
+    ["improving","needs","drops","warmupObservation","pattern"].forEach(function(k){
+      if(!Rd[k]) return;
+      var d2=el("div","small dim"); d2.style.cssText="margin-top:4px;line-height:1.55;padding-left:10px";
+      d2.textContent=String(Rd[k]); det.appendChild(d2);
+    });
+  })();
+  /* build 462: a self estimate is a NOTE, not a rating. It renders in quotes, attributed, and the
+     line underneath says plainly that DUPR is unchanged, so the two can never be read as one. */
+  (function(){
+    var SE=s.selfEstimate; if(!SE||!SE.words) return;
+    var q=el("div","small dim"); q.style.cssText="margin-top:8px;line-height:1.5";
+    q.textContent="His own estimate: \"" + String(SE.words) + "\"";
+    det.appendChild(q);
+    var n2=el("div","small dim"); n2.style.cssText="margin-top:2px;line-height:1.45;padding-left:10px;color:var(--gray2)";
+    n2.textContent="A note, not a rating. DUPR is unchanged.";
+    det.appendChild(n2);
+  })();
+  if(s.blockRead){ var _br=el("div","small dim"); _br.style.cssText="margin-top:6px;line-height:1.5"; _br.textContent=String(s.blockRead); det.appendChild(_br); }
+  if(s.result){ var _rs=el("div","small dim"); _rs.style.cssText="margin-top:6px;line-height:1.5"; _rs.textContent=String(s.result); det.appendChild(_rs); }
   if(s.context){
     var cx=el("div","small dim"); cx.style.cssText="margin-top:9px;line-height:1.5;color:var(--gray2)";
     cx.textContent=String(s.context); det.appendChild(cx);
