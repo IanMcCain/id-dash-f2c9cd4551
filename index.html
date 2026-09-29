@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 463 (2026-09-29)">
+<meta name="build" content="v21 build 464 (2026-09-29)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -22667,6 +22667,74 @@ try{ if(profile==="ian" && state.meta && !state.meta.mig463_belknap && state.rea
     state.meta.mig463_belknap=true; save(true);
     try{ console.log("mig463: "+_L.length+" changes"); }catch(_){}
 } }catch(e){ try{ console.warn("mig463 did not apply:",e&&e.message); }catch(_){} }
+
+
+/* ===== v21 build 464: THE MODEL HOME ASSUMPTION IS NOT SAFE ============================
+   Ian, 29.09.2026: "On October 11 the two-story becomes a model, and I'm not entirely sure how
+   that works yet, because it's still going to have a price, it's just going to push back up to
+   that 730-750 number. So I don't know if it's still for sale or not. I think it might not be for
+   sale, but that price is 100% going to go up to that 730 to 750 number. Maybe it'll still be for
+   sale just at that higher number and no negotiation, but I'm not certain."
+
+   ONE THING IS CERTAIN AND ONE IS NOT, AND THE RECORD KEEPS THEM APART.
+   CERTAIN: the price goes to $730,000 to $750,000 on or about 11 October. He said 100 percent.
+   UNKNOWN: whether it is still for sale at all. THREE POSSIBILITIES ARE ALL LIVE and none is
+   picked: off market entirely, still for sale at the higher number with no negotiation, or
+   something else neither of us has thought of.
+
+   THE PROBLEM THIS CREATES, SAID PLAINLY. Build 456 wrote pipelineDropsAfter 2026-10-11, which
+   assumes it leaves the pipeline. THAT ASSUMPTION IS NOW UNSUPPORTED. If it stays listed at the
+   higher number it does NOT drop out, and it is worth MORE, not less: $740,000 against $684,900
+   is roughly $55,000 more volume and proportionally more commission.
+   SO THE PROJECTION MAY BE UNDERSTATING HIM RATHER THAN OVERSTATING HIM. That is the opposite of
+   this app's usual failure and it is worth naming, because every guard in here is built to stop
+   numbers being inflated and none of them catches a number that is too low.
+   pipelineDropsAfter IS NOT CHANGED. It is flagged as resting on an unconfirmed assumption, which
+   is the honest state: changing it would be picking one of the three possibilities.
+
+   AND THE ANSWER IS NOT RESEARCHABLE. Ian suggested research might clarify this. It will not.
+   This is Scenic Group's own decision about their own listing, so the answer comes from CHRIS and
+   from nowhere else. NO LANE SHOULD SPEND TIME SEARCHING FOR IT.
+
+   Guard state.meta.mig464_model, end of chain, SEED_VERSION stays 13. */
+try{ if(profile==="ian" && state.meta && !state.meta.mig464_model && state.realEstate){
+    var _D=state.realEstate.deals||[], _L=[];
+    var _rc=null; for(var i=0;i<_D.length;i++){ if(_D[i]&&_D[i].id==="re-rose-creek"){ _rc=_D[i]; break; } }
+    var _s=function(k,v){ if(!_rc||_rc[k]===v) return; _L.push({deal:"re-rose-creek",field:k,before:(_rc[k]===undefined?null:_rc[k])}); _rc[k]=v; };
+    if(_rc){
+      _s("modelHomeTransition",{
+        onOrAbout:"2026-10-11",
+        priceMove:{ certain:true, from:"$684,900", to:"$730,000 to $750,000",
+          words:"Ian, 29.09.2026: \"that price is 100% going to go up to that 730 to 750 number.\" HE SAID 100 PERCENT, so this is recorded as certain.",
+          midpoint:"$740,000",
+          note:"NO NEW PRICE IS SET ON THE RECORD. The deal still reads $684,900 because that is what it is listed at today, and writing a future price into the price field would be a date claim dressed as a number." },
+        stillForSale:{ known:false,
+          words:"Ian: \"So I don't know if it's still for sale or not. I think it might not be for sale... Maybe it'll still be for sale just at that higher number and no negotiation, but I'm not certain.\"",
+          possibilities:[
+            "OFF MARKET ENTIRELY. It becomes a model home and stops being a sellable side.",
+            "STILL FOR SALE AT THE HIGHER NUMBER, with no negotiation.",
+            "SOMETHING ELSE. Neither of them has described a third shape and one may exist."
+          ],
+          picked:"NONE. All three are live and this record does not choose between them." },
+        answerComesFrom:"CHRIS, AND NOWHERE ELSE. This is Scenic Group's own decision about their own listing. IT IS NOT RESEARCHABLE and no lane should spend time searching for it. Ian suggested research might clarify it; it will not."
+      });
+      _s("pipelineAssumptionFlag","pipelineDropsAfter 2026-10-11 RESTS ON AN UNCONFIRMED ASSUMPTION and has NOT been changed. It assumes the house leaves the pipeline on the 11th. If it stays listed at $730,000 to $750,000 it does NOT drop out, and it is worth MORE than it is now: $740,000 against $684,900 is about $55,000 more volume and proportionally more commission. SO THE CURRENT PROJECTION MAY BE UNDERSTATING HIM, NOT OVERSTATING HIM, which is the opposite of the failure this app usually guards against. Resolve it with one word from Chris, not by picking a scenario here.");
+      _s("priceNote","$684,900 as listed today. THE PRICE IS CERTAIN TO MOVE to $730,000 to $750,000 on or about 11 October when it becomes a model home, per Ian 29.09.2026 at 100 percent confidence. That future number is NOT written into the price field, because the field is what it is listed at now.");
+      if(typeof _rc.note==="string" && _rc.note.indexOf("THE MODEL HOME TRANSITION IS NOT UNDERSTOOD")<0){
+        _L.push({deal:"re-rose-creek",field:"note",before:_rc.note});
+        _rc.note=_rc.note+"  THE MODEL HOME TRANSITION IS NOT UNDERSTOOD YET, AND ONE HALF OF IT IS CERTAIN. Ian 29.09.2026: the price goes to $730,000 to $750,000 on or about 11 October, and he put that at 100 percent. Whether it is STILL FOR SALE is unknown, with three live possibilities and none picked: off market entirely, for sale at the higher number with no negotiation, or something else. The app's pipelineDropsAfter date assumes it leaves the pipeline and that assumption is now unsupported; if it stays listed it is worth MORE, not less, so the projection may be understating him. The answer comes from Chris and is not researchable.";
+      }
+    }
+    if(_L.length){
+      if(!state.archive||typeof state.archive!=="object") state.archive={};
+      if(!state.archive.modelHomeB464){
+        state.archive.modelHomeB464={ setOn:"2026-09-29", count:_L.length, changes:_L,
+          why:"Previous value of everything build 464 changed on the two storey when the model home transition turned out to be half certain and half unknown." };
+      }
+    }
+    state.meta.mig464_model=true; save(true);
+    try{ console.log("mig464: "+_L.length+" changes"); }catch(_){}
+} }catch(e){ try{ console.warn("mig464 did not apply:",e&&e.message); }catch(_){} }
 
   /* build 372: LAST THING BEFORE THE SAVE. Every migration above has run, deepMergeDefaults
      has run, so this is the only point in the file where the state is actually final. */
