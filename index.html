@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 465 (2026-09-30)">
+<meta name="build" content="v21 build 466 (2026-09-30)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -22802,6 +22802,68 @@ try{ if(profile==="ian" && state.meta && !state.meta.mig465_pk0929pm && state.pi
     state.meta.mig465_pk0929pm=true; save(true);
 } }catch(e){ try{ console.warn("mig465 did not apply:",e&&e.message); }catch(_){} }
 
+
+/* ===== v21 build 466: WEDNESDAY 30 SEPTEMBER. DRILLING ONLY. ===========================
+   7:08 to 8:15 AM, Omaha, 1:06:37. 464 active calories and 568 total, average heart rate 118,
+   max 147, min 79. NO OPEN PLAY. Four timed drilling blocks and nothing else.
+
+   THE PLAN SAID 1.5 HOURS AND THE WATCH SAYS 1:06:37. THE ACTUAL IS RECORDED AND THE GAP IS NOT
+   RECONCILED. Yesterday he said he would drill with Israel for an hour and a half this morning;
+   the watch has 1:06:37. Both are on the record, the difference is about 23 minutes, and no
+   explanation is invented for it. A plan is not a measurement.
+
+   SKINNY SINGLES IS TWO PEOPLE, AND HE CORRECTED HIMSELF TO SAY SO. His words: doubles practice
+   with only two people. The correction is kept beside the definition so nobody reads the name and
+   assumes one player a side.
+
+   118 IS HIS LOWEST AVERAGE HEART RATE SINCE 25 SEPTEMBER, which is to say lower than every
+   session after that date: 137 on the 28th, 141 and 132 on the 29th. The 25th itself was 113 and
+   is lower still, so the claim is "since" and not "lowest recently". CONSISTENT WITH A PURE
+   DRILLING SESSION AND NO MATCH PLAY, and that is as far as it goes: stated, nothing derived.
+
+   TWO THINGS HE IS TRAINING, ONE LINE EACH, NO PRAISE AND NO CONCLUSION.
+   DROPS, THREE DAYS RUNNING: good but inconsistent on Monday, off on Tuesday evening against a
+   4.0 to 4.5 field, drilled this morning. He is acting on it. That is a pattern in his behaviour,
+   which is a different and weaker claim than a pattern in his play, and the record says which.
+   FAST HANDS: hands battles were the one weakness he named on 22 September and he read them as
+   medium last night. He drilled them this morning. Same shape, recorded the same way.
+
+   He is moving Belknap staging equipment after this. No effort key, no calendar event, no gym
+   inference, DUPR stays 3.226. Guard state.meta.mig466_pk0930, end of chain, SEED stays 13. */
+try{ if(profile==="ian" && state.meta && !state.meta.mig466_pk0930 && state.pickleball){
+    var _P=state.pickleball;
+    if(!Array.isArray(_P.sessions)) _P.sessions=[];
+    var _dup=false; _P.sessions.forEach(function(s){ if(s&&s.id==="pk-20260930-am") _dup=true; });
+    if(!_dup){
+      _P.sessions.push({
+        id:"pk-20260930-am", date:"2026-09-30", kind:"Drilling only", venue:"Omaha",
+        duration:"1h 06m 37s", window:"7:08 to 8:15 AM, Omaha",
+        calories:568, activeCalories:464, avgHr:118, maxHr:147, minHr:79,
+        watchEffort:7, watchEffortLabel:"Hard", watchEffortSource:"Apple Watch",
+        /* no effort key: Ian has not rated this session */
+        drillOnly:true,
+        withWhom:"Israel",
+        blocks:[
+          {label:"Dinks, all kinds", detail:"first 30 minutes"},
+          {label:"Drops and resets", detail:"10 minutes"},
+          {label:"Fast hands", detail:"8 to 10 minutes"},
+          {label:"Skinny singles", detail:"the remainder",
+           recordNote:"SKINNY SINGLES IS TWO PEOPLE. His own correction: doubles practice with only two players, not one a side."}
+        ],
+        planVsActual:"PLANNED 1.5 HOURS, ACTUAL 1:06:37. He said yesterday he would drill with Israel for an hour and a half. The watch has 1 hour 6 minutes 37 seconds, about 23 minutes short. BOTH ARE RECORDED AND THE GAP IS NOT RECONCILED: no reason for it is known and none is invented.",
+        heartRateNote:"118 AVERAGE IS HIS LOWEST SINCE 25 SEPTEMBER, lower than every session after that date: 137 on the 28th, 141 and 132 on the 29th. The 25th itself was 113, which is lower, so this is a 'since' and not a 'lowest recently'. Consistent with a pure drilling session and no match play. Stated, nothing derived.",
+        training:{
+          drops:"DROPS, THREE DAYS RUNNING. Good but inconsistent on Monday, off on Tuesday evening against a 4.0 to 4.5 field, drilled this morning. HE IS ACTING ON IT. That is a pattern in his BEHAVIOUR, which is a weaker and different claim from a pattern in his play, and it is not a conclusion about either.",
+          hands:"FAST HANDS. Hands battles were the one weakness he named on 22 September and he read them as medium last night. He drilled them this morning. Recorded, not praised, and not proof of anything."
+        },
+        after:"Moving Belknap staging equipment after this.",
+        result:"", score:"", opponent:"", copyOwned:true
+      });
+      _P.sessions.sort(function(a,z){ return String(a.date).localeCompare(String(z.date)); });
+    }
+    state.meta.mig466_pk0930=true; save(true);
+} }catch(e){ try{ console.warn("mig466 did not apply:",e&&e.message); }catch(_){} }
+
   /* build 372: LAST THING BEFORE THE SAVE. Every migration above has run, deepMergeDefaults
      has run, so this is the only point in the file where the state is actually final. */
   try{ convergeState(); }catch(e){}
@@ -27146,6 +27208,21 @@ function pkSessionItem(parent,s){
   if(s.dropsPattern){ var _dp=el("div","small dim"); _dp.style.cssText="margin-top:8px;line-height:1.55;color:var(--gray2)"; _dp.textContent=String(s.dropsPattern); det.appendChild(_dp); }
   if(s.tomorrow){ var _tm=el("div","small dim"); _tm.style.cssText="margin-top:8px;line-height:1.5;color:var(--gray2)"; _tm.textContent=String(s.tomorrow); det.appendChild(_tm); }
   if(s.dayNote){ var _dn=el("div","small"); _dn.style.cssText="color:var(--sec2,#8af2ac);font-weight:700;margin-top:8px;line-height:1.5"; _dn.textContent=String(s.dayNote); det.appendChild(_dn); }
+  /* build 466: what he is training, one line each, in the dim style so it reads as observation
+     rather than as a verdict on him. */
+  (function(){
+    var T=s.training; if(!T||typeof T!=="object") return;
+    var h=el("div","small"); h.style.cssText="color:var(--gray);font-weight:700;margin-top:9px";
+    h.textContent="What he is training"; det.appendChild(h);
+    Object.keys(T).forEach(function(k){
+      if(!T[k]) return;
+      var li=el("div","small dim"); li.style.cssText="margin-top:4px;line-height:1.55;padding-left:10px";
+      li.textContent=String(T[k]); det.appendChild(li);
+    });
+  })();
+  if(s.planVsActual){ var _pa=el("div","small dim"); _pa.style.cssText="margin-top:8px;line-height:1.5;color:var(--gray2)"; _pa.textContent=String(s.planVsActual); det.appendChild(_pa); }
+  if(s.heartRateNote){ var _hn=el("div","small dim"); _hn.style.cssText="margin-top:6px;line-height:1.5;color:var(--gray2)"; _hn.textContent=String(s.heartRateNote); det.appendChild(_hn); }
+  if(s.after){ var _af=el("div","small dim"); _af.style.cssText="margin-top:6px;line-height:1.5"; _af.textContent=String(s.after); det.appendChild(_af); }
   if(s.context){
     var cx=el("div","small dim"); cx.style.cssText="margin-top:9px;line-height:1.5;color:var(--gray2)";
     cx.textContent=String(s.context); det.appendChild(cx);
