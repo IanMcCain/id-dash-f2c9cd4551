@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 464 (2026-09-29)">
+<meta name="build" content="v21 build 465 (2026-09-30)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -22736,6 +22736,72 @@ try{ if(profile==="ian" && state.meta && !state.meta.mig464_model && state.realE
     try{ console.log("mig464: "+_L.length+" changes"); }catch(_){}
 } }catch(e){ try{ console.warn("mig464 did not apply:",e&&e.message); }catch(_){} }
 
+
+/* ===== v21 build 465: TUESDAY EVENING. THE 29TH IS A DOUBLE. ============================
+   4:18 to 6:27 PM, Omaha, 2:08:59. 1,251 active calories and 1,453 total, average heart rate 132,
+   max 167, min 70. SECOND session of 29 September. The morning, 2:01:45, is untouched: nothing is
+   merged and pk-20260929-am is not overwritten.
+
+   THE "BIGGEST DAY BY A DISTANCE" CLAIM IS WRONG AND IS NOT WRITTEN. Checked against every prior
+   day rather than taken on trust. Tuesday's 4:10:44 across two sessions is his FOURTH biggest day
+   on file: 1 September was 6h03m across two, the APC on 23 August was 5h13m in one, 3 September
+   was 4h24m across two, and then this. It is his biggest day since 3 September and his biggest
+   this month bar none of those, which is a real thing and is what the record says. This is the
+   third brief in a row to carry a superlative that the data does not support, so superlatives now
+   get computed before they get written, every time.
+
+   FOUR SHOT READS, STORED AS FOUR FIELDS. His words: "Drops were off, drives were good, hands were
+   medium, serves were medium." Prose would let them blur; separate fields can be compared against
+   the next session and against the film record.
+
+   THE OPPOSITION IS HIS STRONGEST FIELD YET, 4.0 to 4.5 for the whole session, against 3.6 to 3.9
+   on each of the last two. That is stated as fact and NOTHING IS DERIVED FROM IT. DUPR stays
+   3.226. A stronger field does not move a rating and it does not move a self estimate either.
+   His own framing of why it was harder is kept in his words: "stress was higher."
+
+   DROPS, TWICE IN TWO DAYS, MARKED AS A PATTERN AND NOT A CONCLUSION. Yesterday he said drops were
+   good but needed consistency and that drilling them beforehand would have helped. Tonight they
+   were off against a stronger field. Two mentions in two days is worth watching. It is not proof,
+   and the confound is obvious and recorded: tonight's field was a full half point stronger.
+
+   TOMORROW MORNING is recorded on the session, NOT as calendar events: 1.5 hours drilling with
+   Israel, then moving staging equipment for Belknap. His words for it, a long exhausting morning.
+
+   No effort key, no calendar event, no gym inference. Guard state.meta.mig465_pk0929pm, end of
+   chain, SEED_VERSION stays 13. */
+try{ if(profile==="ian" && state.meta && !state.meta.mig465_pk0929pm && state.pickleball){
+    var _P=state.pickleball;
+    if(!Array.isArray(_P.sessions)) _P.sessions=[];
+    var _dup=false; _P.sessions.forEach(function(s){ if(s&&s.id==="pk-20260929-pm") _dup=true; });
+    if(!_dup){
+      _P.sessions.push({
+        id:"pk-20260929-pm", date:"2026-09-29", kind:"Open play doubles", venue:"Omaha",
+        duration:"2h 08m 59s", window:"4:18 to 6:27 PM, Omaha",
+        calories:1453, activeCalories:1251, avgHr:132, maxHr:167, minHr:70,
+        watchEffort:8, watchEffortLabel:"Hard", watchEffortSource:"Apple Watch",
+        /* no effort key: Ian has not rated this session */
+        hisRead:"Today's evening session went well. Stress was higher.",
+        shotReads:{
+          drops:"OFF",
+          drives:"GOOD",
+          hands:"MEDIUM",
+          serves:"MEDIUM",
+          source:"His own words, 29.09.2026 evening. Four separate reads, kept separate." },
+        opposition:{ majorityLow:4.0, majorityHigh:4.5, floor:4.0, ceiling:4.5,
+          wholeSession:true,
+          strongest:"HIS STRONGEST FIELD YET. The last two sessions were 3.6 to 3.9; this was 4.0 to 4.5 for the whole session. Stated as fact. NOTHING IS DERIVED FROM IT: it does not move DUPR, which stays 3.226, and it does not move a self estimate.",
+          hisFraming:"stress was higher",
+          source:"Ian's own read on the day." },
+        dropsPattern:"PATTERN, NOT A CONCLUSION. Drops have come up twice in two days. On 29.09 morning he said they were not bad but needed consistency and accuracy, and that drilling them before playing would have helped. Tonight they were OFF. Two mentions in two days is worth watching and is not proof, and the confound is recorded rather than ignored: tonight's field was a full half point stronger than the morning's.",
+        tomorrow:"NOT A CALENDAR ENTRY, recorded on the session because he said it here. Tomorrow morning: 1.5 hours drilling with Israel, then moving staging equipment for Belknap. His words for it: a long exhausting morning.",
+        dayNote:"SECOND SESSION OF 29 SEPTEMBER. Tuesday is a double: 2:01:45 in the morning and 2:08:59 in the evening, 4:10:44 on court across the two. That is his FOURTH biggest day on file, behind 1 September at 6h03m, the APC on 23 August at 5h13m, and 3 September at 4h24m. It is his biggest day since 3 September.",
+        result:"", score:"", opponent:"", copyOwned:true
+      });
+      _P.sessions.sort(function(a,z){ return String(a.date).localeCompare(String(z.date)); });
+    }
+    state.meta.mig465_pk0929pm=true; save(true);
+} }catch(e){ try{ console.warn("mig465 did not apply:",e&&e.message); }catch(_){} }
+
   /* build 372: LAST THING BEFORE THE SAVE. Every migration above has run, deepMergeDefaults
      has run, so this is the only point in the file where the state is actually final. */
   try{ convergeState(); }catch(e){}
@@ -27064,6 +27130,22 @@ function pkSessionItem(parent,s){
   })();
   if(s.blockRead){ var _br=el("div","small dim"); _br.style.cssText="margin-top:6px;line-height:1.5"; _br.textContent=String(s.blockRead); det.appendChild(_br); }
   if(s.result){ var _rs=el("div","small dim"); _rs.style.cssText="margin-top:6px;line-height:1.5"; _rs.textContent=String(s.result); det.appendChild(_rs); }
+  /* build 465: four shot reads as four lines, because his own four-word summary is the most
+     comparable thing a session note ever carries and prose would blur it. */
+  (function(){
+    var SR=s.shotReads; if(!SR||typeof SR!=="object") return;
+    var h=el("div","small"); h.style.cssText="color:var(--gray);font-weight:700;margin-top:9px";
+    h.textContent="His shot reads"; det.appendChild(h);
+    [["Drops","drops"],["Drives","drives"],["Hands","hands"],["Serves","serves"]].forEach(function(p){
+      if(!SR[p[1]]) return;
+      var li=el("div","small dim"); li.style.cssText="margin-top:3px;line-height:1.5;padding-left:10px";
+      li.textContent="\u00B7  "+p[0]+"  \u00B7  "+String(SR[p[1]]);
+      det.appendChild(li);
+    });
+  })();
+  if(s.dropsPattern){ var _dp=el("div","small dim"); _dp.style.cssText="margin-top:8px;line-height:1.55;color:var(--gray2)"; _dp.textContent=String(s.dropsPattern); det.appendChild(_dp); }
+  if(s.tomorrow){ var _tm=el("div","small dim"); _tm.style.cssText="margin-top:8px;line-height:1.5;color:var(--gray2)"; _tm.textContent=String(s.tomorrow); det.appendChild(_tm); }
+  if(s.dayNote){ var _dn=el("div","small"); _dn.style.cssText="color:var(--sec2,#8af2ac);font-weight:700;margin-top:8px;line-height:1.5"; _dn.textContent=String(s.dayNote); det.appendChild(_dn); }
   if(s.context){
     var cx=el("div","small dim"); cx.style.cssText="margin-top:9px;line-height:1.5;color:var(--gray2)";
     cx.textContent=String(s.context); det.appendChild(cx);
