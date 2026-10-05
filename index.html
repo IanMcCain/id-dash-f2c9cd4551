@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 468 (2026-10-04)">
+<meta name="build" content="v21 build 469 (2026-10-05)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -23013,6 +23013,91 @@ try{ if(profile==="ian" && state.meta && !state.meta.mig468_pk1003_sweep && stat
     });
     state.meta.mig468_pk1003_sweep=true; save(true);
 } }catch(e){ try{ console.warn("mig468 did not apply:",e&&e.message); }catch(_){} }
+
+/* ===== v21 build 469: MONDAY 5 OCTOBER. 45 MINUTES OF DRILLING, THEN SOCIAL OPEN PLAY ==
+   7:05 to 8:38 AM, Omaha, 1:33:16. 810 active calories and 956 total, average heart rate 123,
+   max about 149, min about 88. Effort 8, "Hard", HIS OWN RATING, in the effort key.
+   NOT ALREADY LOGGED: nothing in the data carried date 2026-10-05 or an id matching pk-20261005.
+
+   THE DRILL BREAKDOWN IS STRUCTURED, NOT PROSE, so a later training trend read can query it.
+   drills[] carries one entry per skill with its own minutes where he gave them: Dinks 25
+   minutes, then Resets and Topspin volleys sharing the remaining 20 or so. THE 20 MINUTES IS
+   NOT SPLIT BETWEEN THOSE TWO, because he did not split it, and each entry says so on its face
+   rather than carrying an invented 10 and 10. skillsWorked[] holds the three names on their own
+   for anything that just needs to ask what he trained.
+
+   IT COUNTS AS PERFORMANCE DATA, UNLIKE SATURDAY. performanceData is true and it is in the
+   effort, heart rate and calorie series.
+
+   BUT THE OPEN PLAY HALF IS NOT A COMPETITIVE RESULT AND IS FLAGGED SO IT CANNOT BE READ AS ONE.
+   His words: more fun than super competitive. competitive:false sits on the openPlay block, not
+   on the session, because the drilling half is ordinary training and nothing about it is social.
+   result, score and opponent stay EMPTY. No win, no loss, nothing to record.
+
+   OPPOSITION IS HIS OWN READ AND IT STAYS IN HIS OWN WORDS: mid to high 3.0s. NO NUMERIC BAND IS
+   STORED, because "mid to high 3.0s" does not convert to a 3.3 to 3.9 without inventing
+   precision he did not give, and the structured band field exists for sessions where he gave
+   actual figures. Nothing is derived about his own level from it.
+
+   EFFORT 8 IS HIS RATING OF HOW HARD HE TRIED AND HOW WELL HE PLAYED, defined 14.09.2026. IT IS
+   NOT RECONCILED AGAINST THE 123 AVERAGE and the two never appear as one claim.
+
+   NO SUPERLATIVE IS CLAIMED. The history was queried first and there is nothing to claim: on
+   duration, calories, average and max heart rate this session sits inside the record on every
+   one. SIX FALSE SUPERLATIVES HAVE ALREADY SHIPPED, so the rule here is that a claim gets made
+   only when the query supports it, and this time the query says no.
+
+   WHAT IS TRUE AND IS RECORDED AS VOLUME RATHER THAN FORM: this is his third session in three
+   days, 3, 4 and 5 October, one session on each. Verified against every logged date: 2 October
+   has none, so the run is exactly three and not longer. ONE HONEST QUALIFIER ON IT, since two
+   of the three are not the same kind of thing: 3 October is tagged recreational and not
+   performance data, so three consecutive days on court is two performance sessions and one
+   casual hit.
+
+   No calendar event, no gym inference, DUPR stays 3.226. Guard state.meta.mig469_pk1005, end of
+   chain, SEED_VERSION stays 13. */
+try{ if(profile==="ian" && state.meta && !state.meta.mig469_pk1005 && state.pickleball){
+    var _P69=state.pickleball;
+    if(!Array.isArray(_P69.sessions)) _P69.sessions=[];
+    var _dup69=false;
+    _P69.sessions.forEach(function(s){ if(s&&(s.id==="pk-20261005-am"||s.date==="2026-10-05")) _dup69=true; });
+    if(!_dup69){
+      _P69.sessions.push({
+        id:"pk-20261005-am", date:"2026-10-05", kind:"Drilling and open play", venue:"Omaha",
+        duration:"1h 33m 16s", window:"7:05 to 8:38 AM, Omaha",
+        calories:956, activeCalories:810, avgHr:123, maxHr:149, minHr:88,
+        effort:8, effortLabel:"Hard", effortSource:"His own rating",
+        effortNote:"EFFORT 8 IS HIS OWN RATING, how hard he tried and how well he played, defined 14.09.2026. It is NOT an exertion figure and it is NOT reconciled against the 123 average heart rate.",
+        performanceData:true,
+        blocks:[
+          {label:"Drilling", detail:"the first 45 minutes, three skills"},
+          {label:"Open play", detail:"the remainder, against a mid to high 3.0 field by his own read",
+           competitive:false,
+           detailNote:"SOCIAL RATHER THAN COMPETITIVE. His words: more fun than super competitive. It is NOT a competitive result and must not be read as one. No score, no win and loss, no opponents recorded."}
+        ],
+        skillsWorked:["Dinks","Resets","Topspin volleys"],
+        drills:[
+          {skill:"Dinks", minutes:25, minutesExact:true,
+           detail:"The first 25 minutes of the drilling block, and the only one of the three with its own stated time."},
+          {skill:"Resets", minutes:null, sharedBlockMinutes:20, sharedWith:["Topspin volleys"],
+           detail:"Shared the remaining 20 or so minutes with topspin volleys. HE DID NOT SPLIT THAT TIME between the two, so no per skill figure is stored and none is estimated."},
+          {skill:"Topspin volleys", minutes:null, sharedBlockMinutes:20, sharedWith:["Resets"],
+           detail:"Shared the remaining 20 or so minutes with resets. HE DID NOT SPLIT THAT TIME between the two, so no per skill figure is stored and none is estimated."}
+        ],
+        drillBlock:{totalMinutes:45, statedAs:"45 minutes of drilling", breakdown:"25 minutes dinks, then resets and topspin volleys across the remaining 20 or so."},
+        opposition:{ hisWords:"mid to high 3.0s",
+          source:"Ian's own read on the day, and it describes the OPEN PLAY half only.",
+          numericBand:null,
+          bandNote:"NO NUMERIC BAND IS STORED. His phrase does not convert to figures without inventing precision he did not give, and nothing about his own level is derived from it." },
+        approximations:"THE MAX AND MIN WERE GIVEN AS APPROXIMATE: max about 149, min about 88. Stored as given. The 1:33:16 duration and the 7:05 to 8:38 AM window are the measured figures.",
+        records:"NO SUPERLATIVE CLAIMED, AND THE HISTORY WAS QUERIED BEFORE SAYING SO. Duration, calories, average and max heart rate all sit inside the record. For reference: longest is 5:13:59 at the APC on 23 August, highest average heart rate 143 on 27 July, highest max 184 on 27 July, highest active calories 2,782 at the APC.",
+        dayNote:"THIRD SESSION IN THREE DAYS, 3, 4 and 5 October, one session on each day. Verified against every logged session date: 2 October has none, so the run is exactly three. QUALIFIER: 3 October is tagged recreational and not performance data, so the three days are two performance sessions and one casual hit.",
+        result:"", score:"", opponent:"", copyOwned:true
+      });
+      _P69.sessions.sort(function(a,z){ return String(a.date).localeCompare(String(z.date)); });
+    }
+    state.meta.mig469_pk1005=true; save(true);
+} }catch(e){ try{ console.warn("mig469 did not apply:",e&&e.message); }catch(_){} }
 
   /* build 372: LAST THING BEFORE THE SAVE. Every migration above has run, deepMergeDefaults
      has run, so this is the only point in the file where the state is actually final. */
