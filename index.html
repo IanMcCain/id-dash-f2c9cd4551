@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 469 (2026-10-05)">
+<meta name="build" content="v21 build 470 (2026-10-05)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -23098,6 +23098,205 @@ try{ if(profile==="ian" && state.meta && !state.meta.mig469_pk1005 && state.pick
     }
     state.meta.mig469_pk1005=true; save(true);
 } }catch(e){ try{ console.warn("mig469 did not apply:",e&&e.message); }catch(_){} }
+
+/* ===== v21 build 470: THE 5 OCTOBER AUDIT. WRONG FACTS AND STALE DATES, CORRECTED. =====
+   APP-22, 05.10.2026. Nine corrections, every one checked against the parsed data before it
+   was written. NOTHING IS DELETED: every superseded string is copied verbatim to
+   state.archive.audit470 with its path and the reason before it is replaced.
+
+   1. HERNANDEZ IS $450,000 FLAT. The record carried $420,000 and a priceNote band of
+      "low 400s, most likely $420,000 to $430,000" from 24.09.2026. Ian has since given one
+      number, so the band comes off and a single figure goes on. He is a Prospect, so this
+      moves the prospect group total and touches neither bar: reGoalsCard counts Closed and
+      Under Contract only.
+
+   2. BELKNAP LISTS 15 OCTOBER 2026. Four surfaces carried "the 8th or the 15th, leaning the
+      8th, not confirmed" and the content slate was deliberately gated on the EARLIER of the
+      two. All of them move together, because the whole point of that wording was that the
+      date was open and it is not open any more. THE STAGING IS FLAGGED, NOT CHANGED: it ran
+      3 and 4 October, which is now eleven days ahead of the list date rather than four, and
+      nobody has said whether that is a problem. Recorded as an open question, not resolved.
+
+   3. THE DUPR CORRECTION LINE SAID THE RATING WAS CORRECTED UPWARD FROM ITSELF.
+      "First DUPR 3.226, corrected upward from 3.226" is in pickleball.goals, and it is a
+      blanket .split("3.115").join("3.226") in the build 346 chain hitting a string that
+      already carried the before-figure. The before-figure is 3.115 and it is still correct
+      everywhere else: pickleball.dupr[0].correction and .supersedes both read 3.115.
+
+   4. 1 SEPTEMBER WAS 6h04m, NOT 6h03m. The 29 September dayNote ranks the day fourth and the
+      ranking is RIGHT: parsed across all 72 sessions the four biggest days are 1 September
+      6h04m24s, the APC 5h13m59s, 3 September 4h24m12s, then 29 September 4h10m44s. Only the
+      quoted figure for 1 September is wrong, and the same record says 6h04m24s elsewhere.
+
+   5. THE 30 SEPTEMBER HEART RATE CLAIM HAS BEEN OVERTAKEN. It said 118 was his lowest since
+      25 September and listed every session after the 25th to prove it. 3 October then came in
+      at 111. A "lowest since" claim that names its own window goes stale the moment a lower
+      one lands, so it is rebounded to the window it was actually true for and the newer
+      figure is named.
+
+   6. THE THEOBALD TODO STILL COUNTS DOWN TO 15 SEPTEMBER. "The 15 September list target is
+      16 days out" was written 30.08.2026 and that date is three weeks past. The deal record
+      says "No updates since 4 September 2026". The todo is kept, the dead countdown comes off.
+
+   7. THE OPEN HOUSE RUNWAY SAID TWO MORE WEEKENDS. Set 29.09.2026 against an off market date
+      of about 11 October. One weekend has since passed, so at the outside there is ONE left,
+      10 and 11 October, and it is the same weekend the house is expected to come off market.
+
+   8. THE EVENTS LIST IS EMPTY FROM TODAY TO 13 NOVEMBER while three listings go live in eight
+      days. The three list days are already confirmed facts on their own deal records, so the
+      events are not new information, they are the same facts on the surface that shows dates.
+      Title and date only, one short note each, no prep blocks and nothing inferred.
+
+   Guard state.meta.mig470_audit, end of chain, SEED_VERSION stays 13. Content guarded per item
+   on the exact superseded string, so a profile that never carried one is left alone and a
+   profile that did is fixed exactly once. */
+try{ if(profile==="ian" && state.meta && !state.meta.mig470_audit){
+    if(!state.archive||typeof state.archive!=="object") state.archive={};
+    if(!state.archive.audit470) state.archive.audit470={ changedOn:"2026-10-05", lane:"APP-22",
+      why:"Full data audit. Every string below was rendering something false, self contradictory, or counting down to a date that has passed. Originals kept verbatim so any of them can be read back.",
+      strings:[], added:[] };
+    var _A70=state.archive.audit470;
+    function _keep70(path,before){ _A70.strings.push({path:path,before:before}); }
+
+    var _RE70=state.realEstate||{};
+    var _dealBy70=function(id){ var t=null; (_RE70.deals||[]).forEach(function(d){ if(d&&d.id===id) t=d; }); return t; };
+
+    /* ---- 1. HERNANDEZ, $450,000 FLAT ---- */
+    var _hz=_dealBy70("re-hernandez-sell");
+    if(_hz && String(_hz.price||"")==="$420,000"){
+      _keep70("realEstate.deals[re-hernandez-sell].price", String(_hz.price||""));
+      _hz.price="$450,000";
+    }
+    if(_hz && String(_hz.priceNote||"").indexOf("BAND ONLY")===0){
+      _keep70("realEstate.deals[re-hernandez-sell].priceNote", String(_hz.priceNote||""));
+      _hz.priceNote="$450,000 FLAT, one figure rather than a band, 05.10.2026. THIS SUPERSEDES the band the record carried from 24.09.2026, which read low 400s, most likely $420,000 to $430,000, and the $420,000 the price field showed. The new number is $30,000 above the top of that band, so nothing about the old reasoning survives it. THE CMA IS STILL THIN AND IS STILL NOT A CURRENT VALUATION: the one on file was run about six months ago and Ian calls it quick and small, so it must not be presented as the basis for this list price either. STILL NO CLOSE DATE AND STILL NO ADDRESS. The iffy flag, the year of hesitation and the two deal ceiling are all unchanged, and he is a Prospect, so this figure counts toward neither 2026 bar.";
+    }
+
+    /* ---- 2. BELKNAP LISTS 15 OCTOBER ---- */
+    var _bk=_dealBy70("re-belknap-sell");
+    if(_bk){
+      if(String(_bk.close||"").indexOf("8 or 15 October")>-1){
+        _keep70("realEstate.deals[re-belknap-sell].close", String(_bk.close||""));
+        _bk.close="Lists 15 October 2026";
+      }
+      if(_bk.listDateConfirmed!==true && String(_bk.listDateNote||"").indexOf("THE 8TH OR THE 15TH")>-1){
+        _keep70("realEstate.deals[re-belknap-sell].listDateNote", String(_bk.listDateNote||""));
+        _bk.listDateConfirmed=true;
+        _bk.listDateNote="15 OCTOBER 2026, CONFIRMED 05.10.2026. This settles the open date: the record read \"the 8th or the 15th, originally leaning the 8th, NOT confirmed\" from 29.09.2026, and the lean lost. ALL THREE LIST INSIDE ONE WEEK, 8 to 15 October 2026: Mattox the 8th, Belknap the 15th, Vogel the 15th. TWO OF THE THREE NOW GO LIVE ON THE SAME DAY, which the earlier wording never had to account for.";
+      }
+      if(String(_bk.sub||"").indexOf("no date")>-1){
+        _keep70("realEstate.deals[re-belknap-sell].sub", String(_bk.sub||""));
+        _bk.sub="Sell side, 4946 Pratt St. Lists 15 October";
+      }
+      if(String(_bk.stagingNote||"").indexOf("STAGING RAN ELEVEN DAYS AHEAD")<0){
+        _keep70("realEstate.deals[re-belknap-sell].stagingNote", String(_bk.stagingNote||""));
+        _bk.stagingNote=String(_bk.stagingNote||"")+" STAGING RAN ELEVEN DAYS AHEAD OF THE LIST DATE, AND THAT IS FLAGGED RATHER THAN FIXED. Staging happened 3 and 4 October, booked when the lean was the 8th. The list date is now the 15th, so the house has been staged eleven days before go live instead of four. Nobody has said whether photos already ran, whether the staging holds that long, or whether it needs a touch up before the shoot. QUESTION FOR IAN, not an assumption: nothing here has been rescheduled and no photo date has been invented.";
+      }
+    }
+
+    /* The Belknap date appears on three other records' shared week line and on the slate. */
+    var _WK70bad="Belknap the 8th or the 15th";
+    var _WK70good="Belknap the 15th";
+    ["re-mattox-sell","re-vogel-sell","re-belknap-sell"].forEach(function(id){
+      var d=_dealBy70(id); if(!d) return;
+      ["weekNote","listDateNote"].forEach(function(f){
+        var cur=String(d[f]||"");
+        if(cur.indexOf(_WK70bad)<0) return;
+        _keep70("realEstate.deals["+id+"]."+f, cur);
+        d[f]=cur.split(_WK70bad).join(_WK70good)
+                .split("Three launches in eight days.").join("Three launches in eight days, two of them on the same day.");
+      });
+    });
+    (((_RE70.contentSlate||{}).items)||[]).forEach(function(it){
+      if(!it||it.id!=="cs-home-belknap") return;
+      if(String(it.gatedOn||"").indexOf("8 or 15 October")>-1){
+        _keep70("realEstate.contentSlate.items[cs-home-belknap].gatedOn", String(it.gatedOn||""));
+        it.gatedOn="Lists 15 October 2026";
+      }
+      if(String(it.dueBy||"")==="2026-10-08"){
+        _keep70("realEstate.contentSlate.items[cs-home-belknap].dueBy", String(it.dueBy||""));
+        it.dueBy="2026-10-15";
+      }
+      if(String(it.note||"").indexOf("earlier of the two possible dates")>-1){
+        _keep70("realEstate.contentSlate.items[cs-home-belknap].note", String(it.note||""));
+        it.note="Due by the list date, now settled as 15 October. The earlier 8 October due date existed only because the list date was open and it was gated on the earlier of the two.";
+      }
+    });
+
+    /* ---- 3. THE DUPR CORRECTION LINE ---- */
+    var _P70=state.pickleball||{};
+    (_P70.goals||[]).forEach(function(g){
+      if(!g||typeof g.text!=="string") return;
+      if(g.text.indexOf("corrected upward from 3.226")<0) return;
+      _keep70("pickleball.goals["+(g.id||"?")+"].text", g.text);
+      g.text=g.text.split("corrected upward from 3.226").join("corrected upward from 3.115");
+    });
+
+    /* ---- 4 and 5. TWO SESSION STRINGS ---- */
+    var _FIX70=[
+      {id:"pk-20260929-pm", f:"dayNote",
+       bad:"behind 1 September at 6h03m",
+       good:"behind 1 September at 6h04m"},
+      {id:"pk-20260930-am", f:"heartRateNote",
+       bad:"118 AVERAGE IS HIS LOWEST SINCE 25 SEPTEMBER, lower than every session after that date: 137 on the 28th, 141 and 132 on the 29th. The 25th itself was 113, which is lower, so this is a 'since' and not a 'lowest recently'.",
+       good:"118 AVERAGE WAS THE LOWEST OF THE 25 TO 30 SEPTEMBER BLOCK, below 137 on the 28th and 141 and 132 on the 29th. THE CLAIM HAS SINCE BEEN OVERTAKEN AND IS BOUNDED TO THAT WINDOW: 3 October came in at 111, which is lower, so this is not his lowest since the 25th any more. The 25th itself was 113, also lower, which is why this was a 'since' and never a 'lowest'."}
+    ];
+    _FIX70.forEach(function(fx){
+      var t=null; (_P70.sessions||[]).forEach(function(s){ if(s&&s.id===fx.id) t=s; });
+      if(!t) return;
+      var cur=String(t[fx.f]||"");
+      if(cur.indexOf(fx.bad)<0) return;
+      _keep70("pickleball.sessions["+fx.id+"]."+fx.f, cur);
+      t[fx.f]=cur.split(fx.bad).join(fx.good);
+    });
+
+    /* ---- 6. THE THEOBALD TODO ---- */
+    (_RE70.todos||[]).forEach(function(t){
+      if(!t||t.id!=="ret-20260830-theobald-walk") return;
+      if(String(t.text||"").indexOf("16 days out")>-1){
+        _keep70("realEstate.todos[ret-20260830-theobald-walk].text", String(t.text||""));
+        t.text="Book the Theobald walkthrough at 5014 S 163 St. Nobody has been inside and the pre inspection has to be booked off the back of it. Chris's client, $324,900 recommended. THE 15 SEPTEMBER LIST TARGET THIS WAS WRITTEN AGAINST HAS PASSED and the deal record reads \"no updates since 4 September 2026\", so there is no live date to work back from.";
+      }
+      if(String(t.src||"").indexOf("15 September list target")>-1){
+        _keep70("realEstate.todos[ret-20260830-theobald-walk].src", String(t.src||""));
+        t.src="Real Estate master context, Theobald walkthrough still unscheduled, and the pre inspection policy which applies to pre live listings only. The 15 September list target this was created against is now past.";
+      }
+    });
+
+    /* ---- 7. THE OPEN HOUSE RUNWAY ---- */
+    var _OH70=_RE70.openHouseCommitment;
+    if(_OH70 && String(_OH70.runwayNote||"").indexOf("AT MOST TWO MORE WEEKENDS")>-1){
+      _keep70("realEstate.openHouseCommitment.runwayNote", String(_OH70.runwayNote||""));
+      _OH70.runwayNote="AT MOST ONE MORE WEEKEND, 10 and 11 October. This read \"two more weekends\" when it was set on 29.09.2026 and one of the two has since passed. The off market date is roughly 11 October, which is the Sunday of that same weekend, so the last open house and the end of the commitment land together. That is the number to weigh the Stephanie arrangement against, and it is now small enough that the arrangement may not be worth setting up at all.";
+    }
+    if(_OH70 && _OH70.thisWeekend && String(_OH70.thisWeekend.note||"").indexOf("WEEKEND OF 3 AND 4 OCTOBER")<0){
+      _keep70("realEstate.openHouseCommitment.thisWeekend.note", String(_OH70.thisWeekend.note||""));
+      _OH70.thisWeekend.note="THIS SPLIT WAS THE WEEKEND OF 3 AND 4 OCTOBER AND IT IS NOW PAST. It is kept as the record of that weekend, not as a plan. Nothing is assigned for 10 and 11 October.";
+    }
+
+    /* ---- 8. THE THREE LIST DAYS ON THE EVENTS SURFACE ---- */
+    if(!Array.isArray(state.events)) state.events=[];
+    var _EV70=[
+      {id:"ev-20261008-mattox-live", date:"2026-10-08", kind:"Real estate",
+       title:"Mattox listing goes live, 19859 Burke St, $479,900",
+       note:"Confirmed by Ian at the 28.09.2026 meeting. Staging ran 3 and 4 October, photos 5 October."},
+      {id:"ev-20261015-belknap-live", date:"2026-10-15", kind:"Real estate",
+       title:"Belknap listing goes live, 4946 Pratt St, $249,900",
+       note:"Settled 05.10.2026, moved off the 8th. Staging ran 3 and 4 October, eleven days ahead, and no photo date is on record."},
+      {id:"ev-20261015-vogel-live", date:"2026-10-15", kind:"Real estate",
+       title:"Vogel listing goes live, 5621 Pine St, $329,900",
+       note:"Firm, Ian 29.09.2026. The possible leak is still unconfirmed and the price is still flagged for revisit until it is identified."}
+    ];
+    _EV70.forEach(function(ev){
+      var dup=false;
+      state.events.forEach(function(e){ if(e&&e.id===ev.id) dup=true; });
+      if(dup) return;
+      state.events.push(ev);
+      _A70.added.push({path:"events["+ev.id+"]", what:ev.title});
+    });
+
+    state.meta.mig470_audit=true; save(true);
+} }catch(e){ try{ console.warn("mig470 did not apply:",e&&e.message); }catch(_){} }
 
   /* build 372: LAST THING BEFORE THE SAVE. Every migration above has run, deepMergeDefaults
      has run, so this is the only point in the file where the state is actually final. */
