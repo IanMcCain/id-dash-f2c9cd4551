@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 470 (2026-10-05)">
+<meta name="build" content="v21 build 471 (2026-10-06)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -23297,6 +23297,127 @@ try{ if(profile==="ian" && state.meta && !state.meta.mig470_audit){
 
     state.meta.mig470_audit=true; save(true);
 } }catch(e){ try{ console.warn("mig470 did not apply:",e&&e.message); }catch(_){} }
+
+/* ===== v21 build 471: TUESDAY 6 OCTOBER, A DOUBLE, AND A FOLLOW THROUGH NOTE ===========
+   TWO SESSIONS ON ONE DAY. Neither was already logged: nothing carried date 2026-10-06 and no id
+   matched pk-20261006.
+
+   MORNING, 7:16 to 8:59 AM, 1:43:06. 786 active calories and 947 total, average heart rate 117,
+   max about 153, min about 76. Effort 8 "Hard", HIS OWN RATING. Drilling the whole time with
+   Israel, no open play: dinks, drives and skinny singles, stored as three named blocks with NO
+   MINUTE SPLIT, because he did not give one and a 34 / 34 / 35 would be invented data.
+
+   EVENING, 4:27 to 6:09 PM, 1:41:43. 913 active calories and 1,072 total, average heart rate 126,
+   max about 159, min about 95. Effort 9 "All Out", HIS OWN RATING. Four blocks IN ORDER, because
+   the order is the point: the singles match came first, before anything else.
+
+   THE SINGLES MATCH IS TAGGED AS A BASELINE, NOT AS CASUAL PLAY. Against a 3.0 player, first
+   thing. His words: surprisingly good at singles, worse at doubles. He is treating it as a read on
+   where he is, so it carries kind "baseline" and benchmark:true rather than sitting in the open
+   play pile.
+
+   THE COACHING NOTE IS THE REASON THIS BUILD MATTERS, and it is NOT buried in a description.
+   His partner in the third block, a 4.5, told him: "He's pretty good and has all the shots, but on
+   his hits he doesn't carry through all the way." Stored VERBATIM in a new queryable array,
+   state.pickleball.coachingNotes, as well as on the session, so film study and training planning
+   find it without reading session prose. He applied it immediately and his read of the games after
+   it is that he played extremely well.
+
+   ONE CORRECTION TO HOW THAT NOTE WAS DESCRIBED, AND IT IS WRITTEN INTO THE RECORD RATHER THAN
+   LEFT IN A MESSAGE. It is NOT the first outside coaching input from a rated player above him.
+   10 September was an hour of drilling with a 4.5 who changed his drop, and 28 September was a
+   paid standard private class with Esteban Celis at 6.3 DUPR. Both precede this. What is true and
+   is recorded instead, with no superlative attached: this is coaching from a PARTNER MID MATCH
+   that he applied inside the same session.
+
+   NO SUPERLATIVE IS CLAIMED ON ANY FIGURE, and all three candidates were queried first.
+   EFFORT 9 is not a first and not a record: three sessions carry 10 and fourteen already carry 9.
+   1,072 CALORIES is not a record: 41 sessions are higher, the top being 3,273 at the APC.
+   TWO SESSIONS IN A DAY is not a first: eight days already carry two, most recently 29 September.
+   Nothing here is written as a record because nothing here is one.
+
+   BOTH COUNT AS PERFORMANCE DATA. EFFORT IS HIS RATING of how hard he tried and how well he
+   played, defined 14.09.2026, and it is NOT reconciled against the 117 or the 126.
+
+   No calendar event, no gym inference, DUPR stays 3.226, and no rating is derived from any
+   opponent level. Guard state.meta.mig471_pk1006, end of chain, SEED_VERSION stays 13. */
+try{ if(profile==="ian" && state.meta && !state.meta.mig471_pk1006 && state.pickleball){
+    var _P71=state.pickleball;
+    if(!Array.isArray(_P71.sessions)) _P71.sessions=[];
+    var _has71=function(id){ var f=false; _P71.sessions.forEach(function(s){ if(s&&s.id===id) f=true; }); return f; };
+    if(!_has71("pk-20261006-am")){
+      _P71.sessions.push({
+        id:"pk-20261006-am", date:"2026-10-06", kind:"Drilling only", venue:"Omaha",
+        duration:"1h 43m 06s", window:"7:16 to 8:59 AM, Omaha",
+        calories:947, activeCalories:786, avgHr:117, maxHr:153, minHr:76,
+        effort:8, effortLabel:"Hard", effortSource:"His own rating",
+        effortNote:"HIS OWN RATING, how hard he tried and how well he played, defined 14.09.2026. NOT an exertion figure and NOT reconciled against the 117 average.",
+        performanceData:true, drillOnly:true, withWhom:"Israel",
+        skillsWorked:["Dinks","Drives","Skinny singles"],
+        drills:[
+          {skill:"Dinks", minutes:null, detail:"One of three drill blocks. NO MINUTE SPLIT was given for any of them."},
+          {skill:"Drives", minutes:null, detail:"One of three drill blocks. NO MINUTE SPLIT was given for any of them."},
+          {skill:"Skinny singles", minutes:null, detail:"One of three drill blocks. NO MINUTE SPLIT was given for any of them.",
+           recordNote:"SKINNY SINGLES IS TWO PEOPLE, his own correction of 30 September: doubles practice with only two players, not one a side."}
+        ],
+        drillBlock:{totalMinutes:103, statedAs:"Drilling the entire session, no open play",
+          breakdown:"Dinks, drives and skinny singles. HE DID NOT SPLIT THE TIME between the three and no split is estimated."},
+        blocks:[{label:"Drilling", detail:"the whole session, three skills, with Israel"}],
+        approximations:"MAX AND MIN WERE GIVEN AS APPROXIMATE: max about 153, min about 76. The 1:43:06 duration and the 7:16 to 8:59 AM window are the measured figures.",
+        records:"NO SUPERLATIVE CLAIMED. Checked: duration, calories, average and max heart rate all sit inside the record.",
+        result:"", score:"", opponent:"", copyOwned:true
+      });
+    }
+    if(!_has71("pk-20261006-pm")){
+      _P71.sessions.push({
+        id:"pk-20261006-pm", date:"2026-10-06", kind:"Singles baseline, open play and games", venue:"Omaha",
+        duration:"1h 41m 43s", window:"4:27 to 6:09 PM, Omaha",
+        calories:1072, activeCalories:913, avgHr:126, maxHr:159, minHr:95,
+        effort:9, effortLabel:"All Out", effortSource:"His own rating",
+        effortNote:"HIS OWN RATING, how hard he tried and how well he played, defined 14.09.2026. NOT an exertion figure and NOT reconciled against the 126 average.",
+        performanceData:true,
+        blocks:[
+          {order:1, label:"Singles match against a 3.0 player", kind:"baseline", benchmark:true,
+           detail:"FIRST THING, before anything else, and that order is deliberate.",
+           hisWords:"Surprisingly good at singles, worse at doubles.",
+           handling:"HE IS TREATING THIS AS A BASELINE READ on where he is at, so it is tagged as a benchmark and NOT as casual play. No rating is derived from it and the 3.0 opponent level is his own read."},
+          {order:2, label:"Open play", detail:"With new players. HIS OWN READ: the first half was weak.", competitive:true},
+          {order:3, label:"A game with a 4.0, a 4.5 and Israel", detail:"THE 4.5 WAS HIS PARTNER. This is the block the coaching note comes from.", competitive:true},
+          {order:4, label:"2 to 3 games against 3.0 to 3.6 players", detail:"After the coaching, applying it. HIS READ: he played extremely well.", competitive:true}
+        ],
+        coaching:{
+          from:"His partner in block 3, a 4.5 rated player",
+          verbatim:"He's pretty good and has all the shots, but on his hits he doesn't carry through all the way.",
+          fault:"FOLLOW THROUGH. He is cutting the stroke short rather than carrying it all the way through the ball.",
+          applied:"Applied immediately in the 2 to 3 games that followed, against 3.0 to 3.6 players. His read of those games: he played extremely well.",
+          notAFirst:"NOT the first outside coaching from a rated player above him. 10 September was an hour of drilling with a 4.5 who changed his drop, and 28 September was a private class with Esteban Celis at 6.3 DUPR. What is true, with no superlative attached: this is coaching from a PARTNER MID MATCH that he applied inside the same session.",
+          possibleLink:"POSSIBLE, NOT PROVEN. The knowledge base already carries weight transferring FORWARD through the ball, and the standing root fault that he plays tall and arrives late. A cut off follow through is consistent with both. Recorded as a line worth testing on film, not as a confirmed mechanism.",
+          nextStep:"Check it on the next film study before treating it as fixed. One partner's read on one evening is a lead, not a finding."
+        },
+        approximations:"MAX AND MIN WERE GIVEN AS APPROXIMATE: max about 159, min about 95. The 1:41:43 duration and the 4:27 to 6:09 PM window are the measured figures.",
+        records:"NO SUPERLATIVE CLAIMED, AND THE THREE CANDIDATES WERE QUERIED. Effort 9 is not a first or a record: three sessions carry 10 and fourteen already carry 9. The 1,072 calories are beaten by 41 sessions, the top being 3,273 at the APC on 23 August. Two sessions in one day is not a first: eight days already carry two, most recently 29 September.",
+        dayNote:"SECOND SESSION OF 6 OCTOBER. The day runs 1:43:06 in the morning and 1:41:43 in the evening, 3:24:49 on court. This is the FOURTH consecutive day on court, 3, 4, 5 and 6 October, verified against every logged date: 2 October has none, so the run is exactly four.",
+        result:"", score:"", opponent:"", copyOwned:true
+      });
+    }
+    _P71.sessions.sort(function(a,z){ return String(a.date).localeCompare(String(z.date)); });
+    /* THE COACHING NOTE GETS ITS OWN QUERYABLE HOME so film study and training planning find it
+       without reading session prose. Idempotent on id. */
+    if(!Array.isArray(_P71.coachingNotes)) _P71.coachingNotes=[];
+    var _cn=false; _P71.coachingNotes.forEach(function(n){ if(n&&n.id==="cn-20261006-followthrough") _cn=true; });
+    if(!_cn){
+      _P71.coachingNotes.push({
+        id:"cn-20261006-followthrough", date:"2026-10-06", sessionId:"pk-20261006-pm",
+        topic:"Follow through", status:"OPEN, unverified on film",
+        from:"A 4.5 rated player who partnered him that evening",
+        verbatim:"He's pretty good and has all the shots, but on his hits he doesn't carry through all the way.",
+        readAs:"He has the shots. The fault is that he cuts the stroke short instead of carrying it all the way through the ball.",
+        applied:"Applied the same evening, in the 2 to 3 games after it. His read: he played extremely well.",
+        checkNext:"TEST IT ON FILM before treating it as established, and look for it specifically on drives and drops."
+      });
+    }
+    state.meta.mig471_pk1006=true; save(true);
+} }catch(e){ try{ console.warn("mig471 did not apply:",e&&e.message); }catch(_){} }
 
   /* build 372: LAST THING BEFORE THE SAVE. Every migration above has run, deepMergeDefaults
      has run, so this is the only point in the file where the state is actually final. */
