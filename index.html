@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 475 (2026-10-07)">
+<meta name="build" content="v21 build 476 (2026-10-07)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -23885,6 +23885,126 @@ try{ if(profile==="ian" && state.meta && !state.meta.mig475_pipeline1007 && stat
     state.meta.mig475_pipeline1007=true; save(true);
     try{ console.log("mig475: pipeline updated, rose creek retired, deals now "+(_R5.deals||[]).length); }catch(_){}
 } }catch(e){ try{ console.warn("mig475 did not apply:",e&&e.message); }catch(_){} }
+
+/* ===== v21 build 476: WEDNESDAY 7 OCTOBER, AND THE MONEY SURFACES RECONCILED ==========
+   TWO JOBS IN ONE BUILD.
+
+   ONE. THE SESSION. 7:12 to 9:21 AM, 2:08:37. 1,097 active calories and 1,298 total, average
+   heart rate 123, max about 174, min about 67. Effort 8 "Hard", his own rating. Two blocks in
+   order: dinks and similar drills, which HE WAS EXPLICIT WERE MORE WARM UP THAN REAL DRILLING and
+   are tagged that way, then open play against high 3s, 3.7 to 3.9 by his own read.
+
+   HIS SELF ASSESSMENT IS STORED VERBATIM: "I kept up very well, I wasn't as consistent as they
+   were but I had my pros over them as well."
+
+   IT IS NOT HIS FIRST TIME DESCRIBING THAT, AND THE RECORD SAYS SO RATHER THAN LETTING A FIRST
+   STAND. 8 September already reads "Open play throughout against DUPR 3.6 to 3.9 players, and you
+   kept up", which is THE SAME BAND, and 19 August records him and Dylan keeping up against a 4.25
+   to 5.5 field. WHAT IS ACTUALLY INTERESTING IS THAT IT IS A REPEAT: two reports a month apart at
+   the identical 3.7 to 3.9 band. That is recorded as a repeat and NOT as proof of anything, since
+   both are self report with no footage.
+
+   THE CONSISTENCY VERSUS STRENGTHS FRAMING IS HIS OWN DIAGNOSIS and it goes in coachingNotes
+   beside the 4.5's follow through note, MARKED AS SELF SOURCED so the two are never read as two
+   outside opinions. It also lines up with the standing record, where consistency has been his own
+   stated weak point on many sessions, and that is noted as consistent rather than as new.
+
+   NOTHING IS CLAIMED AS A RECORD AND ALL THREE CANDIDATES WERE QUERIED FIRST.
+     2:08:37 is NOT a record: 25 sessions are longer, the longest 5:13:59 at the APC.
+     1,097 active calories is NOT a record: 30 sessions are higher, the highest 2,782 at the APC.
+     A 174 max is NOT a record: ten sessions reach 174 or above, led by 184 on 27 July, and 174
+     exactly ties 9 August.
+   Eleven false superlatives have been caught on this file. Nothing here adds a twelfth.
+
+   VOLUME FACTS, VERIFIED AGAINST EVERY LOGGED DATE. FIFTH CONSECUTIVE DAY ON COURT, 3, 4, 5, 6
+   and 7 October, with 2 October empty so the run is exactly five. WEEK TO DATE from Monday 5
+   October: 7 hours 6 minutes 42 seconds across four sessions.
+
+   TWO. THE MONEY SURFACES DISAGREED AND NOW THEY DO NOT. The audit found exactly one real
+   inconsistency, and it was ours from last night.
+     THE WILLIS CARD'S yearEnd BLOCK, written in build 474, still carried the TWO DEAL view: mid
+     January about $305 without Methodist and about minus $2,253 with it, on Willis plus Mattox
+     alone. realEstate.positionAsOf, written in build 475, carries the FOUR DEAL view at about
+     $2,789 and about $231. Both were correct when written and they read as a contradiction now.
+     The Willis block is marked SUPERSEDED and pointed at positionAsOf, with its own figures kept
+     and labelled as the two deal view.
+     THE TROUGH WAS STATED TWO WAYS, roughly $510 on one surface and about $592 on the other.
+     BOTH WERE ARITHMETICALLY RIGHT AND THEY WERE MEASURED AT DIFFERENT INSTANTS, 6 November
+     against 5 November. Both now carry the same precise statement: about $963 at the centre burn
+     and about $509 at a $2,500 burn, measured IMMEDIATELY BEFORE the Willis money funds on 6
+     November, which is the low point.
+
+   EVERYTHING ELSE ON THE BOARD WAS CHECKED AGAINST WHAT WE HOLD AND WAS ALREADY CORRECT. Mattox
+   $464,900 listing 8 October, Willis Under Contract $610,000 closing about 6 November, Belknap
+   and Vogel 15 October, Hernandez Coming Soon 12 November at $450,000 with the basement at 780
+   and 840 and totals 2,996 and 3,056, Theobald $329,900, Rose Creek retired to futureTargets with
+   no probability, Spicer expected take home $0, Teske early to mid January. NO CHANGES WERE MADE
+   TO ANY OF THOSE, and that is recorded so the next lane does not re-verify them.
+
+   No weekday gym assertion is written anywhere in this build. Guard state.meta.mig476_pk1007,
+   end of chain, SEED_VERSION stays 13. */
+try{ if(profile==="ian" && state.meta && !state.meta.mig476_pk1007 && state.pickleball){
+    var _P6=state.pickleball;
+    if(!Array.isArray(_P6.sessions)) _P6.sessions=[];
+    var _dup6=false; _P6.sessions.forEach(function(x){ if(x&&(x.id==="pk-20261007-am"||x.date==="2026-10-07")) _dup6=true; });
+    if(!_dup6){
+      _P6.sessions.push({
+        id:"pk-20261007-am", date:"2026-10-07", kind:"Warm up drills and open play", venue:"Omaha",
+        duration:"2h 08m 37s", window:"7:12 to 9:21 AM, Omaha",
+        calories:1298, activeCalories:1097, avgHr:123, maxHr:174, minHr:67,
+        effort:8, effortLabel:"Hard", effortSource:"His own rating",
+        effortNote:"HIS OWN RATING, how hard he tried and how well he played, defined 14.09.2026. NOT an exertion figure and NOT reconciled against the 123 average.",
+        performanceData:true,
+        blocks:[
+          {order:1, label:"Dinks and similar drills", kind:"warmup",
+           detail:"HIS FRAMING AND IT IS KEPT: more warm up than real drilling. He was explicit about that, so this block is NOT counted as a drilling session."},
+          {order:2, label:"Open play against high 3s", competitive:true,
+           detail:"3.7 to 3.9 by his own read."}
+        ],
+        opposition:{ hisWords:"High 3s, 3.7 to 3.9",
+          source:"Ian's own read on the day. No rating is derived from it and DUPR stays 3.226, measured 23 August." },
+        selfAssessment:{ verbatim:"I kept up very well, I wasn't as consistent as they were but I had my pros over them as well.",
+          handling:"HIS WORDS, RECORDED AND NOT INTERPRETED INTO A RATING.",
+          notAFirst:"NOT the first time he has described keeping up with players above him. 8 September reads 'Open play throughout against DUPR 3.6 to 3.9 players, and you kept up', the SAME BAND, and 19 August records him and Dylan keeping up against a 4.25 to 5.5 field.",
+          whatIsNew:"THE REPEAT IS THE POINT: two reports a month apart at the identical 3.7 to 3.9 band. Recorded as a repeat, NOT as proof. Both are self report and neither has footage." },
+        approximations:"MAX AND MIN WERE GIVEN AS APPROXIMATE: max about 174, min about 67. The 2:08:37 duration and the 7:12 to 9:21 AM window are the measured figures.",
+        records:"NO SUPERLATIVE CLAIMED, AND ALL THREE CANDIDATES WERE QUERIED. 2:08:37 is not a record, 25 sessions are longer and the longest is 5:13:59 at the APC. 1,097 active calories is not a record, 30 sessions are higher and the highest is 2,782 at the APC. A 174 max is not a record, ten sessions reach 174 or above led by 184 on 27 July, and 174 exactly ties 9 August.",
+        dayNote:"FIFTH CONSECUTIVE DAY ON COURT, 3 to 7 October, verified against every logged date with 2 October empty so the run is exactly five. WEEK TO DATE from Monday 5 October: 7 hours 6 minutes 42 seconds across four sessions.",
+        result:"", score:"", opponent:"", copyOwned:true
+      });
+      _P6.sessions.sort(function(a,z){ return String(a.date).localeCompare(String(z.date)); });
+    }
+    if(!Array.isArray(_P6.coachingNotes)) _P6.coachingNotes=[];
+    var _cn6=false; _P6.coachingNotes.forEach(function(n){ if(n&&n.id==="cn-20261007-consistency") _cn6=true; });
+    if(!_cn6){
+      _P6.coachingNotes.push({
+        id:"cn-20261007-consistency", date:"2026-10-07", sessionId:"pk-20261007-am",
+        topic:"Consistency against his own strengths", status:"OPEN, self sourced, unverified on film",
+        from:"IAN HIMSELF. THIS IS A SELF DIAGNOSIS AND NOT AN OUTSIDE COACH. It sits beside the 4.5's follow through note and must never be counted as a second outside opinion.",
+        verbatim:"I kept up very well, I wasn't as consistent as they were but I had my pros over them as well.",
+        readAs:"Against a 3.7 to 3.9 field he reads the gap as CONSISTENCY, not as shot quality, and he reads parts of his own game as better than theirs.",
+        consistentWithRecord:"Consistency has been his own stated weak point across many sessions since 10 August, so this is consistent with the standing record rather than new.",
+        notAFirst:"8 September records the same thing at the same 3.6 to 3.9 band, and 19 August at 4.25 to 5.5.",
+        checkNext:"The one thing that would move this from self report to evidence is film against the written rubric, which exists and is free."
+      });
+    }
+    /* THE MONEY SURFACES. One real inconsistency, ours, from last night. */
+    var _W6=null; (state.realEstate.deals||[]).forEach(function(d){ if(d&&d.id==="re-cynthia-willis") _W6=d; });
+    if(_W6 && _W6.yearEnd){
+      _W6.yearEnd.supersededOn="2026-10-07, build 476";
+      _W6.yearEnd.supersededBy="realEstate.positionAsOf, which carries the FOUR DEAL view as at 7 October.";
+      _W6.yearEnd.midJanuary="SUPERSEDED. This block's figures, about $305 without Methodist and about minus $2,253 with it, are the TWO DEAL view on Willis plus Mattox alone and were correct when written on 6 October. THE CURRENT POSITION IS IN realEstate.positionAsOf: about $2,789 without Methodist and about $231 with it, because Belknap and Vogel now list 15 October and pay in the same window.";
+      _W6.yearEnd.verdict="TWO DEAL VIEW, KEPT FOR THE TRAIL. Willis plus Mattox is $4,400.85 post tax against $4,094, clearing by about $307. THE FOUR DEAL FIGURE, which is the current one, is $6,884.71 post tax across Willis, Mattox, Vogel and Belknap. See positionAsOf.";
+      _W6.yearEnd.trough="THE EARLY NOVEMBER TROUGH IS THE BINDING CONSTRAINT, NOT THE JANUARY POSITION. About $963 at the centre burn and about $509 at a $2,500 burn, measured IMMEDIATELY BEFORE the Willis money funds on 6 November, which is the low point. Positive at every burn tested, and thin. Nothing lands before it.";
+    }
+    if(state.realEstate && state.realEstate.positionAsOf){
+      state.realEstate.positionAsOf.trough="THE EARLY NOVEMBER TROUGH IS UNCHANGED AND STILL HOLDS. About $963 at the centre burn and about $509 at a $2,500 burn, measured IMMEDIATELY BEFORE the Willis money funds on 6 November, which is the low point. Nothing lands before Willis, so nothing in the pipeline update touches it.";
+      state.realEstate.positionAsOf.fourDealPostTax="$6,884.71 across Willis, Mattox, Vogel and Belknap, at the 30 percent set aside convention.";
+      state.realEstate.positionAsOf.auditedOn="2026-10-07, build 476. Every listing checked against what we hold. Mattox, Willis, Belknap, Vogel, Hernandez, Theobald, Teske, Spicer and the Rose Creek retirement were all already correct and were NOT changed. The only inconsistency found was between this block and the Willis yearEnd block, and it is now resolved in favour of this one.";
+    }
+    state.meta.mig476_pk1007=true; save(true);
+    try{ console.log("mig476: session added, coaching note added, money surfaces reconciled"); }catch(_){}
+} }catch(e){ try{ console.warn("mig476 did not apply:",e&&e.message); }catch(_){} }
 
   /* build 372: LAST THING BEFORE THE SAVE. Every migration above has run, deepMergeDefaults
      has run, so this is the only point in the file where the state is actually final. */
