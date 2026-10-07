@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 474 (2026-10-07)">
+<meta name="build" content="v21 build 475 (2026-10-07)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -23761,6 +23761,130 @@ try{ if(profile==="ian" && state.meta && !state.meta.mig474_willis_close && stat
       try{ console.log("mig474: willis close date and year end figures written"); }catch(_){}
     }
 } }catch(e){ try{ console.warn("mig474 did not apply:",e&&e.message); }catch(_){} }
+
+/* ===== v21 build 475: THE 7 OCTOBER PIPELINE UPDATE, AND BOTH ESTIMATES CHECKED ========
+   SEVEN STATUS CHANGES, ONE DEAL RETIRED, AND TWO OF IAN'S OWN NUMBERS TESTED AGAINST THE
+   APP'S OWN MODEL AT THE REAL PRICES AND THE CORRECT SPLIT PER DEAL.
+
+   STATUS. Mattox lists tomorrow, Thursday 8 October, $464,900. Belknap and Vogel both list
+   Thursday 15 October. Willis is under contract and closes about 6 November. Hernandez is Coming
+   Soon with a potential list date of 12 November at $450,000, and $455,000 is recorded as a
+   possible rather than as the number. Teske's home is likely done early to mid January.
+
+   ROSE CREEK IS RETIRED AS A DEAL. The two storey buyers backed out. Ian: she is not buying
+   existing and not building new, for a while. It is KEPT AS A FUTURE TARGET and NOT as a prospect
+   with a probability, because a probability on a deal nobody is pursuing is a number that will be
+   summed by something later. Archived in full, id pushed to meta.removedDealIds, and a
+   realEstate.futureTargets entry created to hold it. THIS REMOVES THE LARGEST SINGLE POST TAX
+   LINE ON THE BOARD, $2,934.11, from the weighted pipeline.
+
+   SPICER IS SET TO ZERO AND THE CARD SAYS WHY. Under contract, closing 13 November, $894,446, and
+   IAN IS 99 PERCENT CERTAIN HE GETS NOTHING FROM IT. ianSplit was already 0 so the model already
+   returned nothing; what was missing was the REASON, which is now on the card so no later reader
+   treats the zero as a gap to be filled in.
+
+   ESTIMATE ONE, HIS FOUR DEAL READ. "Over $5,000 after taxes" for Mattox, Belknap, Vogel and
+   Willis paying late November into early December. IT HOLDS, AND IT IS CONSERVATIVE.
+     Willis   $610,000 x 3.7% x 0.85 x 0.20 Chris's client = $3,836.90 gross, $2,685.83 post tax
+     Mattox   $464,900 x 3.1% x 0.85 x 0.20                = $2,450.02 gross, $1,715.02 post tax
+     Vogel    $329,900 x 3.6% x 0.85 x 0.20                = $2,018.99 gross, $1,413.29 post tax
+     Belknap  $249,900 x 3.6% x 0.85 x 0.20                = $1,529.39 gross, $1,070.57 post tax
+     TOTAL $9,835.30 gross, $6,884.71 POST TAX at his own 30 percent convention.
+   That is over $5,000 by about $1,885. WILLIS IS AT THE 0.20 CHRIS'S CLIENT SHARE, NOT 0.80, and
+   that is the single thing that would have inflated this if it had been got wrong.
+
+   ESTIMATE TWO, HERNANDEZ. HIS GROSS IS EXACTLY RIGHT AND HIS TAX FIGURE IS THE INTERESTING PART.
+     $450,000 x 3.6% = $16,200, less 15 percent brokerage = $13,770, x 80 percent own client
+     = $11,016.00. HIS NUMBER TO THE DOLLAR. At $455,000 it is $11,138.40.
+     THE TAX LINE DOES NOT MAP THE WAY THE BRIEF SAID. $9,000 net on $11,016 implies an effective
+     rate of 18.3 percent, NOT 12.5 percent. At 12.5 percent the answer is $9,639. At his 30
+     percent set aside it is $7,711.20. So his $9,000 sits BETWEEN the two and is not the 12.5
+     percent answer.
+     WHAT IS TRUE: his real bite is almost certainly below the 30 percent he sweeps, so the set
+     aside is holding more than the liability, and that difference is idle money.
+     WHAT IS WORTH CHECKING BEFORE ANYONE SPENDS IT, AND THIS IS NOT TAX ADVICE: self employment
+     tax alone runs 15.3 percent on 92.35 percent of net self employment income, about 14.1
+     percent effective, BEFORE any income tax. An all in 12.5 percent on a marginal commission
+     dollar is therefore hard to get to unless deductions offset it. The honest range on this
+     commission is roughly $7,700 to $9,600 and the tax guy settles it, not this app.
+
+   THE POSITION REBUILT. Same conventions as build 474: $4,287.55 spendable at 21 September,
+   $2,200 a month centre burn, post tax at 0.70, Methodist payment 2 of $2,557.50 still BELIEVED
+   and not confirmed.
+     THE EARLY NOVEMBER TROUGH IS UNCHANGED AND IT STILL HOLDS. About $963 at the centre burn on
+     5 to 6 November, about $592 at a $2,500 burn. NOTHING IN THIS UPDATE LANDS BEFORE WILLIS, so
+     nothing in it touches the trough. Three new listings do not help a trough that sits before
+     any of them can close.
+     AFTER THAT IT IS MATERIALLY BETTER THAN BUILD 474 SAID. With Willis about 6 November, Mattox
+     about 21 November, Belknap about 28 November and Vogel about 1 December, mid January lands at
+     about $2,789 without Methodist, against about $305 in the last build. With Methodist it is
+     about $231 at the centre burn and about minus $912 at a $2,500 burn.
+     HERNANDEZ IS 2027 AND STAYS OUT OF THE 2026 POSITION. If it lists 12 November and closes in
+     the ordinary way, roughly 20 January, it puts about $7,711 post tax in and the end of February
+     reads about $4,762 at the centre burn with Methodist paid.
+     TESKE IS OUTSIDE THE WINDOW TOO. Early to mid January is the FINISH, and commission is paid at
+     closing which follows it, so it is a late January or February item at the earliest and it
+     carries a 35 percent probability besides.
+
+   WHAT STILL BREAKS IT IS UNCHANGED: the VA appraisal on Willis, already recorded on that card.
+
+   No superlative is claimed. Guard state.meta.mig475_pipeline1007, end of chain, SEED stays 13. */
+try{ if(profile==="ian" && state.meta && !state.meta.mig475_pipeline1007 && state.realEstate){
+    var _R5=state.realEstate; var _d5=function(id){ var f=null; (_R5.deals||[]).forEach(function(d){ if(d&&d.id===id) f=d; }); return f; };
+    if(!state.archive||typeof state.archive!=="object") state.archive={};
+
+    var _mx=_d5("re-mattox-sell");
+    if(_mx){ _mx.close="Lists 8 October 2026"; _mx.listStatus="LISTS TOMORROW, Thursday 8 October 2026, at $464,900. Confirmed by Ian 07.10.2026."; }
+
+    var _bk=_d5("re-belknap-sell");
+    if(_bk){ _bk.close="Lists 15 October 2026"; _bk.listStatus="Lists Thursday 15 October 2026. Confirmed by Ian 07.10.2026."; }
+
+    var _vg=_d5("re-vogel-sell");
+    if(_vg){ _vg.close="Lists 15 October 2026"; _vg.listStatus="Lists Thursday 15 October 2026. Confirmed by Ian 07.10.2026."; }
+
+    var _hz=_d5("re-hernandez-sell");
+    if(_hz){ _hz.stage="Coming Soon"; _hz.close="Potential list date 12 November 2026";
+      _hz.priceOptions={ recommended:"$450,000", possible:"$455,000",
+        handling:"$455,000 IS RECORDED AS A POSSIBLE, NOT AS THE NUMBER. $450,000 remains the recommendation.",
+        grossAt450:"$11,016.00", grossAt455:"$11,138.40",
+        model:"Seller side 3.6 percent, less 15 percent brokerage, times 80 percent because this is Ian's own client." };
+      _hz.taxCheck="HIS GROSS IS EXACTLY RIGHT AT $11,016. HIS NET IS NOT THE 12.5 PERCENT ANSWER: $9,000 implies 18.3 percent, 12.5 percent gives $9,639 and his own 30 percent set aside gives $7,711.20. The real bite is very likely below 30 percent, so the sweep is holding more than the liability, but self employment tax alone is about 14.1 percent effective before any income tax, so 12.5 percent all in is hard to reach. Honest range $7,700 to $9,600. The tax guy settles it."; }
+
+    var _tk=_d5("re-teskes");
+    if(_tk){ _tk.close="Home likely done early to mid January 2027";
+      _tk.timingNote="EARLY TO MID JANUARY IS THE FINISH, NOT THE PAYDAY. Commission is paid at closing, which follows the finish, so this is late January or February at the earliest. It also still carries a 35 percent probability."; }
+
+    var _sp=_d5("re-allison-spicer-buy");
+    if(_sp){ _sp.expectedTakeHome="$0";
+      _sp.takeHomeNote="SET TO ZERO DELIBERATELY. Ian is 99 percent certain he gets nothing from this one, 07.10.2026. The deal is real and under contract at $894,446 closing 13 November, but his share of it is not. ianSplit was already 0 so the model already returned nothing; the REASON is what was missing, and it is here so nobody reads the zero as a missing figure and fills it in."; }
+
+    var _rc=_d5("re-rose-creek");
+    if(_rc){
+      if(!state.archive.roseCreekRetiredB475) state.archive.roseCreekRetiredB475={ retiredOn:"2026-10-07",
+        why:"The two storey buyers backed out. Ian: she is not buying existing and not building new, for a while. Retired as a deal and kept as a future target.",
+        record:JSON.parse(JSON.stringify(_rc)) };
+      if(!Array.isArray(state.meta.removedDealIds)) state.meta.removedDealIds=[];
+      if(state.meta.removedDealIds.indexOf("re-rose-creek")<0) state.meta.removedDealIds.push("re-rose-creek");
+      _R5.deals=(_R5.deals||[]).filter(function(d){ return !(d&&d.id==="re-rose-creek"); });
+      if(!Array.isArray(_R5.futureTargets)) _R5.futureTargets=[];
+      var _ft=false; _R5.futureTargets.forEach(function(t){ if(t&&t.id==="ft-rose-creek") _ft=true; });
+      if(!_ft) _R5.futureTargets.push({ id:"ft-rose-creek", title:"Rose Creek, the two storey", since:"2026-10-07",
+        what:"The buyers backed out. She is not buying existing and not building new, for a while.",
+        handling:"A FUTURE TARGET, NOT A PROSPECT. It carries NO probability and NO expected value on purpose, so nothing downstream can sum it into a pipeline.",
+        lastKnown:"Was Active at $684,900 with a 55 percent probability and the largest single post tax line on the board at $2,934.11. Full record at state.archive.roseCreekRetiredB475." });
+    }
+
+    _R5.positionAsOf={ asOf:"2026-10-07", build:"v21 build 475",
+      conventions:"$4,287.55 spendable at 21 September, $2,200 a month centre burn, post tax at 0.70, Methodist payment 2 of $2,557.50 still BELIEVED and not confirmed.",
+      fourDealCheck:"IAN'S 'OVER $5,000 AFTER TAXES' HOLDS AND IS CONSERVATIVE. Willis $3,836.90, Mattox $2,450.02, Vogel $2,018.99, Belknap $1,529.39, total $9,835.30 gross and $6,884.71 post tax, which is over by about $1,885. Willis is at the 0.20 Chris's client share.",
+      trough:"THE EARLY NOVEMBER TROUGH IS UNCHANGED AND STILL HOLDS. About $963 at the centre burn on 5 to 6 November, about $592 at a $2,500 burn. Nothing in this update lands before Willis, so nothing in it touches the trough.",
+      midJanuary:"About $2,789 without Methodist, against about $305 in build 474. About $231 with Methodist at the centre burn, about minus $912 at a $2,500 burn.",
+      early2027:"Hernandez is out of 2026 on purpose. If it lists 12 November and closes about 20 January it adds about $7,711 post tax and the end of February reads about $4,762 at the centre burn with Methodist paid. Teske is late January or February at the earliest, at 35 percent.",
+      breaks:"THE VA APPRAISAL ON WILLIS. Unchanged, recorded on that card." };
+
+    state.meta.mig475_pipeline1007=true; save(true);
+    try{ console.log("mig475: pipeline updated, rose creek retired, deals now "+(_R5.deals||[]).length); }catch(_){}
+} }catch(e){ try{ console.warn("mig475 did not apply:",e&&e.message); }catch(_){} }
 
   /* build 372: LAST THING BEFORE THE SAVE. Every migration above has run, deepMergeDefaults
      has run, so this is the only point in the file where the state is actually final. */
