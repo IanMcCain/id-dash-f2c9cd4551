@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 471 (2026-10-06)">
+<meta name="build" content="v21 build 472 (2026-10-06)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -23418,6 +23418,159 @@ try{ if(profile==="ian" && state.meta && !state.meta.mig471_pk1006 && state.pick
     }
     state.meta.mig471_pk1006=true; save(true);
 } }catch(e){ try{ console.warn("mig471 did not apply:",e&&e.message); }catch(_){} }
+
+/* ===== v21 build 472: THE 6 OCTOBER OVERNIGHT AUDIT ====================================
+   SIX FACTS MADE TRUE, FOUR FALSE SUPERLATIVES CUT, ONE DEAL RETIRED, ONE LONG NOTE TRIMMED.
+   Every change is content guarded and every original is archived. Nothing is redesigned: the
+   heatmap and the circular skill map are untouched, and no render code changes in this build.
+
+   1. WILLIS IS UNDER CONTRACT AT $610,000, fully executed 6 October 2026. VA loan, NO home
+      inspection, and the APPRAISAL IS THE LIVE RISK and the only one named. NO CLOSING DATE
+      EXISTS and none is invented. Take home $3,836.90 on Chris's split, and it is model derived
+      rather than an override: 610,000 x 0.037 = 22,570 gross, less 15 percent brokerage =
+      19,184.50, x 0.20 because this is Chris's client. The arithmetic was recomputed here and
+      checks to the cent. The card previously read Active, $619,900, "Goes live 25 September".
+      WINPROB IS LEFT AT 0.98 AND NOT RAISED. Under contract is not closed, the appraisal is
+      unresolved, and inventing a new probability tonight would be exactly the false precision
+      this audit is cutting elsewhere.
+   2. HERNANDEZ IS A LIVE LISTING, not a prospect. Target list Thursday 12 November 2026,
+      recommended $450,000, which the record already carried.
+   3. MATTOX LISTS 8 OCTOBER AT $464,900, down from the $479,900 on the card, with the 5.5
+      percent commission concession applied. The event title carried the old price too.
+   4. THEOBALD: listing presentation Wednesday 7 October 6:30 PM, recommended $329,900, ladder
+      $324,900 / $329,900 / $334,900. The card read $319,900 and "No updates since 4 September
+      2026", which stopped being true when the pause was lifted.
+   5. BELKNAP AND VOGEL BOTH ALREADY READ "Lists 15 October 2026" AND ARE CORRECT. Checked, not
+      changed. Recording the check so the next lane does not redo it.
+   6. THE JED DEAL IS DEAD. He walked 5 October. $825,000, carried as Prospecting at 50 percent.
+      Retired by the standing mechanism: pushed into meta.removedDealIds so it can never be
+      re-added, and the whole record archived first.
+
+   PIPELINE EFFECT, STATED RATHER THAN LEFT TO BE INFERRED. Willis moves from Active to Under
+   Contract at a price $9,900 lower than the card carried, and Jed leaves the board entirely,
+   taking a $825,000 line and its 50 percent probability out of the weighted pipeline. Both
+   totals are COMPUTED AT RENDER from the deals array, so no stored total needed editing and
+   none was edited. goals2026 is untouched at $10,000,000 production and 20 deals.
+
+   FOUR FALSE SUPERLATIVES CUT, ALL FOUR VERIFIED AGAINST THE FULL SESSION HISTORY FIRST. These
+   are IN ADDITION to the four repaired in build 468.
+     a. 3 August: "Hardest session on record: effort 9 is his highest ever logged and 177 is his
+        highest peak HR". FALSE when written. 184 on 27 July, 181 on 6 July and 179 on both
+        13 and 21 July all precede it.
+     b. 11 August: the two league nights "are the two highest averages in his entire record".
+        FALSE. 143 on 27 July beats both, and 141 on 29 September now does too.
+     c. 10 September: "Your longest single session on record". FALSE. Five earlier sessions are
+        longer, the longest being 5:13:59 at the APC.
+     d. 1 September: "Your first ever early morning session... Every other session on file starts
+        at midday or later". FALSE on both halves. 25 July began 9:05 AM, 26 July 8:52 AM and
+        15 August 9:08 AM. What IS true is that 7:17 AM was his earliest start on file.
+
+   THE WILLIS NOTE IS TRIMMED, which is the one piece of shortening in this build. It had grown
+   to roughly 4,000 characters of our own working: a dead first contract, a dead closing date, a
+   dead day 10 trigger and three paragraphs of CMA defence. The current state is now four lines
+   and the whole original is at state.archive.willisNotePreB472, readable verbatim.
+
+   Guard state.meta.mig472_audit1006, end of chain, SEED_VERSION stays 13. */
+try{ if(profile==="ian" && state.meta && !state.meta.mig472_audit1006 && state.realEstate){
+    var _R=state.realEstate; var _A72={deals:[],events:[],sessions:[],retired:[]};
+    if(!state.archive||typeof state.archive!=="object") state.archive={};
+    var _deal=function(id){ var f=null; (_R.deals||[]).forEach(function(d){ if(d&&d.id===id) f=d; }); return f; };
+    var _set=function(d,k,v,label){ if(!d) return; if(d[k]===v) return; _A72.deals.push({id:d.id,field:k,before:d[k]}); d[k]=v; };
+
+    /* 1. WILLIS */
+    var _w=_deal("re-cynthia-willis");
+    if(_w && _w.stage!=="Under Contract"){
+      if(!state.archive.willisNotePreB472) state.archive.willisNotePreB472={ changedOn:"2026-10-06",
+        why:"Trimmed to current state when the second contract was fully executed. The August history, the first contract at the same price and its termination after the 19 August inspection, is kept here verbatim.",
+        before:String(_w.note||"") };
+      _set(_w,"stage","Under Contract");
+      _set(_w,"price","$610,000");
+      _set(_w,"close","No closing date set");
+      _set(_w,"note","UNDER CONTRACT AT $610,000, fully executed 6 October 2026. VA loan. NO HOME INSPECTION. THE APPRAISAL IS THE LIVE RISK and it is the only one named. NO CLOSING DATE EXISTS YET and none is assumed. TAKE HOME $3,836.90 on Chris's split, model derived and not an override: 610,000 x 0.037 = $22,570 gross, less 15 percent brokerage = $19,184.50, x 0.20 because this is Chris's client. The full August history, including the first contract at the same price and its termination after the 19 August inspection, is archived at state.archive.willisNotePreB472.");
+      _w.contract={ executed:"2026-10-06, fully executed", price:"$610,000", loanType:"VA",
+        homeInspection:"NONE. The buyers are not doing one.",
+        liveRisk:"THE APPRAISAL. It is the only named risk and it is unresolved.",
+        closingDate:"NONE SET. Do not infer one and do not put one on the board.",
+        takeHome:"$3,836.90, Chris's split at 20 percent" };
+      _w.winProbNote="0.98 PREDATES THE CONTRACT AND IS DELIBERATELY NOT RAISED. Under contract is not closed and the appraisal is open.";
+    }
+
+    /* 2. HERNANDEZ */
+    var _h=_deal("re-hernandez-sell");
+    if(_h){ _set(_h,"stage","Coming Soon"); _set(_h,"close","Lists 12 November 2026"); _set(_h,"price","$450,000");
+      _h.listDateNote="TARGET LIST THURSDAY 12 NOVEMBER 2026, set 06.10.2026. This is a LIVE LISTING now, not a prospect. Recommended $450,000."; }
+
+    /* 3. MATTOX */
+    var _m=_deal("re-mattox-sell");
+    if(_m){ _set(_m,"price","$464,900");
+      _m.priceNote="$464,900, set 06.10.2026, WITH THE 5.5 PERCENT COMMISSION CONCESSION APPLIED. This supersedes the $479,900 the card carried. Lists Thursday 8 October 2026."; }
+
+    /* 4. THEOBALD */
+    var _th=_deal("re-theobald-sell");
+    if(_th){ _set(_th,"price","$329,900"); _set(_th,"close","Listing presentation 7 October 2026, 6:30 PM. No list date set");
+      _th.priceNote="RECOMMENDED $329,900, set 06.10.2026. Ladder $324,900 / $329,900 / $334,900. This supersedes the $319,900 the card carried, which was the middle tier of the 4 September refresh.";
+      _th.pauseNote="THE 12 SEPTEMBER PAUSE IS LIFTED, confirmed by Ian 05.10.2026. The card previously read 'No updates since 4 September 2026' and that is no longer true."; }
+
+    /* 6. JED, RETIRED */
+    var _j=_deal("re-jed-lot185");
+    if(_j){
+      if(!state.archive.jedRetiredB472) state.archive.jedRetiredB472={ retiredOn:"2026-10-06",
+        why:"He walked on 5 October 2026. Carried as Prospecting, $825,000, 50 percent. Retired rather than edited, by the same mechanism used for the Mason record.", record:JSON.parse(JSON.stringify(_j)) };
+      if(!Array.isArray(state.meta.removedDealIds)) state.meta.removedDealIds=[];
+      if(state.meta.removedDealIds.indexOf("re-jed-lot185")<0) state.meta.removedDealIds.push("re-jed-lot185");
+      _R.deals=(_R.deals||[]).filter(function(d){ return !(d&&d.id==="re-jed-lot185"); });
+      _A72.retired.push("re-jed-lot185");
+    }
+
+    /* EVENTS: one wrong price, two missing dated items */
+    if(Array.isArray(state.events)){
+      state.events.forEach(function(e){
+        if(e && e.id==="ev-20261008-mattox-live" && String(e.title||"").indexOf("479,900")>=0){
+          _A72.events.push({id:e.id,field:"title",before:e.title});
+          e.title=String(e.title).replace("$479,900","$464,900");
+        }
+      });
+      var _addEv=function(ev){ var dup=false; state.events.forEach(function(e){ if(e&&e.id===ev.id) dup=true; }); if(!dup){ state.events.push(ev); _A72.events.push({id:ev.id,added:ev.title}); } };
+      _addEv({ id:"ev-20261007-theobald-presentation", date:"2026-10-07", kind:"Real estate",
+        title:"Theobald listing presentation, 5014 S 163rd St, 6:30 PM",
+        note:"Confirmed by Ian 05.10.2026. Recommended $329,900, ladder $324,900 / $329,900 / $334,900." });
+      _addEv({ id:"ev-20261112-hernandez-live", date:"2026-11-12", kind:"Real estate",
+        title:"Hernandez listing goes live, 8617 N 177th St, $450,000",
+        note:"Target list date set 06.10.2026. Moved from prospect to live listing." });
+    }
+
+    /* FOUR FALSE SUPERLATIVES, CONTENT GUARDED, ORIGINALS ARCHIVED */
+    var _P72=state.pickleball||{};
+    var _SFIX=[
+      {id:"pk-20260803-openplay",
+       bad:"Hardest session on record: effort 9 is his highest ever logged and 177 is his highest peak HR.",
+       good:"His hardest session of that window by the watch's own reading. THE EARLIER WORDING WAS WRONG and is corrected here: effort 9 was never his highest logged, and 177 was never his highest peak. 184 on 27 July, 181 on 6 July and 179 on both 13 and 21 July all precede this date."},
+      {id:"pk-20260811-league",
+       bad:"which are the two highest averages in his entire record.",
+       good:"which are the two highest averages among his LEAGUE NIGHTS. NOT his highest on record, and the earlier wording that said so was wrong: 143 on 27 July leads, and 141 on 29 September also beats them."},
+      {id:"pk-20260910-training",
+       bad:"Your longest single session on record.",
+       good:"Your longest session since 19 August. NOT your longest on record, and the earlier wording that said so was wrong: the APC on 23 August ran 5:13:59, 1 September 4:06:52, 19 August 3:50:00, 25 July 3:36:33 and 13 July 3:24:22, all longer and all earlier."},
+      {id:"pk-20260901-drills-am",
+       bad:"Your first ever early morning session, confirmed by you on 2 September. Every other session on file starts at midday or later,",
+       good:"Your EARLIEST START on file at 7:17 AM. The earlier wording called this your first ever early morning session and said every other session starts at midday or later, and BOTH HALVES WERE WRONG: the 25 July tournament began 9:05 AM, 26 July 8:52 AM and 15 August 9:08 AM,"}
+    ];
+    if(!state.archive.superlativesPreB472) state.archive.superlativesPreB472={ changedOn:"2026-10-06",
+      why:"Four more superlative claims were checked against the full session history and were false when written. Originals kept verbatim.", fixed:[] };
+    if(Array.isArray(_P72.sessions)){
+      _SFIX.forEach(function(fx){
+        var t=null; _P72.sessions.forEach(function(s2){ if(s2&&s2.id===fx.id) t=s2; });
+        if(!t) return; var cur=String(t.note||""); if(cur.indexOf(fx.bad)<0) return;
+        state.archive.superlativesPreB472.fixed.push({ id:fx.id, field:"note", before:cur });
+        t.note=cur.split(fx.bad).join(fx.good);
+        _A72.sessions.push(fx.id);
+      });
+    }
+
+    state.archive.auditB472={ ranOn:"2026-10-06", changes:_A72 };
+    state.meta.mig472_audit1006=true; save(true);
+    try{ console.log("mig472: deals "+_A72.deals.length+" fields, events "+_A72.events.length+", sessions "+_A72.sessions.length+", retired "+_A72.retired.length); }catch(_){}
+} }catch(e){ try{ console.warn("mig472 did not apply:",e&&e.message); }catch(_){} }
 
   /* build 372: LAST THING BEFORE THE SAVE. Every migration above has run, deepMergeDefaults
      has run, so this is the only point in the file where the state is actually final. */
