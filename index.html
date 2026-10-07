@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 472 (2026-10-06)">
+<meta name="build" content="v21 build 473 (2026-10-07)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -23571,6 +23571,115 @@ try{ if(profile==="ian" && state.meta && !state.meta.mig472_audit1006 && state.r
     state.meta.mig472_audit1006=true; save(true);
     try{ console.log("mig472: deals "+_A72.deals.length+" fields, events "+_A72.events.length+", sessions "+_A72.sessions.length+", retired "+_A72.retired.length); }catch(_){}
 } }catch(e){ try{ console.warn("mig472 did not apply:",e&&e.message); }catch(_){} }
+
+/* ===== v21 build 473: HERNANDEZ. THE BASEMENT IS MEASURED =============================
+   FIVE THINGS FROM IAN, 07.10.2026, AND ONE OF THEM CHANGES A NUMBER THAT HAS BEEN AN ESTIMATE
+   SINCE THIS FILE BEGAN.
+
+   1. THE BASEMENT IS MEASURED, NOT ESTIMATED. Ian measured it himself with his tool, and both
+      figures are kept because they are two different bases, not a range:
+        ABOUT 780 SQ FT NOT COUNTING THE STAIRS
+        ABOUT 840 SQ FT COUNTING THE STAIRS, which is legally countable as finished space
+      His own words: close but not exact. THE ~800 SELLER ESTIMATE AND ITS 750 TO 825 RANGE ARE
+      REMOVED. A measurement does not carry a range, and leaving one would invite the next reader
+      to re-derive the estimate.
+      TOTAL FINISHED: 2,216 above grade + 840 = 3,056 on the stairs inclusive basis, or 2,996 on
+      the stairs exclusive basis. BOTH ARE STORED AND LABELLED. Neither is called "the" number.
+
+   2. IT IS NOT A PRICE INCREASE AND THE RECORD SAYS SO IN THOSE WORDS. Ian's read is that this
+      makes the existing number more certain rather than larger, and the arithmetic agrees: at his
+      quarter rate basement math, 840 against 800 is about 10 above grade equivalent feet, roughly
+      $500 to $750. $450,000 STANDS, UNCHANGED.
+
+   3. THE STAIRS QUESTION IS FLAGGED AND NOT SETTLED, because the Paragon export cannot settle it.
+      Checked against the Chestnut Hills pull: GPRMLS carries Main Floor, 2nd Floor, 3rd Floor,
+      Above Grade, Lower Lvl Abv Grade, Lower Lvl Blw Grade, Total Finished Below Grade and Total
+      Finished. THERE IS NO STAIRS FIELD AND NO MEASUREMENT BASIS FIELD ON ANY RECORD, and every
+      total is a plain sum of its parts. So the basis is unknowable per comp from the export.
+      WHAT THE EVIDENCE DOES SAY, AND IT POINTS BOTH WAYS:
+        AGAINST counting stairs: ANSI Z765, the standard the MLS nominally follows, counts stair
+        treads and landings in the floor they DESCEND FROM, so a basement stair belongs to the
+        main floor and a correctly entered finished basement figure EXCLUDES it. On 8605 the MLS
+        basement figure of 962 equals the assessor's 962 to the square foot, and assessors measure
+        basements without stairs, so at least that comp reads as a stairs exclusive figure.
+        FOR counting stairs: the subject's own 2020 as built MLS entry says 850 below grade. Ian's
+        stairs INCLUSIVE measurement is 840, ten feet away. His stairs exclusive measurement is
+        780, seventy feet away. That is a strong hint the builder's own entry included the stair
+        run, and the comps in this subdivision were entered by the same builder family.
+      SO THE COMP SET IS PROBABLY MIXED, and the per foot comparison is only safe inside one basis.
+      THE RECOMMENDATION STORED HERE IS TO ADVERTISE 780 AND 2,996, for two reasons that do not
+      depend on resolving it: the risk is asymmetric, since an appraiser or a buyer's agent who
+      re-measures finds LESS than advertised and that costs credibility at exactly the wrong
+      moment, and the price does not move either way.
+      ONE DOUBLE COUNT HAZARD, NAMED: if the 2,216 above grade figure was itself measured to ANSI,
+      it ALREADY contains the stair opening on the main floor, so adding the stairs inclusive 840
+      counts that area twice. Nobody has established how the 2,216 was measured, and three sources
+      disagree on it at 2,175 permit, 2,216 Beacon and 2,217 MLS.
+
+   4. THE PROCEEDS SHEET IS DONE AND DELIVERED, which is legally required. At $450,000 they net
+      APPROXIMATELY $164,000 after their HELOC, the full loan payoff and the realtor commission.
+      Stored as an approximation because that is what it is.
+
+   5. THE LOOP EXISTS. DotLoop, named by address, members Ricky, Megan, Chris and Ian. MEGAN IS
+      NOW FORMALLY IN THE LOOP AND THAT IS A CHANGE: her position on selling was previously
+      unknown and the record said so.
+
+   6. TIMELINE, RECORDED AS A STATED TARGET AND NOT AS A FORECAST. List Thursday 12 November 2026
+      if possible, with the goal of an accepted offer before Thanksgiving on 26 November. That is
+      a FOURTEEN DAY window from list to contract and the record calls it tight rather than
+      pretending it is routine.
+
+   7. KNOWN UPCOMING TASK, not a todo for tonight: the GPRMLS input form will be needed for this
+      loop before 12 November, with the Burke Street workflow as the template.
+
+   THE NOTE IS REPLACED AND THE ORIGINAL IS ARCHIVED. It opened "NO ADDRESS, NO VALUATION, NO LIST
+   PRICE" and ran on from there, all of which stopped being true weeks ago. Full original at
+   state.archive.hernandezNotePreB473.
+
+   NO SUPERLATIVE IS CLAIMED ANYWHERE IN THIS BUILD. Guard state.meta.mig473_hernandez, end of
+   chain, SEED_VERSION stays 13. */
+try{ if(profile==="ian" && state.meta && !state.meta.mig473_hernandez && state.realEstate){
+    var _H=null; (state.realEstate.deals||[]).forEach(function(d){ if(d&&d.id==="re-hernandez-sell") _H=d; });
+    if(_H){
+      if(!state.archive||typeof state.archive!=="object") state.archive={};
+      if(!state.archive.hernandezNotePreB473) state.archive.hernandezNotePreB473={ changedOn:"2026-10-07",
+        why:"Replaced when the basement was measured and the listing became live. The original opened with NO ADDRESS, NO VALUATION, NO LIST PRICE, which had been false for weeks.",
+        before:String(_H.note||"") };
+      _H.spec={ aboveGrade:2216,
+        basement:{ measuredBy:"Ian, with his own tool, 07.10.2026", exact:"Close but not exact, his words",
+          excludingStairs:780, includingStairs:840,
+          stairsNote:"The stairs are legally countable as finished space, which is why both figures are kept.",
+          supersedes:"The ~800 seller estimate and its 750 to 825 range. BOTH ARE REMOVED: a measurement does not carry a range." },
+        totalFinished:{ includingStairs:3056, excludingStairs:2996,
+          basisNote:"BOTH ARE STORED AND LABELLED. Neither is the number on its own, and no figure here may be quoted without saying which basis it is on." } };
+      _H.stairsBasis={ status:"OPEN, and the Paragon export cannot close it",
+        exportFinding:"GPRMLS carries no stairs field and no measurement basis field on any record, and every total is a plain sum. The basis is unknowable per comp from the export.",
+        againstStairs:"ANSI Z765 counts stair treads in the floor they descend from, so a correct finished basement figure excludes them. On 8605 the MLS basement 962 equals the assessor's 962 exactly, and assessors exclude stairs, so that comp reads as stairs exclusive.",
+        forStairs:"The subject's own 2020 as built MLS says 850 below grade. The stairs inclusive measurement is 840, ten feet away; the stairs exclusive is 780, seventy feet away. The builder's entry probably included the stair run, and the same builder family entered the comps.",
+        recommendation:"ADVERTISE 780 AND 2,996. The risk is asymmetric: anyone who re-measures finds less than advertised. The price does not move either way.",
+        doubleCountHazard:"If the 2,216 above grade was measured to ANSI it already contains the stair opening on the main floor, so adding the stairs inclusive 840 counts that area twice. How 2,216 was measured is NOT established: permit 2,175, Beacon 2,216, MLS 2,217." };
+      _H.valueEffect="NOT A PRICE INCREASE. The measurement makes the existing number more certain rather than larger. At the quarter rate basement math, 840 against 800 is about 10 above grade equivalent feet, roughly $500 to $750. $450,000 STANDS.";
+      _H.proceeds={ at:"$450,000", net:"approximately $164,000",
+        after:"Their HELOC, the full loan payoff and the realtor commission",
+        status:"SHEET COMPLETED AND DELIVERED, 07.10.2026. Legally required.",
+        handling:"An approximation, and it is recorded as one." };
+      _H.loop={ platform:"DotLoop", named:"By address", members:["Ricky","Megan","Chris","Ian"],
+        createdOn:"2026-10-07",
+        change:"MEGAN IS NOW FORMALLY IN THE LOOP. Her position on selling was previously unknown and the record said so." };
+      _H.timeline={ listTarget:"Thursday 12 November 2026, if possible",
+        goal:"An accepted offer before Thanksgiving, 26 November 2026",
+        window:"Fourteen days from list to contract",
+        handling:"THIS IS THE STATED TARGET, NOT A FORECAST. Fourteen days is tight and the record says so rather than treating it as routine." };
+      _H.upcoming={ task:"GPRMLS input form for this loop",
+        due:"Before 12 November 2026",
+        template:"The Burke Street workflow, _HANDOFF_burke_street_input_form.md",
+        handling:"KNOWN UPCOMING WORK, recorded so it is not discovered late. Not opened as a todo here." };
+      _H.note="LIVE LISTING. Target list Thursday 12 November 2026, goal an accepted offer before Thanksgiving on 26 November, which is a fourteen day window and is tight. LIST $450,000, UNCHANGED by the measurement. THE BASEMENT IS MEASURED, 07.10.2026, by Ian with his own tool: about 780 sq ft not counting stairs, about 840 counting them. Total finished 2,996 or 3,056 depending on basis. The ~800 estimate and its 750 to 825 range are retired. ADVERTISE THE 780 BASIS, see stairsBasis. PROCEEDS SHEET DELIVERED: about $164,000 net at $450,000 after the HELOC, the full payoff and commission. DotLoop loop open, named by address, with Ricky, Megan, Chris and Ian in it. GPRMLS input form needed before 12 November. Full prior note archived at state.archive.hernandezNotePreB473.";
+      if(_H.priceNote){ _H.priceNote=String(_H.priceNote)+" UNCHANGED 07.10.2026 by the basement measurement, deliberately: the measurement adds certainty, not value."; }
+      state.meta.mig473_hernandez=true; save(true);
+      try{ console.log("mig473: hernandez updated, note "+String(state.archive.hernandezNotePreB473.before||"").length+" chars archived"); }catch(_){}
+    }
+} }catch(e){ try{ console.warn("mig473 did not apply:",e&&e.message); }catch(_){} }
 
   /* build 372: LAST THING BEFORE THE SAVE. Every migration above has run, deepMergeDefaults
      has run, so this is the only point in the file where the state is actually final. */
