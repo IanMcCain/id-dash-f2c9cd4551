@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 473 (2026-10-07)">
+<meta name="build" content="v21 build 474 (2026-10-07)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -23680,6 +23680,87 @@ try{ if(profile==="ian" && state.meta && !state.meta.mig473_hernandez && state.r
       try{ console.log("mig473: hernandez updated, note "+String(state.archive.hernandezNotePreB473.before||"").length+" chars archived"); }catch(_){}
     }
 } }catch(e){ try{ console.warn("mig473 did not apply:",e&&e.message); }catch(_){} }
+
+/* ===== v21 build 474: THE WILLIS CLOSING DATE, AND THE YEAR END POSITION ==============
+   IAN, 07.10.2026: "Cynthia's house closes a month from now." From Tuesday 7 October that is
+   APPROXIMATELY FRIDAY 6 OR SATURDAY 7 NOVEMBER 2026.
+
+   IT IS RECORDED AS APPROXIMATE AND SOURCED TO HIM. It is NOT a confirmed date. The exact date
+   sits in the DotLoop purchase agreement, which this system does not hold. ONE LABELLED
+   INFERENCE, and it is labelled rather than folded in: 7 November is a Saturday and closings are
+   normally weekdays, so of the two, 6 November is the likelier. That is a reading of the
+   calendar, not a fact from the contract.
+
+   THE TEXTS WERE CHECKED AND DO NOT STATE IT. Ten days of messages were searched on text plus a
+   conservative attributedBody decode for closing, Cynthia, Spyglass, appraisal, a November date
+   and 610. Zero hits. THAT IS NOT PROOF OF ABSENCE: this system has a recorded history of a
+   broken decoder producing false zero match findings, so the search is reported as inconclusive
+   rather than as evidence the date was never sent.
+
+   THE YEAR END POSITION, RECOMPUTED WITH A DATE INSTEAD OF A QUESTION MARK.
+   Convention is the projection sheet's own: 30 percent set aside for tax, so post tax is 0.70 of
+   gross commission, and post tax dollars are the only ones comparable to the burn.
+     WILLIS net $3,836.90 gross, $2,685.83 post tax, landing about 6 November.
+     MATTOX lists 8 October. On the app's own model at the current $464,900 and the 3.1 percent
+     rate, $2,450.02 gross and $1,715.02 post tax. On a normal window, contract in two to four
+     weeks and a thirty to forty five day close, it lands LATE NOVEMBER TO DECEMBER. Modelled at
+     1 December as the centre.
+     HERNANDEZ IS DELIBERATELY EXCLUDED. It lists 12 November, so any commission lands well into
+     2027 and it has no place in the 2026 position.
+
+   THE GAP IS $4,094 TO 15 JANUARY, UNCHANGED, and the reason it is unchanged matters: it is
+   $2,200 a month of burn across the 116 day window less $4,287.55 of spendable cash. TIME PASSING
+   DOES NOT MOVE IT. A date for Willis moves WHEN money arrives, not HOW MUCH is needed.
+
+   SO THE ANSWER TO THE QUESTION IS BOTH, AND IT SPLITS CLEANLY ON ONE INPUT.
+     WITHOUT the believed Methodist payment, IT IS A TIMING PROBLEM. Willis plus Mattox is
+     $4,400.85 post tax against a $4,094 gap, clearing it by about $307. The money exists and now
+     has dates on it.
+     WITH the believed Methodist payment of $2,557.50, the gap becomes $6,652 and IT IS A SIZE
+     PROBLEM. Willis plus Mattox leaves him about $2,251 short and a third closing is required.
+     Belknap and Vogel both list 15 October and are the candidates.
+     WILLIS ALONE IS A SIZE PROBLEM EITHER WAY, short $1,408.17 against $4,094. That has not
+     changed and the date does not change it.
+
+   THE BINDING CONSTRAINT IS NOT THE 15 JANUARY POSITION, IT IS THE EARLY NOVEMBER TROUGH.
+   Cash runs down to roughly $960 at the centre burn in the first week of November, and to roughly
+   $510 at a $2,500 burn, in the days BEFORE the Willis money arrives. It is positive at every
+   burn rate tested, and it is thin. Nothing else lands before it.
+
+   THE ONE THING THAT BREAKS ALL OF IT IS THE VA APPRAISAL. There is no inspection contingency,
+   but a Notice of Value under $610,000 lets the buyer walk. Nothing is paid until it clears, and
+   if it fails the gap stops being a timing question at any burn rate.
+
+   No superlative is claimed. Guard state.meta.mig474_willis_close, end of chain, SEED stays 13. */
+try{ if(profile==="ian" && state.meta && !state.meta.mig474_willis_close && state.realEstate){
+    var _W4=null; (state.realEstate.deals||[]).forEach(function(d){ if(d&&d.id==="re-cynthia-willis") _W4=d; });
+    if(_W4){
+      _W4.close="Closes about 6 November 2026, APPROXIMATE";
+      _W4.closeDate={ approx:"About 6 or 7 November 2026",
+        source:"Ian, 07.10.2026, his words: \"Cynthia's house closes a month from now.\"",
+        confirmed:false,
+        exactLives:"The DotLoop purchase agreement, which this system does not hold.",
+        inference:"LABELLED AS AN INFERENCE, NOT A FACT: 7 November is a Saturday and closings are normally weekdays, so of the two, 6 November is the likelier.",
+        textsChecked:"Ten days of messages searched on text and a conservative attributedBody decode. Zero hits. NOT PROOF OF ABSENCE, because a broken decoder has produced false zero match findings on this system before." };
+      _W4.yearEnd={ asOf:"2026-10-07",
+        convention:"The projection sheet's own: 30 percent set aside for tax, so post tax is 0.70 of gross. Only post tax dollars are comparable to the burn.",
+        gap:"$4,094 to 15 January, being $2,200 a month across 116 days less $4,287.55 spendable cash. UNCHANGED by the closing date: a date moves when money arrives, not how much is needed.",
+        gapWithMethodist:"$6,652 if the believed second Methodist payment of $2,557.50 lands in the window. Still flagged believed, not confirmed.",
+        willis:"$3,836.90 gross, $2,685.83 post tax, about 6 November.",
+        mattox:"$2,450.02 gross, $1,715.02 post tax, on the app's model at $464,900 and 3.1 percent. Lists 8 October, so a normal window lands it late November to December. Modelled at 1 December.",
+        hernandezExcluded:"Lists 12 November, so any commission lands well into 2027. OUT of the 2026 position on purpose.",
+        verdict:"TIMING, NOT SIZE, WITHOUT METHODIST. Willis plus Mattox is $4,400.85 post tax against $4,094, clearing by about $307. WITH METHODIST IT IS A SIZE PROBLEM: $6,652 leaves them about $2,251 short and a third closing is needed, with Belknap and Vogel the candidates, both listing 15 October.",
+        willisAlone:"STILL SHORT $1,408.17 against $4,094. Willis alone was never enough and the date does not change that.",
+        trough:"THE BINDING CONSTRAINT IS THE EARLY NOVEMBER TROUGH, NOT THE JANUARY POSITION. Cash runs to roughly $960 at the centre burn in the first week of November, roughly $510 at a $2,500 burn, in the days before the Willis money lands. Positive at every burn tested, and thin.",
+        midJanuary:"At the centre burn with Willis and Mattox and no Methodist, about $305 left on 15 January. With Methodist, about minus $2,253." };
+      _W4.risk={ item:"THE VA APPRAISAL",
+        why:"There is no inspection contingency, but a Notice of Value under $610,000 lets the buyer walk.",
+        timing:"It sits between now and the close, and NOTHING IS PAID UNTIL IT CLEARS.",
+        ifItFails:"The gap stops being a timing question at any burn rate." };
+      state.meta.mig474_willis_close=true; save(true);
+      try{ console.log("mig474: willis close date and year end figures written"); }catch(_){}
+    }
+} }catch(e){ try{ console.warn("mig474 did not apply:",e&&e.message); }catch(_){} }
 
   /* build 372: LAST THING BEFORE THE SAVE. Every migration above has run, deepMergeDefaults
      has run, so this is the only point in the file where the state is actually final. */
