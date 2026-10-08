@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 478 (2026-10-07)">
+<meta name="build" content="v21 build 479 (2026-10-08)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -24199,6 +24199,115 @@ try{ if(profile==="ian" && state.meta && !state.meta.mig478_discover && state.fi
     state.meta.mig478_discover=true; save(true);
     try{ console.log("mig478: discover corrected, burn direction flagged, staleness caveats written"); }catch(_){}
 } }catch(e){ try{ console.warn("mig478 did not apply:",e&&e.message); }catch(_){} }
+
+/* ===== v21 build 479: MATTOX. A FULL PRICE OFFER IS BEING WRITTEN, AND IAN PROCURES THE BUYER
+   RECORDED AS AN OFFER IN PROGRESS, NOT AS A DEAL. Nothing is signed, nothing is accepted, three
+   other parties are circling and NO PROBABILITY IS SET. The deal's own computed take home is left
+   at the pre offer structure on purpose, so nothing on the board banks money that does not exist.
+
+   THE OFFER. Full price $464,900 on 19859 Burke St. Buyer MELISSA, unrepresented. IAN IS SIGNING
+   HER AS A CUSTOMER, NOT A CLIENT. He does not represent her, his only client remains the seller
+   through the team, and THERE IS NO DUAL AGENCY. Terms: FINANCED, not cash, and the cash reference
+   was the earnest; pre approval in hand; $10,000 earnest; home inspection requested; NO radon
+   test; close 12/31 or 60 days, flexible. PERSONAL PROPERTY REQUESTED ON TOP OF THE LISTING:
+   table, bar stools, two bedrooms of furniture, basement furniture, mirror, four TVs. OFFER
+   EXPIRES 10PM TONIGHT.
+
+   THE COMMISSION MATH WAS CHECKED AGAINST THE MODEL RATHER THAN COPIED, AND IT COMES OUT $174.34
+   LOWER. THIS IS THE ONE NUMBER TO READ TWICE.
+   The brief computes brokerage as 15 percent of the CHARGED 3.1 percent sell side. THIS APP DOES
+   NOT DO THAT, on Ian's own instruction of 27.09.2026 recorded in dealBrokerage: "The broker takes
+   15% of each side no matter what. If we are buy side they take 15% of 2.4. If we are sell side
+   they take 15% of 3.6. Even if we charge a total of 5%, they are still going to take 15% of 6%."
+   The code comment names THIS DEAL as the live proof of it: Mattox sellerRate 0.031 against a
+   0.036 standard, brokerage still computed on 0.036.
+     BRIEF METHOD: sell 14,411.90 x 0.85 = 12,250.12, buy 11,157.60 x 0.85 = 9,483.96,
+       total 21,734.08, Ian 50 percent = $10,867.04, post tax $7,606.93.
+     APP MODEL: sell gross 14,411.90 less brokerage of 464,900 x 0.036 x 0.15 = 2,510.46, net
+       11,901.44. Buy gross 11,157.60 less 464,900 x 0.024 x 0.15 = 1,673.64, net 9,483.96, which
+       is identical because 2.4 IS the buy side standard. Total 21,385.40, Ian 50 percent =
+       $10,692.70, post tax $7,484.89.
+   THE DIFFERENCE IS THE SELL SIDE BROKERAGE BASIS AND NOTHING ELSE. Both figures are stored. The
+   model figure is the one used in the projections below, because it is the rule Ian himself set
+   and the one every other deal on the board is computed under. IF THE BROKERAGE REALLY DOES TAKE
+   15 PERCENT OF THE DISCOUNTED 3.1 ON THIS FILE, the brief is right and the model is wrong for
+   every discounted listing, which is a bigger finding than this deal. Flagged, not resolved.
+
+   THE SWING IS +$8,242.68 GROSS ON THE MODEL FIGURE, not the +$8,417 in the brief, against the
+   $2,450.02 currently carried, which is Ian's 20 percent of the listing side alone.
+
+   !! THE BAC 425 QUESTION IS OPEN AND IT IS NOT RESOLVED HERE. The proceeds document tags the
+   listing CHRG SELL 3.1, which matches, and BAC 425, which does NOT match a 2.4 percent buy side.
+   IF BAC IS A $425 FLAT, the buy side collapses from $9,483.96 to $425, the total falls to
+   $12,326.44 and Ian's half becomes $6,163.22 gross, $4,314.25 post tax. THAT IS $4,529.48 OF
+   GROSS SITTING ON ONE ABBREVIATION. Ian is checking it. Recorded as an open question with both
+   outcomes priced, and NOTHING downstream assumes the 2.4 percent version is safe.
+
+   TIMING CHANGED AND IT MATTERS MORE THAN THE SHEET ASSUMED. 60 day close, MID TO LATE DECEMBER,
+   possibly slipping to the FIRST WEEK OF JANUARY. The old sheet had Mattox paying 21 November.
+
+   THE REBUILT POSITION, same conventions, and the staleness caveat from build 478 still applies.
+   1. THE 5 TO 6 NOVEMBER TROUGH DOES NOT MOVE. Still about $963 at the centre burn. CONFIRMED BY
+      RECOMPUTING RATHER THAN ASSUMED: nothing in this offer lands before Willis on 6 November, and
+      the trough is computed on the path up to that date, which this does not touch.
+   2. MID JANUARY, Mattox closing about 22 December: about $8,558 without the Methodist payment and
+      about $6,001 with it, against about $2,789 and about $231 before. A roughly $5,770 improvement
+      at the thin end.
+   3. IF IT SLIPS TO THE FIRST WEEK OF JANUARY the 15 January figure is UNCHANGED at about $8,558
+      and $6,001, because 6 January is still inside the window. THE SLIP DOES NOT COST HIM THE
+      MONEY, IT COSTS HIM THE COVER, AND THAT IS THE FINDING THE BRIEF DID NOT ASK FOR:
+      cash immediately BEFORE Mattox funds is about $2,808 on a 22 December close, about $1,724 on
+      a 6 January close without Methodist, and ABOUT MINUS $833 on a 6 January close WITH the
+      Methodist payment landing 31 December. IN THAT ONE COMBINATION THE BINDING LOW POINT MOVES
+      OFF 6 NOVEMBER AND INTO EARLY JANUARY, AND IT GOES NEGATIVE. Two things have to go wrong
+      together for it, and neither is settled.
+   4. WORST CASE, MATTOX NOT CLOSED BY 15 JANUARY AT ALL: about $1,074 without Methodist and about
+      MINUS $1,484 with it.
+
+   No probability is set anywhere on this. Guard state.meta.mig479_mattox_offer, end of chain,
+   SEED_VERSION stays 13. */
+try{ if(profile==="ian" && state.meta && !state.meta.mig479_mattox_offer && state.realEstate){
+    var _M9=null; (state.realEstate.deals||[]).forEach(function(d){ if(d&&d.id==="re-mattox-sell") _M9=d; });
+    if(_M9){
+      _M9.offerInProgress={ status:"OFFER BEING WRITTEN TONIGHT, 08.10.2026. NOT SIGNED, NOT ACCEPTED, NO PROBABILITY SET.",
+        competition:"THREE OTHER PARTIES ARE CIRCLING. This is not the only one in play.",
+        price:"$464,900, FULL PRICE",
+        expires:"10pm tonight, 08.10.2026",
+        buyer:{ name:"Melissa", phone:"402-880-1441", email:"Mdsinger79@gmail.com",
+          represented:false,
+          relationship:"CUSTOMER, NOT A CLIENT. Ian is signing her as a customer. He does NOT represent her. His only client remains the SELLER, through the team. THERE IS NO DUAL AGENCY and this record must never be read as one." },
+        terms:{ financing:"FINANCED, NOT CASH. The cash reference was the EARNEST, not the purchase.",
+          preApproval:"In hand",
+          earnest:"$10,000",
+          inspection:"Home inspection requested",
+          radon:"NO radon test",
+          closing:"12/31 or 60 days, flexible",
+          personalProperty:"REQUESTED ON TOP OF THE LISTING: table, bar stools, two bedrooms of furniture, basement furniture, mirror, four TVs. This is a real concession ask and it is not priced anywhere in the commission figures." },
+        timing:"60 DAY CLOSE, MID TO LATE DECEMBER, possibly slipping to the FIRST WEEK OF JANUARY. This supersedes the 21 November the projection sheet assumed." };
+      _M9.commissionIfAccepted={ structure:"Total 5.5 percent. Sell side 3.1, buy side 2.4. Brokerage 15 percent off each side. IAN AND CHRIS SPLIT 50/50, not Ian's usual 20 percent of the listing side, BECAUSE IAN PROCURES THE BUYER.",
+        appModelFigure:"$10,692.70 gross, $7,484.89 post tax. THIS IS THE FIGURE USED IN THE PROJECTIONS.",
+        briefFigure:"$10,867.04 gross, $7,606.93 post tax, as supplied.",
+        whyTheyDiffer:"$174.34, and it is ENTIRELY the sell side brokerage basis. This app takes 15 percent of the STANDARD 3.6 on a discounted sell side, on Ian's own 27.09.2026 instruction, and dealBrokerage names THIS DEAL as the live proof. The brief takes 15 percent of the charged 3.1. Sell net is 11,901.44 under the model against 12,250.12 in the brief. The buy side is identical at 9,483.96 because 2.4 is the buy standard.",
+        whichIsRight:"NOT RESOLVED HERE. If the brokerage really does take its cut off the discounted rate on this file, the model is wrong for EVERY discounted listing, which is a larger finding than this deal and worth settling once.",
+        swing:"+$8,242.68 gross on the model figure against the $2,450.02 currently carried, which is Ian's 20 percent of the listing side alone. The brief said +$8,417, which follows from its own figure.",
+        carriedFigureNote:"THE DEAL'S COMPUTED TAKE HOME IS DELIBERATELY LEFT AT THE PRE OFFER STRUCTURE. Nothing is accepted, so nothing banks the new money." };
+      _M9.bacQuestion={ status:"OPEN. IAN IS CHECKING. NOT RESOLVED HERE.",
+        what:"The proceeds document tags the listing CHRG SELL 3.1, which matches the sell side, and BAC 425, which does NOT match a 2.4 percent buy side.",
+        ifFlat:"IF BAC IS A $425 FLAT the buy side collapses from $9,483.96 to $425. Total falls to $12,326.44, Ian's half to $6,163.22 gross and $4,314.25 post tax.",
+        atStake:"$4,529.48 of gross sitting on one abbreviation.",
+        rule:"NOTHING DOWNSTREAM MAY ASSUME THE 2.4 PERCENT VERSION IS SAFE until this is answered." };
+    }
+    if(state.realEstate.positionAsOf){
+      var _p9=state.realEstate.positionAsOf;
+      _p9.mattoxOffer="OFFER IN PROGRESS, NOT A DEAL, no probability set. On the APP MODEL figure of $10,692.70 gross and $7,484.89 post tax, closing mid to late December. Supersedes the $1,715.02 post tax on 21 November the sheet carried. See the deal record for the $174.34 model difference and the open BAC 425 question.";
+      _p9.troughRecheck="THE 5 TO 6 NOVEMBER TROUGH DOES NOT MOVE, about $963 at the centre burn, and this was RECOMPUTED rather than assumed. Nothing in the Mattox offer lands before Willis on 6 November.";
+      _p9.midJanuaryRebuilt="With Mattox about 22 December: about $8,558 without Methodist and about $6,001 with it, against about $2,789 and about $231 before.";
+      _p9.slipCase="IF MATTOX SLIPS TO THE FIRST WEEK OF JANUARY the 15 January figure is unchanged, because 6 January is still inside the window. THE SLIP COSTS COVER, NOT MONEY. Cash immediately before Mattox funds is about $2,808 on a 22 December close, about $1,724 on a 6 January close, and ABOUT MINUS $833 on a 6 January close WITH the Methodist payment landing 31 December. In that one combination the binding low point moves off 6 November into early January and goes negative.";
+      _p9.worstCase="MATTOX NOT CLOSED BY 15 JANUARY AT ALL: about $1,074 without Methodist, about minus $1,484 with it.";
+    }
+    state.meta.mig479_mattox_offer=true; save(true);
+    try{ console.log("mig479: mattox offer recorded, projections rebuilt"); }catch(_){}
+} }catch(e){ try{ console.warn("mig479 did not apply:",e&&e.message); }catch(_){} }
 
   /* build 372: LAST THING BEFORE THE SAVE. Every migration above has run, deepMergeDefaults
      has run, so this is the only point in the file where the state is actually final. */
