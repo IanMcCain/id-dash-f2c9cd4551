@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 479 (2026-10-08)">
+<meta name="build" content="v21 build 480 (2026-10-08)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -2063,7 +2063,7 @@ function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]
       var _sh239={id:"ev-20260807-willis-showing-1",
         title:"SHOWING, 10218 Spyglass Dr, 6:45pm, Sara Pohlad RE/MAX Results",
         date:"2026-08-07", kind:"Real estate",
-        note:"FIRST showing on the listing, day 1 on market. Sara Pohlad, RE/MAX Results, 402-850-7918. Confirmation https://showingti.me/KnY9PRtJ. One hour block, 6:45 to 7:45pm. Showing traffic is the input to the DAY 10 decision on Aug 16, so count it there."};
+        note:"FIRST showing on the listing, day 1 on market. Sara Pohlad, RE/MAX Results, contact in LEAD_CONTACTS.md. Confirmation https://showingti.me/KnY9PRtJ. One hour block, 6:45 to 7:45pm. Showing traffic is the input to the DAY 10 decision on Aug 16, so count it there."};
       if(!state.events.some(function(x){ return x&&x.id===_sh239.id; })){ state.events.push(_sh239); save(true); } } }catch(e){}
   /* new drill: speed up block and reset, add-only, keyed on stable id */
   try{ if(state.pickleball){ if(!Array.isArray(state.pickleball.drills)) state.pickleball.drills=[]; if(!state.pickleball.drills.some(function(d){return d&&d.id==="pbk-speedup-0716";})){ state.pickleball.drills.push({id:"pbk-speedup-0716",text:"Speed up defense, dink dink bang: partner speeds up after two dinks, block soft into the kitchen and reset, 15 to 20 reps per side"}); save(true); } } }catch(e){}
@@ -3600,7 +3600,7 @@ function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]
           state.realEstate.people.push({
             id:"pp-nick-colabello",
             name:"Nick Colabello",
-            phone:"402-350-1879",
+            phone:"",
             note:"Lead from the Troester flyer QR code, 07.28.2026. 1105 Gold Coast Rd, Papillion NE 68046, Walnut Creek Hills. CMA out 07.30. Email in BRAIN, Real_Estate/Context/LEAD_CONTACTS.md.",
             last:"2026-07-28",
             kind:"Lead"
@@ -5431,7 +5431,7 @@ function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]
   } }catch(e){ try{ console.warn("mig245c did not apply:",e&&e.message); }catch(_){} }
 
   /* ===== v21 build 246: SECOND SHOWING ON THE WILLIS LISTING, 08.08.2026 =====================
-     Sat 8/8 2:15pm, Richard Begley, Better Homes, 402-216-4109. Source is Ian's "Spyglass Showings"
+     Sat 8/8 2:15pm, Richard Begley, Better Homes, contact in LEAD_CONTACTS.md. Source is Ian's "Spyglass Showings"
      Apple Note, read directly after the 08.08 restart rebuilt the tccd attribution chain.
 
      WRITTEN THE SAME WAY BUILD 239 WROTE FRIDAY'S, deliberately, so the two are comparable:
@@ -5448,7 +5448,7 @@ function loadProfile(p){ profile=p; let raw=null; try{ const s=store.get(KEYS[p]
     var _sh246={id:"ev-20260808-willis-showing-2",
       title:"SHOWING, 10218 Spyglass Dr, 2:15pm, Richard Begley Better Homes",
       date:"2026-08-08", kind:"Real estate",
-      note:"SECOND showing on the listing, day 2 on market. Richard Begley, Better Homes, 402-216-4109. One hour block, 2:15 to 3:15pm. Source is the Spyglass Showings note. Showing traffic is the input to the DAY 10 decision on Aug 16, so count it there alongside Friday's."};
+      note:"SECOND showing on the listing, day 2 on market. Richard Begley, Better Homes, contact in LEAD_CONTACTS.md. One hour block, 2:15 to 3:15pm. Source is the Spyglass Showings note. Showing traffic is the input to the DAY 10 decision on Aug 16, so count it there alongside Friday's."};
     if(!state.events.some(function(x){ return x&&x.id===_sh246.id; })){
       state.events.push(_sh246); save(true);
     }
@@ -11168,7 +11168,7 @@ try{ if(profile==="ian"){
             +"said yes; RECEIPT OF THAT DOCUMENT IS NOT CONFIRMED anywhere. "
             +"DEADLINES NOW LIVE. Home inspection walk through booked TUESDAY 25 AUGUST 11:00 AM, inspector Andy, ordered 19 August as "
             +"inspection plus RADON plus TERMITE. Inspection notice or rejection due within 3 calendar days of the inspection, so FRIDAY 28 "
-            +"AUGUST. Closing FRIDAY 4 SEPTEMBER. Title is AMBASSADOR TITLE SERVICES, Cjensen@ambassadortitle.com, and they opened the file "
+            +"AUGUST. Closing FRIDAY 4 SEPTEMBER. Title is AMBASSADOR TITLE SERVICES, contact in LEAD_CONTACTS.md, and they opened the file "
             +"on 21 August. NOTE AN AMBIGUITY, FLAGGED NOT RESOLVED: the 7 business day inspection window could run from acceptance on 18 "
             +"August, giving 27 August, or from the contract becoming primary on 19 August, giving 28 August. The 25 August inspection sits "
             +"inside both readings so nothing turns on it, but do not quote a deadline without settling which one applies. "
@@ -12024,7 +12024,7 @@ try{ if(profile==="ian"){
             k.note=String(k.note||"").trim()
               + " CHECK IN 21 AUGUST 2026, texted by Ian. NO RESPONSE AS AT THAT DATE."
               + " Recorded as fact, not as a problem. No chase task and no follow up deadline"
-              + " were created, Ian gave neither. Email is Monarrezluis2@gmail.com, held in"
+              + " were created, Ian gave neither. Email is held in"
               + " BRAIN LEAD_CONTACTS.md because the app has no email field. NOTE THE"
               + " DISAGREEMENT: he has a LIVE Paragon collaboration site with a saved search"
               + " firing listing matches almost daily through 21 August, which is far warmer"
@@ -16268,25 +16268,25 @@ try{ if(!state.meta.mig379_people && state.realEstate){
     _rx:/scott theobald/i,
     note:"SELLER, 5014 S 163 St, Omaha 68135. CHRIS'S CLIENT, confirmed by Ian 08.17.2026. Deal re-theobald-sell. PHONE AND EMAIL ARE NOT ON FILE ANYWHERE AND ARE NEEDED. THE CO-OWNER'S FIRST NAME IS UNCONFIRMED AND IS LEFT BLANK ON PURPOSE: Ian is not certain it is Nancy at all, and BRAIN instructs that the name is never written. Get both names at the walkthrough. The walkthrough is still unscheduled, it is CHRIS'S to book, and it gates the 15 September list target. Zero photographs of this house exist, so the walkthrough is the only condition evidence there will ever be. Source LEAD_CONTACTS.md." });
 
-  _n+=_add({ id:"pp-bryant-belknap", name:"Bryant Belknap", phone:"402-639-9783", kind:"Contact", last:"",
+  _n+=_add({ id:"pp-bryant-belknap", name:"Bryant Belknap", phone:"", kind:"Contact", last:"",
     _rx:/bryant belknap/i,
-    note:"SELLER AND BUYER, 4946 Pratt St, Omaha 68104. Email grayharring@gmail.com. Chris's client. Titled owner of record on 4946 Pratt, Douglas County PIN 2233350000, as BELKNAP BRYANT JAMES. ON THE 5122 N 141st PURCHASE ONLY BRYANT SIGNS, because he is a trustee of the trust and his signature alone is sufficient. Deals re-belknap-sell and re-belknap-buy. CASH on the purchase, no financing contingency and no lender appraisal, and they buy first then sell, so the sale carries no contingency and no bridge pressure. They homeschool, so the school year start is a non factor and they are largely insulated from the autumn slowdown. Phone recovered 08.24.2026 from Chris's Messages, not from Ian. Source LEAD_CONTACTS.md." });
+    note:"SELLER AND BUYER, 4946 Pratt St, Omaha 68104. Email in LEAD_CONTACTS.md. Chris's client. Titled owner of record on 4946 Pratt, Douglas County PIN 2233350000, as BELKNAP BRYANT JAMES. ON THE 5122 N 141st PURCHASE ONLY BRYANT SIGNS, because he is a trustee of the trust and his signature alone is sufficient. Deals re-belknap-sell and re-belknap-buy. CASH on the purchase, no financing contingency and no lender appraisal, and they buy first then sell, so the sale carries no contingency and no bridge pressure. They homeschool, so the school year start is a non factor and they are largely insulated from the autumn slowdown. Phone recovered 08.24.2026 from Chris's Messages, not from Ian. Source LEAD_CONTACTS.md." });
 
-  _n+=_add({ id:"pp-emily-belknap", name:"Emily Belknap", phone:"817-366-7295", kind:"Contact", last:"",
+  _n+=_add({ id:"pp-emily-belknap", name:"Emily Belknap", phone:"", kind:"Contact", last:"",
     _rx:/emily belknap/i,
-    note:"SELLER, 4946 Pratt St, Omaha 68104, with Bryant Belknap. Email emilybelknap09@gmail.com. Chris's client. Names confirmed 08.24.2026 from Chris's 17 August message asking them directly whether Bryant and Emily Belknap were the proper legal names for the deed. Her number independently matches the handle she texts Chris from. SHE DOES NOT SIGN ON THE 5122 N 141st PURCHASE, only Bryant does, as trustee. Held as a separate record from Bryant because they have separate numbers and separate emails. Source LEAD_CONTACTS.md." });
+    note:"SELLER, 4946 Pratt St, Omaha 68104, with Bryant Belknap. Email in LEAD_CONTACTS.md. Chris's client. Names confirmed 08.24.2026 from Chris's 17 August message asking them directly whether Bryant and Emily Belknap were the proper legal names for the deed. Her number independently matches the handle she texts Chris from. SHE DOES NOT SIGN ON THE 5122 N 141st PURCHASE, only Bryant does, as trustee. Held as a separate record from Bryant because they have separate numbers and separate emails. Source LEAD_CONTACTS.md." });
 
   var _TEAM=" STRAATMANN LENDING GROUP, CMG Home Loans, 701 Olson Drive suites 111 and 112, Papillion NE 68046. THE FOUR CMG CONTACTS ARE ONE TEAM, NOT FOUR APPROACHES. They are colleagues, not competitors, so this is one relationship with several doors and there is nothing awkward to manage. Source LEAD_CONTACTS.md.";
 
-  _n+=_add({ id:"pp-dezmond-straatmann", name:"Dezmond Straatmann", phone:"531-210-7151", kind:"Contact", last:"2026-09-03",
+  _n+=_add({ id:"pp-dezmond-straatmann", name:"Dezmond Straatmann", phone:"", kind:"Contact", last:"2026-09-03",
     _rx:/dezmond/i,
-    note:"JUNIOR LOAN OFFICER, CMG Home Loans. Email dstraatmann@cmghomeloans.com. NMLS 2632551. THE PRIMARY CONTACT of the four and the one who reached out. He is Jeremy Straatmann's son and is motivated to follow his father, which is why a brand new loan officer is doing his own cold outreach to agents. Identification is VERY HIGH confidence: the number Ian holds is published against him by name on CMG's own team page, an exact digit for digit match, and no second candidate on that roster carries it. First contact was a call then a text on Wednesday 8 July 2026. Coffee Wednesday 2 September 9:00 AM at Karma Koffee, lunch Thursday 3 September."+_TEAM });
+    note:"JUNIOR LOAN OFFICER, CMG Home Loans. Email in LEAD_CONTACTS.md. NMLS 2632551. THE PRIMARY CONTACT of the four and the one who reached out. He is Jeremy Straatmann's son and is motivated to follow his father, which is why a brand new loan officer is doing his own cold outreach to agents. Identification is VERY HIGH confidence: the number Ian holds is published against him by name on CMG's own team page, an exact digit for digit match, and no second candidate on that roster carries it. First contact was a call then a text on Wednesday 8 July 2026. Coffee Wednesday 2 September 9:00 AM at Karma Koffee, lunch Thursday 3 September."+_TEAM });
 
-  _n+=_add({ id:"pp-jeremy-straatmann", name:"Jeremy Straatmann", phone:"402-902-8380", kind:"Contact", last:"",
+  _n+=_add({ id:"pp-jeremy-straatmann", name:"Jeremy Straatmann", phone:"", kind:"Contact", last:"",
     _rx:/jeremy straatmann/i,
-    note:"BRANCH MANAGER and team leader, CMG Home Loans. Email jstraatmann@cmgfi.com. NMLS 1645476. Dezmond's father."+_TEAM });
+    note:"BRANCH MANAGER and team leader, CMG Home Loans. Email in LEAD_CONTACTS.md. NMLS 1645476. Dezmond's father."+_TEAM });
 
-  _n+=_add({ id:"pp-matt-harrison-cmg", name:"Matt Harrison", phone:"402-699-3129", kind:"Contact", last:"",
+  _n+=_add({ id:"pp-matt-harrison-cmg", name:"Matt Harrison", phone:"", kind:"Contact", last:"",
     _rx:/matt harrison/i,
     note:"PRODUCTION MANAGER, CMG Home Loans. NMLS 2436856. NO EMAIL ON FILE."+_TEAM });
 
@@ -17094,7 +17094,7 @@ try{ if(!state.meta.mig386_re && state.realEstate){
       note:"SURNAME NOT KNOWN AND DELIBERATELY EMPTY. NO PHONE AND NO EMAIL, and that is not an "
         +"unchecked field: he is the BUYER on a co-op and he has his own agent, so there is no "
         +"direct line to him and there should not be one. HIS AGENT IS JULIE TARTAGLIA, BHHS "
-        +"Ambassador, 402-215-2156. Chris owns the Scenic Group side with Ryan Beachler at Rose "
+        +"Ambassador, contact in LEAD_CONTACTS.md. Chris owns the Scenic Group side with Ryan Beachler at Rose "
         +"Creek Homes. Blondo Point Lot 185, walkout ranch, $815,000 to $825,000 contingent on "
         +"plans and specs. Deal re-jed-lot185. Source LEAD_CONTACTS.md, created 10.09.2026."
     });
@@ -24273,7 +24273,7 @@ try{ if(profile==="ian" && state.meta && !state.meta.mig479_mattox_offer && stat
         competition:"THREE OTHER PARTIES ARE CIRCLING. This is not the only one in play.",
         price:"$464,900, FULL PRICE",
         expires:"10pm tonight, 08.10.2026",
-        buyer:{ name:"Melissa", phone:"402-880-1441", email:"Mdsinger79@gmail.com",
+        buyer:{ name:"Melissa", phone:"", email:"", contactRef:"Phone and email live in BRAIN/Real_Estate/Context/LEAD_CONTACTS.md. They were stripped from this file on 08.10.2026 because index.html deploys to a public URL and she is an unrepresented customer, not a client.",
           represented:false,
           relationship:"CUSTOMER, NOT A CLIENT. Ian is signing her as a customer. He does NOT represent her. His only client remains the SELLER, through the team. THERE IS NO DUAL AGENCY and this record must never be read as one." },
         terms:{ financing:"FINANCED, NOT CASH. The cash reference was the EARNEST, not the purchase.",
@@ -24308,6 +24308,41 @@ try{ if(profile==="ian" && state.meta && !state.meta.mig479_mattox_offer && stat
     state.meta.mig479_mattox_offer=true; save(true);
     try{ console.log("mig479: mattox offer recorded, projections rebuilt"); }catch(_){}
 } }catch(e){ try{ console.warn("mig479 did not apply:",e&&e.message); }catch(_){} }
+
+/* ===== v21 build 480: PRIVACY STRIP, AND THE JANUARY LOW POINT NOBODY IS WATCHING =========
+   TWO THINGS, 08.10.2026.
+
+   ONE, THE PRIVACY FIX THAT PROMPTED THE BUILD. Build 479 wrote an unrepresented buyer's
+   personal phone number and email into this file. index.html deploys to a public Pages URL
+   where the passcode is client side only and does NOT stop anyone fetching the raw file, so
+   her details were publicly readable. She is a CUSTOMER, NOT A CLIENT. Her details, and every
+   other third party's, are stripped from this file and now live in
+   BRAIN/Real_Estate/Context/LEAD_CONTACTS.md. Seventeen values across twelve people were
+   removed. Ian's own number, his own work email and the NP Dodge main line were left, because
+   those are his, not a third party's. STANDING RULE: third party contact details do not go in
+   this file.
+
+   TWO, THE COMBINATION NOBODY IS WATCHING. The binding low point is currently 6 November. It
+   MOVES if two things happen together: Mattox closes 6 JANUARY rather than in December, AND
+   the Methodist payment lands. Either one alone is fine. December alone is fine. 6 January
+   alone is fine. TOGETHER they put the low point in EARLY JANUARY at about MINUS $833.
+   This is appended to cashNote because that is a field Ian actually reads on the finance
+   surface, rather than left in a report he may not open.
+
+   Guard state.meta.mig480_privacy_jan, end of chain, SEED_VERSION stays 13. */
+try{ if(profile==="ian" && state.meta && !state.meta.mig480_privacy_jan){
+    var _F8=state.finance; 
+    if(_F8 && typeof _F8==="object"){
+      var _JAN=" || WATCH THE COMBINATION, added 08.10.2026: the low point is 6 November TODAY, but if Mattox closes 6 JANUARY *and* the Methodist payment lands, it moves to EARLY JANUARY at about MINUS $833. Either one alone is fine. It is only the pair. Nobody is tracking this.";
+      if(typeof _F8.cashNote==="string" && _F8.cashNote.indexOf("WATCH THE COMBINATION")<0){
+        _F8.cashNote=_F8.cashNote+_JAN;
+      } else if(typeof _F8.cashNote!=="string"){
+        _F8.cashNote=_JAN.replace(/^ \|\| /,"");
+      }
+    }
+    state.meta.mig480_privacy_jan=true; save(true);
+    try{ console.log("mig480: privacy strip recorded, january combination noted"); }catch(_){}
+} }catch(e){ try{ console.warn("mig480 did not apply:",e&&e.message); }catch(_){} }
 
   /* build 372: LAST THING BEFORE THE SAVE. Every migration above has run, deepMergeDefaults
      has run, so this is the only point in the file where the state is actually final. */
