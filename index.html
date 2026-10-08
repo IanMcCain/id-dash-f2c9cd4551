@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 476 (2026-10-07)">
+<meta name="build" content="v21 build 477 (2026-10-07)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -24005,6 +24005,105 @@ try{ if(profile==="ian" && state.meta && !state.meta.mig476_pk1007 && state.pick
     state.meta.mig476_pk1007=true; save(true);
     try{ console.log("mig476: session added, coaching note added, money surfaces reconciled"); }catch(_){}
 } }catch(e){ try{ console.warn("mig476 did not apply:",e&&e.message); }catch(_){} }
+
+/* ===== v21 build 477: THEOBALD. THE PRESENTATION LANDED, AND THE BUY SIDE IS THE BIGGER HALF
+   THE OUTCOME OF THE 7 OCTOBER 6:30 PM PRESENTATION.
+
+   1. PRICE AGREED AS A BAND, NOT A NUMBER: $325,000 to $330,000. It is stored as a band because
+      that is what they agreed. IT SITS INSIDE OUR LADDER: the recommendation was $329,900 and the
+      fast tier was $324,900, so the band brackets our number and reaches down to our fast tier.
+      Recorded as a hit, not as a win, because the band is theirs and the ladder was ours.
+
+   2. THEY ARE LISTING IN SPRING, NOT NOW. The presentation did NOT produce an October or November
+      listing. THE SELL SIDE LEAVES THE 2026 POSITION ENTIRELY. Stage moves to Prospecting with no
+      list date, on the same pattern as the Sydney Spicer spring 2027 record.
+      WHAT THAT DOES TO THE MONEY, STATED PLAINLY SO NOBODY LOOKS FOR A HOLE: NOTHING. Theobald was
+      never in the four deal figure and was never modelled as landing in 2026, so the cash curve,
+      the November trough and the mid January position are all UNCHANGED by this. What changes is
+      the weighted pipeline, which loses a $1,957.79 gross line that was carried at 30 percent.
+
+   3. THEY ARE ALSO BUYING, $500,000 TO LOW $600,000, IN CASH. That is new and it is the bigger
+      half. Created as its own deal, re-theobald-buy.
+
+   THE SPLIT WAS VERIFIED, NOT ASSUMED, AND IT MATTERS MORE THAN THE PRICE.
+   The sell side record carries source "Chris's client" in the field and ianSplit 0.2, and the note
+   says "Chris's client, 20 percent share" in those words. SO THE BUY SIDE INHERITS 0.20.
+   AT 0.20, buyer side 2.4 percent, less 15 percent brokerage:
+     $500,000 = $2,040.00 gross, $1,428.00 post tax
+     $600,000 = $2,448.00 gross, $1,713.60 post tax
+   IF IT WERE EVER TREATED AS IAN'S OWN CLIENT AT 0.80 it would be $8,160 to $9,792 gross, which is
+   four times the money. THE SPLIT IS THE DOMINANT VARIABLE ON THIS DEAL, far more than the price
+   band, and ONLY IAN CAN CHANGE IT. It is recorded at 0.20 and flagged for his confirmation.
+
+   THE CASH POINT, WORKED RATHER THAN ASSERTED. A cash buyer has no financing contingency and no
+   appraisal gate, so the purchase can close in two to three weeks from contract instead of thirty
+   to forty five days. MODELLED AT A 15 DECEMBER CLOSE, at the centre burn:
+     Without Methodist, mid January goes from about $2,789 to about $4,217 at $500,000, or about
+     $4,502 at $600,000.
+     With Methodist, mid January goes from about $231 to about $1,659, or about $1,945.
+   SO IT MATERIALLY IMPROVES THE THIN END OF THE WINDOW, and the with Methodist case stops being
+   near zero.
+   AND IT DOES NOT TOUCH THE TROUGH, WHICH IS THE PART THAT ACTUALLY BINDS. The low point is 6
+   November at about $963, and tonight was the first conversation. Nothing that starts tonight can
+   be under contract and closed before then, cash or not. A cash buyer closes fast once there is a
+   contract; it cannot close before there is one.
+
+   THE SEQUENCING QUESTION IS FLAGGED AND DELIBERATELY NOT RESOLVED. Buyers who are also selling
+   commonly want the sale lined up first, and these two have chosen spring for the sale. THE BUY
+   SIDE MAY OR MAY NOT MOVE INDEPENDENTLY OF THAT. Nothing here assumes it does. The December model
+   above is an ILLUSTRATION OF WHAT A CASH CLOSE WOULD DO, not a forecast that one happens. One
+   question to Ian settles it: are they shopping now, or waiting for the spring sale.
+
+   No superlative is claimed. Guard state.meta.mig477_theobald, end of chain, SEED stays 13. */
+try{ if(profile==="ian" && state.meta && !state.meta.mig477_theobald && state.realEstate){
+    var _R7=state.realEstate;
+    var _T7=null; (_R7.deals||[]).forEach(function(d){ if(d&&d.id==="re-theobald-sell") _T7=d; });
+    if(_T7){
+      _T7.stage="Prospecting";
+      _T7.price="$325,000 to $330,000";
+      _T7.close="Lists spring 2027, no date set";
+      _T7.outcome={ event:"Listing presentation, 7 October 2026, 6:30 PM",
+        priceAgreed:"$325,000 to $330,000, AS A BAND. Stored as a band because that is what they agreed, not as a single number.",
+        againstOurLadder:"INSIDE IT. Our recommendation was $329,900 and our fast tier was $324,900, so their band brackets our number and reaches our fast tier.",
+        timing:"SPRING, NOT NOW. The presentation did not produce an October or November listing.",
+        effectOn2026:"THE SELL SIDE IS OUT OF THE 2026 POSITION ENTIRELY. It was never in the four deal figure and was never modelled as landing in 2026, so the cash curve, the November trough and the mid January position are UNCHANGED. What changes is the weighted pipeline, which loses a $1,957.79 gross line carried at 30 percent." };
+      _T7.priceNote="AGREED BAND $325,000 to $330,000, 07.10.2026, from the presentation. This supersedes the $329,900 recommendation, which was ours. SPRING 2027 LISTING.";
+    }
+    var _has7=false; (_R7.deals||[]).forEach(function(d){ if(d&&d.id==="re-theobald-buy") _has7=true; });
+    if(!_has7){
+      (_R7.deals=_R7.deals||[]).push({
+        id:"re-theobald-buy", title:"Theobald", sub:"Buy side, cash purchase, $500,000 to low $600,000",
+        stage:"Prospecting", side:"Buyer", price:"$500,000 to low $600,000",
+        close:"No date. Timing depends on the sequencing question below.",
+        source:"Chris's client", ianSplit:0.2,
+        created:"2026-10-07, from the listing presentation.",
+        rateNote:"NO RATE FIELD IS SET ON PURPOSE. dealActualRate ignores sellerRate on a Buyer side deal and returns the hardcoded 2.4 percent buyer standard, so writing a sellerRate here would be dead weight that a later reader could misread. The 2.4 percent comes from the model.",
+        priceParsingNote:"THE PRICE IS A RANGE, so the app's computed figure reads the LOW END, $500,000. Treat the card number as the bottom of the band, not the expectation.",
+        cash:{ isCash:true,
+          whatItMeans:"NO FINANCING CONTINGENCY AND NO APPRAISAL GATE, so a purchase can close in two to three weeks from contract rather than thirty to forty five days.",
+          whatItDoesNotMean:"IT CANNOT CLOSE BEFORE THERE IS A CONTRACT. Tonight was the first conversation, so nothing here reaches the 6 November trough." },
+        splitCheck:{ applied:0.2,
+          verifiedHow:"NOT ASSUMED. The sell side record carries source 'Chris's client' in the field, ianSplit 0.2, and its note says 'Chris's client, 20 percent share' in those words. The buy side inherits it.",
+          sensitivity:"THE SPLIT IS THE DOMINANT VARIABLE ON THIS DEAL. At 0.20 it is $2,040 to $2,448 gross. At an own client 0.80 it would be $8,160 to $9,792, four times the money.",
+          whoCanChangeIt:"ONLY IAN. Flagged for his confirmation and left at 0.20 until he says otherwise." },
+        estimate:{ model:"Buyer side 2.4 percent, less 15 percent brokerage, times the 0.20 share.",
+          at500k:"$2,040.00 gross, $1,428.00 post tax",
+          at600k:"$2,448.00 gross, $1,713.60 post tax" },
+        sequencing:{ question:"ARE THEY SHOPPING NOW, OR WAITING FOR THE SPRING SALE?",
+          why:"Buyers who are also selling commonly want the sale lined up first, and they have chosen spring for the sale. The buy side may or may not move independently of it.",
+          handling:"FLAGGED, NOT RESOLVED. Nothing in this record assumes the buy side moves first, and no probability is set on it for that reason. One question to Ian settles it." },
+        note:"NEW 07.10.2026, from the listing presentation. They are buying as well as selling, $500,000 to low $600,000, IN CASH, and this is the bigger half of the relationship. Chris's client, 0.20 share, verified against the sell side record rather than assumed. A cash purchase has no financing contingency and no appraisal gate so it can close fast once under contract, but tonight was the first conversation and nothing here lands before the 6 November trough. Whether it moves independently of the spring sale is a question for Ian and is not assumed here.",
+        result:"", score:"", opponent:"", copyOwned:true
+      });
+    }
+    if(_R7.positionAsOf){
+      _R7.positionAsOf.theobald="SELL SIDE OUT OF 2026, agreed at a $325,000 to $330,000 band and listing in SPRING. It was never in the four deal figure, so the cash curve, the trough and the mid January position are unchanged. BUY SIDE ADDED, $500,000 to low $600,000 in CASH at the verified 0.20 Chris's client share: $2,040 to $2,448 gross, $1,428 to $1,714 post tax.";
+      _R7.positionAsOf.cashBuyIllustration="ILLUSTRATION, NOT A FORECAST. A cash close on 15 December at the centre burn takes mid January from about $2,789 to about $4,217 at $500,000 or about $4,502 at $600,000 without Methodist, and from about $231 to about $1,659 or about $1,945 with it. IT DOES NOT TOUCH THE 6 NOVEMBER TROUGH, which stays at about $963, because nothing starting tonight can close before then.";
+      _R7.positionAsOf.openQuestion="Whether the Theobald buy side moves independently of their spring sale. FLAGGED FOR IAN, not resolved here, and no probability is set on the buy side because of it.";
+    }
+    state.meta.mig477_theobald=true; save(true);
+    try{ console.log("mig477: theobald sell moved to spring, buy side created, deals now "+(_R7.deals||[]).length); }catch(_){}
+} }catch(e){ try{ console.warn("mig477 did not apply:",e&&e.message); }catch(_){} }
 
   /* build 372: LAST THING BEFORE THE SAVE. Every migration above has run, deepMergeDefaults
      has run, so this is the only point in the file where the state is actually final. */
