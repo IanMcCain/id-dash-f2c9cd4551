@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 477 (2026-10-07)">
+<meta name="build" content="v21 build 478 (2026-10-07)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -24104,6 +24104,101 @@ try{ if(profile==="ian" && state.meta && !state.meta.mig477_theobald && state.re
     state.meta.mig477_theobald=true; save(true);
     try{ console.log("mig477: theobald sell moved to spring, buy side created, deals now "+(_R7.deals||[]).length); }catch(_){}
 } }catch(e){ try{ console.warn("mig477 did not apply:",e&&e.message); }catch(_){} }
+
+/* ===== v21 build 478: THE DISCOVER CORRECTIONS, AND THE BURN MOVES THE OTHER WAY ======
+   THREE FINANCIAL FACTS FROM 7 OCTOBER, PLUS A STALENESS CAVEAT THE TROUGH HAS NEEDED FOR A WEEK.
+
+   1. THE DISCOVER STATEMENT IS $1,526.39. The card carried statementBalance $1,720.63 and a running
+      balance of $2,273.60. The statement is updated. THE $2,273.60 BALANCE IS NOT OVERWRITTEN WITH
+      IT, because a statement balance and a running balance are different things and silently
+      swapping one for the other is how a wrong number gets laundered into a right looking field.
+      The balance is instead marked STALE, dated 20 September, with the statement beside it.
+
+   2. A $1,682.31 DISCOVER PAYMENT POSTED 2 OCTOBER. Recorded as an observed actual.
+
+   3. DISCOVER MOVES TO CAPITAL ONE ON 19 OCTOBER. Recorded on the card with the date.
+
+   THE BURN DIRECTION IS THE OPPOSITE OF THE BRIEF, AND THIS IS THE PART WORTH READING.
+   The brief said the burn is understated by about $676 and the trough gets worse. The $676.40 is
+   right, it is $1,682.31 less $1,005.91. THE SIGN IS WRONG ON THIS APP'S OWN METHOD.
+   burnModel is top down: baseline $3,800, less the bike $420, less the citation $172.95, LESS THE
+   DISCOVER PAYMENT, because a card payment SETTLES spend already counted and debt repayment is
+   never consumption. Its own note says so: deducting the $1,720.63 statement gave about $1,486 and
+   deducting the observed $1,005.91 gave about $2,200, and it called the higher figure the
+   inconvenient answer. A BIGGER PAYMENT IS A BIGGER DEDUCTION, SO THE BURN FALLS.
+     As stored, Discover $1,005.91:            burn $2,201.14, 6 November trough about $961
+     Discover = the observed payment $1,682.31: burn $1,524.74, trough about $1,983
+     Discover = the statement $1,526.39:        burn $1,680.66, trough about $1,748
+   ON EVERY READING THE BURN GOES DOWN AND THE TROUGH GOES UP.
+
+   ONE REASON TO NOT BANK THAT, AND IT IS WHY NO NEW TROUGH NUMBER IS ASSERTED HERE. The payment of
+   $1,682.31 EXCEEDS the $1,526.39 statement by $155.92, which reads as paying the statement in full
+   rather than as a month of spend, so the deduction may be part settlement and part paydown and
+   only the settlement half belongs in the burn. AND THE BIKE IS UNRESOLVED: burnModel still removes
+   $420 for a PAUSED bike, while the 21 September sheet records the bike BACK IN at $143 a month
+   from 30 September. Leaving the $420 removal in place is probably now wrong. Without it:
+     Discover $1,682.31, bike NOT removed: burn $1,944.74, trough about $1,349
+     Discover $1,526.39, bike NOT removed: burn $2,100.66, trough about $1,113
+   SO THE HONEST RANGE ON THE TROUGH TONIGHT IS ROUGHLY $1,100 TO $2,000, every case better than the
+   $963 on the board, and the spread is driven by the bike treatment and the settlement question.
+   NEITHER IS SETTLED HERE and neither is guessed. The $963 is NOT replaced with a new single figure.
+
+   4. THE STALENESS CAVEAT, WHICH IS OVERDUE. The last hard balance read is 20 September. That is
+      SEVENTEEN DAYS OLD tonight. Every surface that states the trough, the $4,287.55 cash or the
+      $2,200 burn now carries that age on its face. A trough computed from a seventeen day old
+      balance is a projection, not a measurement, and it should not be quoted with confidence.
+
+   NO DEAL FACTS CHANGED. All eight were re-checked against what we hold and all eight were already
+   right: Theobald sell at the $325,000 to $330,000 band listing spring and out of 2026, Theobald
+   buy at $500,000 to low $600,000 cash LEFT AT THE 0.20 SPLIT AS RECORDED because that is Ian's
+   call and he has not answered, Mattox $464,900 listing 8 October, Willis Under Contract $610,000
+   closing about 6 November, Belknap and Vogel 15 October, Hernandez Coming Soon 12 November at
+   $450,000 with the measured basement, Rose Creek retired, Spicer $0, Teske early to mid January.
+
+   BUILD 477 LANDED ON ITS OWN. Live read 477 with md5 66b9fa41bd7274228e9824b44f336ab7, matching
+   local exactly, so the Pages lag resolved and no re-deploy was needed.
+
+   No superlative is claimed and no weekday gym assertion is written. Guard
+   state.meta.mig478_discover, end of chain, SEED_VERSION stays 13. */
+try{ if(profile==="ian" && state.meta && !state.meta.mig478_discover && state.finance){
+    var _F=state.finance;
+    var _dc=null; (_F.cards||[]).forEach(function(c){ if(c&&c.id==="discover") _dc=c; });
+    if(_dc){
+      _dc.statementBalance=1526.39;
+      _dc.statementAsOf="2026-10-07";
+      _dc.statementNote="STATEMENT $1,526.39 as at 07.10.2026. This REPLACES the $1,720.63 the card carried.";
+      _dc.balanceStale="THE $2,273.60 BALANCE IS A 20 SEPTEMBER READ AND IS SEVENTEEN DAYS OLD. It is NOT overwritten with the statement figure, because a running balance and a statement balance are different things. Treat it as stale until a fresh read.";
+      _dc.payments=[{ date:"2026-10-02", amount:1682.31,
+        note:"OBSERVED ACTUAL. It EXCEEDS the $1,526.39 statement by $155.92, which reads as paying the statement in full rather than as one month of spend." }];
+      _dc.migration={ to:"Capital One", on:"2026-10-19",
+        note:"Discover moves to Capital One on 19 October 2026. Expect the card id, the statement cycle and any Rocket Money linkage to change on that date." };
+    }
+    if(_F.burnModel){
+      _F.burnModel.correction20261007={
+        observedPayment:1682.31, paymentDate:"2026-10-02", statement:1526.39,
+        againstModel:"The model deducts a Discover payment of $1,005.91. The observed payment is $1,682.31, a difference of $676.40.",
+        directionWarning:"THE SIGN MATTERS AND IT RUNS THE OTHER WAY. This model deducts the payment because a card payment settles spend already counted. A BIGGER PAYMENT IS A BIGGER DEDUCTION, SO THE BURN FALLS. Deducting $1,682.31 gives about $1,524.74 and deducting the $1,526.39 statement gives about $1,680.66, against the $2,201.14 on the board.",
+        whyNotBanked:"The payment exceeds the statement by $155.92, so part of it may be paydown rather than settlement and only the settlement half belongs in the burn. SEPARATELY THE BIKE IS UNRESOLVED: this model still removes $420 for a PAUSED bike while the record has it BACK IN at $143 a month from 30 September. Without the $420 removal the same two readings give about $1,944.74 and about $2,100.66.",
+        troughRange:"ROUGHLY $1,100 TO $2,000 on 6 November across those four readings, every one of them better than the $963 currently stated. NO NEW SINGLE FIGURE IS ASSERTED and the $963 is left in place as the conservative number until the bike and the settlement question are answered.",
+        openQuestions:["Is the bike $143 a month in the burn or not, and does the $420 removal come out?","Was the $1,682.31 a month of spend settled, or spend plus paydown?"]
+      };
+      _F.burnModel.result="about $2,200 a month, AND IT IS NOW CONTESTED. See correction20261007: tonight's Discover figures push it down to roughly $1,525 to $2,101 depending on the bike treatment and whether the payment was settlement or paydown.";
+    }
+    _F.staleness={ lastHardRead:"2026-09-20", ageAtWrite:"17 days as at 07.10.2026",
+      what:"Every cash figure in this app, including the $4,287.55 spendable and everything computed from it, rests on a 20 September balance read.",
+      rule:"A TROUGH COMPUTED FROM A SEVENTEEN DAY OLD BALANCE IS A PROJECTION, NOT A MEASUREMENT. Do not quote it with confidence and do not present it as his cash position. One fresh balance read closes this." };
+    var _stale=" CAVEAT, 07.10.2026: this rests on a 20 SEPTEMBER balance read, now seventeen days old, so it is a projection and not a measurement. The burn behind it is also contested, see finance.burnModel.correction20261007, where tonight's Discover figures push the burn DOWN and the trough UP to roughly $1,100 to $2,000.";
+    var _W8=null; (state.realEstate.deals||[]).forEach(function(d){ if(d&&d.id==="re-cynthia-willis") _W8=d; });
+    if(_W8 && _W8.yearEnd && String(_W8.yearEnd.trough||"").indexOf("CAVEAT, 07.10.2026")<0){ _W8.yearEnd.trough=String(_W8.yearEnd.trough)+_stale; }
+    if(state.realEstate && state.realEstate.positionAsOf){
+      var _p=state.realEstate.positionAsOf;
+      if(String(_p.trough||"").indexOf("CAVEAT, 07.10.2026")<0) _p.trough=String(_p.trough)+_stale;
+      if(String(_p.conventions||"").indexOf("CAVEAT, 07.10.2026")<0) _p.conventions=String(_p.conventions)+" CAVEAT, 07.10.2026: the $4,287.55 is a 20 SEPTEMBER read, seventeen days old, and the $2,200 burn is contested by tonight's Discover figures. See finance.staleness and finance.burnModel.correction20261007.";
+      _p.dealsVerified="2026-10-07, build 478. All eight re-checked against what we hold and all eight were already correct. Theobald buy LEFT AT THE 0.20 SPLIT AS RECORDED, because that is Ian's call and he has not answered it.";
+    }
+    state.meta.mig478_discover=true; save(true);
+    try{ console.log("mig478: discover corrected, burn direction flagged, staleness caveats written"); }catch(_){}
+} }catch(e){ try{ console.warn("mig478 did not apply:",e&&e.message); }catch(_){} }
 
   /* build 372: LAST THING BEFORE THE SAVE. Every migration above has run, deepMergeDefaults
      has run, so this is the only point in the file where the state is actually final. */
