@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 483 (2026-10-08)">
+<meta name="build" content="v21 build 484 (2026-10-09)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -24597,6 +24597,304 @@ try{ if(profile==="ian" && state.meta && !state.meta.mig483_mattox_sold){
     state.meta.mig483_mattox_sold=true; save(true);
     try{ console.log("mig483: mattox sold 490k, under contract, closing 13 november"); }catch(_){}
 } }catch(e){ try{ console.warn("mig483 did not apply:",e&&e.message); }catch(_){} }
+
+
+/* ===== v21 build 484, APP-31: THE TEXT PASS AND ROCKET MONEY CORRECTIONS ==============
+   Every item below was verified against the underlying state before being written, by
+   loading the real 28 August export through build 483 and querying the DATA for all
+   clients and all days, not today's DOM. Seven of the fourteen corrections were already
+   correct in the app and are NOT rewritten; the rest are here.
+
+   WHERE THE REAL ESTATE FACTS GO, AND WHY NOT INTO NEW FIELDS. re391ClientRow renders a
+   deal through exactly three disclosures: Timing from close, On the price from priceNote,
+   and Full note from note. A new field such as buyerAgent or waterEvent has no render
+   path, so writing one would record the fact and hide it, which is the defect this pass
+   exists to close. The new facts therefore go into note, which already renders, exactly
+   as every prior build folded its updates in. No new fields, sections or widgets.
+
+   RUSSELL SPEEDER'S MOVES BACK INTO subscriptions AND THAT IS THE WHOLE POINT. The
+   cancelled array has had no render surface since build 426 and is excluded from every
+   live total. Leaving a charge that is still billing inside it understated his recurring
+   spend by $31.02 a month and kept it off the page. The cancelled entry is corrected in
+   place rather than deleted, per the build 426 rule that nothing is deleted.
+
+   Guard state.meta.mig484_app31_deepdive, end of chain, SEED_VERSION stays 13. */
+try{ if(profile==="ian" && state.meta && !state.meta.mig484_app31_deepdive){
+
+  /* ---------- REAL ESTATE ---------- */
+  var _D84=(state.realEstate && state.realEstate.deals)||[];
+  var _get84=function(id){ for(var i=0;i<_D84.length;i++){ if(_D84[i]&&_D84[i].id===id) return _D84[i]; } return null; };
+  var _fold84=function(d,marker,text){
+    if(!d) return false;
+    var cur=String(d.note||"");
+    if(cur.indexOf(marker)>-1) return false;
+    d.note=(cur.trim()? cur.replace(/\s+$/,"")+"  " : "")+text;
+    return true;
+  };
+
+  /* BELKNAP IS $250,000, NOT $249,900. Chris told the sellers on 29 September and Ian
+     agreed. The $249,900 was the CMA rev 4 recommendation and our own 51st percentile
+     figure; it stays on the record as history in note and in cma, superseded not erased. */
+  var _bk=_get84("re-belknap-sell");
+  if(_bk){
+    _bk.price="$250,000";
+    _bk.priceNote="LIST PRICE IS $250,000, agreed 29 September 2026. Chris told the sellers $250,000 and Ian agreed, his words: \"250 so we don't loose buyers on the pricing bridge.\" This supersedes the $249,900 set 20.09.2026, which was the CMA rev 4 recommendation and the 51st percentile of the measured cohort. The $100 is not the point; the round number sits on the search band boundary buyers actually filter on.";
+    _fold84(_bk,"PRICE CORRECTED 29.09.2026",
+      "PRICE CORRECTED 29.09.2026 TO $250,000. Chris told the sellers $250,000 and Ian agreed: \"250 so we don't loose buyers on the pricing bridge.\" Everything above about $249,900, including the CMA rev 4 recommendation, the 51st percentile reasoning and the whole four move price history, stands as the record of how the number was reached and is not erased. The live list price is $250,000.");
+  }
+
+  /* MATTOX. Three facts the record did not hold: who won, the appraisal gap clause that is
+     in the executed purchase agreement, and the backup offer. The record already had the
+     $490,000, the 13 November close, the 20 percent listing side role and the $2,508.80
+     gross, all verified correct here and left alone. */
+  var _mx=_get84("re-mattox-sell");
+  if(_mx){
+    _fold84(_mx,"WINNER, CLAUSE AND BACKUP, RECORDED 09.10.2026",
+      "WINNER, CLAUSE AND BACKUP, RECORDED 09.10.2026. The winning buyer is represented by Alec Skradski of BHHS Ambassador. The executed purchase agreement carries an APPRAISAL GAP CLAUSE, so a low appraisal does not by itself hand the buyer a walk, and that is a materially better position than the open financing question above implies on its own. There is also a BACKUP OFFER AT $475,000 WITH NO HOME SALE CONTINGENCY, held by agreement. Read the two together: the backup is $15,000 below the accepted price and carries less contingency risk, so a failure on the primary is a price cut of $15,000 rather than a return to market. Ian is listing side only at 20 percent on either.");
+  }
+
+  /* WILLIS. THE 1 OCTOBER WATER EVENT WAS ON NO BOARD ANYWHERE. It is the single largest
+     gap this pass found. It goes on the record with its date, its position in the sequence
+     and the mold warranty fact, and nothing is inferred beyond what was stated. */
+  var _wl=_get84("re-cynthia-willis");
+  if(_wl){
+    _fold84(_wl,"WATER IN THE BAR AREA, 1 OCTOBER 2026",
+      "WATER IN THE BAR AREA, 1 OCTOBER 2026, AND IT WAS ON NO RECORD ANYWHERE UNTIL NOW. 1.5 inches of water in the bar area on 1 October, AFTER the mold remediation and FIVE DAYS BEFORE the 6 October contract that carries NO HOME INSPECTION. The sequence is the fact: remediation, then water, then a contract with no inspection. Also recorded: THERE IS NO TRANSFERABLE MOLD WARRANTY. Nebraska requires a repaired material defect to be disclosed, and a recurrence after remediation with no transferable warranty behind it is a disclosure question on its own terms, separate from the VA appraisal that this record already names as the live risk. Nothing here is a legal opinion and no probability is moved: the 0.98 and the appraisal risk are left exactly as Ian set them.");
+  }
+
+  /* WILLIS, SECOND DEFECT, AND THIS ONE WAS ON THE SCREEN. Her row rendered
+     "At risk. [object Object]" on EVERY PAGE of the app, because dealRow does
+     reTidy(d.riskLine||d.risk), mig474 wrote risk as an OBJECT, and no riskLine was ever
+     set alongside it. Found by reading the rendered page rather than the record. riskLine
+     is the field the renderer reaches for first and it is built from the object's own
+     words, so nothing is invented and the object is left intact. */
+  if(_wl && _wl.risk && typeof _wl.risk==="object" && !_wl.riskLine){
+    _wl.riskLine="THE VA APPRAISAL. There is no inspection contingency, but a Notice of Value under $610,000 lets the buyer walk. Nothing is paid until it clears.";
+  }
+
+  /* MATTOX, AND THIS ONE WAS ALSO ON THE SCREEN. The row's face read "Lists 8 October
+     2026" on a house that is SOLD and under contract to close 13 November. close is the
+     field dealRow renders, and it had been left holding a list date through the sale.
+     expectedClose already held the right date; close now agrees with it. closeOn is set
+     at the same time so the build 374 stale stage watchdog can actually watch this deal,
+     which is the one job that field exists for. */
+  if(_mx && /Lists 8 October/.test(String(_mx.close||""))){
+    _mx.close="Closes 13 November 2026, earlier if the parties can manage it";
+    _mx.closeOn="2026-11-13";
+    _mx.listStatus=String(_mx.listStatus||"")+" LISTED 8 October 2026 and SOLD; the list date moved off the close field on 09.10.2026 because the row was showing a list date for a house already under contract.";
+  }
+
+  /* VOGEL. The record carried only Ian's 28.09 "may have a leak" with source, location and
+     severity all unknown. There is a real history behind it and the house lists in six
+     days. The price and probability are NOT moved: revisitWhy already says moving either
+     on an unconfirmed leak would be inventing a number, and that still holds. */
+  var _vg=_get84("re-vogel-sell");
+  if(_vg){
+    _fold84(_vg,"ROOF AND WATER HISTORY, RECORDED 09.10.2026",
+      "ROOF AND WATER HISTORY, RECORDED 09.10.2026, PREVIOUSLY UNRECORDED. There is a roof and water history on this house that the record did not hold: damp ceiling spots in the TV room with an estimate from Emerald against them, and NEW LEAKS TRICKLING AT THE BASE OF A WALL ON 1 OCTOBER. This is what sits behind Ian's 28.09 \"may have a leak\" and it is more than a may: there is a prior history, an estimate and a fresh occurrence. IT LISTS IN SIX DAYS, on 15 October. The CMA's own findings to price rule says active moisture is fixed before launch rather than repriced, so this is a pre launch item and not a price move. The price stays $329,900 and the probability stays as Ian set them, unchanged, because nothing here is a measured cost.");
+  }
+
+  /* THEOBALD. The band taken into the room was $320,000 to $340,000 with a hard $340,000
+     ceiling. And the spring listing and the cash purchase have ZERO corroboration across
+     289,937 messages: both came from Ian only. That is not a doubt about Ian, it is the
+     provenance, and a record that cannot say where a fact came from is how a single
+     unverified sentence becomes a settled number on four surfaces. */
+  var _th=_get84("re-theobald-sell");
+  if(_th){
+    _th.price="$320,000 to $340,000";
+    _th.priceNote="BAND TAKEN INTO THE ROOM WAS $320,000 TO $340,000 WITH A HARD $340,000 CEILING, corrected 09.10.2026. This supersedes both the $325,000 to $330,000 recorded from the 07.10 presentation and the $329,900 single point recommendation, which was ours. The ceiling is the operative half: $340,000 is hard, so the top of the band is a limit and not a stretch target. SPRING 2027 LISTING, AND THAT TIMING IS IAN SOURCED ONLY, see the note.";
+    _fold84(_th,"PROVENANCE, 09.10.2026",
+      "PROVENANCE, 09.10.2026, AND IT APPLIES TO THE TIMING RATHER THAN THE PRICE. The SPRING 2027 LISTING has ZERO CORROBORATION across 289,937 messages. It came from Ian and from nowhere else. It is carried because he said it, and it is marked because nothing independent supports it. Treat the spring date as unverified, not as agreed with the sellers. The band was also corrected the same day: $320,000 to $340,000 with a hard $340,000 ceiling, superseding $325,000 to $330,000.");
+  }
+  var _tb=_get84("re-theobald-buy");
+  if(_tb){
+    _fold84(_tb,"PROVENANCE, 09.10.2026",
+      "PROVENANCE, 09.10.2026. THE CASH PURCHASE HAS ZERO CORROBORATION across 289,937 messages. It came from Ian and from nowhere else. Everything this record builds on the cash fact, the no financing contingency, the no appraisal gate and the two to three week close, inherits that provenance and is only as good as it. The cash block already says a purchase cannot close before there is a contract; this adds that the cash itself is unverified. No probability is set here and none should be.");
+  }
+
+  /* TESKE. Zero messages in the window. The record already marked the January date
+     unconfirmed; the $820,000 was asserted bare and now carries the same marking. */
+  var _tk=_get84("re-teskes");
+  if(_tk){
+    _fold84(_tk,"VERIFICATION, 09.10.2026",
+      "VERIFICATION, 09.10.2026: ZERO MESSAGES IN THE WINDOW. Nothing touched this file in the search window at all, so there is no new information in either direction. BOTH the $820,000 and the early to mid January finish STAY UNVERIFIED. The price has been carried bare and it should not be; it is an estimate of the same vintage as the January date, which this record already marks as the part Ian is not sure of. A clean search is not corroboration.");
+  }
+
+  /* ---------- FINANCE ---------- */
+  var _F84=state.finance;
+  if(_F84 && typeof _F84==="object"){
+
+    /* FRESH BALANCE. Replaces the 20 September read that every cash figure rested on.
+       read is set equal to balance and the three sweep fields come off the account: they
+       existed only to explain why the 20 September read of $9,287.55 was not spendable.
+       The sweep itself is NOT lost, finance.taxSweep holds it with its own correction. */
+    var _ac=(_F84.accounts)||[];
+    for(var _i84=0;_i84<_ac.length;_i84++){
+      var _a=_ac[_i84];
+      if(!_a) continue;
+      if(_a.id==="fnbo8909"){
+        _a.balance=2576; _a.read=2576;
+        try{ delete _a.sweptOut; }catch(_x){}
+        try{ delete _a.sweepFor; }catch(_x){}
+        try{ delete _a.sweepOn; }catch(_x){}
+      }
+      /* savings is already exactly right and is deliberately NOT touched: balance 1000
+         against floor 1000 is $0 saved, which is what the floor-acts-as-zero rule in
+         finance.savings.source already produces. Verified, not rewritten. */
+    }
+    _F84.asOf="2026-10-09";
+    _F84.asOfTime="";
+    _F84.source="Rocket Money, synced today";
+
+    /* The series gets its third observation. It still will not draw: fnSpark refuses under
+       five points, which is the build 418 refusal and it is correct. Recorded so the
+       series is true, not so something appears. */
+    if(Object.prototype.toString.call(_F84.balanceSeries)!=="[object Array]") _F84.balanceSeries=[];
+    var _hasD=function(d){ for(var i=0;i<_F84.balanceSeries.length;i++){ if(_F84.balanceSeries[i]&&_F84.balanceSeries[i].d===d) return true; } return false; };
+    if(!_hasD("2026-10-09")) _F84.balanceSeries.push({ d:"2026-10-09", v:2576, src:"Rocket Money" });
+
+    /* AMEX GOLD IS $703, NOT $0. The $0 was carried as the honest picture of a card he had
+       not used. He has used it. At a $450 recommended monthly spend the scale now draws
+       over its mark, which is the true reading and not a defect. */
+    /* DISCOVER IS $1,580. */
+    var _cd=(_F84.cards)||[];
+    for(var _j84=0;_j84<_cd.length;_j84++){
+      var _c=_cd[_j84];
+      if(!_c) continue;
+      if(_c.id==="amexgold"){
+        _c.balance=703;
+        _c.balanceSource="Rocket Money, synced 09.10.2026. SUPERSEDES THE $0. The zero was correct when it was written and was rendered as a card not yet used; it is no longer true and nothing should describe this card as unused.";
+      }
+      if(_c.id==="discover"){
+        _c.balance=1580;
+        _c.balanceSource="Rocket Money, synced 09.10.2026. SUPERSEDES THE $2,273.60 FNBO-era read of 20.09 and Ian's $2,370 confirmation of 21.09, both of which are now old. The stored pending charges, statementBalance and available are from 20 September and have NOT been updated, so do not add them to this balance or reconcile them against it.";
+      }
+    }
+
+    /* RUSSELL SPEEDER'S. THE CANCELLATION DID NOT TAKE. It charged $31.02 on 7 October,
+       the day the record claimed charges would stop. It goes back into subscriptions so it
+       counts in the live total and reaches the page; the cancelled entry is corrected in
+       place and kept, because nothing is deleted. The amount is the CHARGED $31.02, not
+       the $33 the cancelled entry carried. */
+    _F84.subscriptions=_F84.subscriptions||[];
+    var _hasRS=false;
+    for(var _k84=0;_k84<_F84.subscriptions.length;_k84++){
+      var _s=_F84.subscriptions[_k84];
+      if(_s && /russell/i.test(String(_s.name||""))) _hasRS=true;
+      if(_s && /^supra$/i.test(String(_s.name||"").trim())) _s.amount=14.14;
+      if(_s && /marcus/i.test(String(_s.name||""))) _s.amount=10.69;
+    }
+    if(!_hasRS){
+      _F84.subscriptions.push({
+        name:"Russell Speeder's",
+        amount:31.02,
+        tag:"Vehicle",
+        deduct:{ business:false },
+        source:"THE CANCELLATION DID NOT TAKE. Charged $31.02 on 7 October 2026, the day the record said charges would stop. Back in the live list because it is live. Their online cancellation is broken and it has to be done in person."
+      });
+    }
+    var _cx=(_F84.cancelled)||[];
+    for(var _m84=0;_m84<_cx.length;_m84++){
+      var _q=_cx[_m84];
+      if(_q && /russell/i.test(String(_q.name||""))){
+        _q.done=false;
+        _q.amount=31.02;
+        _q.why="THE CANCELLATION DID NOT TAKE. It charged $31.02 on 7 October 2026, which is the exact date this entry predicted charges would stop. The claim that it was paid through to 7 October and would stop was WRONG, and the error was in treating an attempted in person cancellation as a completed one. Their online cancellation is broken so it has to be done in person, and that has not happened. MOVED BACK INTO finance.subscriptions at the charged $31.02 so it counts in the live total; this entry is kept and corrected rather than deleted. Do not count the saving.";
+        try{ delete _q.noChargeFrom; }catch(_x){}
+        try{ delete _q.paidThrough; }catch(_x){}
+        _q.lastCharge="2026-10-07";
+      }
+    }
+
+    /* ROCKET MONEY NO LONGER MISSES MARCUS, AND THE CORRECTION IS IN HIS FAVOUR. The
+       reliability note has to move both ways or it is not a reliability note. */
+    try{
+      var _sr=_F84.sourceReliability && _F84.sourceReliability.rocketMoney;
+      if(_sr){
+        if(Object.prototype.toString.call(_sr.confirmedWrong)==="[object Array]"){
+          _sr.confirmedWrong=_sr.confirmedWrong.filter(function(x){ return !/marcus/i.test(String(x||"")); });
+        }
+        _sr.notWrongAfterAll=_sr.notWrongAfterAll||[];
+        _sr.notWrongAfterAll.push("IT NO LONGER MISSES THE MARCUS MOVIE CLUB. The build 435 finding that its Discover recurring list showed only APC, Claude and Supra is OUT OF DATE AS AT 09.10.2026 and the correction is in Rocket Money's favour. Marcus is picked up, and at $10.69 rather than the $9.99 this app had been carrying, so on this item its figure was better than ours. Removed from confirmedWrong rather than left standing.");
+        _sr.asOf="2026-10-09";
+      }
+    }catch(_e84){}
+
+    /* WHAT THE FRESH BALANCE DOES TO EVERYTHING COMPUTED FROM THE OLD ONE. The honest
+       move is to mark the derived figures stale, not to silently recompute a trough off
+       one balance read and present it as a measurement. The determinate sums are updated
+       because they are arithmetic on the corrected inputs; the projections are flagged. */
+    try{
+      var _nw=_F84.netWorth;
+      if(_nw){
+        _nw.asOf="2026-10-09";
+        _nw.assets=3576;
+        _nw.assetsNote="$2,576 checking plus $1,000 savings, on the 9 October sync. SUPERSEDES the $5,288 built on the 20 September $4,287.55 read. This is a sum of the two corrected balances, not a new estimate.";
+        _nw.debtsKnown=2283;
+        _nw.debtsKnownNote="Discover $1,580 plus Amex Gold $703, both on the 9 October sync. THE \"AMEX GOLD IS $0\" ON THIS FIELD WAS FALSE AS AT 09.10.2026 and is the reason this was rewritten rather than adjusted.";
+        _nw.value="NEEDS RECOMPUTING. Assets $3,576 less known debts $2,283 is $1,293 before the bike loan, which is still carried only as a range of about $1,650 to $1,800, so the net is around minus $360 to minus $510. STATED AS A RANGE AND NOT AS A FIGURE, because the bike loan has never had a confirmed balance and the previous value of about $1,118 to $1,268 rested on a checking balance that was $1,711 too high.";
+        _nw.needsRecompute=true;
+      }
+    }catch(_e84b){}
+
+    if(typeof _F84.cashNote==="string" && _F84.cashNote.indexOf("BALANCE SUPERSEDED 09.10.2026")<0){
+      _F84.cashNote=_F84.cashNote+" || BALANCE SUPERSEDED 09.10.2026. A fresh sync puts main checking at $2,576, which is $1,711 BELOW the $4,287.55 every figure in this note was computed from, and below the $5,002 an earlier line in it quotes. EVERY TROUGH AND EVERY DATED POSITION ABOVE IS THEREFORE A PROJECTION OFF A SUPERSEDED BASE AND IS NOT RESTATED HERE. In particular the 5 to 6 November trough of about $963 cannot stand: its base moved down by more than the trough itself. NO NEW TROUGH IS COMPUTED in this pass, deliberately, because a trough is a function of the burn as well as the balance and the burn is still contested between about $1,525 and $2,400. What is certain is the DIRECTION: the early November low point is materially worse than $963, and the first week of November was already named as the thin part. One burn figure settles it.";
+    }
+    _F84.staleness={
+      lastHardRead:"2026-10-09",
+      ageAtWrite:"0 days, synced 09.10.2026",
+      what:"Main checking is a fresh $2,576 read. The $4,287.55 base that build 478 flagged as 17 days old is retired.",
+      rule:"THE BALANCE IS NO LONGER THE STALE INPUT. THE BURN IS. Every trough on this page is still a projection, now because the burn is contested between about $1,525 and $2,400 a month and not because the balance is old. Do not quote a trough as a measurement."
+    };
+  }
+
+  /* ===== THREE DEFECTS FOUND BY READING THE RENDERED PAGE, NOT THE RECORD ============
+     None of these came from the text pass. All three were already live on build 483. */
+
+  /* 1. "$5,000 left this account on undefined NaN, undefined for taxes." WAS ON EVERY PAGE.
+     The build 418 sweep line reads _sw.date. mig454 moved the sweep from taxSetAside.lastSweep
+     to finance.taxSweep and named the field leftCheckingOn instead of date, so the renderer
+     has been printing undefined through a date formatter ever since. date is set from
+     leftCheckingOn, which is the same fact under the name the renderer looks for.
+     leftCheckingOn is KEPT: other readers may use it and it is the more precise name. */
+  try{
+    var _TS=state.finance && state.finance.taxSweep;
+    if(_TS && !_TS.date && _TS.leftCheckingOn) _TS.date=_TS.leftCheckingOn;
+  }catch(_e84d){}
+
+  /* 2. THE BELKNAP CALENDAR EVENT STILL CARRIED $249,900 IN ITS TITLE. A price correction
+     that stops at the deal record leaves the old number on the calendar, which is a second
+     surface quoting a dead price. Caught by searching every event title for the figure. */
+  try{
+    var _EV=state.events||[];
+    for(var _n84=0;_n84<_EV.length;_n84++){
+      var _e=_EV[_n84];
+      if(!_e) continue;
+      if(_e.id==="ev-20261015-belknap-live" && /\$249,900/.test(String(_e.title||""))){
+        _e.title=String(_e.title).replace("$249,900","$250,000");
+      }
+      /* 3. ONE EVENT TITLE WRAPPED TO THREE LINES AT 390px, the only one that did. The
+         overflow is OUR annotation, not his event: "Played, 0 and 7, first DUPR 3.226" is a
+         result we appended to a title. Ours comes off, his stays. Ruled by Ian 11.09.2026
+         on exactly this, calendar events are title and time. NOTHING IS LOST: the result
+         lives in pickleball goal pk-goal-tourney in full, with the scores and the rating. */
+      if(_e.id==="ev-20260823-apc-mens-doubles" && /Played, 0 and 7/.test(String(_e.title||""))){
+        _e.title="APC Championship Men's Doubles 3.5 (with Dylan)";
+      }
+    }
+  }catch(_e84e){}
+
+  /* THE POSITION SURFACE INHERITS THE SAME PROBLEM AND MUST SAY SO. */
+  try{
+    var _P84=state.realEstate && state.realEstate.positionAsOf;
+    if(_P84){
+      _P84.troughSuperseded="SUPERSEDED 09.10.2026 BY A FRESH BALANCE READ. Every trough figure on this surface, including the about $963 at the centre burn and about $509 at a $2,500 burn, was computed off a $4,287.55 checking balance of 20 September. The 9 October sync reads $2,576, which is $1,711 lower, so the early November low point is materially worse than the figures above and they must not be quoted. NO REPLACEMENT NUMBER IS WRITTEN HERE because the burn is still contested. The commission figures themselves are unaffected: Willis $2,685.83 and Mattox $1,756.16 post tax are read from the deal records and did not move.";
+    }
+  }catch(_e84c){}
+
+  state.meta.mig484_app31_deepdive=true; save(true);
+  try{ console.log("mig484: APP-31 deep dive, re and finance corrections applied"); }catch(_){}
+} }catch(e){ try{ console.warn("mig484 did not apply:",e&&e.message); }catch(_){} }
 
   /* build 372: LAST THING BEFORE THE SAVE. Every migration above has run, deepMergeDefaults
      has run, so this is the only point in the file where the state is actually final. */
