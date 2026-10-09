@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 487 (2026-10-09)">
+<meta name="build" content="v21 build 488 (2026-10-09)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -25359,6 +25359,157 @@ try{ if(profile==="ian" && state.meta && !state.meta.mig487b_trough && state.fin
     } else { state.meta.mig487b_trough=true; save(true); }
 } }catch(e){ try{ console.warn("mig487b did not apply:",e&&e.message); }catch(_){} }
 
+/* ===== v21 build 488: IAN ANSWERED EVERY OPEN FINANCIAL QUESTION, 09.10.2026 =============
+   Seven answers. Each one is his, quoted, and each is recorded at the level he gave it.
+
+   1. BROKERAGE BASIS, "3.6%." Implemented in dealBrokerage() above, not here. Exactly two
+      deals move, Willis and Troester, the only two charging above standard.
+   2. RACHEL JENKINS IS REMOVED. "they aren't costing us extra also they backed away so there
+      not even a current client."
+   3. THE CHECKING BALANCE IS POST TAX. "the 3576 is after taxes."
+   4. THE BIKE RESTARTS IN NOVEMBER. "bike restarts in November."
+   5. JOHNSON AND THE SPICER NEW BUILD ARE 0 PERCENT TO IAN. Locked.
+   6. GILLIAM'S 90 PERCENT STANDS, pending his own check against actual income.
+   7. GYM LOGGING is handled in the render above, not in state. No gym data is deleted.
+
+   ===== ON ITEM 3, AND THIS IS THE ONE THING IN THIS BUILD HE SHOULD READ =================
+   HIS ANSWER CONFIRMS THE TAX TREATMENT AND THE APP WAS ALREADY RIGHT ON IT. Nothing applied a
+   30 percent haircut to the balance: taxSetAside has only ever applied to COMMISSIONS, and the
+   finance block already said "the burn is real spending, so both are after tax dollars". So the
+   tax half of his answer removes an ambiguity rather than moving a number.
+   THE FIGURE HE NAMED IS NOT THE SPENDABLE BASE, AND THE GAP IS EXACTLY HIS OWN SAVINGS FLOOR.
+   $3,576 is Rocket Money's SUM of both checking accounts, $2,576 operating plus $1,000 savings.
+   His own spec of 20.09.2026 puts a $1,000 FLOOR on the savings account, "the floor acts as
+   zero", for Arizona, and the account structure rule says the two pools are never summed.
+   $3,576 - $1,000 floor = $2,576, which is the base already in use. So on his own two rules the
+   base does not change, and the live trough below stays on $2,576.
+   THE $3,576 VARIANT IS STORED ANYWAY, because the two readings differ by more than the trough
+   itself and the direction of the error matters: on $2,576 the high burn end is NEGATIVE, on
+   $3,576 it is comfortably positive. Presenting the comfortable one and being wrong would hide
+   a shortfall in the exact week it lands. baseIfFloorSpendable carries it, so if he says spend
+   the Arizona money it is ONE field and no arithmetic is redone.
+
+   ===== ON ITEM 4, AND WHAT WAS ASSUMED =================================================
+   The bike is no longer a scenario, it is in. He gave the MONTH AND NOT THE DAY, so an
+   assumption was unavoidable and it is named rather than buried: THE RESTART IS ASSUMED TO LAND
+   BEFORE 13 NOVEMBER, which puts it inside the window and takes about $420 off the trough. That
+   is the conservative reading. If it lands after the 13th the trough is the build 487 pair,
+   about $826 and about $243, and both are stored at bikeAfterThe13th.
+   THE $420 IS THE APP'S OWN BIKE FIGURE, the burn removal confirmed for October. The record
+   also carries a $143 a month figure from 30 September and those two have never been
+   reconciled. That conflict is NOT resolved here and is left flagged where it already sits.
+
+   THE TROUGH, on base $2,576, 35 days to 13 November, bike in:
+     at $1,500: $50.00 a day, $1,750 out, less $420 bike, trough about  $406
+     at $2,000: $66.67 a day, $2,333 out, less $420 bike, trough about -$177
+   THE HIGH BURN END IS NEGATIVE AND IT IS NOW THE LIVE FIGURE, not a named scenario. That is
+   the first time this record has carried a negative trough as the live number.
+
+   Guard state.meta.mig488_ian_answers, end of chain, SEED_VERSION stays 13. */
+try{ if(profile==="ian" && state.meta && !state.meta.mig488_ian_answers && state.realEstate){
+    var _R8=state.realEstate, _F8=state.finance||{};
+    var _d8=function(id){ var r=null; (_R8.deals||[]).forEach(function(d){ if(d&&d.id===id) r=d; }); return r; };
+    if(!state.archive||typeof state.archive!=="object") state.archive={};
+
+    /* ---- 1. CLOSE THE BROKERAGE QUESTION WITH HIS ANSWER ---- */
+    if(_R8.openQuestions && _R8.openQuestions.brokerageBasis){
+      var _q8=_R8.openQuestions.brokerageBasis;
+      _q8.status="CLOSED BY IAN, 09.10.2026.";
+      _q8.answer="3.6%.";
+      _q8.answerVerbatim="Ian, 09.10.2026, asked whether an above-standard listing takes 15 percent of the charged rate or of 3.6 either way. His whole answer: \"3.6%.\"";
+      _q8.implemented="dealBrokerage() now uses dealStandardRate(d) flat. Math.max(standard, charged) is retired.";
+      _q8.moved="EXACTLY TWO DEALS. Willis $3,836.90 to $3,855.20 gross and $2,685.83 to $2,698.64 post tax. Troester $2,736.15 to $2,749.20. Mattox and every other discounted listing are unchanged, because they already computed on the standard rate.";
+      _q8.noteOnTheRefusal="This change was REFUSED earlier the same day and that was correct at the time: the evidence then was an inference from a rule Ian had stated only about discounts. It is made now because he has stated the above-standard case himself. A direct answer beats an inference; an inference does not beat a documented decision.";
+    }
+
+    /* ---- 2. RACHEL JENKINS COMES OFF THE BOARD ---- */
+    var _jk=_d8("re-rachel-jenkins-build");
+    if(_jk){
+      if(!state.archive.jenkinsRemovedB488) state.archive.jenkinsRemovedB488={ removedOn:"2026-10-09", by:"build 488",
+        why:"Ian, 09.10.2026: \"they aren't costing us extra also they backed away so there not even a current client.\" Removed from the board entirely, not reclassified. Kept here verbatim so nothing is lost if they return.",
+        deal:JSON.parse(JSON.stringify(_jk)),
+        whatCameOff:"$700,000 Rose Creek build, Ian's own client at a 0.50 split, $14,875.00 gross on the model. It was PROSPECTING, so it was never in production, volume or any banked figure. What it does come out of is the prospect count and any forward projection that reached for it." };
+      var _ix8=-1; (_R8.deals||[]).forEach(function(d,i){ if(d&&d.id==="re-rachel-jenkins-build") _ix8=i; });
+      if(_ix8>-1) _R8.deals.splice(_ix8,1);
+      if(!Array.isArray(_R8.removedDealIds)) _R8.removedDealIds=[];
+      if(_R8.removedDealIds.indexOf("re-rachel-jenkins-build")<0) _R8.removedDealIds.push("re-rachel-jenkins-build");
+    }
+    /* THE DEAL WAS NOT THE WHOLE OF HER, AND THE FIRST PASS OF THIS BUILD MISSED THAT.
+       She is ALSO a people record, pp-rachel-jenkins, kind Lead, quality Warm, carrying
+       "PROSPECT, BUILD SIDE, AND IAN'S OWN CLIENT" and a confirmed 17 September meeting. A warm
+       lead on the leads list IS prospecting, so removing only the deal would have left her on
+       the board under a different surface and the instruction was "remove her from prospecting
+       entirely". Caught by the harness asserting no Jenkins reference survived, not by reading. */
+    if(Array.isArray(_R8.people)){
+      var _pj=-1; _R8.people.forEach(function(x,i){ if(x&&x.id==="pp-rachel-jenkins") _pj=i; });
+      if(_pj>-1){
+        if(!state.archive.jenkinsPersonRemovedB488) state.archive.jenkinsPersonRemovedB488={ removedOn:"2026-10-09", by:"build 488",
+          why:"Same answer from Ian that removed the deal: \"they aren't costing us extra also they backed away so there not even a current client.\" A warm lead on the leads list is still prospecting, so the person record goes with the deal.",
+          person:JSON.parse(JSON.stringify(_R8.people[_pj])) };
+        _R8.people.splice(_pj,1);
+      }
+    }
+    /* The Hartley record carries a DISAMBIGUATION note about the two Rachels that points at
+       pp-rachel-jenkins by id. That record no longer exists, so the pointer is updated rather
+       than left dangling. The disambiguation itself still matters and is kept. */
+    var _ha=_d8("re-hartley-buy");
+    if(_ha && typeof _ha.note==="string" && _ha.note.indexOf("REMOVED 09.10.2026")<0 && /pp-rachel-jenkins/.test(_ha.note)){
+      _ha.note=_ha.note+" RACHEL JENKINS WAS REMOVED 09.10.2026, deal and people record both, on Ian's word that she backed away and is not a current client. The two-Rachels warning above still stands for anyone reading older material, but pp-rachel-jenkins no longer exists; her archived records are at state.archive.jenkinsRemovedB488 and jenkinsPersonRemovedB488.";
+    }
+
+    /* ---- 3 and 5 and 6. SPLITS CONFIRMED AND LOCKED, so no future audit re-flags them ---- */
+    var _lock8=function(id,words,extra){
+      var d=_d8(id); if(!d) return;
+      d.splitConfirmed={ by:"Ian", on:"2026-10-09", words:words, doNotFlag:"CONFIRMED BY IAN. Do not raise this split as an anomaly again." };
+      if(extra) d.splitConfirmed.note=extra;
+    };
+    _lock8("re-crystal-johnson","Confirmed 0 percent to Ian.",
+      "Zero is CORRECT and deliberate, not a missing value. It counts toward team volume and contributes nothing to his income, the same shape as the Winchester lot.");
+    _lock8("re-allison-spicer-buy","Confirmed 0 percent to Ian.",
+      "Spicer new construction. Zero is CORRECT and deliberate, not a missing value.");
+    var _gl8=_d8("re-ashley-gilliam");
+    if(_gl8){
+      _gl8.splitConfirmed={ by:"Ian", on:"2026-10-09", words:"His first client. \"Stick with that for now.\"",
+        value:0.90, pendingHisOwnCheck:true,
+        doNotFlag:"CONFIRMED BY IAN AT 0.90 AND NOT CHANGED. He wants to verify it against his actual income later, so it is confirmed-pending-his-own-check rather than settled. Do not alter it, and do not re-raise it as an anomaly in the meantime.",
+        alsoNote:"This deal already carries actualNet $10,513.46 and paid true, so the 0.90 does not drive the figure anyway: dealIanNet returns the actual and the model is not consulted. The split matters for consistency, not for this deal's money." };
+    }
+    /* Troester: the basis change moves a CLOSED deal, so say so where it will be read. */
+    var _tr8=_d8("re-chad-troester");
+    if(_tr8){
+      _tr8.basisCorrectedB488="TAKE HOME CORRECTED 09.10.2026 from $2,736.15 to $2,749.20, a rise of $13.05, when Ian settled the brokerage basis at a flat 3.6 percent. THIS DEAL IS CLOSED, so the figure is a MODEL ESTIMATE of what he received and not a confirmed payment. IF THE REAL FIGURE IS KNOWN IT OVERRIDES THE MODEL: set actualNet and dealIanNet will return it untouched, exactly as Gilliam and Spicer already do. The correction is applied because the model should be right, not because $13.05 is material.";
+    }
+
+    /* ---- 4 and 3. THE BALANCE IS POST TAX, AND THE TROUGH TAKES THE BIKE ---- */
+    (_F8.accounts||[]).forEach(function(a){ if(a&&a.id==="fnbo8909"){
+      a.taxStatus="POST TAX. Ian, 09.10.2026: \"the 3576 is after taxes.\" This is SPENDABLE money and nothing further is set aside from it. Confirms what the app already did: taxSetAside applies to commissions only and never to this balance.";
+    } });
+    _F8.postTaxSettled={ on:"2026-10-09", words:"the 3576 is after taxes",
+      means:"Checking is spendable as it stands. No 30 percent haircut, no further reserve.",
+      changedAnything:"NO FIGURE MOVED. The app never haircut the balance; the ambiguity is simply closed." };
+    if(_F8.trough && String(_F8.trough.at)==="2026-11-13" && !_F8.trough.bikeIn){
+      if(!state.archive.troughPreB488) state.archive.troughPreB488={ archivedOn:"2026-10-09",
+        why:"Superseded when Ian confirmed the bike restarts in November. The bike moved from a named caveat to a certainty inside the window.", trough:JSON.parse(JSON.stringify(_F8.trough)) };
+      _F8.trough.bikeIn=true;
+      _F8.trough.atLowBurn=406;
+      _F8.trough.atHighBurn=-177;
+      _F8.trough.line="About $406 at a $1,500 burn and about MINUS $177 at a $2,000 burn.";
+      _F8.trough.bikeCaveat="THE BIKE IS IN, NOT A SCENARIO. Ian, 09.10.2026: \"bike restarts in November.\" About $420 is taken off both ends.";
+      _F8.trough.bikeAssumption="HE GAVE THE MONTH AND NOT THE DAY, SO THIS IS AN ASSUMPTION AND IT IS NAMED. The restart is assumed to land BEFORE 13 November, which puts it inside the window. That is the conservative reading. IF IT LANDS AFTER THE 13TH the trough is about $826 and about $243 instead. One word from Ian settles which.";
+      _F8.trough.bikeAfterThe13th={ atLowBurn:826, atHighBurn:243 };
+      _F8.trough.bikeFigureConflict="The $420 is this app's own bike figure, the burn removal confirmed for October. A $143 a month figure from 30 September also sits on the record and the two have never been reconciled. NOT RESOLVED HERE.";
+      _F8.trough.negative="THE HIGH BURN END IS BELOW ZERO AND IT IS THE LIVE FIGURE, not a scenario. First negative trough this record has carried as the live number. It is a projection off a 9 October balance, not a measurement, and it assumes no money lands before 13 November, which nothing in the pipeline does.";
+      _F8.trough.baseIfFloorSpendable={ base:3576, atLowBurn:1406, atHighBurn:823,
+        why:"IF the $1,000 Arizona floor is treated as spendable, the base is the $3,576 Ian named and both ends are positive. NOT USED, because his own 20.09.2026 spec puts a $1,000 floor on that account that \"acts as zero\" and the account structure rule never sums the two pools. $3,576 less the $1,000 floor is the $2,576 already in use. ONE FIELD CHANGES THIS IF HE SAYS SPEND IT." };
+      _F8.trough.supersedes="About $826 and about $243 of build 487, which assumed no bike payment in the window.";
+      if(typeof _F8.cashNote==="string" && _F8.cashNote.indexOf("BIKE IS IN, 09.10.2026")<0){
+        _F8.cashNote=_F8.cashNote+" || BIKE IS IN, 09.10.2026. Ian confirmed the bike restarts in November, so about $420 comes off the trough and it is no longer a caveat. On the $2,576 post tax base over 35 days to 13 November the trough is about $406 at a $1,500 burn and about MINUS $177 at a $2,000 burn. The restart is ASSUMED to land before the 13th; after the 13th it is about $826 and about $243. He also said the $3,576 is after taxes, which confirms the balance needs no haircut and changes no figure; the spendable base stays $2,576 because the other $1,000 is his own Arizona floor.";
+      }
+    }
+    state.meta.mig488_ian_answers=true; save(true);
+    try{ console.log("mig488: ian's seven answers applied, jenkins removed, trough takes the bike"); }catch(_){}
+} }catch(e){ try{ console.warn("mig488 did not apply:",e&&e.message); }catch(_){} }
+
   /* build 372: LAST THING BEFORE THE SAVE. Every migration above has run, deepMergeDefaults
      has run, so this is the only point in the file where the state is actually final. */
   try{ convergeState(); }catch(e){}
@@ -26171,14 +26322,37 @@ function dualRate(d){ return (d&&typeof d.dualRate==="number")?d.dualRate:RE_RAT
 function dealStandardRate(d){ return dealSide(d)==="Buyer" ? RE_RATES.buyerStd : RE_RATES.sellerStd; }
 function dealActualRate(d){ return dealSide(d)==="Buyer" ? RE_RATES.buyerStd : sellerRate(d); }
 function dealGrossCommission(d){ if(dealSource(d)==="Dual agency"){ var _full=priceNum(d&&d.price)*dualRate(d); return (dealSide(d)==="Both")?_full:_full/2; } return priceNum(d&&d.price) * dealActualRate(d); }
-/* v21 build 452, CONFIRMED BY IAN 27.09.2026 and unchanged in behaviour. The brokerage takes 15
-   percent of the STANDARD side rate, never of a discounted one. His words: "The broker takes 15%
-   of each side no matter what. If we are buy side they take 15% of 2.4. If we are sell side they
-   take 15% of 3.6. Even if we charge a total of 5%, they are still going to take 15% of 6%."
-   That is the Math.max below, which has been here since build 386. A discount to the client comes
-   out of Ian and Chris, never out of the brokerage. Mattox is the live proof: sellerRate 0.031
-   against a 0.036 standard, and the brokerage is still computed on 0.036. */
-function dealBrokerage(d){ if(dealSource(d)==="Dual agency"){ var _fee=priceNum(d&&d.price)*RE_RATES.brokerage*RE_RATES.dualBrokerageBasis; return (dealSide(d)==="Both")?_fee:_fee/2; } var _basis=Math.max(dealStandardRate(d),dealActualRate(d)); return priceNum(d&&d.price) * _basis * RE_RATES.brokerage; }
+/* v21 build 452, CONFIRMED BY IAN 27.09.2026. The brokerage takes 15 percent of the STANDARD
+   side rate, never of a discounted one. His words: "The broker takes 15% of each side no matter
+   what. If we are buy side they take 15% of 2.4. If we are sell side they take 15% of 3.6. Even
+   if we charge a total of 5%, they are still going to take 15% of 6%." A discount to the client
+   comes out of Ian and Chris, never out of the brokerage. Mattox is the live proof: sellerRate
+   0.031 against a 0.036 standard, and the brokerage is computed on 0.036.
+
+   ===== v21 build 488, 09.10.2026. THE BASIS IS FLAT STANDARD. Math.max IS RETIRED. ==========
+   ASKED AND ANSWERED. The open question was: on a listing charging MORE than standard, does the
+   brokerage take 15 percent of the higher charged rate, or 15 percent of 3.6 either way?
+   IAN'S ANSWER, VERBATIM: "3.6%."
+   So the basis is dealStandardRate(d), full stop, whether the charged rate is below, at or above
+   standard. Math.max(standard, actual) was right on the discount case and WRONG above standard.
+
+   THE BUILD 423 REASONING IS SUPERSEDED, AND IT IS WORTH SAYING WHY RATHER THAN DELETING IT.
+   That build argued the basis should be a FLOOR, not a replacement, because always-standard would
+   also take LESS on deals priced above standard and "hand the agent side money the brokerage
+   never gave up". That was a reasonable inference from a rule Ian had stated only about
+   discounts. IT WAS AN INFERENCE. He has now stated the above-standard case directly and it goes
+   the other way. His statement beats our inference, and this is the correct order of events: the
+   change was REFUSED on 09.10.2026 when the evidence was an inference, and is made the same day
+   now that it is his own answer.
+
+   WHAT MOVES, verified against all 33 deals: exactly TWO, the only two charging above standard.
+     Willis    3.7 percent, $3,836.90 -> $3,855.20 gross, $2,685.83 -> $2,698.64 post tax
+     Troester  3.7 percent, $2,736.15 -> $2,749.20 gross
+   DISCOUNTED LISTINGS DO NOT MOVE. Mattox at 3.1 percent took its cut on 3.6 before and takes it
+   on 3.6 now, $2,646.00 either way. DUAL AGENCY IS UNTOUCHED, separate branch, fixed 6 percent
+   basis. Rachel Jenkins at 5.0 percent would have moved and is removed from the board in this
+   same build, so she is not in the count. */
+function dealBrokerage(d){ if(dealSource(d)==="Dual agency"){ var _fee=priceNum(d&&d.price)*RE_RATES.brokerage*RE_RATES.dualBrokerageBasis; return (dealSide(d)==="Both")?_fee:_fee/2; } return priceNum(d&&d.price) * dealStandardRate(d) * RE_RATES.brokerage; }
 /* v21 build 233: AN ACTUAL PAID FIGURE ALWAYS BEATS THE MODEL. If a deal carries actualNet,
    that is what Ian was really paid and it is returned unchanged. The computed path is only a
    fallback for deals with no actual yet. This exists because the Spicer sale paid $2,770 against
@@ -27571,9 +27745,24 @@ function buildIanHome(v){ const workout=daySplit(DOW); const reTop=firstUndone((
          and NOTHING IS SUPPOSED TO COUNT AGAINST IT. A "0 days, target 3" tile did both: it
          carried a retired number from the old three lift plan and scored him against it before
          the week had happened. With no gym logged the tile now reports the last gym day, which
-         is a fact rather than a verdict. */
-      tiles.push({k:"Gym", v:_wk?String(_wk):"\u2014", u:_wk?(_wk===1?"day":"days"):"", sub:_wk?"this week":"no gym logged this week",
-                  col:"var(--gy1,#ff9f0a)", go:function(){ selectTab("gym"); }});
+         is a fact rather than a verdict.
+
+         ===== v21 build 488, 09.10.2026. THE TILE IS REMOVED. IAN WAS RIGHT. ================
+         HIS WORDS: "gym i no longer log anymore, remember we changed it so it doesn't track
+         logging anymore? Unless you didn't actually fix it."
+         THE LAST CLAUSE WAS THE CORRECT ONE, AND IT WAS CHECKED RATHER THAN ASSUMED. Read off a
+         real post-migration profile on 09.10.2026, three surfaces were tested and two were
+         genuinely clean: gymToday() no longer runs, so NO log entry is created for today and
+         gym.logs is still the 47 historical days ending 28 August; and the training heatmap
+         draws ZERO gymonly or gymdot cells on any tab. THIS TILE WAS THE SURVIVOR. It rendered
+         "Gym / -- / no gym logged this week" on Home and on Stats, every day, forever.
+         BUILD 457 TOOK THE VERDICT OFF AND LEFT THE COUNTER ON. Dropping "target 3" removed the
+         scoring but kept _wk, so the tile still counted his week and still reported the absence.
+         A tile whose only possible message is "you have not logged" IS logging tracking, which
+         is exactly what he asked to have removed.
+         THE _wk COUNTER ABOVE IS LEFT IN PLACE DELIBERATELY. It is shared with the heatmap
+         block the comment above points at, and ripping out a computation two surfaces read is a
+         wider change than was asked for. Nothing renders it now. */
     }catch(e){}
     /* solara: the one fact that changes */
     try{
