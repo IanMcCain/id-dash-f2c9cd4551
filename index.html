@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 485 (2026-10-09)">
+<meta name="build" content="v21 build 486 (2026-10-09)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -21161,11 +21161,33 @@ try{ if(profile==="ian" && state.meta && !state.meta.mig451_corr && state.realEs
    sellers Byron and Cynthia Willis at 10218 Spyglass Dr. There is no second Willis record and
    the verification asserts there is not.
 
-   Guard: state.meta.mig450_willis, not in the seed, SEED_VERSION stays 13. */
+   Guard: state.meta.mig450_willis, not in the seed, SEED_VERSION stays 13.
+
+   ===== CORRECTED 09.10.2026, BUILD 486, AND THIS BLOCK BROKE ITS OWN RULE =================
+   THE ENTRY CONDITION BELOW USED TO READ `if(profile==="ian" && state.meta)` WITH NO CHECK ON
+   state.meta.mig450_willis, even though line 21236 sets that flag and the comment above names it
+   as the guard. The flag was WRITTEN AND NEVER READ here. It is read correctly by the unrelated
+   pickleball block at line 2674, which is why the name looked used.
+   SO THE WILLIS HALF OF BUILD 450 RAN ON EVERY LOAD, FOREVER, re-asserting stage "Active" and
+   close "Live 25 September 2026" through its own content guards whenever they differed.
+   THE CONSEQUENCE, and it is the whole bug: build 472 set stage "Under Contract" correctly as a
+   ONE SHOT. Load 1 ran both, so 472 won. From load 2 onward 472's guard was set and this block
+   was not, so it put "Active" back and kept it there. A sold house read Active on every real
+   profile for three days while the record, the note and the price were all right.
+   THIS IS EXACTLY THE DEFECT THE COMMENT ABOVE DESCRIBES, turned on itself: "A MIGRATION MUST
+   NOT BE IDEMPOTENT BY ITS OWN OUTPUT." Guarding on `_w50.stage!=="Active"` IS guarding on its
+   own output. The meta check is added below.
+   THE TWO mig111 FLAGS ARE DELIBERATELY SET OUTSIDE THE NEW GUARD. They disable two older
+   content-guarded re-appenders. They are already true in saved state and nothing clears them,
+   but setting them unconditionally costs nothing and means the new guard can never resurrect
+   the blocks this build was written to kill. */
 try{ if(profile==="ian" && state.meta){
-    /* 1. turn the two content-guarded blocks off for good */
+    /* 1. turn the two content-guarded blocks off for good. OUTSIDE the mig450 guard on purpose,
+       see the build 486 note above. */
     state.meta.mig111_willislive=true;
     state.meta.mig111_venue=true;
+} }catch(e){ try{ console.warn("mig111 flags did not set:",e&&e.message); }catch(_){} }
+try{ if(profile==="ian" && state.meta && !state.meta.mig450_willis){
 
     var _arc50=[];
     var _rec50=function(what,before){ _arc50.push({field:what,before:before}); };
@@ -25106,6 +25128,131 @@ try{ if(profile==="ian" && state.meta && !state.meta.mig485_ian_answers){
   state.meta.mig485_ian_answers=true; save(true);
   try{ console.log("mig485: ian's answers applied, trough recomputed"); }catch(_){}
 } }catch(e){ try{ console.warn("mig485 did not apply:",e&&e.message); }catch(_){} }
+
+/* ===== v21 build 486: WILLIS IS UNDER CONTRACT AND THE PAGE FINALLY SAYS SO ==============
+   WHAT IS WRONG ON A REAL PROFILE, read off one rather than reasoned from the seed:
+     stage = "Active"            should be "Under Contract"
+     close = "Live 25 September 2026"  should be the approximate November close
+   Everything else on the record was ALREADY RIGHT and is not touched: price "$610,000",
+   sellerRate 0.037, ianSplit 0.20, the contract object with executed "2026-10-06, fully
+   executed", the VA loan, the no-home-inspection fact, the appraisal risk, winProb 0.98 and
+   the full note. Build 472 wrote all of that correctly on 6 October.
+
+   THE CAUSE IS FIXED AT LINE ~21165, NOT HERE. The build 450 Willis block had no meta guard
+   and re-asserted "Active" on every load, overwriting build 472 from load 2 onward. See the
+   build 486 note in that block. WITHOUT THAT FIX THIS MIGRATION WOULD BE UNDONE ON THE NEXT
+   LOAD exactly as 472 was, which is why this build changes two places and not one.
+
+   THE CLOSE DATE STAYS APPROXIMATE AND IS NOT PROMOTED. close takes build 474's wording and
+   closeDate IS NOT TOUCHED AT ALL: approx "About 6 or 7 November 2026", confirmed FALSE, the
+   DotLoop note and the Saturday inference all stand. The exact date is in the purchase
+   agreement and this system does not hold it. Do not set confirmed true from a brief.
+
+   WHAT MOVES ON THE SURFACES, AND IT IS A REGROUPING NOT NEW MONEY. Willis leaves the Active
+   listings group and joins Under contract / pending. The banked breakdown is UNAFFECTED in
+   total because reGoal counts stage "Active" WITH contract.executed as committed already, so
+   the $610,000 was in the under-contract layer before this change and stays there; it simply
+   arrives via uc instead of via the Active-plus-executed branch, and the concat cannot double
+   count it because the Active filter stops matching. Banked, closed is untouched: Willis is
+   not closed and no closed figure moves.
+
+   THE COMMISSION BASIS IS DELIBERATELY NOT CHANGED IN THIS BUILD. A request to compute the
+   brokerage cut on the standard rate rather than max(standard, charged) was raised and is NOT
+   implemented, because it is not a bug fix: it reverses build 423, approved by Ian on
+   20.09.2026, and it would move Troester, which is CLOSED. It is recorded as an open question
+   for Ian at state.realEstate.openQuestions.brokerageBasis rather than shipped. The app is
+   ALREADY correct on discounted listings, which is what the request was aimed at: Mattox at
+   3.1 percent takes its cut on 3.6 percent today, verified.
+
+   Guard state.meta.mig486_willis_uc, NOT in the seed, end of chain, SEED_VERSION stays 13. */
+try{ if(profile==="ian" && state.meta && !state.meta.mig486_willis_uc && state.realEstate){
+    var _W6=null; (state.realEstate.deals||[]).forEach(function(d){ if(d&&d.id==="re-cynthia-willis") _W6=d; });
+    if(_W6){
+      if(!state.archive||typeof state.archive!=="object") state.archive={};
+      if(!state.archive.willisStagePreB486){
+        state.archive.willisStagePreB486={ changedOn:"2026-10-09", by:"build 486",
+          stageBefore:String(_W6.stage||""), closeBefore:String(_W6.close||""),
+          why:"The build 450 block re-asserted Active on every load and overwrote build 472's Under Contract from the second load onward. Previous values kept here rather than discarded." };
+      }
+      _W6.stage="Under Contract";
+      _W6.close="Closes about 6 November 2026, APPROXIMATE";
+      _W6.stageNote="UNDER CONTRACT, fully executed 6 October 2026 at $610,000, VA loan, no home inspection. Chris, 6 October 20:22: \"We just came under contract on Spyglass. literally 5 minutes ago.\" Termite inspection ran 9 October. Movers booked 21 to 23 October. THE VA APPRAISAL IS STILL THE LIVE RISK and the 0.98 is deliberately not raised: under contract is not closed.";
+      _W6.stageFixed="STAGE CORRECTED 09.10.2026, BUILD 486. It read Active. The record, the price, the note and the contract object were all already right since build 472 on 6 October; only stage and close were being clobbered on every load by the unguarded build 450 block, which is fixed in the same build. Reported independently by the 26.09 and 05.10 brief runs and not fixed until now.";
+      /* closeDate is NOT touched. It stays approx and confirmed:false by design. */
+      state.meta.mig486_willis_uc=true; save(true);
+      try{ console.log("mig486: willis stage -> Under Contract, close -> approximate November"); }catch(_){}
+    }
+} }catch(e){ try{ console.warn("mig486 did not apply:",e&&e.message); }catch(_){} }
+
+/* ===== v21 build 486b: THE BROKERAGE BASIS QUESTION, RECORDED AND NOT ACTED ON ===========
+   Written as a question for Ian because implementing it would reverse his own 20.09.2026
+   decision and move a closed deal. No figure in the app changes from this block. */
+try{ if(profile==="ian" && state.meta && !state.meta.mig486b_brokerage_q && state.realEstate){
+    if(!state.realEstate.openQuestions||typeof state.realEstate.openQuestions!=="object") state.realEstate.openQuestions={};
+    state.realEstate.openQuestions.brokerageBasis={ raised:"2026-10-09, APP-32", status:"OPEN, FOR IAN. NOT IMPLEMENTED.",
+      question:"Should the brokerage cut be 15 percent of the STANDARD rate always, or 15 percent of max(standard, charged) as it is today?",
+      today:"max(standard, charged). dealBrokerage(), build 423, approved by Ian 20.09.2026 and reaffirmed 27.09.2026.",
+      alreadyCorrectOnDiscounts:"A DISCOUNTED listing already takes its cut on the standard rate. Mattox at 3.1 percent computes on 3.6 percent, cut $2,646.00 either way. Verified on a real profile 09.10.2026. The request was aimed at discounts and there is nothing to fix there.",
+      whatWouldActuallyMove:"Only deals charging ABOVE standard, where today's basis is the higher charged rate: Willis 3.7 percent, Troester 3.7 percent, Jenkins 5.0 percent.",
+      effect:"Willis take home $3,836.90 to $3,855.20, plus $18.30. Troester $2,736.15 to $2,749.20, plus $13.05, AND TROESTER IS CLOSED. Jenkins $14,875.00 to $15,610.00, plus $735.00, and Jenkins is Prospecting.",
+      whyNotShipped:"Three reasons. It reverses a decision Ian approved in his own words. It moves a CLOSED historical figure and the closed take home total with it. And build 423's reasoning holds: a basis that falls below the charged rate hands the agent side money the brokerage never gave up, which contradicts the principle the rule exists to express.",
+      hisQuote:"\"Even if we charge a total of 5%, they are still going to take 15% of 6%.\" Note the 5 and 6 are the DUAL AGENCY pair, and dual already takes its cut on a FIXED 6 percent basis regardless of the charged rate. That quote argues the brokerage never gives up money, which is what the current basis preserves.",
+      toSettle:"One sentence from Ian: on a listing charging MORE than standard, does the brokerage take 15 percent of the higher charged rate, or 15 percent of 3.6 either way?" };
+    state.meta.mig486b_brokerage_q=true; save(true);
+} }catch(e){ try{ console.warn("mig486b did not apply:",e&&e.message); }catch(_){} }
+
+/* ===== v21 build 486c: THURSDAY 8 OCTOBER. THE HOLE IS FILLED, BY IAN ====================
+   Build 485 refused to write this day and said so: "zero sessions dated 2026-10-08 and zero
+   ids containing 20261008. He is sending it. A placeholder would be an invented session, so
+   the hole stays a hole until he fills it." HE HAS NOW SENT IT, 09.10.2026, so it is written.
+   Its verification asserted the absence; that assertion is correct for 485 and is deliberately
+   reversed here with his data behind it.
+
+   EVERY FIGURE BELOW IS HIS: 7:02 to 9:41 AM, 2:39:00, 1,230 active and 1,479 total calories,
+   average 115, maximum 148, effort 8 Hard, Omaha. The duration is internally consistent with
+   the window, 7:02 to 9:41 being exactly 2h 39m, so nothing is reconciled or adjusted.
+
+   WHAT IS NOT WRITTEN, AND THIS IS THE POINT. HE GAVE NO STRUCTURE. So there is NO kind, NO
+   kindNote, NO drillOnly and NO allOpenPlay on this record. The 9 October session carries
+   kind "Open play" with allOpenPlay true because he said so explicitly that day; he said
+   nothing of the sort about the 8th, and copying the neighbouring day's shape would invent a
+   drill and open play split out of nothing. The renderers already handle this honestly:
+   pkSessionCard reads `s.kind||"Play"` and _pkCls returns the neutral k-play class on an empty
+   kind, so the session displays as "Play" with no structural claim attached to it.
+   ALSO ABSENT: minHr, because he did not give one, and maxHrApprox, because he gave 148 as a
+   flat figure rather than the "~156" hedge that made 9 October's maximum approximate.
+
+   Keyed on the DATE, not the id, so it can never duplicate however often this runs.
+   Guard state.meta.mig486c_oct8, NOT in the seed, SEED_VERSION stays 13. */
+try{ if(profile==="ian" && state.meta && !state.meta.mig486c_oct8 && state.pickleball){
+    var _S6=state.pickleball.sessions;
+    if(_S6 && Object.prototype.toString.call(_S6)==="[object Array]"){
+      var _h6=false;
+      for(var _i6=0;_i6<_S6.length;_i6++){ if(_S6[_i6] && String(_S6[_i6].date)==="2026-10-08") _h6=true; }
+      if(!_h6){
+        _S6.push({
+          id:"pk-20261008-am",
+          date:"2026-10-08",
+          venue:"Omaha",
+          duration:"2h 39m 00s",
+          window:"7:02 to 9:41 AM, Omaha",
+          calories:1479,
+          activeCalories:1230,
+          avgHr:115,
+          maxHr:148,
+          effort:8,
+          effortLabel:"Hard",
+          effortSource:"His own rating",
+          effortNote:"HIS OWN RATING, how hard he tried and how well he played, defined 14.09.2026. NOT an exertion figure and NOT reconciled against the 115 average.",
+          performanceData:true,
+          source:"Ian, 09.10.2026. He sent the day after build 485 recorded it as missing.",
+          structureNote:"NO STRUCTURE WAS GIVEN AND NONE IS INVENTED. He supplied times, duration, calories, heart rate, effort and venue, and said nothing about drilling or open play. kind, drillOnly and allOpenPlay are therefore ABSENT rather than guessed, and this session must not be counted as a drilling one or as an open play one. It renders as Play. If he says later what it was, one field closes it."
+        });
+        state.meta.mig486c_oct8=true; save(true);
+        try{ console.log("mig486c: 8 october logged, no structure invented"); }catch(_){}
+      } else { state.meta.mig486c_oct8=true; save(true); }
+    }
+} }catch(e){ try{ console.warn("mig486c did not apply:",e&&e.message); }catch(_){} }
 
   /* build 372: LAST THING BEFORE THE SAVE. Every migration above has run, deepMergeDefaults
      has run, so this is the only point in the file where the state is actually final. */
