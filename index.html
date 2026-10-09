@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 480 (2026-10-08)">
+<meta name="build" content="v21 build 481 (2026-10-08)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -24343,6 +24343,64 @@ try{ if(profile==="ian" && state.meta && !state.meta.mig480_privacy_jan){
     state.meta.mig480_privacy_jan=true; save(true);
     try{ console.log("mig480: privacy strip recorded, january combination noted"); }catch(_){}
 } }catch(e){ try{ console.warn("mig480 did not apply:",e&&e.message); }catch(_){} }
+
+/* ===== v21 build 481: MATTOX. OPEN HOUSE CANCELLED, CLOSE SET TO MID DECEMBER, AND THE
+   JANUARY WARNING FROM BUILD 480 IS WITHDRAWN =============================================
+   BOTH FROM IAN, 08.10.2026, after the listing went live and drew multiple offers on day one.
+
+   ONE. THE SUNDAY 11 OCTOBER OPEN HOUSE, 1 to 3, IS CANCELLED. It sells tonight or tomorrow
+   morning. The calendar entry is retitled CANCELLED rather than deleted, per the standing rule
+   that a dated marker gets a banner and never a deletion. NOT DONE AND NOT DOABLE FROM HERE:
+   it is still live in the MLS and on the portals and has to be pulled by hand. That is the
+   Willis trap repeating, where an open house sat live on Zillow after it was dead.
+
+   TWO. EXPECTED CLOSE IS MID DECEMBER, approximate, nothing signed. It is consistent with the
+   sellers, who told Chris today they do not need a fast close, are out by mid December at the
+   latest and are flexible. It supersedes "mid to late December, possibly slipping to the first
+   week of January".
+
+   THREE, AND THIS IS THE PART THAT MATTERS. BUILD 480 PUT A JANUARY WARNING ON cashNote. THAT
+   WARNING IS NOW WITHDRAWN. It said the low point moves to early January at about MINUS $833 if
+   Mattox closes 6 January AND the Methodist payment lands. A mid December close removes the
+   first leg: Mattox funds BEFORE Methodist is due, so Methodist no longer bites into a pre
+   funding trough. On the model's own figures, cash immediately before Mattox funds is about
+   $2,808 on a 22 December close against about $1,724 on 6 January and about MINUS $833 on
+   6 January with Methodist landing 31 December. Mid December is earlier than 22 December, so
+   the trough is that or better. THE BINDING LOW POINT REVERTS TO 6 NOVEMBER.
+
+   A STALE ALARM IS WORSE THAN NO ALARM, WHICH IS WHY THIS IS WITHDRAWN RATHER THAN LEFT.
+   It comes back if the close slips into January. The conditions are named on the note so the
+   trigger is legible rather than remembered.
+
+   THE 478 STALENESS CAVEAT STILL APPLIES TO EVERY FIGURE: the cash base is a 20 September read
+   and the burn is contested. Nothing is signed, the close date is a seller preference and not a
+   contract term, and the Methodist date is believed rather than confirmed.
+
+   Guard state.meta.mig481_mattox_oh_close, end of chain, SEED_VERSION stays 13. */
+try{ if(profile==="ian" && state.meta && !state.meta.mig481_mattox_oh_close){
+    var _F9=state.finance;
+    if(_F9 && typeof _F9.cashNote==="string"){
+      var _OLD=" || WATCH THE COMBINATION, added 08.10.2026: the low point is 6 November TODAY, but if Mattox closes 6 JANUARY *and* the Methodist payment lands, it moves to EARLY JANUARY at about MINUS $833. Either one alone is fine. It is only the pair. Nobody is tracking this.";
+      if(_F9.cashNote.indexOf("WATCH THE COMBINATION")>-1){ _F9.cashNote=_F9.cashNote.split(_OLD).join(""); }
+      if(_F9.cashNote.indexOf("JANUARY RISK WITHDRAWN")<0){
+        _F9.cashNote=_F9.cashNote+" || JANUARY RISK WITHDRAWN 08.10.2026: Mattox is now expected to close MID DECEMBER, so it funds before the Methodist payment is due and the early January minus $833 case is off the table. The binding low point is 6 November again. IT COMES BACK ONLY IF THE CLOSE SLIPS INTO JANUARY.";
+      }
+    }
+    try{
+      var _M=state.realEstate && state.realEstate.deals;
+      if(_M && _M.length){
+        for(var _i=0;_i<_M.length;_i++){
+          var _d=_M[_i];
+          if(_d && typeof _d.id==="string" && _d.id.indexOf("mattox")>-1){
+            _d.expectedClose="Mid December 2026. Approximate, nothing signed.";
+            _d.openHouse="CANCELLED 08.10.2026. Sunday 11 October 1 to 3 is dead. STILL LIVE IN THE MLS AND ON THE PORTALS and must be pulled by hand.";
+          }
+        }
+      }
+    }catch(_e2){}
+    state.meta.mig481_mattox_oh_close=true; save(true);
+    try{ console.log("mig481: open house cancelled, close mid december, january warning withdrawn"); }catch(_){}
+} }catch(e){ try{ console.warn("mig481 did not apply:",e&&e.message); }catch(_){} }
 
   /* build 372: LAST THING BEFORE THE SAVE. Every migration above has run, deepMergeDefaults
      has run, so this is the only point in the file where the state is actually final. */
