@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 482 (2026-10-08)">
+<meta name="build" content="v21 build 483 (2026-10-08)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -24486,6 +24486,117 @@ try{ if(profile==="ian" && state.meta && !state.meta.mig482_mattox_outcome){
     state.meta.mig482_mattox_outcome=true; save(true);
     try{ console.log("mig482: listing side only, 475k expected, end of november, 50/50 scenario removed"); }catch(_){}
 } }catch(e){ try{ console.warn("mig482 did not apply:",e&&e.message); }catch(_){} }
+
+/* ===== v21 build 483: MATTOX IS SOLD. AGREED TERMS, NOT EXPECTED ONES. ==================
+   IAN, 08.10.2026. THIS IS THE FIRST MATTOX BUILD CARRYING AGREED FIGURES.
+
+   ONE. SOLD AT 490,000. Up from the 475,000 the escalation clause was estimated at, and
+   25,100 OVER the 464,900 list. The escalation settled higher than modelled. Recorded as
+   AGREED. The word EXPECTED comes off the price field, which is the whole point of this
+   build: build 482 could only say expected because an escalation clause is not a number.
+
+   TWO. CLOSE IS 13 NOVEMBER, earlier if they can manage it. Not end of November.
+
+   THREE. THE MONEY. ALL FOUR FIGURES IN THE BRIEF VERIFY EXACTLY AGAINST THE MODEL.
+     charged sell side  3.1 percent of 490,000                  = 15,190.00
+     brokerage          15 percent of the STANDARD 3.6 (17,640) =  2,646.00
+     sell net                                                   = 12,544.00
+     IAN 20 percent     = 2,508.80 gross, 1,756.16 post tax at the 30 percent set aside
+   The brokerage basis is the standard 3.6 and not the charged 3.1, which is Ian's
+   27.09.2026 instruction and which dealBrokerage names THIS DEAL as the live proof of.
+
+   LIKE FOR LIKE, ON THE MODEL BASIS THROUGHOUT, so no basis artefact can creep back in:
+     464,900 list       2,380.29 gross   1,666.20 post tax
+     475,000 escalation 2,432.00 gross   1,702.40 post tax
+     490,000 SOLD       2,508.80 gross   1,756.16 post tax
+   So 25,100 over list buys Ian 128.51 gross and 89.96 post tax, which is 0.51 percent of
+   the overage. That ratio is not a surprise and it is worth stating plainly: a 20 percent
+   share of one discounted side turns about two dollars in every four hundred of sale price
+   into his pocket. THE PRICE WIN IS THE SELLERS' WIN far more than it is his.
+
+   THE REBUILT POSITION.
+     1. THE 5 TO 6 NOVEMBER TROUGH DOES NOT MOVE. About 963 at the centre burn and about
+        509 at a 2,500 burn, measured IMMEDIATELY BEFORE the Willis money funds on
+        6 November. CONFIRMED BY RECOMPUTING, not assumed: the trough is computed on the
+        path UP TO that date, and both Willis (about 6 November) and Mattox (13 November)
+        land on or after it. An earlier Mattox close helps November and cannot help the
+        trough, because the trough is the day before the first money arrives.
+     2. NOVEMBER TURNS FROM THIN INTO GENUINELY COMFORTABLE, and that is new. Two payments
+        inside eight days: WILLIS 2,685.83 post tax about 6 November and MATTOX 1,756.16
+        post tax on 13 November, 4,441.99 together. By 15 November cash reads about 4,750
+        at the centre burn and about 4,210 at a 2,500 burn, against a trough of 963 and 509
+        nine days earlier. That is roughly two months of cover where there was about two
+        weeks. THE THINNESS OF NOVEMBER WAS ALWAYS A FIRST WEEK PROBLEM, never a month
+        problem, and it is now a first week problem with a short fuse.
+     3. MID JANUARY about 2,830 without Methodist and about 272 with it, against 2,776 and
+        218 on build 482. THE WHOLE IMPROVEMENT IS THE 53.76 OF EXTRA POST TAX. The close
+        moving from end of November to 13 November does NOT move the mid January figure,
+        because both dates sit inside the window. TIMING BUYS COVER, NOT MONEY, and what
+        this timing buys is about two and a half weeks of earlier cover in late November
+        and December.
+     4. THE FALL THROUGH CASE IS RE RATED, AND IT IS THE RIGHT QUESTION TO HAVE ASKED.
+        THE DOLLARS DO NOT MOVE: no Mattox money by 15 January is still about 1,074 without
+        Methodist and about MINUS 1,484 with it, because that case is defined by the absence
+        of the payment and not by its size. WHAT MOVES IS THE PROBABILITY, and it moves a
+        long way. Build 482 was pricing an UNACCEPTED OFFER with an escalation clause, where
+        the failure modes included simply losing to the competing offer. This is an EXECUTED
+        CONTRACT at an agreed price. The remaining failure modes are the inspection
+        contingency and the buyer's loan, which are ordinary contract risk rather than deal
+        formation risk.
+        SO THE HONEST DOWNSIDE IS NOT THE MINUS 1,484, IT IS THE SHAPE OF IT. The money is
+        now probable enough that the planning case should be that it arrives, while the
+        consequence of it not arriving is unchanged and still the worst number on the board.
+        NO PROBABILITY IS WRITTEN ON THE DEAL, deliberately: Ian has not given one, the
+        inspection has not happened, and a number invented here would be summed by something
+        later. Under contract is not closed.
+     5. ONE RISK WORTH PRICING, AND IT IS AN OPEN QUESTION RATHER THAN AN ASSUMPTION.
+        13 NOVEMBER IS ABOUT 36 DAYS OUT. If the buyer is financed, 36 days with an
+        inspection contingency is aggressive and THE LENDER IS THE CONSTRAINT, not the
+        parties. WE DO NOT KNOW THEIR FINANCING. This is the escalation winner and NOT
+        Melissa, so the financed, pre approval in hand, 10,000 earnest detail on the Melissa
+        record says nothing about this buyer and must not be read across. Recorded as an
+        open question. If the loan cannot make 13 November the realistic landing is late
+        November or early December, which is build 482's own case and which the position
+        above already survives.
+
+   The build 478 staleness caveat still applies to every cash figure: the 4,287.55 base is a
+   20 September read and the burn is contested.
+   Guard state.meta.mig483_mattox_sold, end of chain, SEED_VERSION stays 13. */
+try{ if(profile==="ian" && state.meta && !state.meta.mig483_mattox_sold){
+    try{
+      var _D3=state.realEstate && state.realEstate.deals;
+      if(_D3 && _D3.length){
+        for(var _i3=0;_i3<_D3.length;_i3++){
+          var _k3=_D3[_i3];
+          if(_k3 && typeof _k3.id==="string" && _k3.id.indexOf("mattox")>-1){
+            _k3.price="$490,000";
+            _k3.stage="Under Contract";
+            _k3.agreedPrice="$490,000 AGREED, 08.10.2026. SOLD. This is a settled number, not an escalation estimate. It is $25,100 over the $464,900 list and $15,000 over the $475,000 the escalation was modelled at.";
+            _k3.expectedClose="13 November 2026, earlier if the parties can manage it.";
+            _k3.closeNote="13 NOVEMBER IS ABOUT 36 DAYS OUT AND THE BUYER'S FINANCING IS NOT KNOWN. If they are financed, 36 days with an inspection contingency is aggressive and the LENDER is the constraint. THIS IS THE ESCALATION WINNER, NOT MELISSA, so nothing on the Melissa offer record describes this buyer. OPEN QUESTION, not an assumption either way.";
+            _k3.ianExpected="$2,508.80 gross, $1,756.16 post tax at the 30 percent set aside. Charged sell side 3.1 percent of $490,000 = $15,190.00, less brokerage of 15 percent of the STANDARD 3.6 percent ($17,640.00) = $2,646.00, sell net $12,544.00, Ian's standard 20 percent of the listing side. Verified against the model, not copied.";
+            _k3.overageMath="LIKE FOR LIKE ON THE MODEL BASIS: $464,900 gave $2,380.29 gross and $1,666.20 post tax, $475,000 gave $2,432.00 and $1,702.40, $490,000 gives $2,508.80 and $1,756.16. So $25,100 over list is worth $128.51 gross and $89.96 post tax to Ian, about 0.51 percent of the overage. The price win is the sellers' win, not his.";
+            if(_k3.expectedPrice) { try{ delete _k3.expectedPrice; }catch(_x3){} }
+          }
+        }
+      }
+    }catch(_e4){}
+    if(state.realEstate && state.realEstate.positionAsOf){
+      var _p3=state.realEstate.positionAsOf;
+      _p3.mattoxOffer="SOLD AND UNDER CONTRACT AT $490,000, closing 13 November 2026. $2,508.80 gross and $1,756.16 post tax, verified against the model. This supersedes every expected and escalation figure on this surface. No probability is set: under contract is not closed, the inspection has not happened and the buyer's financing is unknown.";
+      _p3.troughRecheck="THE 5 TO 6 NOVEMBER TROUGH DOES NOT MOVE, about $963 at the centre burn and about $509 at a $2,500 burn, measured IMMEDIATELY BEFORE the Willis money funds on 6 November. RECOMPUTED, not assumed: both Willis and the 13 November Mattox close land on or after it, and the trough is computed on the path up to that date.";
+      _p3.novemberRebuilt="NOVEMBER IS NOW COMFORTABLE AFTER THE FIRST WEEK. Two payments inside eight days, Willis $2,685.83 post tax about 6 November and Mattox $1,756.16 post tax on 13 November, $4,441.99 together. By 15 November cash reads about $4,750 at the centre burn and about $4,210 at a $2,500 burn, against $963 and $509 nine days earlier. Roughly two months of cover where there was about two weeks. The thin part of November is the first week and nothing can change that.";
+      _p3.midJanuaryRebuilt="About $2,830 without Methodist and about $272 with it, against about $2,776 and about $218 on build 482. The whole improvement is the $53.76 of extra post tax from the higher price. The earlier close does NOT move this figure, because 13 November and end of November are both inside the window.";
+      _p3.slipCase="RETIRED AS A JANUARY CASE. The close is 13 November on an executed contract, so the 6 January combination that produced the minus $833 low point cannot occur. If the buyer's loan cannot make 13 November the realistic slip is late November or early December, which is build 482's own case and which this position already survives.";
+      _p3.worstCase="MATTOX MONEY NOT ARRIVING BY 15 JANUARY: about $1,074 without Methodist and about MINUS $1,484 with it. THE DOLLARS ARE UNCHANGED, because this case is the absence of the payment and not its size. THE PROBABILITY IS MATERIALLY LOWER than it was on build 482, which was pricing an unaccepted offer with an escalation clause. This is an executed contract at an agreed price, and the live failure modes are the inspection contingency and the buyer's loan, which is ordinary contract risk rather than deal formation risk.";
+    }
+    var _FB=state.finance;
+    if(_FB && typeof _FB.cashNote==="string" && _FB.cashNote.indexOf("SOLD AT 490,000")<0){
+      _FB.cashNote=_FB.cashNote+" UPDATED 08.10.2026, MATTOX SOLD AT 490,000 AND CLOSING 13 NOVEMBER: $2,508.80 gross and $1,756.16 post tax. The 5 to 6 November trough is UNCHANGED at about $963 and is still the binding low point, because both Willis and Mattox land on or after it. After that November is comfortable: two payments inside eight days totalling $4,441.99 post tax, and about $4,750 in hand by 15 November at the centre burn. Mid January about $2,830, or about $272 with Methodist.";
+    }
+    state.meta.mig483_mattox_sold=true; save(true);
+    try{ console.log("mig483: mattox sold 490k, under contract, closing 13 november"); }catch(_){}
+} }catch(e){ try{ console.warn("mig483 did not apply:",e&&e.message); }catch(_){} }
 
   /* build 372: LAST THING BEFORE THE SAVE. Every migration above has run, deepMergeDefaults
      has run, so this is the only point in the file where the state is actually final. */
