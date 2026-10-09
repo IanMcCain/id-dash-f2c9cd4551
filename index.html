@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 486 (2026-10-09)">
+<meta name="build" content="v21 build 487 (2026-10-09)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -25253,6 +25253,111 @@ try{ if(profile==="ian" && state.meta && !state.meta.mig486c_oct8 && state.pickl
       } else { state.meta.mig486c_oct8=true; save(true); }
     }
 } }catch(e){ try{ console.warn("mig486c did not apply:",e&&e.message); }catch(_){} }
+
+/* ===== v21 build 487: WILLIS CLOSES 13 NOVEMBER, AND IT STAYS APPROXIMATE ================
+   IAN, 09.10.2026: "Yeah I think Cynthia is 13th as well." THAT IS HIS CALL AND IT IS TAKEN.
+   IT STAYS APPROXIMATE AND confirmed:false, because "I think" is not "it is", and because
+   RE-33 established independently that NO SOURCE WE CAN REACH CARRIES A WILLIS CLOSE DATE:
+   nothing across 1,191 of Chris's texts since the contract, and Paragon's Closing Date field
+   is BLANK. What Paragon does carry corroborates the CONTRACT and not the close: status
+   Pending, contract date 10/6, DOM 11. So the contract is solid and the close date is still
+   only his recollection. Build 486's harness asserted that no "13 November" appeared on this
+   record; that assertion was correct for 486 and is deliberately reversed here, with his
+   words behind it.
+
+   THE 7 NOVEMBER SATURDAY INFERENCE IS RETIRED, NOT CARRIED FORWARD. It existed to choose
+   between 6 and 7 November and that question is gone. 13 November 2026 is a FRIDAY, which is
+   an ordinary closing day, so no weekday caveat replaces it.
+
+   ===== THE DATE COLLISION, RECORDED HERE RATHER THAN ON HIS SURFACE ======================
+   13 NOVEMBER IS NOW CARRIED BY THREE DEALS: Willis, Mattox and the Spicer new construction.
+   It is REAL for Mattox, verbatim in the master file, and Ian may be generalising it across
+   the other two. HE HAS MADE THE CALL, SO IT IS RECORDED AND NOT QUERIED. This paragraph
+   exists only so a later session does not rediscover the three-way match and report it as an
+   error. It is deliberately a code comment and a changelog line, NOT a field on the record,
+   because nothing on Ian's surface should imply his own date is suspect.
+
+   ===== AND IT MOVES THE TROUGH, WHICH IS THE PART THAT MATTERS ===========================
+   The trough is computed on the path UP TO the first money landing, so a close seven days
+   later is a seven day longer burn. Recomputed on build 485's own arithmetic, base $2,576 of
+   9 October, daily burn of monthly/30, nothing new invented:
+       28 days to 6 November   ->  35 days to 13 November
+       at $1,500: $50.00 a day, $1,750 out, trough about $826  (was $1,176)
+       at $2,000: $66.67 a day, $2,333 out, trough about $243  (was   $709)
+   AT THE HIGH BURN END THAT IS $466 THINNER AND IT IS THE WORST FIGURE ON THE RECORD.
+   THE BIKE CASE NOW GOES NEGATIVE AND MUST BE SAID OUT LOUD. The pause is confirmed for
+   OCTOBER ONLY and November is expressly unstated. A restart landing before the 13th takes
+   about $420 off both ends, giving roughly $406 and ABOUT MINUS $177. That is the first time
+   any modelled trough on this record crosses zero. IT IS NOT A PREDICTION: November is not
+   stated and is not assumed either way. It is named because a window that now reaches into
+   mid November makes the unstated month materially more relevant than it was at 28 days.
+   ONE THING GETS BETTER, AND IT IS WORTH SAYING. Willis and Mattox no longer land eight days
+   apart; they land ON THE SAME DAY, 13 November, together $4,441.99 post tax. So the recovery
+   after the low point is sharper even though the low point itself is deeper and later.
+   NOTHING ELSE IS RECOMPUTED. No commission figure moves, the 15 January position is
+   unchanged because a date moves when money arrives and not how much is needed, and the
+   Methodist payment is still late December or January and still outside the window.
+
+   Guard state.meta.mig487_willis_nov13, end of chain, SEED_VERSION stays 13. */
+try{ if(profile==="ian" && state.meta && !state.meta.mig487_willis_nov13 && state.realEstate){
+    var _W7=null; (state.realEstate.deals||[]).forEach(function(d){ if(d&&d.id==="re-cynthia-willis") _W7=d; });
+    if(_W7){
+      if(!state.archive||typeof state.archive!=="object") state.archive={};
+      if(!state.archive.willisCloseDatePreB487){
+        state.archive.willisCloseDatePreB487={ changedOn:"2026-10-09", by:"build 487",
+          closeBefore:String(_W7.close||""), closeDateBefore:_W7.closeDate||null,
+          why:"Superseded by Ian, 09.10.2026: \"Yeah I think Cynthia is 13th as well.\" The 6 or 7 November pair and the Saturday inference are retired, not corrected." };
+      }
+      _W7.close="Closes about 13 November 2026, APPROXIMATE";
+      _W7.closeDate={ approx:"About 13 November 2026",
+        source:"Ian, 09.10.2026, his words: \"Yeah I think Cynthia is 13th as well.\"",
+        confirmed:false,
+        whyNotConfirmed:"He said \"I think\". It is his recollection, not a document, and nothing we can reach corroborates it.",
+        exactLives:"The DotLoop purchase agreement, which this system does not hold.",
+        searched:"RE-33, 09.10.2026, and this is a THOROUGH NEGATIVE rather than a thin one: 1,191 of Chris's texts since the contract carry no Willis close date, and Paragon's Closing Date field is BLANK.",
+        paragonCorroborates:"THE CONTRACT, NOT THE CLOSE. Paragon reads status Pending, contract date 10/6, DOM 11. That confirms the 6 October execution already on this record and says nothing about when it closes.",
+        supersedes:"The 6 or 7 November pair of build 474, and its 7-November-is-a-Saturday inference, which is retired rather than carried forward. 13 November 2026 is a Friday, so no weekday caveat replaces it." };
+      if(_W7.yearEnd){
+        _W7.yearEnd.willis="$3,836.90 gross, $2,685.83 post tax, about 13 NOVEMBER, moved from 6 November by Ian 09.10.2026. The AMOUNT is unchanged; only the date moved.";
+        _W7.yearEnd.dateMoved="CLOSE DATE MOVED TO ABOUT 13 NOVEMBER, 09.10.2026. Every trough figure elsewhere in this yearEnd block was computed to a 6 November close and is therefore SUPERSEDED. The live trough is finance.trough, recomputed in build 487 for the 35 day window. The 15 January position is NOT affected: a date moves when money arrives, not how much is needed.";
+      }
+      state.meta.mig487_willis_nov13=true; save(true);
+      try{ console.log("mig487: willis close -> about 13 November, approximate, unconfirmed"); }catch(_){}
+    }
+} }catch(e){ try{ console.warn("mig487 did not apply:",e&&e.message); }catch(_){} }
+
+/* ===== v21 build 487b: THE TROUGH FOLLOWS THE DATE ======================================
+   Same method, same base, seven more days. See the build 487 note above for the arithmetic
+   and for why the bike case is named rather than assumed. */
+try{ if(profile==="ian" && state.meta && !state.meta.mig487b_trough && state.finance){
+    var _F7=state.finance;
+    if(_F7.trough && String(_F7.trough.at)==="2026-11-06"){
+      if(!state.archive||typeof state.archive!=="object") state.archive={};
+      if(!state.archive.troughPreB487) state.archive.troughPreB487={ archivedOn:"2026-10-09",
+        why:"Superseded when Ian moved the Willis close to about 13 November. The 28 day version is kept verbatim so the change can be checked.", trough:_F7.trough };
+      _F7.trough={
+        at:"2026-11-13",
+        why:"Measured immediately before the Willis money funds on about 13 November, which is the low point. Nothing in the pipeline lands before it: Belknap and Vogel list on 15 October, so neither can close before late November.",
+        base:2576,
+        baseAsOf:"2026-10-09",
+        days:35,
+        method:"Spendable cash less a daily burn of monthly/30 across 35 days. Build 485's arithmetic exactly, with the window extended from 28 days to 35 by Ian's own date change.",
+        atLowBurn:826,
+        atHighBurn:243,
+        line:"About $826 at a $1,500 burn and about $243 at a $2,000 burn.",
+        movedBy:"THE CLOSE DATE, NOT THE BURN AND NOT THE BALANCE. Both are unchanged. Seven more days of burn costs about $350 at the low end and about $466 at the high end, taking the window from 28 days to 35.",
+        supersedes:"About $1,176 and about $709 on a 28 day window to 6 November, build 485. Those two figures are retired and must not be quoted.",
+        bikeCaveat:"ASSUMES NO BIKE PAYMENT INSIDE THE WINDOW, AND AT THIS LENGTH THAT ASSUMPTION CARRIES MORE WEIGHT THAN IT DID. The pause is confirmed for OCTOBER ONLY. A November restart landing before the 13th takes about $420 off both ends, giving roughly $406 and ABOUT MINUS $177. THAT IS THE FIRST MODELLED TROUGH ON THIS RECORD TO CROSS ZERO. He has not said what November does, so it is NAMED AND NOT ASSUMED either way, and no negative figure is presented as the live trough.",
+        methodistCaveat:"The believed second Methodist payment of $2,557.50 is late December or January, so it is still outside this window and does not touch either figure.",
+        recovery:"SHARPER THAN BEFORE, which is the one thing the move improves. Willis and Mattox no longer land eight days apart, they land on the SAME DAY, 13 November, together $4,441.99 post tax."
+      };
+      if(typeof _F7.cashNote==="string" && _F7.cashNote.indexOf("TROUGH MOVED 09.10.2026 LATE")<0){
+        _F7.cashNote=_F7.cashNote+" || TROUGH MOVED 09.10.2026 LATE, BECAUSE THE WILLIS CLOSE MOVED. Ian put Cynthia on the 13th as well, so the window to the first money is 35 days rather than 28 and the trough is about $826 at a $1,500 burn and about $243 at a $2,000 burn. Both supersede the $1,176 and $709 computed earlier today. Burn and balance are UNCHANGED; only the date moved. If the bike restarts before the 13th take about $420 off both, which puts the high burn end BELOW ZERO at about minus $177, and November is not stated either way. Willis and Mattox now land the same day, $4,441.99 post tax together.";
+      }
+      state.meta.mig487b_trough=true; save(true);
+      try{ console.log("mig487b: trough recomputed for the 35 day window"); }catch(_){}
+    } else { state.meta.mig487b_trough=true; save(true); }
+} }catch(e){ try{ console.warn("mig487b did not apply:",e&&e.message); }catch(_){} }
 
   /* build 372: LAST THING BEFORE THE SAVE. Every migration above has run, deepMergeDefaults
      has run, so this is the only point in the file where the state is actually final. */
