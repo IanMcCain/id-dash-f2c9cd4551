@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 481 (2026-10-08)">
+<meta name="build" content="v21 build 482 (2026-10-08)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -24401,6 +24401,91 @@ try{ if(profile==="ian" && state.meta && !state.meta.mig481_mattox_oh_close){
     state.meta.mig481_mattox_oh_close=true; save(true);
     try{ console.log("mig481: open house cancelled, close mid december, january warning withdrawn"); }catch(_){}
 } }catch(e){ try{ console.warn("mig481 did not apply:",e&&e.message); }catch(_){} }
+
+/* ===== v21 build 482: MATTOX OUTCOME. IAN IS NOT THE BUYER'S AGENT. ======================
+   THREE CHANGES FROM IAN, 08.10.2026 LATE. NOTHING IS SIGNED.
+
+   ONE. IAN IS NOT THE BUYER'S AGENT. Melissa's offer is not winning. He is back to his
+   STANDARD 20 PERCENT OF THE LISTING SIDE ONLY. The 50/50 both sides scenario is DELETED,
+   not demoted, because an alternative left sitting on the record gets read as live.
+
+   TWO. AN ESCALATION CLAUSE TAKES THE PRICE TO 475,000 from 464,900. EXPECTED, NOT AGREED.
+   An escalation clause settles against the competing offer, so the final number is not known.
+
+   THREE. CLOSE MOVES TO END OF NOVEMBER, not mid December.
+
+   THE MONEY, RECOMPUTED FROM THE MODEL RATHER THAN COPIED FROM THE BRIEF. All four figures
+   in the brief verify exactly:
+     charged sell side  3.1 percent of 475,000  = 14,725.00
+     brokerage          15 percent of the STANDARD 3.6 (17,100.00) = 2,565.00
+     sell net           = 12,160.00
+     IAN 20 percent     = 2,432.00 gross, 1,702.40 post tax at the 30 percent set aside
+   This uses the app's own brokerage rule, 15 percent of the standard 3.6 and not of the
+   charged 3.1, which is Ian's 27.09.2026 instruction and which dealBrokerage names Mattox as
+   the live proof of.
+
+   !! A REAL DISCREPANCY FOUND WHILE CHECKING, AND IT CHANGES THE SIGN OF THE COMPARISON.
+   The board was carrying Mattox at 2,450.02, which is 20 percent of 12,250.10 and is the
+   BRIEF basis, 15 percent of the charged 3.1. It is not the model basis. On the model basis
+   the old price gives Ian 2,380.29, so:
+     against the carried 2,450.02 the new figure looks like MINUS 18.02 gross
+     like for like on the model basis the escalation is PLUS 51.71 gross, PLUS 36.20 post tax
+   The second is the honest comparison. The first is an artefact of a wrong basis sitting on
+   the board. 10,100 more on the sale price yields Ian 51.71, which is 0.51 percent of it,
+   and that is what a 20 percent share of one side of a discounted listing actually buys.
+
+   THE REBUILT POSITION.
+     5 TO 6 NOVEMBER TROUGH UNCHANGED at about 963. An end of November close is still after
+     it, and Willis still lands 6 November. The binding low point does not move.
+     MID JANUARY comes back to about 2,776 without Methodist and about 218 with it, against
+     2,789 and 231 before tonight. Essentially the original. The 8,558 that the Melissa
+     scenario briefly showed is gone, a swing of about minus 5,782, and it was never banked
+     because build 479 deliberately left the deal's stage, price and take home untouched.
+     Close date does NOT move the mid January figure. End of November and 22 December are both
+     inside the window. Timing buys COVER, not money.
+     WHAT THE EARLIER CLOSE ACTUALLY BUYS: about three weeks of earlier cover on 1,702.40 post
+     tax. It does NOT touch the binding trough, because that is 5 to 6 November and the money
+     arrives at the end of the month either way. It cushions December rather than November.
+
+     THE EARLY JANUARY MINUS 833 CASE IS NOW PERMANENTLY DEAD, not conditionally. It required
+     a 6 January close with Methodist landing 31 December. An end of November close funds a
+     full month before Methodist is due, so the combination cannot occur. Build 481 withdrew
+     it conditionally; this withdraws it outright.
+     THE FALL THROUGH CASE IS UNCHANGED AND IS WORSE THAN THE ONE JUST KILLED: no Mattox by
+     15 January is about 1,074 without Methodist and about MINUS 1,484 with it. Nothing is
+     signed and an escalation clause is not an accepted contract.
+
+   The build 478 staleness caveat still applies to every figure: the cash base is a
+   20 September read and the burn is contested.
+   Guard state.meta.mig482_mattox_outcome, end of chain, SEED_VERSION stays 13. */
+try{ if(profile==="ian" && state.meta && !state.meta.mig482_mattox_outcome){
+    try{
+      var _D=state.realEstate && state.realEstate.deals;
+      if(_D && _D.length){
+        for(var _j=0;_j<_D.length;_j++){
+          var _k=_D[_j];
+          if(_k && typeof _k.id==="string" && _k.id.indexOf("mattox")>-1){
+            _k.expectedPrice="$475,000 EXPECTED via escalation clause, NOT AGREED. Was $464,900. An escalation settles against the competing offer, so the final number is unknown.";
+            _k.expectedClose="End of November 2026. Approximate, nothing signed.";
+            _k.ianRole="LISTING SIDE ONLY, standard 20 percent share. Ian is NOT the buyer's agent. The 50/50 both sides scenario is dead.";
+            _k.ianExpected="$2,432.00 gross, $1,702.40 post tax at the 30 percent set aside. Sell net $12,160.00 = 3.1 percent of $475,000 less 15 percent of the standard 3.6.";
+            if(_k.commissionIfAccepted) { try{ delete _k.commissionIfAccepted; }catch(_x){} }
+            if(_k.offer && _k.offer.buyer) { _k.offer.outcome="NOT WINNING. Melissa's offer is not the one. Ian is not the buyer's agent."; }
+          }
+        }
+      }
+      var _M9=state.meta && state.meta.mig479_mattox_offer_data;
+      if(_M9){ try{ delete _M9.commissionIfAccepted; }catch(_x2){} }
+    }catch(_e3){}
+    var _FA=state.finance;
+    if(_FA && typeof _FA.cashNote==="string"){
+      if(_FA.cashNote.indexOf("JANUARY RISK WITHDRAWN")>-1 && _FA.cashNote.indexOf("PERMANENTLY DEAD")<0){
+        _FA.cashNote=_FA.cashNote+" UPDATED 08.10.2026 LATE: the close moved again, to END OF NOVEMBER, so the early January case is now PERMANENTLY DEAD rather than conditionally withdrawn. Mattox funds a full month before Methodist is due. The 5 to 6 November trough of about $963 is unchanged and is still the binding low point. Mid January comes back to about $2,776, or about $218 with Methodist, because Ian is listing side only at $2,432 gross and not $10,692.";
+      }
+    }
+    state.meta.mig482_mattox_outcome=true; save(true);
+    try{ console.log("mig482: listing side only, 475k expected, end of november, 50/50 scenario removed"); }catch(_){}
+} }catch(e){ try{ console.warn("mig482 did not apply:",e&&e.message); }catch(_){} }
 
   /* build 372: LAST THING BEFORE THE SAVE. Every migration above has run, deepMergeDefaults
      has run, so this is the only point in the file where the state is actually final. */
