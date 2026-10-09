@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 484 (2026-10-09)">
+<meta name="build" content="v21 build 485 (2026-10-09)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -24896,6 +24896,217 @@ try{ if(profile==="ian" && state.meta && !state.meta.mig484_app31_deepdive){
   try{ console.log("mig484: APP-31 deep dive, re and finance corrections applied"); }catch(_){}
 } }catch(e){ try{ console.warn("mig484 did not apply:",e&&e.message); }catch(_){} }
 
+
+/* ===== v21 build 485, APP-31: IAN'S ANSWERS TO THE OPEN QUESTIONS ====================
+   Ten data answers plus two render additions (see _b485_render.js for those). Everything
+   here is his, recorded as he gave it. Guard state.meta.mig485_ian_answers, end of chain,
+   SEED_VERSION stays 13.
+
+   8 OCTOBER IS NOT WRITTEN HERE AND THAT IS DELIBERATE. The data query found zero sessions
+   dated 2026-10-08 and zero ids containing 20261008. He is sending it. A placeholder would
+   be an invented session, so the hole stays a hole until he fills it. */
+try{ if(profile==="ian" && state.meta && !state.meta.mig485_ian_answers){
+
+  var _D5=(state.realEstate && state.realEstate.deals)||[];
+  var _g5=function(id){ for(var i=0;i<_D5.length;i++){ if(_D5[i]&&_D5[i].id===id) return _D5[i]; } return null; };
+  var _fold5=function(d,marker,text){
+    if(!d) return false;
+    var cur=String(d.note||"");
+    if(cur.indexOf(marker)>-1) return false;
+    d.note=(cur.trim()? cur.replace(/\s+$/,"")+"  " : "")+text;
+    return true; };
+
+  /* ---- 1. TODAY'S SESSION, FRIDAY 9 OCTOBER. ALL OPEN PLAY, NO DRILLING ---------------
+     Keyed on the date so it can never duplicate. effort 8 is HIS rating, which is why it
+     goes on the `effort` key with effortSource "His own rating", the shape every one of
+     the other 18 self rated sessions uses. maxHr is recorded as approximate because he
+     said "~156"; it is not rounded into a false exact. */
+  try{
+    var _S5=state.pickleball && state.pickleball.sessions;
+    if(_S5 && Object.prototype.toString.call(_S5)==="[object Array]"){
+      var _have=false;
+      for(var _i5=0;_i5<_S5.length;_i5++){ if(_S5[_i5] && String(_S5[_i5].date)==="2026-10-09") _have=true; }
+      if(!_have){
+        _S5.push({
+          id:"pk-20261009-am",
+          date:"2026-10-09",
+          kind:"Open play",
+          venue:"Omaha",
+          duration:"2h 08m 43s",
+          window:"7:09 to 9:18 AM, Omaha",
+          calories:1353,
+          activeCalories:1152,
+          avgHr:124,
+          maxHr:156,
+          maxHrApprox:true,
+          minHr:79,
+          effort:8,
+          effortLabel:"Hard",
+          effortSource:"His own rating",
+          effortNote:"HIS OWN RATING, how hard he tried and how well he played, defined 14.09.2026. NOT an exertion figure and NOT reconciled against the 124 average.",
+          performanceData:true,
+          drillOnly:false,
+          allOpenPlay:true,
+          kindNote:"ALL OPEN PLAY, NO DRILLING, and he said so explicitly. This is not a mixed session and must not be counted as a drilling one. It breaks a run: 4, 5, 6 and 7 October all carried drilling in some form.",
+          maxHrNote:"THE MAXIMUM IS APPROXIMATE. He gave it as about 156, so it is stored as 156 and flagged rather than presented as a read figure. The 124 average and the 79 minimum are exact."
+        });
+      }
+    }
+  }catch(_e5a){}
+
+  /* ---- 3. THE BURN IS SETTLED, SO THE TROUGH UNFREEZES -------------------------------
+     $1,500 to $2,000 a month, higher in months with big expenses. Ian, 09.10.2026.
+     RECOMPUTED ON THE APP'S OWN METHOD, not a new one: spendable cash less a daily burn of
+     monthly/30 across the days to 6 November, measured immediately before the Willis money
+     funds, which is the low point because nothing lands before it. The old $963 was
+     $4,287.55 less 46 days at $2,200/30, and that arithmetic is what is reused here.
+       base $2,576 on 9 October, 28 days to 6 November
+       at $1,500: $50.00 a day, $1,400 out, trough about $1,176
+       at $2,000: $66.67 a day, $1,867 out, trough about  $709
+     The range straddles the old $963 rather than sitting under it: the balance fell $1,711
+     but the burn fell further and the window is 18 days shorter. */
+  try{
+    var _F5=state.finance;
+    if(_F5){
+      _F5.burnModel=_F5.burnModel||{};
+      _F5.burnModel.settled={
+        range:"$1,500 to $2,000 a month",
+        source:"Ian, 09.10.2026, his own figure. SETTLED, not modelled.",
+        qualifier:"HIGHER IN MONTHS WITH BIG EXPENSES, in his words. The range is the ordinary month, not a cap, so a month carrying a known one off sits above it by that amount rather than inside it.",
+        supersedes:"The contested $1,525 to $2,400 of build 478 and the $2,200 centre of build 440. Both are retired. The top down Rocket Money derivation in this block stays as the record of how we got there, but it is no longer the live figure.",
+        replacesContest:true
+      };
+      _F5.burnModel.result="SETTLED AT $1,500 TO $2,000 A MONTH by Ian, 09.10.2026. The earlier 'about $2,200, AND IT IS NOW CONTESTED' is closed.";
+      _F5.trough={
+        at:"2026-11-06",
+        why:"Measured immediately before the Willis money funds on about 6 November, which is the low point. Nothing in the pipeline lands before it: Belknap and Vogel list on 15 October, so neither can close before late November.",
+        base:2576,
+        baseAsOf:"2026-10-09",
+        days:28,
+        method:"Spendable cash less a daily burn of monthly/30 across 28 days. The same arithmetic that produced the old $963 from $4,287.55 and $2,200, reused rather than replaced.",
+        atLowBurn:1176,
+        atHighBurn:709,
+        line:"About $1,176 at a $1,500 burn and about $709 at a $2,000 burn.",
+        bikeCaveat:"ASSUMES NO BIKE PAYMENT INSIDE THE WINDOW. The pause is confirmed for OCTOBER only, so a November restart that landed before the 6th would take about $420 off both ends, giving roughly $756 and $289. He has not said what November does, so this is NAMED AND NOT ASSUMED either way.",
+        methodistCaveat:"The believed second Methodist payment of $2,557.50 is late December or January, so it is outside this window and does not touch either figure.",
+        supersedes:"The frozen 'about $963 at the centre burn and about $509 at a $2,500 burn'. Both are retired, and the frozen pending-the-burn state is lifted."
+      };
+      if(typeof _F5.cashNote==="string" && _F5.cashNote.indexOf("TROUGH RECOMPUTED 09.10.2026")<0){
+        _F5.cashNote=_F5.cashNote+" || TROUGH RECOMPUTED 09.10.2026, BURN SETTLED. Ian set the burn at $1,500 to $2,000 a month, higher in months with big expenses. On a $2,576 base 28 days out from 6 November the trough is about $1,176 at the low end and about $709 at the high end. Both figures supersede the $963 and $509 above and the 'no new trough is computed' note of build 484, which was waiting for exactly this. The bike pause is confirmed for October only; a November restart before the 6th would take about $420 off both.";
+      }
+      _F5.staleness={
+        lastHardRead:"2026-10-09",
+        ageAtWrite:"0 days, synced 09.10.2026",
+        what:"Main checking is a fresh $2,576 read and the burn is Ian's own settled $1,500 to $2,000.",
+        rule:"NEITHER INPUT IS STALE NOW. The trough is still a projection rather than a measurement, because it runs 28 days forward, but both of its inputs are current and stated. Quote it as a projection with its range, never as a single number."
+      };
+
+      /* ---- 4. THE BIKE IS PAUSED IN OCTOBER. STOP CARRYING IT AS UNRESOLVED --------- */
+      var _ed=_F5.externalDebts||[];
+      for(var _j5=0;_j5<_ed.length;_j5++){
+        var _b5=_ed[_j5];
+        if(_b5 && /bike/i.test(String(_b5.name||""))){
+          _b5.status="PAUSED";
+          _b5.statusConfirmed="Ian, 09.10.2026, his words: \"it's paused in October.\" CONFIRMED FOR OCTOBER. The $420 removal from the burn stands for October and this is no longer an open question.";
+          _b5.statusWhy="Ian paid extra and the payments have stopped. It is a BALANCE, not a monthly, and it is excluded from every burn figure. Confirmed paused for October by Ian on 09.10.2026.";
+          _b5.novemberUnknown="WHAT NOVEMBER DOES IS NOT STATED AND IS NOT GUESSED. He confirmed October. If it restarts before 6 November it takes about $420 off the trough; see finance.trough.bikeCaveat. This is the only part still open and it is a question for him, not an unresolved status.";
+          _b5.unresolved=false;
+        }
+      }
+      for(var _k5=0;_k5<((_F5.burnModel.removed)||[]).length;_k5++){
+        var _r5=_F5.burnModel.removed[_k5];
+        if(_r5 && /bike/i.test(String(_r5.what||""))) _r5.why="PAUSED, CONFIRMED FOR OCTOBER BY IAN 09.10.2026. The removal stands.";
+      }
+    }
+  }catch(_e5b){}
+
+  /* ---- 5. VOGEL IS $334,900. SETTLED ------------------------------------------------ */
+  var _vg5=_g5("re-vogel-sell");
+  if(_vg5){
+    _vg5.price="$334,900";
+    _vg5.priceNote="$334,900, SETTLED BY IAN 09.10.2026. This supersedes the $329,900 he set on 25.09.2026 and returns the price to the CMA revision 3 recommendation, which was $334,900 post abatement with tiers $329,900 low, $334,900 recommended and $339,900 push. It is the recommended tier, not a push. The abatement is done so the as-is $319,900 stays retired.";
+    _vg5.priceNeedsRevisit=false;
+    _vg5.winProbNeedsRevisit=false;
+    _vg5.revisitWhy="CLOSED 09.10.2026. The price is settled at $334,900 and the probability stands as Ian set it. The leak that made both provisional is recorded with its history on this card and is a pre launch item, not a pricing input. Do not re-raise either as needing revisit.";
+    _fold5(_vg5,"PRICE SETTLED 09.10.2026",
+      "PRICE SETTLED 09.10.2026 AT $334,900, Ian's call, superseding the $329,900 of 25.09. Both revisit flags are cleared with it. The roof and water history above still stands and is still a pre launch item; it did not move the price, and the CMA's own rule that active moisture is fixed before launch rather than repriced is why.");
+  }
+
+  /* ---- 6. BELKNAP: HE SAYS IT IS FINE ----------------------------------------------- */
+  var _bk5=_g5("re-belknap-sell");
+  if(_bk5){
+    _bk5.flagsClosed="CLOSED BY IAN 09.10.2026. His words: it's fine, don't worry. Everything on this card that was carried as a watch item is closed: the staging collision with the Willis open house, the private sale risk (already dead on a lowball, 29.09), the pre inspection waiver (already an intentional decision, 21.09) and the list date (confirmed 15 October, 07.10). NOTHING ON BELKNAP IS AN OPEN ITEM. Do not resurface any of it as a gap, a risk or a question.";
+    if(_bk5.stagingNote && /COLLISION/.test(String(_bk5.stagingNote))){
+      _bk5.stagingNote=String(_bk5.stagingNote)+" COLLISION CLOSED 09.10.2026 by Ian: it's fine, don't worry.";
+    }
+    _fold5(_bk5,"FLAGS CLOSED 09.10.2026",
+      "FLAGS CLOSED 09.10.2026. Ian: it's fine, don't worry. The staging collision, the dead private sale, the pre inspection waiver and the list date are all closed as items. The $250,000 list price and the 15 October date stand.");
+  }
+
+  /* ---- 7. SILVER LEAF / LAFAYETTE: DON'T WORRY ABOUT IT -----------------------------
+     Recorded in meta.closedRequests, the existing home for a declined or closed line of
+     enquiry, so it stops being raised. NO DEAL RECORD IS CREATED: there was never one, and
+     creating one now to then mark it closed would be inventing the thing being closed. */
+  try{
+    state.meta.closedRequests=state.meta.closedRequests||{};
+    if(!state.meta.closedRequests.silverLeafLafayette){
+      state.meta.closedRequests.silverLeafLafayette={
+        answer:"CLOSED",
+        closedOn:"2026-10-09",
+        words:"Don't worry about it.",
+        why:"Closed by Ian. Build 484 reported that Silver Leaf / Lafayette appears nowhere in the app: no deal, no lead, no hit on the address or the $145,000, and nothing misattributing the signature chase to Ian. He has now said to leave it. DO NOT raise Lafayette, Silver Leaf, the $145,000 or the lot owner signature as a gap, a missing record or an open item anywhere in this app."
+      };
+    }
+  }catch(_e5c){}
+
+  /* ---- 8. THEOBALD: IT CAME FROM THE MEETING ----------------------------------------
+     THE build 484 FRAMING WAS WRONG AND IS WITHDRAWN. "Ian only, zero corroboration across
+     289,937 messages" was literally true and substantively misleading: the source was the
+     listing presentation on 7 October, and a meeting leaves no text. Absence of a text
+     trail for something said in a room is not weak evidence, it is the expected shape of
+     the evidence. His read: "no guarantees but very strong." */
+  var _th5=_g5("re-theobald-sell");
+  if(_th5){
+    _th5.priceNote="BAND TAKEN INTO THE ROOM WAS $320,000 TO $340,000 WITH A HARD $340,000 CEILING, from the listing presentation on 7 October 2026. The ceiling is the operative half: $340,000 is hard, so the top of the band is a limit and not a stretch target. This supersedes the $325,000 to $330,000 and the $329,900 single point recommendation, which was ours. SPRING 2027 LISTING, CONFIRMED BY IAN FROM THE MEETING, his read: no guarantees but very strong.";
+    _th5.sourcing={
+      from:"The listing presentation, Wednesday 7 October 2026, 6:30 PM.",
+      confirmedBy:"Ian, 09.10.2026.",
+      strength:"NO GUARANTEES BUT VERY STRONG, his words.",
+      whyNoTextTrail:"THE MEETING WAS NOT A TEXT. The build 484 note that the spring listing and the cash purchase had zero corroboration across 289,937 messages was true as a search result and WRONG as a characterisation. Nothing said in a room appears in a message thread, so the absence is the expected shape of the evidence and not a reason for doubt. WITHDRAWN.",
+      status:"CONFIRMED BY IAN, SOURCED TO THE MEETING. Not 'uncorroborated' and not 'Ian only'. Do not reintroduce either phrase on this file."
+    };
+    _fold5(_th5,"SOURCING CORRECTED 09.10.2026",
+      "SOURCING CORRECTED 09.10.2026 AND THE EARLIER FRAMING IS WITHDRAWN. The spring listing and the cash purchase came from the 7 October listing presentation and are CONFIRMED BY IAN, who puts them at no guarantees but very strong. Build 484 marked them 'Ian only, zero corroboration across 289,937 messages'. That was a true search result and a wrong reading: a meeting leaves no text, so the silence in the threads is expected and carries no doubt. Treat both as real and sourced to the meeting.");
+  }
+  var _tb5=_g5("re-theobald-buy");
+  if(_tb5){
+    _tb5.sourcing={
+      from:"The listing presentation, Wednesday 7 October 2026, 6:30 PM.",
+      confirmedBy:"Ian, 09.10.2026.",
+      strength:"NO GUARANTEES BUT VERY STRONG, his words.",
+      whyNoTextTrail:"The meeting was not a text, so there is no thread to corroborate it and none is expected. The build 484 'zero corroboration' framing is WITHDRAWN.",
+      status:"CONFIRMED BY IAN, SOURCED TO THE MEETING."
+    };
+    _fold5(_tb5,"SOURCING CORRECTED 09.10.2026",
+      "SOURCING CORRECTED 09.10.2026. The cash purchase came from the 7 October listing presentation and is CONFIRMED BY IAN at no guarantees but very strong. The build 484 'zero corroboration across 289,937 messages' framing is WITHDRAWN as misleading: a meeting leaves no text. The cash fact is real and sourced, so the no financing contingency, no appraisal gate and fast close that rest on it rest on something stated in a room by the clients. Still no probability is set, because strong is not a number.");
+  }
+
+  /* ---- 9. TESKE IS IN THE MID-800s, AS A RANGE -------------------------------------- */
+  var _tk5=_g5("re-teskes");
+  if(_tk5){
+    _tk5.price="$850,000 to $859,999";
+    _tk5.priceNote="MID-800s, AS A RANGE, from Ian 09.10.2026. It STARTED at $820,000 and they have ADDED to the build, so the $820,000 is the starting contract and not the current number. THERE IS NO FIRM FIGURE: he said mid-800s and did not give one, so this is stored as a band and the band is the fact. STILL UNVERIFIED, and for a reason that has not changed: there is a signed agreement and nobody in this system has read it.";
+    _tk5.priceRange={ low:850000, high:859999, words:"Mid-800s", startedAt:820000,
+      why:"They have added to the build since the original agreement.",
+      firmNumber:false, source:"Ian, 09.10.2026" };
+    _fold5(_tk5,"PRICE IS A RANGE NOW, 09.10.2026",
+      "PRICE IS A RANGE NOW, 09.10.2026. Ian: it started at $820,000 but they have added, so it is in the MID-800s with no firm number. Stored as $850,000 to $859,999 because that is what mid-800s means and a band is honest where a point would not be. The $820,000 is retained above as the STARTING figure. STILL UNVERIFIED: a signed agreement exists and nobody here has read it, so both the price and the early to mid January finish remain estimates. A range is not corroboration.");
+  }
+
+  state.meta.mig485_ian_answers=true; save(true);
+  try{ console.log("mig485: ian's answers applied, trough recomputed"); }catch(_){}
+} }catch(e){ try{ console.warn("mig485 did not apply:",e&&e.message); }catch(_){} }
+
   /* build 372: LAST THING BEFORE THE SAVE. Every migration above has run, deepMergeDefaults
      has run, so this is the only point in the file where the state is actually final. */
   try{ convergeState(); }catch(e){}
@@ -27475,6 +27686,67 @@ function reProspectsList(parent){
   if(!prospects.length){ const c=card(); c._body.appendChild(el("div","empty","No prospects yet.")); parent.appendChild(c); }
   else { const c=card(); c._body.style.padding="0"; const body=el("div","collapse-body"); prospects.forEach(d=>dealRow(body,d)); c._body.appendChild(body); parent.appendChild(c); }
 }
+
+/* ===== v21 build 485: THE PROSPECTS ROW. THE ONE THING IAN ASKED TO BE BUILT ==========
+   Ian, 09.10.2026, answering the build 484 report: "they should be visible but small."
+
+   WHAT WAS WRONG. reViewPipeline builds its stage groups from `pipe`, which is
+   deals.filter(d => !reIsProspect(d)). Every Prospecting and Buyer stage deal was filtered
+   out of the only real estate view the app can reach, so eleven records rendered nothing at
+   all. Theobald had a listing presentation on 7 October with a corrected band and a hard
+   ceiling and none of it could reach a screen.
+
+   WHY NOT reProspectsList, WHICH ALREADY EXISTS. It renders a full dealRow card per
+   prospect: title, sub, close, take home, price, price note, stage chips, a notes textarea.
+   Eleven of those is the opposite of small, and it is reachable from nowhere for that
+   reason. This is a new compact renderer and reProspectsList is left untouched.
+
+   SMALL, AND MEASURED. One line per prospect, name left, price right, 11.5px on a hairline.
+   Eleven rows come to about the height of two dealRow cards.
+
+   THE LABEL GATE IS THE APP'S OWN. The optional cue passes through re391Short, which
+   rejects anything over 34 characters or carrying a run of four or more capitals. So a
+   shouting or overlong sub CANNOT reach this surface: the same gate that protects every
+   other build 391 row protects this one, rather than a new rule of my own.
+
+   PRESENTATION ONLY. No state write, no migration, nothing touched. Every name and price is
+   read verbatim out of state.realEstate.deals. */
+function reProspectsCompact(parent){
+  var deals=(state.realEstate&&state.realEstate.deals)||[];
+  var pros=deals.filter(reIsProspect);
+  if(!pros.length) return;
+  /* Priced first, then by price descending, then the unpriced. A prospect with a number is
+     worth more attention than one without, and ordering by it means the eye lands on
+     Bruce O'Neil and Theobald rather than on whoever happens to be first in the array. */
+  pros=pros.map(function(d,ix){ return {d:d,ix:ix,v:dealVolume(d)}; })
+           .sort(function(a,z){ return (z.v-a.v)||(a.ix-z.ix); })
+           .map(function(o){ return o.d; });
+  var c=card(); var b=c._body;
+  b.appendChild(el("div","g7kicker","Prospects  \u00b7  "+pros.length));
+  var list=el("div","rpxlist");
+  pros.forEach(function(d){
+    var r=el("div","rpxrow");
+    var L=el("div","rpxl");
+    L.appendChild(el("div","rpxname",d.title||""));
+    /* The cue is the descriptor, and ONLY if the app's own short-and-quiet gate passes it. */
+    var cue=re391Short(reTidy(d.sub||""),34);
+    if(cue) L.appendChild(el("div","rpxcue",cue));
+    r.appendChild(L);
+    /* The price is printed VERBATIM, never reformatted. "$500,000 to low $600,000" is his
+       phrasing and a range is a fact about how settled the number is. An em dash says no
+       price on record, which is different from zero and must not read as zero. */
+    var p=el("div","rpxp"+(d.price?"":" rpxnone"));
+    p.textContent=d.price?String(d.price):"\u2014";
+    r.appendChild(p);
+    list.appendChild(r);
+  });
+  b.appendChild(list);
+  var foot=el("div","rpxfoot");
+  foot.textContent="Prospecting and buyer side files. An em dash means no price on record, which is not the same as nothing.";
+  b.appendChild(foot);
+  parent.appendChild(c);
+}
+
 /* ===== v21 build 391: THE REAL ESTATE PAGE, BROUGHT TO THE BUILD 387 STANDARD =====
    Ian, 14.09.2026: "Make sure all pages get the correct full redesign", and for this page
    specifically: "All my real estate information on there, like a CMA, and then all of my
@@ -27833,6 +28105,63 @@ function reGoalsCard(parent,accOverride){
   }
   if(ceiling<PROD_GOAL){ const warn=el("div","small"); warn.style.cssText="margin-top:7px;font-weight:700;color:var(--accent2)";
     warn.textContent="That ceiling is "+fmtMoneyShort(PROD_GOAL-ceiling)+" short of the goal, so closing it needs new business, not execution on what is already here."; b.appendChild(warn); }
+
+  /* ===== v21 build 485: WHAT IS ACTUALLY BANKED. IAN BET HE WAS CLOSE ==================
+     Ian, 09.10.2026: "not sure what we're at but I bet we're close."
+
+     HE IS NOT CLOSE, AND THE BAR IS WHY HE THINKS HE IS. Production on the bar above is
+     closed PLUS under contract, which build 233 already flagged as a true number that
+     implies a false thing. It reads about 74 percent. But a third of what is behind that
+     bar has not closed, and NOTHING on this card has ever stated the banked figure on its
+     own. The ceiling and shortfall lines above answer "what if everything live closes".
+     They do not answer "what do I actually have", which is the question he just guessed at.
+
+     SO THIS BLOCK STATES THE LAYERS, banked first, and names the percentage of the goal
+     that is genuinely done. It does NOT change the goal, the bar, the ceiling line or the
+     shortfall line. Every figure is computed from the deal records; nothing is hardcoded,
+     so a deal that closes moves itself.
+
+     THE RULES, WRITTEN DOWN BECAUSE THEY DECIDE THE NUMBERS.
+       Banked      = stage Closed. Money earned, whatever the payment status.
+       Under contract = stage Under Contract, plus stage Active where the record carries an
+                     EXECUTED contract. Willis is Active and executed 6 October, so leaving
+                     her out of the committed layer would understate it by $610,000.
+       Listing, dated   = Coming Soon with listDateConfirmed true. Belknap and Vogel.
+       Listing, undated = Coming Soon without one. Barkers and Hernandez. Kept VISIBLE and
+                     kept SEPARATE: an undated listing is not nothing and it is not a plan. */
+  {
+    var _gexec=function(d){ return !!(d&&d.contract&&d.contract.executed); };
+    var _banked=closed;
+    var _committed=uc.concat(deals.filter(function(d){ return d.stage==="Active"&&_gexec(d); }));
+    var _csoon=deals.filter(function(d){ return d.stage==="Coming Soon"; });
+    var _dated=_csoon.filter(function(d){ return d.listDateConfirmed===true; });
+    var _undated=_csoon.filter(function(d){ return d.listDateConfirmed!==true; });
+    var _bv=vol(_banked), _cv=vol(_committed), _dv=vol(_dated), _uv=vol(_undated);
+    var _pct=PROD_GOAL?Math.round((_bv/PROD_GOAL)*100):0;
+    var _bw=el("div","small"); _bw.style.cssText="margin-top:7px;padding:9px 10px;border-radius:9px;background:rgba(255,255,255,.04);line-height:1.5";
+    _bw.appendChild(el("div","small muted","Where the bar comes from"));
+    var _mkr=function(lab,amt,n,strong){
+      var r=el("div","between"); r.style.marginTop="5px";
+      r.appendChild(el("div","small"+(strong?"":" dim"),lab+(n?("  \u00b7  "+n+(n===1?" deal":" deals")):"")));
+      var v=el("div","small"); v.style.fontWeight=strong?"800":"700";
+      if(strong) v.style.color="var(--sec2,var(--accent2))";
+      v.textContent=fmtMoney(amt); r.appendChild(v); _bw.appendChild(r); };
+    var _wt=function(a){ return a.reduce(function(x,d){ return x+dealCountWeight(d); },0); };
+    _mkr("Banked, closed",_bv,_wt(_banked),true);
+    if(_cv) _mkr("Under contract, not closed",_cv,_wt(_committed),false);
+    if(_dv) _mkr("Listing on a confirmed date",_dv,_wt(_dated),false);
+    if(_uv) _mkr("Listing, no date on record",_uv,_wt(_undated),false);
+    var _say=el("div","small"); _say.style.cssText="margin-top:8px;padding-top:7px;border-top:1px solid var(--line);line-height:1.5;font-weight:700";
+    _say.innerHTML="The bar reads <b>"+fmtMoneyShort(production)+"</b> because it counts under contract with closed. <b>"
+      +fmtMoney(_bv)+"</b> is banked, which is <b>"+_pct+"%</b> of the "+fmtMoneyShort(PROD_GOAL)+" goal.";
+    _bw.appendChild(_say);
+    var _dg=el("div","small dim"); _dg.style.cssText="margin-top:6px;line-height:1.5";
+    _dg.textContent="On deals, "+_wt(_banked)+" of "+DEALS_GOAL+" are closed. Everything live and dated takes it to "
+      +(_wt(_banked)+_wt(_committed)+_wt(_dated))+", and the undated listings are the only route past that.";
+    _bw.appendChild(_dg);
+    b.appendChild(_bw);
+  }
+
   const nActual=countActualNets(closed);
   const foot=el("div","small dim"); foot.style.marginTop="12px";
   foot.textContent="Production is closed and under contract volume toward your goal. Take-home is your estimated net after the 15% broker cut and your split"
@@ -28280,6 +28609,12 @@ function reViewPipeline(v){
   safe(v,()=>pipelineSummaryPipe(v),"Pipeline stats");
   sect(v,"By stage","tap a stage to expand");
   safe(v,()=>rePipelineGroupedPipe(v),"Pipeline");
+  /* build 485: THE PROSPECTS ROW, Ian 09.10.2026, "visible but small". It sits AFTER the
+     stage groups and BEFORE goals, because a prospect is pipeline and not money. Wrapped in
+     safe() like every other section, so a throw degrades to one line instead of blanking the
+     page. */
+  sect(v,"Prospects","not yet a listing");
+  safe(v,()=>reProspectsCompact(v),"Prospects");
   sect(v,"Goals and money","production and take home");
   safe(v,()=>reGoalsCard(v),"RE goals");
   sect(v,"More","actions, sphere, tools");
@@ -32688,6 +33023,20 @@ function autoLogCard(area){
 /* The buy list is real information but it is not today's business, so it recedes by
    weight and colour rather than by a blanket opacity that also dims its own caption. */
 .g7dimrow .g7name{color:var(--gray2);font-weight:500}
+/* ===== v21 build 485: the compact prospect row. Small by construction, not by restraint.
+   Same tokens as every other row on the page: --line for the hairline, --sec2 for the
+   figure, --gray2 for the cue, tabular numerals so the prices align. 11.5px name against
+   the 16px .g7name is the whole difference, and 8px of vertical padding against 13px. */
+.rpxlist{margin:13px 0 0}
+.rpxrow{display:flex;align-items:baseline;gap:10px;padding:8px 0;border-bottom:1px solid var(--line)}
+.rpxrow:last-child{border-bottom:none;padding-bottom:1px}
+.rpxl{flex:1 1 auto;min-width:0}
+.rpxname{font-size:11.5px;font-weight:600;line-height:1.35;color:var(--white);overflow-wrap:anywhere}
+.rpxcue{font-size:10.5px;line-height:1.4;color:var(--gray2);margin:1px 0 0;overflow-wrap:anywhere}
+.rpxp{flex:0 1 auto;max-width:46%;text-align:right;font-size:11.5px;font-weight:700;line-height:1.35;color:var(--sec2,var(--accent2));font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.rpxnone{color:var(--dim);font-weight:600}
+.rpxfoot{font-size:10.5px;line-height:1.45;color:var(--dim);margin:10px 0 0}
+
 
 /* ----- build 453: the day type library ---------------------------------------
    Sectioning matches the pickleball page, which Ian named as the model. Inside a
