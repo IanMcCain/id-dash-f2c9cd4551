@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 489 (2026-10-11)">
+<meta name="build" content="v21 build 490 (2026-10-11)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -25629,6 +25629,183 @@ try{ if(profile==="ian" && state.meta && !state.meta.mig489_dd_p268){
   state.meta.mig489_dd_p268=true; save(true);
   try{ console.log("mig489: pii scrub, vogel condition, planet fitness, earliest-start claim"); }catch(_){}
 } }catch(e){ try{ console.warn("mig489 did not apply:",e&&e.message); }catch(_){} }
+
+
+/* ===== v21 build 490: TWO SESSIONS, THE SILVER LEAF RECORD, AND R STREET'S SPLIT =========
+   ===== 1. TWO PICKLEBALL SESSIONS, AND THE DATA WAS QUERIED BEFORE WRITING ==============
+   CHECKED AGAINST STATE, NOT A RENDER, on a settled real profile 11.10.2026:
+     2026-10-09 held EXACTLY ONE session, pk-20261009-am, 7:09 to 9:18 AM. The EVENING
+       session is absent and is added. The morning one is NOT touched and NOT merged.
+     2026-10-10 held ZERO sessions. Added.
+     2026-10-11 held ZERO. Not asked for, not written.
+   The earlier report that nothing was logged for 10 or 11 October is CONFIRMED independently.
+
+   NO STRUCTURE IS INVENTED FOR EITHER. He gave times, duration, calories, heart rate, effort
+   and venue, and said nothing about drilling or open play, so kind, drillOnly and allOpenPlay
+   are ABSENT on both, exactly as on 8 October. They render as "Play".
+
+   ===== NO SUPERLATIVE IS WRITTEN, AND THE QUERY IS WHY ==================================
+   THE EFFORT 10 IS NOT CALLED A FIRST. It was checked against all 77 sessions. The highest
+   effort previously on record is 9, on four days. BUT ONLY 20 OF THE 77 SESSIONS CARRY A
+   NUMERIC EFFORT AT ALL: every session before 02.08.2026 has none. So "his first 10" and
+   "his hardest ever" are NOT SUPPORTABLE from this data, because 57 sessions cannot be
+   compared. The honest statement is "the highest of the 20 rated sessions", which is a much
+   weaker claim than it sounds, and it is left OUT of the record rather than hedged into it.
+   THE DURATION IS NOT CALLED LONG. 2:47:04 is 167 minutes and ranks TWELFTH of the 74
+   sessions carrying a parseable duration. The longest is 5h 13m 59s on 23 August.
+   THE MAXIMUM HEART RATE IS NOT CALLED HIGH. 163 against a 184 on 27 July; it is not in the
+   top five. Three superlatives were available to write and all three are false or unsupported.
+   EFFORT IS HIS OWN RATING, how hard he tried and how well he played. IT IS NEVER RECONCILED
+   AGAINST HEART RATE, and the 136 average on the evening session is not evidence for or
+   against the 10.
+
+   ===== 2. SILVER LEAF, AND IT REOPENS SOMETHING THAT WAS CLOSED =========================
+   IAN, 11.10.2026: "build the silver leaf client record, not a guaranteed but it is promising."
+   THIS SUPERSEDES meta.closedRequests.silverLeafLafayette, which was closed by him on
+   09.10.2026 with "Don't worry about it" and which says in terms DO NOT raise Lafayette or
+   Silver Leaf as a gap or a missing record anywhere in this app. That instruction is now
+   OVERTAKEN BY HIM and is marked superseded rather than deleted, so the history reads
+   correctly and no later session re-closes the record this build creates.
+
+   ONE THREAD, ONE BUYER. Lafayette and Silver Leaf are the same client. The lot is 19015
+   Lafayette Ave and its list price is still undecided.
+
+   THE PRICE IS THE BUYER'S OWN STATED RANGE, NOT OUR ESTIMATE, so it is a band and the band
+   is the fact. priceNum() takes the FIRST number out of a band, verified 11.10.2026, so the
+   $900,000 low end is what every computed figure uses. That is the conservative end and it is
+   the same convention Teske, Winchester, Theobald and Sydney Spicer already use.
+     at $900,000:   $32,400 gross commission, less 15 percent of the standard 3.6 percent
+                    ($4,860), x 0.20 = $5,508.00 gross to Ian, $3,855.60 after the 30 percent
+                    set aside.
+     at $1,000,000: $6,120.00 gross to Ian, $4,284.00 after tax.
+   NO sellerRate IS WRITTEN. 3.6 percent IS the standard seller rate, so an explicit 0.036
+   would be dead weight that a later reader could mistake for an override.
+
+   PROMISING IS NOT COMMITTED, AND THIS RECORD FEEDS THE BAR AND THE 20 DEAL COUNT.
+   winProb 0.50 is OURS, not his. He said "not a guaranteed but it is promising" and gave no
+   number, so 0.50 is our reading of those words and is flagged as such on the record. It sits
+   deliberately below Frahm's 0.5-with-history and far below anything under contract. ONE
+   NUMBER FROM IAN REPLACES IT.
+
+   THE R STREET CONFLATION THIS RECORD COULD HAVE CAUSED, AVOIDED DELIBERATELY. The buyer found
+   the lot through "the R Street model", which is the ROSE CREEK MODEL HOME at 20131 R Street.
+   IT IS NOT the "R street" client listing in item 3 below, which is Chris's unconfirmed
+   shorthand for a different property entirely. BRAIN/Real_Estate/Context/R_STREET_LISTING.md
+   warns about exactly this collision. Both are named explicitly here so the two never merge.
+
+   ===== 3. R STREET: THE RATE IS RECORDED, AND NO DOLLAR CEILING IS ======================
+   IAN, 11.10.2026: "r street is the regular 3.6% and I get 20% but I'll take home a little
+   less because my dad has put a lot of money into it and I have only put in time, but not
+   clarified yet."
+   RATE 3.6 PERCENT CONFIRMED. The 20 percent is NOMINAL and his real take is LOWER by an
+   amount nobody has settled.
+   THERE IS NO R STREET DEAL RECORD AND NONE IS CREATED HERE. Verified 11.10.2026 against all
+   33 deals: no record exists, and BRAIN/Real_Estate/Context/R_STREET_LISTING.md says the same
+   in its own words, "Deal record in the app: None exists". He asked for a flag on a record, not
+   for a record, so his statement is stored where it will be found and nothing is invented
+   around it.
+   AND NO DOLLAR CEILING IS WRITTEN, WHICH IS THE PART TO READ. A ceiling of $4,191.59 gross
+   and $2,934.11 post tax implies a price of $684,900. THAT PRICE EXISTS IN NO RECORD. The
+   BRAIN file's own price row reads "Nothing. No CMA, no ladder, no band, no figure of any
+   kind. MISSING". Writing those two figures would make an unsourced price look settled, which
+   is the one thing a finance surface must not do. The CEILING AS A CONCEPT is recorded, in
+   words, without numbers: the nominal 20 percent is an upper bound and the real figure is
+   below it. A price gives it a number, and until then it has none.
+
+   Guard state.meta.mig490_sessions_silverleaf, end of chain, SEED_VERSION stays 13. */
+try{ if(profile==="ian" && state.meta && !state.meta.mig490_sessions_silverleaf){
+    /* ---- 1. THE TWO SESSIONS. Keyed on date PLUS window so the second 9 October session
+             can be added without the date key colliding with the morning one. ---- */
+    try{
+      var _S0=state.pickleball && state.pickleball.sessions;
+      if(_S0 && Object.prototype.toString.call(_S0)==="[object Array]"){
+        var _add0=function(o){
+          for(var i=0;i<_S0.length;i++){ if(_S0[i] && _S0[i].id===o.id) return false; }
+          for(var j=0;j<_S0.length;j++){ if(_S0[j] && _S0[j].date===o.date && String(_S0[j].window||"")===o.window) return false; }
+          _S0.push(o); return true; };
+        _add0({
+          id:"pk-20261009-pm", date:"2026-10-09", venue:"Omaha",
+          duration:"2h 47m 04s", window:"6:03 to 8:50 PM, Omaha",
+          calories:2081, activeCalories:1820, avgHr:136, maxHr:163,
+          effort:10, effortLabel:"All Out", effortSource:"His own rating",
+          effortNote:"HIS OWN RATING, how hard he tried and how well he played, defined 14.09.2026. NOT an exertion figure and NOT reconciled against the 136 average.",
+          performanceData:true,
+          secondOfDay:true,
+          dayNote:"SECOND SESSION OF 9 OCTOBER. The morning session pk-20261009-am, 7:09 to 9:18 AM at effort 8, is a SEPARATE record and is not touched, not merged and not superseded by this one. 9 October is a two session day.",
+          source:"Ian, 11.10.2026.",
+          structureNote:"NO STRUCTURE WAS GIVEN AND NONE IS INVENTED. kind, drillOnly and allOpenPlay are absent rather than guessed. It renders as Play.",
+          ratingContext:"NO SUPERLATIVE IS CLAIMED FOR THIS 10. The highest effort previously on record is 9, but only 20 of the 77 sessions carry a numeric effort at all, so it cannot be called his first or his hardest. Checked against every session 11.10.2026."
+        });
+        _add0({
+          id:"pk-20261010-am", date:"2026-10-10", venue:"Omaha",
+          duration:"1h 13m 06s", window:"7:46 to 8:59 AM, Omaha",
+          calories:750, activeCalories:635, avgHr:120, maxHr:151,
+          effort:6, effortLabel:"Moderate", effortSource:"His own rating",
+          effortNote:"HIS OWN RATING, how hard he tried and how well he played. NOT an exertion figure and NOT reconciled against the 120 average.",
+          performanceData:true,
+          source:"Ian, 11.10.2026.",
+          structureNote:"NO STRUCTURE WAS GIVEN AND NONE IS INVENTED. kind, drillOnly and allOpenPlay are absent rather than guessed. It renders as Play."
+        });
+      }
+    }catch(_e1){}
+
+    /* ---- 2. SILVER LEAF ---- */
+    try{
+      var _R0=state.realEstate;
+      if(_R0 && Array.isArray(_R0.deals)){
+        var _has=false; _R0.deals.forEach(function(d){ if(d&&d.id==="re-silverleaf-howard") _has=true; });
+        if(!_has){
+          _R0.deals.push({
+            id:"re-silverleaf-howard",
+            title:"Silver Leaf",
+            sub:"Seller side, 16623 Howard Cir, new build on the Lafayette lot",
+            stage:"Prospecting",
+            side:"Seller",
+            source:"Chris's client",
+            ianSplit:0.20,
+            price:"$900,000 to $1,000,000",
+            priceRange:{ low:900000, high:1000000, firmNumber:false,
+              source:"THE BUYER'S OWN STATED RANGE, not our estimate and not a CMA. Stored as a band because the band is the fact.",
+              computedOn:"the $900,000 LOW END, because priceNum() takes the first number out of a band. Verified 11.10.2026. The conservative end, and the same convention Teske, Winchester, Theobald and Sydney Spicer use." },
+            close:"No date. Nothing is under contract.",
+            winProb:0.50,
+            winProbSource:"OURS, NOT IAN'S. He said \"not a guaranteed but it is promising\" and gave no number. 0.50 is our reading of those words and nothing more. ONE NUMBER FROM HIM REPLACES IT.",
+            client:"A physician. Met Chris 8 October 2026.",
+            lot:"19015 Lafayette Ave. LIST PRICE STILL UNDECIDED.",
+            thread:"LAFAYETTE AND SILVER LEAF ARE ONE THREAD AND ONE BUYER. Do not create a second record for the Lafayette lot.",
+            takeHome:"$5,508.00 gross and $3,855.60 after the 30 percent set aside at the $900,000 low end. At $1,000,000 it is $6,120.00 and $4,284.00. Both are MODEL figures on the standard 3.6 percent seller rate at the 20 percent Chris's client share; no rate override is written because 3.6 IS the standard.",
+            note:"PROMISING, NOT GUARANTEED, AND THE RECORD MUST NOT READ AS COMMITTED. Ian, 11.10.2026: \"build the silver leaf client record, not a guaranteed but it is promising.\" A physician buying a new build at 16623 Howard Cir on the 19015 Lafayette Ave lot. He found the lot through the ROSE CREEK R STREET MODEL HOME at 20131 R Street. THAT IS NOT THE \"R STREET\" CLIENT LISTING: that one is Chris's unconfirmed shorthand for a different property with no address, no price and no deal record, and BRAIN/Real_Estate/Context/R_STREET_LISTING.md warns specifically against merging the two. Met Chris 8 October 2026. NOTHING IS UNDER CONTRACT, there is no offer, no date and no signed agreement, and this record FEEDS THE PRODUCTION BAR AND THE 20 DEAL COUNT, so the 0.50 probability is doing real work and is ours rather than his. THIS RECORD SUPERSEDES meta.closedRequests.silverLeafLafayette, which he closed on 09.10.2026 with \"Don't worry about it\"; he has now asked for the record himself.",
+            copyOwned:true
+          });
+        }
+      }
+      /* the 09.10 closure is marked superseded rather than deleted, so nobody re-closes this */
+      if(state.meta.closedRequests && state.meta.closedRequests.silverLeafLafayette){
+        var _cr=state.meta.closedRequests.silverLeafLafayette;
+        _cr.superseded="SUPERSEDED BY IAN 11.10.2026: \"build the silver leaf client record, not a guaranteed but it is promising.\" The 09.10 instruction not to raise Silver Leaf or Lafayette as a missing record is DEAD. The record now exists at deal re-silverleaf-howard. DO NOT act on the closure below, and do not delete that deal on the strength of it.";
+        _cr.answer="REOPENED BY IAN 11.10.2026";
+      }
+    }catch(_e2){}
+
+    /* ---- 3. R STREET: his statement, stored, with no deal and no dollar ceiling ---- */
+    try{
+      var _R1=state.realEstate;
+      if(_R1){
+        if(!_R1.rStreet || typeof _R1.rStreet!=="object") _R1.rStreet={};
+        _R1.rStreet.rate="3.6 percent, CONFIRMED by Ian 11.10.2026. The regular seller rate, no discount and no override.";
+        _R1.rStreet.split="20 percent NOMINAL. HIS ACTUAL TAKE IS LOWER AND THE AMOUNT IS NOT SETTLED.";
+        _R1.rStreet.words="Ian, 11.10.2026: \"r street is the regular 3.6% and I get 20% but I'll take home a little less because my dad has put a lot of money into it and I have only put in time, but not clarified yet.\"";
+        _R1.rStreet.ceiling="THE NOMINAL 20 PERCENT IS A CEILING, NOT HIS FIGURE. Whatever the 20 percent would produce, his real take is BELOW it. NO REDUCED NUMBER IS INVENTED and none should be.";
+        _R1.rStreet.noDollarCeiling="AND NO DOLLAR CEILING IS STATED EITHER, DELIBERATELY. A ceiling needs a price and THERE IS NO PRICE. Verified 11.10.2026 against the app and against BRAIN/Real_Estate/Context/R_STREET_LISTING.md, whose price row reads \"Nothing. No CMA, no ladder, no band, no figure of any kind. MISSING\". A figure of $4,191.59 gross / $2,934.11 post tax implies a $684,900 price that appears in no record, so it is NOT written: it would make an unsourced price look settled. The moment a real price exists the ceiling has a number.";
+        _R1.rStreet.noDealRecord="NO DEAL RECORD EXISTS FOR THIS LISTING and none was created here. Checked against all 33 deals on 11.10.2026. This block holds his rate and split statement so it is not lost; it is not a deal and must not be counted as one.";
+        _R1.rStreet.nameWarning="\"R STREET\" IS CHRIS'S SHORTHAND AND IS NOT A CONFIRMED ADDRESS. It is NOT the Rose Creek R Street MODEL HOME at 20131 R Street, which is a different property and is how the Silver Leaf buyer found his lot. Do not merge them and do not present \"R Street\" to Ian or Chris as this client's address.";
+        _R1.rStreet.asOf="2026-10-11";
+      }
+    }catch(_e3){}
+
+    state.meta.mig490_sessions_silverleaf=true; save(true);
+    try{ console.log("mig490: two sessions added, silver leaf created, r street statement recorded"); }catch(_){}
+} }catch(e){ try{ console.warn("mig490 did not apply:",e&&e.message); }catch(_){} }
 
   /* build 372: LAST THING BEFORE THE SAVE. Every migration above has run, deepMergeDefaults
      has run, so this is the only point in the file where the state is actually final. */
