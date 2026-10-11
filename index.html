@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 488 (2026-10-09)">
+<meta name="build" content="v21 build 489 (2026-10-11)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -25509,6 +25509,126 @@ try{ if(profile==="ian" && state.meta && !state.meta.mig488_ian_answers && state
     state.meta.mig488_ian_answers=true; save(true);
     try{ console.log("mig488: ian's seven answers applied, jenkins removed, trough takes the bike"); }catch(_){}
 } }catch(e){ try{ console.warn("mig488 did not apply:",e&&e.message); }catch(_){} }
+
+
+/* ===== v21 build 489, APP-31 deep dive passes 2/6/8 ================================
+   FOUR DEFECTS, ALL FOUND BY QUERYING THE DATA RATHER THAN LOOKING AT TODAY'S RENDER.
+   Guard state.meta.mig489_dd_p268, end of chain, SEED_VERSION stays 13.
+
+   WHAT IS DELIBERATELY NOT HERE. The queue's newest actionable entry asks for a new
+   Silver Leaf new-construction deal record at ~900k. That is client pipeline creation with
+   commission math that feeds the production bar and the 20 deal count, it is not an audit
+   repair, and getting it wrong pollutes the exact numbers pass 6 exists to protect. It is
+   reported with its resolved figures instead. Same for the Jed entry: there is no Jed
+   record in state at all, so there is nothing to mark dead. */
+try{ if(profile==="ian" && state.meta && !state.meta.mig489_dd_p268){
+
+  /* ---- 1. THE PRIVACY SWEEP, AND THE FIX I ALMOST SHIPPED WAS WRONG ---------------
+     Queue q179150128873510 says build 479 wrote the Mattox buyer's personal phone and
+     email into index.html, which deploys to a public GitHub Pages URL. VERIFIED FIXED
+     BEFORE THIS PASS: both strings return zero hits in the state AND zero in the source.
+     That entry is satisfied and should be drained rather than left breaching.
+
+     THEN I SWEPT WIDER, because a rule enforced on one reported instance is not enforced.
+     A regex for phone and email shapes across the whole state found four more third party
+     details: a private gmail on a sphere record, a title company address on a closed deal
+     note, and the direct numbers of two other brokerages' agents on two showing events.
+     I had a scrub written for all four.
+
+     I DELETED IT, BECAUSE THE PREMISE WAS WRONG AND CHECKING TOOK ONE COMMAND. All four
+     return ZERO hits in index.html. They exist only in Ian's SAVED STATE, which lives in
+     localStorage on his own devices and is never served to anyone. The public file carries
+     only Ian's own number and his own npdodge address. So there is no public exposure here,
+     the standing rule of 30.07.2026 is not breached by these four, and scrubbing them would
+     have destroyed real contact detail out of his own private record in the name of a
+     privacy problem that does not exist. Reported to him instead, changed nothing.
+
+     The lesson is the one this pass is built on: the queue entry named one instance, the
+     wider sweep looked like four more of the same defect, and only querying where the
+     strings actually live separated the real breach from the four false ones. */
+  try{
+    state.meta.mig489_privacySweep={
+      ranOn:"2026-10-11",
+      melissaLeak:"FIXED BEFORE THIS PASS AND VERIFIED. Zero hits in state, zero in source. Queue q179150128873510 is satisfied and can be drained.",
+      otherDetails:"FOUR third party contact details exist in SAVED STATE ONLY, zero hits in index.html, so they are not public and were NOT touched: a private gmail on a sphere note, a title company address on a closed deal note, and two other agents' numbers on two showing event notes. All four are also held in BRAIN/Real_Estate/Context/LEAD_CONTACTS.md.",
+      inThePublicFile:"Only Ian's own mobile and his own ian.mccain@npdodge.com address. His own details on his own app. Left alone deliberately; reported to him so the decision is his.",
+      rule:"BEFORE TREATING A CONTACT DETAIL AS A PUBLIC LEAK, GREP index.html, NOT THE STATE. State lives in localStorage and is private. Only what is in the file is served. These are two different exposures and the difference decides whether a scrub is a fix or a deletion."
+    };
+  }catch(_e9a){}
+
+  /* ---- 2. VOGEL CONTRADICTED ITSELF ON THE SAME CARD --------------------------------
+     condition.unknowns read "SOURCE, LOCATION AND SEVERITY ARE ALL UNKNOWN and none of
+     them is inferred" while the note on the SAME RECORD, written in build 484, names the
+     damp TV room ceiling with an Emerald estimate and the 1 October trickle at the base of
+     a basement wall. One record, two answers, and the stale half is the one a reader hits
+     first because it is a short labelled field rather than prose at the end of a long note.
+     This is the top-correct / bottom-superseded failure mode living inside a data record.
+     Queue q179124122453372 asked for exactly this: replace the unknown wording, keep the
+     price flag. The price flag is kept: both price readings and bothReadingsStand survive
+     untouched, and the price itself is not moved. */
+  try{
+    var _D9=(state.realEstate&&state.realEstate.deals)||[];
+    for(var _i9=0;_i9<_D9.length;_i9++){
+      var _d=_D9[_i9];
+      if(!_d||_d.id!=="re-vogel-sell") continue;
+      if(_d.condition&&typeof _d.condition==="object"){
+        _d.condition.issue="LEAK IDENTIFIED, reported by John Vogel himself. TWO SEPARATE WATER ISSUES, neither confirmed repaired: damp TV room ceiling spots from roof water, called an easy fix by Emerald (28.09 and 30.09), and new trickle leaks at the base of a basement wall found 01.10 after heavy rain.";
+        _d.condition.confirmed=true;
+        _d.condition.unknowns="SUPERSEDED 11.10.2026, AND IT WAS CONTRADICTING THE NOTE ON ITS OWN CARD. This field read 'SOURCE, LOCATION AND SEVERITY ARE ALL UNKNOWN' from Ian's 28.09 'may have a leak'. Both sources are now known and both are named in issue above. WHAT IS STILL GENUINELY UNKNOWN IS NARROWER AND IS THE ONLY OPEN PART: whether either issue has been repaired. Neither is confirmed repaired.";
+        _d.condition.repairStatus="NOT CONFIRMED REPAIRED, either of them. This is the live unknown, not the source or the location.";
+      }
+    }
+  }catch(_e9b){}
+
+  /* ---- 3. PLANET FITNESS IS A STALE FIGURE PRESENTED AS CURRENT ---------------------
+     16.05 is sourced to Ian 21.09.2026. A club agreement was issued 25.09.2026 and the
+     rate changed after it, so the stored number predates a known change and the page shows
+     it as live. 26.79 IS NOT WRITTEN. It appears in the 06.10 brief and in NO record, and
+     that brief got Marcus, Fetch and Russell Speeders wrong, so it has no standing.
+     Queue q179138499272596. The amount is LEFT AT 16.05 rather than blanked, because the
+     subscription total is real money and a hole in it is worse than a stale figure that
+     says it is stale. */
+  try{
+    var _subs=(state.finance&&state.finance.subscriptions)||[];
+    for(var _j9=0;_j9<_subs.length;_j9++){
+      var _s9=_subs[_j9];
+      if(_s9&&/planet/i.test(String(_s9.name||""))){
+        _s9.amountStale=true;
+        _s9.amountSupersededOn="2026-09-25";
+        _s9.amountNote="SUPERSEDED AND UNVERIFIED, 11.10.2026. The 16.05 is sourced to Ian 21.09.2026 and a club agreement issued 25.09.2026 changed the rate after that, so this figure predates a known change. THE NEW FIGURE IS NOT ON RECORD. 26.79 appears in the 06.10 brief and nowhere else, and that brief also got Marcus, Fetch and Russell Speeder's wrong, so it is NOT written here as fact. The 16.05 is left in place so the subscription total stays a real number, and it is flagged rather than trusted. One card statement or one line from Ian closes it.";
+      }
+    }
+  }catch(_e9c){}
+
+  /* ---- 4. A SUPERLATIVE THAT WAS TRUE WHEN WRITTEN AND IS NOW FALSE -----------------
+     pk-20260901-drills-am claimed "Your EARLIEST START on file at 7:17 AM". MEASURED
+     ACROSS ALL 77 SESSIONS: FIFTEEN sessions start earlier and the earliest is 6:56 AM on
+     25 September. One other session also starts at exactly 7:17, on 15 September, so 7:17
+     was never even uniquely his earliest.
+
+     I FIRST WROTE "EIGHT" HERE AND IT WAS WRONG. Eight was the length of a list I had
+     truncated for display, and I read the slice as the count. The verification asserts the
+     number against the sessions rather than against this comment, which is the only reason
+     a corrected superlative did not ship carrying a fresh false number. That is the sixth
+     false superlative this system has produced and the first one caught before deploy.
+     The clause is replaced with the measured truth rather than deleted, because the 1
+     September session genuinely was the first early morning block and that part is true. */
+  try{
+    var _S9=(state.pickleball&&state.pickleball.sessions)||[];
+    for(var _k9=0;_k9<_S9.length;_k9++){
+      var _x=_S9[_k9];
+      if(!_x||_x.id!=="pk-20260901-drills-am") continue;
+      if(typeof _x.note==="string" && /EARLIEST START on file at 7:17 AM/.test(_x.note)){
+        _x.note=_x.note.replace(/Your EARLIEST START on file at 7:17 AM\./,
+          "At the time this was written it was his earliest start on file at 7:17 AM. NO LONGER TRUE and corrected 11.10.2026: FIFTEEN sessions now start earlier, the earliest being 6:56 AM on 25 September, and 15 September also started at exactly 7:17. Measured across all 77 sessions.");
+        _x.recordsCorrected="THE EARLIEST START CLAIM ON THIS RECORD WAS OVERTAKEN AND IS NOW CORRECTED, 11.10.2026. It was true on 1 September and false by 22 September. Earliest on file is 6:56 AM, 25 September. Fifteen sessions start before 7:17 and one other ties it. This is the second superlative on this record to need correcting, which is why the 'first ever early morning session' wording was already struck once.";
+      }
+    }
+  }catch(_e9d){}
+
+  state.meta.mig489_dd_p268=true; save(true);
+  try{ console.log("mig489: pii scrub, vogel condition, planet fitness, earliest-start claim"); }catch(_){}
+} }catch(e){ try{ console.warn("mig489 did not apply:",e&&e.message); }catch(_){} }
 
   /* build 372: LAST THING BEFORE THE SAVE. Every migration above has run, deepMergeDefaults
      has run, so this is the only point in the file where the state is actually final. */
