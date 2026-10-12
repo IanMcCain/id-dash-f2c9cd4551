@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 491 (2026-10-12)">
+<meta name="build" content="v21 build 492 (2026-10-12)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -25869,6 +25869,50 @@ try{ if(profile==="ian" && state.meta && !state.meta.mig491_fin_pf_bike && state
     try{ console.log("mig491: planet fitness 26.79, bike loan active but paused, rocket money inactive rule"); }catch(_){}
 } }catch(e){ try{ console.warn("mig491 did not apply:",e&&e.message); }catch(_){} }
 
+/* v21 build 492, PIPELINE CORRECTIONS FROM IAN (12.10.2026). Guard state.meta.mig492_pipeline_fix,
+   saved state only, end of chain, SEED_VERSION stays 13. Set unconditionally by id.
+   (1) Hernandez is "just as certain as Belknaps even though they are farther out". His number, so
+   winProb takes Belknap's value (0.95 today) attributed to Ian. Certainty and timing are different
+   axes: a later list date is never a reason to rank lower. The old 0.55 was ours, not his.
+   (2) Bruce O'Neil and BOTH Theobald records (sell and buy, Ian: "sell and buy on 2027") are 2027 deals. Recorded in the close field the pipeline
+   already reads, plus an explicit year field, so it survives a rebuild. */
+try{ if(profile==="ian" && state.meta && !state.meta.mig492_pipeline_fix && state.realEstate && Array.isArray(state.realEstate.deals)){
+    var _D92=state.realEstate.deals;
+    var _by92=function(id){ for(var i=0;i<_D92.length;i++){ if(_D92[i]&&_D92[i].id===id) return _D92[i]; } return null; };
+    try{
+      var _bk92=_by92("re-belknap-sell"), _hz92=_by92("re-hernandez-sell");
+      var _pv92=(_bk92&&typeof _bk92.winProb==="number")?_bk92.winProb:0.95;
+      if(_hz92){
+        _hz92.winProbPrior=_hz92.winProb;
+        _hz92.winProb=_pv92;
+        _hz92.winProbSource="IAN";
+        _hz92.winProbAsOf="2026-10-12";
+        _hz92.winProbNote="Ian, 12.10.2026: Hernandez is \"just as certain as Belknaps even though they are farther out\". Set equal to Belknap. The earlier 0.55 was ours, not his. CERTAINTY AND TIMING ARE DIFFERENT AXES: Hernandez lists 12 November, further out than Belknap, and that is NOT a reason to rank it lower.";
+      }
+    }catch(_e92a){}
+    try{
+      var _bo92=_by92("s0wqsf9");
+      if(_bo92){
+        _bo92.closeYear=2027;
+        _bo92.closeSource="Ian, 12.10.2026";
+        _bo92.close="2027 (Ian, 12.10.2026). No specific date given and none inferred.";
+      }
+      var _ts92=_by92("re-theobald-sell");
+      if(_ts92){
+        _ts92.closeYear=2027;
+        _ts92.closeSource="Ian, 12.10.2026";
+      }
+      var _tb92=_by92("re-theobald-buy");
+      if(_tb92){
+        _tb92.closeYear=2027;
+        _tb92.closeSource="Ian, 12.10.2026";
+        _tb92.close="2027 (Ian, 12.10.2026). No specific date. Timing depends on the sequencing question.";
+      }
+    }catch(_e92b){}
+    state.meta.mig492_pipeline_fix=true; save(true);
+    try{ console.log("mig492: hernandez certainty set to belknap, bruce o'neil and theobald buy dated 2027"); }catch(_){}
+} }catch(e){ try{ console.warn("mig492 did not apply:",e&&e.message); }catch(_){} }
+
   /* build 372: LAST THING BEFORE THE SAVE. Every migration above has run, deepMergeDefaults
      has run, so this is the only point in the file where the state is actually final. */
   try{ convergeState(); }catch(e){}
@@ -32746,6 +32790,17 @@ function fnUpcoming(v,f){
    SPICER IS THE EXCEPTION AND IT IS THE POINT. It is the only one under contract and it nets
    $0, so it is kept even at zero: the one that is certain pays nothing and the ones that
    would pay are all uncertain. That contrast is real and he should see it. */
+function fnCloseDate(d){
+  try{
+    var t=String((d&&d.close)||""), M="january|february|march|april|may|june|july|august|september|october|november|december";
+    var mo=function(n){ return ("january february march april may june july august september october november december").split(" ").indexOf(String(n).toLowerCase()); };
+    var a=t.match(new RegExp("(\\d{1,2})\\s+("+M+")\\s+(20\\d\\d)","i"));
+    if(a) return new Date(Number(a[3]),mo(a[2]),Number(a[1])).getTime();
+    var b=t.match(new RegExp("("+M+")\\s+(\\d{1,2}),?\\s+(20\\d\\d)","i"));
+    if(b) return new Date(Number(b[3]),mo(b[1]),Number(b[2])).getTime();
+  }catch(e){}
+  return null;
+}
 function fnProjection(v,f){
   try{
     var deals=(state.realEstate&&state.realEstate.deals)||[];
@@ -32799,6 +32854,12 @@ function fnProjection(v,f){
       if(a.p===null) return 1;
       if(z.p===null) return -1;
       if(z.p!==a.p) return z.p-a.p;
+      /* build 492: EQUAL CERTAINTY. Nearer dated first, then bigger net. A pure tiebreak: it only runs
+         when the two probabilities are exactly equal, so distance never lowers anything below a
+         deal that is genuinely less likely. Ian: Hernandez is as certain as Belknaps even though
+         it is farther out. Dates are read from the close text and skipped when either is missing. */
+      var _da=fnCloseDate(a.d), _dz=fnCloseDate(z.d);
+      if(_da&&_dz&&_da!==_dz) return _da-_dz;
       return z.net-a.net;
     });
     var near=live.filter(function(x){ return !x.far; });
