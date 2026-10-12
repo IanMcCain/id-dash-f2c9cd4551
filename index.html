@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 490 (2026-10-11)">
+<meta name="build" content="v21 build 491 (2026-10-12)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -25807,6 +25807,68 @@ try{ if(profile==="ian" && state.meta && !state.meta.mig490_sessions_silverleaf)
     try{ console.log("mig490: two sessions added, silver leaf created, r street statement recorded"); }catch(_){}
 } }catch(e){ try{ console.warn("mig490 did not apply:",e&&e.message); }catch(_){} }
 
+/* v21 build 491, FINANCE ONLY (SONNET-8, 12.10.2026). Queue: SONNET-3 entry 2026-10-12.
+   (1) Planet Fitness is 26.79 billing on the 17th, account ending 8909. Cause: Ian upgraded to
+   Black Card for tanning and massage beds. A rate rise with a recorded cause is settled.
+   Supersedes the 16.05 and the build 489 "UNVERIFIED" flag. (2) Bike loan is ACTIVE but PAUSED
+   FOR OCTOBER, 143.00 a month, last payment 30 September 2026, END DATE BLANK (Ian has not
+   said, none inferred). Not cancelled, not finished. (3) Rocket Money "inactive" is
+   unverified, never cancelled. Set unconditionally by name. Guard state.meta.mig491_fin_pf_bike,
+   saved state only, end of chain, SEED_VERSION stays 13. */
+try{ if(profile==="ian" && state.meta && !state.meta.mig491_fin_pf_bike && state.finance && typeof state.finance==="object"){
+    var _F91=state.finance;
+    try{
+      var _s91=_F91.subscriptions||[];
+      for(var _a91=0;_a91<_s91.length;_a91++){
+        var _p91=_s91[_a91];
+        if(_p91 && /planet/i.test(String(_p91.name||""))){
+          _p91.priorAmount=16.05;
+          _p91.priorAmountNote="SUPERSEDED. 16.05 was the rate Ian gave on 21.09.2026, before the upgrade below.";
+          _p91.amount=26.79;
+          _p91.billsOn=17;
+          _p91.accountLast4="8909";
+          _p91.amountStale=false;
+          delete _p91.amountSupersededOn;
+          _p91.amountNote="26.79 a month, billing on the 17th, account ending 8909. THE RATE ROSE BECAUSE IAN UPGRADED TO BLACK CARD, for the tanning and massage beds (Ian, 12.10.2026). A rise with a known cause is settled, not an error to re-query. Agreed by three sources: the 06.10 brief, Rocket Money and Ian. Replaces the build 489 UNVERIFIED flag.";
+          _p91.source="Ian, 12.10.2026";
+        }
+      }
+    }catch(_e91a){}
+    try{
+      var _d91=_F91.externalDebts||[];
+      for(var _b91=0;_b91<_d91.length;_b91++){
+        var _x91=_d91[_b91];
+        if(_x91 && /bike/i.test(String(_x91.name||""))){
+          _x91.status="ACTIVE, PAUSED FOR OCTOBER";
+          _x91.active=true;
+          _x91.cancelled=false;
+          _x91.finished=false;
+          _x91.monthlyAmount=143.00;
+          _x91.lastPaymentSeen="2026-09-30";
+          _x91.endDate="";
+          _x91.endDateNote="BLANK ON PURPOSE. Ian has not said when it ends and none is inferred.";
+          _x91.statusWhy="A LIVE OBLIGATION, NOT FINISHED. Active but paused for October 2026. 143.00 a month, last payment 30 September 2026 (Ian, 12.10.2026: still running, paused in October). Do not list it as cancelled. It is excluded from the October burn while paused. It is also still a balance for net worth.";
+          _x91.rocketMoneyStatus="inactive";
+          _x91.rocketMoneyStatusWrong=true;
+          _x91.rocketMoneyStatusWhy="Rocket Money marks this loan inactive. Ian confirmed on 12.10.2026 that it is active and paused. Rocket Money is wrong on this.";
+        }
+      }
+    }catch(_e91b){}
+    try{
+      _F91.sourceReliability=_F91.sourceReliability||{};
+      _F91.sourceReliability.rocketMoney=_F91.sourceReliability.rocketMoney||{};
+      var _r91=_F91.sourceReliability.rocketMoney;
+      if(Object.prototype.toString.call(_r91.confirmedWrong)!=="[object Array]") _r91.confirmedWrong=[];
+      var _t91="Paused bike loan reported as INACTIVE. It is active and paused for October 2026. Confirmed wrong by Ian 12.10.2026.";
+      if(_r91.confirmedWrong.indexOf(_t91)<0) _r91.confirmedWrong.push(_t91);
+      _r91.inactiveRule="INACTIVE IN ROCKET MONEY IS UNVERIFIED, NOT CANCELLED. Check with Ian or the account itself before treating anything it marks inactive as finished.";
+      _r91.historyNote="On the record it has been wrong twice: it missed the Marcus Movie Club 9.99 (21.09.2026, since corrected in its favour on 09.10.2026, so that one is history and Marcus is NOT currently missed) and it reports the paused bike loan as inactive (12.10.2026, current).";
+      _r91.asOf="2026-10-12";
+    }catch(_e91c){}
+    state.meta.mig491_fin_pf_bike=true; save(true);
+    try{ console.log("mig491: planet fitness 26.79, bike loan active but paused, rocket money inactive rule"); }catch(_){}
+} }catch(e){ try{ console.warn("mig491 did not apply:",e&&e.message); }catch(_){} }
+
   /* build 372: LAST THING BEFORE THE SAVE. Every migration above has run, deepMergeDefaults
      has run, so this is the only point in the file where the state is actually final. */
   try{ convergeState(); }catch(e){}
@@ -32725,7 +32787,14 @@ function fnProjection(v,f){
        the same percentage still order sensibly. Anything with no probability sorts last
        rather than being assumed to be zero or one. */
     live.forEach(function(x){ var w=x.d&&x.d.winProb; x.p=(typeof w==="number")?w:null; });
+    /* v21 build 491, 12.10.2026. IAN: "list them in order from most certain to least certain, so
+       like Cynthia and Mattox will be high up, Vogel and Belknap are high up but lower". STAGE
+       FIRST, THEN PROBABILITY. Under Contract sorts above everything that is not, because a signed
+       contract is more certain than any listing chance. The percentage had Vogel at 99.9 ahead of
+       two signed deals, which is a different question (will it list) from the one he is asking
+       (will it pay). No new score is invented: stage and winProb are the existing fields. */
     live.sort(function(a,z){
+      if(a.contracted!==z.contracted) return a.contracted?-1:1;
       if(a.p===null&&z.p===null) return z.net-a.net;
       if(a.p===null) return 1;
       if(z.p===null) return -1;
@@ -32793,8 +32862,13 @@ function fnProjection(v,f){
       if(!x.far && gapHi>0 && x.keep>=gapHi) bits.push("clears it");
       else if(!x.far && gapHi>0 && x.keep>0 && x.keep>=gapLo) bits.push("nearly clears");
       var r=fnRow(host,x.d.title||x.d.id,fnMoneyC(x.keep),bits.join(", "),null,false);
-      /* accent, not green: this is not money he has */
-      try{ var amt=r.querySelector(".fnamt"); if(amt) amt.style.color=(x.keep>0?"var(--fi2)":"var(--gray2)"); }catch(e){}
+      /* build 491: GREEN, at Ian's request (12.10.2026). Was the finance accent, chosen because this is
+         not money he has. var(--green) is #30d158, measured 8.4:1 on the card surface (6.9:1 on card2). */
+      try{ var amt=r.querySelector(".fnamt"); if(amt) amt.style.color=(x.keep>0?"var(--green)":"var(--gray2)"); }catch(e){}
+      /* build 491: UNDER CONTRACT NAMES ARE PURPLE (Ian, 12.10.2026), the finance accent the figures used
+         to carry, so nothing new enters the palette. Driven by the stage field through x.contracted,
+         never by a list of names. #da8fff measured 7.6:1 on the card surface (6.2:1 on card2). */
+      try{ if(x.contracted){ var nm=r.querySelector(".fnname"); if(nm) nm.style.color="var(--fi2)"; } }catch(e){}
       return r;
     };
     /* ===== v21 build 440: THE CONFIDENCE BAND. IAN READ THE WEIGHTED FIGURE AS A FLOOR ========
@@ -32861,13 +32935,15 @@ function fnProjection(v,f){
       near.forEach(function(x){ mk(L,x); });
       b.appendChild(L);
     }
+    /* build 491: the 2027 group is its own box, built the same way as the main one and sorted by the
+       same rule (live is already in that order). It was a label inside the first card. */
+    var c27=null;
     if(far.length){
-      var D=el("div"); D.style.marginTop="16px";
-      D.appendChild(el("div","fnsch","2027 or later, outside the window"));
-      var L2=el("div"); L2.style.marginTop="6px";
+      c27=card(); var b27=c27._body;
+      b27.appendChild(el("div","g7kicker","2027 or later, outside the window"));
+      var L2=el("div"); L2.style.marginTop="12px";
       far.forEach(function(x){ mk(L2,x); });
-      D.appendChild(L2);
-      b.appendChild(D);
+      b27.appendChild(L2);
     }
     var notes=[];
     /* build 440: the amounts changed meaning, so the card says so rather than letting him
@@ -32881,6 +32957,7 @@ function fnProjection(v,f){
     if(noPrice) notes.push(noPrice+" more "+(noPrice===1?"deal has":"deals have")+" no price yet, so nothing is computed for "+(noPrice===1?"it":"them")+".");
     b.appendChild(el("div","fnnote",notes.join(" ")));
     v.appendChild(c);
+    if(c27) v.appendChild(c27);
   }catch(e){ try{ console.error("[dash] projection",e); }catch(_){} }
 }
 function fnSavings(v,f){
