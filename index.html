@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 494 (2026-10-12)">
+<meta name="build" content="v21 build 495 (2026-10-12)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -27561,6 +27561,97 @@ function homeZone1(host,nm,workout){
     col.appendChild(nc);
   }
 }
+/* ===== v21 build 495: HOME REDESIGN, PASS 2 OF 4. ZONE 2, THE GRAPHIC BAND ======================
+   Ian: "after about a full page of that then there can be a big graphic like the pickleball heat map",
+   and "on side with big vertical graphics, you can put small vertical graphics on the side".
+   THE ANCHOR IS THE HEATMAP, UNTOUCHED. The builder inside secHeat is byte identical to build 494, so
+   every cell class, band, colour, legend entry, count and footnote is exactly what it was. What changed
+   is the frame: the old collapsible "Training consistency" header (which also carried a stale subtitle,
+   "gym and pickleball, target 11 a week", when the chart has counted pickleball sessions against a
+   target of 8 since build 455) is replaced by a flat band header that states what the chart measures.
+   THE SIDE GRAPHICS ARE READ OFF THE HEATMAP'S OWN CELLS, NOT OFF STATE. hzSideGraphics walks the rows
+   the builder just drew, so the two small charts can never disagree with the big one, and nothing is
+   computed twice or written anywhere. Sessions a week reads each row's own n/8. Court days by weekday
+   counts the cells that already carry a pickleball colour class, over the past rows only.
+   LAYOUT. 390px phone: the heatmap runs full width, the two small charts sit side by side under it.
+   Wide screens: the heatmap takes the left column and the two small charts stack down the right, so
+   a tall graphic never leaves dead space beside it.
+   GLASS. None in zone 2. Zone 1 keeps its single glass strip. MOTION. The bars grow once per load, when
+   the band first scrolls into view, and never under reduced motion. */
+var HZ2_DONE=false;
+function hzBand2(host,build){
+  var band=el("div","z2");
+  var hd=el("div","z2-head");
+  hd.appendChild(el("div","z2-t","Training consistency"));
+  hd.appendChild(el("div","z2-s","Pickleball sessions a week, target 8"));
+  band.appendChild(hd);
+  var grid=el("div","z2-grid"); var main=el("div","z2-main"); var side=el("div","z2-side");
+  grid.appendChild(main); grid.appendChild(side); band.appendChild(grid);
+  try{ build(main); }catch(e){ try{console.error("[dash] hzBand2 heatmap",e);}catch(_){} var er=card(); er._body.appendChild(el("div","small dim","This section could not load.")); main.appendChild(er); }
+  try{ hzSideGraphics(main,side); }catch(e){ try{console.error("[dash] hzBand2 side",e);}catch(_){} while(side.firstChild){ side.removeChild(side.firstChild); } }
+  if(!side.firstChild){ grid.className+=" z2-solo"; }
+  host.appendChild(band);
+  hzBandReveal(band);
+}
+function hzSideGraphics(main,side){
+  var rows=[].slice.call(main.querySelectorAll(".hmrow"));
+  var past=rows.filter(function(r){ return (" "+r.className+" ").indexOf(" ahead ")<0; });
+  if(past.length<2) return;
+  var wk=[];
+  past.forEach(function(r){
+    var lab=r.querySelector(".hmwk"); var c=r.querySelector(".hmn"); var m=c&&/^(\d+)\//.exec(c.textContent||"");
+    if(m) wk.push({lab:lab?lab.textContent:"",n:parseInt(m[1],10),cur:(" "+r.className+" ").indexOf(" cur ")>=0});
+  });
+  var cnt=[0,0,0,0,0,0,0];
+  past.forEach(function(r){
+    var cs=r.querySelectorAll(".hmc");
+    for(var i=0;i<cs.length&&i<7;i++){ if(/(^|\s)k-(open|drill|mix|league|tourn|play)(\s|$)/.test(cs[i].className)) cnt[i]++; }
+  });
+  var todayIx=-1; var tc=main.querySelectorAll(".hmrow.cur .hmc");
+  for(var t=0;t<tc.length&&t<7;t++){ if((" "+tc[t].className+" ").indexOf(" today ")>=0) todayIx=t; }
+  function mini(kicker,sub){ var c=el("div","z2-mini"); c.appendChild(el("div","z2-k",kicker)); c.appendChild(el("div","z2-ks",sub)); return c; }
+  function plot(items,max,target){
+    var p=el("div","z2-plot");
+    if(target!=null){ var tl=el("div","z2-tgt"); tl.style.bottom=Math.round(target/max*100)+"%"; p.appendChild(tl); }
+    items.forEach(function(it,i){
+      var col=el("div","z2-col"); var b=el("div","z2-bar"+(it.v===0?" z0":"")+(it.cur?" cur":""));
+      if(it.v>0) b.style.height=Math.round(it.v/max*100)+"%";
+      try{ b.style.setProperty("--i",String(i)); }catch(e){}
+      col.appendChild(b); p.appendChild(col);
+    });
+    return p;
+  }
+  function labels(items){
+    var r=el("div","z2-row");
+    items.forEach(function(it){ var c=el("div","z2-cell"); c.appendChild(el("div","z2-v",String(it.v))); c.appendChild(el("div","z2-l"+(it.on?" on":""),it.lab)); r.appendChild(c); });
+    return r;
+  }
+  if(wk.length>=2){
+    var mx=8; wk.forEach(function(w){ if(w.n>mx) mx=w.n; });
+    var items=wk.map(function(w){ return {v:w.n,lab:w.cur?"This":w.lab,cur:w.cur,on:w.cur}; });
+    var c1=mini("Sessions a week","Dashed line is 8");
+    c1.appendChild(plot(items,mx,8)); c1.appendChild(labels(items)); side.appendChild(c1);
+  }
+  var tot=0; cnt.forEach(function(n){ tot+=n; });
+  if(tot>0){
+    var L=["M","T","W","T","F","S","S"]; var mx2=1; cnt.forEach(function(n){ if(n>mx2) mx2=n; });
+    var items2=cnt.map(function(n,i){ return {v:n,lab:L[i],on:(i===todayIx)}; });
+    var c2=mini("By weekday","Court days, "+past.length+" weeks");
+    c2.appendChild(plot(items2,mx2,null)); c2.appendChild(labels(items2)); side.appendChild(c2);
+  }
+}
+function hzBandReveal(band){
+  var reduce=false; try{ reduce=!!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches); }catch(e){}
+  var side=band.querySelector(".z2-side");
+  if(HZ2_DONE||reduce||!window.IntersectionObserver||!side||!band.querySelector(".z2-bar")) return;
+  band.className+=" z2-wait";
+  try{
+    /* watch the small charts, not the band: the bars sit at the bottom of a tall band, so the band can be
+       20 percent on screen while every bar is still below the fold, which would spend the one grow unseen */
+    var io=new IntersectionObserver(function(es){ es.forEach(function(en){ if(en.isIntersecting){ band.className=band.className.replace(" z2-wait"," z2-go"); HZ2_DONE=true; io.disconnect(); } }); },{threshold:0.6});
+    io.observe(side);
+  }catch(e){ band.className=band.className.replace(" z2-wait",""); }
+}
 function buildIanHome(v){ const workout=daySplit(DOW); const reTop=firstUndone((state.realEstate.todos||[]).filter(t=>todoList(t)==="todo")); const nm=(state.settings&&state.settings.name)||"Ian";
   /* build 494: the old greeting card is replaced by zone 1, see homeZone1 */
   if(!(state.settings&&state.settings.bannerDismissed)){ const bn=el("div","banner"); bn.appendChild(el("div",null,"For full interactivity and saving, open this file in Safari. An in app preview can limit some taps.")); const x=el("button","bx","\u00D7"); x.onclick=()=>{ if(!state.settings)state.settings={}; state.settings.bannerDismissed=true; save(); render(); }; bn.appendChild(x); v.appendChild(bn); }
@@ -27662,7 +27753,7 @@ function buildIanHome(v){ const workout=daySplit(DOW); const reTop=firstUndone((
      legend entry, count, threshold, title and footnote below is byte identical to build 391.
      Same line build 390 drew on habitConsistencyCard: card takes the page accent, bars keep
      their own colours. Ian named the heatmap a favourite; it is not being diluted. */
-  var secHeat=function(){ pkCollapse(v,"h_heat","Training consistency","gym and pickleball, target 11 a week",true,function(hh){
+  var secHeat=function(){ hzBand2(v,function(hh){
       var pb=state.pickleball||{};
       var cardEl=card(); var b=cardEl._body;
       function _pkCls(kind){ var k=String(kind||"").toLowerCase(); if(/tournament|fall cup|\bapc\b/.test(k)) return "k-tourn"; if(k.indexOf("league")>=0) return "k-league"; var dr=/drill/.test(k); var pl=/open play|doubles|\bplay\b/.test(k); if(dr&&pl) return "k-mix"; if(dr) return "k-drill"; if(pl) return "k-open"; return "k-play"; }
@@ -27868,7 +27959,7 @@ function buildIanHome(v){ const workout=daySplit(DOW); const reTop=firstUndone((
         _fn.textContent="Pickleball only. A day with two sessions counts twice.";
         b.appendChild(_fn); }
       hh.appendChild(cardEl);
-    },ICO.chart,"blue"); }; /* build 392: "green" to "blue". COLLAPSE CHROME ONLY, see the header above. */
+    }); }; /* build 495: zone 2 band replaces the collapse chrome. The builder above is byte identical to 494. */
   var secIdeas=function(){ safe(v,function(){ buildFutureIdeasHome(v); },"Future ideas"); };
   /* build 225: SOLARA IS A CARD HERE, NOT A TAB. Ian's call 08.04.2026. It is an entry point rather
      than a summary: it carries the one fact that changes (days to drop) plus the current status, and
@@ -34564,6 +34655,45 @@ section,.card,.sectlabel{scroll-margin-top:calc(var(--hh) + var(--sat) + 8px)}
 @keyframes hzUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
 .hz-in{animation:hzUp 520ms cubic-bezier(.2,.7,.2,1) both}
 @media (prefers-reduced-motion:reduce){.hz-in{animation:none}.z1-ring .bar{transition:none}}
+</style>
+<style id="hz-b495">
+/* ===== v21 build 495: HOME ZONES, PASS 2 OF 4. Zone 2, the graphic band ==========================
+   Same scale as 494: 4px grid, 8 preferred, 12 between siblings, 16 inside a card, --block 24 between
+   zones. No glass here. Depth is one green tint per small chart and one soft glow behind the header. */
+.hz-z2{margin-bottom:var(--block)}
+.z2-head{position:relative;padding:8px 4px 16px}
+.z2-head::before{content:"";position:absolute;left:0;top:0;width:240px;height:96px;pointer-events:none;background:radial-gradient(closest-side,rgba(46,230,111,.16),rgba(46,230,111,0))}
+.z2-t,.z2-s{position:relative}
+.z2-t{font-size:28px;line-height:1.1;font-weight:800;letter-spacing:-.025em;color:var(--white)}
+.z2-s{font-size:13px;font-weight:600;color:var(--gray);margin-top:4px}
+.z2-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:12px}
+.z2-main{min-width:0}
+.z2-main .card{margin-bottom:0}
+.z2-side{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px;min-width:0}
+.z2-mini{position:relative;display:flex;flex-direction:column;overflow:hidden;min-width:0;border-radius:var(--r);padding:16px;border:1px solid rgba(255,255,255,.05);box-shadow:0 8px 20px rgba(0,0,0,.35);
+  background:linear-gradient(170deg,rgba(46,230,111,.14) 0%,rgba(46,230,111,0) 62%),var(--card)}
+.z2-k{font-size:13px;font-weight:700;color:var(--green)}
+.z2-ks{font-size:12px;color:var(--gray);margin-top:4px;line-height:1.35;margin-bottom:16px}
+.z2-plot{position:relative;display:flex;align-items:flex-end;gap:8px;height:72px;margin-top:auto}
+.z2-col{flex:1 1 0;min-width:0;height:100%;display:flex;align-items:flex-end;justify-content:center}
+.z2-bar{width:100%;max-width:32px;border-radius:4px;background:var(--pk1,#2ee66f);transform-origin:50% 100%}
+.z2-bar.cur{opacity:.6}
+.z2-bar.z0{height:4px;background:rgba(255,255,255,.14)}
+.z2-tgt{position:absolute;left:0;right:0;height:0;border-top:1px dashed rgba(255,255,255,.34)}
+.z2-row{display:flex;gap:8px;margin-top:8px}
+.z2-cell{flex:1 1 0;min-width:0;text-align:center}
+.z2-v{font-size:13px;line-height:1.2;font-weight:700;color:var(--white);font-variant-numeric:tabular-nums}
+.z2-l{font-size:11px;font-weight:600;color:var(--gray);margin-top:4px}
+.z2-l.on{color:var(--green)}
+.z2-wait .z2-bar{transform:scaleY(0)}
+@keyframes z2Grow{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+.z2-go .z2-bar{animation:z2Grow 700ms cubic-bezier(.2,.7,.2,1) both;animation-delay:calc(var(--i,0) * 60ms)}
+.z2-solo{grid-template-columns:minmax(0,1fr) !important}
+@media (min-width:560px){
+  .z2-grid{grid-template-columns:minmax(0,3fr) minmax(0,2fr);align-items:start}
+  .z2-side{grid-template-columns:minmax(0,1fr)}
+}
+@media (prefers-reduced-motion:reduce){.z2-go .z2-bar{animation:none}.z2-wait .z2-bar{transform:none}}
 </style>
 <style id="asof-b493">
 .asof{font-size:11px;line-height:1.4;color:var(--gray2);text-align:center;margin:16px 0 8px}
