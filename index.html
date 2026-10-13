@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 501 (2026-10-13)">
+<meta name="build" content="v21 build 502 (2026-10-13)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -34170,10 +34170,173 @@ function fxScale(total,fill,over,markAt){
   if(total>0&&markAt>0&&markAt<total){ var m=el("i","fx-scm"); m.style.left=(markAt/total*100).toFixed(2)+"%"; w.appendChild(m); }
   return w;
 }
+/* labels for a scale bar: an optional marker label centred on the marker, and the right end. */
+function fxScaleKey(total,markAt,markLabel,endLabel){
+  var k=el("div","fx-sk");
+  if(markLabel&&markAt>0&&markAt<total){ var m=el("span","m",markLabel); m.style.left=(markAt/total*100).toFixed(2)+"%"; k.appendChild(m); }
+  if(endLabel) k.appendChild(el("span","e",endLabel));
+  return k;
+}
+/* a bar on a dollar axis with the shortfall shaded behind it. Never stacked: each bar is one deal or one tier. */
+function fxAxisBar(max,val,gapLo,gapHi,idx){
+  var w=el("div","fx-ax"); max=Number(max)||0; val=Number(val)||0;
+  if(gapHi>0&&max>0){ var b=el("i","fx-axb"); var l=Math.max(0,Math.min(1,gapLo/max)), r=Math.max(0,Math.min(1,gapHi/max)); b.style.left=(l*100).toFixed(2)+"%"; b.style.width=Math.max(0.6,(r-l)*100).toFixed(2)+"%"; w.appendChild(b); }
+  if(max>0&&val>0){ var tone=(gapHi>0)?(val>=gapHi?"g":(val>=gapLo?"a":"")):"g"; var f=el("i","fx-axf"+(tone?" "+tone:"")); f.style.width=(Math.min(1,val/max)*100).toFixed(2)+"%"; try{ f.style.setProperty("--i",String(idx||0)); }catch(e){} w.appendChild(f); }
+  return w;
+}
 function fxOperating(f){ var o=null; (f.accounts||[]).forEach(function(a){ var k=String(a&&a.kind||"").toLowerCase(); if((k==="checking"||k==="main")&&a.balance!=null&&o===null) o=a; }); return o; }
 function fxBuffer(f){ var sum=0,have=false; (f.accounts||[]).forEach(function(a){ var k=String(a&&a.kind||"").toLowerCase(); if((k==="buffer"||k==="extra"||k==="savings")&&a.balance!=null){ sum+=Number(a.balance)||0; have=true; } }); return have?sum:null; }
 function fxShortDay(ms){ try{ return new Date(ms).toLocaleDateString("en-US",{month:"short",day:"numeric"}); }catch(e){ return ""; } }
 
+/* ===== v21 build 502: THE THREE REFERENCE FOLDS, REBUILT. Every graph below REPLACES text, none sits beside it. ======
+   MONTHLY PAYMENTS. Before: gas and groceries as two rows in a list of eleven, a deductible ring plus a caption plus a
+   paragraph that said the same 50 percent three times, the dated Methodist payments again (they are in Coming up), and a
+   sentence saying gas and groceries are estimates. Now: ONE composition bar of what leaves each month, then the
+   subscriptions as the itemised list Ian asked for (build 429: "get rid of that section, it just repeats the subscription
+   section in a different way", so there are NO per subscription bars here, and none were built, whatever the plan said),
+   then the paid rent rows. ESTIMATES ARE DRAWN AS RANGES, NEVER AS MIDPOINTS (build 420 rejected this chart for exactly that
+   reason): a recorded amount is a solid segment, an estimate is a solid segment for its low figure plus a striped segment for
+   the rest of its range, and a visible "estimate" tag sits on its legend row, not in a footnote.
+   DEALS IN PROGRESS. Before: a four row table, a paragraph, two "covers it" sentences, a headline sentence, and a list that
+   repeated the under contract deals. Now: a ladder of the four tiers on one dollar axis with the shortfall shaded, and the
+   not yet contracted deals as bars on their own axis with the shortfall shaded. The 2027 rows are UNCHANGED plain text
+   (Ian, 13.10.2026). The contracted deals are not repeated, they are in Under contract above.
+   TAX. The deductions, a stacked bar of the year, replace the ring and the paragraph. Schedule C and mileage stay whole one
+   level down. NO STATE IS READ THAT WAS NOT READ BEFORE AND NOTHING IS WRITTEN. */
+function fxHatch(col){ return "repeating-linear-gradient(135deg,"+col+" 0,"+col+" 3px,transparent 3px,transparent 6px)"; }
+function fxMonthlyFold(b,f){
+  var dom=new Date().getDate(); var items=[];
+  (f.subscriptions||[]).forEach(function(x){ if(x) items.push({x:x,sub:true}); });
+  (f.monthly||[]).forEach(function(x){ if(x) items.push({x:x,sub:false}); });
+  items=items.map(function(it){ var x=it.x; var hasR=(x.low!=null&&x.high!=null); var amt=Number(x.amount)||(hasR?Number(x.low):0); var hi=hasR?Number(x.high):amt;
+    var cyc=String(x.cycle||"monthly").toLowerCase();
+    var K=function(n){ return (cyc==="annual"||cyc==="yearly")?(n/12):(cyc==="weekly")?(n*52/12):(cyc==="quarterly")?(n/3):n; };
+    return {x:x,sub:it.sub,cyc:cyc,per:K(amt),perHigh:K(hi),range:(hasR&&hi!==amt),estimate:x.estimate===true,day:Number(x.day)||0}; })
+    .sort(function(a,z){ return z.perHigh-a.perHigh; });
+  var total=0,high=0; items.forEach(function(o){ total+=o.per; high+=o.perHigh; });
+  var cue=total>0?((high>total?(fnMoney(total)+" to "+fnMoney(high)):fnMoney(total))+" a month"):"";
+  var rec=items.filter(function(o){ return !o.estimate; }), est=items.filter(function(o){ return o.estimate; });
+  /* the composition bar. Scale is the HIGH total, so nothing is drawn longer than the range allows. */
+  if(high>0){
+    var recSum=0; rec.forEach(function(o){ recSum+=o.per; });
+    var cols=["#1fb9db","#7a8cff","#e3e8ef"];
+    var bar=el("div","fx-comp"); var lg=el("div","fx-lgs");
+    var addSeg=function(w,col,hatched,i){ if(!(w>0)) return; var s2=el("i",hatched?"est":""); s2.style.width=(w/high*100).toFixed(2)+"%"; s2.style.setProperty("--c",col); try{ s2.style.setProperty("--i",String(i)); }catch(e){} bar.appendChild(s2); };
+    var lrow=function(col,hatched,name,val,tag){ var r=el("div","fx-lg"); var sw=el("i",hatched?"est":""); sw.style.setProperty("--c",col); r.appendChild(sw); r.appendChild(el("span","n",name)); if(tag) r.appendChild(el("span","t",tag)); r.appendChild(el("span","v",val)); lg.appendChild(r); };
+    if(recSum>0){ addSeg(recSum,cols[0],false,0); lrow(cols[0],false,"Subscriptions",fnMoneyC(recSum),null); }
+    est.forEach(function(o,i){ var col=cols[(i+1)%cols.length]; addSeg(o.per,col,false,i+1); addSeg(o.perHigh-o.per,col,true,i+1);
+      lrow(col,true,(o.x.name||"Estimate"),(o.range?(fnMoney(o.per)+" to "+fnMoney(o.perHigh)):fnMoneyAuto(o.per)),"estimate"); });
+    b.appendChild(bar); b.appendChild(lg);
+  }
+  /* the subscriptions, itemised, sorted by cost. No bars, by Ian's build 429 decision. */
+  var recur=rec; 
+  if(recur.length){
+    var L1=el("div"); L1.style.marginTop="12px";
+    recur.forEach(function(o){ var state=(o.day>0&&dom>=o.day)?"good":"due"; var bits=[];
+      if(o.day>0) bits.push("The "+o.day+fnOrd(o.day)); if(o.cyc!=="monthly") bits.push(o.cyc); if(o.x&&o.x.tag) bits.push(String(o.x.tag));
+      fnRow(L1,o.x.name||"Payment",o.range?(fnMoney(o.per)+" to "+fnMoney(o.perHigh)):fnMoneyAuto(o.per),bits.join("  \u00b7  "),state,false); });
+    b.appendChild(L1);
+  }
+  /* rent already paid. The dated payments still to come are in Coming up and are not repeated here. */
+  var pays=[]; var anyApprox=false;
+  (f.recurring||[]).forEach(function(rr){ (rr&&rr.payments||[]).forEach(function(pp,ix){ if(!pp) return; var ap=pp.approx===true||rr.approx===true; if(ap) anyApprox=true;
+    pays.push({name:String(rr.name||"Payment"),date:pp.date||"",when:String(pp.when||""),seq:(pp.seq!=null?Number(pp.seq):ix),amount:Number(pp.amount)||0,believed:pp.believed===true,
+      low:(pp.low!=null?Number(pp.low):null),high:(pp.high!=null?Number(pp.high):null),paid:pp.paid===true,approx:ap,over:pp.over===true}); }); });
+  var done=pays.filter(function(p){ return p.paid; }), due=pays.filter(function(p){ return !p.paid; });
+  if(done.length){
+    var D=el("div"); D.style.marginTop="12px";
+    done.forEach(function(p){ fnRow(D,p.name,fnRentAmount(p),"Paid","good",true); });
+    var _prov=[];
+    if(done.some(function(p){ return !p.approx&&!p.believed; })) _prov.push("Paid figures are exact.");
+    if(due.some(function(p){ return p.believed; })) _prov.push("Believed to match the first payment.");
+    if(anyApprox) _prov.push("The rest is from memory.");
+    if(pays.some(function(p){ return !p.date; })) _prov.push("No dates on record.");
+    if(_prov.length) D.appendChild(el("div","fnsch",_prov.join(" ")));
+    b.appendChild(D);
+  }
+  return cue;
+}
+function fxDealsFold(b,f){
+  var deals=(state.realEstate&&state.realEstate.deals)||[]; if(!deals.length) return;
+  var R=null; try{ R=fnRunwayNums(f); }catch(e){ R=null; }
+  var gapHi=R?R.gapHi:0, gapLo=R?R.gapLo:0;
+  var is27=function(d){ return /20(2[7-9]|[3-9]\d)/.test(String((d&&d.close)||"")); };
+  var live=[],noPrice=0;
+  deals.forEach(function(d){
+    if(!d||d.stage==="Closed") return; if(d.fellThrough===true) return;
+    if(typeof RESTAGES!=="undefined" && RESTAGES.indexOf(String(d.stage||""))<0) return;
+    var px=0; try{ px=priceNum(d.price); }catch(e){} var n=0; try{ n=dealIanNet(d); }catch(e){ n=0; }
+    var contracted=(d.stage==="Under Contract"); if(!(px>0)&&!contracted){ noPrice++; return; }
+    live.push({ d:d, net:Math.round(n*100)/100, keep:Math.round(postTax(n)*100)/100, far:is27(d), contracted:contracted });
+  });
+  if(!live.length) return;
+  live.forEach(function(x){ var w=x.d&&x.d.winProb; x.p=(typeof w==="number")?w:null; });
+  live.sort(function(a,z){ if(a.contracted!==z.contracted) return a.contracted?-1:1;
+    if(a.p===null&&z.p===null) return z.net-a.net; if(a.p===null) return 1; if(z.p===null) return -1; if(z.p!==a.p) return z.p-a.p;
+    var _da=fnCloseDate(a.d), _dz=fnCloseDate(z.d); if(_da&&_dz&&_da!==_dz) return _da-_dz; return z.net-a.net; });
+  var near=live.filter(function(x){ return !x.far; }), far=live.filter(function(x){ return x.far; });
+  var rd10=function(n){ return Math.round(n/10)*10; };
+  var band=(gapHi>0)?(fnMoney(rd10(gapLo))+" to "+fnMoney(rd10(gapHi))+" shortfall"):null;
+  var pct=function(x){ if(x.p===null||x.p===undefined) return ""; var _pc=x.p*100,_pw=Math.round(_pc); return (Math.abs(_pc-_pw)<0.05?_pw:Math.round(_pc*10)/10)+"%"; };
+  var keyline=function(host){ if(gapHi>0){ var k=el("div","fx-key"); k.appendChild(el("i","sw")); k.appendChild(document.createTextNode("Shaded: the shortfall")); host.appendChild(k); } };
+  /* 1. THE LADDER. Replaces the four row table, the paragraph and both "covers it" sentences. */
+  var withP=near.filter(function(x){ return x.p!==null&&x.p!==undefined&&x.keep>0; });
+  if(withP.length){
+    var sum=function(arr){ return arr.reduce(function(a,x){ return a+x.keep; },0); };
+    var tSure=withP.filter(function(x){ return x.p>=0.90; }), tLikely=withP.filter(function(x){ return x.p>=0.75; });
+    var vSure=sum(tSure), vLikely=sum(tLikely), vAll=sum(withP), vExp=withP.reduce(function(a,x){ return a+x.keep*x.p; },0);
+    var tiers=[["Floor","if none of them close",0]];
+    if(tSure.length) tiers.push(["Near certain","90% or better",vSure]);
+    if(tLikely.length>tSure.length) tiers.push(["Likely","75% or better",vLikely]);
+    tiers.push(["Expected","an average, not a minimum",vExp]); tiers.push(["Best case","all "+withP.length+", unlikely",vAll]);
+    var mx=Math.max(vAll,gapHi)*1.06;
+    fxLabel(b,"If several close","after "+taxPctWord()+" tax");
+    var L=el("div","fx-ladder");
+    tiers.forEach(function(t,i){ var item=el("div","fx-ci"); var cls=(gapHi>0&&t[2]>=gapHi)?"g":""; fxRow(item,t[0],t[1],fnMoneyC(t[2]),cls||"");
+      item.appendChild(fxAxisBar(mx,t[2],gapLo,gapHi,i)); L.appendChild(item); });
+    b.appendChild(L); keyline(b);
+  }
+  /* 2. THE DEALS NOT YET UNDER CONTRACT, each its own bar on its own axis. Contracted deals are in Under contract above. */
+  var pend=near.filter(function(x){ return !x.contracted; });
+  if(pend.length){
+    var mx2=0; pend.forEach(function(x){ if(x.keep>mx2) mx2=x.keep; }); mx2=Math.max(mx2,gapHi)*1.06;
+    fxLabel(b,"If one closes",gapHi>0?("short "+fnMoney(rd10(gapLo))+" to "+fnMoney(rd10(gapHi))):null);
+    var clears=pend.filter(function(x){ return gapHi>0&&x.keep>=gapHi; });
+    if(gapHi>0&&!clears.length){ var nc=el("div","fx-warn","No single deal clears the shortfall on its own."); b.appendChild(nc); }
+    var L2=el("div","fx-ladder");
+    pend.forEach(function(x,i){ var item=el("div","fx-ci"); var bits=[]; var pc=pct(x); if(pc) bits.push(pc); if(x.net>0) bits.push(fnMoneyC(x.net)+" before tax");
+      fxRow(item,x.d.title||x.d.id,bits.join(", "),fnMoneyC(x.keep),(gapHi>0&&x.keep>=gapHi)?"g":""); item.appendChild(fxAxisBar(mx2,x.keep,gapLo,gapHi,i)); L2.appendChild(item); });
+    b.appendChild(L2); keyline(b);
+  }
+  /* 3. THE 2027 ROWS. Plain text, ungraphed and unchanged, Ian 13.10.2026. */
+  if(far.length){
+    fxLabel(b,"2027 or later, outside the window",null);
+    var L3=el("div");
+    far.forEach(function(x){ var bits=[]; var pc=pct(x); if(pc) bits.push(pc); bits.push(x.contracted?"Under contract":String(x.d.stage||""));
+      if(x.net>0) bits.push(fnMoneyC(x.net)+" before tax"); var r=fnRow(L3,x.d.title||x.d.id,fnMoneyC(x.keep),bits.join(", "),null,false);
+      try{ var amt=r.querySelector(".fnamt"); if(amt) amt.style.color=(x.keep>0?"var(--green)":"var(--gray2)"); }catch(e){} });
+    b.appendChild(L3);
+  }
+  if(noPrice) b.appendChild(el("div","fnnote",noPrice+" more "+(noPrice===1?"deal has":"deals have")+" no price yet, so nothing is computed for "+(noPrice===1?"it":"them")+"."));
+}
+function fxTaxFold(b,f){
+  var cue="";
+  var subs=(f&&f.subscriptions)||[]; var tot=0,ded=0;
+  subs.forEach(function(x){ var a=Number(x&&x.amount)||0; tot+=a; var d=(x&&x.deduct)||{}; if(d.business===true&&Number(d.pct)>0) ded+=a*(Number(d.pct)/100); });
+  var yrSubs=Math.round(ded*12*100)/100; var ho=0, hoSq=null; try{ var h=f.homeOffice; if(h&&Number(h.deduction)>0){ ho=Number(h.deduction); hoSq=h.sqft; } }catch(e){}
+  var all=Math.round((yrSubs+ho)*100)/100;
+  if(all>0){
+    fxLabel(b,"Deductions a year",fnMoneyC(all));
+    var bar=el("div","fx-comp"); var lg=el("div","fx-lgs");
+    var segs=[]; if(yrSubs>0) segs.push(["Business subscriptions",yrSubs,"#1fb9db"]); if(ho>0) segs.push(["Home office"+(hoSq?(", "+hoSq+" sq ft"):""),ho,"#7a8cff"]);
+    segs.forEach(function(sg,i){ var s2=el("i"); s2.style.width=(sg[1]/all*100).toFixed(2)+"%"; s2.style.setProperty("--c",sg[2]); bar.appendChild(s2);
+      var r=el("div","fx-lg"); var sw=el("i"); sw.style.setProperty("--c",sg[2]); r.appendChild(sw); r.appendChild(el("span","n",sg[0])); r.appendChild(el("span","v",fnMoneyC(sg[1]))); lg.appendChild(r); });
+    b.appendChild(bar); b.appendChild(lg);
+    cue=fnMoneyC(all)+" in deductions a year";
+  }
+  fxDisc(b,"fx_sched","Schedule C and mileage","Lines, rates and odometer",function(bb){ return fxAdopt(bb,function(t){ fnTax(t,f); }); });
+  return cue;
+}
 /* BAND 1. The attention grab. Same arithmetic as fnSavings: saved is the balance above the floor. */
 function fxBandFund(v,f){
   var sv=f.savings; if(!sv) return;
@@ -34181,13 +34344,15 @@ function fxBandFund(v,f){
   if(!acct||acct.balance==null) return;
   var bal=Number(acct.balance)||0, floor=Number(sv.floor)||0, saved=Math.round((bal-floor)*100)/100, tgt=Number(sv.target)||0;
   var band=el("div","fx-b fx-fund"); var c=el("div","fx-card"); var row=el("div","fx-fr");
-  if(tgt>0) row.appendChild(fnRing(saved>0?saved/tgt:0,104,"good",null,null));
+  /* build 502: THE RING IS THE FIGURE. It used to print "0%" in the ring, "$0" beside it, "saved of $2,000" under that and
+     "Floor $1,000, never spent" below, four ways of saying one fact. Now the ring centre says what is saved, the one
+     number beside it is the target, and the savings balance and the floor ride on the fold's own hint line. */
+  if(tgt>0) row.appendChild(fnRing(saved>0?saved/tgt:0,104,"good",fnMoneyAuto(saved),"saved"));
   var t=el("div","fx-ft"); t.appendChild(el("div","fx-k g","Arizona fund"));
-  t.appendChild(el("div","fx-big"+(saved>0?" g":""),fnMoneyAuto(saved)));
-  t.appendChild(el("div","fx-line",tgt>0?("saved of "+fnMoneyAuto(tgt)):"saved above the floor"));
+  if(tgt>0){ t.appendChild(el("div","fx-big sm",fnMoneyAuto(tgt))); t.appendChild(el("div","fx-line","target")); }
+  else { t.appendChild(el("div","fx-big"+(saved>0?" g":""),fnMoneyAuto(saved))); t.appendChild(el("div","fx-line","saved above the floor")); }
   row.appendChild(t); c.appendChild(row);
-  c.appendChild(el("div","fx-foot2","Floor "+fnMoneyAuto(floor)+", never spent"));
-  fxDisc(c,"fx_floor","How the floor works",null,function(b){ var p=el("div"); try{ fnSavings(p,f); }catch(e){} var n=p.querySelector(".fnnote"); if(n){ n.style.marginTop="0"; b.appendChild(n); } });
+  fxDisc(c,"fx_floor","How the floor works","Savings "+fnMoneyAuto(bal)+", floor "+fnMoneyAuto(floor)+" never spent",function(b){ var p=el("div"); try{ fnSavings(p,f); }catch(e){} var n=p.querySelector(".fnnote"); if(n){ n.style.marginTop="0"; b.appendChild(n); } });
   band.appendChild(c); v.appendChild(band); hzReveal(band,".fx-card",function(){ return FX_DONE.fund; },function(){ FX_DONE.fund=true; });
 }
 /* BAND 2. Operating is the hero. Each balance appears once. No cash total, ever. */
@@ -34200,11 +34365,11 @@ function fxBandCash(v,f){
     var c=el("div","fx-card"); c.appendChild(el("div","fx-k","Operating"));
     c.appendChild(el("div","fx-big g",fnMoneyAuto(op.balance)));
     c.appendChild(el("div","fx-line","Checking"+(op.last4?(" \xb7 "+op.last4):"")));
-    var tiles=el("div","fx-tiles");
+    var tiles=el("div","fx-tiles one");
     var tile=function(lab,val,cls,sub){ var x=el("div","fx-tile"); x.appendChild(el("div","fx-tl",lab)); x.appendChild(el("div","fx-tv"+(cls?" "+cls:""),val)); if(sub) x.appendChild(el("div","fx-ts",sub)); tiles.appendChild(x); };
-    if(buf!==null) tile("Savings",fnMoneyAuto(buf),"g");
+    /* build 502: the Savings tile is gone. Its figure was the floor, which now rides on the Arizona fold's hint. */
     if(haveOwed){ var net=(Number(op.balance)||0)-owed; tile("Net",fnMoneyAuto(net),(net<0?"a":"g"),"operating less cards"); }
-    c.appendChild(tiles); band.appendChild(c);
+    if(tiles.firstChild) c.appendChild(tiles); band.appendChild(c);
   }
   if(cards.length){
     fxLabel(band,"Cards",haveOwed?(fnMoneyAuto(owed)+" owed"):null);
@@ -34214,8 +34379,11 @@ function fxBandCash(v,f){
       var rec=lim>0?Math.round(lim*ut):ml, over=rec>0&&bal>rec;
       var item=el("div","fx-ci");
       fxRow(item,a.name||a.id||"Card",fnKindWord(a.kind)+(a.last4?(" \xb7 "+a.last4):""),fnMoneyAuto(bal),over?"r":"");
-      if(lim>0){ item.appendChild(fxScale(lim,bal,over,rec)); item.appendChild(el("div","fx-cap",Math.round(bal/lim*100)+"% of "+fnMoney(lim)+", "+Math.round(ut*100)+"% recommended")); }
-      else if(ml>0){ item.appendChild(fxScale(ml,bal,over,0)); item.appendChild(el("div","fx-cap","of "+fnMoney(ml)+" a month, no credit limit"+(a.monthlyLimitProvisional===true?", awaiting your confirmation":""))); }
+      /* build 502: the caption sentence ("44% of $3,600, 30% recommended") is gone. The bar is the percentage; its two
+         ends are labelled instead: the marker says what is recommended, the right end says the limit. */
+      if(lim>0){ item.appendChild(fxScale(lim,bal,over,rec)); item.appendChild(fxScaleKey(lim,rec,Math.round(ut*100)+"% target",fnMoney(lim)+" limit")); }
+      else if(ml>0){ item.appendChild(fxScale(ml,bal,over,0)); item.appendChild(fxScaleKey(ml,0,null,fnMoney(ml)+" a month"));
+        if(a.monthlyLimitProvisional===true) item.appendChild(el("div","fx-cap","Awaiting your confirmation")); }
       cc.appendChild(item);
     });
     band.appendChild(cc);
@@ -34250,7 +34418,9 @@ function fxBandRunway(v,f){
     var tr=el("div","fx-tr"); var seg=function(frac,cls){ if(!(frac>0)) return; var s=el("i",cls); s.style.width=(Math.min(1,frac)*100).toFixed(2)+"%"; tr.appendChild(s); };
     seg(Math.min(R.op,R.needLo)/R.needHi,"g"); seg(Math.max(0,R.needLo-R.op)/R.needHi,"a"); seg(Math.max(0,R.needHi-R.needLo)/R.needHi,"a f");
     c.appendChild(tr);
-    c.appendChild(el("div","fx-line",fnMoney(rd(R.needLo))+" to "+fnMoney(rd(R.needHi))+" committed over four months, against operating above."));
+    /* build 502: the sentence that restated both numbers is gone. The bar's two ends are labelled instead, and Operating is
+       named without its figure because the figure is printed once, in Cash now. */
+    var rk=el("div","fx-sk2"); rk.appendChild(el("span","g","Operating")); rk.appendChild(el("span","a",fnMoney(rd(R.needLo))+" to "+fnMoney(rd(R.needHi))+" committed")); c.appendChild(rk);
     fxDisc(c,"fx_rw","How this is figured",null,function(b){ var p=el("div"); try{ fnRunway(p,f); }catch(e){} var n=p.querySelector(".fnnote"); if(n){ n.style.marginTop="0"; b.appendChild(n); } });
     band.appendChild(c);
   }
@@ -34261,9 +34431,13 @@ function fxBandRunway(v,f){
     cu.lumps.forEach(function(x){ fxRow(cc,x.name,x.when||null,x.amtText,""); });
     if(cu.nodate.length){
       var tot=0; cu.nodate.forEach(function(x){ tot+=x.amt; });
-      fxDisc(cc,"fx_nodate",cu.nodate.length+" subscriptions, no billing day",fnMoneyAuto(Math.round(tot*100)/100)+" a month",function(b){
-        cu.nodate.forEach(function(x){ fxRow(b,x.name,(x.cancelling?"cancelling":(x.tag||null)),fnMoneyAuto(x.amt),""); });
-      });
+      /* build 502: the list of these subscriptions was printed here and again in Monthly payments. It lives in Monthly payments
+         only; this row is one line that opens it. */
+      var nd=el("button","fx-lk2"); nd.type="button";
+      var ndl=el("div","fx-dl"); ndl.appendChild(el("div","fx-dn",cu.nodate.length+" subscriptions, no billing day")); ndl.appendChild(el("div","fx-dhint",fnMoneyAuto(Math.round(tot*100)/100)+" a month"));
+      nd.appendChild(ndl); nd.appendChild(el("span","fx-chev","\u203a"));
+      nd.onclick=function(){ if(FX_REG.fx_monthly) FX_REG.fx_monthly(); };
+      cc.appendChild(nd);
     }
     if(cc.firstChild) band.appendChild(cc);
   }
@@ -34278,35 +34452,40 @@ function fxBandMoney(v,f){
   rows.sort(function(a,z){ if(a.ms&&z.ms) return a.ms-z.ms; if(a.ms) return -1; if(z.ms) return 1; return String(a.d.title||"").localeCompare(String(z.d.title||"")); });
   var band=el("div","fx-b"); fxLabel(band,"Under contract","after "+taxPctWord()+" tax");
   var c=el("div","fx-card fx-list");
-  rows.forEach(function(x){
+  /* build 502: EACH DEAL IS A BAR ON ONE SHARED AXIS WITH THE SHORTFALL SHADED BEHIND IT, so the question the band exists for
+     ("does this cover it") is answered by position, not by a sentence. The bars are never stacked and there is still no total.
+     The two link rows are gone: Deals in progress is the next fold down and Real Estate is on the tab bar. */
+  var RN=null; try{ RN=fnRunwayNums(f); }catch(e){ RN=null; }
+  var gLo=RN&&RN.gapHi>0?RN.gapLo:0, gHi=RN&&RN.gapHi>0?RN.gapHi:0, mx=gHi*1.1;
+  rows.forEach(function(x){ if(x.keep>mx) mx=x.keep; });
+  rows.forEach(function(x,i){
     var sub=x.ms?((/about|approx/i.test(String((x.d&&x.d.close)||""))?"About ":"")+fxShortDay(x.ms)):"Date not on record"; if(!(x.keep>0)) sub+=" \u00b7 nets nothing";
-    fxRow(c,x.d.title||x.d.id,sub,x.keep>0?fnMoney(x.keep):"$0",x.keep>0?"g":"d","p");
+    var item=el("div","fx-ci");
+    fxRow(item,x.d.title||x.d.id,sub,x.keep>0?fnMoney(x.keep):"$0",x.keep>0?"g":"d","p");
+    item.appendChild(fxAxisBar(mx,x.keep,gLo,gHi,i));
+    c.appendChild(item);
   });
-  var go=function(txt,fn){ var b=el("button","fx-link"); b.type="button"; b.appendChild(el("span",null,txt)); b.appendChild(el("span","fx-chev","\u203a")); b.onclick=fn; c.appendChild(b); };
-  go("All deals, what each would net",function(){ if(FX_REG.fx_deals) FX_REG.fx_deals(); });
-  go("Real Estate",function(){ try{ reView="pipeline"; }catch(e){} try{ render(); }catch(e){} selectTab("re"); });
+  if(gHi>0){ var key=el("div","fx-key"); key.appendChild(el("i","sw")); key.appendChild(document.createTextNode("Shaded: the shortfall")); c.appendChild(key); }
   band.appendChild(c); v.appendChild(band); hzReveal(band,".fx-card,.fx-gl",function(){ return FX_DONE.money; },function(){ FX_DONE.money=true; });
 }
 /* THE FOLD. Everything that was on the page and is not a daily glance, one labelled row each, content unchanged. */
 function fxBandRef(v,f){
-  var band=el("div","fx-b"); fxLabel(band,"Reference",null); var c=el("div","fx-card fx-list fx-ref");
-  var _mw=fxDisc(c,"fx_monthly","Monthly payments","Rent, subscriptions, deductions",function(b){ return fxAdopt(b,function(t){ fnMonthly(t,f); }); }); if(_mw) _mw.className+=" fx-mono";
-  fxDisc(c,"fx_deals","Deals in progress","What each would net",function(b){ fxAdopt(b,function(t){ fnProjection(t,f); }); });
+  var band=el("div","fx-b fx-refb"); fxLabel(band,"Reference",null); var c=el("div","fx-card fx-list fx-ref");
+  var _mw=fxDisc(c,"fx_monthly","Monthly payments","Subscriptions and estimates",function(b){ return fxMonthlyFold(b,f); }); if(_mw) _mw.className+=" fx-mono";
+  fxDisc(c,"fx_deals","Deals in progress","What each would net",function(b){ fxDealsFold(b,f); });
   fxDisc(c,"fx_spark","Operating trend","Recent months",function(b){ fxAdopt(b,function(t){ fnSparkline(t,f); }); });
   fxDisc(c,"fx_rent","Rent schedule","Every payment dated",function(b){ fxAdopt(b,function(t){ fnRentRail(t,f); }); });
   if(f.months&&f.months.length>1) fxDisc(c,"fx_flow","Money in and out","Month by month",function(b){ var k=card(); safe(k._body,function(){ fnMonthChart(k._body,f.months,f); },"Finance flow"); b.appendChild(k); });
   if(f.closings&&f.closings.length){ var cl=f.closings,tot=0; cl.forEach(function(x){ tot+=Number(x.net!=null?x.net:x.gross)||0; });
     fxDisc(c,"fx_close","Closings",fnMoney(tot)+" paid",function(b){ var k=card(); cl.forEach(function(x){ fnRow(k._body,x.address||x.title||"Closing",fnMoney(x.net!=null?x.net:x.gross),(x.date?fnShortDate(x.date):null),"good",false); }); b.appendChild(k); }); }
   fxDisc(c,"fx_goals","Goals",null,function(b){ fxAdopt(b,function(t){ fnGoals(t,f); }); });
-  fxDisc(c,"fx_tax","Tax","Set aside and owed",function(b){ fxAdopt(b,function(t){ fnTax(t,f); }); });
+  fxDisc(c,"fx_tax","Tax","Deductions and Schedule C",function(b){ return fxTaxFold(b,f); });
   if(c.firstChild){ band.appendChild(c); v.appendChild(band); hzReveal(band,".fx-card,.fx-gl",function(){ return FX_DONE.ref; },function(){ FX_DONE.ref=true; }); }
 }
 function buildFinance(v){
   var f=finData()||{};
-  var head=el("div"); head.style.cssText="padding:4px 4px 16px";
-  head.appendChild(el("div","g7title","Finances"));
-  if(f.asOf){ head.appendChild(el("div","fnsch",fnShortDate(f.asOf)+(f.asOfTime?(", "+f.asOfTime):"")+" snapshot")); }
-  v.appendChild(head);
+  /* build 502: the page heading and the "snapshot" line are gone. The top bar already names the page and the Data as of
+     stamp at the foot already carries the date, so both were printing a fact the screen states twice. */
   FX_REG={};
   safe(v,function(){ fxBandFund(v,f); },"Finance fund");
   safe(v,function(){ fxBandCash(v,f); },"Finance cash");
@@ -35845,6 +36024,46 @@ section,.card,.sectlabel{scroll-margin-top:calc(var(--hh) + var(--sat) + 8px)}
 .fx-mono .fnamt[style*="--red"]{color:var(--white) !important}
 .fx-db .card{margin-bottom:12px}
 .fx-link{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;padding:12px 0;background:none;border:0;border-top:1px solid var(--line);color:var(--fi2);font:inherit;font-size:15px;font-weight:600;text-align:left;cursor:pointer}
+</style>
+<style id="fx-b502">
+/* ===== v21 build 502: FINANCES, GRAPHS THAT REPLACE TEXT. 4px grid (8 preferred), hairlines 1px to 3px. No glass. Colour keeps its
+   meaning: green is held or covered, amber is the shortfall, red only a card over its level, purple only names under contract. */
+.fx-tiles.one{grid-template-columns:minmax(0,1fr)}
+.fx-sk{position:relative;height:16px;margin-top:8px;font-size:12px;line-height:16px;color:var(--gray)}
+.fx-sk .m{position:absolute;top:0;transform:translateX(-50%);white-space:nowrap}
+.fx-sk .e{position:absolute;right:0;top:0;white-space:nowrap}
+.fx-sk2{display:flex;justify-content:space-between;gap:12px;margin-top:8px;font-size:12px;line-height:16px;color:var(--gray)}
+.fx-sk2 .g::before{content:"";display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--green);margin-right:4px}
+.fx-sk2 .a{color:var(--amber);font-weight:700;text-align:right}
+.fx-ax{position:relative;height:8px;border-radius:4px;background:var(--line);overflow:hidden}
+.fx-axf{position:absolute;left:0;top:0;bottom:0;border-radius:4px;background:rgba(255,255,255,.52);transform-origin:left center}
+.fx-axf.g{background:var(--green)}.fx-axf.a{background:var(--amber)}
+.fx-axb{position:absolute;top:0;bottom:0;background:rgba(255,138,52,.34);border-left:1px solid var(--amber);border-right:1px solid var(--amber)}
+.fx-db .small.dim{color:#a9b1bd}
+.fx-key{display:flex;align-items:center;gap:8px;margin-top:8px;font-size:12px;color:var(--gray)}
+.fx-key .sw{display:block;width:16px;height:8px;border-radius:2px;background:rgba(255,138,52,.34);border-left:1px solid var(--amber);border-right:1px solid var(--amber)}
+.fx-warn{margin-top:8px;font-size:13px;font-weight:700;color:var(--amber)}
+.fx-ladder{margin-top:4px}
+.fx-ladder .fx-ci{padding:0 0 8px}
+.fx-ladder .fx-ci .fx-r{padding:8px 0}
+.fx-ladder .fx-ci+.fx-ci{border-top:1px solid var(--line)}
+.fx-db .fx-gl{margin:16px 0 8px}
+.fx-db .fx-gl:first-child{margin-top:4px}
+.fx-comp{display:flex;gap:2px;height:16px;border-radius:8px;overflow:hidden;margin-top:12px}
+.fx-comp i{display:block;height:100%;background:var(--c);transform-origin:left center}
+.fx-comp i.est,.fx-lg i.est{background:repeating-linear-gradient(135deg,var(--c) 0,var(--c) 3px,transparent 3px,transparent 6px);box-shadow:inset 0 0 0 1px var(--c)}
+.fx-lgs{margin-top:8px}
+.fx-lg{display:flex;align-items:center;gap:8px;padding:8px 0;font-size:13px;line-height:1.3;color:var(--white)}
+.fx-lg+.fx-lg{border-top:1px solid var(--line)}
+.fx-lg i{flex:none;display:block;width:12px;height:12px;border-radius:3px;background:var(--c)}
+.fx-lg .n{flex:1;min-width:0;font-weight:600}
+.fx-lg .t{flex:none;padding:2px 8px;border-radius:999px;font-size:11px;font-weight:700;color:var(--white);background:rgba(255,255,255,.12)}
+.fx-lg .v{flex:none;font-weight:700;font-variant-numeric:tabular-nums}
+.fx-lk2{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;padding:12px 0;background:none;border:0;border-top:1px solid var(--line);color:inherit;font:inherit;text-align:left;cursor:pointer}
+.fx-db .fx-disc{margin-top:12px;border-top:1px solid var(--line)}
+.fx-b:not(.fx-refb) .hz-wait .fx-axf,.fx-b:not(.fx-refb) .hz-wait .fx-scf{transform:scaleX(0)}
+.fx-b:not(.fx-refb) .hz-rise .fx-axf,.fx-b:not(.fx-refb) .hz-rise .fx-scf{animation:z4GrowX 700ms cubic-bezier(.2,.7,.2,1) backwards;animation-delay:calc(var(--i,0) * 60ms + 160ms)}
+@media (prefers-reduced-motion:reduce){.fx-b .hz-wait .fx-axf,.fx-b .hz-wait .fx-scf{transform:none}.fx-b .hz-rise .fx-axf,.fx-b .hz-rise .fx-scf{animation:none}}
 </style>
 <style id="asof-b493">
 .asof{font-size:11px;line-height:1.4;color:var(--gray2);text-align:center;margin:16px 0 8px}
