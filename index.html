@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 499 (2026-10-12)">
+<meta name="build" content="v21 build 500 (2026-10-12)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -34058,7 +34058,219 @@ function fnSect(v,title,sub,fn){
   sect(v,title,fnSub(sub));
   while(probe.firstChild) v.appendChild(probe.firstChild);
 }
+/* ===== v21 build 500: FINANCES PAGE REDESIGN ===================================================
+   Ian: "finance side like a mix of the layout of the Apple app but the informational and design of rocket
+   money". The design board (10.12.2026) found the same two balances printing three times, a 607px savings
+   card for one fact ($0 of $2,000), and every caveat paragraph open on the page.
+   WHAT THIS BUILD IS. A new buildFinance that COMPOSES FROM THE EXISTING DATA AND HELPERS. No state is read
+   that was not read before, nothing is written, and no arithmetic is redone: the shortfall still comes from
+   fnRunwayNums, the deal nets from dealIanNet and postTax, the fund figures from state.finance.savings. The old
+   page is kept defined as buildFinance498 and every old section builder is still called, now from the
+   Reference fold, so no caveat, no per deal figure and no 2027 card was deleted. They moved one tap down.
+   FOUR BANDS, THEN THE FOLD.
+     1 Arizona fund   the attention grab, stays on top (Ian, build 424). The ring stays: he asked for it twice
+                      (build 422) and nobody has told us to drop it. It is smaller. The explainer is one tap.
+     2 Cash now       Operating as the one hero. Savings, cards owed and net as three small figures, each balance
+                      once. Cards as a grouped list with the total on the label line (cards are the same kind of
+                      money, so that total is allowed). NO CASH TOTAL: the two checking accounts are never added.
+     3 Runway         the shortfall as one range and one bar, then Coming up rows. Only an item with a billing
+                      day leads. Items with no billing day sit in one collapsed group with their monthly total.
+     4 Money coming   the deals UNDER CONTRACT only, one line each, after tax. Never added together.
+   WHAT DOES NOT TRANSFER FROM ROCKET MONEY AND IS NOT FAKED: spending donuts and net worth lines. There are no
+   transactions and three balance points. Rocket Money's numbers are not used anywhere on this page.
+   FOUND ON THE WAY AND NOT HIDDEN: the old Due soon card read x.day, and Planet Fitness is stored as billsOn, so it
+   could never appear there. Coming up reads both. The old Utilisation row divided ALL card debt, Amex included,
+   by Discover's limit alone (63 percent), which is not a utilisation of anything; Discover's own 44 percent
+   stays on its card and the row is gone from the main band. */
+var FX_DONE={}; var FX_REG={};
+function fxEsc(t){ return String(t==null?"":t); }
+function fxDisc(host,key,label,hint,build){
+  var body=el("div","fx-db"); var open=(typeof PK_OPEN!=="undefined"&&(key in PK_OPEN))?PK_OPEN[key]:false;
+  try{ var _h=build(body); if(typeof _h==="string"&&_h) hint=_h; }catch(e){ try{console.error("[dash] fxDisc",key,e);}catch(_){} }
+  if(!body.firstChild) return null;
+  var w=el("div","fx-disc"); var h=el("button","fx-dh"); h.type="button";
+  var l=el("div","fx-dl"); l.appendChild(el("div","fx-dn",label)); if(hint) l.appendChild(el("div","fx-dhint",hint));
+  var ch=el("div","fx-chev","\u25be");
+  h.appendChild(l); h.appendChild(ch);
+  var set=function(o){ body.style.display=o?"block":"none"; ch.style.transform=o?"rotate(180deg)":"none"; try{ PK_OPEN[key]=o; }catch(e){} };
+  set(open);
+  h.onclick=function(){ set(body.style.display==="none"); };
+  FX_REG[key]=function(){ set(true); try{ w.scrollIntoView({block:"start",behavior:"smooth"}); }catch(e){} };
+  w.appendChild(h); w.appendChild(body); host.appendChild(w); return w;
+}
+/* run an old section builder into a scratch div and adopt what it drew: its own heading, accent strip and
+   collapse chrome are dropped (the fold row supplies those), the content is kept exactly as built. */
+function fxAdopt(body,run){
+  var cue=""; var t=el("div"); try{ run(t); }catch(e){ try{console.error("[dash] fxAdopt",e);}catch(_){} }
+  var hs=t.querySelectorAll(".sectlabel"); for(var i=0;i<hs.length;i++){ if(hs[i].parentNode) hs[i].parentNode.removeChild(hs[i]); }
+  [].slice.call(t.children).forEach(function(k){
+    if(k.children&&k.children.length===2&&k.firstChild.style&&k.firstChild.style.cursor==="pointer"){ var _c=k.firstChild.querySelector(".small.dim"); if(_c&&!cue) cue=_c.textContent||""; var inner=k.lastChild; inner.style.display="block"; inner.style.marginTop="0"; t.replaceChild(inner,k); }
+  });
+  var ac=t.querySelectorAll(".card > .accent"); for(var j=0;j<ac.length;j++){ if(ac[j].parentNode) ac[j].parentNode.removeChild(ac[j]); }
+  if(!t.firstChild) return "";
+  while(t.firstChild) body.appendChild(t.firstChild);
+  return cue;
+}
+function fxRow(host,name,sub,amt,amtCls,nameCls){
+  var r=el("div","fx-r"); var L=el("div","fx-rl"); L.appendChild(el("div","fx-rn"+(nameCls?" "+nameCls:""),name));
+  if(sub) L.appendChild(el("div","fx-rs",sub));
+  r.appendChild(L); if(amt!=null) r.appendChild(el("div","fx-ra"+(amtCls?" "+amtCls:""),amt));
+  host.appendChild(r); return r;
+}
+function fxLabel(host,left,right){
+  var l=el("div","fx-gl"); l.appendChild(el("span",null,left)); if(right) l.appendChild(el("span","fx-gt",right)); host.appendChild(l); return l;
+}
+function fxScale(total,fill,over,markAt){
+  var w=el("div","fx-sc"); total=Number(total)||0; fill=Number(fill)||0;
+  if(total>0&&fill>0){ var b=el("i","fx-scf"+(over?" o":"")); b.style.width=(Math.max(0,Math.min(1,fill/total))*100).toFixed(2)+"%"; w.appendChild(b); }
+  if(total>0&&markAt>0&&markAt<total){ var m=el("i","fx-scm"); m.style.left=(markAt/total*100).toFixed(2)+"%"; w.appendChild(m); }
+  return w;
+}
+function fxOperating(f){ var o=null; (f.accounts||[]).forEach(function(a){ var k=String(a&&a.kind||"").toLowerCase(); if((k==="checking"||k==="main")&&a.balance!=null&&o===null) o=a; }); return o; }
+function fxBuffer(f){ var sum=0,have=false; (f.accounts||[]).forEach(function(a){ var k=String(a&&a.kind||"").toLowerCase(); if((k==="buffer"||k==="extra"||k==="savings")&&a.balance!=null){ sum+=Number(a.balance)||0; have=true; } }); return have?sum:null; }
+function fxShortDay(ms){ try{ return new Date(ms).toLocaleDateString("en-US",{month:"short",day:"numeric"}); }catch(e){ return ""; } }
+
+/* BAND 1. The attention grab. Same arithmetic as fnSavings: saved is the balance above the floor. */
+function fxBandFund(v,f){
+  var sv=f.savings; if(!sv) return;
+  var acct=null; (f.accounts||[]).forEach(function(a){ if(a&&a.id===sv.accountId) acct=a; });
+  if(!acct||acct.balance==null) return;
+  var bal=Number(acct.balance)||0, floor=Number(sv.floor)||0, saved=Math.round((bal-floor)*100)/100, tgt=Number(sv.target)||0;
+  var band=el("div","fx-b fx-fund"); var c=el("div","fx-card"); var row=el("div","fx-fr");
+  if(tgt>0) row.appendChild(fnRing(saved>0?saved/tgt:0,104,"good",null,null));
+  var t=el("div","fx-ft"); t.appendChild(el("div","fx-k g","Arizona fund"));
+  t.appendChild(el("div","fx-big"+(saved>0?" g":""),fnMoneyAuto(saved)));
+  t.appendChild(el("div","fx-line",tgt>0?("saved of "+fnMoneyAuto(tgt)):"saved above the floor"));
+  row.appendChild(t); c.appendChild(row);
+  c.appendChild(el("div","fx-foot2","Floor "+fnMoneyAuto(floor)+", never spent"));
+  fxDisc(c,"fx_floor","How the floor works",null,function(b){ var p=el("div"); try{ fnSavings(p,f); }catch(e){} var n=p.querySelector(".fnnote"); if(n){ n.style.marginTop="0"; b.appendChild(n); } });
+  band.appendChild(c); v.appendChild(band); hzReveal(band,".fx-card",function(){ return FX_DONE.fund; },function(){ FX_DONE.fund=true; });
+}
+/* BAND 2. Operating is the hero. Each balance appears once. No cash total, ever. */
+function fxBandCash(v,f){
+  var op=fxOperating(f), buf=fxBuffer(f), cards=(f.cards||[]).filter(function(x){ return x; });
+  var owed=0,haveOwed=false; cards.forEach(function(a){ if(a.balance!=null){ owed+=Number(a.balance)||0; haveOwed=true; } });
+  if(!op&&buf===null&&!haveOwed) return;
+  var band=el("div","fx-b");
+  if(op){
+    var c=el("div","fx-card"); c.appendChild(el("div","fx-k","Operating"));
+    c.appendChild(el("div","fx-big g",fnMoneyAuto(op.balance)));
+    c.appendChild(el("div","fx-line","Checking"+(op.last4?(" \xb7 "+op.last4):"")));
+    var tiles=el("div","fx-tiles");
+    var tile=function(lab,val,cls,sub){ var x=el("div","fx-tile"); x.appendChild(el("div","fx-tl",lab)); x.appendChild(el("div","fx-tv"+(cls?" "+cls:""),val)); if(sub) x.appendChild(el("div","fx-ts",sub)); tiles.appendChild(x); };
+    if(buf!==null) tile("Savings",fnMoneyAuto(buf),"g");
+    if(haveOwed){ var net=(Number(op.balance)||0)-owed; tile("Net",fnMoneyAuto(net),(net<0?"a":"g"),"operating less cards"); }
+    c.appendChild(tiles); band.appendChild(c);
+  }
+  if(cards.length){
+    fxLabel(band,"Cards",haveOwed?(fnMoneyAuto(owed)+" owed"):null);
+    var cc=el("div","fx-card fx-list");
+    cards.forEach(function(a){
+      var bal=Number(a.balance)||0, lim=Number(a.limit)||0, ml=Number(a.monthlyLimit)||0, ut=Number(a.utilTarget)>0?Number(a.utilTarget):0.30;
+      var rec=lim>0?Math.round(lim*ut):ml, over=rec>0&&bal>rec;
+      var item=el("div","fx-ci");
+      fxRow(item,a.name||a.id||"Card",fnKindWord(a.kind)+(a.last4?(" \xb7 "+a.last4):""),fnMoneyAuto(bal),over?"r":"");
+      if(lim>0){ item.appendChild(fxScale(lim,bal,over,rec)); item.appendChild(el("div","fx-cap",Math.round(bal/lim*100)+"% of "+fnMoney(lim)+", "+Math.round(ut*100)+"% recommended")); }
+      else if(ml>0){ item.appendChild(fxScale(ml,bal,over,0)); item.appendChild(el("div","fx-cap","of "+fnMoney(ml)+" a month, no credit limit"+(a.monthlyLimitProvisional===true?", awaiting your confirmation":""))); }
+      cc.appendChild(item);
+    });
+    band.appendChild(cc);
+  }
+  try{ var sw=f.taxSweep||(f.taxSetAside&&typeof f.taxSetAside==="object"&&f.taxSetAside.lastSweep)||null;
+    if(sw&&Number(sw.amount)>0) band.appendChild(el("div","fx-foot",fnMoney(sw.amount)+" left operating "+fnShortDate(sw.date||sw.leftCheckingOn)+" for "+(sw.purpose||"taxes")+", to an account the app cannot see. Not spend.")); }catch(e){}
+  v.appendChild(band); hzReveal(band,".fx-card,.fx-gl",function(){ return FX_DONE.cash; },function(){ FX_DONE.cash=true; });
+}
+/* BAND 3. The shortfall from fnRunwayNums (one computation, two readers), then what is coming up. */
+function fxComingUp(f){
+  var dated=[],nodate=[],lumps=[]; var t0=new Date(); var today0=new Date(t0.getFullYear(),t0.getMonth(),t0.getDate());
+  var nextDay=function(d){ d=Number(d); if(!(d>=1&&d<=31)) return null; var t=new Date(today0.getFullYear(),today0.getMonth(),d); if(t<today0) t=new Date(today0.getFullYear(),today0.getMonth()+1,d); return Math.round((t-today0)/86400000); };
+  (f.subscriptions||[]).forEach(function(x){ if(!x) return; var dd=nextDay(x.billsOn!=null?x.billsOn:x.day);
+    if(dd!==null) dated.push({name:x.name||"Payment",amt:Number(x.amount)||0,days:dd,day:Number(x.billsOn!=null?x.billsOn:x.day),cancelling:x.cancelling===true});
+    else nodate.push({name:x.name||"Payment",amt:Number(x.amount)||0,cancelling:x.cancelling===true,tag:x.tag||""}); });
+  (f.cards||[]).forEach(function(c){ if(!c||!c.dueDate) return; var d=daysUntil(c.dueDate); if(d>=0&&d<900) dated.push({name:(c.name||"Card")+" payment",amt:Number(c.balance)||0,days:d,day:0}); });
+  (f.recurring||[]).forEach(function(rr){ (rr&&rr.payments||[]).forEach(function(pp){ if(!pp||pp.paid===true) return;
+    var label=(rr.name||"Payment")+(pp.seq!=null?(", payment "+pp.seq):"");
+    if(pp.date){ var d=daysUntil(pp.date); if(d>=0&&d<900){ dated.push({name:label,amt:null,amtText:fnRentAmount(pp),days:d,day:0}); return; } }
+    lumps.push({name:label,when:pp.when||"",amtText:fnRentAmount(pp),seq:Number(pp.seq)||0});
+  }); });
+  dated.sort(function(a,z){ return a.days-z.days; }); lumps.sort(function(a,z){ return a.seq-z.seq; });
+  return {dated:dated,nodate:nodate,lumps:lumps};
+}
+function fxBandRunway(v,f){
+  var R=fnRunwayNums(f); var cu=fxComingUp(f); var band=el("div","fx-b");
+  var rd=function(n){ return Math.round(n/10)*10; };
+  if(R&&R.needHi>0){
+    var short=R.gapHi>0; var c=el("div","fx-card");
+    c.appendChild(el("div","fx-k"+(short?" a":" g"),short?"Short over four months":"Covered for four months"));
+    c.appendChild(el("div","fx-big sm"+(short?" a":" g"),short?(fnMoney(rd(R.gapLo))+" to "+fnMoney(rd(R.gapHi))):(fnMoney(rd(-R.gapHi))+" to "+fnMoney(rd(-R.gapLo))+" spare")));
+    var tr=el("div","fx-tr"); var seg=function(frac,cls){ if(!(frac>0)) return; var s=el("i",cls); s.style.width=(Math.min(1,frac)*100).toFixed(2)+"%"; tr.appendChild(s); };
+    seg(Math.min(R.op,R.needLo)/R.needHi,"g"); seg(Math.max(0,R.needLo-R.op)/R.needHi,"a"); seg(Math.max(0,R.needHi-R.needLo)/R.needHi,"a f");
+    c.appendChild(tr);
+    c.appendChild(el("div","fx-line",fnMoney(rd(R.needLo))+" to "+fnMoney(rd(R.needHi))+" committed over four months, against operating above."));
+    fxDisc(c,"fx_rw","How this is figured",null,function(b){ var p=el("div"); try{ fnRunway(p,f); }catch(e){} var n=p.querySelector(".fnnote"); if(n){ n.style.marginTop="0"; b.appendChild(n); } });
+    band.appendChild(c);
+  }
+  if(cu.dated.length||cu.lumps.length||cu.nodate.length){
+    fxLabel(band,"Coming up",null);
+    var cc=el("div","fx-card fx-list");
+    cu.dated.forEach(function(x){ fxRow(cc,x.name,(x.days===0?"today":x.days===1?"tomorrow":("in "+x.days+" days"))+(x.day?(" \xb7 the "+x.day+fnOrd(x.day)):"")+(x.cancelling?" \xb7 cancelling":""),x.amtText||fnMoneyAuto(x.amt),""); });
+    cu.lumps.forEach(function(x){ fxRow(cc,x.name,x.when||null,x.amtText,""); });
+    if(cu.nodate.length){
+      var tot=0; cu.nodate.forEach(function(x){ tot+=x.amt; });
+      fxDisc(cc,"fx_nodate",cu.nodate.length+" subscriptions, no billing day",fnMoneyAuto(Math.round(tot*100)/100)+" a month",function(b){
+        cu.nodate.forEach(function(x){ fxRow(b,x.name,(x.cancelling?"cancelling":(x.tag||null)),fnMoneyAuto(x.amt),""); });
+      });
+    }
+    if(cc.firstChild) band.appendChild(cc);
+  }
+  if(band.firstChild){ v.appendChild(band); hzReveal(band,".fx-card,.fx-gl",function(){ return FX_DONE.run; },function(){ FX_DONE.run=true; }); }
+}
+/* BAND 4. Only what is under contract, one line each, after tax. There is no total and no code path for one. */
+function fxBandMoney(v,f){
+  var deals=(state.realEstate&&state.realEstate.deals)||[]; var rows=[];
+  deals.forEach(function(d){ if(!d||d.stage!=="Under Contract"||d.fellThrough===true) return; var n=0; try{ n=dealIanNet(d); }catch(e){ n=0; }
+    rows.push({d:d,keep:Math.round(postTax(n)),ms:fnCloseDate(d)}); });
+  if(!rows.length) return;
+  rows.sort(function(a,z){ if(a.ms&&z.ms) return a.ms-z.ms; if(a.ms) return -1; if(z.ms) return 1; return String(a.d.title||"").localeCompare(String(z.d.title||"")); });
+  var band=el("div","fx-b"); fxLabel(band,"Under contract","after "+taxPctWord()+" tax");
+  var c=el("div","fx-card fx-list");
+  rows.forEach(function(x){
+    var sub=x.ms?((/about|approx/i.test(String((x.d&&x.d.close)||""))?"About ":"")+fxShortDay(x.ms)):"Date not on record"; if(!(x.keep>0)) sub+=" \u00b7 nets nothing";
+    fxRow(c,x.d.title||x.d.id,sub,x.keep>0?fnMoney(x.keep):"$0",x.keep>0?"g":"d","p");
+  });
+  var go=function(txt,fn){ var b=el("button","fx-link"); b.type="button"; b.appendChild(el("span",null,txt)); b.appendChild(el("span","fx-chev","\u203a")); b.onclick=fn; c.appendChild(b); };
+  go("All deals, what each would net",function(){ if(FX_REG.fx_deals) FX_REG.fx_deals(); });
+  go("Real Estate",function(){ try{ reView="pipeline"; }catch(e){} try{ render(); }catch(e){} selectTab("re"); });
+  band.appendChild(c); v.appendChild(band); hzReveal(band,".fx-card,.fx-gl",function(){ return FX_DONE.money; },function(){ FX_DONE.money=true; });
+}
+/* THE FOLD. Everything that was on the page and is not a daily glance, one labelled row each, content unchanged. */
+function fxBandRef(v,f){
+  var band=el("div","fx-b"); fxLabel(band,"Reference",null); var c=el("div","fx-card fx-list fx-ref");
+  var _mw=fxDisc(c,"fx_monthly","Monthly payments","Rent, subscriptions, deductions",function(b){ return fxAdopt(b,function(t){ fnMonthly(t,f); }); }); if(_mw) _mw.className+=" fx-mono";
+  fxDisc(c,"fx_deals","Deals in progress","What each would net",function(b){ fxAdopt(b,function(t){ fnProjection(t,f); }); });
+  fxDisc(c,"fx_spark","Operating trend","Recent months",function(b){ fxAdopt(b,function(t){ fnSparkline(t,f); }); });
+  fxDisc(c,"fx_rent","Rent schedule","Every payment dated",function(b){ fxAdopt(b,function(t){ fnRentRail(t,f); }); });
+  if(f.months&&f.months.length>1) fxDisc(c,"fx_flow","Money in and out","Month by month",function(b){ var k=card(); safe(k._body,function(){ fnMonthChart(k._body,f.months,f); },"Finance flow"); b.appendChild(k); });
+  if(f.closings&&f.closings.length){ var cl=f.closings,tot=0; cl.forEach(function(x){ tot+=Number(x.net!=null?x.net:x.gross)||0; });
+    fxDisc(c,"fx_close","Closings",fnMoney(tot)+" paid",function(b){ var k=card(); cl.forEach(function(x){ fnRow(k._body,x.address||x.title||"Closing",fnMoney(x.net!=null?x.net:x.gross),(x.date?fnShortDate(x.date):null),"good",false); }); b.appendChild(k); }); }
+  fxDisc(c,"fx_goals","Goals",null,function(b){ fxAdopt(b,function(t){ fnGoals(t,f); }); });
+  fxDisc(c,"fx_tax","Tax","Set aside and owed",function(b){ fxAdopt(b,function(t){ fnTax(t,f); }); });
+  if(c.firstChild){ band.appendChild(c); v.appendChild(band); hzReveal(band,".fx-card,.fx-gl",function(){ return FX_DONE.ref; },function(){ FX_DONE.ref=true; }); }
+}
 function buildFinance(v){
+  var f=finData()||{};
+  var head=el("div"); head.style.cssText="padding:4px 4px 16px";
+  head.appendChild(el("div","g7title","Finances"));
+  if(f.asOf){ head.appendChild(el("div","fnsch",fnShortDate(f.asOf)+(f.asOfTime?(", "+f.asOfTime):"")+" snapshot")); }
+  v.appendChild(head);
+  FX_REG={};
+  safe(v,function(){ fxBandFund(v,f); },"Finance fund");
+  safe(v,function(){ fxBandCash(v,f); },"Finance cash");
+  safe(v,function(){ fxBandRunway(v,f); },"Finance runway");
+  safe(v,function(){ fxBandMoney(v,f); },"Finance money coming");
+  safe(v,function(){ fxBandRef(v,f); },"Finance reference");
+}
+function buildFinance498(v){
   var f=finData()||{};
   /* The header is a plain block, not a card. The year is context, not a financial fact, so it
      does not get the largest type on the screen; the snapshot date rides here as provenance for
@@ -35530,6 +35742,65 @@ section,.card,.sectlabel{scroll-margin-top:calc(var(--hh) + var(--sat) + 8px)}
 .re-pxc{font-size:12px;color:var(--gray);margin-top:2px}
 .re-pxp{flex:none;max-width:48%;text-align:right;font-size:12px;color:var(--gray);font-variant-numeric:tabular-nums}
 @media (prefers-reduced-motion:reduce){.re-seg{transition:none}.re-segw{transform:none}}
+</style>
+<style id="fx-b500">
+/* ===== v21 build 500: FINANCES REDESIGN. Spacing on the 4px grid: 4, 8, 12, 16, 24. No glass on this page.
+   Colour: amounts white, green for held money and money in, amber for short or needs you, red only for a card over
+   its own recommended level, purple for the page accent and the names of deals under contract. */
+.fx-b{margin-bottom:24px}
+.fx-card{position:relative;overflow:hidden;min-width:0;border-radius:var(--r);padding:16px;background:var(--card);border:1px solid rgba(255,255,255,.06);box-shadow:0 8px 20px rgba(0,0,0,.35)}
+.fx-card+.fx-card{margin-top:12px}
+.fx-fund .fx-card{background:linear-gradient(170deg,rgba(48,209,88,.16) 0%,rgba(48,209,88,0) 62%),var(--card)}
+.fx-fr{display:flex;align-items:center;gap:16px}
+.fx-ft{min-width:0}
+.fx-k{font-size:13px;font-weight:700;color:var(--gray)}
+.fx-k.g{color:var(--green)}.fx-k.a{color:var(--amber)}
+.fx-big{font-size:40px;line-height:1.05;font-weight:800;letter-spacing:-.03em;color:var(--white);font-variant-numeric:tabular-nums;margin-top:4px}
+.fx-big.g{color:var(--green)}.fx-big.a{color:var(--amber)}.fx-big.sm{font-size:28px}
+.fx-line{font-size:13px;line-height:1.35;color:var(--gray);margin-top:4px}
+.fx-foot2{font-size:13px;color:var(--gray);margin-top:16px;padding-top:12px;border-top:1px solid rgba(255,255,255,.08)}
+.fx-foot{font-size:12px;line-height:1.35;color:var(--gray);margin-top:12px;padding:0 4px}
+.fx-tiles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:16px}
+.fx-tile{min-width:0;border-radius:12px;padding:12px;background:var(--card2)}
+.fx-tl{font-size:12px;font-weight:600;color:var(--gray)}
+.fx-tv{font-size:18px;line-height:1.15;font-weight:700;color:var(--white);font-variant-numeric:tabular-nums;margin-top:4px}
+.fx-tv.g{color:var(--green)}.fx-tv.a{color:var(--amber)}
+.fx-ts{font-size:11px;line-height:1.3;color:var(--gray);margin-top:4px}
+.fx-gl{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin:24px 4px 8px;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--gray)}
+.fx-b>.fx-card+.fx-gl,.fx-b>.fx-gl:first-child{margin-top:24px}
+.fx-b>.fx-gl:first-child{margin-top:0}
+.fx-gt{font-size:13px;font-weight:600;letter-spacing:0;text-transform:none;color:var(--white);font-variant-numeric:tabular-nums}
+.fx-list{padding:4px 16px}
+.fx-r{display:flex;align-items:baseline;justify-content:space-between;gap:12px;padding:12px 0}
+.fx-r+.fx-r,.fx-ci+.fx-ci,.fx-r+.fx-disc,.fx-disc+.fx-r{border-top:1px solid var(--line)}
+.fx-rl{min-width:0}
+.fx-rn{font-size:15px;font-weight:600;line-height:1.3;color:var(--white);overflow-wrap:anywhere}
+.fx-rn.p{color:var(--fi2)}
+.fx-rs{font-size:12px;line-height:1.35;color:var(--gray);margin-top:4px}
+.fx-ra{font-size:15px;font-weight:700;line-height:1.3;color:var(--white);font-variant-numeric:tabular-nums;white-space:nowrap}
+.fx-ra.g{color:var(--green)}.fx-ra.r{color:var(--red)}.fx-ra.d{color:var(--gray)}
+.fx-ci{padding:0 0 12px}
+.fx-ci .fx-r{padding-bottom:8px}
+.fx-sc{position:relative;height:8px;border-radius:4px;background:var(--line);overflow:hidden}
+.fx-scf{position:absolute;left:0;top:0;bottom:0;background:var(--green)}.fx-scf.o{background:var(--red)}
+.fx-scm{position:absolute;top:0;bottom:0;width:2px;background:var(--white);opacity:.85}
+.fx-cap{font-size:12px;line-height:1.35;color:var(--gray);margin-top:8px}
+.fx-tr{display:flex;height:8px;border-radius:4px;background:var(--line);overflow:hidden;margin-top:16px}
+.fx-tr i{display:block;height:100%}.fx-tr i.g{background:var(--green)}.fx-tr i.a{background:var(--amber)}.fx-tr i.f{opacity:.45}
+.fx-disc{margin:0}
+.fx-dh{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;padding:12px 0;background:none;border:0;color:inherit;font:inherit;text-align:left;cursor:pointer}
+.fx-card:not(.fx-list)>.fx-disc{margin-top:12px;border-top:1px solid rgba(255,255,255,.08)}
+.fx-list>.fx-disc:first-child{border-top:0}
+.fx-ref .fx-disc+.fx-disc{border-top:1px solid var(--line)}
+.fx-dl{min-width:0}
+.fx-dn{font-size:15px;font-weight:600;color:var(--white)}
+.fx-dhint{font-size:12px;line-height:1.35;color:var(--gray);margin-top:4px}
+.fx-chev{flex:none;font-size:16px;color:var(--fi2);transition:transform .15s ease}
+.fx-db{padding:0 0 12px}
+.fx-db .fnnote{color:var(--gray)}
+.fx-mono .fnamt[style*="--red"]{color:var(--white) !important}
+.fx-db .card{margin-bottom:12px}
+.fx-link{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;padding:12px 0;background:none;border:0;border-top:1px solid var(--line);color:var(--fi2);font:inherit;font-size:15px;font-weight:600;text-align:left;cursor:pointer}
 </style>
 <style id="asof-b493">
 .asof{font-size:11px;line-height:1.4;color:var(--gray2);text-align:center;margin:16px 0 8px}
