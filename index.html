@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 498 (2026-10-12)">
+<meta name="build" content="v21 build 499 (2026-10-12)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -30098,7 +30098,204 @@ function reViewLanding390(v){
    Goals and money is reGoalsCard, passed through WHOLE, not one figure touched. More is
    re391More, which is where Tools lives and Tools had no other entry point anywhere in the
    app. Both use sect(), the idiom already on this page. */
+/* ===== v21 build RE-REDESIGN: THE REAL ESTATE PAGE, REBUILT AS THREE BANDS ===========================
+   BEFORE: 4,920px at 390px. Seven count tiles (612px) for five numbers, a stage card per stage with every
+   deal's working note printed in full on its row (the stage cards were 47 percent of the page), a goals and
+   money card that Home already carries, and a prospects list with a footnote explaining our own shorthand.
+   NOW, three bands and a footer:
+     1. PIPELINE   one proportional bar and five counts (replaces seven tiles), one line to Home for production
+     2. LIVE NOW   every live deal (under contract, active, coming soon, building) in ONE list, soonest date first,
+                   one row each: name, stage chip, key date, price. At risk is one amber line.
+     3. QUIET      Prospects and Closed, each one collapsed row. Then the three link rows that already existed.
+   WHERE THE WORKING NOTES WENT. Nothing was deleted. The note text (the deal's sub line, the full close text, the
+   price qualifier, the take home line, the risk line, the open question flag) is the SAME markup dealRow has
+   always drawn. It now lives behind a tap: open a row and dealRow's own content is adopted into a grey note panel
+   (its title and price are dropped from the panel because the row above already shows them), then the existing
+   editor chips. The row itself carries only what answers "what is next": name, stage, date, price, one risk line.
+   WHAT WAS CUT AS DUPLICATE: the seven tiles, the Active and Other tiles, the Goals and money card (Home carries
+   the explainer, and a one line link below the bar reaches it), the em dash footnote under Prospects, and the
+   per row after tax commission line (it is in the note panel, and Finances carries the totals).
+   DATES. close is free text, so the key date is read by closeSortKey and printed ONLY when the text carries a day
+   (or closeOn is set). A text with no day prints as written, clipped to one line. Nothing is invented.
+   The previous function is kept as reViewPipeline498 and is not called, per the BRAIN convention. */
+var RE_DONE=false, RE_BAR_DONE=false;
+function reKeyDate(d){
+  var out={}; var k=closeSortKey(d.close,out); var iso=null;
+  if(d.closeOn && /^\d{4}-\d{2}-\d{2}$/.test(String(d.closeOn))){ iso=String(d.closeOn); k=Number(iso.replace(/-/g,"")); }
+  else if(isFinite(k) && out.explicitDay){ var y=Math.floor(k/10000), m=Math.floor(k/100)%100, dd=k%100; iso=y+"-"+(m<10?"0":"")+m+"-"+(dd<10?"0":"")+dd; }
+  var txt=String(d.close||"");
+  /* day before month ("15 October 2026", "13 November"): closeSortKey only reads month then day, so read it here.
+     Only an attached digit pair counts, the same rule closeSortKey's explicit flag uses. */
+  if(!iso){
+    var MN={jan:1,feb:2,mar:3,apr:4,may:5,jun:6,jul:7,aug:8,sep:9,oct:10,nov:11,dec:12};
+    var dm=txt.match(/(?:^|[^\d])(\d{1,2})(?:st|nd|rd|th)?\s+(jan(?:uary)?|feb(?:ruary)?|mar(?:ch)?|apr(?:il)?|may|jun(?:e)?|jul(?:y)?|aug(?:ust)?|sep(?:t(?:ember)?)?|oct(?:ober)?|nov(?:ember)?|dec(?:ember)?)\b\.?(?:,?\s*(20\d{2}))?/i);
+    if(dm){ var dd2=parseInt(dm[1],10), mo=MN[dm[2].toLowerCase().slice(0,3)], yy=dm[3]?parseInt(dm[3],10):2026;
+      if(mo && dd2>=1 && dd2<=31){ iso=yy+"-"+(mo<10?"0":"")+mo+"-"+(dd2<10?"0":"")+dd2; k=Number(iso.replace(/-/g,"")); } }
+  }
+  var verbs={"Under Contract":"Closes","Coming Soon":"Lists","Active":"Listed","Closed":"Closed","Just Sold":"Sold"};
+  var verb=verbs[d.stage]||""; var label=null, days=null;
+  if(iso){
+    var p=iso.split("-"); var t=new Date(+p[0],+p[1]-1,+p[2]); var n=new Date(); n.setHours(0,0,0,0); days=Math.round((t-n)/86400000);
+    var soft=/potential|likely|approx|about|around|maybe|earlier|if /i.test(txt);
+    label=(verb?verb+" ":"")+(soft?"about ":"")+fmtShort(iso);
+  } else { label=reTidy(txt)||"No date set"; }
+  return {k:(iso||!isFinite(k))?k:k+0.5, label:label, days:days, dated:!!iso};
+}
+function rePriceParts(p){
+  var s=String(p==null?"":p).trim(); if(!s) return null;
+  var i=s.search(/\s+to\s+/i);
+  if(i>0) return {main:s.slice(0,i), tail:s.slice(i).trim()};
+  return {main:s, tail:""};
+}
+function reStageChip(stage){
+  var m={"Under Contract":["uc","Under contract"],"Coming Soon":["cs","Coming soon"],"Building":["bd","Building"],"Active":["cs","Active"]};
+  var x=m[stage]; if(!x) return null;
+  return el("span","re-chip "+x[0],x[1]);
+}
+/* The editor block carries three read only values that already sit above it (Price and Close date, both on the row
+   and in the note panel) and Notes, which can run to several thousand characters. Price and Close date are dropped
+   here as duplicates. Notes is kept whole, clamped to a few lines with a "Read the full note" toggle that opens it in
+   place (no re render). Nothing is removed from the data or from the page text. */
+function reTrimEditors(ed){
+  var kids=[].slice.call(ed.children);
+  kids.forEach(function(k,i){
+    var t=(k.textContent||"").trim(); var isLab=(k.className||"").indexOf("small")>-1;
+    if(!isLab) return;
+    if(t==="Price"||t==="Close date"){ var v=kids[i+1]; if(k.parentNode) k.parentNode.removeChild(k); if(v&&v.parentNode) v.parentNode.removeChild(v); }
+    else if(t==="Notes"){
+      var nv=kids[i+1]; if(!nv||(nv.textContent||"").length<240) return;
+      nv.className+=" re-clamp";
+      var tg=el("button","re-more","Read the full note");
+      tg.onclick=function(){ var o=nv.className.indexOf(" re-full")>-1; nv.className=o?nv.className.replace(" re-full",""):nv.className+" re-full"; tg.textContent=o?"Read the full note":"Show less"; };
+      if(nv.parentNode) nv.parentNode.insertBefore(tg,nv.nextSibling);
+    }
+  });
+}
+function reDealRowNew(parent,d,opts){
+  opts=opts||{};
+  var open=!!reDealOpen[d.id];
+  var wrap=el("div","re-row"+(opts.next?" next":"")+(open?" open":""));
+  var btn=el("button","re-rb"); btn.setAttribute("aria-expanded",open?"true":"false");
+  var L=el("div","re-l");
+  if(opts.next) L.appendChild(el("div","re-nextk","Next up"));
+  L.appendChild(el("div","re-nm"+(d.stage==="Under Contract"?" uc":""),d.title||""));
+  var l2=el("div","re-l2");
+  var kd=reKeyDate(d); var when=kd.label;
+  var passed=false;
+  if(kd.days!==null && !opts.closed){
+    if(kd.days<0){ passed=true; when+=", date passed"; }
+    else if(kd.days<=14){ when+=", "+(kd.days===0?"today":(kd.days===1?"tomorrow":"in "+kd.days+" days")); }
+  }
+  l2.appendChild(el("span","re-date"+(passed?" late":""),when));
+  L.appendChild(l2);
+  if(d.risk && !opts.closed){ L.appendChild(el("div","re-risk","At risk. "+reTidy(d.riskLine||d.risk))); }
+  btn.appendChild(L);
+  var R=el("div","re-r"); var pp=rePriceParts(d.price);
+  if(pp){ R.appendChild(el("div","re-p",pp.main)); if(pp.tail) R.appendChild(el("div","re-pt",pp.tail)); }
+  else R.appendChild(el("div","re-p re-none","No price"));
+  if(!opts.closed){ var ch=reStageChip(d.stage); if(ch) R.appendChild(ch); }
+  btn.appendChild(R);
+  btn.appendChild(el("span","re-chev","\u203a"));
+  btn.onclick=function(){ reDealOpen[d.id]=!reDealOpen[d.id]; render(); };
+  wrap.appendChild(btn);
+  if(open){
+    var det=el("div","re-detail"); var note=el("div","re-note");
+    var was=reDealOpen[d.id]; reDealOpen[d.id]=false; var tmp=el("div");
+    try{ dealRow(tmp,d); }finally{ reDealOpen[d.id]=was; }
+    var old=tmp.querySelector(".deal-row");
+    if(old){
+      var dn=old.querySelector(".dn"); if(dn&&dn.parentNode) dn.parentNode.removeChild(dn);
+      var dp=old.querySelector(".dp"); if(dp&&dp.parentNode) dp.parentNode.removeChild(dp);
+      var sp=old.querySelector(".stpill"); if(sp&&sp.parentNode) sp.parentNode.removeChild(sp);
+      while(old.firstChild) note.appendChild(old.firstChild);
+    }
+    if(note.textContent.replace(/\s+/g,"")) det.appendChild(note);
+    var ed=el("div","re-ed"); dealEditors(ed,d); reTrimEditors(ed); det.appendChild(ed);
+    wrap.appendChild(det);
+  }
+  parent.appendChild(wrap);
+}
+function reHeroBand(parent,deals){
+  var by=function(st){ return deals.filter(function(x){ return x&&x.stage===st; }); };
+  var closed=by("Closed"), uc=by("Under Contract"), cs=by("Coming Soon"), bd=by("Building"), act=by("Active");
+  var pros=deals.filter(reIsProspect);
+  var live=uc.length+cs.length+bd.length+act.length;
+  var h=el("div","re-band re-hero"); h.setAttribute("role","button"); h.setAttribute("aria-label","Production, open Today");
+  h.appendChild(el("div","re-hk","Pipeline"));
+  var big=el("div","re-hbig"); big.appendChild(el("b",null,String(live))); big.appendChild(el("span",null,live===1?"live deal":"live deals")); h.appendChild(big);
+  var bits=[]; if(uc.length) bits.push(uc.length+" under contract"); if(act.length) bits.push(act.length+" active"); if(cs.length) bits.push(cs.length+" coming soon"); if(bd.length) bits.push(bd.length+" building");
+  if(bits.length) h.appendChild(el("div","re-hsub",bits.join(", ")));
+  var segs=[["Closed",closed.length,"s-closed"],["Under contract",uc.length,"s-uc"],["Coming soon",cs.length+act.length,"s-cs"],["Building",bd.length,"s-bd"],["Prospects",pros.length,"s-pr"]];
+  var bar=el("div","re-bar"); bar.setAttribute("aria-hidden","true");
+  var reduce=false; try{ reduce=!!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches); }catch(e){}
+  var grow=!RE_BAR_DONE && !reduce && !!window.IntersectionObserver;
+  var segEls=[];
+  segs.forEach(function(sg,i){ if(!sg[1]) return; var e=el("i","re-seg "+sg[2]); e.style.flexGrow=String(sg[1]); try{ e.style.setProperty("--i",String(i)); }catch(x){} if(grow) e.className+=" re-segw"; bar.appendChild(e); segEls.push(e); });
+  h.appendChild(bar);
+  if(grow){ try{ var io=new IntersectionObserver(function(es){ es.forEach(function(en){ if(en.isIntersecting){ io.disconnect(); RE_BAR_DONE=true; segEls.forEach(function(e){ e.className=e.className.replace(" re-segw",""); }); } }); },{threshold:0.5}); io.observe(bar); }catch(e){ segEls.forEach(function(x){ x.className=x.className.replace(" re-segw",""); }); } }
+  var lg=el("div","re-legend");
+  segs.forEach(function(sg){ var li=el("div","re-li"); li.appendChild(el("b",null,String(sg[1]))); var sp=el("span",null); sp.appendChild(el("i","re-dot "+sg[2])); sp.appendChild(document.createTextNode(sg[0])); li.appendChild(sp); lg.appendChild(li); });
+  h.appendChild(lg);
+  var vol=function(a){ return a.reduce(function(t,x){ return t+dealVolume(x); },0); };
+  var g=(state.realEstate&&state.realEstate.goals2026)||{}; var goal=g.production||10000000;
+  var pr=el("div","re-prod"); pr.appendChild(el("span",null,"Production "+fmtMoneyShort(vol(closed)+vol(uc))+" of "+fmtMoneyShort(goal)+" goal")); pr.appendChild(el("span","re-chev","\u203a")); h.appendChild(pr);
+  h.onclick=function(){ selectTab("home"); };
+  parent.appendChild(h);
+}
+function reLiveBand(parent,deals){
+  var stages={"Under Contract":1,"Active":1,"Coming Soon":1,"Building":1};
+  var live=deals.map(function(x,ix){ return {x:x,ix:ix,k:reKeyDate(x).k}; }).filter(function(o){ return o.x&&stages[o.x.stage]; })
+    .sort(function(a,b){ return a.k!==b.k ? a.k-b.k : a.ix-b.ix; }).map(function(o){ return o.x; });
+  if(!live.length) return;
+  var band=el("div","re-band");
+  var hd=el("div","re-bh"); hd.appendChild(el("h3",null,"Live now")); hd.appendChild(el("span",null,live.length+(live.length===1?" deal":" deals")+", soonest date first")); band.appendChild(hd);
+  var list=el("div","re-list"); live.forEach(function(d,i){ reDealRowNew(list,d,{next:i===0}); }); band.appendChild(list);
+  parent.appendChild(band);
+}
+function reQuietBand(parent,deals){
+  var rows=[];
+  var pros=deals.filter(reIsProspect);
+  if(pros.length) rows.push({key:"Prospecting",title:"Prospects",sub:"not yet a listing",count:String(pros.length),body:function(b){
+    var ps=pros.map(function(d,ix){ return {d:d,ix:ix,v:dealVolume(d)}; }).sort(function(a,z){ return (z.v-a.v)||(a.ix-z.ix); }).map(function(o){ return o.d; });
+    var l=el("div","re-px");
+    ps.forEach(function(d){ var r=el("div","re-pxr"); var L=el("div","re-pxl"); L.appendChild(el("div","re-pxn",d.title||""));
+      var cue=re391Short(reTidy(d.sub||""),34); if(cue) L.appendChild(el("div","re-pxc",cue)); r.appendChild(L);
+      if(d.price) r.appendChild(el("div","re-pxp",String(d.price))); l.appendChild(r); });
+    b.appendChild(l); }});
+  [["Closed","Closed"],["Just Sold","Just sold"],["Follow up","Follow up"]].forEach(function(g){
+    var gd=deals.filter(function(d){ return d&&d.stage===g[0]; }); if(!gd.length) return;
+    var sorted=gd.map(function(x,ix){ return {x:x,ix:ix,k:reKeyDate(x).k}; }).sort(function(a,b){ return a.k!==b.k ? b.k-a.k : a.ix-b.ix; }).map(function(o){ return o.x; });
+    var sides=gd.reduce(function(a,d){ return a+dealCountWeight(d); },0); var vol=gd.reduce(function(a,d){ return a+dealVolume(d); },0);
+    rows.push({key:g[0],title:g[1],sub:gd.length+(gd.length===1?" deal":" deals")+(sides!==gd.length?", "+sides+" sides":"")+(vol?", "+fmtMoneyShort(vol):""),count:null,body:function(b){
+      var l=el("div","re-list re-inner"); sorted.forEach(function(d){ reDealRowNew(l,d,{closed:true}); }); b.appendChild(l); }});
+  });
+  if(!rows.length) return;
+  var band=el("div","re-band re-quiet");
+  var card=el("div","re-list");
+  rows.forEach(function(r){
+    var open=!!reStageOpen[r.key];
+    var w=el("div","re-qr"+(open?" open":""));
+    var btn=el("button","re-rb re-qb"); btn.setAttribute("aria-expanded",open?"true":"false");
+    var L=el("div","re-l"); L.appendChild(el("div","re-qt",r.title)); L.appendChild(el("div","re-qs",r.sub)); btn.appendChild(L);
+    if(r.count) btn.appendChild(el("span","re-badge",r.count));
+    btn.appendChild(el("span","re-chev","\u203a"));
+    btn.onclick=function(){ reStageOpen[r.key]=!open; render(); };
+    w.appendChild(btn);
+    if(open){ var body=el("div","re-qbody"); r.body(body); w.appendChild(body); }
+    card.appendChild(w);
+  });
+  band.appendChild(card); parent.appendChild(band);
+}
 function reViewPipeline(v){
+  var deals=(state.realEstate&&state.realEstate.deals)||[];
+  var root=el("div","re-page"); v.appendChild(root);
+  safe(root,function(){ reHeroBand(root,deals); },"Pipeline strip");
+  safe(root,function(){ reLiveBand(root,deals); },"Live deals");
+  safe(root,function(){ reQuietBand(root,deals); },"Prospects and closed");
+  safe(root,function(){ var b=el("div","re-band"); re391More(b,true); root.appendChild(b); },"RE more");
+  try{ hzReveal(root,".re-band",function(){ return RE_DONE; },function(){ RE_DONE=true; }); }catch(e){}
+}
+function reViewPipeline498(v){ /* previous Real Estate page, kept and not called */
   safe(v,()=>pipelineSummaryPipe(v),"Pipeline stats");
   sect(v,"By stage","tap a stage to expand");
   safe(v,()=>rePipelineGroupedPipe(v),"Pipeline");
@@ -35256,6 +35453,83 @@ section,.card,.sectlabel{scroll-margin-top:calc(var(--hh) + var(--sat) + 8px)}
   .hz-wait{opacity:1}.hz-rise,.hz-rise .pbar i{animation:none}.hz-wait .pbar i{transform:none}
   .z4-go .z4-ch,.z4-go .z4-dot{animation:none}.z4-wait .z4-ch{clip-path:none}.z4-wait .z4-dot{opacity:1}.z5-strip:active{transform:none}
 }
+</style>
+<style id="re-redesign">
+/* ===== v21 REAL ESTATE REDESIGN. Spacing on the 4px grid (8 preferred), hairlines 1px to 3px. No glass on
+   this page. Green is the domain colour, purple is under contract only, amber is at risk only. ======== */
+.re-page{padding-top:8px}
+.re-band{margin-bottom:var(--block)}
+.re-hero{position:relative;overflow:hidden;cursor:pointer;border-radius:var(--r);padding:20px;border:1px solid rgba(255,255,255,.06);
+  background:radial-gradient(120% 90% at 100% 0%,rgba(48,209,88,.26) 0%,rgba(48,209,88,0) 60%),linear-gradient(160deg,#0f2418 0%,#0d1a14 100%);
+  box-shadow:0 12px 32px rgba(0,0,0,.45)}
+.re-hk{font-size:13px;font-weight:600;color:var(--gray)}
+.re-hbig{display:flex;align-items:baseline;gap:8px;margin-top:4px}
+.re-hbig b{font-size:40px;line-height:1.05;font-weight:800;letter-spacing:-.03em;color:var(--green);font-variant-numeric:tabular-nums}
+.re-hbig span{font-size:16px;font-weight:700;color:var(--white)}
+.re-hsub{font-size:13px;color:var(--gray);margin-top:4px}
+.re-bar{display:flex;gap:2px;height:12px;margin-top:20px;border-radius:6px;overflow:hidden}
+.re-seg{display:block;flex-basis:0;min-width:6px;height:100%;border-radius:3px;transform-origin:left center;transition:transform 700ms cubic-bezier(.2,.7,.2,1);transition-delay:calc(var(--i,0) * 60ms)}
+.re-segw{transform:scaleX(0)}
+.s-closed{background:var(--green)}
+.s-uc{background:var(--fi2,#da8fff)}
+.s-cs{background:rgba(48,209,88,.58)}
+.s-bd{background:rgba(48,209,88,.32)}
+.s-pr{background:rgba(255,255,255,.24)}
+.re-legend{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin-top:12px}
+.re-li b{display:block;font-size:22px;line-height:1.1;font-weight:800;letter-spacing:-.02em;color:var(--white);font-variant-numeric:tabular-nums}
+.re-li span{display:flex;align-items:flex-start;gap:4px;margin-top:4px;font-size:11px;line-height:1.2;color:var(--gray)}
+.re-dot{flex:none;display:block;width:8px;height:8px;border-radius:50%;margin-top:2px}
+.re-prod{display:flex;align-items:center;justify-content:space-between;margin-top:16px;padding-top:12px;border-top:1px solid rgba(255,255,255,.08);font-size:13px;font-weight:600;color:var(--white)}
+.re-bh{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin:0 4px 12px}
+.re-bh h3{font-size:20px;font-weight:800;letter-spacing:-.02em;color:var(--white)}
+.re-bh span{font-size:12px;color:var(--gray)}
+.re-list{background:var(--card);border:1px solid rgba(255,255,255,.05);border-radius:var(--r);overflow:hidden}
+.re-list.re-inner{border:0;border-radius:0;border-top:1px solid rgba(255,255,255,.06);background:rgba(255,255,255,.02)}
+.re-row+.re-row,.re-qr+.re-qr{border-top:1px solid rgba(255,255,255,.06)}
+.re-row.next{background:linear-gradient(90deg,rgba(48,209,88,.12) 0%,rgba(48,209,88,0) 60%);box-shadow:inset 3px 0 0 var(--green)}
+.re-rb{display:flex;align-items:center;gap:12px;width:100%;padding:16px;background:none;border:0;text-align:left;color:var(--white);font-family:inherit}
+.re-rb:active{opacity:.6}
+.re-l{flex:1;min-width:0}
+.re-nextk{font-size:11px;font-weight:700;color:var(--green);margin-bottom:2px}
+.re-nm{font-size:16px;font-weight:700;letter-spacing:-.01em;line-height:1.25;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.re-nm.uc{color:var(--fi2,#da8fff)}
+.re-l2{display:flex;align-items:center;gap:8px;margin-top:4px;min-width:0;font-size:12px;line-height:1.3;color:var(--gray)}
+.re-date{min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.re-date.late{color:var(--amber2,#ffd264);font-weight:700}
+.re-chip{display:inline-block;margin-top:4px;padding:2px 8px;border-radius:999px;font-size:11px;font-weight:700;line-height:1.3}
+.re-chip.uc{color:var(--fi2,#da8fff);background:rgba(218,143,255,.14)}
+.re-chip.cs{color:#7ee59f;background:rgba(48,209,88,.14)}
+.re-chip.bd{color:#a8dfba;background:rgba(48,209,88,.10)}
+.re-risk{margin-top:4px;font-size:12px;font-weight:600;line-height:1.3;color:var(--amber2,#ffd264);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.re-r{flex:none;max-width:44%;text-align:right}
+.re-band .g7kicker{color:var(--green)}
+.re-p{font-size:15px;font-weight:700;color:var(--white);font-variant-numeric:tabular-nums}
+.re-p.re-none{font-weight:600;color:var(--gray2)}
+.re-pt{font-size:12px;color:var(--gray);margin-top:2px;overflow-wrap:anywhere}
+.re-chev{flex:none;font-size:18px;line-height:1;color:var(--gray2);transition:transform 200ms}
+.re-row.open .re-chev,.re-qr.open .re-chev{transform:rotate(90deg)}
+.re-detail{padding:0 16px 16px}
+.re-note{padding:12px;border-radius:12px;background:rgba(255,255,255,.04);font-size:13px;line-height:1.5;color:var(--gray)}
+.re-note .dl{display:block;min-width:0}
+.re-note .dr{display:block;max-width:none;margin-top:8px}
+.re-note .dsub{font-size:13px;line-height:1.5;color:var(--gray);font-weight:500;margin-top:4px;white-space:normal;overflow-wrap:anywhere}
+.re-note [style*="--danger"]{color:var(--amber2,#ffd264)!important}
+.re-ed{margin-top:12px}
+.re-clamp{max-height:132px;overflow:hidden;-webkit-mask-image:linear-gradient(#000 55%,transparent)}
+.re-clamp.re-full{max-height:none;-webkit-mask-image:none}
+.re-more{display:block;margin-top:8px;padding:8px 0;background:none;border:0;font-family:inherit;font-size:13px;font-weight:700;color:var(--green)}
+.re-qb{padding:16px}
+.re-qt{font-size:16px;font-weight:700;color:var(--white)}
+.re-qs{font-size:12px;color:var(--gray);margin-top:2px}
+.re-badge{flex:none;min-width:28px;padding:2px 8px;border-radius:999px;text-align:center;font-size:12px;font-weight:700;color:var(--white);background:rgba(255,255,255,.10);font-variant-numeric:tabular-nums}
+.re-px{padding:0 16px 8px;border-top:1px solid rgba(255,255,255,.06)}
+.re-pxr{display:flex;align-items:baseline;justify-content:space-between;gap:12px;padding:12px 0}
+.re-pxr+.re-pxr{border-top:1px solid rgba(255,255,255,.05)}
+.re-pxl{min-width:0}
+.re-pxn{font-size:14px;font-weight:600;color:var(--white)}
+.re-pxc{font-size:12px;color:var(--gray);margin-top:2px}
+.re-pxp{flex:none;max-width:48%;text-align:right;font-size:12px;color:var(--gray);font-variant-numeric:tabular-nums}
+@media (prefers-reduced-motion:reduce){.re-seg{transition:none}.re-segw{transform:none}}
 </style>
 <style id="asof-b493">
 .asof{font-size:11px;line-height:1.4;color:var(--gray2);text-align:center;margin:16px 0 8px}
