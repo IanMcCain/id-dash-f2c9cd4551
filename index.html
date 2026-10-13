@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 500 (2026-10-12)">
+<meta name="build" content="v21 build 501 (2026-10-13)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -25958,6 +25958,50 @@ try{ if(profile==="ian" && state.meta && !state.meta.mig498_pk1012 && state.pick
     state.meta.mig498_pk1012=true; save(true);
     try{ console.log("mig498: 12 October split session logged"); }catch(_){}
 } }catch(e){ try{ console.warn("mig498 did not apply:",e&&e.message); }catch(_){} }
+
+/* ===== v21 build 501: TUESDAY 13 OCTOBER, 7:01 TO 8:53 AM, A SPLIT SESSION ====================
+   Ian: "first entire hour was drilling, the rest was mid to high 3s open play." ONE RECORD, NOT
+   TWO, same pattern as pk-20261012-am and the build 348 precedent. Two records would double the
+   weekly session count and force the calories and heart rate to be divided between halves the
+   watch never separated.
+   THE SPLIT IS EXACT, NOT APPROXIMATE: 60:00 drilling and 52:25 open play on a 1:52:25 total
+   (3600 + 3145 = 6745 seconds). He gave the hour precisely, so splitApproximate is FALSE and the
+   approximate flag from 12 October is deliberately NOT carried across.
+   COMPETITION is stored as he said it, "mid to high 3s", which is not the same words as the
+   12 October "high 3s" and is not normalized to it. It applies to the OPEN PLAY portion only,
+   because drilling has no opponent level.
+   EFFORT 8, "Hard", is HIS OWN RATING of how hard he tried and how well he played. NOT an exertion
+   figure and NOT reconciled against the 112 average. A lower average HR than 12 October at the
+   same effort is not a contradiction, because the two are different axes. No minimum HR was given,
+   so minHr is absent rather than zero. Checked before writing: no session on 2026-10-13 existed.
+   Guard state.meta.mig501_pk1013, saved state only, idempotent on id and on date plus window,
+   end of chain, SEED_VERSION stays 13. */
+try{ if(profile==="ian" && state.meta && !state.meta.mig501_pk1013 && state.pickleball){
+    var _P01=state.pickleball;
+    if(!Array.isArray(_P01.sessions)) _P01.sessions=[];
+    var _has01=false;
+    _P01.sessions.forEach(function(s){ if(s&&(s.id==="pk-20261013-am"||(s.date==="2026-10-13"&&/7:01/.test(String(s.window||""))))) _has01=true; });
+    if(!_has01){
+      _P01.sessions.push({
+        id:"pk-20261013-am", date:"2026-10-13", kind:"Drilling + open play", venue:"Omaha",
+        duration:"1h 52m 25s", window:"7:01 to 8:53 AM, Omaha",
+        calories:928, activeCalories:752, avgHr:112, maxHr:139,
+        drillMinutes:60, playMinutes:52, drillSeconds:3600, playSeconds:3145, playDuration:"52:25",
+        splitApproximate:false, splitSource:"Ian, 13.10.2026, his own figures: the opening hour drilling, the rest open play",
+        segments:[{type:"Drilling",minutes:60,seconds:3600},{type:"Open play",minutes:52,seconds:3145}],
+        effort:8, effortLabel:"Hard", effortSource:"His own rating",
+        effortNote:"HIS OWN RATING, how hard he tried and how well he played. NOT an exertion figure and NOT reconciled against the 112 average.",
+        competition:{ level:"Mid to high 3s", source:"Ian, 13.10.2026, his words", appliesTo:"Open play portion only", scopeNote:"Drilling has no opponent level." },
+        result:"", score:"", opponent:"", copyOwned:true,
+        source:"Ian, 13.10.2026.",
+        note:"Pickleball, Tuesday 13 October, Omaha, 7:01 to 8:53 AM. 1:52:25 in total: the opening hour was drilling and the remaining 52:25 was open play against mid to high 3s players. From Apple Watch: avg HR 112, peak 139, active 752, total 928.",
+        agent:"SPLIT SESSION, EXACT. drillMinutes 60 and playMinutes 52 (52:25, playSeconds 3145) are Ian's figures, splitApproximate is false. Do NOT carry the 12 October approximate flag across. Do NOT split calories or HR across the segments, the watch measured one block. Do NOT write this as two sessions, it would double the weekly count. Competition level applies to the open play portion only. Effort is his own rating, never reconcile it against heart rate, and the 112 against 121 on 12 October at the same effort is not a contradiction. DATA NOTE for us, not a highlight for Ian: in the data checked on 13.10.2026 (80 sessions before this one, 6 July to 12 October) this is the third session to carry drillMinutes with playMinutes and a segments array, after pk-20260827-training and pk-20261012-am, and 12 and 13 October are consecutive days. pk-20260922-am and pk-20260924-am carry drillMinutes alone. No minHr was given."
+      });
+      _P01.sessions.sort(function(a,z){ return String(a.date).localeCompare(String(z.date)); });
+    }
+    state.meta.mig501_pk1013=true; save(true);
+    try{ console.log("mig501: 13 October split session logged"); }catch(_){}
+} }catch(e){ try{ console.warn("mig501 did not apply:",e&&e.message); }catch(_){} }
 
   /* build 372: LAST THING BEFORE THE SAVE. Every migration above has run, deepMergeDefaults
      has run, so this is the only point in the file where the state is actually final. */
