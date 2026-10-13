@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 503 (2026-10-13)">
+<meta name="build" content="v21 build 504 (2026-10-13)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -26365,6 +26365,64 @@ try{ if(profile==="ian" && state.meta && !state.meta.mig503_tier1){
   try{ console.log("mig503: "+_L3.length+" tier 1 changes, "+_L3.join(" | ")); }catch(_){}
 } }catch(e){ try{ console.warn("mig503 did not apply:",e&&e.message); }catch(_){} }
 
+/* ===== v21 build 504: HEALTH CHECK PASS, SONNET-A, 13.10.2026 ====================================
+   Mechanical data corrections only. Guard state.meta.mig504_health, idempotent, end of chain,
+   SEED_VERSION stays 13.
+   WHAT THIS DOES: (1) Belknap is FULLY STAGED and Vogel staging is IN PROGRESS today, 13.10.2026, both
+   as stated by Ian. The old Belknap stagingNote still carried a collision, a "may be wasted" worry and
+   a question for Ian that he closed on 09.10.2026, and Vogel's said "not staging this weekend" with no
+   date. The old text is kept whole in stagingNoteHistory. (2) 2 September 2026 was a Wednesday and the
+   note called it a Tuesday. (3) Four pickleball records carry counts that were true on the day and are
+   false now ("25 sessions are longer"), so each is stamped with the date it was true. The numbers are
+   NOT recomputed, they are labelled.
+   WHAT THIS DELIBERATELY DOES NOT DO: it does not touch any Vogel price or price note. Three live Vogel
+   figures exist in the files ($329,900, $334,900, $319,900) and that is Ian's call, not a lane's. It does
+   not touch Theobald's band, Teskes's band top or Hernandez's probability, because the records
+   contradict the fix list on each and Ian has to say which is right. */
+try{ if(profile==="ian" && state.meta && !state.meta.mig504_health){
+  var _L4=[];
+  var _R4=state.realEstate||{};
+  var _D4=Array.isArray(_R4.deals)?_R4.deals:[];
+  var _get4=function(id){ for(var i=0;i<_D4.length;i++){ if(_D4[i]&&_D4[i].id===id) return _D4[i]; } return null; };
+
+  var _bk4=_get4("re-belknap-sell");
+  if(_bk4 && !_bk4.stagedAsOf){
+    if(typeof _bk4.stagingNote==="string" && _bk4.stagingNote && !_bk4.stagingNoteHistory) _bk4.stagingNoteHistory=_bk4.stagingNote;
+    _bk4.staging="FULL";
+    _bk4.stagedAsOf="2026-10-13";
+    _bk4.stagingNote="FULLY STAGED, as of 13.10.2026, Ian. The earlier collision with the Willis open house and the worry that staging ran eleven days ahead of the list date were closed by Ian on 09.10.2026. Lists Thursday 15 October 2026. The full earlier note is kept in stagingNoteHistory.";
+    _L4.push("belknap: stagingNote rewritten to FULLY STAGED 13.10, old text kept in stagingNoteHistory");
+  }
+  var _vg4=_get4("re-vogel-sell");
+  if(_vg4 && !_vg4.stagingInProgressAsOf){
+    if(typeof _vg4.stagingNote==="string" && _vg4.stagingNote && !_vg4.stagingNoteHistory) _vg4.stagingNoteHistory=_vg4.stagingNote;
+    _vg4.stagingOn="2026-10-13";
+    _vg4.stagingInProgressAsOf="2026-10-13";
+    _vg4.stagingNote="STAGING IS IN PROGRESS TODAY, 13.10.2026, Ian. It is not finished and nothing here says it is. The earlier note said no staging date was booked, which is no longer true. Lists Thursday 15 October 2026. The earlier note is kept in stagingNoteHistory.";
+    _L4.push("vogel: staging marked IN PROGRESS 13.10 (stagingOn set), price fields untouched");
+  }
+
+  var _pk4=(state.pickleball&&Array.isArray(state.pickleball.sessions))?state.pickleball.sessions:[];
+  var _ps4=function(id){ for(var i=0;i<_pk4.length;i++){ if(_pk4[i]&&_pk4[i].id===id) return _pk4[i]; } return null; };
+  var _s02=_ps4("pk-20260902-openplay");
+  if(_s02 && typeof _s02.note==="string" && _s02.note.indexOf("Tuesday 2 September")===0 && new Date(2026,8,2).getDay()===3){
+    _s02.note=_s02.note.replace("Tuesday 2 September","Wednesday 2 September"); _L4.push("pk-20260902: weekday corrected Tuesday to Wednesday");
+  }
+  var _stamp=function(id,field,human){
+    var r=_ps4(id); if(!r||typeof r[field]!=="string"||r[field].indexOf("As of ")>=0) return;
+    r[field]=r[field]+" As of "+human+": these counts were true on that date and are not recomputed, so they will be out of date as sessions are added."; _L4.push(id+"."+field+": stamped as of "+human);
+  };
+  _stamp("pk-20260928-am","records","28 September 2026");
+  _stamp("pk-20260929-pm","dayNote","29 September 2026");
+  _stamp("pk-20261006-pm","records","6 October 2026");
+  _stamp("pk-20261007-am","records","7 October 2026");
+
+  state.meta.mig504_health=true;
+  state.meta.mig504_changes=_L4;
+  save(true);
+  try{ console.log("mig504: "+_L4.length+" changes, "+_L4.join(" | ")); }catch(_){}
+} }catch(e){ try{ console.warn("mig504 did not apply:",e&&e.message); }catch(_){} }
+
   /* build 372: LAST THING BEFORE THE SAVE. Every migration above has run, deepMergeDefaults
      has run, so this is the only point in the file where the state is actually final. */
   try{ convergeState(); }catch(e){}
@@ -27093,6 +27151,16 @@ function fmtMoney(n){ try{ return "$"+Math.round(n).toLocaleString("en-US"); }ca
    Dual agency 50/50. Ian take home per deal = side% x price x 0.85 x source share.
    PRODUCTION stays sales volume (sum of prices), it is not income. These add an income estimate. */
 function dealSource(d){ var s=(d&&d.source)||""; return (s==="Chris's client"||s==="Dual agency")?s:"Ian's own"; }
+/* ===== v21 build 504: AN UNRECOGNISED SOURCE IS A MISSING FACT, NOT THE MOST GENEROUS SHARE. ===========
+   dealSource() still normalises for equality tests, because a dozen callers compare it to "Dual agency"
+   and "Chris's client". What it must NOT do is feed sourceShare(), which used to hand every other
+   string, a typo, a new business arrangement, an empty field, the 0.80 share of "Ian's own". Measured
+   13.10.2026 on 20131 R St: roughly $16,765 of income from a rate Ian never stated.
+   dealShareUnset(d) is true when there is no explicit ianSplit, no actualNet, and the raw source is not
+   one of the three strings the model knows. sourceShare() then returns null, dealIanNet() counts it as
+   0 in totals (never as a fabricated figure), and the renderers say "rate not set". 0.80 now needs an
+   explicit source of "Ian's own". fxIanEarns stays as the presentation gate and also honours this. */
+function dealShareUnset(d){ if(!d) return false; if(typeof d.ianSplit==="number"||typeof d.actualNet==="number") return false; var s=d.source; return !(s==="Ian's own"||s==="Chris's client"||s==="Dual agency"); }
 function dealSide(d){ var s=(d&&d.side)||""; if(s==="Buyer"||s==="Seller"||s==="Both") return s; /* v21 build 41: infer from the TITLE only, not the note, since notes often mention the clients buying elsewhere (Spicer and Bonks selling deals were wrongly read as Buyer). */ var t=String((d&&d.title)||""); return /buy|buyer|buying/i.test(t)?"Buyer":"Seller"; }
 /* v21 build 57: a "Both" side is dual agency by definition and its commission is computed via dualRate in
    dealGrossCommission, so sideRate is only reached for SINGLE-side (non-dual) deals. The old "Both" branch
@@ -27157,7 +27225,7 @@ function taxKeepRate(){ return 1-taxSetAsideRate(); }
 function taxPctWord(){ return Math.round(taxSetAsideRate()*100)+"%"; }
 function postTax(n){ return (Number(n)||0)*taxKeepRate(); }
 function sellerRate(d){ return (d&&typeof d.sellerRate==="number")?d.sellerRate:RE_RATES.sellerStd; }
-function sourceShare(source,d){ if(d&&typeof d.ianSplit==="number") return d.ianSplit; /* v21 build 434, 21.09.2026: IAN'S OWN IS 0.80, NOT 0.90. His words: "Stick with that for now." The 0.90 was a code default nobody had ever confirmed and it had leaked to four records. */ return source==="Chris's client"?0.20 : source==="Dual agency"?0.50 : 0.80; }
+function sourceShare(source,d){ if(d&&typeof d.ianSplit==="number") return d.ianSplit; /* v21 build 434, 21.09.2026: IAN'S OWN IS 0.80, NOT 0.90. His words: "Stick with that for now." The 0.90 was a code default nobody had ever confirmed and it had leaked to four records. */ if(d && dealShareUnset(d)) return null; return source==="Chris's client"?0.20 : source==="Dual agency"?0.50 : source==="Ian's own"?0.80 : null; }
 /* v21 build 42: dual agency commission is 5% TOTAL on the sale price, charged ONCE for the property,
    NOT seller 3.75% plus buyer 2.4%. Matt Snyder is entered as two side-entries (buyer and seller) for
    volume and deal count, so each side-entry contributes HALF of the property's 5% gross, so the pair
@@ -27213,7 +27281,7 @@ function dealBrokerage(d){ if(dealSource(d)==="Dual agency"){ var _fee=priceNum(
    fallback for deals with no actual yet. This exists because the Spicer sale paid $2,770 against
    a modeled $2,906.39 and the cause could not be identified from one closing. Setting an actual
    is how a known number survives any later change to the model. */
-function dealIanNet(d){ if(d&&typeof d.actualNet==="number") return d.actualNet; return (dealGrossCommission(d)-dealBrokerage(d)) * sourceShare(dealSource(d),d); }
+function dealIanNet(d){ if(d&&typeof d.actualNet==="number") return d.actualNet; if(dealShareUnset(d)) return 0; return (dealGrossCommission(d)-dealBrokerage(d)) * sourceShare(dealSource(d),d); }
 /* v21 build 440: what he actually KEEPS. Derived, never stored. See the RE_RATES block above. */
 function dealIanPostTax(d){ return postTax(dealIanNet(d)); }
 function dealNetIsActual(d){ return !!(d&&typeof d.actualNet==="number"); }
@@ -27238,6 +27306,11 @@ function dealNetIsActual(d){ return !!(d&&typeof d.actualNet==="number"); }
    AN ACTUAL PAID FIGURE IMPLIES RECEIPT. actualNet exists only where a real payment was recorded, so
    dealIsPaid reads it as confirmed rather than requiring the flag to be set twice. Spicer is the one
    deal carrying it, $2,770. */
+/* v21 build 504: THE MODEL MISS IS COMPUTED, NOT TYPED. It used to read "$136 high on the one deal with a real
+   figure", hardcoded, and two deals carry a paid amount (one high, one low). Each deal with an actualNet is
+   re-run through the model with the actual removed, so the sentence follows the data. */
+function reModelMisses(arr){ var out=[]; (arr||[]).forEach(function(d){ if(!d||typeof d.actualNet!=="number") return; var c={}; for(var k in d) c[k]=d[k]; delete c.actualNet; if(dealShareUnset(c)) return; var diff=dealIanNet(c)-d.actualNet; if(isFinite(diff)) out.push({d:d,diff:diff}); }); return out; }
+function reModelMissText(arr){ var m=reModelMisses(arr); if(!m.length) return "No closed deal has a paid amount to check the model against yet"; return "Against the "+(m.length===1?"one deal":m.length+" deals")+" with a real figure, the model was "+m.map(function(x){ return "$"+Math.round(Math.abs(x.diff)).toLocaleString("en-US")+(x.diff>0?" high":" low")+" on "+String(x.d.title||"a deal"); }).join(" and ")+", so treat pending take-home as approximate"; }
 function dealIsPaid(d){ return !!(d && (d.paid===true || typeof d.actualNet==="number")); }
 /* build 375: payUnknown means the commission status is GENUINELY NOT KNOWN, as opposed to
    known to be outstanding. Ian said Crystal Johnson is "fully closed", which is a statement
@@ -27511,9 +27584,9 @@ function dealEditors(parent,d){
   const sideLab=el("div","small muted","Side Ian represents"); sideLab.style.marginTop="10px"; parent.appendChild(sideLab);
   parent.appendChild(chipRowKV([["Seller side","Seller"],["Buyer side","Buyer"],["Both sides","Both"]], dealSide(d), v=>{ d.side=v; save(); render(); }));
   if(dealSource(d)==="Dual agency"){ const rLab=el("div","small muted","Dual commission rate, aim 6%, as low as 5% to make a deal"); rLab.style.marginTop="10px"; parent.appendChild(rLab); parent.appendChild(chipRowKV([["5%",0.05],["6%",0.06]], dualRate(d), function(v){ d.dualRate=v; save(); render(); })); const rNote=el("div","small dim"); rNote.style.marginTop="4px"; rNote.textContent="Current rate "+(+(dualRate(d)*100).toFixed(2))+"%"+(dualRate(d)<0.05?" (locked one-time exception)":""); parent.appendChild(rNote); }
-  const inc=el("div","small dim"); inc.style.marginTop="9px"; inc.style.lineHeight="1.55"; /* v21 build 285: NO PRICE MEANS NO NUMBER. Ian, 08.13.2026. priceNum returns 0 for an empty price, so this line used to render a confident "Est. your take home $0" on every prospect with no price yet, which reads as a derived figure rather than a missing one. The deal ROW already guarded this with if(_tn>0); the editor did not. Say the price is missing, and name the split that WOULD apply so a wrong source is visible before a price is ever typed. */ if(priceNum(d&&d.price)<=0 && !dealNetIsActual(d)){ inc.innerHTML="No price on record, so no income estimate. It fills in at your <b>"+Math.round(sourceShare(dealSource(d),d)*100)+"%</b> split ("+dealSource(d)+")."; } else if(dealSource(d)==="Dual agency"){ /* build 440: the editor is where the chain is spelled out, so the tax sweep joins the end of
+  const inc=el("div","small dim"); inc.style.marginTop="9px"; inc.style.lineHeight="1.55"; /* v21 build 285: NO PRICE MEANS NO NUMBER. Ian, 08.13.2026. priceNum returns 0 for an empty price, so this line used to render a confident "Est. your take home $0" on every prospect with no price yet, which reads as a derived figure rather than a missing one. The deal ROW already guarded this with if(_tn>0); the editor did not. Say the price is missing, and name the split that WOULD apply so a wrong source is visible before a price is ever typed. */ if(dealShareUnset(d)){ inc.innerHTML="Commission rate and your share are <b>not set</b> for this source, so no income estimate is shown. Pick Ian's own, Chris's client or Dual agency, or set a split."; } else if(priceNum(d&&d.price)<=0 && !dealNetIsActual(d)){ inc.innerHTML="No price on record, so no income estimate. It fills in at your <b>"+Math.round(sourceShare(dealSource(d),d)*100)+"%</b> split ("+dealSource(d)+")."; } else if(dealSource(d)==="Dual agency"){ /* build 440: the editor is where the chain is spelled out, so the tax sweep joins the end of
      the chain rather than being left off it. Gross, broker cut, split, THEN tax. */
-    inc.innerHTML="Est. your commission <b>"+fmtMoney(dealIanNet(d))+"</b>, of which you keep <b>"+fmtMoney(dealIanPostTax(d))+"</b> after setting aside "+taxPctWord()+" for tax. Dual agency at "+(+(dualRate(d)*100).toFixed(2))+"% on the property, charged once. Broker takes 15% of a 6% basis, then your 50/50 with Chris. Counts twice for volume and deal count."; } else { inc.innerHTML="Est. your commission <b>"+fmtMoney(dealIanNet(d))+"</b>, of which you keep <b>"+fmtMoney(dealIanPostTax(d))+"</b> after setting aside "+taxPctWord()+" for tax. Gross commission this side "+fmtMoney(dealGrossCommission(d))+", after the 15% broker cut and your "+Math.round(sourceShare(dealSource(d),d)*100)+"% split."; } parent.appendChild(inc);
+    inc.innerHTML="Est. your commission <b>"+fmtMoney(dealIanNet(d))+"</b>, of which you keep <b>"+fmtMoney(dealIanPostTax(d))+"</b> after setting aside "+taxPctWord()+" for tax. Dual agency at "+(+(dualRate(d)*100).toFixed(2))+"% on the property, charged once. Broker takes 15% of a 6% basis, then your 50/50 with Chris. Counts twice for volume and deal count."; } else { inc.innerHTML="Est. your commission <b>"+fmtMoney(dealIanNet(d))+"</b>, of which you keep <b>"+fmtMoney(dealIanPostTax(d))+"</b> after setting aside "+taxPctWord()+" for tax. Gross commission this side "+fmtMoney(dealGrossCommission(d))+", before the 15% broker cut and your "+Math.round(sourceShare(dealSource(d),d)*100)+"% split."; } parent.appendChild(inc);
   
 }
 function dealRow(parent,d){
@@ -27936,7 +28009,7 @@ function homeZone1(host,nm,workout){
   var hm=el("div","z1-hmain"); hm.appendChild(el("div","z1-lab","Production this year"));
   var big=el("div","z1-big",fmtMoneyShort(prod)); hm.appendChild(big);
   hm.appendChild(el("div","z1-sub","of "+fmtMoneyShort(goal)+" goal"));
-  hm.appendChild(el("div","z1-sub2",nDeals+(nDeals===1?" deal":" deals")+" closed or under contract"));
+  hm.appendChild(el("div","z1-sub2",nDeals+(nDeals===1?" side":" sides")+" closed or under contract"));
   top.appendChild(hm);
   if(anim){
     requestAnimationFrame(function(){ requestAnimationFrame(function(){ bar.style.strokeDashoffset=String(offTo); }); });
@@ -28300,7 +28373,7 @@ function hzClosingsData(){
   var deals=(state.realEstate&&state.realEstate.deals)||[]; var by={}; var un=0, unN=0;
   deals.forEach(function(d){
     if(!d||(d.stage!=="Closed"&&d.stage!=="Under Contract")) return;
-    var v=dealVolume(d); var mo=hzCloseMonth(d.close);
+    var v=dealVolume(d); var mo=hzCloseMonth(d.close)||((typeof d.closeDate==="string")?hzCloseMonth(d.closeDate):null);
     if(!mo){ un+=v; unN++; return; }
     var k=mo.y*12+mo.m; var o=by[k]||(by[k]={k:k,y:mo.y,m:mo.m,closed:0,uc:0}); if(d.stage==="Closed") o.closed+=v; else o.uc+=v;
   });
@@ -29590,7 +29663,7 @@ function pipelineSummaryPipe(parent){
   const other=deals.filter(function(d){ return d&&!_counted[d.id]; });
   sect(parent,"Overview",deals.length+" deals total, counts and volume");
   const tiles=[
-    statTile({label:"Closed",color:"green",value:closed.length,unit:closed.length===1?"deal":"deals",sub:fmtMoney(vol(closed))+" volume"}),
+    statTile({label:"Closed",color:"green",value:closed.reduce(function(a,d){return a+dealCountWeight(d);},0),unit:"sides",sub:closed.length+" deals, "+fmtMoney(vol(closed))+" volume"}),
     statTile({label:"Under contract",color:"blue",value:uc.length,unit:"pending",sub:fmtMoney(vol(uc))+" pending"}),
     statTile({label:"Active",color:"orange",value:act.length,unit:act.length===1?"listing":"listings",sub:fmtMoney(vol(act))}),
     statTile({label:"Coming soon",color:"purple",value:cs.length,unit:cs.length===1?"listing":"listings",sub:"No dates confirmed"}),
@@ -30004,7 +30077,7 @@ function reGoalsCard(parent,accOverride){
   b.appendChild(el("div","small muted","2026 production goals"));
   const mk=(label,valHtml,frac,col)=>{ const wrap=el("div","goalrow"); const top=el("div","between"); top.appendChild(el("div","goal-lab",label)); const vv=el("div","goal-val"); vv.innerHTML=valHtml; top.appendChild(vv); wrap.appendChild(top); const bar=el("div","pbar"); const i=el("i"); bar.appendChild(i); wrap.appendChild(bar); try{ i.style.width=Math.min(100,frac*100)+"%"; i.style.background="var(--"+col+")"; }catch(e){} return wrap; };
   b.appendChild(mk("Production",'<b>'+fmtMoneyShort(production)+'</b> <span>of '+fmtMoneyShort(PROD_GOAL)+'</span>',PROD_GOAL?production/PROD_GOAL:0,"teal"));
-  b.appendChild(mk("Deals",'<b>'+dealsDone+'</b> <span>of '+DEALS_GOAL+'</span>',DEALS_GOAL?dealsDone/DEALS_GOAL:0,"teal2"));
+  b.appendChild(mk("Sides",'<b>'+dealsDone+'</b> <span>of '+DEALS_GOAL+'</span>',DEALS_GOAL?dealsDone/DEALS_GOAL:0,"teal2"));
   const incClosed=sumIanNet(closed); const incUc=sumIanNet(uc);
   const incLine=el("div"); incLine.style.cssText="margin-top:13px;display:flex;justify-content:space-between;align-items:baseline";
   incLine.appendChild(el("div","goal-lab","Est. commission"));
@@ -30033,7 +30106,7 @@ function reGoalsCard(parent,accOverride){
   const row=function(cls,dot,lab,sub,amt){ const r=el("div","gm-row"+(cls?" "+cls:"")); const d=el("i","gm-dot"); d.style.background=dot; r.appendChild(d);
     const l=el("div","gm-lab"); l.appendChild(document.createTextNode(lab)); if(sub) l.appendChild(el("small",null,sub)); r.appendChild(l);
     r.appendChild(el("div","gm-amt",fmtMoney(amt))); tbl.appendChild(r); };
-  const dl=function(a){ const n=_wt(a); return n+(n===1?" deal":" deals"); };
+  const dl=function(a){ const n=_wt(a); return n+(n===1?" side":" sides"); };
   row("bank","var(--green)","Banked, closed",dl(_banked)+"  \u00b7  "+_pct+"% of the goal",_bv);
   if(_cv) row("","var(--fi2,#da8fff)","Under contract, not closed",dl(_committed),_cv);
   if(_dv) row("","var(--blue)","Listing on a confirmed date",dl(_dated),_dv);
@@ -30051,7 +30124,7 @@ function reGoalsCard(parent,accOverride){
 
   const atRisk=deals.filter(d=>d&&d.risk&&(d.stage==="Under Contract"||d.stage==="Closed"));
   if(atRisk.length){ const rk=el("div","gm-risk"); const n=_wt(atRisk);
-    rk.appendChild(el("b",null,"At risk")); rk.appendChild(document.createTextNode(" "+fmtMoneyShort(vol(atRisk))+" across "+n+" deal"+(n===1?"":"s")+": "));
+    rk.appendChild(el("b",null,"At risk")); rk.appendChild(document.createTextNode(" "+fmtMoneyShort(vol(atRisk))+" across "+n+" side"+(n===1?"":"s")+": "));
     atRisk.forEach(function(d,i){ if(i) rk.appendChild(document.createTextNode(", ")); rk.appendChild(el("span","gm-nm",String(d.title||""))); });
     b.appendChild(rk); }
 
@@ -30061,16 +30134,16 @@ function reGoalsCard(parent,accOverride){
   const chev=el("span","gm-chev","\u25BE"); chev.style.transform="rotate("+(openNow?"180deg":"0deg")+")"; how.appendChild(chev);
   const det=el("div","gm-det"); det.style.display=openNow?"block":"none";
   const dline=function(t){ det.appendChild(el("p",null,t)); };
-  dline("If every live listing also closes this year: "+fmtMoneyShort(ceiling)+" and "+ceilDeals+" deals."
-    +(parked27.length?(" "+fmtMoneyShort(vol(parked27))+" across "+parked27.length+" deal"+(parked27.length===1?"":"s")+" finishes in 2027 and cannot land in 2026."):""));
-  dline("On deals, "+_wt(_banked)+" of "+DEALS_GOAL+" are closed. Everything live and dated takes it to "+(_wt(_banked)+_wt(_committed)+_wt(_dated))+", and the undated listings are the only route past that.");
+  dline("If every live listing also closes this year: "+fmtMoneyShort(ceiling)+" and "+ceilDeals+" sides."
+    +(parked27.length?(" "+fmtMoneyShort(vol(parked27))+" across "+parked27.reduce(function(a,d){return a+dealCountWeight(d);},0)+" side"+(parked27.reduce(function(a,d){return a+dealCountWeight(d);},0)===1?"":"s")+" finishes in 2027 and cannot land in 2026."):""));
+  dline("On sides, "+_wt(_banked)+" of "+DEALS_GOAL+" are closed. Everything live and dated takes it to "+(_wt(_banked)+_wt(_committed)+_wt(_dated))+", and the undated listings are the only route past that.");
   var _est=closed.length-countActualNets(closed);
-  dline((_un>0||_uk>0)
+  dline((_un>0||_uk>0||closed.some(function(d){ return !dealIsPaid(d); }))
     ? "Received counts only what you have confirmed arriving. The rest is earned, not banked."
     : ("Every closed deal is confirmed received."+(_est>0?(" "+_est+" of "+closed.length+" are still model estimates, not amounts you have stated."):"")));
   const nActual=countActualNets(closed);
   dline("Take-home is your estimated net after the 15% broker cut and your split"+(nActual?(", except "+nActual+" deal"+(nActual===1?"":"s")+" showing what you were actually paid."):".")
-    +" The model was $136 high on the one deal with a real figure to check against, so treat pending take-home as approximate. Source tags default to your side, check them per deal.");
+    +" "+reModelMissText(closed)+". A source tag that is blank or unrecognised shows rate not set instead of a figure, so check the tags per deal.");
   how.onclick=function(){ const o=(det.style.display==="none"); det.style.display=o?"block":"none"; chev.style.transform="rotate("+(o?"180deg":"0deg")+")"; PK_OPEN[KEY]=o; };
   b.appendChild(how); b.appendChild(det);
   parent.appendChild(c);
@@ -30084,7 +30157,7 @@ function reGoalsCard495(parent,accOverride){ /* build 496: the build 495 explain
   b.appendChild(el("div","small muted","2026 production goals"));
   const mk=(label,valHtml,frac,col)=>{ const wrap=el("div","goalrow"); const top=el("div","between"); top.appendChild(el("div","goal-lab",label)); const vv=el("div","goal-val"); vv.innerHTML=valHtml; top.appendChild(vv); wrap.appendChild(top); const bar=el("div","pbar"); const i=el("i"); bar.appendChild(i); wrap.appendChild(bar); try{ i.style.width=Math.min(100,frac*100)+"%"; i.style.background="var(--"+col+")"; }catch(e){} return wrap; };
   b.appendChild(mk("Production",'<b>'+fmtMoneyShort(production)+'</b> <span>of '+fmtMoneyShort(PROD_GOAL)+'</span>',PROD_GOAL?production/PROD_GOAL:0,"teal"));
-  b.appendChild(mk("Deals",'<b>'+dealsDone+'</b> <span>of '+DEALS_GOAL+'</span>',DEALS_GOAL?dealsDone/DEALS_GOAL:0,"teal2"));
+  b.appendChild(mk("Sides",'<b>'+dealsDone+'</b> <span>of '+DEALS_GOAL+'</span>',DEALS_GOAL?dealsDone/DEALS_GOAL:0,"teal2"));
   const incClosed=sumIanNet(closed); const incUc=sumIanNet(uc);
   const incLine=el("div"); incLine.style.cssText="margin-top:13px;display:flex;justify-content:space-between;align-items:baseline";
   /* v21 build 440: THE LABEL WAS THE LIE. "Est. take-home" against a pre tax commission claims
@@ -30130,7 +30203,7 @@ function reGoalsCard495(parent,accOverride){ /* build 496: the build 495 explain
        a model estimate rather than an amount Ian actually stated, since that is the only real
        caveat left on it. Both branches are computed, nothing is hardcoded. */
     var _est=closed.length-countActualNets(closed);
-    _r4.textContent=(_un>0||_uk>0)
+    _r4.textContent=(_un>0||_uk>0||closed.some(function(d){ return !dealIsPaid(d); }))
       ? "Received counts only what you have confirmed arriving. The rest is earned, not banked."
       : "Every closed deal is confirmed received."+(_est>0?(" "+_est+" of "+closed.length+" are still model estimates, not amounts you have stated."):"");
     _pay.appendChild(_r4);
@@ -30148,8 +30221,8 @@ function reGoalsCard495(parent,accOverride){ /* build 496: the build 495 explain
   const ceiling=production+vol(inFlight);
   const ceilDeals=dealsDone+inFlight.reduce((a,d)=>a+dealCountWeight(d),0);
   const note=el("div","small"); note.style.cssText="margin-top:11px;padding:9px 10px;border-radius:9px;background:rgba(255,255,255,.04);line-height:1.5";
-  note.innerHTML='<b>'+fmtMoneyShort(ceiling)+' and '+ceilDeals+' deals</b> is the ceiling if everything live also closes this year'
-    +(parked27.length?('. <b>'+fmtMoneyShort(vol(parked27))+'</b> across '+parked27.length+' deal'+(parked27.length===1?"":"s")+' cannot land in 2026 at all, it finishes in 2027.'):'.');
+  note.innerHTML='<b>'+fmtMoneyShort(ceiling)+' and '+ceilDeals+' sides</b> is the ceiling if everything live also closes this year'
+    +(parked27.length?('. <b>'+fmtMoneyShort(vol(parked27))+'</b> across '+parked27.reduce(function(a,d){return a+dealCountWeight(d);},0)+' side'+(parked27.reduce(function(a,d){return a+dealCountWeight(d);},0)===1?"":"s")+' cannot land in 2026 at all, it finishes in 2027.'):'.');
   b.appendChild(note);
   /* v21 build 295: WHAT IS COUNTED AND CAN STILL LEAVE. The two lines above answer what has not
      arrived yet and what cannot arrive this year. Neither answers the harder question, which is
@@ -30206,7 +30279,7 @@ function reGoalsCard495(parent,accOverride){ /* build 496: the build 495 explain
     _bw.appendChild(el("div","small muted","Where the bar comes from"));
     var _mkr=function(lab,amt,n,strong){
       var r=el("div","between"); r.style.marginTop="5px";
-      r.appendChild(el("div","small"+(strong?"":" dim"),lab+(n?("  \u00b7  "+n+(n===1?" deal":" deals")):"")));
+      r.appendChild(el("div","small"+(strong?"":" dim"),lab+(n?("  \u00b7  "+n+(n===1?" side":" sides")):"")));
       var v=el("div","small"); v.style.fontWeight=strong?"800":"700";
       if(strong) v.style.color="var(--sec2,var(--accent2))";
       v.textContent=fmtMoney(amt); r.appendChild(v); _bw.appendChild(r); };
@@ -30220,7 +30293,7 @@ function reGoalsCard495(parent,accOverride){ /* build 496: the build 495 explain
       +fmtMoney(_bv)+"</b> is banked, which is <b>"+_pct+"%</b> of the "+fmtMoneyShort(PROD_GOAL)+" goal.";
     _bw.appendChild(_say);
     var _dg=el("div","small dim"); _dg.style.cssText="margin-top:6px;line-height:1.5";
-    _dg.textContent="On deals, "+_wt(_banked)+" of "+DEALS_GOAL+" are closed. Everything live and dated takes it to "
+    _dg.textContent="On sides, "+_wt(_banked)+" of "+DEALS_GOAL+" are closed. Everything live and dated takes it to "
       +(_wt(_banked)+_wt(_committed)+_wt(_dated))+", and the undated listings are the only route past that.";
     _bw.appendChild(_dg);
     b.appendChild(_bw);
@@ -30230,7 +30303,7 @@ function reGoalsCard495(parent,accOverride){ /* build 496: the build 495 explain
   const foot=el("div","small dim"); foot.style.marginTop="12px";
   foot.textContent="Production is closed and under contract volume toward your goal. Take-home is your estimated net after the 15% broker cut and your split"
     +(nActual?(", except "+nActual+" deal"+(nActual===1?"":"s")+" showing what you were actually paid."):".")
-    +" The model was $136 high on the one deal with a real figure to check against, so treat pending take-home as approximate. Source tags default to your side, check them per deal.";
+    +" "+reModelMissText(closed)+". A source tag that is blank or unrecognised shows rate not set instead of a figure, so check the tags per deal.";
   b.appendChild(foot);
   parent.appendChild(c);
 }
@@ -34691,7 +34764,7 @@ function fxEsc(t){ return String(t==null?"":t); }
    left completely alone, dealIanNet is untouched, and only the PRESENTATION changes: the row says
    whose deal it is instead of printing a dollar figure as if it were his.
    The figure itself stays on the record for whoever answers the open question. */
-function fxIanEarns(d){ return !(d && (d.suppressIanEarnings===true || d.notIansDeal===true)); }
+function fxIanEarns(d){ return !(d && (d.suppressIanEarnings===true || d.notIansDeal===true || dealShareUnset(d))); }
 /* TWO FORMS, and the short one is not cosmetic. fnSub enforces a FOUR WORD RULE and returns null
    rather than truncating, so any sub line longer than four words is silently dropped and the row
    renders with no explanation at all. That is exactly what happened on the first attempt at this
@@ -34701,6 +34774,7 @@ function fxIanEarns(d){ return !(d && (d.suppressIanEarnings===true || d.notIans
 function fxOwnedByLine(d){
   try{ if(d && d.ownedByShort) return String(d.ownedByShort); }catch(e){}
   try{ if(d && d.ownedBy) return String(d.ownedBy); }catch(e){}
+  try{ if(d && d.notIansDeal!==true && dealShareUnset(d)) return "rate not set"; }catch(e){}
   return "not his deal";
 }
 /* TWO DIFFERENT REASONS A FIGURE IS WITHHELD, and they must not read the same.
