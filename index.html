@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 497 (2026-10-12)">
+<meta name="build" content="v21 build 498 (2026-10-12)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -25919,6 +25919,45 @@ try{ if(profile==="ian" && state.meta && !state.meta.mig492_pipeline_fix && stat
     state.meta.mig492_pipeline_fix=true; save(true);
     try{ console.log("mig492: hernandez certainty set to belknap, bruce o'neil and theobald buy dated 2027"); }catch(_){}
 } }catch(e){ try{ console.warn("mig492 did not apply:",e&&e.message); }catch(_){} }
+
+/* ===== v21 build 498: MONDAY 12 OCTOBER, 7:18 TO 8:42 AM, A SPLIT SESSION =====================
+   Ian: "half drilling half open play with high 3s players." ONE RECORD, NOT TWO, following build
+   348 (27 August). Two records would double the weekly session count and force the calories and
+   heart rate to be divided between halves the watch never separated. The split is STRUCTURED:
+   drillMinutes, playMinutes and a segments array, all marked APPROXIMATE, because he said "half"
+   and gave no minutes. 42 and 42 on a 1:23:49 total is our reading of "half", nothing more.
+   COMPETITION LEVEL is stored in his own words, "high 3s players". He gave no numeric band and
+   none is invented, and he did not say which half it applies to.
+   EFFORT 8, "Hard", is HIS OWN RATING of how hard he tried and how well he played. It is NOT an
+   exertion figure and is not reconciled against the 121 average. No minimum HR was given, so
+   minHr is absent rather than written as zero. Checked before writing: no session on 2026-10-12
+   existed in the data. Guard state.meta.mig498_pk1012, saved state only, idempotent on id and on
+   date plus window, end of chain, SEED_VERSION stays 13. */
+try{ if(profile==="ian" && state.meta && !state.meta.mig498_pk1012 && state.pickleball){
+    var _P98=state.pickleball;
+    if(!Array.isArray(_P98.sessions)) _P98.sessions=[];
+    var _has98=false;
+    _P98.sessions.forEach(function(s){ if(s&&(s.id==="pk-20261012-am"||(s.date==="2026-10-12"&&/7:18/.test(String(s.window||""))))) _has98=true; });
+    if(!_has98){
+      _P98.sessions.push({
+        id:"pk-20261012-am", date:"2026-10-12", kind:"Drilling + open play", venue:"Omaha",
+        duration:"1h 23m 49s", window:"7:18 to 8:42 AM, Omaha",
+        calories:804, activeCalories:673, avgHr:121, maxHr:163,
+        drillMinutes:42, playMinutes:42, splitApproximate:true,
+        segments:[{type:"Drilling",minutes:42,approximate:true},{type:"Open play",minutes:42,approximate:true}],
+        effort:8, effortLabel:"Hard", effortSource:"His own rating",
+        effortNote:"HIS OWN RATING, how hard he tried and how well he played. NOT an exertion figure and NOT reconciled against the 121 average.",
+        competition:{ level:"High 3s players", source:"Ian, 12.10.2026, his words", scopeNote:"He did not say whether this applies to the open play half or the whole session, and gave no numeric band." },
+        result:"", score:"", opponent:"", copyOwned:true,
+        source:"Ian, 12.10.2026.",
+        note:"Pickleball, Monday 12 October, Omaha, 7:18 to 8:42 AM. 1:23:49 in total, about half drilling and about half open play, against high 3s players. The halves are approximate because you said half and gave no minutes. From Apple Watch: avg HR 121, peak 163, active 673, total 804.",
+        agent:"SPLIT SESSION. drillMinutes 42 and playMinutes 42 are approximate (Ian said half, no minutes) and segments carries the same thing. Do NOT split calories or HR across the segments, the watch measured one block. Do NOT write this as two sessions, it would double the weekly count. Effort is his own rating, never reconcile it against heart rate. DATA NOTE for us, not a highlight for Ian: in the data checked on 12.10.2026 (79 sessions, 6 July to 10 October) this is the second session to carry drillMinutes with playMinutes and a segments array, after pk-20260827-training. Two others carry drillMinutes alone (pk-20260922-am, pk-20260924-am). No minHr was given."
+      });
+      _P98.sessions.sort(function(a,z){ return String(a.date).localeCompare(String(z.date)); });
+    }
+    state.meta.mig498_pk1012=true; save(true);
+    try{ console.log("mig498: 12 October split session logged"); }catch(_){}
+} }catch(e){ try{ console.warn("mig498 did not apply:",e&&e.message); }catch(_){} }
 
   /* build 372: LAST THING BEFORE THE SAVE. Every migration above has run, deepMergeDefaults
      has run, so this is the only point in the file where the state is actually final. */
