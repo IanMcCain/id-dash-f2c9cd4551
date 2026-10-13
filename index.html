@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 496 (2026-10-12)">
+<meta name="build" content="v21 build 497 (2026-10-12)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -27709,6 +27709,7 @@ function homeZone3(host){
     b.onclick=it.go; grid.appendChild(b);
   });
   z.appendChild(grid); host.appendChild(z);
+  hzReveal(z,".z3-t",function(){ return HZ3_DONE; },function(){ HZ3_DONE=true; });
 }
 function hzCloseMonth(txt){
   var s=String(txt||""); if(!s||/not confirmed|not given|unknown|tbd|no date/i.test(s)) return null;
@@ -27781,11 +27782,19 @@ function homeZone4(host){
   if(tot2>=2){
     var mx2=1; wk.forEach(function(w){ if(w.h>mx2) mx2=w.h; });
     var card2=el("div","z4-card z4-b"); card2.setAttribute("role","img"); card2.setAttribute("aria-label","Pickleball court hours per week, last eight weeks");
-    card2.appendChild(el("div","z4-k","Court hours a week")); card2.appendChild(el("div","z4-ks","Time on court, last 8 weeks. Zone above counts sessions."));
-    var plot=el("div","z4-vp");
-    wk.forEach(function(w,i){ var col=el("div","z4-vc"); var bar=el("div","z4-vb"+(w.h<=0?" z0":"")+(w.cur?" cur":""));
-      if(w.h>0) bar.style.height=Math.max(4,Math.round(w.h/mx2*100))+"%"; try{ bar.style.setProperty("--i",String(i)); }catch(e){}
-      col.appendChild(bar); plot.appendChild(col); });
+    card2.appendChild(el("div","z4-k","Court hours a week")); card2.appendChild(el("div","z4-ks","Time on court each week, last 8 weeks."));
+    var plot=el("div","z4-vp z4-line"); var NW=wk.length; var ch=el("div","z4-ch");
+    /* the line runs through the finished weeks only. The current week is a hollow dot at its own value: it is not
+       over, and a line that plunged to zero on a Monday would read as a collapse that has not happened. */
+    var py=function(w){ return w.h>0?Math.max(4,Math.round(w.h/mx2*88)+4):4; };
+    var fin=wk.filter(function(w){ return !w.cur; });
+    var lp=[], ap=["0.5,100"];
+    wk.forEach(function(w,i){ if(w.cur) return; var x=(i+0.5), y=100-py(w); lp.push(x+","+y); ap.push(x+","+y); });
+    ap.push((fin.length-0.5)+",100");
+    ch.innerHTML='<svg viewBox="0 0 '+NW+' 100" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="z4lg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5fe6d2" stop-opacity=".32"/><stop offset="1" stop-color="#5fe6d2" stop-opacity="0"/></linearGradient></defs>'
+      +'<polygon points="'+ap.join(" ")+'" fill="url(#z4lg)"/><polyline points="'+lp.join(" ")+'" fill="none" stroke="#5fe6d2" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/></svg>';
+    plot.appendChild(ch);
+    wk.forEach(function(w,i){ var d=el("div","z4-dot"+(w.cur?" cur":"")+(w.h<=0&&!w.cur?" z0":"")); d.style.left=((i+0.5)/NW*100)+"%"; d.style.bottom=py(w)+"%"; try{ d.style.setProperty("--i",String(i)); }catch(e){} plot.appendChild(d); });
     card2.appendChild(plot);
     var lab=el("div","z4-vr");
     wk.forEach(function(w){ var c=el("div","z4-vcell"); c.appendChild(el("div","z4-vv",w.h>0?(Math.round(w.h*10)/10).toFixed(1):"0")); c.appendChild(el("div","z4-vl"+(w.cur?" on":""),w.lab)); lab.appendChild(c); });
@@ -27798,6 +27807,110 @@ function homeZone4(host){
   z.className+=" z4-wait";
   try{ var io=new IntersectionObserver(function(es){ es.forEach(function(en){ if(en.isIntersecting){ z.className=z.className.replace(" z4-wait"," z4-go"); HZ4_DONE=true; io.disconnect(); } }); },{threshold:0.35}); io.observe(z); }
   catch(e){ z.className=z.className.replace(" z4-wait",""); }
+}
+/* ===== v21 build 497: HOME REDESIGN, PASS 4 OF 4. ZONE 5, THE DATA BAND, AND ONE MOTION SYSTEM ==========
+   Ian: "then data", "no dumb information only things important and useful", and "coloring all
+   throughout, animation all throughout ... nothing should be overwhelmingly repeated."
+   ZONE 5 WAS A DUMPING GROUND: eight legacy sections nobody promoted, in a long column of identical
+   grey cards, 1746px, 43 percent of the whole page. It is now five blocks, each a different weight.
+     First thing       the one computed thing that needs him (secFirstThing, unchanged logic). Amber rule:
+                       amber means overdue or needs you, here and on the rows below.
+     Today's lifts     secWorkout. Silent on a rest day, so it costs nothing then.
+     Where the goal    the production explainer (reGoalsCard). Its Production bar is DROPPED here: the zone 1 ring
+       stands          is that bar, same figure, same maths. The Deals bar stays, it is the only place the goal of 20 shows.
+     Coming up         the next moves, soonest first (homeUpcomingCard, unchanged logic).
+     Pickleball        the rating and the last session. One slim strip. The only pickleball number on Home that the
+                       zone 2 and zone 4 charts do not already draw.
+   CUT, and why:
+     secSolara   duplicated the Solara quick link in zone 3, and the Solara tile inside secStatus said the same
+                 "Drop 001, parked" a third time. Zone 3 keeps it, it is the one with a door.
+     secStatus   its Pickleball tile is rebuilt as the strip above, its Solara tile is the duplicate, its Real estate
+                 tile was already filtered because the ring is it.
+     secWater    "aim 9 cups a day" over a card with nothing to tick since build 362. Easy wins already says the same.
+     secSphere   a collapsed card opening the same list the Stay in touch quick link opens, and Coming up already
+                 names the people who are overdue.
+   All four functions are kept defined and not called, per the BRAIN convention. Nothing in state is written.
+   MOTION IS ONE SYSTEM NOW. Easing cubic-bezier(.2,.7,.2,1) everywhere, 520ms for things that rise and 700ms for
+   things that grow, 60 to 80ms between siblings, ONCE per load, never replayed on a re render, none under reduced
+   motion. What is on screen at load enters at load (zone 1, hzUp). Everything below the first screen enters when it is
+   first reached, by the one driver below: zone 2 and 4 bars grow, zone 3 tiles and zone 5 blocks rise.
+   hzReveal is that driver for the rise. Zone 3 tiles used to be the only band with no entrance at all. */
+var HZ3_DONE=false, HZ5_DONE=false;
+function hzReveal(host,sel,isDone,mark){
+  var reduce=false; try{ reduce=!!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches); }catch(e){}
+  if(isDone()||reduce||!window.IntersectionObserver) return;
+  var items=host.querySelectorAll(sel); if(!items.length) return;
+  var i; for(i=0;i<items.length;i++){ items[i].className+=" hz-wait"; try{ items[i].style.setProperty("--i",String(i)); }catch(e){} }
+  try{ var io=new IntersectionObserver(function(es){ es.forEach(function(en){ if(en.isIntersecting){ io.disconnect(); mark();
+      for(var k=0;k<items.length;k++){ items[k].className=items[k].className.replace(" hz-wait"," hz-rise"); } } }); },{threshold:0.15}); io.observe(host); }
+  catch(e){ for(i=0;i<items.length;i++){ items[i].className=items[i].className.replace(" hz-wait",""); } }
+}
+function homeZone5(host,F){
+  var z=el("div","z5"); var n=0;
+  /* run one legacy section into a scratch div, then adopt what it drew: its own heading and accent bar are dropped,
+     the band supplies the heading. Returns the label the section used. */
+  function adopt(b,run,label){
+    var t=el("div"); run(t);
+    var lab=null; var hs=t.querySelectorAll(".sectlabel");
+    if(hs.length){ lab=hs[0].firstChild?hs[0].firstChild.textContent:null; for(var i=0;i<hs.length;i++) hs[i].parentNode.removeChild(hs[i]); }
+    var ac=t.querySelectorAll(".card > .accent"); for(var j=0;j<ac.length;j++) ac[j].parentNode.removeChild(ac[j]);
+    if(!t.childNodes.length) return false;
+    var l=label||lab; if(l) b.appendChild(el("div","z5-k",l));
+    while(t.firstChild) b.appendChild(t.firstChild);
+    return true;
+  }
+  function block(cls,fn){ var b=el("div","z5-b "+cls); var ok=false; try{ ok=fn(b); }catch(e){ ok=false; try{ console.error("[dash] zone 5 "+cls,e); }catch(_){} }
+    if(ok&&b.childNodes.length){ z.appendChild(b); n++; } }
+  /* 1. FIRST THING */
+  block("z5-first",function(b){
+    var ok=adopt(b,F.first); if(!ok) return false;
+    if(/Waiting on someone else/.test(b.textContent)) b.className+=" wait";
+    return true;
+  });
+  /* 2. TODAY'S LIFTS, silent on a rest day */
+  block("z5-work",function(b){ return adopt(b,F.work); });
+  /* 3. WHERE THE GOAL STANDS */
+  block("z5-year",function(b){
+    var ok=adopt(b,F.year,"Where the goal stands"); if(!ok) return false;
+    var cb=b.querySelector(".cbody"); if(cb&&cb.firstChild&&/production goals/i.test(cb.firstChild.textContent||"")) cb.removeChild(cb.firstChild);
+    var rows=b.querySelectorAll(".goalrow");
+    if(rows.length>1&&/Production/.test(rows[0].textContent||"")) rows[0].parentNode.removeChild(rows[0]);
+    var fl=b.querySelectorAll(".pbar i"); for(var i=0;i<fl.length;i++){ fl[i].style.background="var(--green)"; }
+    var inl=b.querySelectorAll("[style*='--sec2']"); for(var k=0;k<inl.length;k++){ inl[k].style.color="var(--white)"; }
+    return true;
+  });
+  /* 4. COMING UP */
+  block("z5-up",function(b){
+    var ok=adopt(b,F.up,"Coming up"); if(!ok) return false;
+    var cb=b.querySelector(".cbody");
+    if(cb){ var first=cb.children[0], second=cb.children[1];
+      if(first&&/^Coming up$/.test(first.textContent||"")) cb.removeChild(first);
+      if(second&&/soonest first/.test(second.textContent||"")) cb.removeChild(second); }
+    var rs=b.querySelectorAll(".mrow"); for(var i=0;i<rs.length;i++){ if(/overdue/i.test(rs[i].textContent||"")) rs[i].className+=" late"; }
+    return true;
+  });
+  /* 5. PICKLEBALL: the rating and the last session */
+  block("z5-pk",function(b){
+    var pb=state.pickleball||{};
+    var dp=(Array.isArray(pb.dupr)&&pb.dupr.length)?pb.dupr[pb.dupr.length-1]:null;
+    var ss=Array.isArray(pb.sessions)?pb.sessions.slice().sort(function(a,c){ return String((c&&c.date)||"").localeCompare(String((a&&a.date)||"")); }):[];
+    var last=ss.length?ss[0]:null;
+    if(!dp&&!last) return false;
+    var when="";
+    if(last&&last.date){ try{ var du=daysUntil(last.date); when=(du===0?"today":du===-1?"yesterday":(du<0?(-du)+" days ago":fmtShort(last.date))); }catch(e){ when=String(last.date); } }
+    var st=el("div","z5-strip"); st.setAttribute("role","button"); st.setAttribute("aria-label","Pickleball, open the tab");
+    if(dp){ var c1=el("div","z5-cell"); var v1=el("div","z5-sv",String(dp.rating)); c1.appendChild(v1); c1.appendChild(el("div","z5-sl","DUPR rating")); st.appendChild(c1); }
+    if(last){ var c2=el("div","z5-cell"); c2.appendChild(el("div","z5-sv z5-sv2",when)); c2.appendChild(el("div","z5-sl","Last session")); st.appendChild(c2); }
+    st.onclick=function(){ selectTab("pickle"); };
+    b.appendChild(st); return true;
+  });
+  /* 6. the one grey line for anything gated, silent when there is nothing */
+  block("z5-quiet",function(b){ return adopt(b,F.quiet); });
+  if(!n) return;
+  var head=el("div","z5-head"); head.appendChild(el("div","z5-t","Behind the numbers")); head.appendChild(el("div","z5-s","The goal, the next moves and the rating"));
+  z.insertBefore(head,z.firstChild);
+  host.appendChild(z);
+  hzReveal(z,".z5-b",function(){ return HZ5_DONE; },function(){ HZ5_DONE=true; });
 }
 function buildIanHome(v){ const workout=daySplit(DOW); const reTop=firstUndone((state.realEstate.todos||[]).filter(t=>todoList(t)==="todo")); const nm=(state.settings&&state.settings.name)||"Ian";
   /* build 494: the old greeting card is replaced by zone 1, see homeZone1 */
@@ -28785,16 +28898,18 @@ function buildIanHome(v){ const workout=daySplit(DOW); const reTop=firstUndone((
      pass 4 fills z4 and sorts z5. */
   v=Z.z2; secHeat();   /* z2: the training heatmap, UNTOUCHED */
   safe(Z.z4,function(){ homeZone4(Z.z4); },"Home zone 4");   /* z4: build 496, medium graphics */
+  /* build 497: zone 5 is designed, see homeZone5. secStatus, secSolara, secWater and secSphere are no longer called
+     (duplicates and a dead card, reasons in the build 497 header). secProg is replaced by the Where the goal stands and
+     Coming up blocks, which call reGoalsCard and homeUpcomingCard directly. Each legacy section still draws itself, into a
+     scratch div that the band adopts, so its logic is untouched. */
   v=Z.z5;
-  secStatus();     /* z5: Pickleball and Solara tiles; the Real estate tile is the zone 1 ring */
-  secProg();       /* z5: goal pace and what is coming up */
-  secWorkout();    /* z5: silent on a rest day */
-  secFirstThing(); /* z5: ONE computed thing */
-  secSolara();     /* z5: the Solara door */
-  secWater();      /* z5 */
-  secSphere();     /* z5 */
-  secCal();        /* z5: removed, no-op */
-  secQuiet();      /* z5: what was gated, one grey line */
+  safe(Z.z5,function(){ homeZone5(Z.z5,{
+    first:function(h){ var k=v; v=h; try{ secFirstThing(); }finally{ v=k; } },
+    work:function(h){ var k=v; v=h; try{ secWorkout(); }finally{ v=k; } },
+    year:function(h){ reGoalsCard(h,"a-teal"); },
+    up:function(h){ homeUpcomingCard(h); },
+    quiet:function(h){ var k=v; v=h; try{ secQuiet(); }finally{ v=k; } }
+  }); },"Home zone 5");
   v=ROOT;
   /* secBrief REMOVED build 344. "Today from Claude" is cut, not shrunk. 1 tick in 44
      cards over a fortnight against 61 percent for Easy wins, the identical mechanic on the
@@ -35026,6 +35141,82 @@ section,.card,.sectlabel{scroll-margin-top:calc(var(--hh) + var(--sat) + 8px)}
 .gm-chev{font-size:14px;transition:transform .15s ease}
 .gm-det{margin-top:8px}
 .gm-det p{font-size:12px;line-height:1.5;color:var(--gray);margin:8px 0 0}
+</style>
+<style id="hz-b497">
+/* ===== v21 build 497: HOME ZONES, PASS 4 OF 4. Zone 5 the data band, the one motion driver, the court hours line.
+   Same scale as 494 to 496: 4px grid, 8 preferred, 12 between siblings, 16 inside a card, --block 24 between zones.
+   No glass in zone 5 (Home still carries exactly one, zone 1's Next to close strip). Colour follows the domain:
+   green is real estate, blue is pickleball, amber means overdue or needs you, teal is time on court. */
+.hz-z5{margin-bottom:var(--block)}
+.z5{display:flex;flex-direction:column;gap:12px}
+.z5-head{position:relative;padding:8px 4px 4px}
+.z5-head::before{content:"";position:absolute;left:0;top:0;width:200px;height:80px;pointer-events:none;background:radial-gradient(closest-side,rgba(61,155,255,.14),rgba(61,155,255,0))}
+.z5-t,.z5-s{position:relative}
+.z5-t{font-size:22px;line-height:1.15;font-weight:800;letter-spacing:-.02em;color:var(--white)}
+.z5-s{font-size:13px;font-weight:600;color:var(--gray);margin-top:4px}
+.z5-b{min-width:0}
+.z5-k{font-size:13px;font-weight:700;color:var(--gray);padding:0 4px 8px}
+.z5-b .card{margin-bottom:0;border-radius:var(--r);border:1px solid rgba(255,255,255,.05);box-shadow:0 8px 20px rgba(0,0,0,.35)}
+.z5-b .cbody{padding:16px}
+/* first thing: the amber rule */
+.z5-first .card{border-left:3px solid var(--amber);background:linear-gradient(170deg,rgba(255,159,10,.14) 0%,rgba(255,159,10,0) 60%),var(--card)}
+.z5-first.wait .card{border-left-color:rgba(255,255,255,.22);background:var(--card)}
+.z5-first .cbody,.z5-first .cbody div{color:var(--white)}
+.z5-first .cbody .small{color:var(--gray)}
+.z5-first .pill{display:inline-block;margin-bottom:8px;padding:4px 8px;border-radius:99px;font-size:11px;font-weight:700;color:var(--amber2);background:rgba(255,159,10,.14);border:1px solid rgba(255,159,10,.3)}
+.z5-first.wait .pill{color:var(--gray);background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.12)}
+/* where the goal stands */
+.z5-year .card{background:linear-gradient(170deg,rgba(48,209,88,.14) 0%,rgba(48,209,88,0) 62%),var(--card)}
+.z5-year .goalrow{margin-top:0}
+.z5-year .goal-lab{font-size:13px;font-weight:700;color:var(--gray)}
+.z5-year .goal-val b{font-size:19px;font-weight:800;color:var(--white)}
+.z5-year .goal-val span{color:var(--gray)}
+.z5-year .pbar{height:8px;margin-top:8px;background:rgba(255,255,255,.08);overflow:hidden}
+.z5-year .pbar i{display:block;height:100%;border-radius:99px;transform-origin:0 50%}
+.z5-year .small,.z5-year .dim{color:var(--gray)}
+.z5-year .gm-tbl{margin-top:16px}
+/* coming up */
+.z5-up .mrow{padding:12px 0;border-bottom:1px solid rgba(255,255,255,.08)}
+.z5-up .mrow .ml{color:var(--white);font-weight:600}
+.z5-up .mrow .ml small{color:var(--gray)}
+.z5-up .mrow .small.dim{color:var(--gray);text-align:right}
+.z5-up .mrow.late .small{color:var(--amber2)}
+/* pickleball strip */
+.z5-strip{display:flex;align-items:center;gap:16px;padding:16px;border-radius:var(--r);cursor:pointer;border:1px solid rgba(255,255,255,.05);box-shadow:0 8px 20px rgba(0,0,0,.35);
+  background:linear-gradient(170deg,rgba(61,155,255,.18) 0%,rgba(61,155,255,0) 58%),var(--card);-webkit-tap-highlight-color:transparent}
+.z5-strip:active{transform:scale(.98)}
+.z5-cell{flex:1 1 0;min-width:0}
+.z5-cell+.z5-cell{padding-left:16px;border-left:1px solid rgba(255,255,255,.1)}
+.z5-sv{font-size:28px;line-height:1.1;font-weight:800;letter-spacing:-.02em;color:var(--white);font-variant-numeric:tabular-nums}
+.z5-sv2{font-size:20px;line-height:1.35;letter-spacing:-.01em}
+.z5-sl{font-size:12px;color:var(--gray);margin-top:4px;line-height:1.35}
+/* quiet line */
+.z5-quiet{padding:0 4px}
+/* one rise, for everything that enters when it is first reached */
+.hz-wait{opacity:0}
+.hz-rise{animation:hzUp 520ms cubic-bezier(.2,.7,.2,1) backwards;animation-delay:calc(var(--i,0) * 60ms)}
+.hz-wait .pbar i{transform:scaleX(0)}
+.hz-rise .pbar i{animation:z4GrowX 700ms cubic-bezier(.2,.7,.2,1) backwards;animation-delay:calc(var(--i,0) * 60ms + 160ms)}
+/* court hours as a line, so it is not a third green bar chart */
+.z4-b{background:linear-gradient(170deg,rgba(95,230,210,.14) 0%,rgba(95,230,210,0) 62%),var(--card)}
+.z4-b .z4-k{color:var(--teal2)}
+.z4-b .z4-vl.on{color:var(--teal2)}
+.z4-line{position:relative}
+.z4-line .z4-ch{position:absolute;left:0;right:0;top:0;bottom:0}
+.z4-line svg{position:absolute;left:0;top:0;width:100%;height:100%;display:block;overflow:visible}
+.z4-dot{position:absolute;width:8px;height:8px;margin:0 0 -4px -4px;border-radius:50%;background:var(--teal2)}
+.z4-dot.cur{background:var(--card);box-shadow:0 0 0 2px var(--teal2) inset}
+.z4-dot.z0{background:rgba(255,255,255,.3)}
+.z4-wait .z4-ch{clip-path:inset(0 100% 0 0)}
+.z4-wait .z4-dot{opacity:0}
+@keyframes z4Wipe{from{clip-path:inset(0 100% 0 0)}to{clip-path:inset(0 0 0 0)}}
+@keyframes z4Pop{from{opacity:0}to{opacity:1}}
+.z4-go .z4-ch{animation:z4Wipe 700ms cubic-bezier(.2,.7,.2,1) both}
+.z4-go .z4-dot{animation:z4Pop 520ms cubic-bezier(.2,.7,.2,1) both;animation-delay:calc(var(--i,0) * 60ms + 200ms)}
+@media (prefers-reduced-motion:reduce){
+  .hz-wait{opacity:1}.hz-rise,.hz-rise .pbar i{animation:none}.hz-wait .pbar i{transform:none}
+  .z4-go .z4-ch,.z4-go .z4-dot{animation:none}.z4-wait .z4-ch{clip-path:none}.z4-wait .z4-dot{opacity:1}.z5-strip:active{transform:none}
+}
 </style>
 <style id="asof-b493">
 .asof{font-size:11px;line-height:1.4;color:var(--gray2);text-align:center;margin:16px 0 8px}
