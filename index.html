@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 495 (2026-10-12)">
+<meta name="build" content="v21 build 496 (2026-10-12)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -27652,6 +27652,153 @@ function hzBandReveal(band){
     io.observe(side);
   }catch(e){ band.className=band.className.replace(" z2-wait",""); }
 }
+/* ===== v21 build 496: HOME REDESIGN, PASS 3 OF 4. ZONE 3 QUICK LINKS, ZONE 4 MEDIUM GRAPHICS ==========
+   ZONE 3. Ian: "under that there can be quick links or button that open up into informational areas."
+   The bottom tab bar already opens Today, Real Est, Gym, Pickle and Finances, so a link to a tab would
+   be a duplicate. These six open a SPECIFIC VIEW inside a tab, scrolled to the section, with a live
+   line that says something before the tap:
+     To do            Real Estate > Things I have to do. Open count and how many are due inside 7 days.
+     Stay in touch    Real Estate > Stay in touch. How many contacts are overdue.
+     Closings         Finances > Closings, where the closing money is. Ian looks here when something closes.
+     Mechanics        Pickleball > Mechanics, the after-a-session surface.
+     Skill map        Pickleball > Skill map. Linked, not redrawn or moved.
+     Solara           The one area with no tab on the bar. Shows the current drop.
+   Real Estate leads because it is half the workload. Sessions is NOT linked: zone 2 is the sessions graphic.
+   ZONE 4. Two charts, each answering one question nothing else on Home answers.
+     Closings by month   when the money lands: banked in green, under contract in purple, month by month.
+                         Built from the same Closed and Under Contract deals and the same dealVolume as the ring,
+                         so the bars plus the deals with no month on record add up to the ring's figure.
+     Court hours a week  how long, where zone 2 says how often. Ian's goal is 5 to 6 sessions a week "without
+                         overworking", and hours is the half of that sentence nothing showed.
+   Read only. Nothing is written to state. No glass in either zone. */
+var HZ4_DONE=false;
+var HZ_MONL=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+function hzJump(tab,setup,find){
+  try{ if(setup) setup(); }catch(e){}
+  try{ render(); }catch(e){}
+  selectTab(tab);
+  if(find){ setTimeout(function(){ try{
+    var pg=document.getElementById("p-"+tab); if(!pg) return;
+    var cs=pg.querySelectorAll(".card"); var hit=null;
+    for(var i=0;i<cs.length&&!hit;i++){ if(String(cs[i].textContent||"").replace(/^\s+/,"").indexOf(find)===0) hit=cs[i]; }
+    if(hit){ window.scrollTo(0,Math.max(0,hit.getBoundingClientRect().top+(window.pageYOffset||0)-72)); }
+  }catch(e){} },60); }
+}
+function homeZone3(host){
+  var RE=state.realEstate||{}; var deals=RE.deals||[]; var todos=RE.todos||[];
+  var open=todos.filter(function(t){ return t&&!t.done&&todoList(t)==="todo"; });
+  var due=open.filter(function(t){ return t.due&&daysUntil(t.due)<=7; }).length;
+  var sph=0; try{ sph=sphereOverdue().length; }catch(e){}
+  var ucN=deals.filter(function(d){ return d&&d.stage==="Under Contract"; }).reduce(function(t,d){ return t+dealCountWeight(d); },0);
+  var drop=(state.solara&&state.solara.drop)||"";
+  var items=[
+    {g:"re",ic:ICO.check,lab:"To do",sub:open.length+" open"+(due?(", "+due+" due"):""),go:function(){ hzJump("re",function(){ reView="todo"; }); }},
+    {g:"re",ic:ICO.people,lab:"Stay in touch",sub:sph?(sph+" to reach out"):"All caught up",go:function(){ hzJump("re",function(){ reView="sphere"; }); }},
+    {g:"re",ic:ICO.chart,lab:"Closings",sub:ucN?(ucN+" under contract"):"None pending",go:function(){ hzJump("finance",function(){ PK_OPEN["fin_close"]=true; },"Closings"); }},
+    {g:"pk",ic:ICO.ball,lab:"Mechanics",sub:"Shot by shot",go:function(){ hzJump("pickle",function(){ PK_OPEN["pk_mechanics"]=true; },"Mechanics"); }},
+    {g:"pk",ic:ICO.target,lab:"Skill map",sub:"Where you stand",go:function(){ hzJump("pickle",function(){ PK_OPEN["pk_skill"]=true; },"Skill map"); }},
+    {g:"so",ic:ICO.sun,lab:"Solara",sub:drop||"Open",go:function(){ selectTab("solara"); }}
+  ];
+  var z=el("div","z3");
+  z.appendChild(el("div","z3-k","Jump to"));
+  var grid=el("div","z3-grid");
+  items.forEach(function(it){
+    var b=el("button","z3-t g-"+it.g); b.type="button";
+    var ic=el("span","z3-ic"); ic.innerHTML=it.ic; b.appendChild(ic);
+    var tx=el("span","z3-tx"); tx.appendChild(el("span","z3-l",it.lab)); tx.appendChild(el("span","z3-s",it.sub)); b.appendChild(tx);
+    b.onclick=it.go; grid.appendChild(b);
+  });
+  z.appendChild(grid); host.appendChild(z);
+}
+function hzCloseMonth(txt){
+  var s=String(txt||""); if(!s||/not confirmed|not given|unknown|tbd|no date/i.test(s)) return null;
+  var M="(Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|June?|July?|Aug(?:ust)?|Sep(?:t(?:ember)?)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)";
+  var r1=new RegExp("\\b"+M+"\\.?\\s+(\\d{1,2})(?:st|nd|rd|th)?\\b(?:,?\\s*(20\\d\\d))?","i");
+  var r2=new RegExp("\\b(\\d{1,2})(?:st|nd|rd|th)?\\s+(?:of\\s+)?"+M+"\\b(?:,?\\s*(20\\d\\d))?","i");
+  var r3=new RegExp("\\b"+M+"\\.?,?\\s+(20\\d\\d)\\b","i");
+  var m,mon,yr;
+  if((m=r2.exec(s))){ mon=m[2]; yr=m[3]; } else if((m=r1.exec(s))){ mon=m[1]; yr=m[3]; } else if((m=r3.exec(s))){ mon=m[1]; yr=m[2]; } else return null;
+  var mi=HZ_MONL.map(function(x){ return x.toLowerCase(); }).indexOf(String(mon).slice(0,3).toLowerCase()); if(mi<0) return null;
+  return {y:yr?parseInt(yr,10):parseInt(String(TODAY).slice(0,4),10),m:mi};
+}
+function hzClosingsData(){
+  var deals=(state.realEstate&&state.realEstate.deals)||[]; var by={}; var un=0, unN=0;
+  deals.forEach(function(d){
+    if(!d||(d.stage!=="Closed"&&d.stage!=="Under Contract")) return;
+    var v=dealVolume(d); var mo=hzCloseMonth(d.close);
+    if(!mo){ un+=v; unN++; return; }
+    var k=mo.y*12+mo.m; var o=by[k]||(by[k]={k:k,y:mo.y,m:mo.m,closed:0,uc:0}); if(d.stage==="Closed") o.closed+=v; else o.uc+=v;
+  });
+  var ks=Object.keys(by).map(Number).sort(function(a,b){ return a-b; });
+  var rows=[]; if(ks.length){ for(var k=ks[0];k<=ks[ks.length-1];k++){ rows.push(by[k]||{k:k,y:Math.floor(k/12),m:k%12,closed:0,uc:0}); } }
+  return {rows:rows,un:un,unN:unN};
+}
+function hzDurMin(s){ var t=String(s||""); var h=/(\d+)\s*h/i.exec(t), m=/(\d+)\s*m/i.exec(t), sc=/(\d+)\s*s/i.exec(t); return (h?parseInt(h[1],10)*60:0)+(m?parseInt(m[1],10):0)+(sc?parseInt(sc[1],10)/60:0); }
+function hzIso(d){ return d.getFullYear()+"-"+("0"+(d.getMonth()+1)).slice(-2)+"-"+("0"+d.getDate()).slice(-2); }
+function hzWeeklyHours(){
+  var p=String(TODAY).split("-"); var t=new Date(+p[0],+p[1]-1,+p[2]); var dow=(t.getDay()+6)%7;
+  var mon0=new Date(t.getFullYear(),t.getMonth(),t.getDate()-dow); var ss=(state.pickleball&&state.pickleball.sessions)||[]; var out=[];
+  for(var i=7;i>=0;i--){
+    var ws=new Date(mon0.getFullYear(),mon0.getMonth(),mon0.getDate()-7*i), we=new Date(ws.getFullYear(),ws.getMonth(),ws.getDate()+6);
+    var a=hzIso(ws), b=hzIso(we); var mins=0, n=0;
+    ss.forEach(function(x){ if(x&&x.date&&x.date>=a&&x.date<=b){ mins+=hzDurMin(x.duration); n++; } });
+    out.push({lab:(i===0?"This":((ws.getMonth()+1)+"/"+ws.getDate())),h:mins/60,n:n,cur:i===0});
+  }
+  return out;
+}
+function homeZone4(host){
+  var z=el("div","z4"); var any=false;
+  var cd=hzClosingsData();
+  if(cd.rows.length>=2){
+    var rows=cd.rows.slice(); var lead=null;
+    if(rows.length>8){ var cut=rows.splice(0,rows.length-7); lead={lab:"Earlier",closed:cut.reduce(function(t,r){ return t+r.closed; },0),uc:cut.reduce(function(t,r){ return t+r.uc; },0),cur:false}; }
+    var curK=(function(){ var p=String(TODAY).split("-"); return (+p[0])*12+(+p[1]-1); })(); var curY=Math.floor(curK/12);
+    var list=(lead?[lead]:[]).concat(rows.map(function(r){ return {lab:HZ_MONL[r.m]+(r.y!==curY?(" "+String(r.y).slice(2)):""),closed:r.closed,uc:r.uc,cur:r.k===curK}; }));
+    var mx=1; list.forEach(function(r){ var t=r.closed+r.uc; if(t>mx) mx=t; });
+    var card1=el("div","z4-card z4-a"); card1.setAttribute("role","img");
+    card1.setAttribute("aria-label","Closings by month, banked and under contract volume");
+    card1.appendChild(el("div","z4-k","Closings by month")); card1.appendChild(el("div","z4-ks","Closed and under contract volume, by month"));
+    var bars=el("div","z4-hb");
+    list.forEach(function(r,i){
+      var tot=r.closed+r.uc; var row=el("div","z4-hr"+(r.cur?" cur":""));
+      row.appendChild(el("div","z4-hl",r.lab));
+      var tr=el("div","z4-ht");
+      if(tot>0){ var fill=el("div","z4-hf"); fill.style.width=Math.max(2,Math.round(tot/mx*100))+"%"; try{ fill.style.setProperty("--i",String(i)); }catch(e){}
+        if(r.closed>0){ var g1=el("i","g"); g1.style.flexGrow=String(r.closed); fill.appendChild(g1); }
+        if(r.uc>0){ var u1=el("i","u"); u1.style.flexGrow=String(r.uc); fill.appendChild(u1); }
+        tr.appendChild(fill); }
+      row.appendChild(tr);
+      row.appendChild(el("div","z4-hv"+(tot>0?"":" none"),tot>0?fmtMoneyShort(tot):"None"));
+      bars.appendChild(row);
+    });
+    card1.appendChild(bars);
+    var lg=el("div","z4-lg"); var l1=el("span"); l1.appendChild(el("i","g")); l1.appendChild(document.createTextNode("Banked")); lg.appendChild(l1);
+    var l2=el("span"); l2.appendChild(el("i","u")); l2.appendChild(document.createTextNode("Under contract")); lg.appendChild(l2); card1.appendChild(lg);
+    if(cd.unN>0){ card1.appendChild(el("div","z4-fn",cd.unN+(cd.unN===1?" deal has":" deals have")+" no month on record and "+(cd.unN===1?"is":"are")+" not shown.")); }
+    z.appendChild(card1); any=true;
+  }
+  var wk=hzWeeklyHours(); var tot2=0; wk.forEach(function(w){ tot2+=w.n; });
+  if(tot2>=2){
+    var mx2=1; wk.forEach(function(w){ if(w.h>mx2) mx2=w.h; });
+    var card2=el("div","z4-card z4-b"); card2.setAttribute("role","img"); card2.setAttribute("aria-label","Pickleball court hours per week, last eight weeks");
+    card2.appendChild(el("div","z4-k","Court hours a week")); card2.appendChild(el("div","z4-ks","Time on court, last 8 weeks. Zone above counts sessions."));
+    var plot=el("div","z4-vp");
+    wk.forEach(function(w,i){ var col=el("div","z4-vc"); var bar=el("div","z4-vb"+(w.h<=0?" z0":"")+(w.cur?" cur":""));
+      if(w.h>0) bar.style.height=Math.max(4,Math.round(w.h/mx2*100))+"%"; try{ bar.style.setProperty("--i",String(i)); }catch(e){}
+      col.appendChild(bar); plot.appendChild(col); });
+    card2.appendChild(plot);
+    var lab=el("div","z4-vr");
+    wk.forEach(function(w){ var c=el("div","z4-vcell"); c.appendChild(el("div","z4-vv",w.h>0?(Math.round(w.h*10)/10).toFixed(1):"0")); c.appendChild(el("div","z4-vl"+(w.cur?" on":""),w.lab)); lab.appendChild(c); });
+    card2.appendChild(lab); z.appendChild(card2); any=true;
+  }
+  if(!any) return;
+  host.appendChild(z);
+  var reduce=false; try{ reduce=!!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches); }catch(e){}
+  if(HZ4_DONE||reduce||!window.IntersectionObserver) return;
+  z.className+=" z4-wait";
+  try{ var io=new IntersectionObserver(function(es){ es.forEach(function(en){ if(en.isIntersecting){ z.className=z.className.replace(" z4-wait"," z4-go"); HZ4_DONE=true; io.disconnect(); } }); },{threshold:0.35}); io.observe(z); }
+  catch(e){ z.className=z.className.replace(" z4-wait",""); }
+}
 function buildIanHome(v){ const workout=daySplit(DOW); const reTop=firstUndone((state.realEstate.todos||[]).filter(t=>todoList(t)==="todo")); const nm=(state.settings&&state.settings.name)||"Ian";
   /* build 494: the old greeting card is replaced by zone 1, see homeZone1 */
   if(!(state.settings&&state.settings.bannerDismissed)){ const bn=el("div","banner"); bn.appendChild(el("div",null,"For full interactivity and saving, open this file in Safari. An in app preview can limit some taps.")); const x=el("button","bx","\u00D7"); x.onclick=()=>{ if(!state.settings)state.settings={}; state.settings.bannerDismissed=true; save(); render(); }; bn.appendChild(x); v.appendChild(bn); }
@@ -27659,7 +27806,9 @@ function buildIanHome(v){ const workout=daySplit(DOW); const reTop=firstUndone((
   safe(ROOT,function(){ homeZone1(Z.z1,nm,workout); },"Home zone 1");
   /* quick actions (build 176: Command Center removed, Quick actions sits at the top of Home) */
   v=Z.z3;
-  safe(v,function(){
+  safe(v,function(){ homeZone3(v); },"Home zone 3");
+  /* build 496: the old four button row (Real Estate, Workout, Mechanics, Solara) duplicated the tab bar and is no longer called. */
+  if(false) safe(v,function(){
     var qc=card(); var q=el("div","qa");
     function qb(cls,icon,label,fn){ var b=el("button","qab "+cls); var i=el("div","ic"); if(/^\s*<svg/.test(icon)){ i.innerHTML=icon; } else { i.textContent=icon; } b.appendChild(i); var s=el("div"); s.textContent=label; b.appendChild(s); b.onclick=fn; return b; }
     /* build 121 NAV FIX: the Gym page has two collapsibles keyed by TITLE in reToolOpen. Both buttons used to
@@ -28635,6 +28784,7 @@ function buildIanHome(v){ const workout=daySplit(DOW); const reTop=firstUndone((
      is routed into its slot by pointing v at the slot for the call. Pass 2 replaces z2, pass 3 z3,
      pass 4 fills z4 and sorts z5. */
   v=Z.z2; secHeat();   /* z2: the training heatmap, UNTOUCHED */
+  safe(Z.z4,function(){ homeZone4(Z.z4); },"Home zone 4");   /* z4: build 496, medium graphics */
   v=Z.z5;
   secStatus();     /* z5: Pickleball and Solara tiles; the Real estate tile is the zone 1 ring */
   secProg();       /* z5: goal pace and what is coming up */
@@ -29101,7 +29251,106 @@ function fmtMoneyShort(n){ n=n||0; if(n>=1e6){ var m=n/1e6; return "$"+(m>=10?St
    touched, including the 2027 ceiling prose. Deciding which of its numbers survive is Ian's
    call, exactly as the build 391 header on buildIanRe says, and it is still the first thing to
    put to him. A card accent is chrome, not a number. */
+/* ===== v21 build 496: THE PRODUCTION EXPLAINER, REBUILT. Ian: "this sections weird." ================
+   It was seven blocks in four colours, four of them explaining the same production maths in different
+   words: a gray received block, a gray ceiling paragraph, a red box, a blue sentence, the table with a
+   restating sentence and a dim sentence under it, then a long gray footnote. His standing rule:
+   "nothing should be overwhelmingly repeated, no dumb information only things important and useful."
+   NOW. The two bars and the two commission rows are unchanged. Then, in this order:
+     1. the four row table (banked, under contract, listing on a confirmed date, listing with no date),
+        each row with a coloured dot, banked carrying its share of the goal. This is the real content.
+     2. ONE insight line: how far short of the goal the ceiling is, and that closing it needs new business.
+     3. ONE risk line, the only warning colour on the card, naming the deals in the under contract purple.
+     4. "How this is calculated", collapsed. Everything that was prose lives behind it, nothing is deleted:
+        the all-live ceiling, the 2027 parked volume, the deals count, the received and estimate caveat,
+        the broker cut and split basis, the $136 model gap, the source tag default.
+   Cut outright because the table or the bars already show it: the sentence restating the bar, the banked
+   dollar figure and percent in prose, and the Received and Kept rows when nothing is outstanding (they equal
+   Est. commission). If anything IS outstanding, one Awaiting payment row shows it.
+   Colour language: green figures, purple under contract names, one red accent for the risk line. Every
+   figure is still computed from the deal records. The previous function is kept below as reGoalsCard495
+   and is not called. */
 function reGoalsCard(parent,accOverride){
+  const deals=state.realEstate.deals||[]; const vol=arr=>arr.reduce((a,d)=>a+dealVolume(d),0);
+  const closed=deals.filter(d=>d.stage==="Closed"); const uc=deals.filter(d=>d.stage==="Under Contract");
+  const production=vol(closed)+vol(uc); const dealsDone=closed.concat(uc).reduce(function(a,d){ return a+dealCountWeight(d); },0);
+  const g=(state.realEstate&&state.realEstate.goals2026)||{}; const PROD_GOAL=g.production||10000000; const DEALS_GOAL=g.deals||20;
+  const c=card(accOverride||"a-teal"); const b=c._body;
+  b.appendChild(el("div","small muted","2026 production goals"));
+  const mk=(label,valHtml,frac,col)=>{ const wrap=el("div","goalrow"); const top=el("div","between"); top.appendChild(el("div","goal-lab",label)); const vv=el("div","goal-val"); vv.innerHTML=valHtml; top.appendChild(vv); wrap.appendChild(top); const bar=el("div","pbar"); const i=el("i"); bar.appendChild(i); wrap.appendChild(bar); try{ i.style.width=Math.min(100,frac*100)+"%"; i.style.background="var(--"+col+")"; }catch(e){} return wrap; };
+  b.appendChild(mk("Production",'<b>'+fmtMoneyShort(production)+'</b> <span>of '+fmtMoneyShort(PROD_GOAL)+'</span>',PROD_GOAL?production/PROD_GOAL:0,"teal"));
+  b.appendChild(mk("Deals",'<b>'+dealsDone+'</b> <span>of '+DEALS_GOAL+'</span>',DEALS_GOAL?dealsDone/DEALS_GOAL:0,"teal2"));
+  const incClosed=sumIanNet(closed); const incUc=sumIanNet(uc);
+  const incLine=el("div"); incLine.style.cssText="margin-top:13px;display:flex;justify-content:space-between;align-items:baseline";
+  incLine.appendChild(el("div","goal-lab","Est. commission"));
+  const incVal=el("div","goal-val"); incVal.innerHTML='<b>'+fmtMoney(incClosed)+'</b> <span>closed'+(incUc?', '+fmtMoney(incUc)+' pending':'')+'</span>'; incLine.appendChild(incVal);
+  b.appendChild(incLine);
+  { var _ptLine=el("div"); _ptLine.style.cssText="margin-top:5px;display:flex;justify-content:space-between;align-items:baseline";
+    _ptLine.appendChild(el("div","small dim","Yours after "+taxPctWord()+" tax"));
+    var _ptVal=el("div","small"); _ptVal.style.fontWeight="800"; _ptVal.style.color="var(--sec2,var(--accent2))";
+    _ptVal.innerHTML='<b>'+fmtMoney(postTax(incClosed))+'</b>'+(incUc?' <span class="dim">, '+fmtMoney(postTax(incUc))+' pending</span>':'');
+    _ptLine.appendChild(_ptVal); b.appendChild(_ptLine); }
+  var _un=sumUnpaid(closed), _uk=sumUnknownPay(closed);
+  if(_un>0||_uk>0){ var _aw=el("div"); _aw.style.cssText="margin-top:5px;display:flex;justify-content:space-between;align-items:baseline";
+    _aw.appendChild(el("div","small dim","Closed, awaiting payment")); var _awv=el("div","small"); _awv.style.fontWeight="800"; _awv.textContent=fmtMoney(_un+_uk); _aw.appendChild(_awv); b.appendChild(_aw); }
+
+  /* the layers, with the same rules as build 485 */
+  const _gexec=function(d){ return !!(d&&d.contract&&d.contract.executed); };
+  const _wt=function(a){ return a.reduce(function(x,d){ return x+dealCountWeight(d); },0); };
+  const _banked=closed;
+  const _committed=uc.concat(deals.filter(function(d){ return d.stage==="Active"&&_gexec(d); }));
+  const _csoon=deals.filter(function(d){ return d.stage==="Coming Soon"; });
+  const _dated=_csoon.filter(function(d){ return d.listDateConfirmed===true; });
+  const _undated=_csoon.filter(function(d){ return d.listDateConfirmed!==true; });
+  const _bv=vol(_banked), _cv=vol(_committed), _dv=vol(_dated), _uv=vol(_undated);
+  const _pct=PROD_GOAL?Math.round((_bv/PROD_GOAL)*100):0;
+  const tbl=el("div","gm-tbl"); tbl.appendChild(el("div","gm-k","Where the bar comes from"));
+  const row=function(cls,dot,lab,sub,amt){ const r=el("div","gm-row"+(cls?" "+cls:"")); const d=el("i","gm-dot"); d.style.background=dot; r.appendChild(d);
+    const l=el("div","gm-lab"); l.appendChild(document.createTextNode(lab)); if(sub) l.appendChild(el("small",null,sub)); r.appendChild(l);
+    r.appendChild(el("div","gm-amt",fmtMoney(amt))); tbl.appendChild(r); };
+  const dl=function(a){ const n=_wt(a); return n+(n===1?" deal":" deals"); };
+  row("bank","var(--green)","Banked, closed",dl(_banked)+"  \u00b7  "+_pct+"% of the goal",_bv);
+  if(_cv) row("","var(--fi2,#da8fff)","Under contract, not closed",dl(_committed),_cv);
+  if(_dv) row("","var(--blue)","Listing on a confirmed date",dl(_dated),_dv);
+  if(_uv) row("dim","var(--gray2)","Listing, no date on record",dl(_undated),_uv);
+  b.appendChild(tbl);
+
+  /* the ceiling: production plus live volume that can still land this year */
+  const is27=d=>/20(2[7-9]|[3-9]\d)/.test(String((d&&d.close)||""));
+  const inFlight=deals.filter(d=>(d.stage==="Active"||d.stage==="Coming Soon")&&!is27(d));
+  const parked27=deals.filter(is27);
+  const ceiling=production+vol(inFlight);
+  const ceilDeals=dealsDone+inFlight.reduce((a,d)=>a+dealCountWeight(d),0);
+  if(ceiling<PROD_GOAL){ const ins=el("div","gm-ins"); ins.appendChild(el("b",null,fmtMoneyShort(PROD_GOAL-ceiling)+" short"));
+    ins.appendChild(document.createTextNode(" of the goal even if every live listing closes. Closing it takes new business.")); b.appendChild(ins); }
+
+  const atRisk=deals.filter(d=>d&&d.risk&&(d.stage==="Under Contract"||d.stage==="Closed"));
+  if(atRisk.length){ const rk=el("div","gm-risk"); const n=_wt(atRisk);
+    rk.appendChild(el("b",null,"At risk")); rk.appendChild(document.createTextNode(" "+fmtMoneyShort(vol(atRisk))+" across "+n+" deal"+(n===1?"":"s")+": "));
+    atRisk.forEach(function(d,i){ if(i) rk.appendChild(document.createTextNode(", ")); rk.appendChild(el("span","gm-nm",String(d.title||""))); });
+    b.appendChild(rk); }
+
+  /* methodology and the long form, collapsed. PK_OPEN keeps it open across a re-render. */
+  const KEY="re_goals_how"; const openNow=(KEY in PK_OPEN)?PK_OPEN[KEY]:false;
+  const how=el("button","gm-how"); how.type="button"; const hl=el("span",null,"How this is calculated"); how.appendChild(hl);
+  const chev=el("span","gm-chev","\u25BE"); chev.style.transform="rotate("+(openNow?"180deg":"0deg")+")"; how.appendChild(chev);
+  const det=el("div","gm-det"); det.style.display=openNow?"block":"none";
+  const dline=function(t){ det.appendChild(el("p",null,t)); };
+  dline("If every live listing also closes this year: "+fmtMoneyShort(ceiling)+" and "+ceilDeals+" deals."
+    +(parked27.length?(" "+fmtMoneyShort(vol(parked27))+" across "+parked27.length+" deal"+(parked27.length===1?"":"s")+" finishes in 2027 and cannot land in 2026."):""));
+  dline("On deals, "+_wt(_banked)+" of "+DEALS_GOAL+" are closed. Everything live and dated takes it to "+(_wt(_banked)+_wt(_committed)+_wt(_dated))+", and the undated listings are the only route past that.");
+  var _est=closed.length-countActualNets(closed);
+  dline((_un>0||_uk>0)
+    ? "Received counts only what you have confirmed arriving. The rest is earned, not banked."
+    : ("Every closed deal is confirmed received."+(_est>0?(" "+_est+" of "+closed.length+" are still model estimates, not amounts you have stated."):"")));
+  const nActual=countActualNets(closed);
+  dline("Take-home is your estimated net after the 15% broker cut and your split"+(nActual?(", except "+nActual+" deal"+(nActual===1?"":"s")+" showing what you were actually paid."):".")
+    +" The model was $136 high on the one deal with a real figure to check against, so treat pending take-home as approximate. Source tags default to your side, check them per deal.");
+  how.onclick=function(){ const o=(det.style.display==="none"); det.style.display=o?"block":"none"; chev.style.transform="rotate("+(o?"180deg":"0deg")+")"; PK_OPEN[KEY]=o; };
+  b.appendChild(how); b.appendChild(det);
+  parent.appendChild(c);
+}
+function reGoalsCard495(parent,accOverride){ /* build 496: the build 495 explainer, kept intact and NOT called. See reGoalsCard above. */
   const deals=state.realEstate.deals||[]; const vol=arr=>arr.reduce((a,d)=>a+dealVolume(d),0);
   const closed=deals.filter(d=>d.stage==="Closed"); const uc=deals.filter(d=>d.stage==="Under Contract");
   const production=vol(closed)+vol(uc); const dealsDone=closed.concat(uc).reduce(function(a,d){ return a+dealCountWeight(d); },0);
@@ -34694,6 +34943,89 @@ section,.card,.sectlabel{scroll-margin-top:calc(var(--hh) + var(--sat) + 8px)}
   .z2-side{grid-template-columns:minmax(0,1fr)}
 }
 @media (prefers-reduced-motion:reduce){.z2-go .z2-bar{animation:none}.z2-wait .z2-bar{transform:none}}
+</style>
+<style id="hz-b496">
+/* ===== v21 build 496: HOME ZONES, PASS 3 OF 4. Zone 3 quick links, zone 4 medium graphics, and the
+   production explainer. Same scale as 494 and 495: 4px grid, 8 preferred, 12 between siblings, 16 inside
+   a card, --block 24 between zones. No glass in any of it. Depth is one tint per card and a soft shadow. */
+.hz-z3{margin-bottom:var(--block)}
+.hz-z4{margin-bottom:var(--block)}
+.z3-k{font-size:13px;font-weight:700;color:var(--gray);padding:0 4px 8px}
+.z3-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px}
+.z3-t{position:relative;display:flex;align-items:center;gap:12px;min-width:0;min-height:64px;padding:12px 16px;border-radius:var(--r);text-align:left;cursor:pointer;
+  font:inherit;color:var(--white);border:1px solid rgba(255,255,255,.05);box-shadow:0 8px 20px rgba(0,0,0,.35);-webkit-tap-highlight-color:transparent}
+.z3-t.g-re{background:linear-gradient(170deg,rgba(48,209,88,.15) 0%,rgba(48,209,88,0) 62%),var(--card)}
+.z3-t.g-pk{background:linear-gradient(170deg,rgba(61,155,255,.18) 0%,rgba(61,155,255,0) 58%),var(--card)}
+.z3-t.g-so{background:linear-gradient(170deg,rgba(155,107,255,.20) 0%,rgba(155,107,255,0) 62%),var(--card)}
+.z3-t:active{transform:scale(.98)}
+.z3-ic{flex:none;width:32px;height:32px;border-radius:12px;display:grid;place-items:center;background:rgba(255,255,255,.08)}
+.z3-ic svg{width:20px;height:20px;display:block}
+.g-re .z3-ic{color:var(--green)}
+.g-pk .z3-ic{color:#8ec5ff}
+.g-so .z3-ic{color:var(--violet2)}
+.z3-tx{min-width:0;display:flex;flex-direction:column}
+.z3-l{font-size:14px;font-weight:700;color:var(--white);line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.z3-s{font-size:12px;color:var(--gray);margin-top:4px;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.z4{display:grid;grid-template-columns:minmax(0,1fr);gap:12px}
+.z4-card{position:relative;overflow:hidden;min-width:0;border-radius:var(--r);padding:16px;border:1px solid rgba(255,255,255,.05);box-shadow:0 8px 20px rgba(0,0,0,.35)}
+.z4-a{background:linear-gradient(170deg,rgba(48,209,88,.14) 0%,rgba(48,209,88,0) 62%),var(--card)}
+.z4-b{background:linear-gradient(170deg,rgba(46,230,111,.14) 0%,rgba(46,230,111,0) 62%),var(--card)}
+.z4-k{font-size:13px;font-weight:700;color:var(--green)}
+.z4-b .z4-k{color:var(--pk1,#2ee66f)}
+.z4-ks{font-size:12px;color:var(--gray);margin-top:4px;line-height:1.35;margin-bottom:16px}
+.z4-hb{display:flex;flex-direction:column;gap:4px}
+.z4-hr{display:flex;align-items:center;gap:12px;min-height:28px}
+.z4-hl{flex:none;width:40px;font-size:12px;font-weight:600;color:var(--gray)}
+.z4-hr.cur .z4-hl{color:var(--green)}
+.z4-ht{flex:1 1 0;min-width:0;height:12px;border-radius:6px;background:rgba(255,255,255,.06);overflow:hidden}
+.z4-hf{display:flex;height:100%;transform-origin:0 50%}
+.z4-hf i{display:block;height:100%;flex-basis:0;min-width:2px}
+.z4-hf i.g,.z4-lg i.g{background:var(--green)}
+.z4-hf i.u,.z4-lg i.u{background:var(--fi2,#da8fff)}
+.z4-hv{flex:none;width:52px;text-align:right;font-size:13px;font-weight:700;color:var(--white);font-variant-numeric:tabular-nums}
+.z4-hv.none{font-weight:600;color:var(--gray)}
+.z4-lg{display:flex;gap:16px;margin-top:16px;font-size:12px;color:var(--gray)}
+.z4-lg span{display:inline-flex;align-items:center;gap:8px}
+.z4-lg i{display:inline-block;width:8px;height:8px;border-radius:50%}
+.z4-fn{font-size:12px;color:var(--gray);margin-top:8px;line-height:1.35}
+.z4-vp{display:flex;align-items:flex-end;gap:8px;height:96px}
+.z4-vc{flex:1 1 0;min-width:0;height:100%;display:flex;align-items:flex-end;justify-content:center}
+.z4-vb{width:100%;max-width:32px;border-radius:4px;background:var(--pk1,#2ee66f);transform-origin:50% 100%}
+.z4-vb.cur{opacity:.6}
+.z4-vb.z0{height:4px;background:rgba(255,255,255,.14)}
+.z4-vr{display:flex;gap:8px;margin-top:8px}
+.z4-vcell{flex:1 1 0;min-width:0;text-align:center}
+.z4-vv{font-size:12px;line-height:1.2;font-weight:700;color:var(--white);font-variant-numeric:tabular-nums}
+.z4-vl{font-size:11px;font-weight:600;color:var(--gray);margin-top:4px;white-space:nowrap}
+.z4-vl.on{color:var(--pk1,#2ee66f)}
+.z4-wait .z4-hf{transform:scaleX(0)}
+.z4-wait .z4-vb{transform:scaleY(0)}
+@keyframes z4GrowX{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+@keyframes z4GrowY{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+.z4-go .z4-hf{animation:z4GrowX 700ms cubic-bezier(.2,.7,.2,1) both;animation-delay:calc(var(--i,0) * 60ms)}
+.z4-go .z4-vb{animation:z4GrowY 700ms cubic-bezier(.2,.7,.2,1) both;animation-delay:calc(var(--i,0) * 60ms)}
+@media (min-width:560px){.z4{grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:stretch}.z3-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media (prefers-reduced-motion:reduce){.z4-go .z4-hf,.z4-go .z4-vb{animation:none}.z4-wait .z4-hf,.z4-wait .z4-vb{transform:none}.z3-t:active{transform:none}}
+/* the production explainer */
+.gm-tbl{margin-top:20px}
+.gm-k{font-size:13px;font-weight:700;color:var(--gray);margin-bottom:4px}
+.gm-row{display:flex;align-items:center;gap:12px;min-height:48px;padding:8px 0;border-top:1px solid rgba(255,255,255,.08)}
+.gm-dot{flex:none;width:8px;height:8px;border-radius:50%}
+.gm-lab{flex:1 1 0;min-width:0;font-size:14px;font-weight:600;line-height:1.3;color:var(--white)}
+.gm-lab small{display:block;font-size:12px;font-weight:500;color:var(--gray);margin-top:2px}
+.gm-amt{flex:none;font-size:15px;font-weight:700;color:var(--white);font-variant-numeric:tabular-nums}
+.gm-row.bank .gm-amt{color:var(--green)}
+.gm-row.dim .gm-lab,.gm-row.dim .gm-amt{color:var(--gray)}
+.gm-ins{margin-top:12px;padding-top:12px;border-top:1px solid rgba(255,255,255,.08);font-size:14px;line-height:1.4;color:var(--white)}
+.gm-ins b{font-weight:800}
+.gm-risk{margin-top:12px;padding:0 0 0 12px;border-left:3px solid var(--danger,#ff6363);font-size:14px;line-height:1.4;color:var(--white)}
+.gm-risk b{font-weight:800;color:var(--danger,#ff6363)}
+.gm-nm{font-weight:600;color:var(--fi2,#da8fff)}
+.gm-how{display:flex;align-items:center;justify-content:space-between;width:100%;margin-top:16px;padding:12px 0 0;border:0;border-top:1px solid rgba(255,255,255,.08);background:none;
+  font:inherit;font-size:12px;font-weight:600;color:var(--gray);cursor:pointer;text-align:left}
+.gm-chev{font-size:14px;transition:transform .15s ease}
+.gm-det{margin-top:8px}
+.gm-det p{font-size:12px;line-height:1.5;color:var(--gray);margin:8px 0 0}
 </style>
 <style id="asof-b493">
 .asof{font-size:11px;line-height:1.4;color:var(--gray2);text-align:center;margin:16px 0 8px}
