@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 502 (2026-10-13)">
+<meta name="build" content="v21 build 503 (2026-10-13)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -256,9 +256,31 @@ main{position:relative;padding:calc(var(--hh) + var(--sat) + 8px) 16px calc(var(
 @keyframes slidein{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 #t-home:checked~main #p-home,#t-re:checked~main #p-re,#t-gym:checked~main #p-gym,#t-pickle:checked~main #p-pickle,#t-solara:checked~main #p-solara,#t-finance:checked~main #p-finance,#t-settings:checked~main #p-settings{display:block;animation:slidein .24s cubic-bezier(.22,.61,.36,1)}
 #t-home:checked~header .htt-home,#t-stats:checked~header .htt-stats,#t-re:checked~header .htt-re,#t-gym:checked~header .htt-gym,#t-pickle:checked~header .htt-pickle,#t-solara:checked~header .htt-solara,#t-finance:checked~header .htt-finance,#t-settings:checked~header .htt-settings{display:block}
-#t-home:checked~#t-home:checked~.tabbar label[for=t-home],#t-stats:checked~.tabbar label[for=t-stats],#t-re:checked~.tabbar label[for=t-re],#t-gym:checked~.tabbar label[for=t-gym]{color:var(--white)}
-#t-home:checked~#t-home:checked~.tabbar label[for=t-home] .ti,#t-stats:checked~.tabbar label[for=t-stats] .ti,#t-re:checked~.tabbar label[for=t-re] .ti,#t-gym:checked~.tabbar label[for=t-gym] .ti .ti{transform:translateY(-1px) scale(1.06)}
-#t-home:checked~#t-home:checked~.tabbar label[for=t-home]::before,#t-stats:checked~.tabbar label[for=t-stats]::before,#t-re:checked~.tabbar label[for=t-re]::before,#t-gym:checked~.tabbar label[for=t-gym]::before{content:"";position:absolute;top:0;width:24px;height:3px;border-radius:0 0 4px 4px;background:linear-gradient(90deg,var(--accent),var(--accent2))}
+#t-home:checked~.tabbar label[for=t-home],#t-stats:checked~.tabbar label[for=t-stats],#t-re:checked~.tabbar label[for=t-re],#t-gym:checked~.tabbar label[for=t-gym]{color:var(--white)}
+#t-home:checked~.tabbar label[for=t-home] .ti,#t-stats:checked~.tabbar label[for=t-stats] .ti,#t-re:checked~.tabbar label[for=t-re] .ti,#t-gym:checked~.tabbar label[for=t-gym] .ti{transform:translateY(-1px) scale(1.06)}
+/* ===== build 503: THE TAB BAR SELECTED STATE WAS BROKEN FOR THREE OF THE FIVE TABS. ============
+   Two separate mistakes, both silent, both invisible to a reader skimming the selectors.
+
+   1. EVERY Home rule in this file was written `#t-home:checked~#t-home:checked~.tabbar ...`. An
+      element cannot be its own following sibling, so that selector matches nothing, ever. Home
+      therefore had NO selected state at all: not the label colour, not the label text colour, not
+      the icon colour, not the icon lift, not the underline bar. Measured on computed styles, the
+      Home label sat at rgb(152,152,158), byte identical to the four unselected tabs. Home is the
+      tab the app OPENS ON, so the default view was the one with no indication of where you are.
+      Eleven occurrences, all now `#t-home:checked~`: lines 259, 260, 261, 505, 510, and in the
+      later blocks the --accent pair and the --misc1 per section set.
+   2. Three duplicated descendant typos, each one killing its own rule:
+        this line               ended `label[for=t-gym] .ti .ti`        -> Gym lost the icon lift
+        the --accent icon rule  ended `label[for=t-gym] .ti svg .ti svg` -> Gym icon colour
+        the --misc1 rules       ended `.tl .tl` and `.ti svg .ti svg`     -> dead t-stats branch
+      `.ti .ti` asks for a .ti inside a .ti. There is one .ti per label, so it matches nothing.
+
+   NOT TOUCHED, and deliberately: the `#t-stats` and `#t-more` branches riding along in these same
+   rules. Neither tab exists (the live set is t-home, t-re, t-gym, t-pickle, t-solara, t-finance,
+   t-settings), so they are dead selectors. Removing them is tidy up, not a fix, and dead code is
+   fix list item 51, a later pass. They are the reason this bug survived four audits: a rule with
+   four branches looks maintained even when three of them cannot match. */
+#t-home:checked~.tabbar label[for=t-home]::before,#t-stats:checked~.tabbar label[for=t-stats]::before,#t-re:checked~.tabbar label[for=t-re]::before,#t-gym:checked~.tabbar label[for=t-gym]::before{content:"";position:absolute;top:0;width:24px;height:3px;border-radius:0 0 4px 4px;background:linear-gradient(90deg,var(--accent),var(--accent2))}
 
 .tabbar{position:fixed;left:0;right:0;bottom:0;z-index:50;height:calc(var(--bh) + var(--sab));padding-bottom:var(--sab);display:flex;align-items:stretch;background:rgba(10,10,12,.94);backdrop-filter:saturate(1.5) blur(14px);border-top:1px solid var(--line)}
 .tabbar label{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:var(--dim);padding:8px 1px 4px;position:relative;transition:color .15s}
@@ -502,12 +524,12 @@ input.in,textarea.in,select.in{background:#0b0b11;border-color:#30303c}
 .btn{background:linear-gradient(180deg,var(--sec,var(--accent)),color-mix(in srgb,var(--sec,var(--accent)) 80%, #000));color:#06121f}
 
 /* active bottom tab tints to the section color */
-#t-home:checked~#t-home:checked~.tabbar label[for=t-home] .tl{color:var(--accent2)}
+#t-home:checked~.tabbar label[for=t-home] .tl{color:var(--accent2)}
 #t-re:checked~.tabbar label[for=t-re] .tl{color:var(--teal2)}
 #t-gym:checked~.tabbar label[for=t-gym] .tl{color:var(--amber2)}
 #t-stats:checked~.tabbar label[for=t-stats] .tl{color:var(--cyan2)}
 #t-more:checked~.tabbar label[for=t-more] .tl{color:var(--slate2)}
-#t-home:checked~#t-home:checked~.tabbar label[for=t-home]::before{background:linear-gradient(90deg,var(--accent),var(--accent2))}
+#t-home:checked~.tabbar label[for=t-home]::before{background:linear-gradient(90deg,var(--accent),var(--accent2))}
 #t-re:checked~.tabbar label[for=t-re]::before{background:linear-gradient(90deg,var(--teal),var(--teal2))}
 #t-gym:checked~.tabbar label[for=t-gym]::before{background:linear-gradient(90deg,var(--amber),var(--amber2))}
 #t-stats:checked~.tabbar label[for=t-stats]::before{background:linear-gradient(90deg,var(--cyan),var(--cyan2))}
@@ -599,8 +621,28 @@ input.in,textarea.in,select.in,.btn{ border-radius:var(--r2); }
 :root{
   --bg:#000000; --bg2:#0b0b0d;
   --card:#1c1c1e; --card2:#2c2c2e; --line:#3a3a3c; --line2:#48484a; --stroke:#2c2c2e;
-  --white:#ffffff; --gray:#c7c7cc; --gray2:#98989e; --dim:#6c6c72;
-  /* Apple system colors, used for accents and per stat color coding */
+  --white:#ffffff; --gray:#c7c7cc; --gray2:#98989e; --dim:#8a8a90;
+  /* ===== build 503: --dim WAS #6c6c72 AND THAT WAS THE WHOLE CONTRAST PROBLEM. =================
+     #6c6c72 on --card #1c1c1e measures 3.26 against a required 4.5. It failed in 58 places across
+     Today, Real Estate, Gym and Pickleball: 52 `small dim` lines, 3 `g7chev` row chevrons, 3
+     `g7quiet` lines. It was NOT a heatmap problem. The heatmap footnote everyone kept reporting at
+     "about 3.20" is this token, measured at 3.26 on rendered pixels with a glyph ink mask.
+
+     #8a8a90 measures 4.96 on --card and 6.12 on --bg #000000, the only two backgrounds any .dim
+     text actually sits on in the live app (measured, not assumed). Same hue relationship as before,
+     r=g and b=r+6, so nothing shifts colour, only lightness.
+
+     WHY NOT BRIGHTER. --gray2 #98989e measures 5.93 on the card. --dim has to stay a visible step
+     below it or the four level ladder (white, gray, gray2, dim) collapses into three. 4.96 keeps the
+     step and clears AA with margin. Going to #929298 would clear --card2 #2c2c2e as well, but that
+     lands at 5.50 and sits on top of --gray2, and no .dim text in the app is on --card2 anyway.
+
+     THREE LOCAL PATCHES ARE LEFT IN PLACE ON PURPOSE, and this is the part not to "tidy": line
+     36042 `.fx-db .small.dim{color:#a9b1bd}` (build 502) and lines 35847 and 35853 forcing z5-year
+     and z5-up to var(--gray) (build 497). Those were each written to make one surface BRIGHTER than
+     --dim, and all three already pass. Removing them would dim text that currently reads brighter,
+     which is a restyle, not a contrast fix. They are now redundant for AA and deliberate for
+     emphasis. Do not fix the token a fourth time locally. ================================== */
   --accent:#0a84ff; --accent2:#64d2ff; --blue:#0a84ff; --blue2:#64d2ff;
   --red:#ff453a; --green:#30d158; --orange:#ff9f0a; --amber:#ff9f0a; --amber2:#ffd264;
   --teal:#40cbe0; --teal2:#64d2ff; --violet:#bf5af0; --violet2:#da8fff;
@@ -800,9 +842,19 @@ header{ background:rgba(0,0,0,.82); border-bottom:1px solid rgba(255,255,255,.07
 .hst .hmn.warn{color:#ffd60a}
 .hmc.future.planned{border-color:#4c4c5c}
 .hmrow.cur .hmwk{color:var(--pk2)}
-.hmrow.ahead .hmwk{color:#5a5a68}
+/* ===== build 503: HEATMAP CONTRAST ONLY. Fence lifted by Ian for exactly this and nothing else.
+   Measured on rendered pixels with a glyph ink mask, not by eye:
+     .hmrow.ahead .hmwk  was #5a5a68, ratio 2.51 on --card. Now #8a8a9c, ratio 5.02.
+     .hmn.ahead          was #4a4a56, ratio 1.95 on --card. Now #86869a, ratio 4.77.
+                         (.hmn.norec carried the same #4a4a56 and gets the same value, below.)
+   NOTHING ELSE CHANGED. Same font sizes, same weights, same italic, same gaps, same cell radii,
+   same backgrounds, same colours on every other row state. The relative order is preserved too:
+   the week label stays a step brighter than the session number, exactly as it was at 2.51 over 1.95.
+   These are the future weeks with no data, so they are still the dimmest thing in the heatmap, now
+   legible rather than nearly invisible. This is Ian's favourite thing in the app. Do not restyle it. */
+.hmrow.ahead .hmwk{color:#8a8a9c}
 .hmn.wip{color:var(--gray2)}
-.hmn.ahead{color:#4a4a56;font-weight:700;font-style:italic;font-size:9.5px}
+.hmn.ahead{color:#86869a;font-weight:700;font-style:italic;font-size:9.5px}
 </style>
 </head>
 <body>
@@ -26003,6 +26055,316 @@ try{ if(profile==="ian" && state.meta && !state.meta.mig501_pk1013 && state.pick
     try{ console.log("mig501: 13 October split session logged"); }catch(_){}
 } }catch(e){ try{ console.warn("mig501 did not apply:",e&&e.message); }catch(_){} }
 
+/* ===== v21 build 503: TIER 1 DATA DEFECTS, PLUS IAN'S TWO ANSWERS =================================
+   Seven Tier 1 items from the four audits of 13 October 2026, all of them "wrong in front of Ian or
+   a client", plus the two open questions he answered. Item 6, the "Net $293" tile, is fixed in the
+   RENDERER rather than here, because the bike loan balance is a range and writing a single net
+   figure into state would invent a number the record does not hold. See fxBandCash.
+
+   WHAT IS DELIBERATELY NOT IN THIS MIGRATION, so the next lane does not think it was missed:
+     SIDES NOT DEALS (fix list item 8) is a later pass and will touch the same counts. Not started.
+     Barkers stays counted in the pipeline. Ian 13.10.2026: paused, he is reaching out soon, leave
+       it counted for now. Its pipeline treatment is UNCHANGED here on his instruction.
+     Winchester's dollar figure is NOT replaced. See item 4 below, this is the important one.
+     Tiers 2, 3 and 4 otherwise untouched.
+
+   Guard state.meta.mig503_tier1, idempotent on every write, end of chain, SEED_VERSION stays 13. */
+try{ if(profile==="ian" && state.meta && !state.meta.mig503_tier1){
+  var _L3=[];                 /* change log, so this is auditable without a diff */
+  var _R3=state.realEstate||{};
+  var _D3=Array.isArray(_R3.deals)?_R3.deals:[];
+  var _get3=function(id){ for(var i=0;i<_D3.length;i++){ if(_D3[i]&&_D3[i].id===id) return _D3[i]; } return null; };
+
+  /* ===== 1. CREATE THE 20131 R STREET RECORD ======================================================
+     Ian 13.10.2026: ACTIVE, MLS 22614537, $684,900, 136 days on market, Rose Creek Homes, Scenic
+     Group's own model home.
+
+     THREE TRAPS HERE AND ALL THREE ARE DELIBERATELY AVOIDED.
+
+     (a) THE ID. `re-rose-creek` is TOMBSTONED. Build 475 retired it on 2026-10-07 because "the two
+         storey buyers backed out, Ian: she is not buying existing and not building new, for a
+         while", and pushed the id into meta.removedDealIds. That tombstone is CORRECT and is LEFT
+         IN PLACE: the thing it retired was the deal built around those buyers, and they are still
+         gone. Reusing the id would drag back that record's dead buyer narrative along with its
+         stale winProb 0.55, offMarketOn, pipelineDropsAfter and modelHomeTransition fields. So this
+         is a NEW record with a NEW id for the LISTING, which is a different object from the retired
+         pursuit. Build 254 lifted a tombstone for Bruce O'Neil when that was the right move; this
+         is the other case, where it is not. LANE_START_HERE: a missing record is not automatically
+         a problem to fix, so the archive was read first. archive.roseCreekRetiredB475 holds it all.
+
+     (b) THE NAME COLLISION, and this one would reach a client. realEstate.rStreet.nameWarning says
+         it in capitals: "R STREET" IS CHRIS'S SHORTHAND for a DIFFERENT property with no address,
+         no price and no deal record, and it is NOT this model home. They must not be merged. This
+         record therefore carries notRStreetClient pointing at that block, and that block is not
+         touched. The 3.6 percent and 20 percent nominal in realEstate.rStreet belong to the OTHER
+         listing and are NOT copied here.
+
+     (c) THE PRICE THAT IS NOT WRITTEN. The retired record carried modelHomeTransition.priceMove,
+         Ian on 29.09.2026 at "100 percent" certainty that the price goes to $730,000 to $750,000
+         when it becomes a model home, and pipelineDropsAfter 2026-10-11. Both of those were
+         PREDICTIONS about today. Ian has now given the actual state on 13.10.2026: still ACTIVE, at
+         $684,900. His statement beats the prediction (LANE_START_HERE rule 9), so $684,900 is the
+         price and the $730,000 to $750,000 is recorded as a superseded expectation, not as a band.
+
+     NO COMMISSION BASIS IS SET, and that is a flag not an omission. "Scenic Group's own model home"
+     is a different commercial position from "Chris's client", which is what the retired record said,
+     and Ian gave no rate and no split for it today. A rate here would be invented, so the record
+     carries commissionUnset and a question for him instead. */
+  if(!_get3("re-rstreet-model")){
+    _D3.push({
+      id:"re-rstreet-model",
+      title:"20131 R St",
+      stage:"Active",
+      price:"$684,900",
+      close:"Can sell anytime",
+      address:"20131 R St, Omaha, NE",
+      mls:"22614537",
+      builder:"Rose Creek Homes",
+      modelHome:true,
+      side:"Seller",
+      source:"Scenic Group's own model home",
+      sub:"Two storey model home, 20131 R St",
+      daysOnMarket:136,
+      daysOnMarketAsOf:"2026-10-13",
+      daysOnMarketNote:"136 DAYS AS AT 13 OCTOBER 2026, Ian's figure. Stamped with its as of date on purpose: a bare day count goes stale silently and that is its own defect class on this app. 136 days back from 13 October is about 30 May 2026, but Ian gave the count and not a list date, so no list date is asserted.",
+      paused:false,
+      priceNote:"$684,900, ACTIVE, Ian 13.10.2026. THE $730,000 TO $750,000 IS A SUPERSEDED EXPECTATION, NOT A PRICE. On 29.09.2026 Ian said at 100 percent confidence that the price would rise to that band when the house became a model home on or about 11 October, and build 475's retired record carried pipelineDropsAfter 2026-10-11 on the assumption it would leave the pipeline. Today is 13 October, both of those dates have passed, and Ian's own 13.10 statement is that it is ACTIVE at $684,900. The prediction did not happen and must not be quoted as the price.",
+      commissionUnset:true,
+      commissionUnsetWhy:"NO RATE AND NO SPLIT ARE SET, DELIBERATELY. The retired re-rose-creek record read source \"Chris's client\" with the 20 percent share. Ian's words on 13.10.2026 are that this is Scenic Group's own model home, which is a different commercial position, and he gave no rate and no split with it. Inventing one would put a fabricated dollar figure on a live listing. QUESTION FOR IAN: on the R Street model home, what is the rate and what is your share, given it is Scenic Group's own inventory rather than a client's?",
+      /* WARNING: THIS PAIR IS LOAD BEARING AND IT IS NOT OPTIONAL. Caught while verifying, before shipping.
+         dealSource() only recognises "Chris's client" and "Dual agency"; EVERY OTHER source string
+         falls through to "Ian's own", and sourceShare() then hands "Ian's own" a 0.80 share. So
+         source "Scenic Group's own model home" would have been read as Ian taking 80 percent, and
+         the app would have computed and displayed roughly $16,765 of income on this listing out of
+         nothing at all. That is the exact defect class this build exists to remove, manufactured by
+         the fix for it. Suppressing the earnings presentation is the only honest state until Ian
+         answers commissionUnsetWhy: the listing still carries its price, its volume and its deal
+         count, and no figure is asserted for him.
+         DO NOT REMOVE THESE TWO FIELDS when the question is answered. Set the real rate and share
+         first, confirm the computed figure against his answer, and only then clear them. */
+      suppressIanEarnings:true,
+      notIansDeal:false,
+      ownedBy:"Scenic Group's own model home, commission not set",
+      ownedByShort:"rate not set",
+      notRStreetClient:"THIS IS NOT THE \"R STREET\" CLIENT LISTING. That is Chris's shorthand for a different property with no address, no price and no deal record; see realEstate.rStreet.nameWarning, which says the same thing from the other side. The two must never be merged, and \"R Street\" must not be presented to Ian or Chris as this property. The connection that does exist: the Silver Leaf buyer found his Lafayette Ave lot through THIS model home.",
+      note:"CREATED 13.10.2026, build 503, on Ian's instruction. ACTIVE listing at 20131 R St, MLS 22614537, $684,900, 136 days on market as at 13 October, built by Rose Creek Homes, and it is Scenic Group's own model home. WHY IT HAD NO RECORD: build 475 retired re-rose-creek on 7 October when the two storey buyers backed out, and archived it as a future target. That retired the DEAL. The LISTING stayed live and nothing was holding it, so the app carried a live todo about a $684,900 listing that existed nowhere in the pipeline, which is how four separate audits found it. The full retired record, including the buyer narrative, the 0.55 win probability and the model home transition reasoning, is kept whole in archive.roseCreekRetiredB475 and is not duplicated here. Ian's framing of it, recorded on 11.10.2026: they are desperate to sell it.",
+      agent:"TOMBSTONE: re-rose-creek stays in meta.removedDealIds. Do NOT lift it and do NOT merge this record into it. That id belongs to the retired buyer pursuit and its buyers are still gone. NAME: never show this as \"R Street\" and never merge it with realEstate.rStreet, which is a different property. PRICE: $684,900 is current; $730,000 to $750,000 is a prediction that did not happen, quote it only as superseded. DAYS ON MARKET: 136 is stamped 2026-10-13, recompute or restate the as of date, never let it sit bare. COMMISSION: unset on purpose, there is a question for Ian on the record. SIDES NOT DEALS: this record will need revisiting in that pass, it is side Seller and one side."
+    });
+    _R3.deals=_D3;
+    _L3.push("created re-rstreet-model, ACTIVE $684,900, MLS 22614537, 136 DOM as at 13.10, commission unset and flagged");
+  }
+
+  /* ===== 2. MATTOX: THE NOTE RENDERS A DEAD FIGURE ================================================
+     01_MASTER_CONTEXT.md lists $479,900 as a DEAD figure that must never be quoted. The price field
+     is already correct at $490,000 and priceNote already carries the $464,900 list, so this was
+     only ever the note prose, which still read "List price $479,900, Ian's own call on 20.09.2026"
+     as a statement of the live price. The agreed price is $490,000 from the buyer escalation of
+     08.10.2026 and the list was $464,900. The $479,900 is not erased from the record's history
+     elsewhere, it is removed from the one place that presented it as current. */
+  var _mx3=_get3("re-mattox-sell");
+  if(_mx3 && String(_mx3.note||"").indexOf("List price $479,900, Ian's own call on 20.09.2026.")>=0){
+    _mx3.note=String(_mx3.note).replace(
+      "List price $479,900, Ian's own call on 20.09.2026.",
+      "AGREED PRICE $490,000, from the buyer escalation of 08.10.2026, and it LISTED at $464,900 on 8 October. The $479,900 that stood here as the list price is a DEAD FIGURE per 01_MASTER_CONTEXT.md and must never be quoted; it was the top of the retired $474,900 to $479,900 band and was superseded first by the $464,900 list on 06.10.2026 and then by the $490,000 agreement."
+    );
+    _L3.push("mattox note: dead $479,900 list price replaced with the $490,000 agreed and $464,900 list");
+  }
+
+  /* ===== 3. BELKNAP: THREE SEPARATE WRONG THINGS IN ONE NOTE ======================================
+     The price field is already right at $250,000, Ian's call of 29.09.2026, and the fix list itself
+     says so. The note prose had not caught up in three places:
+       (a) "If one Belknap Pratt list price is quoted anywhere, it is $244,900." That is an explicit
+           instruction to quote a dead number. $244,900 lived for one morning on 4 September.
+       (b) "the price IS Still not set and that IS DELIBERATE ... the field stays empty and this deal
+           contributes nothing to the pipeline total." Written 20.09, false since 29.09.
+       (c) two superseded hedged list dates, the "late October before halloween or early November"
+           read from 20.09 and "they want the 8th, CONDITIONAL" from 28.09. The list date is
+           Thursday 15 October 2026, confirmed, and listDateConfirmed, listDateNote and listStatus
+           on this record already say so. The prose was the only thing still hedging.
+     The four move price history and the CMA reasoning are NOT touched. They are labelled history and
+     they are the record of how the number was reached. */
+  var _bk3=_get3("re-belknap-sell");
+  if(_bk3){
+    var _bn=String(_bk3.note||""), _bb=_bn;
+    _bn=_bn.replace(
+      "If one Belknap Pratt list price is quoted anywhere, it is $244,900.",
+      "IF ONE BELKNAP PRATT LIST PRICE IS QUOTED ANYWHERE, IT IS $250,000, Ian's call of 29 September 2026. Corrected 13.10.2026: this line said $244,900, which lived for one morning on 4 September and is dead. The $249,900 CMA rev 4 recommendation and the whole four move history below stand as the record of how the number was reached, and neither is the list price."
+    );
+    _bn=_bn.replace(
+      "the price IS Still not set and that IS DELIBERATE: the CMA settles at $249,900 but the list price is his call and he has not made it, so the field stays empty and this deal contributes nothing to the pipeline total.",
+      "[THIS SENTENCE IS SUPERSEDED, corrected 13.10.2026. It said the price was unset and that the deal contributed nothing to the pipeline. He made the call on 29 September: $250,000. The price field carries it and the deal contributes to the pipeline like any other.]"
+    );
+    _bn=_bn.replace(
+      "EARLIEST IS Late october before halloween, OR Early november before thanksgiving.",
+      "[SUPERSEDED, corrected 13.10.2026. This was the 20 September read, late October before Halloween or early November before Thanksgiving. THE LIST DATE IS THURSDAY 15 OCTOBER 2026, CONFIRMED.]"
+    );
+    _bn=_bn.replace(
+      "IAN 28.09.2026, AFTER THE MEETING: they want the 8th, CONDITIONAL.",
+      "IAN 28.09.2026, AFTER THE MEETING: they wanted the 8th, CONDITIONAL. [SUPERSEDED, corrected 13.10.2026: the lean lost and the confirmed list date is THURSDAY 15 OCTOBER 2026. The conditional risk below is dead, see 29.09.]"
+    );
+    if(_bn!==_bb){ _bk3.note=_bn; _L3.push("belknap note: $244,900 quote line -> $250,000, unset/contributes-nothing sentence superseded, two hedged list dates superseded by the confirmed 15 October"); }
+    /* the attribution date on priceLine said 20 September, the call was the 29th */
+    if(String(_bk3.priceLine||"").indexOf("20 September")>=0){
+      _bk3.priceLine="Ian's call, 29 September 2026.";
+      _L3.push("belknap priceLine date 20 September -> 29 September");
+    }
+  }
+
+  /* ===== 4. WINCHESTER: THE APP SHOWS IAN EARNING ON A DEAL HE IS NOT ON ==========================
+     Ian took it off his list on 24.08.2026. It is Chris's, with Ryan Beachler at Rose Creek Homes.
+     The record still read source "Dual agency", side "Both", dualRate 0.05, which is what produces
+     the figure and the $22,550 / $24,600 share in the note.
+
+     WARNING: THE DOLLAR FIGURE IS NOT REPLACED, AND THAT IS THE INSTRUCTION. BRAIN is internally
+     inconsistent on the amount itself: the note's own text records two live bases, price x 0.0205
+     giving $22,550, and Ian's worked example of 5 percent split 2.5 each with the brokerage taking
+     15 percent giving price x 0.02125, about $825 more, and says that question "is older than today
+     and is not resolved here". On top of that, if he is off the deal entirely his share may be
+     nothing. Picking any of those three would be inventing a number. So: the ATTRIBUTION is marked,
+     the presentation of him earning is switched off, the amount is LEFT AS IT IS, and it is flagged
+     for Ian. dualRate, side and price are all untouched so nothing downstream silently re-bases. */
+  var _wc3=_get3("re-brandon-winchester");
+  if(_wc3 && !_wc3.notIansDeal){
+    _wc3.notIansDeal=true;
+    _wc3.ownedBy="Chris, with Ryan Beachler at Rose Creek Homes";
+    /* FOUR WORDS OR FEWER. fnSub drops any sub line longer than that rather than truncating it, so
+       a long phrase here would render as a bare "not yours" with no reason beside it. */
+    _wc3.ownedByShort="Chris's deal";
+    _wc3.ownedBySource="Ian, 24.08.2026. He took it off his list.";
+    _wc3.suppressIanEarnings=true;
+    _wc3.earningsFlag="DO NOT PRESENT IAN AS EARNING ON THIS DEAL. He took it off his list on 24 August 2026; it is Chris's, with Ryan Beachler at Rose Creek Homes. The app had no flag for this and was rendering a share for him.";
+    _wc3.amountUnresolved="THE AMOUNT IS LEFT EXACTLY AS IT WAS AND NO REPLACEMENT FIGURE IS INVENTED. Three different answers are defensible from the record as it stands and that is the problem: (1) price x 0.0205, the master context basis, giving about $22,550 at $1,100,000 and $24,600 at $1,200,000; (2) price x 0.02125, from Ian's own worked example of 5 percent split 2.5 each with the brokerage at 15 percent, about $825 more, a conflict this note already records as unresolved and older than today; (3) nothing at all, if he is off the deal. BRAIN is internally inconsistent here, so picking one would be fabricating a number on a seven figure deal. QUESTION FOR IAN: you took Winchester off your list on 24 August. Do you earn anything on it now, and if so on what basis?";
+    _wc3.riskLine="Chris's deal, with Ryan Beachler. Ghosting since 20 September. Not certain to proceed.";
+    _wc3.note=String(_wc3.note||"").trim()+"  ATTRIBUTION CORRECTED 13.10.2026, build 503. THIS IS NOT IAN'S DEAL. He took it off his list on 24 August 2026 and it is Chris's, with Ryan Beachler at Rose Creek Homes. The app carried no flag and was presenting a share for Ian, which four audits found. The $22,550 and $24,600 figures above are LEFT ON THE RECORD UNCHANGED and are no longer presented as his income: see amountUnresolved on this record for why no replacement number was invented and what the open question for Ian is. dualRate, side and price are deliberately unchanged so nothing downstream silently re-bases off this edit.";
+    _L3.push("winchester: flagged as Chris's with Ryan Beachler, Ian's earnings suppressed, AMOUNT LEFT ALONE and flagged for Ian");
+  }
+
+  /* ===== 5. VOGEL LIVE EVENT TITLE CARRIES A SUPERSEDED PRICE =====================================
+     The deal price is already $334,900, settled by Ian 09.10.2026. The calendar event title still
+     said $329,900, which is the figure that settled on 25.09 and was superseded two weeks ago. */
+  if(Array.isArray(state.events)){
+    state.events.forEach(function(e){
+      if(e && e.id==="ev-20261015-vogel-live" && String(e.title||"").indexOf("$329,900")>=0){
+        e.title=String(e.title).replace("$329,900","$334,900");
+        e.priceNote="$334,900, settled by Ian 09.10.2026, superseding the $329,900 of 25.09 that this title carried until 13.10.2026.";
+        _L3.push("vogel live event title $329,900 -> $334,900");
+      }
+    });
+  }
+
+  /* ===== 7. METHODIST PAYMENT 2 IS EARLY JANUARY ==================================================
+     Ian, 13.10.2026. It read "late December or January", a band spanning two months, and it renders
+     in two places on Finances: the Coming up row and the "How this is figured" fold, both off this
+     one field. The trough caveat carries the same words and is corrected with it. The two copies in
+     state.archive are NOT touched: archive is history and the archive-never-delete rule applies. */
+  var _f3=state.finance||{};
+  if(Array.isArray(_f3.recurring) && _f3.recurring[0] && Array.isArray(_f3.recurring[0].payments)){
+    var _p23=_f3.recurring[0].payments[1];
+    if(_p23 && _p23.when==="late December or January"){
+      _p23.when="early January";
+      _p23.whenSource="Ian, 13.10.2026. Supersedes \"late December or January\", which spanned two months and was the error class he spotted himself.";
+      _p23.whenExactDay=false;
+      _L3.push("methodist payment 2: late December or January -> early January");
+    }
+  }
+  if(_f3.trough && typeof _f3.trough.methodistCaveat==="string" && _f3.trough.methodistCaveat.indexOf("late December or January")>=0){
+    _f3.trough.methodistCaveat=_f3.trough.methodistCaveat.replace("late December or January","early January (Ian, 13.10.2026)");
+    _L3.push("trough.methodistCaveat: same correction");
+  }
+
+  /* ===== IAN'S ANSWER 1: THE $325 AMEX CHARGE IS AN ANNUAL FEE ====================================
+     Open question 1 from the fix list. Rocket Money showed a $325 "Credit Card Membership Fee" on
+     the Amex Gold on 11 October that was on no record anywhere. Ian 13.10.2026: it is the ANNUAL
+     FEE. Recorded on the card and in spendNotes so it is explained wherever it surfaces.
+     NOT DONE HERE: the balance itself. Tier 2 item 14 says flag and do not blindly write, and
+     prefers the card's own app over Rocket Money. The balance stays at the 09.10 sync. */
+  if(Array.isArray(_f3.cards)){
+    _f3.cards.forEach(function(c){
+      if(c && c.id==="amexgold" && !c.annualFee){
+        c.annualFee=325;
+        c.annualFeeNote="THE $325 CHARGE ON 11 OCTOBER 2026 IS THE ANNUAL FEE. Answered by Ian 13.10.2026. It appeared in Rocket Money as \"Credit Card Membership Fee\" and was on no record anywhere, which is why it was raised as an open question. It is a once a year charge, NOT part of the $450 monthly limit and NOT discretionary spend, so it must not be rolled into the monthly burn.";
+        c.annualFeeSeen="2026-10-11";
+        c.annualFeeSource="Ian, 13.10.2026";
+        _L3.push("amex gold: $325 of 11 October recorded as the ANNUAL FEE, Ian's answer");
+      }
+    });
+  }
+  if(_f3.spendNotes && !_f3.spendNotes.amexAnnualFee){
+    _f3.spendNotes.amexAnnualFee={
+      amount:325,
+      what:"American Express Gold annual fee",
+      seen:"2026-10-11",
+      classification:"ANNUAL FEE, not spend and not a subscription.",
+      note:"Answered by Ian 13.10.2026, closing open question 1 from the 13 October fix list. Rocket Money labelled it \"Credit Card Membership Fee\" and it matched no record. Keep it OUT of the monthly burn and out of the subscriptions total: it recurs yearly, not monthly. The next one is due around October 2027.",
+      asOf:"2026-10-13"
+    };
+    _L3.push("spendNotes.amexAnnualFee created");
+  }
+
+  /* ===== IAN'S ANSWER 2: PPA ARIZONA AND THE CARVANA MESA CUP ARE ONE EVENT ======================
+     Open question 2. Two events sat on 2027-02-15 with contradictory certainty: ev-20270215-mesacup
+     with confirmed 15 to 21 February dates and a register by 13 February 2027 5pm MST deadline, and
+     ev-20270215-ppa-arizona hedged as "Mid February, exact date not confirmed".
+     Ian 13.10.2026: THEY ARE THE SAME EVENT. Merged into the Mesa Cup record, which is the one
+     holding the confirmed dates and the deadline. The PPA Arizona name, the men's doubles division
+     and the Dylan partnership are folded in, the hedge is dropped, and the duplicate is removed.
+     The goal text loses its "exact date not confirmed" hedge and its "registration timing is open"
+     claim, because the deadline is now known and on the record. */
+  if(Array.isArray(state.events)){
+    var _mesa=null,_ppa=null;
+    state.events.forEach(function(e){
+      if(!e) return;
+      if(e.id==="ev-20270215-mesacup") _mesa=e;
+      if(e.id==="ev-20270215-ppa-arizona") _ppa=e;
+    });
+    if(_mesa && !_mesa.mergedPpaArizona){
+      _mesa.title="Carvana Mesa Cup (PPA Arizona), men's doubles with Dylan";
+      _mesa.date="2027-02-15";
+      _mesa.endDate="2027-02-21";
+      _mesa.registerBy="2027-02-13";
+      _mesa.registerByTime="5pm MST";
+      _mesa.kind="Tournament";
+      _mesa.aliases=["PPA Arizona","Carvana Mesa Cup"];
+      _mesa.mergedPpaArizona=true;
+      _mesa.division="Men's doubles";
+      _mesa.partner="Dylan";
+      _mesa.datesConfirmed=true;
+      _mesa.note="ONE EVENT, MERGED 13.10.2026 ON IAN'S ANSWER. PPA Arizona and the Carvana Mesa Cup are the SAME February 2027 event; two records sat on 2027-02-15 with contradictory date certainty and he settled it. The confirmed dates are 15 to 21 FEBRUARY 2027 and registration closes 13 FEBRUARY 2027 AT 5PM MST. The \"mid February, exact date not confirmed\" hedge the PPA record carried is DEAD and must not be reintroduced. Division is men's doubles with Dylan, carried over from the PPA record. Entry, bracket and seeding are still undecided, and that is a real gap rather than a hedge about the date. This is the next thing that moves the DUPR after 3.226.";
+      _mesa.agent="MERGED RECORD. Do not re-create a separate PPA Arizona event: Ian confirmed on 13.10.2026 they are one event. The aliases array carries both names so a search on either finds this. Dates and the 13 February 5pm MST deadline are CONFIRMED, do not re-hedge them.";
+      state.events=state.events.filter(function(e){ return !(e && e.id==="ev-20270215-ppa-arizona"); });
+      _L3.push("merged PPA Arizona into the Carvana Mesa Cup as one event, Feb 15 to 21 2027 confirmed, register by Feb 13 2027 5pm MST, duplicate removed");
+    }
+  }
+  if(state.pickleball && Array.isArray(state.pickleball.goals)){
+    state.pickleball.goals.forEach(function(g){
+      if(g && g.id==="pk-goal-ppa-az" && String(g.text||"").indexOf("Exact date not confirmed")>=0){
+        g.text=String(g.text)
+          .replace("The target event is now PPA Arizona, mid February 2027, men's doubles with Dylan.",
+                   "The target event is the Carvana Mesa Cup, also called PPA Arizona, 15 to 21 FEBRUARY 2027, men's doubles with Dylan. Registration closes 13 FEBRUARY 2027 AT 5PM MST.")
+          .replace("Exact date not confirmed, mid February is what he said, so registration timing and the division are both still open.",
+                   "Ian confirmed on 13.10.2026 that PPA Arizona and the Carvana Mesa Cup are the same event, which settles the dates and the deadline; the old \"exact date not confirmed\" hedge is dead. The division is men's doubles with Dylan. Entry and bracket are still undecided, which is a real gap and not a date hedge.");
+        _L3.push("pk-goal-ppa-az: merged naming, confirmed dates and deadline, hedge removed");
+      }
+    });
+  }
+
+  /* ===== BARKERS: EXPLICITLY UNCHANGED ===========================================================
+     Fix list item 20 says a paused deal does not count, and Barkers is paused and counted anyway.
+     Ian 13.10.2026: he is reaching out soon, leave it counted for now. So nothing is changed on it
+     and the instruction is written onto the record so the next lane does not "fix" it. */
+  var _bar3=_get3("re-barkers");
+  if(_bar3 && !_bar3.keepCountedUntilReviewed){
+    _bar3.keepCountedUntilReviewed=true;
+    _bar3.keepCountedWhy="LEAVE IT COUNTED. Ian 13.10.2026: Barkers is paused and he is reaching out soon, so its pipeline treatment is unchanged on his instruction. Fix list item 20, that a paused deal does not count, is NOT applied here and is NOT an oversight. Revisit only after he has reached out. Nothing on this record was altered in build 503.";
+    _L3.push("barkers: keepCountedUntilReviewed flag set, pipeline treatment deliberately UNCHANGED");
+  }
+
+  state.meta.mig503_tier1=true;
+  state.meta.mig503_changes=_L3;
+  save(true);
+  try{ console.log("mig503: "+_L3.length+" tier 1 changes, "+_L3.join(" | ")); }catch(_){}
+} }catch(e){ try{ console.warn("mig503 did not apply:",e&&e.message); }catch(_){} }
+
   /* build 372: LAST THING BEFORE THE SAVE. Every migration above has run, deepMergeDefaults
      has run, so this is the only point in the file where the state is actually final. */
   try{ convergeState(); }catch(e){}
@@ -27661,6 +28023,121 @@ function homeZone1(host,nm,workout){
    a tall graphic never leaves dead space beside it.
    GLASS. None in zone 2. Zone 1 keeps its single glass strip. MOTION. The bars grow once per load, when
    the band first scrolls into view, and never under reduced motion. */
+/* ===== v21 build 503: THE GUARANTEED RELEASE FOR THE 494 TO 502 REVEAL SYSTEM ====================
+
+   THE RULE THIS RESTORES. Build 202 wrote it at lines 360 to 365 of this file and it is the single
+   most important invariant in the animation code: "A cosmetic flourish must never be the thing that
+   decides whether the chart can be seen." Build 202 backs every animation it starts with a plain
+   setTimeout that strips the fill (line 26584, "GUARANTEED RELEASE, and this is the load bearing
+   line"), because a plain timer keeps running when the animation clock does not.
+
+   Builds 494 to 502 built a second, independent reveal system and did not carry that invariant
+   across. Four drivers (hzReveal, hzBandReveal, hzZone4Reveal, and the Real Estate bar) each add a
+   wait class that sets opacity:0 or scaleX(0), then rely ENTIRELY on an IntersectionObserver to
+   take it off again. If the observer never fires, the content is invisible forever. There was no
+   timer, no rect check, no fallback of any kind.
+
+   THE FAILURE IS NOT HYPOTHETICAL AND IT WAS MEASURED. An IntersectionObserver whose threshold the
+   target can never reach fires exactly ONCE, with isIntersecting false, and then never again.
+   Verified in the live app with a 40000px tall element at threshold 0.15: a single callback with
+   intersectionRatio 0.0211 and isIntersecting false. The callback body never runs, so the wait
+   class is never removed. A target can never reach ratio R if its own height exceeds the viewport
+   height divided by R, because the visible slice can never be more than one viewport tall.
+
+   At 390x844 that gives these ceilings, and these measured host heights on build 502:
+     hzReveal, threshold 0.15, Real Estate  ceiling 5627px   actual 1600px   <- the exposure
+     hzReveal, threshold 0.15, Today zone 5 ceiling 5627px   actual 1240px
+     hzReveal, threshold 0.15, Today zone 3 ceiling 5627px   actual  243px
+     hzReveal, threshold 0.15, Finances     ceiling 5627px   actual  534px worst band
+     hzBandReveal, threshold 0.6            ceiling 1407px   actual  205px
+     hzZone4Reveal, threshold 0.35          ceiling 2411px   actual  638px
+   Nothing failed on 502. The Real Estate one is the live risk because its host is the WHOLE PAGE
+   ROOT, not a band, and it grows every time a deal is added. Past 5627px the page goes blank.
+
+   TWO GUARDS, because they cover different failures.
+
+   1. hzCanReach(host,threshold) is checked BEFORE the wait class goes on. If the threshold is
+      arithmetically unreachable for this host at this viewport, the driver does not arm at all and
+      the content is simply there, finished, with no animation. Deterministic, no timer involved,
+      and it is the correct failure: visible and unanimated beats animated and invisible.
+
+   2. hzGuard(host,release) watches on a plain timer as a backstop for every OTHER reason an
+      observer might not fire, the ones nobody can enumerate in advance. It calls the same release
+      path the observer and the catch block already use. It does NOT just fire after a delay: see
+      the comment on hzGuard itself for why that first version was wrong and what it broke.
+
+   WHY THE BACKSTOP RELEASES WITHOUT ANIMATING. Removing the wait class without adding the rise
+   class leaves the element at its own resting style, which for every one of these is the finished
+   state. Same reasoning as build 202's keyframes declaring only a `from`. If the backstop fires,
+   Ian sees the content, just not the flourish.
+
+   WHY 10 SECONDS. Long enough that ordinary use never hits it: a user who scrolls reaches the band
+   in well under a second and gets the real animation. Short enough that a stuck state cannot
+   survive to be read as missing data. The cost of the timer firing is one lost flourish; the cost
+   of not having it is a blank page, so the asymmetry says be generous and keep it.
+
+   THE BACKSTOP ALSO DISCONNECTS THE OBSERVER, which closes the leak audit item 51 flagged for these
+   four drivers: render() replaces the page DOM on any state change, so an observer armed but not
+   yet fired was left watching a detached node that can never intersect and so never disconnects.
+   ============================================================================================= */
+var HZ_GUARD_MS=2000;        /* how often the guard looks */
+var HZ_GUARD_TICKS=30;       /* give up after this many, so 60 seconds of looking, then release */
+function hzCanReach(host,threshold){
+  /* true if `host` can physically reach `threshold` intersection ratio at this viewport. On any
+     doubt, including a zero or unmeasurable height, return true so the caller behaves exactly as it
+     did before build 503 and the backstop timer is the thing that covers it. */
+  try{
+    var h=host.getBoundingClientRect().height;
+    if(!(h>0)) return true;
+    var vh=window.innerHeight||document.documentElement.clientHeight||0;
+    if(!(vh>0)) return true;
+    return (h*threshold) <= vh;
+  }catch(e){ return true; }
+}
+function hzGuard(host,release){
+  /* ===== build 503: THE GUARD HAS TO TELL "CANNOT FIRE" FROM "HAS NOT FIRED YET". ================
+     The first version of this was a single flat setTimeout and it was WRONG in a way that only
+     showed up in a full five page run, so it is written down here.
+
+     render() builds EVERY page at boot, not on tab entry, so hzReveal arms the Finances bands the
+     moment the app loads even though Ian is looking at Today. A flat timer then counted down
+     against a page nobody had opened yet. Measured: with a 10 second timer, walking the five pages
+     in order took about 25 seconds, so by the time Finances was reached the guard had already
+     stripped every wait class and the entire Finances entrance was gone. Animation starts on
+     Finances went from 7 on entry and 9 on scroll down to 1 and 0. The safety net had quietly
+     deleted the thing it was protecting.
+
+     So the guard LOOKS rather than fires. Every HZ_GUARD_MS it asks one question: has Ian actually
+     reached this host yet? Same rect test build 202 uses in chVisible, and for the same reason,
+     because an SVG group has no offsetParent and a node on a display:none page measures 0 by 0.
+       host measures 0 by 0        -> the page is not open, or not laid out. KEEP WAITING. This is
+                                      the Finances case and it is not a stuck state.
+       host is below the fold      -> he has not scrolled to it. KEEP WAITING. The observer is doing
+                                      its job and will fire when he gets there.
+       host overlaps the viewport  -> he IS looking at it and the wait class is STILL on. The
+                                      observer should have fired by now and did not. THAT is the
+                                      stuck state, and the next tick releases it.
+     One grace tick is allowed in the overlap case so a reveal already in flight is never cut off.
+
+     HZ_GUARD_TICKS is a hard stop at 30 ticks, 60 seconds of looking, after which it releases
+     whatever the rect says. That covers the failures nobody can enumerate, including the measured
+     unreachable threshold case where the observer fires once with isIntersecting false and never
+     again. Build 202's rule holds at every exit: nothing may fail into invisible. */
+  function tick(n,sawOnScreen){
+    var onScreen=false;
+    try{
+      var r=host.getBoundingClientRect();
+      var vh=window.innerHeight||document.documentElement.clientHeight||844;
+      onScreen = (r.width>0 && r.height>0 && r.top<vh && r.bottom>0);
+    }catch(e){ onScreen=true; }   /* cannot measure, so do not keep something hidden on a guess */
+    if(onScreen && sawOnScreen) { try{ release(); }catch(e){} return; }
+    if(n>=HZ_GUARD_TICKS) { try{ release(); }catch(e){} return; }
+    try{ setTimeout(function(){ tick(n+1,onScreen); }, HZ_GUARD_MS); }
+    catch(e){ try{ release(); }catch(_){} }
+  }
+  try{ setTimeout(function(){ tick(1,false); }, HZ_GUARD_MS); }
+  catch(e){ try{ release(); }catch(_){} }
+}
 var HZ2_DONE=false;
 function hzBand2(host,build){
   var band=el("div","z2");
@@ -27727,13 +28204,27 @@ function hzBandReveal(band){
   var reduce=false; try{ reduce=!!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches); }catch(e){}
   var side=band.querySelector(".z2-side");
   if(HZ2_DONE||reduce||!window.IntersectionObserver||!side||!band.querySelector(".z2-bar")) return;
+  /* build 503: threshold 0.6 is the tightest in the file, ceiling 1407px at a 844px viewport. The
+     .z2-side grid measures 205px today, but it is the one host that would stack rather than sit two
+     up if a third small chart were ever added, so check before arming. */
+  if(!hzCanReach(side,0.6)) return;
   band.className+=" z2-wait";
+  /* build 503: one release path, called by the observer, the catch, and the backstop timer. */
+  var released=false;
+  var release=function(go){
+    if(released) return; released=true;
+    try{ if(_io) _io.disconnect(); }catch(e){}
+    band.className=band.className.replace(" z2-wait", go?" z2-go":"");
+    HZ2_DONE=true;
+  };
+  var _io=null;
   try{
     /* watch the small charts, not the band: the bars sit at the bottom of a tall band, so the band can be
        20 percent on screen while every bar is still below the fold, which would spend the one grow unseen */
-    var io=new IntersectionObserver(function(es){ es.forEach(function(en){ if(en.isIntersecting){ band.className=band.className.replace(" z2-wait"," z2-go"); HZ2_DONE=true; io.disconnect(); } }); },{threshold:0.6});
-    io.observe(side);
-  }catch(e){ band.className=band.className.replace(" z2-wait",""); }
+    _io=new IntersectionObserver(function(es){ es.forEach(function(en){ if(en.isIntersecting){ release(true); } }); },{threshold:0.6});
+    _io.observe(side);
+    hzGuard(side,function(){ release(false); });   /* build 503: watches .z2-side, the thing the observer watches */
+  }catch(e){ release(false); }
 }
 /* ===== v21 build 496: HOME REDESIGN, PASS 3 OF 4. ZONE 3 QUICK LINKS, ZONE 4 MEDIUM GRAPHICS ==========
    ZONE 3. Ian: "under that there can be quick links or button that open up into informational areas."
@@ -27887,9 +28378,23 @@ function homeZone4(host){
   host.appendChild(z);
   var reduce=false; try{ reduce=!!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches); }catch(e){}
   if(HZ4_DONE||reduce||!window.IntersectionObserver) return;
+  /* build 503: threshold 0.35, ceiling 2411px at a 844px viewport. Zone 4 measures 638px with both
+     chart cards present, so there is room, but it is checked rather than assumed. */
+  if(!hzCanReach(z,0.35)) return;
   z.className+=" z4-wait";
-  try{ var io=new IntersectionObserver(function(es){ es.forEach(function(en){ if(en.isIntersecting){ z.className=z.className.replace(" z4-wait"," z4-go"); HZ4_DONE=true; io.disconnect(); } }); },{threshold:0.35}); io.observe(z); }
-  catch(e){ z.className=z.className.replace(" z4-wait",""); }
+  /* build 503: one release path, called by the observer, the catch, and the backstop timer. */
+  var released=false, _io=null;
+  var release=function(go){
+    if(released) return; released=true;
+    try{ if(_io) _io.disconnect(); }catch(e){}
+    z.className=z.className.replace(" z4-wait", go?" z4-go":"");
+    HZ4_DONE=true;
+  };
+  try{
+    _io=new IntersectionObserver(function(es){ es.forEach(function(en){ if(en.isIntersecting){ release(true); } }); },{threshold:0.35});
+    _io.observe(z);
+    hzGuard(z,function(){ release(false); });      /* build 503: watches the zone 4 container */
+  }catch(e){ release(false); }
 }
 /* ===== v21 build 497: HOME REDESIGN, PASS 4 OF 4. ZONE 5, THE DATA BAND, AND ONE MOTION SYSTEM ==========
    Ian: "then data", "no dumb information only things important and useful", and "coloring all
@@ -27923,10 +28428,32 @@ function hzReveal(host,sel,isDone,mark){
   var reduce=false; try{ reduce=!!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches); }catch(e){}
   if(isDone()||reduce||!window.IntersectionObserver) return;
   var items=host.querySelectorAll(sel); if(!items.length) return;
+  /* ===== build 503: THIS IS THE ONE THAT GOES BLANK, so the check matters most here. ==============
+     This driver is called with the WHOLE REAL ESTATE PAGE ROOT as its host (see the re-redesign
+     call site), not with a band. Threshold 0.15 gives a 5627px ceiling at a 844px viewport and the
+     page measured 1600px on build 502, so it works today and grows toward the cliff with every deal
+     added. Past the ceiling the observer fires once with isIntersecting false and `.hz-wait`, which
+     is opacity:0, never comes off: the entire Real Estate page renders blank. Checking first means
+     the page shows unanimated instead of not at all, which is the correct failure. */
+  if(!hzCanReach(host,0.15)) return;
   var i; for(i=0;i<items.length;i++){ items[i].className+=" hz-wait"; try{ items[i].style.setProperty("--i",String(i)); }catch(e){} }
-  try{ var io=new IntersectionObserver(function(es){ es.forEach(function(en){ if(en.isIntersecting){ io.disconnect(); mark();
-      for(var k=0;k<items.length;k++){ items[k].className=items[k].className.replace(" hz-wait"," hz-rise"); } } }); },{threshold:0.15}); io.observe(host); }
-  catch(e){ for(i=0;i<items.length;i++){ items[i].className=items[i].className.replace(" hz-wait",""); } }
+  /* build 503: one release path, called by the observer, the catch, and the backstop timer. `go`
+     false strips the wait class WITHOUT adding the rise class, which leaves every item at its own
+     resting style, and the resting style is the finished state. */
+  var released=false, _io=null;
+  var release=function(go){
+    if(released) return; released=true;
+    try{ if(_io) _io.disconnect(); }catch(e){}
+    try{ mark(); }catch(e){}
+    for(var k=0;k<items.length;k++){
+      try{ items[k].className=items[k].className.replace(" hz-wait", go?" hz-rise":""); }catch(e){}
+    }
+  };
+  try{
+    _io=new IntersectionObserver(function(es){ es.forEach(function(en){ if(en.isIntersecting){ release(true); } }); },{threshold:0.15});
+    _io.observe(host);
+    hzGuard(host,function(){ release(false); });   /* build 503: watches the same host the observer does */
+  }catch(e){ release(false); }
 }
 function homeZone5(host,F){
   var z=el("div","z5"); var n=0;
@@ -30276,7 +30803,27 @@ function reHeroBand(parent,deals){
   var segEls=[];
   segs.forEach(function(sg,i){ if(!sg[1]) return; var e=el("i","re-seg "+sg[2]); e.style.flexGrow=String(sg[1]); try{ e.style.setProperty("--i",String(i)); }catch(x){} if(grow) e.className+=" re-segw"; bar.appendChild(e); segEls.push(e); });
   h.appendChild(bar);
-  if(grow){ try{ var io=new IntersectionObserver(function(es){ es.forEach(function(en){ if(en.isIntersecting){ io.disconnect(); RE_BAR_DONE=true; segEls.forEach(function(e){ e.className=e.className.replace(" re-segw",""); }); } }); },{threshold:0.5}); io.observe(bar); }catch(e){ segEls.forEach(function(x){ x.className=x.className.replace(" re-segw",""); }); } }
+  /* ===== build 503: the fourth reveal driver gets the same guarantee as the other three. ==========
+     `.re-segw` is transform:scaleX(0), so a stuck wait state here collapses every segment of the
+     pipeline bar to nothing and the band reads as an empty rail. Threshold 0.5 on a 12px tall bar
+     is never unreachable, so hzCanReach will always pass, but it is called anyway so all four
+     drivers read the same and nobody has to work out which one is the exception. The backstop timer
+     is the part that actually earns its place here. */
+  if(grow && hzCanReach(bar,0.5)){
+    var reReleased=false, _reIo=null;
+    var reRelease=function(){
+      if(reReleased) return; reReleased=true;
+      try{ if(_reIo) _reIo.disconnect(); }catch(e){}
+      RE_BAR_DONE=true;
+      segEls.forEach(function(x){ try{ x.className=x.className.replace(" re-segw",""); }catch(e){} });
+    };
+    try{
+      _reIo=new IntersectionObserver(function(es){ es.forEach(function(en){ if(en.isIntersecting){ reRelease(); } }); },{threshold:0.5});
+      _reIo.observe(bar);
+      hzGuard(bar,reRelease);
+    }catch(e){ reRelease(); }
+  }
+  else if(grow){ segEls.forEach(function(x){ x.className=x.className.replace(" re-segw",""); }); }
   var lg=el("div","re-legend");
   segs.forEach(function(sg){ var li=el("div","re-li"); li.appendChild(el("b",null,String(sg[1]))); var sp=el("span",null); sp.appendChild(el("i","re-dot "+sg[2])); sp.appendChild(document.createTextNode(sg[0])); li.appendChild(sp); lg.appendChild(li); });
   h.appendChild(lg);
@@ -33809,13 +34356,17 @@ function fnProjection(v,f){
          is the number the badge beside it is judged against and putting the other one there is
          how this card was wrong in the first place. The commission is not hidden, it is named
          one line down as the thing the keep figure comes from. */
-      if(x.net>0) bits.push(fnMoneyC(x.net)+" before tax");
-      if(!x.far && gapHi>0 && x.keep>=gapHi) bits.push("clears it");
-      else if(!x.far && gapHi>0 && x.keep>0 && x.keep>=gapLo) bits.push("nearly clears");
-      var r=fnRow(host,x.d.title||x.d.id,fnMoneyC(x.keep),bits.join(", "),null,false);
+      /* build 503: a deal that is not Ian's shows whose it is instead of a figure for him. No
+         "clears it" badge either: a deal he does not earn on cannot clear his shortfall. */
+      var _mine=fxIanEarns(x.d);
+      if(_mine && x.net>0) bits.push(fnMoneyC(x.net)+" before tax");
+      if(!_mine) bits.push(fxOwnedByLine(x.d));
+      if(_mine && !x.far && gapHi>0 && x.keep>=gapHi) bits.push("clears it");
+      else if(_mine && !x.far && gapHi>0 && x.keep>0 && x.keep>=gapLo) bits.push("nearly clears");
+      var r=fnRow(host,x.d.title||x.d.id,_mine?fnMoneyC(x.keep):fxNoFigureLabel(x.d),bits.join(", "),null,false);
       /* build 491: GREEN, at Ian's request (12.10.2026). Was the finance accent, chosen because this is
          not money he has. var(--green) is #30d158, measured 8.4:1 on the card surface (6.9:1 on card2). */
-      try{ var amt=r.querySelector(".fnamt"); if(amt) amt.style.color=(x.keep>0?"var(--green)":"var(--gray2)"); }catch(e){}
+      try{ var amt=r.querySelector(".fnamt"); if(amt) amt.style.color=(!_mine?"var(--gray2)":(x.keep>0?"var(--green)":"var(--gray2)")); if(amt&&!_mine) amt.style.fontSize="13px"; }catch(e){}
       /* build 491: UNDER CONTRACT NAMES ARE PURPLE (Ian, 12.10.2026), the finance accent the figures used
          to carry, so nothing new enters the palette. Driven by the stage field through x.contracted,
          never by a list of names. #da8fff measured 7.6:1 on the card surface (6.2:1 on card2). */
@@ -34128,6 +34679,37 @@ function fnSect(v,title,sub,fn){
    stays on its card and the row is gone from the main band. */
 var FX_DONE={}; var FX_REG={};
 function fxEsc(t){ return String(t==null?"":t); }
+/* ===== v21 build 503: DEALS THAT ARE NOT IAN'S MUST NOT RENDER A FIGURE FOR HIM =================
+   Winchester was showing "$15,785.00" and "Building, $22,550.00 before tax" on the Finances
+   reference ladder. Ian took it off his list on 24 August 2026; it is Chris's, with Ryan Beachler
+   at Rose Creek Homes. The record now carries suppressIanEarnings and ownedBy (see mig503).
+
+   WHY THIS DOES NOT RETURN ZERO, which is the obvious implementation and the wrong one. Returning 0
+   from dealIanNet would assert that he earns nothing, and that is a claim the record does not
+   support: the deal may still pay him, on a basis BRAIN is internally inconsistent about. Three
+   defensible figures exist and mig503's amountUnresolved field lists all three. So the model is
+   left completely alone, dealIanNet is untouched, and only the PRESENTATION changes: the row says
+   whose deal it is instead of printing a dollar figure as if it were his.
+   The figure itself stays on the record for whoever answers the open question. */
+function fxIanEarns(d){ return !(d && (d.suppressIanEarnings===true || d.notIansDeal===true)); }
+/* TWO FORMS, and the short one is not cosmetic. fnSub enforces a FOUR WORD RULE and returns null
+   rather than truncating, so any sub line longer than four words is silently dropped and the row
+   renders with no explanation at all. That is exactly what happened on the first attempt at this
+   fix: "Building, Chris, with Ryan Beachler at Rose Creek Homes" vanished and left a bare
+   "not yours" with no reason beside it. So ladder and row surfaces get ownedByShort, four words or
+   fewer, and the full phrase is for prose surfaces with no word limit. */
+function fxOwnedByLine(d){
+  try{ if(d && d.ownedByShort) return String(d.ownedByShort); }catch(e){}
+  try{ if(d && d.ownedBy) return String(d.ownedBy); }catch(e){}
+  return "not his deal";
+}
+/* TWO DIFFERENT REASONS A FIGURE IS WITHHELD, and they must not read the same.
+     notIansDeal     Winchester. Someone else's deal, he is off it, "not yours" is accurate.
+     rate not set    the R Street model home. It IS Scenic Group's own and may well pay him; what
+                     is missing is the rate and his share, which is a question for him.
+   Saying "not yours" about his own company's model home would be a new wrong statement replacing
+   the old one, so the label follows the reason. */
+function fxNoFigureLabel(d){ return (d && d.notIansDeal===true) ? "not yours" : "not set"; }
 function fxDisc(host,key,label,hint,build){
   var body=el("div","fx-db"); var open=(typeof PK_OPEN!=="undefined"&&(key in PK_OPEN))?PK_OPEN[key]:false;
   try{ var _h=build(body); if(typeof _h==="string"&&_h) hint=_h; }catch(e){ try{console.error("[dash] fxDisc",key,e);}catch(_){} }
@@ -34304,8 +34886,14 @@ function fxDealsFold(b,f){
     var clears=pend.filter(function(x){ return gapHi>0&&x.keep>=gapHi; });
     if(gapHi>0&&!clears.length){ var nc=el("div","fx-warn","No single deal clears the shortfall on its own."); b.appendChild(nc); }
     var L2=el("div","fx-ladder");
-    pend.forEach(function(x,i){ var item=el("div","fx-ci"); var bits=[]; var pc=pct(x); if(pc) bits.push(pc); if(x.net>0) bits.push(fnMoneyC(x.net)+" before tax");
-      fxRow(item,x.d.title||x.d.id,bits.join(", "),fnMoneyC(x.keep),(gapHi>0&&x.keep>=gapHi)?"g":""); item.appendChild(fxAxisBar(mx2,x.keep,gapLo,gapHi,i)); L2.appendChild(item); });
+    pend.forEach(function(x,i){ var item=el("div","fx-ci"); var bits=[]; var pc=pct(x); if(pc) bits.push(pc);
+      /* build 503: same rule as the 2027 rows, a deal that is not Ian's shows whose it is. */
+      var _mine=fxIanEarns(x.d);
+      if(_mine && x.net>0) bits.push(fnMoneyC(x.net)+" before tax");
+      if(!_mine) bits.push(fxOwnedByLine(x.d));
+      fxRow(item,x.d.title||x.d.id,bits.join(", "),_mine?fnMoneyC(x.keep):fxNoFigureLabel(x.d),(_mine&&gapHi>0&&x.keep>=gapHi)?"g":"");
+      if(_mine) item.appendChild(fxAxisBar(mx2,x.keep,gapLo,gapHi,i));
+      L2.appendChild(item); });
     b.appendChild(L2); keyline(b);
   }
   /* 3. THE 2027 ROWS. Plain text, ungraphed and unchanged, Ian 13.10.2026. */
@@ -34313,8 +34901,13 @@ function fxDealsFold(b,f){
     fxLabel(b,"2027 or later, outside the window",null);
     var L3=el("div");
     far.forEach(function(x){ var bits=[]; var pc=pct(x); if(pc) bits.push(pc); bits.push(x.contracted?"Under contract":String(x.d.stage||""));
-      if(x.net>0) bits.push(fnMoneyC(x.net)+" before tax"); var r=fnRow(L3,x.d.title||x.d.id,fnMoneyC(x.keep),bits.join(", "),null,false);
-      try{ var amt=r.querySelector(".fnamt"); if(amt) amt.style.color=(x.keep>0?"var(--green)":"var(--gray2)"); }catch(e){} });
+      /* build 503: a deal that is not Ian's shows whose it is, not a dollar figure for him. */
+      var _mine=fxIanEarns(x.d);
+      if(_mine && x.net>0) bits.push(fnMoneyC(x.net)+" before tax");
+      if(!_mine) bits.push(fxOwnedByLine(x.d));
+      var r=fnRow(L3,x.d.title||x.d.id,_mine?fnMoneyC(x.keep):fxNoFigureLabel(x.d),bits.join(", "),null,false);
+      try{ var amt=r.querySelector(".fnamt"); if(amt) amt.style.color=(!_mine?"var(--gray2)":(x.keep>0?"var(--green)":"var(--gray2)")); }catch(e){}
+      try{ if(!_mine) amt.style.fontSize="13px"; }catch(e){} });
     b.appendChild(L3);
   }
   if(noPrice) b.appendChild(el("div","fnnote",noPrice+" more "+(noPrice===1?"deal has":"deals have")+" no price yet, so nothing is computed for "+(noPrice===1?"it":"them")+"."));
@@ -34368,7 +34961,35 @@ function fxBandCash(v,f){
     var tiles=el("div","fx-tiles one");
     var tile=function(lab,val,cls,sub){ var x=el("div","fx-tile"); x.appendChild(el("div","fx-tl",lab)); x.appendChild(el("div","fx-tv"+(cls?" "+cls:""),val)); if(sub) x.appendChild(el("div","fx-ts",sub)); tiles.appendChild(x); };
     /* build 502: the Savings tile is gone. Its figure was the floor, which now rides on the Arizona fold's hint. */
-    if(haveOwed){ var net=(Number(op.balance)||0)-owed; tile("Net",fnMoneyAuto(net),(net<0?"a":"g"),"operating less cards"); }
+    /* ===== build 503: "Net $293" READ AS MONEY HE HAS, AND IT IS NOT. =============================
+       The arithmetic was always right: operating $2,576 less cards $2,283 is $293. The label was the
+       problem. "Net" with no scope reads as net worth, and it is not net worth, because it leaves
+       out the bike loan, a live obligation with a balance of about $1,650 to $1,800. His own
+       finance.netWorth field puts the real figure at about minus $360 to minus $510. So a tile
+       saying a positive $293 was pointing the wrong way, not just understating.
+
+       RELABELLED RATHER THAN RECOMPUTED, and the reason is the bike balance. It has never had a
+       confirmed figure, only a range, and finance.externalDebts says so in four places. Subtracting
+       a range gives a range, and writing one number into a tile that reads as cash would be
+       inventing a figure. BRAIN's rule applies: never assert a figure the record does not hold.
+
+       So the tile now says what it actually is, "Cards covered", and the sub line names the
+       exclusion out loud. A second line carries the real net as the RANGE it is, taken from
+       finance.netWorth.value, not computed here, so there is one owner for that number.
+       If the bike loan ever gets a confirmed balance, this becomes one figure and the second line
+       can collapse into the first. Until then the range is the honest answer. ================== */
+    if(haveOwed){
+      var net=(Number(op.balance)||0)-owed;
+      tile("Cards covered",fnMoneyAuto(net),(net<0?"a":"g"),"operating less cards, before the bike loan");
+      var _nw=f.netWorth||{};
+      var _bike=null;
+      try{ (f.externalDebts||[]).forEach(function(d){ if(d&&d.active&&!d.cancelled&&/bike/i.test(String(d.name||""))) _bike=d; }); }catch(e){}
+      if(_bike){
+        var _lo=Number(_bike.balanceMin)||0, _hi=Number(_bike.balanceMax)||0;
+        var _rng=(_lo&&_hi)?(fnMoneyAuto(net-_hi)+" to "+fnMoneyAuto(net-_lo)):null;
+        if(_rng) tile("With the bike loan",_rng,"a","about "+fnMoneyAuto(_lo)+" to "+fnMoneyAuto(_hi)+" still owed, balance never confirmed");
+      }
+    }
     if(tiles.firstChild) c.appendChild(tiles); band.appendChild(c);
   }
   if(cards.length){
@@ -35117,8 +35738,8 @@ function autoLogCard(area){
 .tabbar label .ti{font-size:0;line-height:0}
 .tabbar label .ti svg{width:24px;height:24px;display:block;color:var(--gray2);transition:color .15s,transform .15s}
 .tabbar label{color:var(--gray2)}
-#t-home:checked~#t-home:checked~.tabbar label[for=t-home],#t-stats:checked~.tabbar label[for=t-stats],#t-re:checked~.tabbar label[for=t-re],#t-gym:checked~.tabbar label[for=t-gym]{color:var(--accent)}
-#t-home:checked~#t-home:checked~.tabbar label[for=t-home] .ti svg,#t-stats:checked~.tabbar label[for=t-stats] .ti svg,#t-re:checked~.tabbar label[for=t-re] .ti svg,#t-gym:checked~.tabbar label[for=t-gym] .ti svg .ti svg{color:var(--accent)}
+#t-home:checked~.tabbar label[for=t-home],#t-stats:checked~.tabbar label[for=t-stats],#t-re:checked~.tabbar label[for=t-re],#t-gym:checked~.tabbar label[for=t-gym]{color:var(--accent)}
+#t-home:checked~.tabbar label[for=t-home] .ti svg,#t-stats:checked~.tabbar label[for=t-stats] .ti svg,#t-re:checked~.tabbar label[for=t-re] .ti svg,#t-gym:checked~.tabbar label[for=t-gym] .ti svg{color:var(--accent)}
 
 /* 2. Launcher / nav-card icons: line glyphs tinted to the section color; tile neutralized to section (was hardcoded blue) */
 .launch .li{font-size:0;background:color-mix(in srgb,var(--sec,var(--accent)) 14%, #0b0b0f);border-color:color-mix(in srgb,var(--sec,var(--accent)) 34%, transparent)}
@@ -35358,7 +35979,18 @@ body.solara-off .tabbar label[for=t-solara]{display:none}
 /* v21 build 409: Finances. Every width below resolves inside the 332px a .cbody gives at a
    390px viewport. No fixed pixel width is used on anything that carries data. */
 #t-finance:checked~.tabbar label[for=t-finance],#t-finance:checked~.tabbar label[for=t-finance] .tl{color:var(--fi1)}
-#t-finance:checked~.tabbar label[for=t-finance]::before{background:linear-gradient(90deg,var(--fi1),var(--fi2))}
+/* ===== build 503: Finances was selected-state incomplete, in two ways that compounded. ==========
+   The rule below set the underline's BACKGROUND but no rule anywhere set `content` for t-finance.
+   The base ::before rule at line 261 lists home, stats, re and gym and never grew a finance branch
+   when the tab was added in build 409. With no `content`, the pseudo element does not exist, so the
+   violet gradient was being painted onto nothing. Measured: `content: none`, box auto x auto.
+   Pickle and Solara each solved this by declaring the full ::before themselves (their own blocks
+   below); finance declared only the background. It now declares the full box, matching those two.
+   Separately the icon `svg` never received --fi1, so the label went violet while the glyph above it
+   stayed grey rgb(152,152,158), and the icon lift was missing. Both added. */
+#t-finance:checked~.tabbar label[for=t-finance]::before{content:"";position:absolute;top:0;width:24px;height:3px;border-radius:0 0 4px 4px;background:linear-gradient(90deg,var(--fi1),var(--fi2))}
+#t-finance:checked~.tabbar label[for=t-finance] .ti svg{color:var(--fi1)}
+#t-finance:checked~.tabbar label[for=t-finance] .ti{transform:translateY(-1px) scale(1.06)}
 body.finance-off .tabbar label[for=t-finance]{display:none}
 .fnsplit{display:flex;height:16px;border-radius:999px;overflow:hidden;background:var(--card2);margin:12px 0 0}
 .fnsplit span{display:block;min-width:0}
@@ -35388,12 +36020,12 @@ body.finance-off .tabbar label[for=t-finance]{display:none}
 #t-pickle:checked~.tabbar label[for=t-pickle] .ti svg{color:var(--pk1)}
 #t-gym:checked~.tabbar label[for=t-gym],#t-gym:checked~.tabbar label[for=t-gym] .tl{color:var(--gy1)}
 #t-gym:checked~.tabbar label[for=t-gym] .ti svg{color:var(--gy1)}
-#t-home:checked~#t-home:checked~.tabbar label[for=t-home],#t-stats:checked~.tabbar label[for=t-stats]{color:var(--misc1)}
-#t-home:checked~#t-home:checked~.tabbar label[for=t-home] .tl,#t-stats:checked~.tabbar label[for=t-stats] .tl .tl{color:var(--misc1)}
-#t-home:checked~#t-home:checked~.tabbar label[for=t-home] .ti svg,#t-stats:checked~.tabbar label[for=t-stats] .ti svg .ti svg{color:var(--misc1)}
+#t-home:checked~.tabbar label[for=t-home],#t-stats:checked~.tabbar label[for=t-stats]{color:var(--misc1)}
+#t-home:checked~.tabbar label[for=t-home] .tl,#t-stats:checked~.tabbar label[for=t-stats] .tl{color:var(--misc1)}
+#t-home:checked~.tabbar label[for=t-home] .ti svg,#t-stats:checked~.tabbar label[for=t-stats] .ti svg{color:var(--misc1)}
 
 /* Tab indicator bars per section */
-#t-home:checked~#t-home:checked~.tabbar label[for=t-home]::before,#t-stats:checked~.tabbar label[for=t-stats]::before{background:linear-gradient(90deg,var(--misc1),var(--misc2))}
+#t-home:checked~.tabbar label[for=t-home]::before,#t-stats:checked~.tabbar label[for=t-stats]::before{background:linear-gradient(90deg,var(--misc1),var(--misc2))}
 #t-re:checked~.tabbar label[for=t-re]::before{background:linear-gradient(90deg,var(--re1),var(--re2))}
 #t-gym:checked~.tabbar label[for=t-gym]::before{background:linear-gradient(90deg,var(--gy1),var(--gy2))}
 #t-pickle:checked~.tabbar label[for=t-pickle]::before{background:linear-gradient(90deg,var(--pk1),var(--pk2))}
@@ -35420,7 +36052,9 @@ body.finance-off .tabbar label[for=t-finance]{display:none}
 .hmc.both{background:linear-gradient(135deg,var(--pk1) 0 50%,var(--gy1) 50% 100%)}
 .hmn{width:34px;flex:0 0 auto;text-align:right;font-size:10.5px;font-weight:800;color:var(--gray2)}
 .hmn.hit{color:var(--pk1)}
-.hmn.norec{color:#4a4a56;font-weight:700;font-style:italic}
+/* build 503: was #4a4a56, ratio 1.95. Same role and same old value as .hmn.ahead above, so it takes
+   the same new value #86869a, ratio 4.77. Contrast only, nothing else in the heatmap touched. */
+.hmn.norec{color:#86869a;font-weight:700;font-style:italic}
 .hmkey{display:flex;gap:12px;flex-wrap:wrap;margin-top:9px;font-size:10.5px;font-weight:700;color:var(--gray2)}
 .hmkey i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px}
 
@@ -35866,8 +36500,37 @@ section,.card,.sectlabel{scroll-margin-top:calc(var(--hh) + var(--sat) + 8px)}
 /* one rise, for everything that enters when it is first reached */
 .hz-wait{opacity:0}
 .hz-rise{animation:hzUp 520ms cubic-bezier(.2,.7,.2,1) backwards;animation-delay:calc(var(--i,0) * 60ms)}
-.hz-wait .pbar i{transform:scaleX(0)}
-.hz-rise .pbar i{animation:z4GrowX 700ms cubic-bezier(.2,.7,.2,1) backwards;animation-delay:calc(var(--i,0) * 60ms + 160ms)}
+/* ===== v21 build 503: THE "DEALS 17 OF 20" BAR RENDERED AT ZERO WIDTH ON LOAD. ==================
+   Two rules lived here and both are gone. They were:
+     .hz-wait .pbar i{transform:scaleX(0)}
+     .hz-rise .pbar i{animation:z4GrowX 700ms ... backwards; animation-delay:... + 160ms}
+
+   WHAT WAS WRONG. Build 202 already owns every .pbar in the app. chUnits collects `.pbar` and gives
+   its `i` the chRight keyframe, chPlay writes the animation inline, and chPlay's setTimeout strips
+   it afterwards. Build 497 then added a SECOND entrance for the same element from CSS. Measured on
+   the live build 502, the one .pbar on Today, "Deals 17 of 20":
+     on page entry      inline `width: 85%`, computed transform matrix(0,0,0,1,0,0), rendered 0px
+                        wide against a 324px track. The bar was simply not there.
+     during the reveal  inline style carried `animation: 1500ms ... chRight` from chRun while the
+                        computed animation-name was z4GrowX from the CSS rule above. Two systems,
+                        one element, taking turns as chRun's release timer cleared its own inline
+                        animation.
+     after the reveal   275.4px, correct.
+   So the bar was invisible until zone 5 was scrolled into view, and it was being animated twice.
+
+   WHY REMOVING BUILD 497'S RULES IS THE FIX RATHER THAN ADDING A THIRD RULE. Two reasons, and the
+   second one is build 202's, not mine.
+   1. The .pbar already had a working entrance with a guaranteed release. Deleting the duplicate
+      leaves one owner for the element. Layering a third rule on top would leave three.
+   2. Build 202 chose width over scaleX for these specifically, and wrote down why at lines 537 to
+      539: "HORIZONTAL PROGRESS BARS grow right from the left edge. Width rather than scaleX, same
+      reason: a pill with a 99px radius distorts badly under a horizontal scale." .pbar is
+      border-radius 99px. So build 497's scaleX was not just redundant, it was the transform build
+      202 had already rejected for this shape.
+
+   THE BLOCK STILL RISES. .z5-b keeps its hz-wait/hz-rise opacity fade, so the card the bar sits in
+   still enters when it is first reached. Only the second collapse of the fill inside it is gone,
+   and with the build 503 release guard above, that opacity is now guaranteed to come off. */
 /* court hours as a line, so it is not a third green bar chart */
 .z4-b{background:linear-gradient(170deg,rgba(95,230,210,.14) 0%,rgba(95,230,210,0) 62%),var(--card)}
 .z4-b .z4-k{color:var(--teal2)}
@@ -35885,7 +36548,9 @@ section,.card,.sectlabel{scroll-margin-top:calc(var(--hh) + var(--sat) + 8px)}
 .z4-go .z4-ch{animation:z4Wipe 700ms cubic-bezier(.2,.7,.2,1) both}
 .z4-go .z4-dot{animation:z4Pop 520ms cubic-bezier(.2,.7,.2,1) both;animation-delay:calc(var(--i,0) * 60ms + 200ms)}
 @media (prefers-reduced-motion:reduce){
-  .hz-wait{opacity:1}.hz-rise,.hz-rise .pbar i{animation:none}.hz-wait .pbar i{transform:none}
+  /* build 503: the two .pbar clauses that were here are dropped with the rules they guarded. The
+     .pbar fill is build 202's again, and that system already returns early on CH_REDUCE. */
+  .hz-wait{opacity:1}.hz-rise{animation:none}
   .z4-go .z4-ch,.z4-go .z4-dot{animation:none}.z4-wait .z4-ch{clip-path:none}.z4-wait .z4-dot{opacity:1}.z5-strip:active{transform:none}
 }
 </style>
@@ -36067,6 +36732,57 @@ section,.card,.sectlabel{scroll-margin-top:calc(var(--hh) + var(--sat) + 8px)}
 </style>
 <style id="asof-b493">
 .asof{font-size:11px;line-height:1.4;color:var(--gray2);text-align:center;margin:16px 0 8px}
+</style>
+
+<style id="rm-b503">
+/* ===== v21 build 503: ONE REDUCED MOTION BLOCK, LAST IN THE FILE. ==============================
+   Reduced motion has been a stated requirement in every build, and the chart systems honour it
+   properly: the build 202 chRun driver returns early on CH_REDUCE, and builds 494 to 502 each
+   wrote their own @media block. The problem was never the charts. It was everything that was
+   nobody's chart, so no lane owned it. Measured by running the whole app twice at 390px, once
+   normally and once with prefers-reduced-motion forced, and recording every animationstart and
+   transitionstart event. Every chart animation correctly went to zero. These still fired:
+
+     slidein, the PAGE TRANSITION          line 257. Fired on every one of the five tab entries,
+                                           every time. The most frequent motion in the app and the
+                                           only one that moves the whole screen.
+     transform on .ti, the TAB ICON        line 265 transition plus line 267 :active scale(.88).
+                                           Fired on every page entry.
+     slidein on .deal-detail               line 732. Not covered by any reduced motion rule.
+     shake on the lock keypad              line 236. Not covered by any reduced motion rule.
+
+   WHY THIS BLOCK IS LAST AND WHY IT USES !important. These four are declared across four different
+   style blocks spanning 35,000 lines, two of them inside blocks a later lane appended. A rule that
+   has to beat all of them, whatever order they end up in, is the one thing here that earns
+   !important. Being last in the file means a future appended block cannot silently outrank it.
+
+   THE :active SCALES ARE INCLUDED, and that is a deliberate call rather than scope creep. There are
+   thirteen :active transform rules in this file and exactly two of them were already neutralised
+   under reduced motion: .z3-t by build 496 and .z5-strip by build 497. Two lanes decided tap
+   feedback counts as motion, and eleven other rules written by other lanes never got the memo. One
+   answer for all thirteen is the coherent system; two answers is the drift this build is cleaning
+   up. Tap feedback is a nicety, the tap still registers, so switching it off costs nothing.
+
+   NOTHING HERE CHANGES NORMAL MOTION. Every rule is inside the media query. With reduced motion
+   off, this block is inert. ============================================================== */
+@media (prefers-reduced-motion:reduce){
+  /* the page transition, the single most frequent motion in the app */
+  #t-home:checked~main #p-home,#t-re:checked~main #p-re,#t-gym:checked~main #p-gym,
+  #t-pickle:checked~main #p-pickle,#t-solara:checked~main #p-solara,
+  #t-finance:checked~main #p-finance,#t-settings:checked~main #p-settings{animation:none !important}
+  /* the deal detail reveal and the lock keypad shake */
+  .deal-detail{animation:none !important}
+  .shake{animation:none !important}
+  /* the tab icon: kill both the transition and the active scale, keep the selected lift, which is
+     a static position and not motion */
+  .tabbar label .ti{transition:none !important}
+  .tabbar label:active .ti{transform:none !important}
+  /* every tap feedback scale in the file, in one place, matching what builds 496 and 497 already
+     did for their own two */
+  .key:active,.key.fn:active,.profcard:active,.gear:active,.feedlink:active,.btn:active,
+  .chip:active,.card.tap:active,.qab:active,.dtag:active,.z3-t:active,
+  .z5-strip:active{transform:none !important}
+}
 </style>
 
 </body>
