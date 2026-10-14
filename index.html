@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 510 (2026-10-14)">
+<meta name="build" content="v21 build 511 (2026-10-14)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -23362,7 +23362,7 @@ try{ if(profile==="ian" && state.meta && !state.meta.mig470_audit){
        title:"Mattox listing goes live, 19859 Burke St, $479,900",
        note:"Confirmed by Ian at the 28.09.2026 meeting. Staging ran 3 and 4 October, photos 5 October."},
       {id:"ev-20261015-belknap-live", date:"2026-10-15", kind:"Real estate",
-       title:"Belknap listing goes live, 4946 Pratt St, $249,900",
+       title:"Belknap listing goes live, 4946 Pratt St, $250,000",
        note:"Settled 05.10.2026, moved off the 8th. Staging ran 3 and 4 October, eleven days ahead, and no photo date is on record."},
       {id:"ev-20261015-vogel-live", date:"2026-10-16", kind:"Real estate",
        title:"Vogel listing goes live, 5621 Pine St",
@@ -26826,6 +26826,44 @@ try{ if(profile==="ian" && state.meta && !state.meta.mig510_vogel_price && state
     save(true);
     try{ console.log("mig510: "+_L10.length+" changes, "+_L10.join(" | ")); }catch(_){}
 } }catch(e){ try{ console.warn("mig510 did not apply:",e&&e.message); }catch(_){} }
+
+/* ===== v21 build 511: BELKNAP LISTS AT $250,000, NOT $249,900. IAN, 14 OCTOBER 2026, LIVE TOMORROW. ===========
+   The listing agreement says $250,000 and Ian confirmed it is the list. The deal price field was already
+   $250,000 (Ian's call of 29.09.2026, build 84) and the calendar event title was already patched; this
+   build adds the SOURCE (listing agreement), marks the CMA rev 4 $249,900 as a recommendation and not
+   the list price so there are not two live answers, and fixes the seed event title for a fresh profile.
+   The CMA analysis fields are KEPT as the record of how the number was reached.
+   Belknap lists THURSDAY 15 OCTOBER 2026, Vogel FRIDAY 16 OCTOBER 2026 at $324,900.
+   Guard state.meta.mig511_belknap_price, idempotent, end of chain, SEED_VERSION stays 13. */
+try{ if(profile==="ian" && state.meta && !state.meta.mig511_belknap_price && state.realEstate && Array.isArray(state.realEstate.deals)){
+    var _D11=state.realEstate.deals, _L11=[];
+    var _bk11=null;
+    for(var _i11=0;_i11<_D11.length;_i11++){ if(_D11[_i11]&&_D11[_i11].id==="re-belknap-sell") _bk11=_D11[_i11]; }
+    if(_bk11){
+      _bk11.price="$250,000";
+      _bk11.priceSource="Listing agreement, confirmed by Ian 14.10.2026";
+      _bk11.priceNote="LIST PRICE IS $250,000. The listing agreement says $250,000 and Ian confirmed it 14.10.2026. Lists Thursday 15 October 2026. The $249,900 in older records was the CMA rev 4 recommendation, not the list price, and is superseded as an answer.";
+      if(_bk11.cma && typeof _bk11.cma==="object"){
+        _bk11.cma.recommendedNote="CMA rev 4 RECOMMENDATION of $249,900, kept as the analysis record. It is NOT the list price. The list price is $250,000 (listing agreement, Ian 14.10.2026).";
+      }
+      _bk11.note=String(_bk11.note||"")+"  14.10.2026, IAN: Belknap lists at $250,000 per the listing agreement, NOT $249,900. Lists Thursday 15 October 2026.";
+      _L11.push("belknap: price $250,000 sourced to the listing agreement, CMA $249,900 marked as a recommendation");
+    }
+    if(Array.isArray(state.events)){
+      state.events.forEach(function(e){
+        if(e && e.id==="ev-20261015-belknap-live"){
+          e.date="2026-10-15";
+          e.title="Belknap listing goes live, 4946 Pratt St, $250,000";
+          _L11.push("belknap live event: title $250,000, date 2026-10-15");
+        }
+      });
+    }
+    state.meta.mig511_belknap_price=true;
+    state.meta.mig511_changes=_L11;
+    save(true);
+    try{ console.log("mig511: "+_L11.length+" changes, "+_L11.join(" | ")); }catch(_){}
+} }catch(e){ try{ console.warn("mig511 did not apply:",e&&e.message); }catch(_){} }
+
 
 
 
