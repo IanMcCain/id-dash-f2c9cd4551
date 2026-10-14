@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 506 (2026-10-13)">
+<meta name="build" content="v21 build 507 (2026-10-14)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -26589,6 +26589,69 @@ try{ if(profile==="ian" && state.meta && !state.meta.mig506_ian_answers && state
     save(true);
     try{ console.log("mig506: "+_L6.length+" changes, "+_L6.join(" | ")); }catch(_){}
 } }catch(e){ try{ console.warn("mig506 did not apply:",e&&e.message); }catch(_){} }
+
+/* ===== v21 build 507: WEDNESDAY 14 OCTOBER, 7:06 TO 8:51 AM, SONNET-F ============================
+   One session, plus the first entry in a NEW store, state.pickleball.equipmentConcerns, so an
+   equipment worry can be counted across sessions instead of living in a note nobody will search.
+   WATCH VALUES (Apple Fitness screenshot, 14.10.2026): workout time 1:45:27, active 704, total 869,
+   avg HR 109, max 151. No minimum HR shown, so minHr is ABSENT, not zero. Guarded by id.
+   EFFORT: Ian gave NO rating of his own, so effort is ABSENT. Apple's Effort 6, Moderate is Apple's
+   field, stored as appleEffort, never merged. His effort means how hard he tried and how well he
+   played, never exertion, and is never reconciled against heart rate or calories.
+   HIS OWN ACCOUNT of the session (a poor one on his terms) lives in the QUARANTINED selfAssessment
+   store at ["2026-10-14"], no skills key so the radar cannot draw it, and is NOT on the session
+   record. A blind grading pass works from footage against a written rubric and never sees it.
+   PADDLE POWER CONCERN: an OPEN EQUIPMENT CONCERN, not a performance note. It is not resolved, not
+   attributed to his technique and not dismissed. Ian is unsure whether it is the paddle or himself
+   and the record keeps that uncertainty. Each time he raises it, one occurrence is appended. If the
+   complaints recur, THAT PATTERN is the evidence. Nothing is inferred from a single occurrence.
+   Guard state.meta.mig507_pk1014, idempotent on ids, end of chain, SEED_VERSION stays 13. */
+try{ if(profile==="ian" && state.meta && !state.meta.mig507_pk1014 && state.pickleball){
+    var _P07=state.pickleball;
+    if(!Array.isArray(_P07.sessions)) _P07.sessions=[];
+    var _has07=false;
+    _P07.sessions.forEach(function(s){ if(s&&s.id==="pk-20261014-am") _has07=true; });
+    if(!_has07){
+      _P07.sessions.push({
+        id:"pk-20261014-am", date:"2026-10-14", kind:"Pickleball", venue:"Omaha",
+        duration:"1h 45m 27s", window:"7:06 to 8:51 AM, Omaha",
+        calories:869, activeCalories:704, avgHr:109, maxHr:151,
+        appleEffort:6, appleEffortLabel:"Moderate", appleEffortSource:"Apple Fitness Effort field. NOT Ian's rating.",
+        effortNote:"IAN GAVE NO RATING OF HIS OWN for this session, so effort is absent. Apple's Effort 6, Moderate is Apple's field and is kept in appleEffort, never merged into effort. Ian's effort means how hard he tried and how well he played, never exertion, and is never reconciled against heart rate or calories.",
+        equipmentConcernId:"eq-paddle-power",
+        result:"", score:"", opponent:"", copyOwned:true,
+        source:"Ian and his Apple Fitness screenshot, 14.10.2026.",
+        note:"Pickleball, Wednesday 14 October, Omaha, 7:06 to 8:51 AM. 1:45:27 in total. From Apple Watch: avg HR 109, peak 151, active 704, total 869. Apple's own Effort field read 6, Moderate; that is Apple's field and not your rating. Ian gave his own account of the session, which is stored separately. A paddle power concern was raised and is tracked as an open equipment concern, not as part of this note.",
+        agent:"No drill or open play split was given, so none is stored: no drillMinutes, playMinutes or segments. Do NOT split calories or HR. Effort is absent because Ian gave no rating; Apple's 6 is appleEffort and effort is never reconciled against heart rate. He raised a PADDLE POWER CONCERN this session: see state.pickleball.equipmentConcerns, id eq-paddle-power. It is an open equipment concern. Do not resolve it, do not attribute it to technique, do not dismiss it."
+      });
+      _P07.sessions.sort(function(a,z){ return String(a.date).localeCompare(String(z.date)); });
+    }
+    if(!Array.isArray(_P07.equipmentConcerns)) _P07.equipmentConcerns=[];
+    var _eq07=null;
+    _P07.equipmentConcerns.forEach(function(c){ if(c&&c.id==="eq-paddle-power") _eq07=c; });
+    if(!_eq07){
+      _P07.equipmentConcerns.push({
+        id:"eq-paddle-power", item:"Paddle", topic:"Power and sweet spot", status:"OPEN",
+        opened:"2026-10-14", openedBy:"Ian", source:"Ian, 14.10.2026, his words in substance",
+        summary:"The power feels off. If he does not hit it perfectly in the center it goes nowhere. The paddle used to have a huge sweet spot and even off center hits would still carry, despite it not being a high pop paddle, and that is no longer happening. He is unsure whether it is the paddle or himself.",
+        cause:"UNDETERMINED. Ian himself does not know whether it is the paddle or himself. Not attributed to technique, not attributed to the paddle, not dismissed.",
+        occurrences:[{date:"2026-10-14", sessionId:"pk-20261014-am", note:"First occurrence logged in this store. Raised in his account of a session he described as poor on his own terms."}],
+        trackingRule:"Append one occurrence each time Ian raises a power or sweet spot complaint, with the date and session id. If the complaints recur, that pattern is the evidence. One occurrence proves nothing either way. Do not close this concern without Ian saying so.",
+        resolution:null
+      });
+    }
+    if(!_P07.selfAssessment || typeof _P07.selfAssessment!=="object") _P07.selfAssessment={};
+    if(!_P07.selfAssessment["2026-10-14"]) _P07.selfAssessment["2026-10-14"]={
+      label:"10.14.2026", source:"Ian self assessed", form:"session account", quarantinedFromGrading:true,
+      sessionId:"pk-20261014-am",
+      account:"He did not play well. He was missing easy hits.",
+      attitude:"He was not taking it seriously, and says that is part of why he played worse.",
+      contrastWith13Oct:"On 13 October he described getting beaten by strong players but learning a lot. This session he describes as poor on his own terms.",
+      note:"HIS ACCOUNT, recorded as his and not reinterpreted. QUARANTINED: any coach grading pass must be BLIND and work from footage against a written rubric. Do not show this to a grading pass, do not copy it into any BRAIN file the video coach reads, and do not render it as a radar value (it carries no skills key). It is not an effort rating and is not reconciled against heart rate or calories."
+    };
+    state.meta.mig507_pk1014=true; save(true);
+    try{ console.log("mig507: 14 October session, paddle concern and self account logged"); }catch(_){}
+} }catch(e){ try{ console.warn("mig507 did not apply:",e&&e.message); }catch(_){} }
 
 
   /* build 372: LAST THING BEFORE THE SAVE. Every migration above has run, deepMergeDefaults
