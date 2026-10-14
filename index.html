@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 505 (2026-10-13)">
+<meta name="build" content="v21 build 506 (2026-10-13)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -23365,8 +23365,8 @@ try{ if(profile==="ian" && state.meta && !state.meta.mig470_audit){
        title:"Belknap listing goes live, 4946 Pratt St, $249,900",
        note:"Settled 05.10.2026, moved off the 8th. Staging ran 3 and 4 October, eleven days ahead, and no photo date is on record."},
       {id:"ev-20261015-vogel-live", date:"2026-10-15", kind:"Real estate",
-       title:"Vogel listing goes live, 5621 Pine St, $329,900",
-       note:"Firm, Ian 29.09.2026. The possible leak is still unconfirmed and the price is still flagged for revisit until it is identified."}
+       title:"Vogel listing goes live, 5621 Pine St, $334,900",
+       note:"Firm, Ian 29.09.2026. Live number $334,900. Ian 13.10.2026 is considering $329,900 on new comp information, undecided."}
     ];
     _EV70.forEach(function(ev){
       var dup=false;
@@ -26480,6 +26480,116 @@ try{ if(profile==="ian" && state.meta && !state.meta.mig505_pk1013pm && state.pi
     state.meta.mig505_pk1013pm=true; save(true);
     try{ console.log("mig505: 13 October evening session and self read logged"); }catch(_){}
 } }catch(e){ try{ console.warn("mig505 did not apply:",e&&e.message); }catch(_){} }
+
+/* ===== v21 build 506: IAN'S ANSWERS OF 13 OCTOBER 2026, FOUR OF THEM, SONNET-H ===================
+   1. VOGEL PRICE IS NOT SETTLED. His words: "we originally told him 335 but because of the new
+      information I'm considering moving to 329 nine, not certain yet, we'll see how it turns out
+      but we might stick with 334 nine." So: $334,900 stays the LIVE number, it is what the seller
+      was told. $329,900 is UNDER CONSIDERATION, driven by new comp information, UNDECIDED as of
+      13.10.2026. $319,900 is DEAD: the abatement is done, so the as is axis is retired everywhere.
+      This REOPENS the price that build 503 section 5 and the 09.10 settle block treated as closed.
+      price is not moved. priceNeedsRevisit goes back to true with the reason stated.
+   2. HERNANDEZ 0.95 IS NOW HIS OWN FIGURE. "probability I would say 95%, they could obviously back
+      out anytime, but I think there's an extremely low probability that they do." Before today the
+      0.95 was a lane copying Belknap's number under his name (build 492). Re annotated, dated.
+   3. 20131 R ST, RATE AND SHARE ANSWERED. "20% for R Street, saying the people that come in do
+      have an agent. If they do not it'll be 50-50, but likely that they will have an agent."
+      Working figure is 20%. The 50/50 no agent case is stored as ianSplitAlt, NOT the default.
+      He gave a share and no rate, so the standard seller rate default (3.6%) is what computes and
+      the record says so in rateAssumed. The two suppression flags build 503 added are cleared in
+      this same step, as that build's own warning required (share set first, then clear).
+   4. WINCHESTER BASIS ANSWERED. Split 50/50. Closing probability 50%, his read: "there's no
+      certainty to it, just a hope and a decent chance." It is a HOPE, never a forecast, and the
+      rows must show the 50% weighting beside the figure. hopeLabel drives that (fxHopeBits).
+      Supersedes the 24.08.2026 reattribution and the suppression build 503 applied on it.
+   Guard state.meta.mig506_ian_answers, idempotent, end of chain, SEED_VERSION stays 13. */
+try{ if(profile==="ian" && state.meta && !state.meta.mig506_ian_answers && state.realEstate && Array.isArray(state.realEstate.deals)){
+    var _D06=state.realEstate.deals, _L6=[];
+    var _by06=function(id){ for(var i=0;i<_D06.length;i++){ if(_D06[i]&&_D06[i].id===id) return _D06[i]; } return null; };
+
+    /* ---- 1. VOGEL ---- */
+    var _vg6=_by06("re-vogel-sell");
+    if(_vg6){
+      _vg6.price="$334,900";
+      _vg6.priceUnderConsideration={
+        amount:"$329,900", status:"UNDECIDED", asOf:"2026-10-13", source:"Ian, 13.10.2026",
+        driver:"new comp information",
+        words:"we originally told him 335 but because of the new information I'm considering moving to 329 nine, not certain yet, we'll see how it turns out but we might stick with 334 nine"
+      };
+      _vg6.priceNote="LIVE NUMBER $334,900. It is what the seller was told. $329,900 IS UNDER CONSIDERATION, NOT SET: Ian 13.10.2026, because of new comp information, undecided. His words: \"we originally told him 335 but because of the new information I'm considering moving to 329 nine, not certain yet, we'll see how it turns out but we might stick with 334 nine.\" Do not present $329,900 as the price and do not present the price as settled. $319,900 is DEAD: the abatement is done, so the as is figure is retired and is not a lower tier.";
+      _vg6.priceNeedsRevisit=true;
+      _vg6.revisitWhy="REOPENED 13.10.2026 by Ian. $334,900 stays live. $329,900 is under consideration on new comp information and is undecided. This supersedes the CLOSED 09.10.2026 wording, which was right on 09.10 and is no longer current.";
+      if(_vg6.abatement && typeof _vg6.abatement.note==="string"){
+        _vg6.abatement.note=_vg6.abatement.note.replace("$319,900 as-is is retired to a footnote.","$319,900 as-is is DEAD, retired, not a lower tier.");
+      }
+      _vg6.note=String(_vg6.note||"")+"  PRICE REOPENED 13.10.2026, IAN: $334,900 stays the live number (what the seller was told). He is considering $329,900 because of new comp information and is not certain; it may stay at $334,900. $319,900 is dead, the abatement is done.";
+      _L6.push("vogel: $334,900 live, $329,900 under consideration (undecided), $319,900 retired");
+    }
+    if(Array.isArray(state.events)){
+      state.events.forEach(function(e){
+        if(e && e.id==="ev-20261015-vogel-live"){
+          e.title="Vogel listing goes live, 5621 Pine St, $334,900";
+          e.note="Live number $334,900, what the seller was told. Ian 13.10.2026 is considering $329,900 on new comp information and is not certain; it may stay at $334,900. Listing date 15 October stands.";
+          e.priceNote="$334,900 live. $329,900 under consideration, undecided as of 13.10.2026 (Ian).";
+          _L6.push("vogel live event: title $334,900, note records $329,900 as under consideration");
+        }
+      });
+    }
+
+    /* ---- 2. HERNANDEZ ---- */
+    var _hz6=_by06("re-hernandez-sell");
+    if(_hz6){
+      _hz6.winProbPriorSource=_hz6.winProbSource||"";
+      _hz6.winProb=0.95;
+      _hz6.winProbSource="IAN";
+      _hz6.winProbAsOf="2026-10-13";
+      _hz6.winProbNote="Ian's OWN figure, stated 13.10.2026: \"probability I would say 95%, they could obviously back out anytime, but I think there's an extremely low probability that they do.\" Before today the 0.95 was a lane copying Belknap's number under his name (build 492, 12.10.2026). It is now his, dated 13.10.2026.";
+      _L6.push("hernandez: winProb 0.95 re annotated as Ian's own stated figure, 13.10.2026");
+    }
+
+    /* ---- 3. 20131 R ST ---- */
+    var _rs6=_by06("re-rstreet-model");
+    if(_rs6){
+      _rs6.ianSplit=0.20;
+      _rs6.ianSplitSource="Ian, 13.10.2026: \"20% for R Street, saying the people that come in do have an agent.\" Working figure because a buyer's agent is the likely case.";
+      _rs6.ianSplitAlt={ share:0.50, case:"the buyer has NO agent", source:"Ian, 13.10.2026: \"If they do not it'll be 50-50, but likely that they will have an agent.\"", isDefault:false };
+      _rs6.rateAssumed="Ian gave a share and no rate. The standard seller rate (3.6%) is what computes. If the listing rate differs, say so and it changes.";
+      _rs6.commissionUnset=false;
+      _rs6.commissionUnsetWhy="ANSWERED 13.10.2026: 20 percent working share, 50/50 if the buyer has no agent. See ianSplitSource and ianSplitAlt.";
+      _rs6.suppressIanEarnings=false;
+      _rs6.ownedBy="Scenic Group's own model home";
+      _rs6.ownedByShort="";
+      _rs6.note=String(_rs6.note||"")+"  RATE AND SHARE ANSWERED 13.10.2026, IAN: 20 percent is the working figure because the people who come in usually have an agent; if the buyer has no agent it is 50/50. 50/50 is stored as the alternative, not the default. No rate was given, so the 3.6 percent standard seller rate computes.";
+      _L6.push("r street: ianSplit 0.20 set, 50/50 no agent stored as alternative, suppression cleared");
+    }
+
+    /* ---- 4. WINCHESTER ---- */
+    var _wn6=_by06("re-brandon-winchester");
+    if(_wn6){
+      _wn6.ianSplit=0.50;
+      _wn6.ianSplitSource="Ian, 13.10.2026: the split is 50/50.";
+      _wn6.notIansDeal=false;
+      _wn6.suppressIanEarnings=false;
+      _wn6.ownedBy="";
+      _wn6.ownedByShort="";
+      _wn6.earningsFlag="CLEARED 13.10.2026. Ian answered the basis: split 50/50. Supersedes the 24.08.2026 reattribution and the suppression build 503 applied on it. The figure is a HOPE weighted at 50 percent, never a forecast.";
+      _wn6.amountUnresolved="ANSWERED 13.10.2026: the split is 50/50, the dual agency basis. The three way ambiguity this field described is closed.";
+      _wn6.winProb=0.50;
+      _wn6.winProbSource="IAN";
+      _wn6.winProbAsOf="2026-10-13";
+      _wn6.winProbNote="Ian, 13.10.2026: 50 percent is his read. They have already invested a lot but have been slow and sometimes ghosting, and being wealthy may mean the investment does not bind them. His words: \"there's no certainty to it, just a hope and a decent chance.\" If it closes it is a very big chunk of money, so the 50 percent weighting must show beside the figure and the gross is never expected income.";
+      _wn6.hopeLabel="a hope, not a forecast";
+      _wn6.riskLine="A hope with a decent chance, 50 percent (Ian). Slow, sometimes ghosting.";
+      _wn6.note=String(_wn6.note||"")+"  BASIS ANSWERED 13.10.2026, IAN: split 50/50, closing chance 50 percent. \"there's no certainty to it, just a hope and a decent chance.\" The gross figure above is what Ian earns IF IT CLOSES. It is not expected income; the expected value is half of it.";
+      _L6.push("winchester: 50/50 split, winProb 0.50 (Ian), earnings unsuppressed, labelled a hope");
+    }
+
+    state.meta.mig506_ian_answers=true;
+    state.meta.mig506_changes=_L6;
+    save(true);
+    try{ console.log("mig506: "+_L6.length+" changes, "+_L6.join(" | ")); }catch(_){}
+} }catch(e){ try{ console.warn("mig506 did not apply:",e&&e.message); }catch(_){} }
+
 
   /* build 372: LAST THING BEFORE THE SAVE. Every migration above has run, deepMergeDefaults
      has run, so this is the only point in the file where the state is actually final. */
@@ -34491,7 +34601,7 @@ function fnProjection(v,f){
          "clears it" badge either: a deal he does not earn on cannot clear his shortfall. */
       var _mine=fxIanEarns(x.d);
       if(_mine && x.net>0) bits.push(fnMoneyC(x.net)+" before tax");
-      if(!_mine) bits.push(fxOwnedByLine(x.d));
+      if(!_mine) bits.push(fxOwnedByLine(x.d)); fxHopeBits(x,bits);
       if(_mine && !x.far && gapHi>0 && x.keep>=gapHi) bits.push("clears it");
       else if(_mine && !x.far && gapHi>0 && x.keep>0 && x.keep>=gapLo) bits.push("nearly clears");
       var r=fnRow(host,x.d.title||x.d.id,_mine?fnMoneyC(x.keep):fxNoFigureLabel(x.d),bits.join(", "),null,false);
@@ -34842,6 +34952,9 @@ function fxOwnedByLine(d){
    Saying "not yours" about his own company's model home would be a new wrong statement replacing
    the old one, so the label follows the reason. */
 function fxNoFigureLabel(d){ return (d && d.notIansDeal===true) ? "not yours" : "not set"; }
+/* ===== v21 build 506: A HOPE SHOWS ITS WEIGHT. A deal carrying hopeLabel (Winchester, Ian 13.10.2026: "just a hope and a decent chance") prints the label and the probability weighted figure beside the full figure, so the full figure is never read as expected income. */
+/* The sub line is held to FOUR WORDS by fnSub, which DROPS a longer line whole. The first cut of this helper appended two bits to the existing ones, overflowed the limit, and the Winchester row rendered as a bare full figure with no label at all (caught by _verify506.js). So a hope row REPLACES its bits with exactly four words: "50% hope, weighted $7,893". */
+function fxHopeBits(x,bits){ try{ var d=x&&x.d; if(d&&d.hopeLabel&&typeof x.p==="number"&&x.keep>0){ bits.length=0; bits.push(Math.round(x.p*100)+"% hope"); bits.push("weighted "+fnMoneyC(x.keep*x.p)); } }catch(e){} }
 function fxDisc(host,key,label,hint,build){
   var body=el("div","fx-db"); var open=(typeof PK_OPEN!=="undefined"&&(key in PK_OPEN))?PK_OPEN[key]:false;
   try{ var _h=build(body); if(typeof _h==="string"&&_h) hint=_h; }catch(e){ try{console.error("[dash] fxDisc",key,e);}catch(_){} }
@@ -35022,7 +35135,7 @@ function fxDealsFold(b,f){
       /* build 503: same rule as the 2027 rows, a deal that is not Ian's shows whose it is. */
       var _mine=fxIanEarns(x.d);
       if(_mine && x.net>0) bits.push(fnMoneyC(x.net)+" before tax");
-      if(!_mine) bits.push(fxOwnedByLine(x.d));
+      if(!_mine) bits.push(fxOwnedByLine(x.d)); fxHopeBits(x,bits);
       fxRow(item,x.d.title||x.d.id,bits.join(", "),_mine?fnMoneyC(x.keep):fxNoFigureLabel(x.d),(_mine&&gapHi>0&&x.keep>=gapHi)?"g":"");
       if(_mine) item.appendChild(fxAxisBar(mx2,x.keep,gapLo,gapHi,i));
       L2.appendChild(item); });
@@ -35036,7 +35149,7 @@ function fxDealsFold(b,f){
       /* build 503: a deal that is not Ian's shows whose it is, not a dollar figure for him. */
       var _mine=fxIanEarns(x.d);
       if(_mine && x.net>0) bits.push(fnMoneyC(x.net)+" before tax");
-      if(!_mine) bits.push(fxOwnedByLine(x.d));
+      if(!_mine) bits.push(fxOwnedByLine(x.d)); fxHopeBits(x,bits);
       var r=fnRow(L3,x.d.title||x.d.id,_mine?fnMoneyC(x.keep):fxNoFigureLabel(x.d),bits.join(", "),null,false);
       try{ var amt=r.querySelector(".fnamt"); if(amt) amt.style.color=(!_mine?"var(--gray2)":(x.keep>0?"var(--green)":"var(--gray2)")); }catch(e){}
       try{ if(!_mine) amt.style.fontSize="13px"; }catch(e){} });
