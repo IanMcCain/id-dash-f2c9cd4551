@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 508 (2026-10-14)">
+<meta name="build" content="v21 build 509 (2026-10-14)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -23364,8 +23364,8 @@ try{ if(profile==="ian" && state.meta && !state.meta.mig470_audit){
       {id:"ev-20261015-belknap-live", date:"2026-10-15", kind:"Real estate",
        title:"Belknap listing goes live, 4946 Pratt St, $249,900",
        note:"Settled 05.10.2026, moved off the 8th. Staging ran 3 and 4 October, eleven days ahead, and no photo date is on record."},
-      {id:"ev-20261015-vogel-live", date:"2026-10-15", kind:"Real estate",
-       title:"Vogel listing goes live, 5621 Pine St, $334,900",
+      {id:"ev-20261015-vogel-live", date:"2026-10-16", kind:"Real estate",
+       title:"Vogel listing goes live, 5621 Pine St",
        note:"Firm, Ian 29.09.2026. Live number $334,900. Ian 13.10.2026 is considering $329,900 on new comp information, undecided."}
     ];
     _EV70.forEach(function(ev){
@@ -26688,6 +26688,90 @@ try{ if(profile==="ian" && state.meta && !state.meta.mig508_eq_foam && state.pic
       try{ console.log("mig508: eq-paddle-power foam clarification applied"); }catch(_){}
     }
 } }catch(e){ try{ console.warn("mig508 did not apply:",e&&e.message); }catch(_){} }
+
+/* ===== v21 build 509: IAN'S UPDATE OF 14 OCTOBER 2026, VOGEL MOVES TO FRIDAY 16, PRICE IS A TWO WAY DECISION ====
+   1. VOGEL GO LIVE MOVED to FRIDAY 16 OCTOBER 2026 (was Thursday 15). Ian, 14.10.2026. The event id
+      ev-20261015-vogel-live now carries the wrong date in its NAME. The id is LEFT ALONE on purpose:
+      the build 70 seed pushes that id when no event holds it, and mig503 and mig506 look it up by it,
+      so a rename would put a second Vogel event back on the 15th on the next load. Only the date
+      field changes. idNote records why.
+   2. BELKNAP STAYS THURSDAY 15 OCTOBER. List date confirmed again 14.10.2026. The app already tracks it
+      (close, listDateConfirmed, ev-20261015-belknap-live); this restamps it.
+   3. VOGEL PRICE IS NOT SETTLED. He decides TONIGHT between $324,900 and $319,900 and says it will not move
+      anywhere else. $334,900 is no longer the plan. THE LIVE PRICE FIELD IS NOT CHANGED: it stays
+      $334,900, flagged as pending a decision and superseded in direction. Neither candidate is entered
+      as the price because neither is chosen. $329,900 and $309,900 are retired as candidates. Pass 4
+      (multi-level evidence, recommended $309,900, upper tier $314,900) stays on the record as evidence.
+      He is listing above it. It is his call; no argument is made here.
+   Guard state.meta.mig509_vogel_1014, idempotent, end of chain, SEED_VERSION stays 13. */
+try{ if(profile==="ian" && state.meta && !state.meta.mig509_vogel_1014 && state.realEstate && Array.isArray(state.realEstate.deals)){
+    var _D09=state.realEstate.deals, _L9=[];
+    var _by09=function(id){ for(var i=0;i<_D09.length;i++){ if(_D09[i]&&_D09[i].id===id) return _D09[i]; } return null; };
+    var _vg9=_by09("re-vogel-sell");
+    if(_vg9){
+      _vg9.listDatePrior=_vg9.close||"";
+      _vg9.close="Lists 16 October 2026";
+      _vg9.listDateConfirmed=true;
+      _vg9.listDateNote="FRIDAY 16 OCTOBER 2026. Ian, 14.10.2026: Vogel has moved to Friday; it was Thursday 15 October. Supersedes every 15 October line on this record, which stay as trail.";
+      _vg9.weekNote="Belknap lists Thursday 15 October, Vogel lists Friday 16 October.";
+      _vg9.price="$334,900";
+      _vg9.priceStatus="PENDING DECISION TONIGHT (Ian, 14.10.2026)";
+      _vg9.priceDecision={
+        status:"PENDING", decidedBy:"Ian", asOf:"2026-10-14", decideBy:"tonight, 14.10.2026",
+        candidates:["$324,900","$319,900"],
+        retiredCandidates:["$329,900","$309,900"],
+        livePrice:"$334,900",
+        livePriceNote:"Still the field value only because neither candidate is chosen. SUPERSEDED IN DIRECTION: $334,900 is no longer the plan.",
+        words:"deciding tonight between $324,900 and $319,900, will not move anywhere else"
+      };
+      if(_vg9.priceUnderConsideration && typeof _vg9.priceUnderConsideration==="object"){
+        _vg9.priceUnderConsideration.status="RETIRED 14.10.2026 as a candidate. See priceDecision.";
+      }
+      _vg9.priceEvidence={
+        pass4:"Multi-level evidence, pass 4 (14.10.2026): recommended $309,900, upper tier $314,900. Kept as the evidence on record. Ian is listing above it. His call. See WORK/Real_Estate/Input/VOGEL_PASS4_HANDOFF.md.",
+        pass5:"Prior sale pass (14.10.2026): see WORK/Real_Estate/Input/VOGEL_PASS5_PRIORSALE.md."
+      };
+      _vg9.priceNote="PRICE NOT SETTLED. Ian 14.10.2026 decides tonight between $324,900 and $319,900 and says it will not move anywhere else. The field still reads $334,900 only because neither is chosen; $334,900 is superseded in direction and is no longer the plan. $329,900 and $309,900 are retired as candidates. Enter the price here once he decides.";
+      _vg9.priceNeedsRevisit=true;
+      _vg9.revisitWhy="OPEN 14.10.2026: two candidates, $324,900 and $319,900, decision tonight (Ian). Supersedes the 13.10.2026 $329,900 consideration.";
+      _vg9.note=String(_vg9.note||"")+"  14.10.2026, IAN: lists FRIDAY 16 OCTOBER (moved from Thursday 15). Price undecided, choosing tonight between $324,900 and $319,900 only; $334,900 is no longer the plan.";
+      _L9.push("vogel: list date Friday 16 Oct, price decision set recorded (324,900 / 319,900), 329,900 and 309,900 retired as candidates");
+    }
+    var _bk9=_by09("re-belknap-sell");
+    if(_bk9){
+      _bk9.close="Lists 15 October 2026";
+      _bk9.listDateConfirmed=true;
+      _bk9.listDateConfirmedAsOf="2026-10-14";
+      _bk9.listDateNote="THURSDAY 15 OCTOBER 2026, confirmed again by Ian 14.10.2026 while Vogel moved to Friday 16. Earlier notes on this record stand as trail.";
+      _L9.push("belknap: Thursday 15 Oct restamped confirmed 14.10");
+    }
+    if(Array.isArray(state.events)){
+      state.events.forEach(function(e){
+        if(!e) return;
+        if(e.id==="ev-20261015-vogel-live"){
+          e.date="2026-10-16";
+          e.title="Vogel listing goes live, 5621 Pine St";
+          e.note="Friday 16 October 2026 (Ian, 14.10.2026), moved from Thursday 15. Price to be decided tonight between $324,900 and $319,900.";
+          e.priceNote="Pending decision tonight, $324,900 or $319,900 (Ian, 14.10.2026).";
+          e.idNote="The id still says 20261015 on purpose. The date field is the truth. Do not rename: the seed and mig503 and mig506 key on this id.";
+          _L9.push("vogel live event: date 2026-10-16, price removed from title");
+        }
+        if(e.id==="ev-20261015-belknap-live"){
+          e.date="2026-10-15";
+          _L9.push("belknap live event: date 2026-10-15 confirmed");
+        }
+      });
+    }
+    var _cs9=(state.realEstate.contentSlate&&state.realEstate.contentSlate.items)||[];
+    _cs9.forEach(function(it){
+      if(it&&it.id==="cs-home-vogel"){ it.gatedOn="Lists Friday 16 October 2026"; it.dueBy="2026-10-16"; _L9.push("cs-home-vogel: lists Friday 16 Oct"); }
+    });
+    state.meta.mig509_vogel_1014=true;
+    state.meta.mig509_changes=_L9;
+    save(true);
+    try{ console.log("mig509: "+_L9.length+" changes, "+_L9.join(" | ")); }catch(_){}
+} }catch(e){ try{ console.warn("mig509 did not apply:",e&&e.message); }catch(_){} }
+
 
 
   /* build 372: LAST THING BEFORE THE SAVE. Every migration above has run, deepMergeDefaults
