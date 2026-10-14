@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 504 (2026-10-13)">
+<meta name="build" content="v21 build 505 (2026-10-13)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -26422,6 +26422,64 @@ try{ if(profile==="ian" && state.meta && !state.meta.mig504_health){
   save(true);
   try{ console.log("mig504: "+_L4.length+" changes, "+_L4.join(" | ")); }catch(_){}
 } }catch(e){ try{ console.warn("mig504 did not apply:",e&&e.message); }catch(_){} }
+
+/* ===== v21 build 505: TUESDAY 13 OCTOBER, 4:48 TO 7:20 PM, EVENING SESSION, SONNET-F ===========
+   SECOND session on 13 October. The morning record pk-20261013-am (7:01 to 8:53 AM) already exists,
+   so this is guarded by ID and never by date. A date guard would refuse it. Two sessions on one day
+   is correct here and contributes 2 to the day, not 1.
+   WATCH VALUES (Apple Fitness screenshot, 13.10.2026): workout time 2:32:43, active 1,461, total
+   1,700, avg HR 128, max 159. No minimum HR was shown, so minHr is ABSENT rather than zero.
+   THE EFFORT AXIS, AND THIS IS THE RULE THAT COST FOUR OBSERVATION BLOCKS. Ian's effort rating means
+   how hard he TRIED and how WELL he played. It is never exertion and is NEVER reconciled against heart
+   rate or calories. He gave NO rating of his own for this session, so the effort field is deliberately
+   ABSENT, not zero and not copied from the watch. Apple's own Effort field read 9, "All Out". That is
+   APPLE'S field, stored separately as appleEffort and never merged into effort.
+   DRILLING: "only about 15 to 20 minutes" as a warm up, the rest open play. That is a range, so it is
+   stored as a range. No drillMinutes point value, no playMinutes, no segments: any of those would
+   invent a precision he did not give. Calories and HR are NOT split, the watch measured one block.
+   SELF ASSESSMENT: his overall read lives at state.pickleball.selfAssessment["2026-10-13"], the same
+   date keyed store as the 07.29, 08.05 and 08.08 reads. It has NO skills key on purpose, because
+   pkSelfLatest only draws entries that carry skills, so this cannot move the radar. It is NOT written
+   on the session record and NOT into any BRAIN file the video coach path reads. A blind grading pass
+   works from footage against a written rubric and never sees this. His 4.5 arc and his December
+   expectation are HIS. Nothing here re-derives, adjusts or argues with either.
+   Guard state.meta.mig505_pk1013pm, idempotent on id, end of chain, SEED_VERSION stays 13. */
+try{ if(profile==="ian" && state.meta && !state.meta.mig505_pk1013pm && state.pickleball){
+    var _P05=state.pickleball;
+    if(!Array.isArray(_P05.sessions)) _P05.sessions=[];
+    var _has05=false;
+    _P05.sessions.forEach(function(s){ if(s&&s.id==="pk-20261013-pm") _has05=true; });
+    if(!_has05){
+      _P05.sessions.push({
+        id:"pk-20261013-pm", date:"2026-10-13", kind:"Drilling + open play", venue:"Omaha",
+        duration:"2h 32m 43s", window:"4:48 to 7:20 PM, Omaha",
+        calories:1700, activeCalories:1461, avgHr:128, maxHr:159,
+        drillMinutesRange:[15,20], drillApproximate:true,
+        splitSource:"Ian, 13.10.2026, his words: only about 15 to 20 minutes of drilling as a warm up, the rest open play",
+        appleEffort:9, appleEffortLabel:"All Out", appleEffortSource:"Apple Fitness Effort field. NOT Ian's rating.",
+        effortNote:"IAN GAVE NO RATING OF HIS OWN for this session, so effort is absent. Apple's Effort 9, All Out is Apple's field and is kept in appleEffort, never merged into effort. Ian's effort means how hard he tried and how well he played, never exertion, and is never reconciled against heart rate or calories.",
+        competition:{ level:"Roughly 3.5 to 4.5", source:"Ian, 13.10.2026, his words", appliesTo:"Open play portion", scopeNote:"A wide field, not a single band." },
+        result:"", score:"", opponent:"", copyOwned:true,
+        source:"Ian and his Apple Fitness screenshot, 13.10.2026.",
+        note:"Pickleball, Tuesday 13 October, Omaha, 4:48 to 7:20 PM. 2:32:43 in total. Evening session: only about 15 to 20 minutes of drilling as a warm up, the rest open play. The field ranged roughly 3.5 to 4.5. You were beaten badly by the strongest players and said you learned a lot. Exhausted afterward. From Apple Watch: avg HR 128, peak 159, active 1,461, total 1,700. Apple's own Effort field read 9, All Out; that is Apple's field and not your rating.",
+        agent:"SECOND SESSION ON 13 OCTOBER. Guarded by id. Morning record is pk-20261013-am. Do NOT write this as part of that one and do NOT collapse the day to one session. Drilling is a RANGE (15 to 20 minutes), no point value, no playMinutes, no segments. Do NOT split calories or HR. Effort is absent because Ian gave no rating. Apple's 9 is appleEffort, a different field, and effort is his own rating of how hard he tried and how well he played, never exertion, never reconciled against heart rate or calories. Do not compare this session's HR to the morning's as if effort moved with it."
+      });
+      _P05.sessions.sort(function(a,z){ return String(a.date).localeCompare(String(z.date)); });
+    }
+    if(!_P05.selfAssessment || typeof _P05.selfAssessment!=="object") _P05.selfAssessment={};
+    if(!_P05.selfAssessment["2026-10-13"]) _P05.selfAssessment["2026-10-13"]={
+      label:"10.13.2026", source:"Ian self assessed", form:"overall", quarantinedFromGrading:true,
+      bestCase:"At his absolute best he puts himself at about 3.8 to 3.9, no higher.",
+      bestCaseRange:{lo:3.8,hi:3.9},
+      gapView:"He sees a big gap between himself and players who have been a settled 4.0 for years, but says he is breaking into it.",
+      expectation:"He expects to be a clear 4.0 or higher by December.",
+      outworkClaim:"I am outworking the best",
+      outworkNote:"His claim, recorded as his. He said it while also saying he is not the best yet.",
+      note:"HIS SELF READ, recorded in his terms and not rounded or reinterpreted. QUARANTINED: any coach grading pass must be BLIND and work from footage against a written rubric. Do not show this to a grading pass, do not copy it into any BRAIN file the video coach reads, and do not render it as a radar value (it carries no skills key). The 4.5 arc and the December expectation are Ian's to set and are not re-derived here."
+    };
+    state.meta.mig505_pk1013pm=true; save(true);
+    try{ console.log("mig505: 13 October evening session and self read logged"); }catch(_){}
+} }catch(e){ try{ console.warn("mig505 did not apply:",e&&e.message); }catch(_){} }
 
   /* build 372: LAST THING BEFORE THE SAVE. Every migration above has run, deepMergeDefaults
      has run, so this is the only point in the file where the state is actually final. */
