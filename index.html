@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 511 (2026-10-14)">
+<meta name="build" content="v21 build 512 (2026-10-14)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -26863,6 +26863,61 @@ try{ if(profile==="ian" && state.meta && !state.meta.mig511_belknap_price && sta
     save(true);
     try{ console.log("mig511: "+_L11.length+" changes, "+_L11.join(" | ")); }catch(_){}
 } }catch(e){ try{ console.warn("mig511 did not apply:",e&&e.message); }catch(_){} }
+
+/* ===== v21 build 512: FULL REAL ESTATE SYNC, IAN'S CONFIRMED FACTS OF 14 OCTOBER 2026 ====================
+   BELKNAP, 4946 Pratt St: lists $250,000, live THURSDAY 15 OCTOBER. Input form complete, listing agreement
+   expiration 02/28/2027. The basement egress question that was open for Bryant is ANSWERED: both basement
+   bedrooms have egress AND daylight windows. Spec: 4 bed (2 above grade, 2 below), 2 full baths, 1,073 main
+   plus 864 finished basement, built 1949, no HOA, no SID.
+   VOGEL, 5621 Pine St: lists $324,900, live FRIDAY 16 OCTOBER. Spec: multi-level, built 1941, 3 bed, 1 full
+   bath, 1,459 above grade, unfinished basement, owner occupied. Roof and basement water confirmed RESOLVED by Ian.
+   FIXED HERE: the card price lines. Vogel read "Ian's call, 25 September 2026" (the date of a price that has been
+   superseded twice, flagged in the 13.10 handoff and left); Belknap read "Ian's call, 29 September 2026" for a
+   price now sourced to the listing agreement. Vogel listStatus still said Thursday 15 October.
+   KEPT ON RECORD, UNCHANGED, NOT ARGUED: the multi-level analysis (pass 4) recommended $309,900 with a $314,900
+   top tier; Ian lists $324,900. His decision. The evidence trail stays in priceEvidence.
+   Guard state.meta.mig512_re_sync, idempotent, end of chain, SEED_VERSION stays 13. */
+try{ if(profile==="ian" && state.meta && !state.meta.mig512_re_sync && state.realEstate && Array.isArray(state.realEstate.deals)){
+    var _D12=state.realEstate.deals, _L12=[];
+    var _by12=function(id){ for(var i=0;i<_D12.length;i++){ if(_D12[i]&&_D12[i].id===id) return _D12[i]; } return null; };
+    var _bk12=_by12("re-belknap-sell"), _vg12=_by12("re-vogel-sell");
+    if(_bk12){
+      _bk12.priceLine="Listing agreement, 14 October 2026.";
+      _bk12.listStatus="Lists Thursday 15 October 2026 at $250,000. Confirmed by Ian 14.10.2026.";
+      _bk12.listingAgreementExpires="2027-02-28";
+      _bk12.inputForm="Complete (14.10.2026)";
+      _bk12.spec={
+        beds:4, bedsAboveGrade:2, bedsBelowGrade:2, bathsFull:2,
+        mainSqft:1073, finishedBasementSqft:864, yearBuilt:1949,
+        hoa:false, sid:false,
+        basementBedroomsEgress:true, basementBedroomsDaylight:true,
+        source:"Ian, confirmed 14.10.2026"
+      };
+      _bk12.egressQuestion={ status:"ANSWERED", answer:"Both basement bedrooms have egress and daylight windows.", answeredBy:"Ian", asOf:"2026-10-14", wasOpenFor:"Bryant Belknap" };
+      _L12.push("belknap: priceLine, listStatus, expiration 2027-02-28, input form complete, spec, egress question answered");
+    }
+    if(_vg12){
+      _vg12.priceLine="Ian's call, 14 October 2026.";
+      _vg12.listStatus="Lists Friday 16 October 2026 at $324,900. Moved from Thursday 15 (Ian 14.10.2026).";
+      _vg12.spec={
+        style:"Multi-level", yearBuilt:1941, beds:3, bathsFull:1, aboveGradeSqft:1459,
+        basement:"Unfinished", ownerOccupied:true,
+        roofWater:"Resolved", basementWater:"Resolved",
+        source:"Ian, confirmed 14.10.2026"
+      };
+      if(_vg12.condition && typeof _vg12.condition==="object"){
+        _vg12.condition.status="RESOLVED. Ian confirmed 14.10.2026 that the roof water and the basement water are resolved.";
+        _vg12.condition.repairStatus="RESOLVED, per Ian 14.10.2026. Supersedes NOT CONFIRMED REPAIRED.";
+        _vg12.condition.unknowns="CLOSED 14.10.2026. Ian confirmed both water issues are resolved.";
+      }
+      _L12.push("vogel: priceLine, listStatus Friday 16 Oct, spec, water issues resolved");
+    }
+    state.meta.mig512_re_sync=true;
+    state.meta.mig512_changes=_L12;
+    save(true);
+    try{ console.log("mig512: "+_L12.length+" changes, "+_L12.join(" | ")); }catch(_){}
+} }catch(e){ try{ console.warn("mig512 did not apply:",e&&e.message); }catch(_){} }
+
 
 
 
