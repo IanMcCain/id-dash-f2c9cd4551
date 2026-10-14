@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 507 (2026-10-14)">
+<meta name="build" content="v21 build 508 (2026-10-14)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -26652,6 +26652,42 @@ try{ if(profile==="ian" && state.meta && !state.meta.mig507_pk1014 && state.pick
     state.meta.mig507_pk1014=true; save(true);
     try{ console.log("mig507: 14 October session, paddle concern and self account logged"); }catch(_){}
 } }catch(e){ try{ console.warn("mig507 did not apply:",e&&e.message); }catch(_){} }
+
+/* ===== v21 build 508: eq-paddle-power, FOAM CORE CLARIFICATION, SONNET-F, 14.10.2026 ============
+   Ian clarified the paddle is a FOAM paddle (foam core or foam injected thermoformed). Adds core type,
+   an acquisition date field and an hours on paddle field, both UNKNOWN for now, and the leading
+   hypothesis. WHAT THIS DOES NOT DO: it does not set the cause. Cause stays UNDETERMINED. A worn
+   foam core is recorded as the LEADING HYPOTHESIS, which is not a finding, and the paddle is not
+   declared worn. It does not attribute anything to his technique and does not dismiss anything.
+   WHICH PADDLE is not stated in the clarification, so it is NOT assumed. The app records a Six Zero
+   Coral Pro arriving 2 September 2026 and an earlier Joola Perseus IV, both noted only as candidates
+   to confirm. The number that settles this is the acquisition date, because hours on the paddle can
+   then be summed from the logged sessions since that date. The occurrence tracking rule is KEPT.
+   Existing occurrences are untouched. Guard state.meta.mig508_eq_foam, idempotent, end of chain,
+   SEED_VERSION stays 13. */
+try{ if(profile==="ian" && state.meta && !state.meta.mig508_eq_foam && state.pickleball && Array.isArray(state.pickleball.equipmentConcerns)){
+    var _c08=null;
+    state.pickleball.equipmentConcerns.forEach(function(c){ if(c&&c.id==="eq-paddle-power") _c08=c; });
+    if(_c08){
+      if(!_c08.coreType){
+        _c08.coreType="Foam. Foam core or foam injected thermoformed.";
+        _c08.coreTypeSource="Ian, 14.10.2026, his clarification";
+        _c08.quarantinedFromGrading=true;
+        _c08.leadingHypothesis={
+          text:"The paddle is genuinely worn. Foam and thermoformed paddles have a known power degradation curve: the foam compresses and softens with heavy use and the effective sweet spot shrinks toward the center. His description (used to carry off center hits, now only a dead center hit does anything) matches that pattern.",
+          status:"HYPOTHESIS, NOT A FINDING",
+          since:"2026-10-14",
+          note:"Leading hypothesis over 'it is him', on the strength of the pattern match alone. Not confirmed. No hours or acquisition date are known yet, and nothing here has been tested."
+        };
+        _c08.cause="UNDETERMINED. Leading hypothesis is a worn foam core, recorded as a hypothesis only. Not attributed to his technique, not declared the paddle, not dismissed.";
+        _c08.acquired={ date:null, status:"UNKNOWN", paddle:"Not stated in the clarification. Candidates in the app records, unconfirmed: Six Zero Coral Pro (recorded as arriving 2026-09-02) and an earlier Joola Perseus IV.", note:"Ask Ian once for the date he got this paddle. This is the number that settles the concern." };
+        _c08.hoursOnPaddle={ value:null, status:"UNKNOWN", method:"Once acquired.date is known, sum the duration of logged sessions on or after that date. Until then, no figure is estimated.", usageNote:"Reported play rate is around 8 sessions a week, which accelerates foam breakdown considerably. A rate, not an hours count." };
+        _c08.trackingRule=(_c08.trackingRule||"")+" KEPT AND EXTENDED 14.10.2026: still append one occurrence each time Ian raises a power or sweet spot complaint. Once acquired.date is set, record hoursOnPaddle.value and compare it with the dates of the occurrences. A recurring pattern is the evidence. Still do not attribute it to his technique.";
+      }
+      state.meta.mig508_eq_foam=true; save(true);
+      try{ console.log("mig508: eq-paddle-power foam clarification applied"); }catch(_){}
+    }
+} }catch(e){ try{ console.warn("mig508 did not apply:",e&&e.message); }catch(_){} }
 
 
   /* build 372: LAST THING BEFORE THE SAVE. Every migration above has run, deepMergeDefaults
