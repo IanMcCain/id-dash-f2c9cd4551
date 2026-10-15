@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 512 (2026-10-14)">
+<meta name="build" content="v21 build 513 (2026-10-15)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -33085,6 +33085,59 @@ function pkTournaments(v){
    line. A week with no sessions draws a real zero rather than being skipped, because a gap is
    the most useful thing a training chart can show, and build 189 already settled that a true
    zero renders as zero instead of a stub. */
+/* ===== v21 build 513: SPLIT FLAP ON ONE NUMBER, SONNET-F, 15.10.2026 ============================
+   Ian asked for a split flap on two numbers. Only the Pickleball session count exists as a number to
+   flap. NO YTD EARNINGS FIGURE EXISTS on Finances in this build (the only YTD there is the deductions
+   ring, which is a different number), and none was invented. See DEPLOY_STATUS.
+   RESTRAINED ON PURPOSE: no card, no border, no new typeface. The digits inherit the surrounding font,
+   weight and colour, and the only extra mark is a faint seam at the hinge while a digit is moving.
+   The number is real text first. flapNum returns a span holding the plain digits, and the effect is
+   layered on top inside try/catch, so any failure leaves the plain number. The moving panels are drawn
+   from data attributes by CSS, so textContent is never duplicated.
+   WHEN IT PLAYS: once when the number first comes into view this session, and again only when the value
+   actually differs from the last value shown. A re-render with the same value shows plain text with no
+   motion. WHEN IT DOES NOT: prefers-reduced-motion, or no IntersectionObserver, show the final value.
+   NOTHING MOVES THE LAYOUT: every digit cell keeps its own tabular width, the panels are absolutely
+   positioned inside it, and only changed digits animate. About 0.3 seconds in total. */
+var FLAP_LAST={}, FLAP_RM=false;
+try{ FLAP_RM=!!(window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches); }catch(e){}
+function flapNum(value,key){
+  var str=String(value), wrap=document.createElement("span");
+  wrap.className="flapn"; wrap.textContent=str;
+  try{
+    var last=FLAP_LAST[key], same=(last!==undefined&&String(last)===str);
+    if(same||FLAP_RM||typeof IntersectionObserver==="undefined"){ FLAP_LAST[key]=str; return wrap; }
+    var old=(last===undefined)?"":String(last), off=str.length-old.length, cells=[], k;
+    wrap.textContent="";
+    for(k=0;k<str.length;k++){
+      var c=document.createElement("span"), oc=(k-off>=0)?old.charAt(k-off):"";
+      c.className="fd"; c.textContent=str.charAt(k);
+      if(oc!==str.charAt(k)){ c.className="fd fd-pre"; c._o=oc; c._n=str.charAt(k); cells.push(c); }
+      wrap.appendChild(c);
+    }
+    var done=false, io=null;
+    var finish=function(){ try{ cells.forEach(function(c){ c.className="fd"; c.style.removeProperty("--fdcol"); c.style.removeProperty("--fdd"); while(c.children.length) c.removeChild(c.children[0]); }); }catch(e){}
+      FLAP_LAST[key]=str; };
+    var run=function(){ if(done) return; done=true;
+      try{
+        var col=getComputedStyle(wrap).color;
+        cells.forEach(function(c,i){
+          c.className="fd fd-run"; c.style.setProperty("--fdcol",col); c.style.setProperty("--fdd",(i*60)+"ms");
+          [["fa",c._n],["fb",c._o],["fc",c._o],["fd2",c._n]].forEach(function(p){
+            var e=document.createElement("i"); e.className=p[0]; e.setAttribute("data-x",p[1]); c.appendChild(e); });
+        });
+        setTimeout(finish,(cells.length*60)+260);
+      }catch(e){ finish(); }
+    };
+    io=new IntersectionObserver(function(es){
+      try{ for(var j=0;j<es.length;j++){ if(es[j].isIntersecting){ io.disconnect(); run(); return; } } }catch(e){ done=true; finish(); }
+    },{threshold:0.6});
+    io.observe(wrap);
+    setTimeout(function(){ try{ if(!done&&wrap.offsetParent!==null){ done=true; io.disconnect(); finish(); } }catch(e){} },6000);
+  }catch(e){ try{ wrap.textContent=str; }catch(_){} }
+  return wrap;
+}
+
 function pkSessionGraphs(v){
   try{
     var pb=state.pickleball||{};
@@ -33124,8 +33177,9 @@ function pkSessionGraphs(v){
       return {label:lab(w),pct:(maxN?Math.round(w.n/maxN*100):0),cap:w.n};
     }),null,124));
     var sub=el("div","g7quiet");
-    sub.textContent=S.length+" sessions logged, "+weeks.length+" weeks, "
-      +fmtShort(S[0].date)+" to "+fmtShort(S[S.length-1].date)+".";
+    sub.appendChild((typeof flapNum==="function")?flapNum(S.length,"pk-sessions"):document.createTextNode(String(S.length)));
+    sub.appendChild(document.createTextNode(" sessions logged, "+weeks.length+" weeks, "
+      +fmtShort(S[0].date)+" to "+fmtShort(S[S.length-1].date)+"."));
     b.appendChild(sub);
     v.appendChild(c);
 
@@ -36416,6 +36470,20 @@ function autoLogCard(area){
 /* A group with nothing in it states that quietly. It does NOT draw a dashed box
    inviting him to add something: he does not add anything. */
 .g7quiet{font-size:13.5px;line-height:1.5;color:var(--dim);padding:12px 0 3px}
+.flapn{white-space:nowrap}
+.fd{position:relative;display:inline-block;font-variant-numeric:tabular-nums}
+.fd-pre,.fd-run{color:transparent}
+.fd-run{perspective:.9em}
+.fd-run::after{content:"";position:absolute;left:0;right:0;top:50%;height:1px;background:var(--fdcol);opacity:.14;pointer-events:none}
+.fd-run i{position:absolute;left:0;right:0;top:0;bottom:0;text-align:center;color:var(--fdcol);font-style:normal;backface-visibility:hidden;-webkit-backface-visibility:hidden}
+.fd-run i::before{content:attr(data-x)}
+.fd-run .fa,.fd-run .fc{clip-path:inset(0 0 50% 0)}
+.fd-run .fb,.fd-run .fd2{clip-path:inset(50% 0 0 0)}
+.fd-run .fc{animation:fdTop 70ms ease-in var(--fdd,0ms) forwards}
+.fd-run .fd2{transform:rotateX(90deg);animation:fdBot 90ms ease-out calc(var(--fdd,0ms) + 70ms) forwards}
+@keyframes fdTop{to{transform:rotateX(-90deg)}}
+@keyframes fdBot{to{transform:rotateX(0deg)}}
+@media (prefers-reduced-motion: reduce){ .fd-run i{display:none !important} .fd-pre,.fd-run{color:inherit !important} .fd-run::after{display:none} }
 /* The buy list is real information but it is not today's business, so it recedes by
    weight and colour rather than by a blanket opacity that also dims its own caption. */
 .g7dimrow .g7name{color:var(--gray2);font-weight:500}
