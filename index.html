@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 513 (2026-10-15)">
+<meta name="build" content="v21 build 514 (2026-10-15)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -33198,6 +33198,430 @@ function pkSessionGraphs(v){
     }
   }catch(e){ try{ console.error("[dash] pk graphs",e); }catch(_){} }
 }
+/* ===== build PKCOURT: 3D court, a shot placement TEACHING reference (Ian's own design, 15 Oct 2026) =====
+   It shows where to STAND and where the ball should LAND for each shot. It is not a record of his actual shots.
+   three.js r128 from the Cloudflare CDN, loaded lazily the first time the card is on screen, so a collapsed card
+   costs nothing. No CapsuleGeometry (it does not exist in r128). No localStorage. ASCII only.
+   Court frame, hitter's own view: x 0..20 left to right, y 0 (own baseline) .. 22 (net) .. 44 (their baseline).
+   Own kitchen line y=15, their kitchen line y=29. y can be NEGATIVE (behind the baseline) for serve and return.
+   World frame: X = x - 10, Z = 22 - y, Y up (feet). The default camera sits behind the hitter's baseline. */
+var PKCOURT_SHOTS = [
+  /*PKCOURT_DATA_BEGIN*/
+
+ {
+  "id": "serve",
+  "name": "Serve (right side)",
+  "short": "Serve",
+  "stand": [
+   15,
+   -1.5
+  ],
+  "land": [
+   6,
+   41
+  ],
+  "zone": [
+   4,
+   3
+  ],
+  "contact": 3,
+  "apex": 5,
+  "standText": "Right side, just behind the baseline (x 15, y minus 1.5).",
+  "landText": "Deep in the far service box on the left as you face it, about 3 ft short of the baseline and 6 ft in from the left sideline (x 6, y 41). Target zone 4 ft wide, 3 ft deep.",
+  "why": "A deep serve keeps the returner back so you are not attacked on the third shot.",
+  "depends": "The receiver and which hand they use. Depth matters most. The exact side to side spot is a default, so vary it.",
+  "disagree": "Coaches agree on depth and on mixing pace and spin. The side to side spot is not settled.",
+  "conf": "high on depth, medium on the exact spot"
+ },
+ {
+  "id": "return",
+  "name": "Return of serve",
+  "short": "Return",
+  "stand": [
+   15,
+   -3
+  ],
+  "land": [
+   8.5,
+   41
+  ],
+  "zone": [
+   2,
+   3
+  ],
+  "contact": 2.5,
+  "apex": 5,
+  "standText": "Right side receiver, about 3 ft behind the baseline (x 15, y minus 3). Step in as the ball allows, then move to the kitchen.",
+  "landText": "Deep and near the middle, 1.5 ft off the center line and about 3 ft short of the baseline (x 8.5, y 41). Target zone 2 ft wide, 3 ft deep.",
+  "why": "A deep return pins the serving team back and takes away angles.",
+  "depends": "Where the serving team's partner stands and how hard the serve came. The spot is a default, not a rule.",
+  "disagree": "USA Pickleball supports a deep middle return, which is the default here. Selkirk (May 2026) also teaches deep down the line.",
+  "conf": "high on deep and middle, medium on the exact spot"
+ },
+ {
+  "id": "drop",
+  "name": "Third shot drop",
+  "short": "3rd drop",
+  "stand": [
+   12,
+   0.5
+  ],
+  "land": [
+   10,
+   25.5
+  ],
+  "zone": [
+   4,
+   2
+  ],
+  "contact": 2.5,
+  "apex": 8,
+  "standText": "Right side server at the baseline, moved toward the middle to meet the deep return (x 12, y 0.5). If your partner has the cleaner forehand on this ball, they take it.",
+  "landText": "Middle of the far kitchen, 3.5 ft past the net (x 10, y 25.5). Target zone 4 ft wide, 2 ft deep.",
+  "why": "A soft ball into the middle kitchen clears the lowest part of the net and gives the opponent the fewest angles.",
+  "depends": "Cross court (about x 7) is a strong choice against a returner still moving in. Learn the reliable middle drop first.",
+  "disagree": "USA Pickleball calls the middle the safest target. Depth is not settled: Pickleball.com teaches the front half, Dominic Catalano teaches the back third. 3.5 ft is a teaching compromise, not a published standard.",
+  "conf": "high on the middle target, medium on the exact depth"
+ },
+ {
+  "id": "drive",
+  "name": "Third shot drive",
+  "short": "3rd drive",
+  "type": "contact",
+  "stand": [
+   12,
+   0.5
+  ],
+  "land": [
+   5,
+   34
+  ],
+  "ch": 0.8,
+  "opp": [
+   5,
+   34
+  ],
+  "zone": [
+   1.6,
+   1.6
+  ],
+  "contact": 3,
+  "apex": 3.9,
+  "standText": "Same spot as the drop, right side at the baseline (x 12, y 0.5).",
+  "landText": "A contact zone, not a bounce: the feet of the advancing returner, shown on a ghost player (about x 5, y 34). The ball should reach them low, before it bounces.",
+  "why": "A low drive at the feet of a returner who is slow to the kitchen forces a weak fourth shot and sets up a better fifth shot.",
+  "depends": "Use it when the return is high or the opponents are late. Against a deep return and set opponents, drop first. The ghost spot is an example, so aim at where the returner really is.",
+  "disagree": "Selkirk (Porter Barr) also teaches the dominant hip as a target. Coaches differ on how often to drive a deep return instead of dropping.",
+  "conf": "high on aiming low, low on the exact spot"
+ },
+ {
+  "id": "dink",
+  "name": "Dink (cross court)",
+  "short": "Dink",
+  "stand": [
+   15,
+   14.5
+  ],
+  "land": [
+   5,
+   25.5
+  ],
+  "zone": [
+   2,
+   2
+  ],
+  "contact": 2.5,
+  "apex": 4.2,
+  "standText": "Right side, at the kitchen line, balanced with your paddle up (x 15, y 14.5).",
+  "landText": "Cross court into the far left kitchen, 5 ft in from the sideline and 3.5 ft past the net, the kitchen midpoint (x 5, y 25.5). Target zone 2 ft by 2 ft.",
+  "why": "The cross court dink uses the longer diagonal and the lower middle of the net, and keeps the ball in with room to spare.",
+  "depends": "Opponent position and the next ball you want. Shorter keeps them from attacking, deeper crowds their feet, wider (about x 3) is an intentional variation. If you are pulled wide and under pressure, Dominic Catalano suggests the inside foot of the player straight ahead.",
+  "disagree": "Cross court is the mainstream neutral default (USA Pickleball, Pickleball.com). No source gives an exact spot. 5 ft in and 3.5 ft deep are coaching judgments.",
+  "conf": "high on cross court, medium on the exact spot"
+ },
+ {
+  "id": "volley",
+  "name": "Volley (block)",
+  "short": "Volley",
+  "stand": [
+   15,
+   14.5
+  ],
+  "land": [
+   10,
+   25.5
+  ],
+  "zone": [
+   4,
+   2
+  ],
+  "contact": 3,
+  "apex": 4,
+  "standText": "Right side at the kitchen line (x 15, y 14.5). The dink exchange has sped up and the ball arrives at or below net height.",
+  "landText": "A soft block into the middle of the far kitchen, 3.5 ft past the net (x 10, y 25.5). Target zone 4 ft wide, 2 ft deep.",
+  "why": "Absorbing the pace with a soft block neutralizes the attack and keeps you at the line.",
+  "depends": "Contact at or below net height means block. Above the net and balanced, you can punch it at a foot or an open gap. That is a different shot and is not shown.",
+  "disagree": "USA Pickleball and Selkirk (Catherine Parenteau) agree on soft blocks to neutralize pace. Block versus punch is decided by contact height, not a true disagreement.",
+  "conf": "high on the block, medium on the exact spot"
+ },
+ {
+  "id": "reset",
+  "name": "Reset (from transition)",
+  "short": "Reset",
+  "stand": [
+   15,
+   9
+  ],
+  "land": [
+   12,
+   25
+  ],
+  "zone": [
+   4,
+   2
+  ],
+  "contact": 1.2,
+  "apex": 5.5,
+  "standText": "Right side, 6 ft behind the kitchen line (x 15, y 9). Plant and split step before the hit. The opponent has attacked low at your feet.",
+  "landText": "A soft ball into the far kitchen, 3 ft past the net and a little toward the middle (x 12, y 25). Target zone 4 ft wide, 2 ft deep.",
+  "why": "A soft reset into the kitchen takes the pace out and lets you move up to the line.",
+  "depends": "Straight ahead and short is safest when you are scrambling. Cross court works once you are balanced.",
+  "disagree": "Catherine Parenteau teaches straight ahead and shallow when scrambling. Selkirk drills also use cross court. No source gives an exact spot.",
+  "conf": "high on the purpose, medium on the exact spot"
+ },
+ {
+  "id": "lob",
+  "name": "Lob (offensive)",
+  "short": "Lob",
+  "stand": [
+   15,
+   14.5
+  ],
+  "land": [
+   16.5,
+   40.5
+  ],
+  "zone": [
+   3,
+   3
+  ],
+  "contact": 2.5,
+  "apex": 15,
+  "standText": "Right side at the kitchen line, balanced in a dink rally (x 15, y 14.5). The right handed opponent across from you is leaning forward.",
+  "landText": "Deep, 3.5 ft in from the right sideline and 3.5 ft short of the baseline (x 16.5, y 40.5). Target zone 3 ft by 3 ft. The ball goes over that opponent's backhand shoulder.",
+  "why": "A lob over the backhand shoulder of a player leaning in forces a weak overhead or a retreat.",
+  "depends": "It needs a high enough arc to clear their reach, and the landing spot alone does not make a good lob. Use it when the opponent leans in, not as a rescue.",
+  "disagree": "Targeting the backhand side is widely taught (USA Pickleball, Selkirk). A middle lob can confuse a right and left handed pair.",
+  "conf": "medium, depends on the situation"
+ },
+ {
+  "id": "speedup",
+  "name": "Speed up (hands battle)",
+  "short": "Speed up",
+  "type": "contact",
+  "stand": [
+   15,
+   14.5
+  ],
+  "land": [
+   14.5,
+   29.5
+  ],
+  "ch": 2.6,
+  "opp": [
+   15,
+   29.5
+  ],
+  "zone": [
+   1.6,
+   1.6
+  ],
+  "contact": 3.2,
+  "apex": 3.8,
+  "standText": "Right side at the kitchen line (x 15, y 14.5). The dink in front of you sits high enough to attack while you are balanced.",
+  "landText": "A contact zone, not a bounce: the right hip of the right handed player across from you, shown on a ghost player (about x 14.5, y 29.5).",
+  "why": "A compact attack at the dominant hip jams the paddle and produces an awkward counter.",
+  "depends": "Only when the ball is high enough and you are balanced. Expect the counter, since this is usually the first attack and not the finish. A gap between the opponents can be better when one really opens.",
+  "disagree": "Selkirk supports the dominant hip. USA Pickleball favors the wide backhand and warns against attacking a comfortable body backhand.",
+  "conf": "high that the hip is a known target, medium as the default, low on the exact spot"
+ }
+
+  /*PKCOURT_DATA_END*/
+];
+var PKCOURT_THREE_URL = "https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js";
+var PKCOURT_LOAD = null;
+function pkCourtLoadThree(ok,bad){
+  if(window.THREE&&window.THREE.WebGLRenderer){ ok(); return; }
+  if(PKCOURT_LOAD&&PKCOURT_LOAD.failed){ bad(); return; }
+  if(!PKCOURT_LOAD){
+    PKCOURT_LOAD={q:[],failed:false,done:false};
+    var s=document.createElement("script"); s.src=PKCOURT_THREE_URL; s.async=true; s.crossOrigin="anonymous";
+    var t=setTimeout(function(){ if(!PKCOURT_LOAD.done){ PKCOURT_LOAD.failed=true; PKCOURT_LOAD.q.splice(0).forEach(function(p){ try{p[1]();}catch(_){} }); } },12000);
+    s.onload=function(){ PKCOURT_LOAD.done=true; clearTimeout(t); if(window.THREE&&window.THREE.WebGLRenderer){ PKCOURT_LOAD.q.splice(0).forEach(function(p){ try{p[0]();}catch(_){} }); } else { PKCOURT_LOAD.failed=true; PKCOURT_LOAD.q.splice(0).forEach(function(p){ try{p[1]();}catch(_){} }); } };
+    s.onerror=function(){ PKCOURT_LOAD.failed=true; clearTimeout(t); PKCOURT_LOAD.q.splice(0).forEach(function(p){ try{p[1]();}catch(_){} }); };
+    document.head.appendChild(s);
+  }
+  PKCOURT_LOAD.q.push([ok,bad]);
+}
+function pkCourtDispose(inst){
+  if(!inst||inst.dead) return; inst.dead=true;
+  try{ cancelAnimationFrame(inst.raf); }catch(_){}
+  try{ if(inst.io) inst.io.disconnect(); }catch(_){}
+  try{ if(inst.ro) inst.ro.disconnect(); }catch(_){}
+  try{
+    if(inst.scene) inst.scene.traverse(function(o){ if(o.geometry) o.geometry.dispose(); if(o.material){ var m=o.material; (Array.isArray(m)?m:[m]).forEach(function(mm){ if(mm.map) mm.map.dispose(); mm.dispose(); }); } });
+    if(inst.renderer){ inst.renderer.dispose(); if(inst.renderer.forceContextLoss) inst.renderer.forceContextLoss(); }
+  }catch(_){}
+}
+function pkCourt3D(host){
+  var SHOTS=PKCOURT_SHOTS; if(!SHOTS.length) return;
+  /* one live scene at a time: the page rebuilds on navigation, so an old, detached scene is released here */
+  try{ if(window.__pkCourtInst) pkCourtDispose(window.__pkCourtInst); }catch(_){}
+  var inst={dead:false}; window.__pkCourtInst=inst;
+  var cd=card("a-green"); var cb=cd._body; cd.style.marginBottom="0";
+  cb.appendChild(el("div","small dim","A teaching reference, not your shots. Pick a shot to see where you stand (blue) and where the ball should land (yellow)."));
+  /* ---- stage ---- */
+  var stage=el("div"); stage.style.cssText="position:relative;width:100%;height:300px;margin-top:10px;border-radius:14px;overflow:hidden;background:#0b141c;touch-action:pan-y";
+  var msg=el("div","small dim"); msg.style.cssText="position:absolute;left:0;right:0;top:0;bottom:0;display:flex;align-items:center;justify-content:center;text-align:center;padding:18px;line-height:1.5";
+  msg.textContent="Loading the 3D court"; stage.appendChild(msg); cb.appendChild(stage);
+  /* ---- view buttons ---- */
+  var vrow=el("div"); vrow.style.cssText="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap";
+  function mkBtn(label){ var b=el("button",null,label); b.type="button"; b.style.cssText="flex:1 1 0;min-width:64px;min-height:40px;border-radius:11px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.05);color:var(--white,#fff);font-weight:700;font-size:13px;padding:8px 6px"; return b; }
+  var bBehind=mkBtn("Behind"), bSide=mkBtn("Side"), bTop=mkBtn("Top"), bSpin=mkBtn("Spin on");
+  [bBehind,bSide,bTop,bSpin].forEach(function(b){ vrow.appendChild(b); }); cb.appendChild(vrow);
+  /* ---- shot list: three columns on a phone so all nine show without scrolling ---- */
+  var grid=el("div"); grid.style.cssText="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:12px";
+  var detail=el("div"); detail.style.cssText="margin-top:12px;line-height:1.55";
+  var btns=[]; var cur=null;
+  var DOT="\u25cf";
+  function showDetail(s){
+    detail.innerHTML="";
+    var h=el("div"); h.style.cssText="font-weight:800;font-size:16px;letter-spacing:-.01em"; h.textContent=s.name; detail.appendChild(h);
+    function line(k,v,col){ if(!v) return; var d=el("div","small"); d.style.cssText="margin-top:6px;color:var(--gray)"; var b=el("span"); b.style.cssText="font-weight:800;color:"+(col||"var(--white,#fff)"); b.textContent=k+" "; d.appendChild(b); d.appendChild(document.createTextNode(v)); detail.appendChild(d); }
+    line("You stand:",s.standText,"#6db3ff"); line("Ball lands:",s.landText,"#f5d547"); line("Why:",s.why);
+    if(s.depends) line("It depends:",s.depends); if(s.disagree) line("Sources differ:",s.disagree);
+    var cf=el("div","small dim"); cf.style.marginTop="6px"; cf.textContent="Confidence: "+s.conf+". Standing spots are coaching defaults, not measured optimums."; detail.appendChild(cf);
+  }
+  var api={select:function(i){ cur=i; btns.forEach(function(b,j){ var on=(i===j); b.style.background=on?"rgba(59,130,246,.28)":"rgba(255,255,255,.05)"; b.style.borderColor=on?"rgba(109,179,255,.9)":"rgba(255,255,255,.14)"; }); showDetail(SHOTS[i]); if(api.onSelect) api.onSelect(SHOTS[i]); }};
+  SHOTS.forEach(function(s,i){
+    var b=el("button"); b.type="button"; b.style.cssText="min-height:44px;border-radius:11px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.05);color:var(--white,#fff);font-weight:700;font-size:13px;padding:6px 4px;line-height:1.15;text-align:center";
+    b.textContent=DOT+" "+s.short; b.setAttribute("aria-label",s.name); b.onclick=function(){ api.select(i); }; btns.push(b); grid.appendChild(b);
+  });
+  cb.appendChild(grid); cb.appendChild(detail); cd.style.marginBottom="0"; host.appendChild(cd);
+  api.select(0);
+  function fallback(why){ stage.style.height="auto"; stage.style.touchAction="auto"; stage.innerHTML=""; var m=el("div","small dim"); m.style.cssText="padding:14px;line-height:1.55"; m.textContent=why+" The shot list below still tells you where to stand and where the ball should land."; stage.appendChild(m); vrow.style.display="none"; api.onSelect=null; }
+  /* ---- the 3D scene starts only when the card is actually on screen ---- */
+  function start(){
+    pkCourtLoadThree(function(){ if(inst.dead) return; try{ build(); }catch(e){ try{console.error("[dash] pkcourt",e);}catch(_){} fallback("The 3D view could not start on this device."); } },
+      function(){ if(!inst.dead) fallback("The 3D library could not be loaded."); });
+  }
+  var started=false;
+  function onVis(vis){ inst.visible=vis; if(vis&&!started){ started=true; start(); } }
+  if("IntersectionObserver" in window){ inst.io=new IntersectionObserver(function(es){ onVis(es[0].isIntersecting); },{threshold:0.05}); inst.io.observe(stage); } else { onVis(true); }
+  function build(){
+    var T=window.THREE; var W=Math.max(200,stage.clientWidth||340), H=stage.clientHeight||300;
+    var renderer; try{ renderer=new T.WebGLRenderer({antialias:true,alpha:false,powerPreference:"low-power"}); }catch(e){ fallback("This browser has no WebGL."); return; }
+    if(!renderer||!renderer.getContext()){ fallback("This browser has no WebGL."); return; }
+    inst.renderer=renderer; renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,2)); renderer.setSize(W,H); renderer.setClearColor(0x0b141c,1);
+    stage.innerHTML=""; stage.appendChild(renderer.domElement); renderer.domElement.style.cssText="display:block;width:100%;height:100%;touch-action:pan-y";
+    renderer.domElement.addEventListener("webglcontextlost",function(ev){ ev.preventDefault(); pkCourtDispose(inst); fallback("The 3D view was interrupted."); });
+    var scene=new T.Scene(); inst.scene=scene;
+    var cam=new T.PerspectiveCamera(38,W/H,1,400);
+    scene.add(new T.AmbientLight(0xffffff,0.85)); var dl=new T.DirectionalLight(0xffffff,0.55); dl.position.set(-14,40,24); scene.add(dl);
+    /* ---- court surface painted once on a canvas, so the whole floor is a single draw call ---- */
+    var CW=1024,CH=2048,AX=6,AY=8,TW=20+2*AX,TL=44+2*AY; var sx=CW/TW, sy=CH/TL;
+    var cv=document.createElement("canvas"); cv.width=CW; cv.height=CH; var g=cv.getContext("2d");
+    function px(x){ return (x+AX)*sx; } function py(y){ return (AY+(44-y))*sy; }
+    g.fillStyle="#16222d"; g.fillRect(0,0,CW,CH);
+    g.fillStyle="#2c6c9c"; g.fillRect(px(0),py(44),20*sx,44*sy);
+    g.fillStyle="#2f8a73"; g.fillRect(px(0),py(29),20*sx,14*sy);
+    var LW=0.17; g.fillStyle="#f4f7fa";
+    function vline(x,y0,y1){ g.fillRect(px(x)-LW*sx/2,py(y1),LW*sx,(y1-y0)*sy); }
+    function hline(y,x0,x1){ g.fillRect(px(x0),py(y)-LW*sy/2,(x1-x0)*sx,LW*sy); }
+    vline(0,0,44); vline(20,0,44); hline(0,0,20); hline(44,0,20); hline(15,0,20); hline(29,0,20); vline(10,0,15); vline(10,29,44);
+    var tex=new T.CanvasTexture(cv); tex.anisotropy=Math.min(4,renderer.capabilities.getMaxAnisotropy()||1);
+    var floor=new T.Mesh(new T.PlaneGeometry(TW,TL),new T.MeshLambertMaterial({map:tex})); floor.rotation.x=-Math.PI/2; scene.add(floor);
+    /* ---- net: a see through grid with a white top band, plus two posts ---- */
+    var nc=document.createElement("canvas"); nc.width=256; nc.height=64; var ng=nc.getContext("2d"); ng.clearRect(0,0,256,64); ng.strokeStyle="rgba(235,240,245,.55)"; ng.lineWidth=1;
+    for(var gx=0;gx<=256;gx+=8){ ng.beginPath(); ng.moveTo(gx,0); ng.lineTo(gx,64); ng.stroke(); } for(var gy=0;gy<=64;gy+=8){ ng.beginPath(); ng.moveTo(0,gy); ng.lineTo(256,gy); ng.stroke(); }
+    ng.fillStyle="#ffffff"; ng.fillRect(0,0,256,6);
+    var ntex=new T.CanvasTexture(nc); var net=new T.Mesh(new T.PlaneGeometry(21.5,3),new T.MeshBasicMaterial({map:ntex,transparent:true,side:T.DoubleSide,depthWrite:false})); net.position.set(0,1.5,0); scene.add(net);
+    [-10.75,10.75].forEach(function(px0){ var p=new T.Mesh(new T.CylinderGeometry(0.16,0.16,3.15,10),new T.MeshLambertMaterial({color:0xdde3ea})); p.position.set(px0,1.575,0); scene.add(p); });
+    function wx(x){ return x-10; } function wz(y){ return 22-y; }
+    /* ---- labels that always face the camera, so the scene reads from any angle ---- */
+    function label(text,color){ var c=document.createElement("canvas"); c.width=256; c.height=96; var q=c.getContext("2d"); q.font="800 54px -apple-system,Helvetica,Arial,sans-serif"; q.textAlign="center"; q.textBaseline="middle"; q.lineWidth=10; q.strokeStyle="rgba(8,14,20,.92)"; q.strokeText(text,128,50); q.fillStyle=color; q.fillText(text,128,50); var t=new T.CanvasTexture(c); var sp=new T.Sprite(new T.SpriteMaterial({map:t,transparent:true,depthTest:false})); sp.scale.set(6.4,2.4,1); sp.renderOrder=10; return sp; }
+    var youLbl=label("YOU","#8fc4ff"), tgtLbl=label("TARGET","#ffe066"), tgtLbl2=label("CONTACT","#ffe066"); tgtLbl2.visible=false; scene.add(tgtLbl2); function tgtTxt(t){ tgtLbl.visible=(t==="TARGET"); tgtLbl2.visible=(t==="CONTACT"); } scene.add(youLbl); scene.add(tgtLbl); var netLbl=label("NET","#e6edf3"); netLbl.position.set(0,4.6,0); netLbl.scale.set(4.6,1.7,1); scene.add(netLbl);
+    /* ---- the two markers: a figure for you, a ball for the target. Cylinders and spheres only. ---- */
+    var you=new T.Group(); var bodyMat=new T.MeshLambertMaterial({color:0x3b82f6});
+    var body=new T.Mesh(new T.CylinderGeometry(0.85,1.05,3.1,16),bodyMat); body.position.y=1.55; you.add(body);
+    var head=new T.Mesh(new T.SphereGeometry(0.72,16,12),new T.MeshLambertMaterial({color:0xcfe3ff})); head.position.y=3.75; you.add(head);
+    var ring=new T.Mesh(new T.RingGeometry(1.5,1.85,32),new T.MeshBasicMaterial({color:0x6db3ff,side:T.DoubleSide,transparent:true,opacity:.95})); ring.rotation.x=-Math.PI/2; ring.position.y=0.04; you.add(ring);
+    scene.add(you);
+    var ball=new T.Group(); var bm=new T.Mesh(new T.SphereGeometry(0.6,18,14),new T.MeshLambertMaterial({color:0xf5d547,emissive:0x5a4a00})); bm.position.y=0.65; ball.add(bm);
+    var bring=new T.Mesh(new T.RingGeometry(0.95,1.25,32),new T.MeshBasicMaterial({color:0xf5d547,side:T.DoubleSide,transparent:true,opacity:.95})); bring.rotation.x=-Math.PI/2; bring.position.y=0.05; ball.add(bring); scene.add(ball);
+    var zone=new T.Mesh(new T.PlaneGeometry(1,1),new T.MeshBasicMaterial({color:0xf5d547,transparent:true,opacity:.30,side:T.DoubleSide,depthWrite:false})); zone.rotation.x=-Math.PI/2; zone.position.y=0.03; scene.add(zone);
+    var ghost=new T.Group(); var gMat=new T.MeshLambertMaterial({color:0xe5646b,transparent:true,opacity:.42,depthWrite:false}); var gb=new T.Mesh(new T.CylinderGeometry(0.85,1.05,3.1,16),gMat); gb.position.y=1.55; ghost.add(gb); var gh=new T.Mesh(new T.SphereGeometry(0.72,16,12),gMat); gh.position.y=3.75; ghost.add(gh); ghost.visible=false; scene.add(ghost);
+    var oppLbl=label("THEM","#ff9aa0"); oppLbl.scale.set(6.4,2.4,1); oppLbl.visible=false; scene.add(oppLbl);
+    var flyer=new T.Mesh(new T.SphereGeometry(0.34,12,10),new T.MeshBasicMaterial({color:0xffffff})); scene.add(flyer);
+    var NP=36; var arcGeo=new T.BufferGeometry(); var arcPos=new Float32Array(NP*3); arcGeo.setAttribute("position",new T.BufferAttribute(arcPos,3));
+    var arc=new T.Line(arcGeo,new T.LineBasicMaterial({color:0xffffff,transparent:true,opacity:.5})); arc.frustumCulled=false; scene.add(arc);
+    /* ---- movement: markers glide to the new spot ---- */
+    var from={sx:0,sz:0,lx:0,lz:0,zw:1,zh:1}, goal={sx:0,sz:0,lx:0,lz:0,zw:1,zh:1}, mv=1, curShot=null;
+    function setShot(s,instant){
+      curShot=s; var isC=(s.type==="contact"); goal={sx:wx(s.stand[0]),sz:wz(s.stand[1]),lx:wx(s.land[0]),lz:wz(s.land[1]),zw:s.zone[0],zh:s.zone[1]};
+      zone.visible=!isC; ghost.visible=!!(isC&&s.opp); oppLbl.visible=ghost.visible; if(s.opp){ ghost.position.set(wx(s.opp[0]),0,wz(s.opp[1])); oppLbl.position.set(wx(s.opp[0]),6.1,wz(s.opp[1])); }
+      tgtTxt(isC?"CONTACT":"TARGET");
+      if(instant){ from=Object.assign({},goal); mv=1; } else { from={sx:you.position.x,sz:you.position.z,lx:ball.position.x,lz:ball.position.z,zw:zone.scale.x,zh:zone.scale.y}; mv=0; }
+    }
+    api.onSelect=function(s){ setShot(s,false); };
+    function lerp(a,b,t){ return a+(b-a)*t; }
+    function bez(t,p0,pc,p2){ var u=1-t; return u*u*p0+2*u*t*pc+t*t*p2; }
+    var arcP={};
+    function applyPose(t){
+      var e=t<1?(1-Math.pow(1-t,3)):1;
+      var sx_=lerp(from.sx,goal.sx,e), sz_=lerp(from.sz,goal.sz,e), lx_=lerp(from.lx,goal.lx,e), lz_=lerp(from.lz,goal.lz,e), zw_=lerp(from.zw,goal.zw,e), zh_=lerp(from.zh,goal.zh,e);
+      you.position.set(sx_,0,sz_); ball.position.set(lx_,(curShot&&curShot.ch)||0,lz_); zone.position.set(lx_,0.03,lz_); zone.scale.set(zw_,zh_,1);
+      youLbl.position.set(sx_,5.9,sz_); tgtLbl.position.set(lx_,3.3,lz_); tgtLbl2.position.set(lx_,((curShot&&curShot.ch)||0)+3.3,lz_);
+      var h0=(curShot&&curShot.contact)||3, h2=(curShot&&curShot.ch)||0.35, ap=(curShot&&curShot.apex)||5, pcH=(4*ap-h0-h2)/2;
+      arcP={x0:sx_,z0:sz_,x2:lx_,z2:lz_,h0:h0,h2:h2,pc:pcH};
+      for(var i=0;i<NP;i++){ var tt=i/(NP-1); arcPos[i*3]=bez(tt,sx_,(sx_+lx_)/2,lx_); arcPos[i*3+1]=bez(tt,h0,pcH,h2); arcPos[i*3+2]=bez(tt,sz_,(sz_+lz_)/2,lz_); }
+      arcGeo.attributes.position.needsUpdate=true;
+    }
+    /* ---- camera: spherical orbit, slow spin, drag to orbit ---- */
+    var look=new T.Vector3(0,1.2,1.5);
+    var reduce=false; try{ reduce=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches; }catch(_){}
+    var st={az:0,po:1.0,rad:60,tAz:0,tPo:1.0,tRad:60,spin:!reduce,idle:0,drag:false,px:0,py:0};
+    function fitRad(po){ var asp=W/H; return (po<0.4?70:(po>1.08?58:60))*Math.max(1,1.15/asp); }
+    var VIEWS={behind:{az:0,po:1.0},side:{az:Math.PI/2,po:1.15},top:{az:0,po:0.18}};
+    function setView(k){ var v=VIEWS[k]; var dz=((v.az-st.az)%(2*Math.PI)+3*Math.PI)%(2*Math.PI)-Math.PI; st.tAz=st.az+dz; st.tPo=v.po; st.tRad=fitRad(v.po); st.idle=0; }
+    st.rad=st.tRad=fitRad(st.po);
+    bBehind.onclick=function(){ setView("behind"); }; bSide.onclick=function(){ setView("side"); }; bTop.onclick=function(){ setView("top"); };
+    function syncSpin(){ bSpin.textContent=st.spin?"Spin on":"Spin off"; bSpin.style.background=st.spin?"rgba(59,130,246,.28)":"rgba(255,255,255,.05)"; } syncSpin();
+    bSpin.onclick=function(){ st.spin=!st.spin; syncSpin(); };
+    var dom=renderer.domElement;
+    dom.addEventListener("pointerdown",function(e){ st.drag=true; st.px=e.clientX; st.py=e.clientY; st.idle=0; try{ dom.setPointerCapture(e.pointerId); }catch(_){} });
+    dom.addEventListener("pointermove",function(e){ if(!st.drag) return; var dx=e.clientX-st.px, dy=e.clientY-st.py; st.px=e.clientX; st.py=e.clientY; st.az-=dx*0.009; st.tAz=st.az; if(e.pointerType==="mouse"){ st.po=Math.min(1.45,Math.max(0.12,st.po+dy*0.006)); st.tPo=st.po; st.tRad=fitRad(st.po); } st.idle=0; });
+    function endDrag(){ st.drag=false; st.idle=0; } dom.addEventListener("pointerup",endDrag); dom.addEventListener("pointercancel",endDrag); dom.addEventListener("pointerleave",endDrag);
+    function place(){ var po=st.po, az=st.az, r=st.rad*(1+(po>0.4?0.3:0)*Math.abs(Math.sin(az))); cam.position.set(look.x+r*Math.sin(po)*Math.sin(az), look.y+r*Math.cos(po), look.z+r*Math.sin(po)*Math.cos(az)); cam.lookAt(look); }
+    function resize(){ var w=Math.max(200,stage.clientWidth||W), h=stage.clientHeight||H; if(w===W&&h===H) return; W=w; H=h; renderer.setSize(W,H); cam.aspect=W/H; cam.updateProjectionMatrix(); st.tRad=fitRad(st.tPo); }
+    if("ResizeObserver" in window){ inst.ro=new ResizeObserver(resize); inst.ro.observe(stage); }
+    setShot(SHOTS[cur==null?0:cur],true); applyPose(1); place();
+    var last=performance.now(), tflight=0;
+    function frame(now){
+      if(inst.dead) return; inst.raf=requestAnimationFrame(frame);
+      if(!dom.isConnected){ pkCourtDispose(inst); return; }
+      var dt=Math.min(0.05,(now-last)/1000); last=now;
+      if(inst.visible===false||document.hidden) return;
+      if(mv<1){ mv=Math.min(1,mv+dt/0.5); applyPose(mv); }
+      if(!st.drag){ st.idle+=dt; if(st.spin&&st.idle>2.2) st.tAz+=0.16*dt; }
+      st.az+=(st.tAz-st.az)*Math.min(1,dt*6); st.po+=(st.tPo-st.po)*Math.min(1,dt*6); st.rad+=(st.tRad-st.rad)*Math.min(1,dt*6);
+      tflight=(tflight+dt/1.7)%1.35; var ft=Math.min(1,tflight); if(arcP.x0!==undefined){ flyer.position.set(bez(ft,arcP.x0,(arcP.x0+arcP.x2)/2,arcP.x2),bez(ft,arcP.h0,arcP.pc,arcP.h2),bez(ft,arcP.z0,(arcP.z0+arcP.z2)/2,arcP.z2)); flyer.visible=tflight<=1.0; }
+      var pulse=1+0.07*Math.sin(now/260); ring.scale.set(pulse,pulse,1); bring.scale.set(pulse,pulse,1);
+      place(); renderer.render(scene,cam);
+    }
+    inst.raf=requestAnimationFrame(frame);
+  }
+}
 function buildPickle(v){ var pb=state.pickleball||(state.pickleball={});
   if(!Array.isArray(pb.sessions)) pb.sessions=[];
   if(typeof pb.dayNote!=="string") pb.dayNote="";
@@ -33235,6 +33659,11 @@ function buildPickle(v){ var pb=state.pickleball||(state.pickleball={});
       if(co.status) r.appendChild(el("div","g7cue",String(co.status)));
       cb.appendChild(r); c.appendChild(cc);
     },"Coach");
+  });
+  /* ===== build 514: 3D court, a shot placement TEACHING reference (Ian's own design, 15 Oct 2026). Sits after the
+     skill map and touches neither it nor the heatmap. Lazy: the 3D library loads only when the card is on screen. ===== */
+  pkCollapse(v,"pk_court","3D court","where to stand and where the ball goes",false,function(c){
+    safe(c,function(){ pkCourt3D(c); },"3D court");
   });
   /* v21 build 183: removed the This week sessions per week card (Ian's request). The underlying pb.sessions data is untouched and still drives the training heatmap and the session log, only this per week counter card is gone from the Pickleball page. */
   /* ===== build 354: THE PICKLEBALL PAGE IS CUT BACK TO THE HEATMAP AND MECHANICS ============
