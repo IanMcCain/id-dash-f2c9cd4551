@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 514 (2026-10-15)">
+<meta name="build" content="v21 build 515 (2026-10-15)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -26917,6 +26917,41 @@ try{ if(profile==="ian" && state.meta && !state.meta.mig512_re_sync && state.rea
     save(true);
     try{ console.log("mig512: "+_L12.length+" changes, "+_L12.join(" | ")); }catch(_){}
 } }catch(e){ try{ console.warn("mig512 did not apply:",e&&e.message); }catch(_){} }
+
+/* ===== v21 build 515: THURSDAY 15 OCTOBER, 6:04 TO 8:26 PM, EVENING SESSION, SONNET-F ===========
+   ONE session. WATCH VALUES (Apple Fitness screenshot, 15.10.2026): workout time 2:21:45, active
+   1,231, total 1,453, avg HR 120, max HR 170. No minimum HR shown, so minHr is ABSENT, not zero.
+   Guarded by id. Checked before writing: no session on 2026-10-15 existed in the source.
+   EFFORT: Ian gave NO rating of his own, so effort is ABSENT. Apple's Effort 7, Hard is Apple's field,
+   stored as appleEffort and never merged. His effort means how hard he tried and how well he played,
+   never exertion, and is NEVER reconciled against heart rate or calories. Apple's word "Hard" is
+   Apple's, not his.
+   Ian gave no account of how it went, so NOTHING is written to the self-assessment store and the note
+   says only what the watch recorded. No drill or play split was given, so none is stored. The paddle
+   concern is untouched: he did not raise it. Guard state.meta.mig515_pk1015pm, end of chain,
+   SEED_VERSION stays 13. */
+try{ if(profile==="ian" && state.meta && !state.meta.mig515_pk1015pm && state.pickleball){
+    var _P15=state.pickleball;
+    if(!Array.isArray(_P15.sessions)) _P15.sessions=[];
+    var _has15=false;
+    _P15.sessions.forEach(function(s){ if(s&&s.id==="pk-20261015-pm") _has15=true; });
+    if(!_has15){
+      _P15.sessions.push({
+        id:"pk-20261015-pm", date:"2026-10-15", kind:"Pickleball", venue:"Omaha",
+        duration:"2h 21m 45s", window:"6:04 to 8:26 PM, Omaha",
+        calories:1453, activeCalories:1231, avgHr:120, maxHr:170,
+        appleEffort:7, appleEffortLabel:"Hard", appleEffortSource:"Apple Fitness Effort field. NOT Ian's rating.",
+        effortNote:"IAN GAVE NO RATING OF HIS OWN for this session, so effort is absent. Apple's Effort 7, Hard is Apple's field and is kept in appleEffort, never merged into effort. Ian's effort means how hard he tried and how well he played, never exertion, and is never reconciled against heart rate or calories.",
+        result:"", score:"", opponent:"", copyOwned:true,
+        source:"Ian's Apple Fitness screenshot, 15.10.2026.",
+        note:"Pickleball, Thursday 15 October, Omaha, 6:04 to 8:26 PM. 2:21:45 in total. From Apple Watch: avg HR 120, peak 170, active 1,231, total 1,453. Apple's own Effort field read 7, Hard; that is Apple's field and not your rating. No account of how it went was given.",
+        agent:"Watch data only. No drill or open play split was given, so none is stored: no drillMinutes, playMinutes or segments. Do NOT split calories or HR. Effort is absent because Ian gave no rating; Apple's 7 is appleEffort and effort is never reconciled against heart rate or calories. No self assessment was given, so none was written. The paddle concern eq-paddle-power was not raised this session, so it carries no new occurrence."
+      });
+      _P15.sessions.sort(function(a,z){ return String(a.date).localeCompare(String(z.date)); });
+    }
+    state.meta.mig515_pk1015pm=true; save(true);
+    try{ console.log("mig515: 15 October evening session logged"); }catch(_){}
+} }catch(e){ try{ console.warn("mig515 did not apply:",e&&e.message); }catch(_){} }
 
 
 
