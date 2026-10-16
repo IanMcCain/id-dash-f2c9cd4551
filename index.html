@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 519 (2026-10-16)">
+<meta name="build" content="v21 build 520 (2026-10-16)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -27021,6 +27021,60 @@ try{ if(profile==="ian" && state.meta && !state.meta.mig518_night_facts && state
     state.meta.mig518_night_facts=true; save(true);
     try{ console.log("mig518: Belknap live, showings and open houses, Mattox addendum, Willis signing"); }catch(_){}
 } }catch(e){ try{ console.warn("mig518 did not apply:",e&&e.message); }catch(_){} }
+
+/* ===== build 520: sync to Friday 16 October 2026 (Ian). Written once, guarded, no price or split touched.
+   Belknap: FOUR showings now (adds Peter Manhart, Better Homes, Fri 16 Oct 5:30 PM; brokerages recorded); Farah Altwal and
+   Lee Maran are done. Open house Sat 17 Oct 12 to 2 unchanged.
+   Vogel: recorded LIVE since 16 Oct, stage Coming Soon to Active. THE SOURCE IS INFERRED: no text explicitly confirms it went
+   live, the evidence is three showing requests arriving on day one. liveSource says so and the close text carries it. Three
+   confirmed showings; open house Sun 18 Oct 2 to 4, Chris running it. Price untouched.
+   Mattox: inspection resolution CLEARED (Mark says finalized, buyer asking for nothing). The clog is removed. Stage stays Under
+   Contract on purpose: moving to Just Sold would drop it from the 2026 goal bars before it closes. Remaining milestones are the
+   final walkthrough and closing, no dates invented.
+   Willis: seller signing was Fri 16 Oct 3:30 PM at NP Dodge, 501 N 148th; whether it happened is UNCONFIRMED. The VA appraisal is
+   still outstanding and Chris asked Ian to chase the lender. The appraisal clog (risk.item) is KEPT.
+   Guard state.meta.mig520_sync_16oct, end of chain, SEED_VERSION stays 13. */
+try{ if(profile==="ian" && state.meta && !state.meta.mig520_sync_16oct && state.realEstate && Array.isArray(state.realEstate.deals)){
+    state.realEstate.deals.forEach(function(d){
+      if(!d) return;
+      if(d.id==="re-belknap-sell"){
+        d.showings=[
+          {who:"Farah Altwal",firm:"BHHS Ambassador",date:"2026-10-15",time:"6:00 PM",day:"Thursday 15 October 2026",status:"Done",source:"Ian, 16 October 2026"},
+          {who:"Lee Maran",firm:"NP Dodge",date:"2026-10-16",time:"11:00 AM",day:"Friday 16 October 2026",status:"Done",source:"Ian, 16 October 2026"},
+          {who:"Peter Manhart",firm:"Better Homes",date:"2026-10-16",time:"5:30 PM",day:"Friday 16 October 2026",status:"Confirmed",source:"Ian, 16 October 2026"},
+          {who:"Debra Rau Gray",firm:"BHHS Ambassador",date:"2026-10-16",time:"6:00 PM",day:"Friday 16 October 2026",status:"Confirmed",source:"Ian, 16 October 2026"}
+        ];
+        d.pipeStatus="Live. Four showings confirmed, two done. Open house Saturday 17 October 12 to 2 PM. Ian, 16 October 2026.";
+      }
+      if(d.id==="re-vogel-sell"){
+        d.stage="Active"; d.close="Live since 16 October 2026, inferred from showings";
+        d.liveSince="2026-10-16";
+        d.liveSource="INFERRED, not confirmed: showing requests arrived on day one. No text explicitly says it went live.";
+        d.listStatus="LIVE 16 October 2026 at $324,900. Inferred from showing requests arriving; no text explicitly confirms the go live. Ian, 16 October 2026.";
+        d.sub="Sell side, 5621 Pine St. Live 16 October";
+        d.showings=[
+          {who:"Diane Hughes",firm:"BHHS Ambassador",date:"2026-10-16",time:"4:00 PM",day:"Friday 16 October 2026",status:"Confirmed",source:"Ian, 16 October 2026"},
+          {who:"Johnny Duggan",firm:"PJ Morgan",date:"2026-10-16",time:"5:15 PM",day:"Friday 16 October 2026",status:"Confirmed",source:"Ian, 16 October 2026"},
+          {who:"Maggie Kalin",firm:"Better Homes",date:"2026-10-17",time:"11:00 AM",day:"Saturday 17 October 2026",status:"Confirmed",source:"Ian, 16 October 2026"}
+        ];
+        d.openHouse={date:"2026-10-18",start:"14:00",end:"16:00",runBy:"Chris",note:"Sunday 18 October 2026, 2 to 4 PM, Chris running it. Confirmed by John Vogel. Ian, 16 October 2026."};
+        d.pipeStatus="Live (inferred from three showing requests on day one). Open house Sunday 18 October 2 to 4 PM, Chris running it. Ian, 16 October 2026.";
+      }
+      if(d.id==="re-mattox-sell"){
+        d.pipeStatus="Inspection resolution cleared. Mark says it is finalized and the buyer is asking for nothing. Remaining: final walkthrough, then closing. Ian, 16 October 2026.";
+        d.pipeClog="";
+        d.milestonesLeft=["Final walkthrough","Closing"];
+        d.inspectionResolution={status:"CLEARED",source:"Mark (seller) via Ian, 16 October 2026",note:"Finalized, buyer asking for nothing. Supersedes the 15 October addendum receipt question."};
+      }
+      if(d.id==="re-cynthia-willis"){
+        d.signing={date:"2026-10-16",time:"3:30 PM",where:"NP Dodge, 501 N 148th",who:"Seller signing",happened:"UNCONFIRMED",source:"Ian, 16 October 2026"};
+        d.pipeStatus="Seller signing was Friday 16 October 3:30 PM at NP Dodge, 501 N 148th. Whether it happened is unconfirmed. The VA appraisal is still outstanding and Chris asked Ian to chase the lender. Ian, 16 October 2026.";
+        d.lenderChase={status:"OPEN",note:"Chris asked Ian to chase the lender on the VA appraisal.",source:"Ian, 16 October 2026"};
+      }
+    });
+    state.meta.mig520_sync_16oct=true; save(true);
+    try{ console.log("mig520: Belknap 4 showings, Vogel live, Mattox inspection cleared, Willis signing and lender chase"); }catch(_){}
+} }catch(e){ try{ console.warn("mig520 did not apply:",e&&e.message); }catch(_){} }
 
 
 
