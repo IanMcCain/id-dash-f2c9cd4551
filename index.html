@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 518 (2026-10-15)">
+<meta name="build" content="v21 build 519 (2026-10-16)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -30328,16 +30328,23 @@ function rePipe3D(host){
   var chips=el("div"); chips.style.cssText="display:flex;gap:6px;margin-top:10px;flex-wrap:wrap"; cb.appendChild(chips);
   var detail=el("div"); detail.style.cssText="margin-top:12px;line-height:1.5"; cb.appendChild(detail);
   host.appendChild(cd);
-  var sel=null, focus=-1;
-  function showDetail(p){
-    sel=p; detail.innerHTML="";
-    if(!p){ detail.appendChild(el("div","small dim","Tap a sphere, or a stage, to see the figures.")); return; }
+  /* build 519: sel is a deal Ian TAPPED (pinned for a few seconds). front is the id of the deal that is FACING the viewer right
+     now, so the detail follows the spin. shownId is what the detail is currently showing. */
+  var sel=null, focus=-1, front=null, shownId=null, fadeTok=0, pinUntil=0;
+  function showDetail(p,follow){
+    if(!follow) sel=p; detail.innerHTML="";
+    if(!p){ if(inst.follow){ shownId=null; front=null; return; } detail.appendChild(el("div","small dim","Tap a sphere, or a stage, to see the figures.")); return; }
+    if(follow){ var kk=el("div","small"); kk.style.cssText="font-size:10.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#6db3ff;margin-bottom:4px"; kk.textContent="Facing you"; detail.appendChild(kk); }
     var h=el("div"); h.style.cssText="font-weight:800;font-size:16px;letter-spacing:-.01em"; h.textContent=p.title; detail.appendChild(h);
     rePipeDetailLines(p).forEach(function(kv){
       var r=el("div","small"); r.style.cssText="margin-top:5px;color:var(--gray)";
       var b=el("span"); b.style.cssText="font-weight:800;color:"+(kv[0]==="Clog"?"#ff6b6b":"var(--white,#fff)"); b.textContent=kv[0]+": ";
       r.appendChild(b); r.appendChild(document.createTextNode(kv[1])); detail.appendChild(r);
     });
+  }
+  function fadeTo(p,follow){
+    var tok=++fadeTok; detail.style.transition="opacity .16s ease,transform .16s ease"; detail.style.opacity="0"; detail.style.transform="translateY(6px)";
+    setTimeout(function(){ if(tok!==fadeTok||inst.dead) return; showDetail(p,follow); detail.style.opacity="1"; detail.style.transform="none"; },170);
   }
   function stageStats(i){ var n=0,w=0; P.forEach(function(p){ if(p.si===i){ n++; if(!p.paused) w+=p.core; } }); return {n:n,w:w}; }
   function renderChips(){
@@ -30360,7 +30367,7 @@ function rePipe3D(host){
     });
   }
   renderChips(); showDetail(null);
-  function fallback(why){ stage.style.height="auto"; stage.style.touchAction="auto"; stage.innerHTML=""; var m=el("div","small dim"); m.style.cssText="padding:14px;line-height:1.55"; m.textContent=why+" The same figures are listed below."; stage.appendChild(m); inst.setFocus=null; listFor(-1); }
+  function fallback(why){ stage.style.height="auto"; stage.style.touchAction="auto"; stage.innerHTML=""; var m=el("div","small dim"); m.style.cssText="padding:14px;line-height:1.55"; m.textContent=why+" The same figures are listed below."; stage.appendChild(m); inst.setFocus=null; inst.follow=false; fadeTok++; detail.style.minHeight=""; detail.style.opacity="1"; detail.style.transform="none"; listFor(-1); }
   var started=false;
   function onVis(vis){ inst.visible=vis; if(!vis&&!stage.isConnected){ pkCourtDispose(inst); return; } if(vis&&inst.resume) inst.resume(); if(vis&&!started){ started=true; rePipeLoadThree(function(){ if(inst.dead) return; try{ build(); }catch(e){ try{console.error("[dash] repipe",e);}catch(_){} fallback("The 3D view could not start on this device."); } },function(){ if(!inst.dead) fallback("The 3D library could not be loaded."); }); } }
   if("IntersectionObserver" in window){ inst.io=new IntersectionObserver(function(es){ onVis(es[0].isIntersecting); },{threshold:0.05}); inst.io.observe(stage); } else { onVis(true); }
@@ -30424,14 +30431,14 @@ function rePipe3D(host){
       var core=new T.Mesh(new T.SphereGeometry(hasShell?p.rc:p.r,28,20),mat); core.position.set(p.x,p.y,p.z); if(!p.ceil) root.add(core);
       if(hasShell){ var sh=new T.Mesh(new T.SphereGeometry(p.r,20,14),new T.MeshBasicMaterial({color:col,wireframe:true,transparent:true,opacity:0.4})); sh.position.set(p.x,p.y,p.z); root.add(sh); }
       if(p.clog){ var cm=new T.Mesh(new T.TorusGeometry(R-0.08,0.2,10,56),new T.MeshStandardMaterial({color:0xff4d4d,emissive:0xff2020,emissiveIntensity:0.6,roughness:0.5})); cm.rotation.x=Math.PI/2; cm.position.y=p.y; root.add(cm); }
-      spheres.push({p:p,mesh:core});
+      spheres.push({p:p,mesh:core,mat:mat});
     });
     /* HTML labels, positioned from the projected scene each frame */
     var lblLayer=el("div"); lblLayer.style.cssText="position:absolute;left:0;top:0;right:0;bottom:0;pointer-events:none;overflow:hidden"; stage.appendChild(lblLayer);
     var stageLbl=segs.map(function(sg){ var d=el("div"); d.style.cssText="position:absolute;font-size:11px;font-weight:800;line-height:1.25;color:#"+("000000"+sg.color.toString(16)).slice(-6)+";text-shadow:0 1px 2px #000;white-space:nowrap"; var st=stageStats(sg.i); d.innerHTML=""; var a=el("div",null,sg.name+" \u00b7 "+st.n+(sg.i===5?(st.n===1?" side":" sides"):"")); var b=el("div",null,rePipeMoney(st.w)+(sg.i===5?" received":" weighted")); b.style.cssText="font-weight:600;color:#c9d3df"; d.appendChild(a); d.appendChild(b); lblLayer.appendChild(d); return {el:d,sg:sg}; });
     var dealLbl=spheres.map(function(s){ var d=el("div"); d.style.cssText="position:absolute;font-size:10.5px;font-weight:700;color:#fff;text-shadow:0 1px 2px #000;white-space:nowrap;transform:translate(-50%,-50%);display:none"; d.textContent=s.p.title.length>20?s.p.title.slice(0,19)+".":s.p.title; lblLayer.appendChild(d); return d; });
     /* camera: orbit around the pipe axis */
-    var az=0.5, pitch=0.22, ty=(topY+botY)/2, dist=totalH/2/Math.tan(19*Math.PI/180)*1.12, tty=ty, tdist=dist, autoRot=true;
+    var az=0.5, pitch=0.22, ty=(topY+botY)/2, dist=totalH/2/Math.tan(19*Math.PI/180)*1.12, tty=ty, tdist=dist, TAU=Math.PI*2, vel=0, lastInt=0, lastT=0;
     var vfov=38*Math.PI/180;
     function fitDist(h){ return h/2/Math.tan(vfov/2)*1.1; }
     inst.setFocus=function(i){
@@ -30455,45 +30462,73 @@ function rePipe3D(host){
       });
       var want=[];
       spheres.forEach(function(s,k){
-        dealLbl[k].style.display="none";
-        var on=(sel&&sel.id===s.p.id)||(focus>=0&&s.p.si===focus)||(focus<0&&s.p.si>=2&&s.p.si<=4);
+        dealLbl[k].style.display="none"; dealLbl[k].style.opacity=(front===s.p.id||(sel&&sel.id===s.p.id))?"1":"0.6";
+        var on=(sel&&sel.id===s.p.id)||front===s.p.id||(focus>=0&&s.p.si===focus)||(focus<0&&s.p.si>=2&&s.p.si<=4);
         if(on){ var q2=proj(s.p.x,s.p.y,s.p.z); want.push({k:k,x:(focus<0?cx-pr-8:q2.x),y:q2.y,left:focus<0}); }
       });
       want.sort(function(a,b){ return a.y-b.y; });
       var lastY=-99;
       want.forEach(function(w){ var y=Math.max(w.y,lastY+13); lastY=y; var d=dealLbl[w.k]; d.style.display="block"; d.style.left=w.x+"px"; d.style.top=y+"px"; d.style.transform=w.left?"translate(-100%,-50%)":"translate(-50%,-50%)"; });
     }
+    /* FRONT FACING DETECTION (build 519). The camera sits on the horizontal direction (sin az, cos az) from the pipe axis, so a
+       sphere at (x,z) faces the viewer by x*sin(az)+z*cos(az), the depth toward the camera, plus its radius for its front
+       surface. The highest score is the deal facing the viewer. Real positions, real azimuth, no timer. A new deal has to beat
+       the current front by a margin before it takes over, so two spheres passing each other do not make the text flicker. */
+    function frontScores(){ var cx=Math.sin(az), cz=Math.cos(az), out=[]; spheres.forEach(function(s){ if(focus>=0&&s.p.si!==focus) return; out.push({s:s,sc:s.p.x*cx+s.p.z*cz+s.p.r}); }); return out; }
+    function hi(p){
+      spheres.forEach(function(s){ var on=p&&s.p.id===p.id; if(s.p.clog){ s.mat.emissiveIntensity=on?1.5:0.8; } else { s.mat.emissive.setHex(on?0x2f5d8a:0x000000); s.mat.emissiveIntensity=on?0.9:0; } });
+      stageLbl.forEach(function(l){ l.el.style.opacity=(!p||focus>=0||l.sg.i===p.si)?"1":"0.45"; });
+    }
+    function updateFront(now){
+      if(sel){ if(now>pinUntil){ sel=null; shownId=null; front=null; hi(null); } else return; }
+      var sc=frontScores(); if(!sc.length) return;
+      var best=sc[0], cur=null; sc.forEach(function(e){ if(e.sc>best.sc) best=e; if(front!=null&&e.s.p.id===front) cur=e; });
+      if(cur&&best.s.p.id!==front&&best.sc<cur.sc+0.15) best=cur;
+      var id=best.s.p.id; front=id;
+      if(id!==shownId){ var first=!detail.firstChild; shownId=id; hi(best.s.p); if(first) showDetail(best.s.p,true); else fadeTo(best.s.p,true); }
+    }
     /* input: drag to turn, tap to pick */
     var down=null, moved=0;
     var cv=renderer.domElement;
-    cv.addEventListener("pointerdown",function(ev){ down={x:ev.clientX,y:ev.clientY,az:az}; moved=0; autoRot=false; });
-    cv.addEventListener("pointermove",function(ev){ if(!down) return; var dx=ev.clientX-down.x; moved=Math.max(moved,Math.abs(dx)+Math.abs(ev.clientY-down.y)); az=down.az+dx*0.01; });
+    cv.addEventListener("pointerdown",function(ev){ var n0=performance.now(); down={x:ev.clientX,y:ev.clientY,az:az,lt:n0}; moved=0; vel=0; lastInt=n0; });
+    cv.addEventListener("pointermove",function(ev){ if(!down) return; var dx=ev.clientX-down.x; moved=Math.max(moved,Math.abs(dx)+Math.abs(ev.clientY-down.y)); var na=down.az+dx*0.01, nt=performance.now(), dtt=(nt-down.lt)/1000; if(dtt>0.004){ vel=Math.max(-4,Math.min(4,vel*0.5+0.5*((na-az)/dtt))); down.lt=nt; } az=na; lastInt=nt; });
     function pick(ev){
       var rc=cv.getBoundingClientRect(); var px=(ev.clientX-rc.left)*(W/rc.width), py=(ev.clientY-rc.top)*(H/rc.height);
       var best=null,bd=1e9;
       spheres.forEach(function(s){ var q2=proj(s.p.x,s.p.y,s.p.z); var sr=s.p.r/(2*Math.tan(vfov/2)*dist)*H; var dd=Math.sqrt((q2.x-px)*(q2.x-px)+(q2.y-py)*(q2.y-py))-sr; if(dd<bd&&dd<16){ bd=dd; best=s.p; } });
-      if(best){ showDetail(best); } else { showDetail(null); }
+      if(best){ pinUntil=performance.now()+8000; sel=best; shownId=best.id; hi(best); fadeTo(best,false); } else { showDetail(null); }
     }
-    cv.addEventListener("pointerup",function(ev){ var wasTap=down&&moved<8; down=null; if(wasTap) pick(ev); });
-    cv.addEventListener("pointercancel",function(){ down=null; });
+    cv.addEventListener("pointerup",function(ev){ var wasTap=down&&moved<8; down=null; lastInt=performance.now(); if(wasTap){ vel=0; pick(ev); } });
+    cv.addEventListener("pointercancel",function(){ down=null; lastInt=performance.now(); });
     function size(){ var w2=Math.max(200,stage.clientWidth||W); if(Math.abs(w2-W)>2){ W=w2; renderer.setSize(W,H); camera.aspect=W/H; camera.updateProjectionMatrix(); } }
     if("ResizeObserver" in window){ inst.ro=new ResizeObserver(size); inst.ro.observe(stage); }
     /* build 518: the loop STOPS (no requestAnimationFrame at all) while the card is off screen or the tab is hidden, and the
        scene is disposed when the page rebuilds and the stage leaves the document. Before this the loop kept scheduling frames
        forever and the renderer held its WebGL context until the next time the card was built. */
-    function tick(){
+    function tick(now){
+      now=now||performance.now();
       if(inst.dead) return;
       if(!stage.isConnected){ pkCourtDispose(inst); return; }
       if(!inst.visible||document.hidden){ inst.idle=true; return; }
       inst.raf=requestAnimationFrame(tick);
-      if(autoRot) az+=0.0035;
+      var dtf=Math.min(0.05,(now-lastT)/1000); lastT=now;
+      /* build 519: full 360, continuous. Time based so it is the same speed at any frame rate (0.2 rad/s, about 31 s a turn).
+         A drag turns it and lets go with a little momentum, then the slow turn picks up again 2.5 s later. A tapped deal holds
+         the spin for its pin. az is an unbounded angle that only feeds sin and cos, so there is no wrap point to jump at. */
+      if(!down){
+        if(Math.abs(vel)>0.04){ az+=vel*dtf; vel*=Math.pow(0.03,dtf); }
+        else { vel=0; if(!(sel&&now<pinUntil)&&now-lastInt>2500) az+=0.2*dtf; }
+        if(Math.abs(az)>TAU*4) az=az%TAU;
+      }
       ty+=(tty-ty)*0.12; dist+=(tdist-dist)*0.12;
-      place(); labels(); renderer.render(scene,camera);
+      updateFront(now); place(); labels(); renderer.render(scene,camera);
     }
-    inst.resume=function(){ if(inst.dead||!inst.idle) return; inst.idle=false; tick(); };
+    inst.resume=function(){ if(inst.dead||!inst.idle) return; lastT=performance.now(); inst.idle=false; tick(); };
     inst.vis=function(){ if(inst.dead) return; if(!document.hidden) inst.resume(); };
     document.addEventListener("visibilitychange",inst.vis);
-    place(); labels(); renderer.render(scene,camera); inst.idle=false; tick();
+    /* reserve the height of the tallest detail so the page below does not jump as the text changes */
+    inst.follow=true; var mh=0; spheres.forEach(function(s2){ showDetail(s2.p,true); mh=Math.max(mh,detail.offsetHeight); }); detail.innerHTML=""; detail.style.minHeight=mh+"px"; shownId=null; front=null;
+    place(); labels(); renderer.render(scene,camera); lastT=performance.now(); inst.idle=false; tick();
   }
 }
 
