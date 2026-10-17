@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 524 (2026-10-17)">
+<meta name="build" content="v21 build 525 (2026-10-17)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -29219,16 +29219,20 @@ function hzCloseMonth(txt){
   return {y:yr?parseInt(yr,10):parseInt(String(TODAY).slice(0,4),10),m:mi};
 }
 function hzClosingsData(){
-  var deals=(state.realEstate&&state.realEstate.deals)||[]; var by={}; var un=0, unN=0;
+  var deals=(state.realEstate&&state.realEstate.deals)||[]; var by={}; var un=0, unN=0, oy=0, oyN=0;
+  var curY=parseInt(String(TODAY).slice(0,4),10); var closedAll=0, ucAll=0, unNames=[];
   deals.forEach(function(d){
     if(!d||(d.stage!=="Closed"&&d.stage!=="Under Contract")) return;
     var v=dealVolume(d); var mo=hzCloseMonth(d.close)||((typeof d.closeDate==="string")?hzCloseMonth(d.closeDate):null);
-    if(!mo){ un+=v; unN++; return; }
+    if(d.stage==="Closed") closedAll+=v; else ucAll+=v;
+    if(!mo){ un+=v; unN++; unNames.push((d.title||"A deal")+((/lot/i.test(String(d.sub||"")))?" lot":"")); return; }
+    if(mo.y!==curY){ oy+=v; oyN++; return; }
     var k=mo.y*12+mo.m; var o=by[k]||(by[k]={k:k,y:mo.y,m:mo.m,closed:0,uc:0}); if(d.stage==="Closed") o.closed+=v; else o.uc+=v;
   });
-  var ks=Object.keys(by).map(Number).sort(function(a,b){ return a-b; });
-  var rows=[]; if(ks.length){ for(var k=ks[0];k<=ks[ks.length-1];k++){ rows.push(by[k]||{k:k,y:Math.floor(k/12),m:k%12,closed:0,uc:0}); } }
-  return {rows:rows,un:un,unN:unN};
+  /* build 525 (Ian, 17 Oct 2026): EVERY MONTH OF THE YEAR, January to December, whether or not anything closed. A month left out
+     reads as "no data recorded" when it means "nothing happened", and those are different facts. An empty month is a zero row. */
+  var rows=[]; for(var mi2=0;mi2<12;mi2++){ var k=curY*12+mi2; rows.push(by[k]||{k:k,y:curY,m:mi2,closed:0,uc:0}); }
+  return {rows:rows,un:un,unN:unN,oy:oy,oyN:oyN,closedAll:closedAll,ucAll:ucAll,unNames:unNames};
 }
 function hzDurMin(s){ var t=String(s||""); var h=/(\d+)\s*h/i.exec(t), m=/(\d+)\s*m/i.exec(t), sc=/(\d+)\s*s/i.exec(t); return (h?parseInt(h[1],10)*60:0)+(m?parseInt(m[1],10):0)+(sc?parseInt(sc[1],10)/60:0); }
 function hzIso(d){ return d.getFullYear()+"-"+("0"+(d.getMonth()+1)).slice(-2)+"-"+("0"+d.getDate()).slice(-2); }
@@ -29248,7 +29252,7 @@ function homeZone4(host){
   var cd=hzClosingsData();
   if(cd.rows.length>=2){
     var rows=cd.rows.slice(); var lead=null;
-    if(rows.length>8){ var cut=rows.splice(0,rows.length-7); lead={lab:"Earlier",closed:cut.reduce(function(t,r){ return t+r.closed; },0),uc:cut.reduce(function(t,r){ return t+r.uc; },0),cur:false}; }
+    if(rows.length>12){ var cut=rows.splice(0,rows.length-11); lead={lab:"Earlier",closed:cut.reduce(function(t,r){ return t+r.closed; },0),uc:cut.reduce(function(t,r){ return t+r.uc; },0),cur:false}; }
     var curK=(function(){ var p=String(TODAY).split("-"); return (+p[0])*12+(+p[1]-1); })(); var curY=Math.floor(curK/12);
     var list=(lead?[lead]:[]).concat(rows.map(function(r){ return {lab:HZ_MONL[r.m]+(r.y!==curY?(" "+String(r.y).slice(2)):""),closed:r.closed,uc:r.uc,cur:r.k===curK}; }));
     var mx=1; list.forEach(function(r){ var t=r.closed+r.uc; if(t>mx) mx=t; });
@@ -29271,7 +29275,11 @@ function homeZone4(host){
     card1.appendChild(bars);
     var lg=el("div","z4-lg"); var l1=el("span"); l1.appendChild(el("i","g")); l1.appendChild(document.createTextNode("Banked")); lg.appendChild(l1);
     var l2=el("span"); l2.appendChild(el("i","u")); l2.appendChild(document.createTextNode("Under contract")); lg.appendChild(l2); card1.appendChild(lg);
-    if(cd.unN>0){ card1.appendChild(el("div","z4-fn",cd.unN+(cd.unN===1?" deal has":" deals have")+" no month on record and "+(cd.unN===1?"is":"are")+" not shown.")); }
+    if(cd.oyN>0){ card1.appendChild(el("div","z4-fn",cd.oyN+(cd.oyN===1?" deal closes":" deals close")+" in another year and "+(cd.oyN===1?"is":"are")+" not shown.")); }
+    /* build 525: the bars and the headline must visibly agree. The closed and under contract totals are printed, and any volume
+       with no month on record is named as INSIDE those totals but off the bars, never silently left out of them. */
+    card1.appendChild(el("div","z4-fn","Closed "+fmtMoney(cd.closedAll)+" \u00b7 under contract "+fmtMoney(cd.ucAll)));
+    if(cd.unN>0){ card1.appendChild(el("div","z4-fn","Includes "+fmtMoney(cd.un)+" with no month on record, "+cd.unNames.join(", ")+", not on the bars.")); }
     z.appendChild(card1); any=true;
   }
   var wk=hzWeeklyHours(); var tot2=0; wk.forEach(function(w){ tot2+=w.n; });
