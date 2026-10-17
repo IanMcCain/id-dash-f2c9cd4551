@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 520 (2026-10-16)">
+<meta name="build" content="v21 build 521 (2026-10-16)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -27075,6 +27075,68 @@ try{ if(profile==="ian" && state.meta && !state.meta.mig520_sync_16oct && state.
     state.meta.mig520_sync_16oct=true; save(true);
     try{ console.log("mig520: Belknap 4 showings, Vogel live, Mattox inspection cleared, Willis signing and lender chase"); }catch(_){}
 } }catch(e){ try{ console.warn("mig520 did not apply:",e&&e.message); }catch(_){} }
+
+/* ===== build 521: deep dive pass 6 (Ian, 16 Oct 2026). Corrections to existing fields only, written once, guarded.
+   Fact recorded: Spicer, Mattox AND Willis all close 13 November 2026. That is correct, not a data error.
+   Willis gets closeOn 2026-11-13 and confirmed. Deal close text and event titles lose their caveat shouting (names are labels).
+   Belknap and Vogel pipeStatus carry Ian's 16 Oct facts. No price, split, stage, session or log is touched.
+   Guard state.meta.mig521_pass6, end of chain, SEED_VERSION stays 13. */
+try{ if(profile==="ian" && state.meta && !state.meta.mig521_pass6 && state.realEstate && Array.isArray(state.realEstate.deals)){
+    var NOTE521=" Three closings on 13 November 2026 (Spicer, Mattox, Willis) is correct, not a data error. Ian, 16 October 2026.";
+    var CLOSE521={"re-spicer-sell":"August 3, 2026 (closed)","re-bonks-sell":null,"re-bonks-buy":null,"re-michelle-miller":null,"re-chad-troester":null,
+      "re-crystal-johnson":"Early week of 31 August 2026","re-frahm-sell":"Next year, 2027. No date set.","re-frahm-build":"Next year, 2027"};
+    state.realEstate.deals.forEach(function(d){
+      if(!d||!d.id) return;
+      if(Object.prototype.hasOwnProperty.call(CLOSE521,d.id)){
+        if(CLOSE521[d.id]!==null){ d.close=CLOSE521[d.id]; }
+        else if(typeof d.close==="string"){ d.close=d.close.replace(/\s*\(CLOSED and PAID\)/i," (closed)"); }
+      }
+      if(d.id==="re-cynthia-willis"){
+        d.close="Closes 13 November 2026"; d.closeOn="2026-11-13";
+        if(d.closeDate && typeof d.closeDate==="object"){ d.closeDate.confirmed=true; d.closeDate.approx="13 November 2026"; d.closeDate.confirmedBy="Ian, 16 October 2026: Spicer, Mattox and Willis all close 13 November"; }
+        d.pipeStatus="Seller signing was today, Friday 16 October. Whether it happened is unconfirmed. The VA appraisal is still outstanding and the lender has not been reached. Closes 13 November. Ian, 16 October 2026.";
+        d.note=(d.note||"")+NOTE521;
+      }
+      if(d.id==="re-allison-spicer-buy"||d.id==="re-mattox-sell"){ d.note=(d.note||"")+NOTE521; }
+      if(d.id==="re-mattox-sell"){
+        d.pipeStatus="Inspection cleared. Remaining: final walkthrough, then closing 13 November. Ian, 16 October 2026.";
+      }
+      if(d.id==="re-belknap-sell"){
+        d.pipeStatus="Live at $250,000. Four showings. One offer in hand around $242,000, deadline tomorrow morning. Ian is countering at $245,000 and a second offer is likely. Open house Saturday 17 October 12 to 2 PM. Ian, 16 October 2026.";
+      }
+      if(d.id==="re-vogel-sell"){
+        d.pipeStatus="Live at $324,900. Three showings, interest but no offers. Open house Sunday 18 October 2 to 4 PM, Chris running it. Ian, 16 October 2026.";
+      }
+    });
+    var EV521={
+      "ev-20260730-willis-live":"Cynthia Willis listing went live, 10218 Spyglass Dr, $619,900",
+      "ev-20260815-barker-meeting":"Barker meeting, date not set",
+      "ev-20260809-stack-decision":"Stacking with Dylan, decided against 09 Aug 2026",
+      "ev-20260816-willis-day10":"Willis day 10 price decision, cancelled, under contract at $610,000",
+      "ev-20260807-willis-showing-1":"Showing, 10218 Spyglass Dr, 6:45pm, Sara Pohlad RE/MAX Results",
+      "ev-20260808-willis-showing-2":"Showing, 10218 Spyglass Dr, 2:15pm, Richard Begley Better Homes",
+      "ev-20260820-bonks-buy-close":"Bonks buy closing, 401 Fir St Ashland",
+      "ev-20260817-taper-start":"Taper week, hard Mon and Tue, then lighter into Sunday",
+      "ev-20260818-taper-tue":"Tue push stays hard. League 6:30, last competitive night before DUPR",
+      "ev-20260822-taper-sat":"Sat light. Tournament tomorrow",
+      "ev-20260819-taper-wed":"Wed legs moderate, not hard",
+      "ev-20260820-taper-thu":"Thu abs and cardio moderate",
+      "ev-20260821-taper-fri":"Fri push light",
+      "ev-20260817-bonks-sell-walk":"Bonks sell final walk through, morning",
+      "ev-20260817-blondo-edit":"Edit the three Blondo Pointe lot videos, 3:00 to 5:30pm",
+      "ev-20260818-blondo-post1":"Blondo Pointe lot video 1 goes live, noon",
+      "ev-20260820-blondo-post2":"Blondo Pointe lot video 2 goes live, noon",
+      "ev-20260822-blondo-post3":"Blondo Pointe lot video 3 goes live, noon",
+      "ev-20260819-siena-viewing":"Siena II viewing, 19 August 2026, never confirmed",
+      "ev-20261015-belknap-live":"Belknap goes live, 4946 Pratt St",
+      "ev-20261015-vogel-live":"Vogel goes live, 5621 Pine St",
+      "ev-20260816-belknap-reshow":"Belknaps re-show both finalists, 4:30pm"
+    };
+    (state.events||[]).forEach(function(e){ if(e && e.id && typeof EV521[e.id]==="string" && EV521[e.id]) e.title=EV521[e.id]; });
+    try{ var gl=state.pickleball&&state.pickleball.goals; if(Array.isArray(gl)) gl.forEach(function(g){ if(g&&g.id==="pk-goal-drillday") g.short="Drill day, done 15 Aug"; }); }catch(_){}
+    state.meta.mig521_pass6=true; save(true);
+    try{ console.log("mig521: Willis closeOn, caveat text cleaned, Belknap and Vogel status"); }catch(_){}
+} }catch(e){ try{ console.warn("mig521 did not apply:",e&&e.message); }catch(_){} }
 
 
 
