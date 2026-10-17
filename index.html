@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 526 (2026-10-17)">
+<meta name="build" content="v21 build 527 (2026-10-17)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -27306,6 +27306,38 @@ try{ if(profile==="ian" && state.meta && !state.meta.mig526_pk1016am && state.pi
     try{ console.log("mig526: 16 October morning session logged"); }catch(_){}
 } }catch(e){ try{ console.warn("mig526 did not apply:",e&&e.message); }catch(_){} }
 
+  /* ===== v21 build 527: NP DODGE'S OWN PRODUCTION FIGURE, STORED BESIDE THE DEALS, NOT IN THEM ================
+     Ian, 17 Oct 2026: NP Dodge's production report, "Volume By Team Owner-Leader", period ending 30 Sep 2026,
+     says 13.00 sides and $6,227,800 volume. The app's own roll-up of closed deals read 14 sides and $5,997,911.
+     Ian called the NP Dodge report the most accurate source and asked for it to be the production number.
+     AMENDED SAME DAY BY IAN: THE SIDE COUNT IS 14, NOT 13. Volume is NP Dodge's $6,227,800 through 30 Sep 2026.
+     The 14 is Ian's own convention, dual agency (Snyder) counted as two sides. NP Dodge's own report blends it
+     into one side and shows 13.00. BOTH ARE DELIBERATE. Do not "correct" the 14 back to 13 in a later pass.
+     THE VARIANCE IS NOT RECONCILED AND THIS RECORD DOES NOT CLAIM IT IS. Ian's account is that NP Dodge blends
+     dual agency (Snyder) into one side and credits volume on both. If it credited the Snyder volume twice the
+     totals would differ by $797,850, not $229,889, so that account does not close the arithmetic. Ian is content
+     to treat the rest as small per deal differences, and that is his call, but it is recorded as open.
+     NO PER DEAL RECORD IS TOUCHED. Prices, sides, sources, splits and every commission or net figure still come
+     from state.realEstate.deals exactly as before. The report's start date was cut off in the screenshot, assumed
+     1 Jan 2026 and UNVERIFIED. Guard state.meta.mig527_npd_production, end of chain, SEED_VERSION stays 13. */
+  try{ if(profile==="ian" && state.meta && !state.meta.mig527_npd_production && state.realEstate){
+      if(!state.realEstate.npdProduction){
+        state.realEstate.npdProduction={
+          source:"NP Dodge production report",
+          report:"Volume By Team Owner-Leader",
+          periodEnd:"2026-09-30", periodEndLabel:"30 September 2026", periodEndShort:"30 Sep",
+          periodStartNote:"Start date was cut off in the screenshot. Assumed 1 January 2026, unverified.",
+          sides:14, npdSides:13,
+          sidesNote:"14 is Ian's own count, dual agency (Snyder) as two sides, set deliberately on 17 Oct 2026. NP Dodge's own report shows 13.00 because it blends dual agency into one side. Do not correct 14 back to 13.",
+          volume:6227800,
+          recordedBy:"Ian, 17 October 2026",
+          varianceNote:"Volume only. The app's closed roll-up is $5,997,911 against NP Dodge's $6,227,800, a difference of $229,889. Per Ian, NP Dodge credits dual agency volume on both sides. If the Snyder volume had been credited twice the totals would differ by $797,850, so that account alone does not close it. NOT reconciled to specific deals."
+        };
+      }
+      state.meta.mig527_npd_production=true; save(true);
+      try{ console.log("mig527: NP Dodge production figure recorded"); }catch(_){}
+  } }catch(e){ try{ console.warn("mig527 did not apply:",e&&e.message); }catch(_){} }
+
   /* build 372: LAST THING BEFORE THE SAVE. Every migration above has run, deepMergeDefaults
      has run, so this is the only point in the file where the state is actually final. */
   try{ convergeState(); }catch(e){}
@@ -29448,7 +29480,7 @@ function homeZone5(host,F){
     var ok=adopt(b,F.year,"Where the goal stands"); if(!ok) return false;
     var cb=b.querySelector(".cbody"); if(cb&&cb.firstChild&&/production goals/i.test(cb.firstChild.textContent||"")) cb.removeChild(cb.firstChild);
     var rows=b.querySelectorAll(".goalrow");
-    if(rows.length>1&&/Production/.test(rows[0].textContent||"")) rows[0].parentNode.removeChild(rows[0]);
+    if(rows.length>1&&/Production/.test(rows[0].textContent||"")&&!/NP Dodge/.test(rows[0].textContent||"")) rows[0].parentNode.removeChild(rows[0]);
     var fl=b.querySelectorAll(".pbar i"); for(var i=0;i<fl.length;i++){ fl[i].style.background="var(--green)"; }
     var inl=b.querySelectorAll("[style*='--sec2']"); for(var k=0;k<inl.length;k++){ inl[k].style.color="var(--white)"; }
     return true;
@@ -31259,8 +31291,17 @@ function reGoalsCard(parent,accOverride){
   const c=card(accOverride||"a-teal"); const b=c._body;
   b.appendChild(el("div","small muted","2026 production goals"));
   const mk=(label,valHtml,frac,col)=>{ const wrap=el("div","goalrow"); const top=el("div","between"); top.appendChild(el("div","goal-lab",label)); const vv=el("div","goal-val"); vv.innerHTML=valHtml; top.appendChild(vv); wrap.appendChild(top); const bar=el("div","pbar"); const i=el("i"); bar.appendChild(i); wrap.appendChild(bar); try{ i.style.width=Math.min(100,frac*100)+"%"; i.style.background="var(--"+col+")"; }catch(e){} return wrap; };
-  b.appendChild(mk("Production",'<b>'+fmtMoneyShort(production)+'</b> <span>of '+fmtMoneyShort(PROD_GOAL)+'</span>',PROD_GOAL?production/PROD_GOAL:0,"teal"));
-  b.appendChild(mk("Sides",'<b>'+dealsDone+'</b> <span>of '+DEALS_GOAL+'</span>',DEALS_GOAL?dealsDone/DEALS_GOAL:0,"teal2"));
+  /* build 527: NP Dodge's own report is the production headline. The app's roll-up stays underneath as the detail. */
+  const _np=(state.realEstate&&state.realEstate.npdProduction&&state.realEstate.npdProduction.volume)?state.realEstate.npdProduction:null;
+  if(_np){
+    b.appendChild(mk("Production, NP Dodge",'<b>'+fmtMoneyShort(_np.volume)+'</b> <span>of '+fmtMoneyShort(PROD_GOAL)+'</span>',PROD_GOAL?_np.volume/PROD_GOAL:0,"teal"));
+    b.appendChild(mk("Sides, dual agency counted twice",'<b>'+_np.sides+'</b> <span>of '+DEALS_GOAL+'</span>',DEALS_GOAL?_np.sides/DEALS_GOAL:0,"teal2"));
+    var _npSrc=el("div","small dim"); _npSrc.style.cssText="margin:4px 0 12px;line-height:1.4";
+    _npSrc.textContent="Volume: NP Dodge report, "+_np.report+", through "+_np.periodEndLabel+", "+fmtMoney(_np.volume)+". Sides: "+_np.sides+", Ian's count with dual agency as two. NP Dodge's own report shows "+_np.npdSides+" because it blends dual agency into one side. Both are deliberate.";
+    b.appendChild(_npSrc);
+  }
+  b.appendChild(mk(_np?"App roll-up, closed plus under contract":"Production",'<b>'+fmtMoneyShort(production)+'</b> <span>of '+fmtMoneyShort(PROD_GOAL)+'</span>',PROD_GOAL?production/PROD_GOAL:0,"teal"));
+  b.appendChild(mk(_np?"App sides, closed plus under contract":"Sides",'<b>'+dealsDone+'</b> <span>of '+DEALS_GOAL+'</span>',DEALS_GOAL?dealsDone/DEALS_GOAL:0,"teal2"));
   const incClosed=sumIanNet(closed); const incUc=sumIanNet(uc);
   const incLine=el("div"); incLine.style.cssText="margin-top:13px;display:flex;justify-content:space-between;align-items:baseline";
   incLine.appendChild(el("div","goal-lab","Est. commission"));
@@ -31290,11 +31331,26 @@ function reGoalsCard(parent,accOverride){
     const l=el("div","gm-lab"); l.appendChild(document.createTextNode(lab)); if(sub) l.appendChild(el("small",null,sub)); r.appendChild(l);
     r.appendChild(el("div","gm-amt",fmtMoney(amt))); tbl.appendChild(r); };
   const dl=function(a){ const n=_wt(a); return n+(n===1?" side":" sides"); };
-  row("bank","var(--green)","Banked, closed",dl(_banked)+"  \u00b7  "+_pct+"% of the goal",_bv);
+  if(_np) row("bank","var(--green)","Closed to "+_np.periodEndShort+", NP Dodge volume",_np.sides+" sides  \u00b7  "+(PROD_GOAL?Math.round((_np.volume/PROD_GOAL)*100):0)+"% of the goal",_np.volume);
+  row(_np?"dim":"bank",_np?"var(--gray2)":"var(--green)",_np?"App roll-up, closed deals":"Banked, closed",dl(_banked)+"  \u00b7  "+_pct+"% of the goal",_bv);
   if(_cv) row("","var(--fi2,#da8fff)","Under contract, not closed",dl(_committed),_cv);
   if(_dv) row("","var(--blue)","Listing on a confirmed date",dl(_dated),_dv);
   if(_uv) row("dim","var(--gray2)","Listing, no date on record",dl(_undated),_uv);
   b.appendChild(tbl);
+  if(_np){
+    const _after=function(d){ var c=String((d&&d.close)||""); return /\b(Oct|Nov|Dec)[a-z]*\b/i.test(c)&&/2026/.test(c); };
+    const _inWin=_banked.filter(function(d){ return !_after(d); }), _outWin=_banked.filter(_after);
+    const _wv=vol(_inWin), _ws=_wt(_inWin), _gap=_np.volume-_wv;
+    const vn=el("div","small dim"); vn.style.cssText="margin:10px 0 0;line-height:1.45";
+    vn.textContent="App roll-up of closed deals to "+_np.periodEndShort+": "+fmtMoney(_wv)+" across "+_ws+" sides. NP Dodge volume: "+fmtMoney(_np.volume)
+      +". The side count here is Ian's, dual agency as two; NP Dodge's own report counts "+_np.npdSides+" and per Ian credits dual agency volume on both sides. The remaining volume difference of "
+      +fmtMoney(Math.abs(_gap))+" is not reconciled to specific deals. Per deal records, commissions and net figures are unchanged.";
+    b.appendChild(vn);
+    const _ow=_wt(uc)+_wt(_outWin);
+    if(_ow){ const on=el("div","small dim"); on.style.cssText="margin:8px 0 0;line-height:1.45";
+      on.textContent="After "+_np.periodEndShort+", outside the NP Dodge figure: "+fmtMoney(vol(uc)+vol(_outWin))+" across "+_ow+" side"+(_ow===1?"":"s")+" under contract or closed since. Listings still on the market are not counted in either.";
+      b.appendChild(on); }
+  }
 
   /* the ceiling: production plus live volume that can still land this year */
   const is27=d=>/20(2[7-9]|[3-9]\d)/.test(String((d&&d.close)||""));
@@ -31317,6 +31373,7 @@ function reGoalsCard(parent,accOverride){
   const chev=el("span","gm-chev","\u25BE"); chev.style.transform="rotate("+(openNow?"180deg":"0deg")+")"; how.appendChild(chev);
   const det=el("div","gm-det"); det.style.display=openNow?"block":"none";
   const dline=function(t){ det.appendChild(el("p",null,t)); };
+  if(_np) dline("Production volume at the top is NP Dodge's own figure from its "+_np.report+" report, through "+_np.periodEndLabel+". "+_np.periodStartNote+" "+_np.sidesNote+" The goal bars below, the ceiling and every commission figure still run on the app's own deal records.");
   dline("If every live listing also closes this year: "+fmtMoneyShort(ceiling)+" and "+ceilDeals+" sides."
     +(parked27.length?(" "+fmtMoneyShort(vol(parked27))+" across "+parked27.reduce(function(a,d){return a+dealCountWeight(d);},0)+" side"+(parked27.reduce(function(a,d){return a+dealCountWeight(d);},0)===1?"":"s")+" finishes in 2027 and cannot land in 2026."):""));
   dline("On sides, "+_wt(_banked)+" of "+DEALS_GOAL+" are closed. Everything live and dated takes it to "+(_wt(_banked)+_wt(_committed)+_wt(_dated))+", and the undated listings are the only route past that.");
@@ -32085,7 +32142,8 @@ function reHeroBand(parent,deals){
   h.appendChild(lg);
   var vol=function(a){ return a.reduce(function(t,x){ return t+dealVolume(x); },0); };
   var g=(state.realEstate&&state.realEstate.goals2026)||{}; var goal=g.production||10000000;
-  var pr=el("div","re-prod"); pr.appendChild(el("span",null,"Production "+fmtMoneyShort(vol(closed)+vol(uc))+" of "+fmtMoneyShort(goal)+" goal")); pr.appendChild(el("span","re-chev","\u203a")); h.appendChild(pr);
+  var pr=el("div","re-prod"); var _npH=(state.realEstate&&state.realEstate.npdProduction&&state.realEstate.npdProduction.volume)?state.realEstate.npdProduction:null;
+  pr.appendChild(el("span",null,_npH?("Production "+fmtMoneyShort(_npH.volume)+" of "+fmtMoneyShort(goal)+", NP Dodge to "+_npH.periodEndShort):("Production "+fmtMoneyShort(vol(closed)+vol(uc))+" of "+fmtMoneyShort(goal)+" goal"))); pr.appendChild(el("span","re-chev","\u203a")); h.appendChild(pr);
   h.onclick=function(){ selectTab("home"); };
   parent.appendChild(h);
 }
