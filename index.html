@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 522 (2026-10-17)">
+<meta name="build" content="v21 build 523 (2026-10-17)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -11038,11 +11038,11 @@ try{ if(profile==="ian"){
         state.meta.mig322_fri=true;
       }
       /* SATURDAY OPEN HOUSE. On his calendar, was not in the app at all. */
-      if(Array.isArray(state.events) && !state.events.some(function(x){ return x&&x.id==="ev-20260822-openhouse"; })){
+      if(!state.meta.mig322_openhouse && Array.isArray(state.events)){ state.meta.mig322_openhouse=true; if(!state.events.some(function(x){ return x&&x.id==="ev-20260822-openhouse"; })){
         state.events.unshift({id:"ev-20260822-openhouse", date:"2026-08-22", kind:"Real estate",
           title:"Open house, Rose Creek Homes two storey, 12:00 to 4:00",
           note:"From your calendar, named you. Model duty at the two storey runs every Saturday and Sunday until it sells and you and Chris swap freely, so this is your Saturday. Sunday is the tournament."});
-      }
+      } }
       if(!state.meta.mig322_daily){ state.meta.mig322_daily=true; }
       save(true);
   } }catch(e){ try{ console.warn("mig322 did not apply:",e&&e.message); }catch(_){} }
@@ -27233,6 +27233,23 @@ try{ if(profile==="ian" && state.meta && !state.meta.mig522_sync_17oct && state.
     try{ console.log("mig522: Vogel under contract at $324,000, Belknap two offers, open houses cancelled-unconfirmed, close dates"); }catch(_){}
 } }catch(e){ try{ console.warn("mig522 did not apply:",e&&e.message); }catch(_){} }
 
+/* ===== build 523: screenshot review of every page (Ian, 17 Oct 2026). Written once, guarded, SEED_VERSION stays 13.
+   Mattox close text carried "earlier if the parties can manage it", which the date label reads as a soft date and showed
+   "Closes about Nov 13" on the Real Estate page. The date is 13 November (closeOn), so the text now says so; the
+   earlier-if note lives on in expectedClose. The Willis inspection report to-do is closed: the contract has no inspection
+   and the buyers are not doing one. The Vogel pre-approval event title is shortened so it fits on Home in two lines. */
+try{ if(profile==="ian" && state.meta && !state.meta.mig523_screens_17oct && state.realEstate && Array.isArray(state.realEstate.deals)){
+    state.realEstate.deals.forEach(function(d){
+      if(d && d.id==="re-mattox-sell"){ d.close="Closes 13 November 2026"; }
+    });
+    (state.events||[]).forEach(function(e){ if(e && e.id==="ev-20261019-vogel-preapproval") e.title="Vogel pre-approval letter due"; });
+    (state.realEstate.todos||[]).forEach(function(t){
+      if(t && t.id==="ret-20260820-willis-repair-scope" && !t.done){ t.done=true; t.doneNote="Closed 17 October 2026: the Willis contract has no inspection and the buyers are not doing one."; }
+    });
+    state.meta.mig523_screens_17oct=true; save(true);
+    try{ console.log("mig523: Mattox close text, Willis inspection todo closed, Vogel event title"); }catch(_){}
+} }catch(e){ try{ console.warn("mig523 did not apply:",e&&e.message); }catch(_){} }
+
 
 
 
@@ -27283,7 +27300,7 @@ try{ if(profile==="ian" && state.meta && !state.meta.mig522_sync_17oct && state.
    them is an id that is already sitting in archive.todosDone with the reason it left. */
 /* Short all-caps tokens that are genuinely his, not emphasis we added. Anything not on this
    list and two letters or longer is treated as shouting and lowercased. */
-var PK_ACRONYMS={CMA:1,MLS:1,GPRMLS:1,LLC:1,HOA:1,DOM:1,NP:1,RE:1,AVP:1,FNBO:1,
+var PK_ACRONYMS={VA:1,FHA:1,HVAC:1,CMA:1,MLS:1,GPRMLS:1,LLC:1,HOA:1,DOM:1,NP:1,RE:1,AVP:1,FNBO:1,
   DUPR:1,APC:1,NPL:1,PPA:1,MLP:1,ATP:1,MST:1,USA:1,US:1,
   HR:1,BPM:1,PM:1,AM:1,NE:1,AZ:1,IA:1,MO:1,KS:1,TV:1,ID:1,OK:1,IQ:1,MVP:1,GPS:1,IMG:1,
   W:1,L:1,I:1,A:0};
@@ -31977,7 +31994,7 @@ function reHeroBand(parent,deals){
   var big=el("div","re-hbig"); big.appendChild(el("b",null,String(live))); big.appendChild(el("span",null,live===1?"live deal":"live deals")); h.appendChild(big);
   var bits=[]; if(uc.length) bits.push(uc.length+" under contract"); if(act.length) bits.push(act.length+" active"); if(cs.length) bits.push(cs.length+" coming soon"); if(bd.length) bits.push(bd.length+" building");
   if(bits.length) h.appendChild(el("div","re-hsub",bits.join(", ")));
-  var segs=[["Closed",closed.length,"s-closed"],["Under contract",uc.length,"s-uc"],["Coming soon",cs.length+act.length,"s-cs"],["Building",bd.length,"s-bd"],["Prospects",pros.length,"s-pr"]];
+  var segs=[["Closed",closed.reduce(function(n,x){ return n+dealCountWeight(x); },0),"s-closed"],["Under contract",uc.length,"s-uc"],["Coming soon",cs.length+act.length,"s-cs"],["Building",bd.length,"s-bd"],["Prospects",pros.length,"s-pr"]];
   var bar=el("div","re-bar"); bar.setAttribute("aria-hidden","true");
   var reduce=false; try{ reduce=!!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches); }catch(e){}
   var grow=!RE_BAR_DONE && !reduce && !!window.IntersectionObserver;
@@ -36839,7 +36856,7 @@ function asofFor(id){
     if(id==="p-finance") return asofMax([S.finance&&S.finance.asOf]);
     if(id==="p-re"){
       var R=S.realEstate||{}, L=[R.positionAsOf&&R.positionAsOf.asOf, R.rStreet&&R.rStreet.asOf];
-      (R.deals||[]).forEach(function(d){ L.push(d&&d.winProbAsOf); });
+      (R.deals||[]).forEach(function(d){ L.push(d&&d.winProbAsOf); L.push(d&&d.stageSince); });
       return asofMax(L);
     }
   }catch(e){}
