@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 521 (2026-10-16)">
+<meta name="build" content="v21 build 522 (2026-10-17)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -27137,6 +27137,101 @@ try{ if(profile==="ian" && state.meta && !state.meta.mig521_pass6 && state.realE
     state.meta.mig521_pass6=true; save(true);
     try{ console.log("mig521: Willis closeOn, caveat text cleaned, Belknap and Vogel status"); }catch(_){}
 } }catch(e){ try{ console.warn("mig521 did not apply:",e&&e.message); }catch(_){} }
+
+/* ===== build 522: Saturday 17 October 2026 sync (Ian). Written once, guarded, SEED_VERSION stays 13.
+   VOGEL, 5621 Pine St: UNDER CONTRACT, signed 08:26 Sat 17 Oct, accepted as written, no counter. Sale price $324,000 (list was
+   $324,900). Buyer Ashley Bogus, single purchaser, agent Johnny Duggan, PJ Morgan Real Estate. Conventional, Home Federal, Kevin
+   Ottman. Close 19 Nov 2026, possession at closing. Earnest $3,000 inside 120 hours. Seller pays buyer agent 2.4 percent, buyer pays
+   Duggan $750 separately. The buyer's pre-approval letter on file expired 2 July 2026 and a current one is promised Monday 19 Oct.
+   Ian's take home is NOT typed here: it comes from dealIanNet at the new price (the brokerage takes 15 percent of the STANDARD
+   3.6 rate). BELKNAP, 4946 Pratt: UNDER CONTRACT at $250,000, Manhart accepted 10:54 Sat 17 Oct, Maran declined 10:29, close 13 Nov or
+   sooner, FHA $241,250. Inspection response 10 days. OPEN HOUSES for both are CANCELLED, confirmed. Close dates: Spicer, Mattox and Willis 13 Nov, Vogel 19 Nov.
+   The Vogel pass-4 recommendation ($309,900, upper tier $314,900) is recorded as the evidence it was, and it was low. */
+try{ if(profile==="ian" && state.meta && !state.meta.mig522_sync_17oct && state.realEstate && Array.isArray(state.realEstate.deals)){
+    var AS522="Ian, 17 October 2026";
+    state.realEstate.deals.forEach(function(d){
+      if(!d||!d.id) return;
+      if(d.id==="re-vogel-sell"){
+        d.stage="Under Contract"; d.price="$324,000"; d.sub="Sell side, 5621 Pine St. Under contract 17 October";
+        d.close="Closes 19 November 2026"; d.closeOn="2026-11-19";
+        d.stageSince="2026-10-17"; d.stageSinceSource="Signed 08:26 Saturday 17 October 2026, accepted as written with no counter ("+AS522+").";
+        d.agreedPrice="$324,000 AGREED, 17 October 2026. List was $324,900, so $900 under.";
+        d.listStatus="Under contract 17 October 2026 at $324,000. Listed 16 October at $324,900.";
+        d.priceNote="Sale price $324,000, accepted as written 17 October 2026. List price was $324,900, Ian's decision of 14 October. Pass 4 multi-level analysis recommended $309,900 with $314,900 as the upper tier; it sold $14,100 over the recommendation and $9,100 over its upper tier, two days after listing, with three showings.";
+        d.priceLine="Sale price $324,000, 17 October 2026.";
+        d.contract={executed:"2026-10-17, signed 08:26, accepted as written, no counter",price:"$324,000",
+          buyer:"Ashley Bogus, single purchaser",buyerAgent:"Johnny Duggan, PJ Morgan Real Estate, 402-769-6139",
+          loanType:"Conventional",lender:"Home Federal, Kevin Ottman, 308-398-4923",
+          closingDate:"19 November 2026, possession at closing",earnest:"$3,000 within 120 hours of acceptance",
+          title:"Nebraska Title",escrow:"PJ Morgan Closing Company",
+          contingencies:"Appraisal contingency present. Inspections informational only. Termite inspection by Bug Z.",
+          warrantyRequests:"Buyer asked for the appliance, HVAC, roof and gutter warranties to be transferred.",
+          commission:"Seller pays the buyer agent 2.4 percent. Buyer pays Duggan $750 separately.",
+          outstanding:"The pre-approval letter on file expired 2 July 2026. Duggan promised a current one on Monday 19 October.",
+          source:AS522};
+        d.milestonesLeft=["Current pre-approval letter (promised Monday 19 October)","Earnest money $3,000 (within 120 hours)","Appraisal","Warranty transfer request answered","Closing 19 November"];
+        d.pipeClog="Buyer pre-approval letter on file expired 2 July 2026, current one promised Monday 19 October";
+        d.pipeStatus="Under contract at $324,000, signed 08:26 Saturday 17 October, accepted as written. Buyer Ashley Bogus, conventional through Home Federal. Closes 19 November. Pre-approval letter on file is expired, a current one is promised Monday. Ian, 17 October 2026.";
+        d.ianExpected="Ian's take home is computed by the app from the $324,000 sale price at the 20 percent share, with the brokerage taking 15 percent of the standard 3.6 rate. The listing rate is the app default and no separate rate is recorded for this listing.";
+        d.openHouse={date:"2026-10-18",start:"14:00",end:"16:00",runBy:"Chris",status:"cancelled",note:"Sunday 18 October 2 to 4 PM. CANCELLED, confirmed by Ian 17 October 2026: the home is under contract."};
+        if(Array.isArray(d.showings)){ d.showings.forEach(function(sh){ if(sh&&sh.status==="Confirmed") sh.status="Done"; }); }
+      }
+      if(d.id==="re-belknap-sell"){
+        d.stage="Under Contract"; d.price="$250,000"; d.sub="Sell side, 4946 Pratt St. Under contract 17 October";
+        d.close="Closes 13 November 2026 or sooner"; d.closeOn="2026-11-13";
+        d.stageSince="2026-10-17"; d.stageSinceSource="Manhart offer accepted 10:54 Saturday 17 October 2026 ("+AS522+").";
+        d.agreedPrice="$250,000 AGREED, 17 October 2026, full list price.";
+        d.listStatus="Under contract 17 October 2026 at $250,000, full list. Listed 15 October.";
+        d.priceLine="Sale price $250,000, 17 October 2026.";
+        d.contract={executed:"2026-10-17, accepted 10:54",price:"$250,000",
+          buyer:"Nicole Perez and Jonathan Quintana Madrid",buyerAgent:"Peter Manhart, Better Homes and Gardens The Good Life Group, 402-350-3890",
+          loanType:"FHA",loanAmount:"$241,250",lender:"Regent Financial",
+          closingDate:"13 November 2026 or sooner, possession at closing",earnest:"$2,500 within 72 hours",
+          title:"Green Title",escrow:"Green Title",
+          contingencies:"No sale contingency. Section 10 blank. FHA amendatory clause signed at $250,000, so an appraisal below that is the live risk.",
+          inspectionResponse:"10 days, changed from 14 in the offer (Chris countered, Manhart accepted). Every other term was not restated and is the original offer.",
+          commission:"Seller pays the buyer agent 2.4 percent. Buyer pays Manhart $399 separately.",
+          homeWarranty:"Declined",source:AS522};
+        d.milestonesLeft=["Earnest money $2,500 (within 72 hours)","Inspection response (10 days)","FHA appraisal at $250,000","Closing 13 November or sooner"];
+        d.pipeClog="FHA appraisal must come in at $250,000 or higher (amendatory clause signed at $250,000)";
+        d.pipeStatus="Under contract at $250,000, full list, accepted 10:54 Saturday 17 October. Buyers Nicole Perez and Jonathan Quintana Madrid, FHA through Regent Financial. Closes 13 November or sooner. Live risk is the FHA appraisal at $250,000. Ian, 17 October 2026.";
+        d.offers=[
+          {id:"belknap-offer-manhart",agent:"Peter Manhart, Better Homes and Gardens The Good Life Group",buyers:"Nicole Perez and Jonathan Quintana Madrid",price:"$250,000",status:"ACCEPTED 10:54 Saturday 17 October 2026",source:AS522},
+          {id:"belknap-offer-maran",agent:"Lee Maran, NP Dodge",price:"$250,000 (revised up from $242,000 at 09:13 on 17 October)",status:"Declined 10:29 Saturday 17 October. Chris told him he would come back if it falls through. The revised document was never found; terms never seen.",source:AS522},
+          {id:"belknap-offer-gray",agent:"Debra Rau Gray, BHHS Ambassador",status:"Withdrawn, her buyers were waffling",source:AS522}];
+        d.offersNote="Manhart accepted at 10:54, Maran declined at 10:29 on Saturday 17 October 2026. Ian, 17 October 2026.";
+        d.ianExpected="Ian's take home is computed by the app from the $250,000 sale price at the 20 percent share, with the brokerage taking 15 percent of the standard 3.6 rate.";
+        d.openHouse={date:"2026-10-17",start:"12:00",end:"14:00",status:"cancelled",note:"Saturday 17 October 12 to 2 PM. CANCELLED, confirmed: Chris named Pratt at 09:27 and asked for a sign reading open house cancelled, home is under contract. Ian, 17 October 2026."};
+        if(Array.isArray(d.showings)){ d.showings.forEach(function(sh){ if(sh&&sh.status==="Confirmed") sh.status="Done"; }); }
+      }
+      if(d.id==="re-cynthia-willis" && d.contract && typeof d.contract==="object"){
+        d.contract.closingDate="13 November 2026 (Ian, 16 October 2026)";
+        d.contract.takeHome="$3,855.20, Chris's split at 20 percent, brokerage on the standard 3.6 rate (build 488)";
+      }
+    });
+    var EV522=[
+      ["ev-20261119-vogel-close","2026-11-19","Vogel closing, 5621 Pine St"],
+      ["ev-20261113-willis-close","2026-11-13","Willis closing, 10218 Spyglass Dr"],
+      ["ev-20261113-mattox-close","2026-11-13","Mattox closing, 19859 Burke St"],
+      ["ev-20261019-vogel-preapproval","2026-10-19","Vogel: current pre-approval letter due from Duggan"],
+      ["ev-20261022-vogel-earnest","2026-10-22","Vogel: earnest money $3,000 due, 120 hours from acceptance"],
+      ["ev-20261113-belknap-close","2026-11-13","Belknap closing, 4946 Pratt St, or sooner"]];
+    if(!Array.isArray(state.events)) state.events=[];
+    EV522.forEach(function(x){ var have=false; state.events.forEach(function(e){ if(e&&e.id===x[0]) have=true; });
+      if(!have) state.events.push({id:x[0],date:x[1],kind:"Real estate",title:x[2]}); });
+    var T522=[
+      {id:"ret-20261017-vogel-preapproval",text:"Get the current pre-approval letter for Ashley Bogus from Johnny Duggan. The one on file expired 2 July 2026. He promised it Monday 19 October.",short:"Vogel: current pre-approval letter",due:"2026-10-19"},
+      {id:"ret-20261017-vogel-earnest",text:"Confirm the $3,000 earnest money lands at Nebraska Title within 120 hours of the 08:26 Saturday 17 October acceptance.",short:"Vogel: confirm earnest money",due:"2026-10-22"},
+      {id:"ret-20261017-belknap-earnest",text:"Confirm the $2,500 earnest money lands at Green Title within 72 hours of the 10:54 Saturday 17 October acceptance.",short:"Belknap: confirm earnest money",due:"2026-10-20"}];
+    if(!Array.isArray(state.realEstate.todos)) state.realEstate.todos=[];
+    T522.forEach(function(t){ var have=false; state.realEstate.todos.forEach(function(x){ if(x&&x.id===t.id) have=true; });
+      if(!have) state.realEstate.todos.push({id:t.id,text:t.text,short:t.short,done:false,due:t.due,list:"todo",src:AS522}); });
+    try{ if(state.finance&&state.finance.trough&&typeof state.finance.trough.why==="string"){
+      state.finance.trough.why=state.finance.trough.why.replace("Nothing in the pipeline lands before it: Belknap and Vogel list on 15 October, so neither can close before late November.","Nothing in the pipeline lands before it. Vogel is under contract and closes 19 November, after the low point. Belknap is under contract at $250,000 and closes 13 November or sooner."); } }catch(_){}
+    try{ if(state.realEstate.positionAsOf){ state.realEstate.positionAsOf.vogelContract1017="Vogel is under contract at $324,000, closing 19 November 2026. The fourDealCheck figure for Vogel above was computed at an earlier price and is superseded; the app now computes it from the sale price. Belknap is under contract at $250,000, closing 13 November or sooner. Ian, 17 October 2026."; } }catch(_){}
+    state.meta.mig522_sync_17oct=true; save(true);
+    try{ console.log("mig522: Vogel under contract at $324,000, Belknap two offers, open houses cancelled-unconfirmed, close dates"); }catch(_){}
+} }catch(e){ try{ console.warn("mig522 did not apply:",e&&e.message); }catch(_){} }
 
 
 
