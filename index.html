@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 527 (2026-10-17)">
+<meta name="build" content="v21 build 528 (2026-10-17)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -27338,6 +27338,26 @@ try{ if(profile==="ian" && state.meta && !state.meta.mig526_pk1016am && state.pi
       try{ console.log("mig527: NP Dodge production figure recorded"); }catch(_){}
   } }catch(e){ try{ console.warn("mig527 did not apply:",e&&e.message); }catch(_){} }
 
+  /* ===== v21 build 528: AMEX GOLD RECOMMENDED SPEND IS $750 ON PURPOSE =====================
+     Ian, 17 Oct 2026, verbatim: "I know I'm still over it but it's because if I spend 8k in the first 6 months of usage,
+     I will get 100k in points for rewards which I will then use for travel." So $8,000 inside the first 6 months of
+     card usage earns 100,000 points, to be used for travel. The recommended monthly spend goes from $400/$450 to $750
+     and spend on this card is DELIBERATE: no overspend flag, red state or "due" colour is drawn for it. DO NOT
+     CORRECT THE $750 BACK DOWN and do not treat the balance as overspending. Guard in saved state only, SEED_VERSION stays 13. */
+  try{ if(profile==="ian" && state.meta && !state.meta.mig528_amex_signup && state.finance && Array.isArray(state.finance.cards)){
+      state.finance.cards.forEach(function(c){
+        if(c && c.id==="amexgold"){
+          c.monthlyLimit=750; c.monthlyLimitProvisional=false;
+          c.monthlyLimitSource="Ian, 17.10.2026, his own number, deliberate: $8,000 within the first 6 months of card usage earns 100,000 points for travel.";
+          c.spendDeliberate=true;
+          c.signupBonusReason={ asOf:"2026-10-17", quote:"I know I'm still over it but it's because if I spend 8k in the first 6 months of usage, I will get 100k in points for rewards which I will then use for travel.",
+            terms:"$8,000 within the first 6 months of card usage earns 100,000 points, which Ian intends to use for travel.",
+            rule:"Spend on this card is intentional. Do not flag it as overspending and do not correct the $750 back down." };
+        }
+      });
+      state.meta.mig528_amex_signup=true; save(true);
+  } }catch(e){ try{ console.warn("mig528 did not apply:",e&&e.message); }catch(_){} }
+
   /* build 372: LAST THING BEFORE THE SAVE. Every migration above has run, deepMergeDefaults
      has run, so this is the only point in the file where the state is actually final. */
   try{ convergeState(); }catch(e){}
@@ -35137,13 +35157,13 @@ function fnBalances(v,f,part){
       else if(Number(a.monthlyLimit)>0){
         var _ml=Number(a.monthlyLimit);
         var _mw=el("div"); _mw.style.marginTop="8px";
-        _mw.appendChild(fnScale(_ml,_bal,(_bal>_ml?"due":"good"),[]));
+        _mw.appendChild(fnScale(_ml,_bal,((_bal>_ml&&a.spendDeliberate!==true)?"due":"good"),[]));
         var _mt=el("div","fnsch"); _mt.style.marginTop="7px";
         _mt.textContent=fnMoneyC(_bal)+" of a recommended "+fnMoney(_ml)+" a month"
-          +(a.monthlyLimitProvisional===true?", awaiting your confirmation":"")+".";
+          +(a.monthlyLimitProvisional===true?", awaiting your confirmation":"")+(a.spendDeliberate===true?", a deliberate target":"")+".";
         _mw.appendChild(_mt);
         var _mn=el("div","fnsch"); _mn.style.marginTop="3px";
-        _mn.textContent="No credit limit on this card, so this is a spending recommendation and not a ceiling.";
+        _mn.textContent=(a.spendDeliberate===true)?"Spending above this is intentional, for the signup bonus: $8,000 in the first 6 months earns 100,000 points for travel.":"No credit limit on this card, so this is a spending recommendation and not a ceiling.";
         _mw.appendChild(_mn);
         b.appendChild(_mw);
       }
@@ -36737,14 +36757,15 @@ function fxBandCash(v,f){
     var cc=el("div","fx-card fx-list");
     cards.forEach(function(a){
       var bal=Number(a.balance)||0, lim=Number(a.limit)||0, ml=Number(a.monthlyLimit)||0, ut=Number(a.utilTarget)>0?Number(a.utilTarget):0.30;
-      var rec=lim>0?Math.round(lim*ut):ml, over=rec>0&&bal>rec;
+      var rec=lim>0?Math.round(lim*ut):ml, over=rec>0&&bal>rec&&a.spendDeliberate!==true;
       var item=el("div","fx-ci");
       fxRow(item,a.name||a.id||"Card",fnKindWord(a.kind)+(a.last4?(" \xb7 "+a.last4):""),fnMoneyAuto(bal),over?"r":"");
       /* build 502: the caption sentence ("44% of $3,600, 30% recommended") is gone. The bar is the percentage; its two
          ends are labelled instead: the marker says what is recommended, the right end says the limit. */
       if(lim>0){ item.appendChild(fxScale(lim,bal,over,rec)); item.appendChild(fxScaleKey(lim,rec,Math.round(ut*100)+"% target",fnMoney(lim)+" limit")); }
       else if(ml>0){ item.appendChild(fxScale(ml,bal,over,0)); item.appendChild(fxScaleKey(ml,0,null,fnMoney(ml)+" a month"));
-        if(a.monthlyLimitProvisional===true) item.appendChild(el("div","fx-cap","Awaiting your confirmation")); }
+        if(a.monthlyLimitProvisional===true) item.appendChild(el("div","fx-cap","Awaiting your confirmation"));
+        if(a.spendDeliberate===true) item.appendChild(el("div","fx-cap","Deliberate target, signup bonus")); }
       cc.appendChild(item);
     });
     band.appendChild(cc);
