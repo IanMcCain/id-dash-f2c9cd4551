@@ -63,6 +63,8 @@ button{font-family:inherit}
 #why b{position:absolute;right:4px;top:0;width:30px;height:100%;display:grid;place-items:center;color:#9fb0c0;font-size:16px}
 #hint{position:absolute;left:50%;bottom:calc(8px + env(safe-area-inset-bottom));transform:translateX(-50%);font-size:13px;color:#e6edf3;background:rgba(10,18,26,.66);border-radius:10px;padding:4px 12px;opacity:0;pointer-events:none;transition:opacity .2s;z-index:5;text-align:center;max-width:44%;font-size:12.5px}
 #hint.show{opacity:1}
+#aimTag{position:absolute;left:50%;top:calc(46px + env(safe-area-inset-top));transform:translateX(-50%);font-size:14px;font-weight:800;color:#bfeaff;background:rgba(10,18,26,.74);border:1px solid rgba(127,227,255,.45);border-radius:999px;padding:3px 14px;opacity:0;pointer-events:none;transition:opacity .15s;z-index:5;white-space:nowrap}
+#aimTag.show{opacity:1}#aimTag.quick{color:#ffd9a0;border-color:rgba(255,179,71,.6)}#aimTag.done{color:#d9e4ee;border-color:rgba(255,255,255,.3)}
 #zone{position:absolute;left:calc(8px + env(safe-area-inset-left));bottom:calc(6px + env(safe-area-inset-bottom));width:150px;height:150px;z-index:4;touch-action:none}
 #jbase{position:absolute;left:22px;top:22px;width:106px;height:106px;border-radius:50%;border:2px solid rgba(255,255,255,.38);background:rgba(255,255,255,.08);pointer-events:none}
 #jknob{position:absolute;left:31px;top:31px;width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,.45)}
@@ -84,7 +86,7 @@ button{font-family:inherit}
   <div class="modeNote" id="lvNote">Level 1 is the easiest, 5 plays like a 3.0, 6 like a 3.5, 8 like a 4.5, 10 like a pro. Lower levels also give you a wider window to hit a drop.</div>
   <button class="go" id="goBtn" disabled>Loading the court</button>
   <div class="note" id="fsNote">Tap Play to go full screen. Turn your phone sideways to play.</div>
-  <div class="rules"><b>Controls.</b> Left thumb: the stick sits in the corner, drag its knob to move. Right thumb: HIT is a drive, SOFT is a dink or drop, LOB goes over their head. Lean the stick up or down as you hit to aim. When you serve the buttons become SHORT, DRIVE and SLICE.<br><b>Rules.</b> Serve underhand to the diagonal box. Serve and return must bounce. No volleys inside the kitchen (the green strip). Side out scoring: only the serving side scores. To 11, win by 2. Doubles is called server score, receiver score, server number.</div>
+  <div class="rules"><b>Controls.</b> Left thumb: the stick sits in the corner, drag its knob to move. Right thumb: HIT is a drive, SOFT is a dink or drop, LOB goes over their head. Lean the stick up or down as you hit to aim. For a dink, lean toward the net as you hit for a quicker one, or back for a soft one. When you serve the buttons become SHORT, DRIVE and SLICE.<br><b>Rules.</b> Serve underhand to the diagonal box. Serve and return must bounce. No volleys inside the kitchen (the green strip). Side out scoring: only the serving side scores. To 11, win by 2. Doubles is called server score, receiver score, server number.</div>
   <div class="rules1"><b>Controls.</b> Stick in the corner to move. HIT drive, SOFT dink or drop, LOB over their head. <b>Scoring.</b> Side out: only the server scores. To 11, win by 2.</div>
 </div>
 <div id="game">
@@ -92,6 +94,7 @@ button{font-family:inherit}
   <div id="hud"><span class="lab">YOU</span><span class="num" id="sYou">0</span><span class="num">:</span><span class="num" id="sOpp">0</span><span class="lab">OPP</span><span id="callBox"><b id="c1">0</b><b id="c2">0</b><b id="c3"></b></span><span id="srv"></span></div>
   <div id="tools"><button id="pauseBtn">Pause</button><button id="mute">Sound on</button></div>
   <div id="hint"></div>
+  <div id="aimTag"></div>
   <div id="msg"></div>
   <div id="why"><span id="whyT"></span><b id="whyX">x</b></div>
   <div id="zone"><div id="jbase"><div id="jknob"></div></div></div>
@@ -118,7 +121,7 @@ var PB=(function(){
 var SERVEH=2.8;   /* USAPA 2026 rulebook 7.C.3: the ball must be CLEARLY NO HIGHER THAN THE WAIST when struck (the summary page still says waist level, the rulebook governs). 2.8 ft is under a 3 ft waist. */
 var GR=32.2, REST=0.72, HRET=0.62, REACH=3.8, SPEED=0.8, WIN=11;
 var STATS=[{atkOpp:0,atkTaken:0},{atkOpp:0,atkTaken:0}];   /* team 0 and 1: attackable dinks seen coming, and how many were waited for and attacked (read by levels_sim.js) */
-var CFG={human:11.0,su:1.12,offDink:22,pressure:1,lvHuman:6,lvPart:6,lvOpp:6,forgiveBot:false};
+var CFG={human:11.0,su:1.12,offDink:22,pressure:1,lvHuman:6,lvPart:6,lvOpp:6,forgiveBot:false,lobTrait:"auto",lobberShare:0.35,retHuman:1.0};   /* build 536: lobTrait "auto" | "lobber" | "non" (tests force it) */
 function clamp(v,a,b){ return v<a?a:(v>b?b:v); }
 function rnd(a,b){ return a+Math.random()*(b-a); }
 function gauss(){ return (Math.random()+Math.random()+Math.random()+Math.random()-2)*0.87; }
@@ -127,7 +130,7 @@ function face(t){ return t===0?1:-1; }
 function netH(x){ var u=(x-10)/10; return 2.83+0.17*u*u; }
 function partner(i){ return i<2?i+2:i-2; }
 function mem(g,t){ return g.mode==="doubles"?[t,t+2]:[t]; }
-function mkPl(i){ var t=i%2; return {idx:i,team:t,x:10,y:t===0?-3:47,vx:0,vy:0,cd:0,sw:0,anim:0,swKind:"drive",swAim:0,serveT:-1,goal:null,half:10,ai:{shot:-1,react:0,plan:null,vol:false,replan:0,delay:1,err:{x:0,y:0},resp:-1,kind:null,rush:false,dinkOff:false,mistake:false,atk:false}}; }
+function mkPl(i){ var t=i%2; return {idx:i,team:t,x:10,y:t===0?-3:47,vx:0,vy:0,cd:0,sw:0,anim:0,swKind:"drive",swAim:0,serveT:-1,goal:null,half:10,live:{aim:0,fwd:0},ai:{lobber:false,lobRate:0.004,angle:false,shot:-1,react:0,plan:null,vol:false,replan:0,delay:1,err:{x:0,y:0},resp:-1,kind:null,rush:false,dinkOff:false,mistake:false,atk:false}}; }
 function newGame(mode){
   var g={t:0,mode:mode==="doubles"?"doubles":"singles",score:[0,0],server:0,sn:1,first:[2,1],sideR:[0,1],srvIdx:0,rcvIdx:1,phase:"intro",phaseT:0,msg:"",msgT:0,over:false,winner:-1,last:"",
     ball:{x:10,y:0,h:3,vx:0,vy:0,vh:0,held:true},pl:[mkPl(0),mkPl(1),mkPl(2),mkPl(3)],rally:null,ownX:15,events:[],deadT:0,rallies:0,shotsTotal:0,log:[],call:"0 0",why:null};
@@ -139,9 +142,21 @@ function callOf(g){ var s=g.server; return g.mode==="doubles"?(g.score[s]+" "+g.
 function startMatch(g,mode){
   if(mode) g.mode=(mode==="doubles")?"doubles":"singles";
   g.pl=[mkPl(0),mkPl(1),mkPl(2),mkPl(3)];
-  g.score=[0,0]; g.server=0; g.over=false; g.winner=-1; g.rallies=0; g.shotsTotal=0; g.log=[]; g.why=null;
+  g.score=[0,0]; g.server=0; g.over=false; g.winner=-1; g.rallies=0; g.shotsTotal=0; g.log=[]; g.why=null; g.lobN=[0,0];
   g.sideR=[0,1]; g.first=[2,1]; g.sn=(g.mode==="doubles")?2:1;   /* the first service turn of a doubles game starts at server 2 */
+  assignTraits(g);
   startPoint(g);
+}
+/* build 536: LOB FREQUENCY IS A PERSONALITY, NOT A RATE (Ian, 18 Oct 2026: "lobs are not very common, most people don't incorporate them into a game at all,
+   some do lob and the people that do lob, typically do it often"). Each computer player is dealt a trait ONCE per match. A non lobber almost never lobs
+   (0.4 percent of the chances). A lobber lobs on a real share of the chances where it makes sense, which is when an opponent is standing at the kitchen line. */
+function assignTraits(g){
+  var forced=CFG.lobTrait;
+  [1,2,3].forEach(function(i){
+    var a=g.pl[i].ai, share=(i===2)?CFG.lobberShare*0.7:CFG.lobberShare, L;
+    if(Array.isArray(forced)) L=(forced[i]==="lobber"); else if(forced==="lobber") L=true; else if(forced==="non") L=false; else L=(Math.random()<share);
+    a.lobber=L; a.lobRate=L?rnd(0.13,0.24):0.004;
+  });
 }
 function startPoint(g){
   var s=g.server, r=1-s, dbl=(g.mode==="doubles"), ownXs=(g.score[s]%2===0)?15:5;   /* SINGLES (USAPA 5.A.1): the court follows the server's score, even right, odd left */
@@ -212,6 +227,14 @@ function meanOpp(g,t){ var m=mem(g,1-t), sx=0; m.forEach(function(i){ sx+=g.pl[i
 var THR=3.0;
 function pressure(g){ return CFG.pressure*Math.max(0,Math.min(1,(g.rally.shotNo-6)/20)); }   /* 0 for the first six shots, then creeps up to 1 by shot 26 */
 function contactD(b,p,f){ return Math.hypot(b.x-p.x,b.y-(p.y+f*0.9)); }
+/* build 536: HITTING WHILE RETREATING. Backward speed at contact as a share of a full sprint, 0 to 1. A player who runs back for a lob and arrives early and
+   waits has rt of 0. One who is still going backward when the paddle meets the ball has rt near 1 and pays for it (Ian: high stress, so a big accuracy penalty).
+   The computer players pay a smaller price as their level rises (good players defend lobs well). */
+function retreatOf(g,i){
+  var p=g.pl[i], v=-p.vy*face(p.team), r=clamp((v-0.8)/6.5,0,1);
+  if(i===0&&!p.isAI) return r*CFG.retHuman;
+  return r*LV.retPen[lvOf(i)-1];
+}
 function dropModel(b,p,f,w){
   w=w||0;   /* build 535: w (0 to 1) widens the sweet spot for the HUMAN at low and middle levels (see LV.wide). 0 is the old, tight model. */
   var h=b.h, vh=b.vh, d=contactD(b,p,f), sp=Math.hypot(b.vx,b.vy), dy=0;
@@ -226,29 +249,47 @@ function dropModel(b,p,f,w){
 }
 function dropGradeOf(dy,d,db){ if(dy<-3.4) return "net"; if(db<0.45) return "jam"; if(dy>2.4) return "long"; if(dy>1.2) return "ok"; return "good"; }
 /* what a drop hit RIGHT NOW would be, for the on screen timing cue and for the AI's patience */
-function dropGrade(g,i){ var p=g.pl[i], b=g.ball, f=face(p.team), dy=(dropModel(b,p,f,wideOf(g,i))+1.1*pressure(g))*forgive(g,i); return {dy:dy,grade:dropGradeOf(dy,0,Math.hypot(b.x-p.x,b.y-p.y)/jamScale(g,i))}; }
+function dropGrade(g,i){
+  var p=g.pl[i], b=g.ball, f=face(p.team), rt=retreatOf(g,i), dy=(dropModel(b,p,f,wideOf(g,i))+1.1*pressure(g))*forgive(g,i)+RET.bias*rt;
+  var gr=dropGradeOf(dy,0,Math.hypot(b.x-p.x,b.y-p.y)/jamScale(g,i));
+  if(rt>0.45&&gr==="good") gr="ok";   /* the cue turns amber while you are backing up: the stress is the point */
+  return {dy:dy,grade:gr,rt:rt};
+}
+var RET={bias:2.3,sd:4.0,q:0.42,deep:1.0,dump:0.30};   /* build 536: the cost of a drop hit on the run: a push long on average, and a wide spread, so it goes long OR into the net */
 /* around the post: null, or where to aim. Ball must be on this player's side, low, outside the sideline and near the net. */
 function atpOption(g,i){
   var p=g.pl[i], t=p.team, b=g.ball, r=g.rally;
   if(g.phase!=="rally"||r.lastHit===t) return null;
   if(t===0?b.y>22.2:b.y<21.8) return null;
   if(b.h>2.9||b.h<0.1) return null;
-  var o=own(t,b.x,b.y); if(o.y<11.5||o.y>21.8) return null;
-  var side=o.x<-1.2?-1:(o.x>21.2?1:0); if(!side) return null;
-  var ty=30.5, k=(ty-o.y)/(22-o.y), lim=side<0?-1.0:21.0, tx=o.x+(lim-o.x)*k;   /* the farthest the ball can be aimed and still pass outside the post */
-  if(side<0){ if(tx<1.6) return null; tx=Math.max(1.0,Math.min(tx-0.5,4.5)); } else { if(tx>18.4) return null; tx=Math.min(19.0,Math.max(tx+0.5,15.5)); }
-  return {tx:tx,ty:ty,side:side};
+  var o=own(t,b.x,b.y); if(o.y<8.0||o.y>21.8) return null;   /* build 536: from 8 ft out, was 11.5 (the transition zone is where a pulled wide player ends up) */
+  var side=o.x<ATPX?-1:(o.x>20-ATPX?1:0); if(!side) return null;
+  var lim=side<0?-1.0:21.0, tys=[30.5,28.0,25.5];
+  /* build 536: try a deep target first, then shorter ones. The farthest aim that still passes OUTSIDE the post is checked for each, and the first one that can land in the court wins. */
+  for(var n=0;n<tys.length;n++){
+    var ty=tys[n], k=(ty-o.y)/(22-o.y), tx=o.x+(lim-o.x)*k;
+    if(side<0){ if(tx<1.0) continue; tx=Math.max(1.0,Math.min(tx-0.5,4.5)); } else { if(tx>19.0) continue; tx=Math.min(19.0,Math.max(tx+0.5,15.5)); }
+    return {tx:tx,ty:ty,side:side};
+  }
+  return null;
 }
+var ATPX=-0.9;   /* how far outside the sideline the ball has to be, in feet (was 1.2). The ball at the sideline itself is played over the net as normal. */
 /* a groundstroke, volley or smash from the ball's current spot. kind: drive | soft | lob. aim -1..1 across the court. */
 function strike(g,i,kind,aim,q,skill){
   var p=g.pl[i], t=p.team, b=g.ball, f=face(t), oppPos=own(t,meanOpp(g,t),0), me=own(t,p.x,p.y);
   var sp=Math.hypot(b.vx,b.vy), spPen=1+Math.max(0,(sp-24)/60);
   var assist=clamp((10-oppPos.x)*0.3,-2.6,2.6);
   var nearNet=me.y>=11.5, prevRec=g.log.length?g.log[g.log.length-1]:null;
+  var humanCtl=(i===0&&!p.isAI&&p.live);
+  if(humanCtl) aim=clamp(p.live.aim,-1,1);   /* build 536: the stick AT THE MOMENT OF CONTACT aims the shot, not the stick at the moment the button went down */
+  var rt=retreatOf(g,i), afterLob=!!(prevRec&&prevRec.kind==="lob"&&prevRec.t!==t&&g.rally.lastKind==="lob");
+  q*=(1-RET.q*rt);   /* build 536: hitting while backing up costs accuracy on every shot */
+  if(afterLob&&nearNet&&prevRec&&prevRec.perfect) q*=0.78;   /* a perfect drive off a lob rushes a reset */
+  if(prevRec&&prevRec.smash&&prevRec.t!==t) q*=0.70;   /* an overhead rushes whoever has to answer it */
   q*=(1-0.05*pressure(g));   /* a long rally narrows the contact tolerance a little for both sides */
   if(nearNet&&prevRec&&prevRec.t!==t&&prevRec.dink==="off") q*=((i>0||p.isAI)?0.80+0.016*lvOf(i):0.82);   /* an offensive dink rushes whoever has to answer it; a higher level handles the rush better (0.82 at level 1 up to 0.96 at level 10), the human always 0.82 */
   var rec={n:g.rally.shotNo+1,idx:i,t:t,kind:kind,q:q,dq:QP.dq,hq:QP.hq,ballH:b.h,vh:b.vh,d:contactD(b,p,f),sp:sp,vol:(g.rally.bounces===0),aim:aim,hy:me.y,hx:me.x,pos:snap(g),land:null,
-    drop:false,dropGrade:null,dropDy:0,dink:null,speedup:null,atp:false};
+    drop:false,dropGrade:null,dropDy:0,dink:null,speedup:null,atp:false,rt:rt,afterLob:afterLob,smash:false,perfect:false,weak:false,lobGrade:null};
   var tx=10+aim*6.8+(Math.abs(aim)<0.15?assist:0), ty, T, clear=3.45, flat=false, Lx, Ly, L, dist;
   var sx=(0.45+(1-q)*2.7)*spPen*(skill||1), sy=(0.55+(1-q)*2.3)*spPen*(skill||1), speed=0;
   var atp=(kind!=="lob")?atpOption(g,i):null;
@@ -256,17 +297,31 @@ function strike(g,i,kind,aim,q,skill){
     rec.atp=true; rec.kind="atp";
     Lx=atp.tx+gauss()*(0.35+(1-q)*1.2); Ly=atp.ty+gauss()*0.9; L=own(t,Lx,Ly); dist=Math.hypot(L.x-b.x,L.y-b.y); T=Math.max(0.55,dist/38); flat=true;
   } else {
-    if(kind==="lob"){ ty=40.2; T=rnd(1.9,2.1); }
+    if(kind==="lob"){
+      /* build 536: A LOB IS HARD TO EXECUTE (Ian). Depth scatter is wide and gets wider when you are stretched or on the run. A stretched lob also comes up SHORT and LOW
+         (an easy overhead from mid court for them). Hit the ball hard and the lob goes LONG and out. The target depth is the back third, about 40 ft, not the baseline. */
+      var sdL=(4.0+(1-q)*7.2)*(skill||1);   /* gauss() has a spread of about 0.5, so this is twice the real spread in feet */
+      ty=40.4-4.8*(1-q)+Math.max(0,sp-26)*0.10; sy=sdL;
+      T=1.85+gauss()*0.12-0.60*(1-q)*rnd(0.2,1.2); T=Math.max(1.05,T);
+    }
     else if(kind==="soft"){
       if(nearNet){
         /* the two dinks. Early (ball high or still rising) = offensive: quick, flat, low over the net. Late = defensive: slow, high. */
-        var off=(g.rally.bounces===0||b.h>=1.5);   /* taken high or out of the air: that is what lets it be flat and quick */
-        rec.dink=off?"off":"def";
+        var off=(g.rally.bounces===0||b.h>=1.5), fwdL=humanCtl?clamp(p.live.fwd,-1,1):0;   /* taken high or out of the air: that is what lets it be flat and quick */
+        /* build 536: DINK CONTROL with no new buttons. The stick leaned toward the net as you hit makes it the quick offensive dink, leaned back makes it the soft defensive one.
+           Aim is the stick up or down, which is the aim every shot already used. A quick dink taken LOW still clips the tape: you can ask for pace, you cannot cheat the height. */
+        if(humanCtl&&fwdL>0.45){ if(!off&&b.h<1.0) q*=0.80; off=true; } else if(humanCtl&&fwdL<-0.45) off=false;
+        rec.fwd=fwdL; rec.dink=off?"off":"def";
         if(Math.abs(aim)>0.85) tx=10+Math.sign(aim)*(6.8+(Math.abs(aim)-0.85)/0.15*2.5);   /* a wide dink, risky and the setup for an ATP */
-        ty=off?27.0:25.4;   /* the quick one goes deeper into the kitchen on a flat line, the slow one drops in short on an arc */
-        if(off){ speed=CFG.offDink; clear=3.1; }
+        ty=off?27.0:25.4-0.5*Math.max(0,-fwdL);   /* the quick one goes deeper into the kitchen on a flat line, the slow one drops in short on an arc */
+        if(off){ speed=CFG.offDink*(0.88+0.30*Math.max(0,fwdL)); clear=3.1; }
       } else {
         var dm=(dropModel(b,p,f,wideOf(g,i))+1.1*pressure(g))*forgive(g,i), gr=dropGradeOf(dm,0,Math.hypot(b.x-p.x,b.y-p.y)/jamScale(g,i));
+        if(rt>0.05||me.y<2){   /* build 536: the drop on the run, and the drop from behind the baseline */
+          dm+=RET.bias*rt+gauss()*RET.sd*rt+gauss()*RET.deep*Math.max(0,(2-me.y)/6);
+          if(rt>0.35&&Math.random()<RET.dump*rt) dm-=rnd(3.6,6.0);   /* the scrambled drop that is dumped into the net */
+          gr=dropGradeOf(dm,0,Math.hypot(b.x-p.x,b.y-p.y)/jamScale(g,i));
+        }
         rec.drop=true; rec.dropGrade=gr; rec.dropDy=dm; rec.dropDb=Math.hypot(b.x-p.x,b.y-p.y);
         ty=Math.max(22.7,Math.min(36,25.5+dm)); sx=(0.5+0.15*Math.abs(dm))*(skill||1); sy=(0.3+0.12*Math.abs(dm))*(skill||1);
         if(gr==="net"){ ty=24.5; flat=true; }
@@ -276,11 +331,23 @@ function strike(g,i,kind,aim,q,skill){
       if(nearNet){
         var thr=THR; if(prevRec&&prevRec.t!==t&&prevRec.land&&Math.abs(prevRec.land.x-10)>6) thr=2.6;   /* a wide angled dink is attackable lower down */
         var dl=Math.max(0,thr-b.h)*(1-0.35*Math.min(1,Math.abs(aim)));
-        if(dl<0.1){ rec.speedup="attack"; ty=(b.h>=3.3)?31.8:34.5-(b.h-3.0)*9; speed=44*CFG.su; }
+        if(afterLob&&b.h>=THR+1.0&&me.y>=7){ rec.smash=true; rec.speedup="attack"; ty=34.5; speed=60; sx*=0.7; sy*=0.7; }
+        else if(dl<0.1){ rec.speedup="attack"; ty=(b.h>=3.3)?31.8:34.5-(b.h-3.0)*9; speed=44*CFG.su; }
         else if(dl>=1.35){ rec.speedup="net"; ty=34; speed=46*CFG.su; flat=true; }
         else { rec.speedup="long"; ty=37.2+dl*6.5; speed=36*CFG.su; }
-      } else ty=37.2;
+      } else {
+        ty=37.2;
+        if(afterLob&&b.h>=THR+1.0&&me.y>=7){ rec.smash=true; ty=36.5; speed=64; sx*=0.7; sy*=0.7; }   /* build 536: an overhead from mid court: hard, steep, and well placed unless you are scrambling */
+        else if(afterLob){
+          /* build 536: DRIVING OFF A LOB IS A GAMBLE. A clean one skims deep and fast: they reset slowly and you get your kitchen line back. A poor one sits up in the air
+             in the middle of the court and they place it where you cannot reach without a sprint. */
+          var qv=q+gauss()*0.16;
+          if(qv>=0.60&&rt<0.8){ rec.perfect=true; ty=39.0; sx*=0.7; sy*=0.6; }
+          else if(qv<0.46){ rec.weak=true; ty=30.5+gauss()*1.2; }
+        }
+      }
     }
+    if(rec.smash&&nearNet){ ty=34.5; }
     var pf=1+0.15*pressure(g); sx*=pf; sy*=pf;
     Lx=tx+gauss()*sx; Ly=ty+gauss()*sy; L=own(t,Lx,Ly); dist=Math.hypot(L.x-b.x,L.y-b.y);
     if(kind!=="lob"){
@@ -288,17 +355,27 @@ function strike(g,i,kind,aim,q,skill){
         if(nearNet){ T=speed>0?Math.max(0.5,dist/(speed)):Math.max(0.8,dist/9.5); var pf0=clamp((0.40-q)/0.10,0,1); rec.pop=pf0; T*=1+0.6*pf0; }   /* a poorly struck dink floats up: that is the attackable ball */
         else { T=Math.max(1.0,dist/17); if(speed<0) T*=1.3; if(flat) T=Math.max(0.5,dist/16); }
       }
-      else { T=speed>0?Math.max(0.42,dist/speed):Math.max(0.5,dist/(ty<33?44:31)); }
+      else {
+        T=speed>0?Math.max(0.42,dist/speed):Math.max(0.5,dist/(ty<33?44:31));
+        if(rec.weak){ T=Math.max(1.15,dist/15); rec.pop=1; }   /* a poor drive off a lob is a high slow ball that sits up */
+        if(rec.perfect) T=Math.max(0.5,dist/40);
+      }
     }
     if(q<0.55&&!flat) clear-=(0.55-q)*2.8*rnd(0.3,1.6)*((rec.dink==="off")?0.5:1);
     if(kind==='soft'&&nearNet) clear+=0.30*pressure(g);   /* tired dinks ride a little higher over the tape */
   }
   if(!flat) T=solveT(b,L.x,L.y,T,clear);
-  launch(b,L.x,L.y,T);
+  if(kind==="lob"){   /* build 536: what the lob is, for the explain line and the tests. Own view y of the landing, 44 is the baseline. */
+    rec.lobGrade=(Ly>44||Math.abs(Lx-10)>10)?"out":(T<1.32?"low":(Ly<37.5?"short":"good")); rec.lobY=Ly;
+  }
+  var kickV=0;
+  if(kind==="soft"&&nearNet&&rec.dink&&Math.abs(aim)>=0.9&&!rec.atp) kickV=3.0*(aim>0?1:-1)*(t===0?1:-1);   /* build 536: a sharp angle dink kicks toward the sideline off the bounce (side spin). This is what drags a player off the court, and what makes an around the post chance. */
+  launch(b,L.x,L.y,T,0,kickV);
   b.rest=rec.drop?(0.52+clamp((rec.dropDy-2.5)/2,0,1)*0.2):(rec.dink==='off'?0.55:(rec.dink==='def'?0.58:REST));
   if(rec.dink) b.rest+=(REST-b.rest)*(rec.pop||0);   /* a soft shot is struck dead: it does not jump back up */
   var r=g.rally; r.lastHit=t; r.lastIdx=i; r.shotNo++; r.bounces=0; r.crossed=false; r.since=0; g.shotsTotal++;
   g.log.push(rec);
+  if(kind==="lob"&&!rec.atp){ g.lobN=g.lobN||[0,0]; g.lobN[t]++; }   /* build 536: lobs hit this match, per team, for the end of match line */
   p.anim=0.28; r.lastKind=kind; r.lastQ=q; ev(g,"hit",{t:t,kind:rec.kind,q:q,idx:i,dink:rec.dink,drop:rec.dropGrade,speedup:rec.speedup});
   if(rec.atp){ g.slow=0.8; ev(g,"atp",{t:t,idx:i}); }
   return {Lx:L.x,Ly:L.y,T:T};
@@ -335,10 +412,14 @@ function tryContact(g,i){
   var p=g.pl[i], t=p.team, b=g.ball, r=g.rally;
   if(g.phase!=="rally"||r.lastHit===t) return false;
   if(t===0?b.y>22.2:b.y<21.8) return false;
-  if(b.h>6.5||b.h<0.05) return false;
+  var lobBall=(r.lastKind==="lob");   /* build 536: a lob can be taken higher, an overhead reaches about 7.8 ft */
+  if(b.h>(lobBall?7.8:6.5)||b.h<0.05) return false;
   var f=face(t), d=Math.hypot(b.x-p.x,b.y-(p.y+f*0.9));
-  var thresh=(p.sw<0.07)?REACH:2.4; if(d>thresh) return false;
+  var thresh=(p.sw<0.07)?REACH:2.4;
+  if(atpOption(g,i)) thresh=Math.max(thresh,(i===0&&!p.isAI)?5.4:4.8);   /* the human gets the longer lunge */   /* build 536: a lunge for a ball outside the post reaches a little farther */
+  if(d>thresh) return false;
   var volley=(r.bounces===0), q=quality(t,p,b);
+  if(lobBall&&b.h>3.4) q=QP.dq;   /* an overhead is not judged by contact height, the height IS the point of it */
   var flt=null, code=null;
   if(volley&&r.shotNo<=2){ flt="Volleyed before the bounce"; code="twobounce"; }
   else if(volley&&inKitchen(t,p)){ flt="Kitchen fault"; code="kitchen"; }
@@ -406,6 +487,7 @@ function predict(g,t,volleyOK){
       if(s.vh>0&&s.h>=1.9){ out.contact={x:s.x,y:s.y,t:tt,vol:false,h:s.h}; break; }
       if(s.vh<=0&&pv>0){ out.contact={x:s.x,y:s.y,t:tt,vol:false,h:s.h}; break; }
     }
+    if(volleyOK&&bn===0&&r.lastKind==="lob"&&s.vh<0&&s.h<=7.2&&s.h>=4.4&&oy<=19&&oy>=10.5&&!out.contact){ out.contact={x:s.x,y:s.y,t:tt,vol:true,h:s.h,oh:true}; break; }   /* build 536: an overhead on the way down */
     if(volleyOK&&bn===0&&s.h>=1.8&&s.h<=4.3&&oy<=14.2&&oy>=4&&!out.contact){ out.contact={x:s.x,y:s.y,t:tt,vol:true,h:s.h}; break; }
   }
   return out;
@@ -459,7 +541,20 @@ var LV={
   forgive: [0.15,0.16,0.18,0.20,0.22,0.25,0.28,0.32,0.40,0.55],
   wide:    [1.00,1.00,0.98,0.95,0.90,0.85,0.78,0.68,0.50,0.30],
   svShort: [0.70,0.62,0.55,0.48,0.42,0.36,0.30,0.25,0.21,0.18],
-  svSlice: [0.04,0.07,0.10,0.14,0.18,0.23,0.29,0.35,0.40,0.45]
+  svSlice: [0.04,0.07,0.10,0.14,0.18,0.23,0.29,0.35,0.40,0.45],
+  /* build 536, lob defense and the new shots. All indexed by level 1 to 10.
+     lobDelay  extra seconds before a player starts to react to a lob (a good player reads it the moment it leaves the paddle)
+     lobBack   how fast the player backs up for a lob, share of normal speed (a good player turns and runs)
+     ovh       chance the player goes for an overhead out of the air on a lob that comes down in reach, instead of letting it bounce
+     retPen    share of the retreat penalty a computer player pays when it hits while backing up (the human pays all of it)
+     atpGo     chance of playing a ball around the post when the chance is there
+     angle     chance a dink is hit as a sharp angle that drags the opponent wide (this is what makes an around the post chance) */
+  lobDelay:[0.75,0.66,0.58,0.50,0.44,0.38,0.28,0.18,0.08,0.02],
+  lobBack: [0.62,0.66,0.70,0.74,0.78,0.80,0.86,0.92,0.97,1.00],
+  ovh:     [0.30,0.36,0.42,0.48,0.54,0.60,0.68,0.76,0.85,0.92],
+  retPen:  [1.00,0.92,0.84,0.76,0.68,0.60,0.50,0.40,0.32,0.25],
+  atpGo:   [0.35,0.42,0.50,0.58,0.66,0.74,0.82,0.88,0.93,0.97],
+  angle:   [0.03,0.045,0.06,0.075,0.09,0.11,0.13,0.15,0.17,0.19]
 };
 function lvOf(i){ var v=(i===0)?CFG.lvHuman:((i===2)?CFG.lvPart:CFG.lvOpp); return clamp(Math.round(v),1,10); }
 function LP(i){ var k=lvOf(i)-1, o={}; for(var n in LV) o[n]=LV[n][k]; return o; }
@@ -497,6 +592,13 @@ function halfX(g,p){
   var base=p.half>10?13.6:6.4, bx=own(p.team,g.ball.x,g.ball.y).x;
   return clamp(base+0.3*(bx-base),2,18);
 }
+/* build 536: does this computer player lob THIS ball? Only a lobber ever really does, and only when an opponent is standing at the kitchen line. */
+function lobWanted(g,idx,a,b,ctx){
+  var t=idx%2, atNet=false;
+  mem(g,1-t).forEach(function(i){ if(own(1-t,g.pl[i].x,g.pl[i].y).y>=10) atNet=true; });
+  var rate=a.lobRate; if(!atNet) rate*=0.06; if(ctx==="return") rate*=0.5; if(b.h>=THR+0.4) rate*=0.2;
+  return Math.random()<rate;
+}
 function aiUpdate(g,idx,dt){
   var p=g.pl[idx], t=p.team, a=p.ai, b=g.ball, r=g.rally, f=face(t), cmd={mx:0,my:0,press:null,aim:0,ai:true}, dbl=(g.mode==="doubles");
   var me=own(t,p.x,p.y), P=LP(idx);
@@ -521,6 +623,8 @@ function aiUpdate(g,idx,dt){
     if(a.shot!==r.shotNo){
       a.shot=r.shotNo; a.react=rnd(AIP.reactLo,AIP.reactHi)*P.react; a.plan=null; a.replan=0; a.resp=-1; a.kind=null; a.atk=false; a.oppSeen=false; a.recog=(Math.random()<P.recog);
       a.vol=(r.shotNo>=2&&me.y>=8&&Math.random()<0.5);
+      a.angle=(Math.random()<P.angle);
+      if(r.lastKind==="lob"){ a.vol=(Math.random()<P.ovh); a.react+=P.lobDelay; }   /* build 536: how well this player defends a lob depends on the level */
       a.err={x:gauss()*0.55*P.noise,y:gauss()*0.55*P.noise};
     }
     a.react-=dt;
@@ -535,20 +639,25 @@ function aiUpdate(g,idx,dt){
       var mine=(!dbl)||a.resp<0||a.resp===idx;
       if(mine&&a.plan){
         var gx=a.plan.x+a.err.x, gy=a.plan.y-f*0.9+a.err.y;
+        var atpNow=atpOption(g,idx);
+        if(atpNow&&Math.random()<1){ gx=b.x+b.vx*0.22; gy=b.y+b.vy*0.22-f*0.9; }   /* build 536: the ball is already outside the post: run at it where it is, not where the plan said */
         var dx=gx-p.x, dy=gy-p.y, d=Math.hypot(dx,dy);
         if(d>0.15){ var k=Math.min(1,d/1.2); cmd.mx=dx/d*k; cmd.my=dy/d*k; }
+        if(r.lastKind==="lob"&&cmd.my*f<0) cmd.my*=P.lobBack;   /* backing up is slower than running forward, and much slower for a weak player */
         var rd=Math.hypot(b.x-p.x,b.y-(p.y+f*0.9));
-        var nn=own(t,p.x,p.y).y>=11.5, hmax=nn?5.6:3.7;
-        if(p.cd<=0&&rd<2.6&&b.h<hmax&&b.h>0.15&&(t===0?b.y<=22:b.y>=22)){
+        var nn=own(t,p.x,p.y).y>=11.5, hmax=(r.lastKind==="lob"&&a.plan&&a.plan.oh)?7.6:(nn?5.6:3.7);   /* build 536: only a planned overhead is taken that high */
+        if(p.cd<=0&&rd<(atpNow?4.4:2.6)&&b.h<hmax&&b.h>(atpNow?0.06:0.15)&&(t===0?b.y<=22:b.y>=22)){
           var vol=(r.bounces===0);
           if(!(vol&&(r.shotNo<=2||inKitchen(t,p)))){
             var mm=own(t,p.x,p.y), nearNet=mm.y>=11.5, u=Math.random();
             if(a.kind===null){
               var atpO=atpOption(g,idx), kk;
-              if(atpO&&Math.random()<0.8) kk="drive";                                  /* a wide low ball: go around the post */
-              else if(r.shotNo===1) kk=u<0.82?"drive":(u<0.9?"lob":"soft");
-              else if(nearNet){ if(b.h>=THR) kk=u<P.atk?"drive":"soft"; else kk=u<P.lowDrive?"drive":(u<P.lowDrive+0.04?"lob":"soft"); }   /* only the high ones get sped up, a misread low ball gets driven */
-              else kk=u<P.trSoft?"soft":(u<P.trSoft+(1-P.trSoft-P.trLob)?"drive":"lob");
+              if(atpO&&Math.random()<P.atpGo) kk="drive";                              /* a wide low ball: go around the post */
+              else if(r.lastKind==="lob"&&b.h>=THR+1.0&&mm.y>=7) kk=(u<0.97)?"drive":"soft";    /* build 536: an overhead */
+              else if(lobWanted(g,idx,a,b,r.shotNo===1?"return":"rally")) kk="lob";   /* build 536: only a lobber, and only against someone at the line */
+              else if(r.shotNo===1) kk=u<0.9?"drive":"soft";
+              else if(nearNet){ if(b.h>=THR) kk=u<P.atk?"drive":"soft"; else kk=u<P.lowDrive?"drive":"soft"; }   /* only the high ones get sped up, a misread low ball gets driven */
+              else kk=u<P.trSoft?"soft":"drive";
               a.kind=kk; a.rush=(Math.random()<P.rush); a.dinkOff=(Math.random()<P.dinkOff); a.mistake=(nearNet&&kk==="drive"&&b.h<THR);
             }
             var peak=b.h+(b.vh>0?b.vh*b.vh/(2*GR):0);
@@ -565,7 +674,11 @@ function aiUpdate(g,idx,dt){
               var feet=null;
               if(a.kind==="drive"&&nearNet&&r.shotNo>=3&&b.h>=THR){ feet=feetAim(g,t); }
               cmd.aim=(feet!==null)?feet:((Math.random()<P.aimRnd)?rnd(-0.25,0.25):pickAim(g,t));
-              if(a.kind==="soft"&&nearNet&&Math.abs(cmd.aim)>0.95) cmd.aim*=0.95;
+              if(a.kind==="soft"&&nearNet&&a.angle){   /* build 536: the sharp angle dink, aimed at the sideline away from the opponent */
+                var oxs=mem(g,1-t).map(function(i2){ return own(t,g.pl[i2].x,0).x; }), oxm=oxs.reduce(function(x,y){ return x+y; },0)/oxs.length;
+                cmd.aim=(oxm>10?-1:1)*0.93;
+              }
+              else if(a.kind==="soft"&&nearNet&&Math.abs(cmd.aim)>0.95) cmd.aim*=0.95;
             }
           }
         }
@@ -622,7 +735,14 @@ function step(g,realDt,input){
   }
   var hc=input||{mx:0,my:0,press:null,aim:0};
   g.pl[0].isAI=!!hc.ai;
-  movePl(g,0,hc,dt,hc.ai?CFG.human*LP(0).spd:CFG.human);
+  var hcm=hc;
+  g.pl[0].live.aim=hc.aim||0; g.pl[0].live.fwd=hc.my||0;   /* build 536: the stick right now, read at the moment of contact */
+  if(g.phase==="rally"&&g.rally.lastKind==="lob"&&g.rally.lastHit===1&&!hc.ai&&hc.my<0){
+    /* backing up for a lob is slower than running forward, and the first moments are lost to recognising it */
+    hcm={mx:hc.mx,my:hc.my*clamp(0.35+g.rally.since/1.0*0.65,0.35,1)*0.85,press:hc.press,aim:hc.aim};
+  }
+  if(!hc.ai&&g.pl[0].anim>0&&g.pl[0].swKind==="soft"&&own(0,g.pl[0].x,g.pl[0].y).y>=8){ hcm={mx:hcm.mx*0.2,my:hcm.my*0.2,press:hcm.press,aim:hcm.aim}; }   /* build 536: planted feet for a dink, so leaning the stick to aim it does not walk you into the kitchen */
+  movePl(g,0,hcm,dt,hc.ai?CFG.human*LP(0).spd:CFG.human);
   if(hc.press) press(g,0,hc.press,hc.aim);
   act.forEach(function(i){ if(i===0) return; var ac=aiUpdate(g,i,dt); movePl(g,i,ac,dt,AIP.speed*LP(i).spd); if(ac.press) press(g,i,ac.press,ac.aim); });
   if(g.phase==="serve"){ holdBall(g); act.forEach(function(i){ var p=g.pl[i]; if(p.serveT>0){ p.serveT-=dt; if(p.serveT<=0){ serve(g,i,p.swKind,p.swAim); } } }); }
@@ -666,6 +786,7 @@ function explain(g,w,code){
     if(last.speedup==="long") return "You sped up a low ball. With no height to work with it only goes long.";
     if(last.atp&&code==="net") return "Your post shot clipped the net. It has to pass outside the post.";
     if(last.atp&&code==="out") return "Your post shot landed out. It has to come back in near the sideline.";
+    if(last.drop&&last.rt>0.35&&code==="net") return "You dropped it while still running backward and it went into the net. Get back early and set your feet before you hit.";
     if(last.drop&&(code==="net"||code==="short")) return "You let the ball fall too low before you dropped it, so it went into the net.";
     if(last.dink==="off"&&(code==="net"||code==="short")) return "That quick dink needs a ball you take high. Taken low it clips the tape.";
     if(code==="net"||code==="short"){
@@ -706,6 +827,10 @@ function explain(g,w,code){
   /* the three new mechanics, named when they are the cause */
   if(last.atp&&last.t===0) return "Around the post. The ball never had to clear the net.";
   if(last.atp&&last.t===1) return (prev&&prev.t===0&&prev.land&&Math.abs(prev.land.x-10)>7.5)?"That dink was wide enough to go around the post. Keep dinks inside the sideline.":null;
+  if(dTeam===0&&prev&&prev.t===0&&prev.kind==="lob"&&last.smash&&last.t===1) return prev.lobGrade==="low"?"That lob was too low. It gave them an overhead.":"That lob came up short. It gave them an overhead.";
+  if(dTeam===0&&prev&&prev.t===0&&prev.idx===0&&prev.afterLob&&prev.drop&&prev.rt>0.35&&last.t===1&&(prev.dropGrade==="long"||prev.dropGrade==="ok"||prev.dropGrade==="jam")) return "Your drop on the run came out long and they attacked it. Back up early and set before you hit.";
+  if(dTeam===0&&prev&&prev.t===0&&prev.idx===0&&prev.weak&&last.t===1) return "That drive off the lob sat up in the middle and they placed it where you could not reach.";
+  if(dTeam===1&&prev&&prev.t===0&&prev.idx===0&&prev.perfect) return "A clean drive off the lob. They could only reset it and you got your kitchen line back.";
   if(dTeam===0&&prev&&prev.t===0&&prev.idx===0&&prev.drop&&last.vol&&last.t===1){
     if(prev.dropGrade==="long") return "Your drop went long and they took it out of the air, so you never got up to the line.";
     if(prev.dropGrade==="ok") return "Your drop landed deep in the kitchen and they took it out of the air, so you were stuck in the transition zone.";
@@ -747,8 +872,24 @@ function explain(g,w,code){
   if(last.kind==="soft"&&dy<9) return "They were back when your dink landed short.";
   return null;
 }
+/* build 536: WHERE WOULD A DINK GO IF YOU HIT IT NOW. The same arithmetic as strike() without the scatter, for the target ring on screen.
+   The stick up or down aims it, the stick leaned toward the net makes it quick, leaned back makes it soft. Returns null when you are not in dink range. */
+function aimPreview(g,i){
+  var p=g.pl[i], t=p.team, me=own(t,p.x,p.y), r=g.rally, b=g.ball;
+  if(me.y<8) return null;
+  var aim=clamp(p.live.aim,-1,1), fwd=clamp(p.live.fwd,-1,1), oppPos=own(t,meanOpp(g,t),0);
+  var tx=10+aim*6.8+(Math.abs(aim)<0.15?clamp((10-oppPos.x)*0.3,-2.6,2.6):0);
+  if(Math.abs(aim)>0.85) tx=10+Math.sign(aim)*(6.8+(Math.abs(aim)-0.85)/0.15*2.5);
+  var off=(r.bounces===0||b.h>=1.5); if(fwd>0.45) off=true; else if(fwd<-0.45) off=false;
+  var ty=off?27.0:25.4-0.5*Math.max(0,-fwd), lab;
+  if(Math.abs(tx-10)<2.6) lab="Middle";
+  else if(Math.abs(me.x-10)<2.5) lab=(tx<10)?"Angle up":"Angle down";   /* standing in the middle there is no cross court or line, so say which way on the screen */
+  else lab=((tx-10)*(me.x-10)>0)?"Down the line":"Cross court";
+  var o=own(t,tx,ty);
+  return {x:o.x,y:o.y,quick:off,label:lab+(off?", quick":", soft"),aimed:Math.abs(aim)>0.3,paced:Math.abs(fwd)>0.45};
+}
 function debugEnd(g,w,reason,code){ g.phase="rally"; endPoint(g,w,reason||"test",code||"winner"); }
-return {newGame:newGame,startMatch:startMatch,step:step,predict:predict,aiUpdate:aiUpdate,press:press,own:own,face:face,AIP:AIP,CFG:CFG,movePl:movePl,inKitchen:inKitchen,nearest:nearest,mem:mem,partner:partner,explain:explain,debugEnd:debugEnd,startPoint:startPoint,dropGrade:dropGrade,atpOption:atpOption,THR:THR,LV:LV,LP:LP,STATS:STATS,lvOf:lvOf,setLevels:setLevels,_strike:strike,_stepBall:stepBall};
+return {newGame:newGame,startMatch:startMatch,step:step,predict:predict,aiUpdate:aiUpdate,press:press,own:own,face:face,AIP:AIP,CFG:CFG,movePl:movePl,inKitchen:inKitchen,nearest:nearest,mem:mem,partner:partner,explain:explain,debugEnd:debugEnd,startPoint:startPoint,dropGrade:dropGrade,atpOption:atpOption,aimPreview:aimPreview,retreatOf:retreatOf,lobWanted:lobWanted,THR:THR,LV:LV,LP:LP,STATS:STATS,lvOf:lvOf,setLevels:setLevels,_strike:strike,_stepBall:stepBall};
 })();
 
 </script>
@@ -781,7 +922,7 @@ function beep(f,d,type,vol,slide){
   }catch(_){}
 }
 /* ---------------------------------------------------------------- HUD */
-var hud={you:$("sYou"),opp:$("sOpp"),srv:$("srv"),msg:$("msg"),hint:$("hint"),mute:$("mute"),c1:$("c1"),c2:$("c2"),c3:$("c3"),why:$("why"),whyT:$("whyT")};
+var hud={aimTag:$("aimTag"),you:$("sYou"),opp:$("sOpp"),srv:$("srv"),msg:$("msg"),hint:$("hint"),mute:$("mute"),c1:$("c1"),c2:$("c2"),c3:$("c3"),why:$("why"),whyT:$("whyT")};
 var shown={score:"",hint:"",menu:false};
 function setMsg(title,sub,good){
   hud.msg.innerHTML=""; var a=document.createElement("div"); a.className="mt"; a.textContent=title; hud.msg.appendChild(a);
@@ -808,6 +949,12 @@ function updateHud(){
   else if(g.phase==="serve"&&g.server===1) h="Opponent serves. Let it bounce, then hit it back.";
   else if(g.phase==="rally"&&g.rally.shotNo===1&&g.rally.lastHit===1) h="Let it bounce first.";
   else if(g.phase==="rally"&&g.rally.shotNo===2&&g.rally.lastHit===0) h="They must let it bounce too.";
+  else if(g.phase==="rally"&&g.rally.lastHit===1&&g.rally.shotNo>=3&&D.last&&D.aimed<2&&D.hintOff!==g.rallies){
+    /* build 536: the one time hint for dink control. It shows on the first few points where you are at the line with a dink coming, and stops once you have aimed twice. */
+    if(D.hintAt!==g.rallies&&D.hints<5){ D.hintAt=g.rallies; D.hints++;
+      if(D.hints===3&&D.aimed===0) showWhy("Aim your dink: while you hit, push the stick up or down. The ring on their side shows where it will land. Push toward the net for a quicker one."); }
+    if(D.hintAt===g.rallies) h="Dink aim: lean the stick up or down as you hit. Toward the net is quicker, back is softer.";
+  }
   if(h!==shown.hint){ shown.hint=h; hud.hint.textContent=h; hud.hint.className=h?"show":""; }
   /* build 535: while YOU are serving the three right buttons are the serve menu, and they go back to HIT, SOFT, LOB the moment the rally begins */
   var sm=((g.phase==="setup"||g.phase==="serve")&&g.srvIdx===0);
@@ -929,8 +1076,11 @@ function buildScene(){
   var landR=new T.Mesh(new T.RingGeometry(0.9,1.3,24),new T.MeshBasicMaterial({color:0xf5d547,transparent:true,opacity:0.9,side:T.DoubleSide,depthWrite:false})); landR.rotation.x=-Math.PI/2; landR.position.y=0.06; landR.visible=false; scene.add(landR);
   var contR=new T.Mesh(new T.RingGeometry(1.5,1.95,28),new T.MeshBasicMaterial({color:0x4ade80,transparent:true,opacity:0.85,side:T.DoubleSide,depthWrite:false})); contR.rotation.x=-Math.PI/2; contR.position.y=0.07; contR.visible=false; scene.add(contR);
   var box=new T.Mesh(new T.PlaneGeometry(10,15),new T.MeshBasicMaterial({color:0xf5d547,transparent:true,opacity:0.22,side:T.DoubleSide,depthWrite:false})); box.rotation.x=-Math.PI/2; box.position.y=0.05; box.visible=false; scene.add(box);
+  /* build 536: the dink target ring. Shows where a dink would go if you hit it now, and moves as the stick moves. */
+  var aimR=new T.Mesh(new T.RingGeometry(0.85,1.2,28),new T.MeshBasicMaterial({color:0x7fe3ff,transparent:true,opacity:0.92,side:T.DoubleSide,depthWrite:false})); aimR.rotation.x=-Math.PI/2; aimR.position.y=0.09; aimR.visible=false; scene.add(aimR);
+  var aimD=new T.Mesh(new T.CircleGeometry(0.28,12),new T.MeshBasicMaterial({color:0x7fe3ff,transparent:true,opacity:0.95,side:T.DoubleSide,depthWrite:false})); aimD.rotation.x=-Math.PI/2; aimD.position.y=0.095; aimD.visible=false; scene.add(aimD);
   var pulses=[]; for(var k=0;k<5;k++){ var pm=new T.Mesh(new T.RingGeometry(0.5,0.75,20),new T.MeshBasicMaterial({color:0xffffff,transparent:true,opacity:0,side:T.DoubleSide,depthWrite:false})); pm.rotation.x=-Math.PI/2; pm.visible=false; scene.add(pm); pulses.push({m:pm,t:9}); }
-  sc={renderer:renderer,scene:scene,cam:cam,figs:figs,ball:ball,rim:rim,bsh:bsh,tr:tr,landR:landR,contR:contR,box:box,pulses:pulses,W:W,H:H};
+  sc={aimR:aimR,aimD:aimD,renderer:renderer,scene:scene,cam:cam,figs:figs,ball:ball,rim:rim,bsh:bsh,tr:tr,landR:landR,contR:contR,box:box,pulses:pulses,W:W,H:H};
   fitCamera();
 }
 function pulse(x,y,col){
@@ -953,6 +1103,10 @@ function fitCamera(){
     if(ok) break;
   }
 }
+var D={last:null,doneT:0,dinks:0,aimed:0,paced:0,hints:0,hintAt:-1};
+function showAimTag(txt,cls){ hud.aimTag.textContent=txt; hud.aimTag.className="show"+(cls?" "+cls:""); }
+function hideAimTag(){ hud.aimTag.className=""; }
+function hideHint2(){ D.hintOff=g.rallies; }
 var pred={t:0,land:null,cont:null};
 function frameScene(dt){
   var b=g.ball, Sx=sc;
@@ -988,6 +1142,14 @@ function frameScene(dt){
     }
     Sx.figs[0].ring.material.color.setHex(rc);
   }
+  /* build 536: the dink aim ring and its one line label. Visible while a ball is coming to you and you are in dink range. */
+  var ap=null; if(g.phase==="rally"&&g.rally.lastHit===1&&g.rally.shotNo>=2&&g.rally.lastKind!=="lob"&&Math.hypot(b.vx,b.vy)<28) ap=PB.aimPreview(g,0);   /* not for a lob or a fast drive coming at you */
+  if(ap){
+    Sx.aimR.visible=true; Sx.aimD.visible=true; Sx.aimR.position.set(wx(ap.x),0.09,wz(ap.y)); Sx.aimD.position.set(wx(ap.x),0.095,wz(ap.y));
+    var col=ap.quick?0xffb347:0x7fe3ff; Sx.aimR.material.color.setHex(col); Sx.aimD.material.color.setHex(col);
+    var sp=1+0.06*Math.sin(g.t*10); Sx.aimR.scale.set(sp,sp,1);
+    D.last=ap; showAimTag("Dink: "+ap.label,ap.quick?"quick":"");
+  } else { Sx.aimR.visible=false; Sx.aimD.visible=false; if(D.doneT>0){ D.doneT-=dt; if(D.doneT<=0) hideAimTag(); } else if(hud.aimTag.className.indexOf("done")<0) hideAimTag(); }
   var showBox=(g.phase==="serve"&&g.server===0);
   Sx.box.visible=showBox; if(showBox){ var lo=(g.ownX===15)?0:10; Sx.box.position.set(wx(lo+5),0.05,wz(36.5)); }
   Sx.pulses.forEach(function(q){ if(q.t<0.3){ q.t+=dt; var u=q.t/0.3, s=1+u*2.2; q.m.scale.set(s,s,1); q.m.material.opacity=0.8*(1-u); } else q.m.visible=false; });
@@ -999,6 +1161,10 @@ function tell(m){ if(!EMBED) return; try{ window.parent.postMessage({pbgame:m},l
 var last=0, raf=0, running=false;
 function handleEvents(){
   g.events.forEach(function(e){
+    if(e.k==="hit"&&e.a.idx===0&&e.a.dink&&D.last){
+      D.dinks++; if(D.last.aimed) D.aimed++; if(D.last.paced) D.paced++;
+      showAimTag("You hit: "+D.last.label,"done"); D.doneT=1.1; hideHint2();
+    }
     if(e.k==="hit"){ beep(e.a.kind==="drive"?480:(e.a.kind==="lob"?360:600),0.07,"square",0.1,240); pulse(g.ball.x,g.ball.y,0xffffff); }
     else if(e.k==="atp"){
       var gold=(e.a.t===0); [0,0.12,0.24].forEach(function(dl,ix){ setTimeout(function(){ pulse(g.ball.x,g.ball.y,0xffd23f); },dl*1000); });
@@ -1084,6 +1250,10 @@ function showEnd(){
   var w=g.winner===0; ovTitle.textContent=w?"You win":"You lose"; ovBody.innerHTML="";
   var a=document.createElement("div"); a.className="big"; a.textContent=g.score[0]+" to "+g.score[1]; ovBody.appendChild(a);
   var b=document.createElement("div"); b.textContent=w?"Good match. To 11, win by 2.":"Close ones are won at the kitchen line. Try again."; ovBody.appendChild(b);
+  var lb=document.createElement("div"); lb.style.cssText="margin-top:6px;color:#9fb0c0;font-size:14px";
+  var nLob=(g.lobN&&g.lobN[1])||0, anyLob=[1,3].some(function(i){ return (i===1||g.mode==="doubles")&&g.pl[i].ai.lobber; });
+  lb.textContent=anyLob?("Opponent style: a lobber. They lobbed "+nLob+(nLob===1?" time.":" times.")):"Opponent style: keeps it low. They almost never lob.";
+  ovBody.appendChild(lb);
   var lvl=document.createElement("div"); lvl.style.cssText="margin-top:8px;color:#9fb0c0;font-size:14px"; lvl.textContent="Opponent level "+LVN[PB.CFG.lvOpp-1]+(w?". Try a level higher from the start screen.":"."); ovBody.appendChild(lvl);
   ovBtn.textContent="Play again"; ovBtn.style.display=""; ovBtn.disabled=false; ov.className="screen show";
   ovBtn.onclick=function(){ audioInit(); ov.className="screen"; PB.startMatch(g,MODE); hideMsg(); hideWhy(); shown.score=""; S.paused=false; evalRun(); };
