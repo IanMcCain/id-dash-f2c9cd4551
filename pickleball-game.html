@@ -109,8 +109,13 @@ button{font-family:inherit}
    SCORING IS SIDE OUT. Only the serving side can score. If the receiving side wins the rally it wins the serve, not a point.
    Singles: call is server score then receiver score. Doubles: server score, receiver score, server number (1 or 2).
    Both partners serve before a side out, except the first service turn of the game, which starts at server 2.
-   To 11, win by 2. The server serves from the right court when their side's score is even, the left court when odd. */
+   To 11, win by 2. SINGLES: the server serves from the right court when their score is even, the left when odd (5.A.1).
+   DOUBLES (build 534, 2026 USAPA rulebook 5.B): the serving court comes from POSITION, not score. On a side out the player standing on the
+   right serves first from the right. The second server serves from the court he stands in, which is opposite the first server's last court.
+   Partners swap sides only when their own team scores. 5.B.3 (even score, the player who began the game on the right is on the right) is a
+   position invariant that follows from that, used only to validate. Game start: the starting server is server 2 and the side outs after one turn. */
 var PB=(function(){
+var SERVEH=2.8;   /* USAPA 2026 rulebook 7.C.3: the ball must be CLEARLY NO HIGHER THAN THE WAIST when struck (the summary page still says waist level, the rulebook governs). 2.8 ft is under a 3 ft waist. */
 var GR=32.2, REST=0.72, HRET=0.62, REACH=3.8, SPEED=0.8, WIN=11;
 var STATS=[{atkOpp:0,atkTaken:0},{atkOpp:0,atkTaken:0}];   /* team 0 and 1: attackable dinks seen coming, and how many were waited for and attacked (read by levels_sim.js) */
 var CFG={human:11.0,su:1.12,offDink:22,pressure:1,lvHuman:6,lvPart:6,lvOpp:6,forgiveBot:false};
@@ -139,9 +144,10 @@ function startMatch(g,mode){
   startPoint(g);
 }
 function startPoint(g){
-  var s=g.server, r=1-s, dbl=(g.mode==="doubles"), ownXs=(g.score[s]%2===0)?15:5; g.ownX=ownXs;
+  var s=g.server, r=1-s, dbl=(g.mode==="doubles"), ownXs=(g.score[s]%2===0)?15:5;   /* SINGLES (USAPA 5.A.1): the court follows the server's score, even right, odd left */
   g.srvIdx=dbl?(g.sn===1?g.first[s]:partner(g.first[s])):s;
-  if(dbl) g.sideR[s]=(ownXs===15)?g.srvIdx:partner(g.srvIdx);   /* the server stands in the court the score calls for */
+  if(dbl) ownXs=(g.sideR[s]===g.srvIdx)?15:5;   /* DOUBLES: the serving court is wherever the server physically stands (USAPA 5.B.2, 5.B.5, 5.B.6), never the score. sideR[t] is the player on team t's right. */
+  g.ownX=ownXs;
   var sx=(s===0)?ownXs:20-ownXs, rcx=20-sx, rOwn=(r===0)?rcx:20-rcx;   /* the receiver stands diagonally across */
   g.rcvIdx=dbl?((rOwn>10)?g.sideR[r]:partner(g.sideR[r])):r;
   g.pl.forEach(function(p){ p.goal=null; p.serveT=-1; p.ai.shot=-1; p.ai.resp=-1; });
@@ -156,7 +162,7 @@ function startPoint(g){
   g.log=[]; g.call=callOf(g);
   holdBall(g);
 }
-function holdBall(g){ var p=g.pl[g.srvIdx], b=g.ball; b.x=p.x; b.y=p.y+face(p.team)*0.8; b.h=3.0; b.held=true; }
+function holdBall(g){ var p=g.pl[g.srvIdx], b=g.ball; b.x=p.x; b.y=p.y+face(p.team)*0.8; b.h=SERVEH; b.held=true; }
 function inKitchen(t,p){ var oy=t===0?p.y:44-p.y; return oy>15.05; }
 function snap(g){ return g.pl.map(function(p){ return {x:p.x,y:p.y}; }); }
 /* w is the team that won the rally. Under side out scoring that is a point only if w was serving. */
@@ -167,7 +173,7 @@ function endPoint(g,w,reason,code){
   var s=g.server, scored=(w===s), sideout=false, second=false;
   if(scored){ g.score[s]++; if(g.mode==="doubles") g.sideR[s]=partner(g.sideR[s]); }
   else if(g.mode==="doubles"&&g.sn===1){ g.sn=2; second=true; }
-  else { g.server=w; g.sn=1; sideout=true; if(g.mode==="doubles") g.first[w]=(g.score[w]%2===0)?g.sideR[w]:partner(g.sideR[w]); }
+  else { g.server=w; g.sn=1; sideout=true; if(g.mode==="doubles") g.first[w]=g.sideR[w]; }   /* side out: whoever is physically on the RIGHT serves first, from the right, whatever the score (5.B.2). The receiving team never swaps. */
   g.why=why; g.call=callOf(g);
   g.last=(scored?(w===0?"Your point. ":"Opponent point. "):(sideout?"Side out. ":"Second server. "))+reason;
   ev(g,"point",{w:w,reason:reason,scored:scored,sideout:sideout,second:second,why:why,call:g.call,atp:!!(g.log.length&&g.log[g.log.length-1].atp)});
@@ -300,11 +306,11 @@ function serve(g,i,kind,aim){
   var tx=cx+clamp(aim,-1,1)*3.5+gauss()*0.6;
   var ty=(kind==="soft")?rnd(32,34.5):rnd(37.5,40.8); ty+=gauss()*0.8;
   var L=own(t,tx,ty);
-  b.x=p.x; b.y=p.y+f*0.8; b.h=3.0;
+  b.x=p.x; b.y=p.y+f*0.8; b.h=SERVEH;
   var T=Math.max(0.95,Math.hypot(L.x-b.x,L.y-b.y)/32);
   T=solveT(b,L.x,L.y,T,3.45);
   var so=own(t,p.x,p.y);
-  g.log.push({n:1,idx:i,t:t,kind:"serve",q:1,dq:1,hq:1,ballH:3,vol:false,aim:aim,hy:so.y,hx:so.x,pos:snap(g),land:null});
+  g.log.push({n:1,idx:i,t:t,kind:"serve",q:1,dq:1,hq:1,ballH:SERVEH,vol:false,aim:aim,hy:so.y,hx:so.x,pos:snap(g),land:null});
   launch(b,L.x,L.y,T);
   g.phase="rally"; var r=g.rally; r.lastHit=t; r.lastIdx=i; r.shotNo=1; r.bounces=0; r.crossed=false; r.since=0; p.anim=0.28; p.serveT=-1; g.shotsTotal++;
   ev(g,"hit",{t:t,kind:"serve",q:1,idx:i});
