@@ -84,7 +84,7 @@ button{font-family:inherit}
   <div class="modeNote" id="lvNote">Level 1 is the easiest, 5 plays like a 3.0, 6 like a 3.5, 8 like a 4.5, 10 like a pro. Lower levels also give you a wider window to hit a drop.</div>
   <button class="go" id="goBtn" disabled>Loading the court</button>
   <div class="note" id="fsNote">Tap Play to go full screen. Turn your phone sideways to play.</div>
-  <div class="rules"><b>Controls.</b> Left thumb: the stick sits in the corner, drag its knob to move. Right thumb: HIT is a drive, SOFT is a dink or drop, LOB goes over their head. Lean the stick up or down as you hit to aim.<br><b>Rules.</b> Serve underhand to the diagonal box. Serve and return must bounce. No volleys inside the kitchen (the green strip). Side out scoring: only the serving side scores. To 11, win by 2. Doubles is called server score, receiver score, server number.</div>
+  <div class="rules"><b>Controls.</b> Left thumb: the stick sits in the corner, drag its knob to move. Right thumb: HIT is a drive, SOFT is a dink or drop, LOB goes over their head. Lean the stick up or down as you hit to aim. When you serve the buttons become SHORT, DRIVE and SLICE.<br><b>Rules.</b> Serve underhand to the diagonal box. Serve and return must bounce. No volleys inside the kitchen (the green strip). Side out scoring: only the serving side scores. To 11, win by 2. Doubles is called server score, receiver score, server number.</div>
   <div class="rules1"><b>Controls.</b> Stick in the corner to move. HIT drive, SOFT dink or drop, LOB over their head. <b>Scoring.</b> Side out: only the server scores. To 11, win by 2.</div>
 </div>
 <div id="game">
@@ -190,7 +190,8 @@ function solveT(b,Lx,Ly,T,clear){
   }
   return T;
 }
-function launch(b,Lx,Ly,T){ b.vx=(Lx-b.x)/T; b.vy=(Ly-b.y)/T; b.vh=(0-b.h+0.5*GR*T*T)/T; b.held=false; }
+/* ax is a sideways acceleration (ft per second squared, common frame) for a SLICED serve: the ball is launched so it still lands exactly where planned, but its flight bows by ax*T*T/8 feet. kick is added to its sideways speed at the first bounce. */
+function launch(b,Lx,Ly,T,ax,kick){ var a=ax||0; b.curve=a; b.kick=kick||0; b.vx=(Lx-b.x)/T-0.5*a*T; b.vy=(Ly-b.y)/T; b.vh=(0-b.h+0.5*GR*T*T)/T; b.held=false; }
 var QP={dq:1,hq:1};
 function quality(t,p,b){
   var f=face(t), d=Math.hypot(b.x-p.x,b.y-(p.y+f*0.9));
@@ -211,19 +212,21 @@ function meanOpp(g,t){ var m=mem(g,1-t), sx=0; m.forEach(function(i){ sx+=g.pl[i
 var THR=3.0;
 function pressure(g){ return CFG.pressure*Math.max(0,Math.min(1,(g.rally.shotNo-6)/20)); }   /* 0 for the first six shots, then creeps up to 1 by shot 26 */
 function contactD(b,p,f){ return Math.hypot(b.x-p.x,b.y-(p.y+f*0.9)); }
-function dropModel(b,p,f){
+function dropModel(b,p,f,w){
+  w=w||0;   /* build 535: w (0 to 1) widens the sweet spot for the HUMAN at low and middle levels (see LV.wide). 0 is the old, tight model. */
   var h=b.h, vh=b.vh, d=contactD(b,p,f), sp=Math.hypot(b.vx,b.vy), dy=0;
-  /* sweet spot: ball near its peak or just past it (vh between -4 and 3), waist high (1.1 to 2.4 ft), out in front (0.8 to 1.9 ft), not hit hard */
-  if(h>2.4) dy+=4.0*(h-2.4); else if(h<1.1) dy-=2.2*(1.1-h);
-  if(vh>3) dy+=Math.min(3.5,0.5*(vh-3)); else if(vh<-4) dy-=Math.min(2.0,0.5*(-4-vh));
+  /* sweet spot: ball near its peak or just past it, waist high (1.1 to 2.4 ft at w=0), out in front (0.8 to 1.9 ft), not hit hard */
+  var hHi=2.4+2.0*w, hLo=1.1-0.9*w, vUp=3+3*w, vDn=-4-8*w, spOn=20+22*w, dFar=1.9+0.8*w;
+  if(h>hHi) dy+=4.0*(h-hHi); else if(h<hLo) dy-=2.2*(hLo-h);
+  if(vh>vUp) dy+=Math.min(3.5,0.5*(vh-vUp)); else if(vh<vDn) dy-=Math.min(2.0,0.5*(vDn-vh));
   var db=Math.hypot(b.x-p.x,b.y-p.y);   /* the ball on top of your body is jammed, the ball out past 1.9 ft from the hitting spot is a stretch */
-  if(d>1.9) dy+=1.1*(d-1.9); if(db<0.7) dy-=1.8*(0.7-db);
-  if(sp>20) dy+=1.6*(sp-20)/10;
+  if(d>dFar) dy+=1.1*(d-dFar); if(db<0.7) dy-=1.8*(0.7-db);
+  if(sp>spOn) dy+=1.6*(sp-spOn)/10;
   return dy;
 }
 function dropGradeOf(dy,d,db){ if(dy<-3.4) return "net"; if(db<0.45) return "jam"; if(dy>2.4) return "long"; if(dy>1.2) return "ok"; return "good"; }
 /* what a drop hit RIGHT NOW would be, for the on screen timing cue and for the AI's patience */
-function dropGrade(g,i){ var p=g.pl[i], b=g.ball, f=face(p.team), dy=(dropModel(b,p,f)+1.1*pressure(g))*forgive(g,i); return {dy:dy,grade:dropGradeOf(dy,0,Math.hypot(b.x-p.x,b.y-p.y)/jamScale(g,i))}; }
+function dropGrade(g,i){ var p=g.pl[i], b=g.ball, f=face(p.team), dy=(dropModel(b,p,f,wideOf(g,i))+1.1*pressure(g))*forgive(g,i); return {dy:dy,grade:dropGradeOf(dy,0,Math.hypot(b.x-p.x,b.y-p.y)/jamScale(g,i))}; }
 /* around the post: null, or where to aim. Ball must be on this player's side, low, outside the sideline and near the net. */
 function atpOption(g,i){
   var p=g.pl[i], t=p.team, b=g.ball, r=g.rally;
@@ -263,7 +266,7 @@ function strike(g,i,kind,aim,q,skill){
         ty=off?27.0:25.4;   /* the quick one goes deeper into the kitchen on a flat line, the slow one drops in short on an arc */
         if(off){ speed=CFG.offDink; clear=3.1; }
       } else {
-        var dm=(dropModel(b,p,f)+1.1*pressure(g))*forgive(g,i), gr=dropGradeOf(dm,0,Math.hypot(b.x-p.x,b.y-p.y)/jamScale(g,i));
+        var dm=(dropModel(b,p,f,wideOf(g,i))+1.1*pressure(g))*forgive(g,i), gr=dropGradeOf(dm,0,Math.hypot(b.x-p.x,b.y-p.y)/jamScale(g,i));
         rec.drop=true; rec.dropGrade=gr; rec.dropDy=dm; rec.dropDb=Math.hypot(b.x-p.x,b.y-p.y);
         ty=Math.max(22.7,Math.min(36,25.5+dm)); sx=(0.5+0.15*Math.abs(dm))*(skill||1); sy=(0.3+0.12*Math.abs(dm))*(skill||1);
         if(gr==="net"){ ty=24.5; flat=true; }
@@ -300,20 +303,33 @@ function strike(g,i,kind,aim,q,skill){
   if(rec.atp){ g.slow=0.8; ev(g,"atp",{t:t,idx:i}); }
   return {Lx:L.x,Ly:L.y,T:T};
 }
+/* ---------------------------------------------------------------- THE THREE SERVES (build 535). The three right buttons become SHORT, DRIVE, SLICE while the human serves.
+   Paddle imparted spin is legal, so the slice gets its curve and kick from the stroke. Pre spinning the ball by hand before release is NOT legal and is not modelled.
+   Ball struck no higher than the waist (7.C.3), see SERVEH.
+   short: slow, high arc, lands a few feet past the kitchen line. Safe over the net, but if it comes up short it is a kitchen fault and the receiver can step in and attack it.
+   drive: fast and flat to the baseline. Hard to return, but it clips the net or goes long more often.
+   slice: medium pace, bends in the air (about two feet) and kicks sideways off the bounce. Lands lower and skids. Aim near the sideline and it can curve out of the box. */
+var SV={short:{ty:31.4,sdy:1.15,sdx:0.6,pace:22,clear:4.3,rest:0.66,curve:0,kick:0,retq:1.0},
+        drive:{ty:41.8,sdy:1.45,sdx:0.7,pace:42,clear:3.05,rest:0.74,curve:0,kick:0,retq:0.84},
+        slice:{ty:38.4,sdy:1.0,sdx:1.5,pace:29,clear:3.6,rest:0.58,curve:13,kick:9,retq:0.88}};
+function serveKindOf(kind){ return kind==="soft"?"short":(kind==="lob"?"slice":"drive"); }
 function serve(g,i,kind,aim){
-  var p=g.pl[i], t=p.team, b=g.ball, f=face(t), ox=g.ownX;
+  var p=g.pl[i], t=p.team, b=g.ball, f=face(t), ox=g.ownX, sk=serveKindOf(kind), V=SV[sk], nz=(i>0||p.isAI)?Math.max(0.45,LP(i).noise):1.0;
   var cx=(ox===15)?5:15; /* the diagonal box in the server's own view */
-  var tx=cx+clamp(aim,-1,1)*3.5+gauss()*0.6;
-  var ty=(kind==="soft")?rnd(32,34.5):rnd(37.5,40.8); ty+=gauss()*0.8;
-  var L=own(t,tx,ty);
+  var tx=cx+clamp(aim,-1,1)*3.5+gauss()*2*V.sdx*nz;   /* gauss() has a spread of about 0.5 ft, so x2 makes sdx and sdy the real standard deviations in feet */
+  var ty=V.ty+gauss()*2*V.sdy*nz;
+  var sg=(tx>=10)?1:-1, cf=(t===0)?1:-1;   /* the slice bends toward the near sideline, in the server's own view; cf turns that into the common frame */
   b.x=p.x; b.y=p.y+f*0.8; b.h=SERVEH;
-  var T=Math.max(0.95,Math.hypot(L.x-b.x,L.y-b.y)/32);
-  T=solveT(b,L.x,L.y,T,3.45);
+  var L=own(t,tx,ty), dist=Math.hypot(L.x-b.x,L.y-b.y);
+  var T=Math.max(sk==="short"?1.35:0.9,dist/V.pace);
+  var clear=V.clear+(sk==="drive"?gauss()*2*0.07:0);   /* a flat drive skims the tape: it will sometimes clip it */
+  T=solveT(b,L.x,L.y,T,clear);
   var so=own(t,p.x,p.y);
-  g.log.push({n:1,idx:i,t:t,kind:"serve",q:1,dq:1,hq:1,ballH:SERVEH,vol:false,aim:aim,hy:so.y,hx:so.x,pos:snap(g),land:null});
-  launch(b,L.x,L.y,T);
+  g.log.push({n:1,idx:i,t:t,kind:"serve",sk:sk,q:1,dq:1,hq:1,ballH:SERVEH,vol:false,aim:aim,hy:so.y,hx:so.x,pos:snap(g),land:null});
+  launch(b,L.x,L.y,T,V.curve*sg*cf,V.kick*sg*cf);
+  b.rest=V.rest;
   g.phase="rally"; var r=g.rally; r.lastHit=t; r.lastIdx=i; r.shotNo=1; r.bounces=0; r.crossed=false; r.since=0; p.anim=0.28; p.serveT=-1; g.shotsTotal++;
-  ev(g,"hit",{t:t,kind:"serve",q:1,idx:i});
+  ev(g,"hit",{t:t,kind:"serve",sk:sk,q:1,idx:i});
 }
 function tryContact(g,i){
   var p=g.pl[i], t=p.team, b=g.ball, r=g.rally;
@@ -328,6 +344,7 @@ function tryContact(g,i){
   else if(volley&&inKitchen(t,p)){ flt="Kitchen fault"; code="kitchen"; }
   /* a computer player reads the ball at the last moment: it only speeds up an attackable ball, unless this is one of its mistakes */
   if((i>0||p.isAI)&&p.swKind==="drive"&&own(t,p.x,p.y).y>=11.5&&b.h<THR&&!p.ai.mistake&&!atpOption(g,i)) p.swKind="soft";
+  if(r.shotNo===1&&g.log.length&&g.log[0].sk) q*=SV[g.log[0].sk].retq;   /* the return of serve: a drive is rushed (hurried contact), a slice is hard to read, a short serve is the easiest */
   var cpu=(i>0||p.isAI), nz=cpu?LP(i).noise:1.0;
   if(cpu) q*=Math.max(0.5,1-0.22*(nz-0.55));   /* build 533: a lower level makes poorer contact, so it floats more dinks */
   strike(g,i,p.swKind,p.swAim,q,nz);
@@ -359,7 +376,7 @@ function stepBall(g,dt){
   var n=Math.max(1,Math.ceil(dt/0.008)), h=dt/n, r=g.rally;
   for(var i=0;i<n;i++){
     var px=b.x,py=b.y,ph=b.h;
-    b.vh-=GR*h; b.x+=b.vx*h; b.y+=b.vy*h; b.h+=b.vh*h;
+    b.vh-=GR*h; if(b.curve&&b.h>0) b.vx+=b.curve*h; b.x+=b.vx*h; b.y+=b.vy*h; b.h+=b.vh*h;
     if((py-22)*(b.y-22)<0){
       var fr=(22-py)/(b.y-py), hc=ph+(b.h-ph)*fr, xc=px+(b.x-px)*fr;
       if(hc-0.12<netH(xc)&&xc>-0.6&&xc<20.6){
@@ -370,6 +387,7 @@ function stepBall(g,dt){
     if(b.h<=0&&b.vh<0){
       b.h=0; onBounce(g);
       b.vh=-b.vh*(b.rest||REST); b.vx*=HRET; b.vy*=HRET;
+      if(b.kick){ b.vx+=b.kick; b.kick=0; } b.curve=0;   /* a sliced serve kicks sideways off its first bounce, then flies straight */
       if(b.vh<1.5){ b.vh=0; b.vx*=0.985; b.vy*=0.985; }
     }
     if(b.h<=0&&b.vh===0){ b.vx*=0.995; b.vy*=0.995; }
@@ -377,10 +395,10 @@ function stepBall(g,dt){
 }
 /* where a ball will come down, and where it will be playable after the bounce, for the assist rings and for the AI */
 function predict(g,t,volleyOK){
-  var b=g.ball, r=g.rally, s={x:b.x,y:b.y,h:b.h,vx:b.vx,vy:b.vy,vh:b.vh}, bn=r.bounces, tt=0;
+  var b=g.ball, r=g.rally, s={x:b.x,y:b.y,h:b.h,vx:b.vx,vy:b.vy,vh:b.vh}, bn=r.bounces, tt=0, cu=b.curve||0;   /* the bend of a slice is predicted, the kick off the bounce is not */
   var out={land:null,contact:null};
   for(var i=0;i<260;i++){
-    var pv=s.vh, dt=1/60; s.vh-=GR*dt; s.x+=s.vx*dt; s.y+=s.vy*dt; s.h+=s.vh*dt; tt+=dt;
+    var pv=s.vh, dt=1/60; s.vh-=GR*dt; if(cu&&bn===0) s.vx+=cu*dt; s.x+=s.vx*dt; s.y+=s.vy*dt; s.h+=s.vh*dt; tt+=dt;
     if(s.h<=0&&s.vh<0){ s.h=0; bn++; if(bn===1&&!out.land) out.land={x:s.x,y:s.y,t:tt}; s.vh=-s.vh*REST; s.vx*=HRET; s.vy*=HRET; if(bn>=3) break; }
     var onMine=(t===0?s.y<=22.2:s.y>=21.8); if(!onMine) continue;
     var oy=t===0?s.y:44-s.y;
@@ -416,7 +434,9 @@ var AIP={speed:9.4,reactLo:0.24,reactHi:0.42,skill:1.0,slip:0.012};
      line/line2/rec  where the player stops (kitchen line, after the return) and how fast it gets there
      noise     accuracy: scales the landing scatter and the court reading error (the unforced error lever)
      jam       scales how close a falling ball has to be to jam the player on a drop (good players give themselves room), 1.0 is the old rule; for the human it follows forgive
-     forgive   HUMAN ONLY: scales the drop contact offset so the good window is wide at low levels and tight at 9 and 10 */
+     forgive   HUMAN ONLY: scales the drop contact offset so the good window is wide at low levels and tight at 9 and 10
+     wide      HUMAN ONLY: 0 to 1, widens the drop sweet spot (ball height, speed, how fast it is falling) so the window is playable by hand
+     svShort/svSlice  share of serves that are short and sliced (the rest are drives) */
 var LV={
   react:   [1.30,1.25,1.20,1.14,1.08,1.04,0.98,0.93,0.86,0.78],
   spd:     [0.90,0.91,0.93,0.95,0.97,0.98,1.00,1.02,1.05,1.09],
@@ -431,15 +451,19 @@ var LV={
   dropLo:  [-3.40,-3.20,-3.00,-2.80,-2.60,-2.40,-2.20,-2.20,-2.20,-2.20],
   dropHi:  [3.00,2.70,2.40,2.10,1.80,1.60,1.40,1.30,1.20,1.10],
   vol:     [0.35,0.45,0.55,0.65,0.72,0.80,0.88,0.93,0.97,1.00],
-  line:    [9.00,9.60,10.20,10.90,11.60,12.30,13.00,13.40,13.60,13.70],
+  line:    [9.00,9.60,10.20,10.90,11.60,12.30,13.00,13.30,13.40,13.40],
   line2:   [8.00,8.50,9.00,9.60,10.20,10.70,11.00,11.00,11.00,11.00],
   rec:     [0.45,0.50,0.56,0.62,0.68,0.74,0.80,0.84,0.90,0.96],
   aimRnd:  [0.60,0.52,0.45,0.38,0.32,0.25,0.18,0.12,0.07,0.03],
   jam:     [1.00,1.00,1.00,1.00,1.00,1.00,0.80,0.60,0.40,0.30],
-  forgive: [0.15,0.18,0.21,0.25,0.29,0.34,0.40,0.46,0.62,0.85]
+  forgive: [0.15,0.16,0.18,0.20,0.22,0.25,0.28,0.32,0.40,0.55],
+  wide:    [1.00,1.00,0.98,0.95,0.90,0.85,0.78,0.68,0.50,0.30],
+  svShort: [0.70,0.62,0.55,0.48,0.42,0.36,0.30,0.25,0.21,0.18],
+  svSlice: [0.04,0.07,0.10,0.14,0.18,0.23,0.29,0.35,0.40,0.45]
 };
 function lvOf(i){ var v=(i===0)?CFG.lvHuman:((i===2)?CFG.lvPart:CFG.lvOpp); return clamp(Math.round(v),1,10); }
 function LP(i){ var k=lvOf(i)-1, o={}; for(var n in LV) o[n]=LV[n][k]; return o; }
+function wideOf(g,i){ var p=g.pl[i]; return (i===0&&(!p.isAI||CFG.forgiveBot))?LV.wide[lvOf(1)-1]:0; }   /* HUMAN only: how much wider the drop sweet spot is, 0 to 1 */
 function forgive(g,i){ var p=g.pl[i]; return (i===0&&(!p.isAI||CFG.forgiveBot))?LV.forgive[lvOf(1)-1]:1; }   /* the human's drop window follows the opponent level slider */
 function jamScale(g,i){ var p=g.pl[i]; return (i===0&&(!p.isAI||CFG.forgiveBot))?LV.forgive[lvOf(1)-1]:LP(i).jam; }
 function setLevels(o){ if(!o) return; if(o.opp!=null) CFG.lvOpp=o.opp; if(o.part!=null) CFG.lvPart=o.part; if(o.human!=null) CFG.lvHuman=o.human; }
@@ -480,7 +504,12 @@ function aiUpdate(g,idx,dt){
   if(g.phase==="serve"){
     if(g.srvIdx===idx){
       a.delay-=dt;
-      if(a.delay<=0&&p.serveT<0){ cmd.press=(Math.random()<0.78)?"drive":"soft"; cmd.aim=rnd(-0.9,0.9); }
+      if(a.delay<=0&&p.serveT<0){
+        var us=Math.random();   /* build 535: all three serves, weighted by level. Short comes off as the level climbs, slice comes in. */
+        if(us<P.svShort){ cmd.press="soft"; cmd.aim=rnd(-0.9,0.9); }
+        else if(us<P.svShort+P.svSlice){ cmd.press="lob"; cmd.aim=rnd(-0.75,0.75); }
+        else { cmd.press="drive"; cmd.aim=rnd(-0.9,0.9); }
+      }
     }
     return cmd;
   }
@@ -753,7 +782,7 @@ function beep(f,d,type,vol,slide){
 }
 /* ---------------------------------------------------------------- HUD */
 var hud={you:$("sYou"),opp:$("sOpp"),srv:$("srv"),msg:$("msg"),hint:$("hint"),mute:$("mute"),c1:$("c1"),c2:$("c2"),c3:$("c3"),why:$("why"),whyT:$("whyT")};
-var shown={score:"",hint:""};
+var shown={score:"",hint:"",menu:false};
 function setMsg(title,sub,good){
   hud.msg.innerHTML=""; var a=document.createElement("div"); a.className="mt"; a.textContent=title; hud.msg.appendChild(a);
   if(sub){ var b=document.createElement("div"); b.className="ms"; b.textContent=sub; hud.msg.appendChild(b); }
@@ -774,12 +803,15 @@ function updateHud(){
     hud.srv.textContent=srvLabel(); hud.srv.className=g.server===0?"you":"opp";
   }
   var h="";
-  if(g.phase==="serve"&&g.srvIdx===0) h="Your serve. Stay behind the baseline. HIT is deep, SOFT is short. Lean the stick up or down to aim.";
+  if(g.phase==="serve"&&g.srvIdx===0) h="Serve below the waist. SHORT, DRIVE or SLICE. Lean the stick to aim.";
   else if(g.phase==="serve"&&g.server===0) h="Your partner serves. Get ready for the return.";
   else if(g.phase==="serve"&&g.server===1) h="Opponent serves. Let it bounce, then hit it back.";
   else if(g.phase==="rally"&&g.rally.shotNo===1&&g.rally.lastHit===1) h="Let it bounce first.";
   else if(g.phase==="rally"&&g.rally.shotNo===2&&g.rally.lastHit===0) h="They must let it bounce too.";
   if(h!==shown.hint){ shown.hint=h; hud.hint.textContent=h; hud.hint.className=h?"show":""; }
+  /* build 535: while YOU are serving the three right buttons are the serve menu, and they go back to HIT, SOFT, LOB the moment the rally begins */
+  var sm=((g.phase==="setup"||g.phase==="serve")&&g.srvIdx===0);
+  if(sm!==shown.menu){ shown.menu=sm; $("bHit").textContent=sm?"DRIVE":"HIT"; $("bSoft").textContent=sm?"SHORT":"SOFT"; $("bLob").textContent=sm?"SLICE":"LOB"; }
 }
 var whyTimer=0;
 function showWhy(text){
