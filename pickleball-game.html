@@ -52,6 +52,7 @@ button{font-family:inherit}
 #msg .mt{font-size:30px;font-weight:800;text-shadow:0 2px 12px #000}
 #msg .ms{font-size:15px;color:#e6edf3;margin-top:4px;text-shadow:0 1px 8px #000}
 #msg.good .mt{color:#6ee7a0}#msg.bad .mt{color:#ff8a8a}
+#msg.gold .mt{color:#ffd23f;font-size:36px;text-shadow:0 0 18px rgba(255,210,63,.7),0 2px 12px #000}
 #why{position:absolute;left:50%;bottom:calc(14px + env(safe-area-inset-bottom));transform:translateX(-50%);max-width:44%;min-width:200px;background:rgba(10,18,26,.88);border:1px solid rgba(143,196,255,.45);border-radius:12px;padding:8px 34px 8px 12px;font-size:14px;line-height:1.35;color:#f4f7fa;z-index:8;opacity:0;pointer-events:none;transition:opacity .2s}
 #why.show{opacity:1;pointer-events:auto}
 #why b{position:absolute;right:4px;top:0;width:30px;height:100%;display:grid;place-items:center;color:#9fb0c0;font-size:16px}
@@ -104,7 +105,7 @@ button{font-family:inherit}
    To 11, win by 2. The server serves from the right court when their side's score is even, the left court when odd. */
 var PB=(function(){
 var GR=32.2, REST=0.72, HRET=0.62, REACH=3.8, SPEED=0.8, WIN=11;
-var CFG={human:11.0};
+var CFG={human:11.0,su:1.12,offDink:22,pressure:1};
 function clamp(v,a,b){ return v<a?a:(v>b?b:v); }
 function rnd(a,b){ return a+Math.random()*(b-a); }
 function gauss(){ return (Math.random()+Math.random()+Math.random()+Math.random()-2)*0.87; }
@@ -113,7 +114,7 @@ function face(t){ return t===0?1:-1; }
 function netH(x){ var u=(x-10)/10; return 2.83+0.17*u*u; }
 function partner(i){ return i<2?i+2:i-2; }
 function mem(g,t){ return g.mode==="doubles"?[t,t+2]:[t]; }
-function mkPl(i){ var t=i%2; return {idx:i,team:t,x:10,y:t===0?-3:47,vx:0,vy:0,cd:0,sw:0,anim:0,swKind:"drive",swAim:0,serveT:-1,goal:null,half:10,ai:{shot:-1,react:0,plan:null,vol:false,replan:0,delay:1,err:{x:0,y:0},resp:-1}}; }
+function mkPl(i){ var t=i%2; return {idx:i,team:t,x:10,y:t===0?-3:47,vx:0,vy:0,cd:0,sw:0,anim:0,swKind:"drive",swAim:0,serveT:-1,goal:null,half:10,ai:{shot:-1,react:0,plan:null,vol:false,replan:0,delay:1,err:{x:0,y:0},resp:-1,kind:null,rush:false,dinkOff:false,mistake:false,atk:false}}; }
 function newGame(mode){
   var g={t:0,mode:mode==="doubles"?"doubles":"singles",score:[0,0],server:0,sn:1,first:[2,1],sideR:[0,1],srvIdx:0,rcvIdx:1,phase:"intro",phaseT:0,msg:"",msgT:0,over:false,winner:-1,last:"",
     ball:{x:10,y:0,h:3,vx:0,vy:0,vh:0,held:true},pl:[mkPl(0),mkPl(1),mkPl(2),mkPl(3)],rally:null,ownX:15,events:[],deadT:0,rallies:0,shotsTotal:0,log:[],call:"0 0",why:null};
@@ -161,7 +162,7 @@ function endPoint(g,w,reason,code){
   else { g.server=w; g.sn=1; sideout=true; if(g.mode==="doubles") g.first[w]=(g.score[w]%2===0)?g.sideR[w]:partner(g.sideR[w]); }
   g.why=why; g.call=callOf(g);
   g.last=(scored?(w===0?"Your point. ":"Opponent point. "):(sideout?"Side out. ":"Second server. "))+reason;
-  ev(g,"point",{w:w,reason:reason,scored:scored,sideout:sideout,second:second,why:why,call:g.call});
+  ev(g,"point",{w:w,reason:reason,scored:scored,sideout:sideout,second:second,why:why,call:g.call,atp:!!(g.log.length&&g.log[g.log.length-1].atp)});
   var a=g.score[0],b=g.score[1];
   if(scored&&(a>=WIN||b>=WIN)&&Math.abs(a-b)>=2){ g.over=true; g.winner=a>b?0:1; }
 }
@@ -185,31 +186,104 @@ function quality(t,p,b){
   return qd*qh;
 }
 function meanOpp(g,t){ var m=mem(g,1-t), sx=0; m.forEach(function(i){ sx+=g.pl[i].x; }); return sx/m.length; }
+/* ---------------------------------------------------------------- the three skill mechanics (Ian, 17 Oct 2026)
+   1 DROP: a soft shot from behind the kitchen line is a skill check. Where it lands is decided by the contact (ball height,
+     whether it is still rising, how far out in front, how fast it came), with only a little noise on top.
+   2 SPEED UP: a drive from the kitchen line only works on an attackable ball (above the net, or a wide angled dink). Below that
+     it goes into the net if the ball is very low, long if it is a little low. The input is never blocked.
+   3 ATP: a low ball wide of the sideline can be played around the post. Triggered by ball position, no button.
+   And two dinks: a soft shot from the line taken EARLY (ball high or still rising) is the offensive dink, quicker and flatter;
+   taken late (ball low and falling) it is the defensive dink, slow and high. Same SOFT button, timing decides. */
+var THR=3.0;
+function pressure(g){ return CFG.pressure*Math.max(0,Math.min(1,(g.rally.shotNo-6)/20)); }   /* 0 for the first six shots, then creeps up to 1 by shot 26 */
+function contactD(b,p,f){ return Math.hypot(b.x-p.x,b.y-(p.y+f*0.9)); }
+function dropModel(b,p,f){
+  var h=b.h, vh=b.vh, d=contactD(b,p,f), sp=Math.hypot(b.vx,b.vy), dy=0;
+  /* sweet spot: ball near its peak or just past it (vh between -4 and 3), waist high (1.1 to 2.4 ft), out in front (0.8 to 1.9 ft), not hit hard */
+  if(h>2.4) dy+=4.0*(h-2.4); else if(h<1.1) dy-=2.2*(1.1-h);
+  if(vh>3) dy+=Math.min(3.5,0.5*(vh-3)); else if(vh<-4) dy-=Math.min(2.0,0.5*(-4-vh));
+  var db=Math.hypot(b.x-p.x,b.y-p.y);   /* the ball on top of your body is jammed, the ball out past 1.9 ft from the hitting spot is a stretch */
+  if(d>1.9) dy+=1.1*(d-1.9); if(db<0.7) dy-=1.8*(0.7-db);
+  if(sp>20) dy+=1.6*(sp-20)/10;
+  return dy;
+}
+function dropGradeOf(dy,d,db){ if(dy<-3.4) return "net"; if(db<0.45) return "jam"; if(dy>2.4) return "long"; if(dy>1.2) return "ok"; return "good"; }
+/* what a drop hit RIGHT NOW would be, for the on screen timing cue and for the AI's patience */
+function dropGrade(g,i){ var p=g.pl[i], b=g.ball, f=face(p.team), dy=dropModel(b,p,f)+1.1*pressure(g); return {dy:dy,grade:dropGradeOf(dy,0,Math.hypot(b.x-p.x,b.y-p.y))}; }
+/* around the post: null, or where to aim. Ball must be on this player's side, low, outside the sideline and near the net. */
+function atpOption(g,i){
+  var p=g.pl[i], t=p.team, b=g.ball, r=g.rally;
+  if(g.phase!=="rally"||r.lastHit===t) return null;
+  if(t===0?b.y>22.2:b.y<21.8) return null;
+  if(b.h>2.9||b.h<0.1) return null;
+  var o=own(t,b.x,b.y); if(o.y<11.5||o.y>21.8) return null;
+  var side=o.x<-1.2?-1:(o.x>21.2?1:0); if(!side) return null;
+  var ty=30.5, k=(ty-o.y)/(22-o.y), lim=side<0?-1.0:21.0, tx=o.x+(lim-o.x)*k;   /* the farthest the ball can be aimed and still pass outside the post */
+  if(side<0){ if(tx<1.6) return null; tx=Math.max(1.0,Math.min(tx-0.5,4.5)); } else { if(tx>18.4) return null; tx=Math.min(19.0,Math.max(tx+0.5,15.5)); }
+  return {tx:tx,ty:ty,side:side};
+}
 /* a groundstroke, volley or smash from the ball's current spot. kind: drive | soft | lob. aim -1..1 across the court. */
 function strike(g,i,kind,aim,q,skill){
-  var p=g.pl[i], t=p.team, b=g.ball, oppPos=own(t,meanOpp(g,t),0), me=own(t,p.x,p.y);
+  var p=g.pl[i], t=p.team, b=g.ball, f=face(t), oppPos=own(t,meanOpp(g,t),0), me=own(t,p.x,p.y);
   var sp=Math.hypot(b.vx,b.vy), spPen=1+Math.max(0,(sp-24)/60);
   var assist=clamp((10-oppPos.x)*0.3,-2.6,2.6);
-  var tx=10+aim*6.8+(Math.abs(aim)<0.15?assist:0), ty, T;
-  var nearNet=me.y>=11.5;
-  if(kind==="lob"){ ty=40.2; T=rnd(1.9,2.1); }
-  else if(kind==="soft"){ ty=nearNet?25.4:25.8; }
-  else { if(nearNet&&b.h>3.3){ ty=31.8; } else ty=37.2; }
-  var sx=(0.45+(1-q)*2.7)*spPen*(skill||1), sy=(0.55+(1-q)*2.3)*spPen*(skill||1);
-  var Lx=tx+gauss()*sx, Ly=ty+gauss()*sy;
-  var L=own(t,Lx,Ly);
-  var dist=Math.hypot(L.x-b.x,L.y-b.y);
-  if(kind!=="lob"){
-    if(kind==="soft") T=Math.max(nearNet?0.8:1.1,dist/(nearNet?9.5:19));
-    else T=Math.max(0.5,dist/(ty<33?44:31));
+  var nearNet=me.y>=11.5, prevRec=g.log.length?g.log[g.log.length-1]:null;
+  q*=(1-0.05*pressure(g));   /* a long rally narrows the contact tolerance a little for both sides */
+  if(nearNet&&prevRec&&prevRec.t!==t&&prevRec.dink==="off") q*=0.82;   /* an offensive dink rushes whoever has to answer it */
+  var rec={n:g.rally.shotNo+1,idx:i,t:t,kind:kind,q:q,dq:QP.dq,hq:QP.hq,ballH:b.h,vh:b.vh,d:contactD(b,p,f),sp:sp,vol:(g.rally.bounces===0),aim:aim,hy:me.y,hx:me.x,pos:snap(g),land:null,
+    drop:false,dropGrade:null,dropDy:0,dink:null,speedup:null,atp:false};
+  var tx=10+aim*6.8+(Math.abs(aim)<0.15?assist:0), ty, T, clear=3.45, flat=false, Lx, Ly, L, dist;
+  var sx=(0.45+(1-q)*2.7)*spPen*(skill||1), sy=(0.55+(1-q)*2.3)*spPen*(skill||1), speed=0;
+  var atp=(kind!=="lob")?atpOption(g,i):null;
+  if(atp){
+    rec.atp=true; rec.kind="atp";
+    Lx=atp.tx+gauss()*(0.35+(1-q)*1.2); Ly=atp.ty+gauss()*0.9; L=own(t,Lx,Ly); dist=Math.hypot(L.x-b.x,L.y-b.y); T=Math.max(0.55,dist/38); flat=true;
+  } else {
+    if(kind==="lob"){ ty=40.2; T=rnd(1.9,2.1); }
+    else if(kind==="soft"){
+      if(nearNet){
+        /* the two dinks. Early (ball high or still rising) = offensive: quick, flat, low over the net. Late = defensive: slow, high. */
+        var off=(g.rally.bounces===0||b.h>=1.5);   /* taken high or out of the air: that is what lets it be flat and quick */
+        rec.dink=off?"off":"def";
+        if(Math.abs(aim)>0.85) tx=10+Math.sign(aim)*(6.8+(Math.abs(aim)-0.85)/0.15*2.5);   /* a wide dink, risky and the setup for an ATP */
+        ty=off?27.0:25.4;   /* the quick one goes deeper into the kitchen on a flat line, the slow one drops in short on an arc */
+        if(off){ speed=CFG.offDink; clear=3.1; }
+      } else {
+        var dm=dropModel(b,p,f)+1.1*pressure(g), gr=dropGradeOf(dm,0,Math.hypot(b.x-p.x,b.y-p.y));
+        rec.drop=true; rec.dropGrade=gr; rec.dropDy=dm;
+        ty=Math.max(22.7,Math.min(36,25.5+dm)); sx=0.5+0.15*Math.abs(dm); sy=0.3+0.12*Math.abs(dm);
+        if(gr==="net"){ ty=24.5; flat=true; }
+        if(gr==="jam") speed=-1;   /* popped up: a high slow ball */
+      }
+    } else {
+      if(nearNet){
+        var thr=THR; if(prevRec&&prevRec.t!==t&&prevRec.land&&Math.abs(prevRec.land.x-10)>6) thr=2.6;   /* a wide angled dink is attackable lower down */
+        var dl=Math.max(0,thr-b.h)*(1-0.35*Math.min(1,Math.abs(aim)));
+        if(dl<0.1){ rec.speedup="attack"; ty=(b.h>=3.3)?31.8:34.5-(b.h-3.0)*9; speed=44*CFG.su; }
+        else if(dl>=1.35){ rec.speedup="net"; ty=34; speed=46*CFG.su; flat=true; }
+        else { rec.speedup="long"; ty=37.2+dl*6.5; speed=36*CFG.su; }
+      } else ty=37.2;
+    }
+    var pf=1+0.15*pressure(g); sx*=pf; sy*=pf;
+    Lx=tx+gauss()*sx; Ly=ty+gauss()*sy; L=own(t,Lx,Ly); dist=Math.hypot(L.x-b.x,L.y-b.y);
+    if(kind!=="lob"){
+      if(kind==="soft"){
+        if(nearNet){ T=speed>0?Math.max(0.5,dist/(speed)):Math.max(0.8,dist/9.5); var pf0=clamp((0.40-q)/0.10,0,1); rec.pop=pf0; T*=1+0.6*pf0; }   /* a poorly struck dink floats up: that is the attackable ball */
+        else { T=Math.max(1.0,dist/17); if(speed<0) T*=1.3; if(flat) T=Math.max(0.5,dist/16); }
+      }
+      else { T=speed>0?Math.max(0.42,dist/speed):Math.max(0.5,dist/(ty<33?44:31)); }
+    }
+    if(q<0.55&&!flat) clear-=(0.55-q)*2.8*rnd(0.3,1.6)*((rec.dink==="off")?0.5:1);
+    if(kind==='soft'&&nearNet) clear+=0.30*pressure(g);   /* tired dinks ride a little higher over the tape */
   }
-  var clear=3.45; if(q<0.55) clear-=(0.55-q)*2.8*rnd(0.3,1.6);
-  T=solveT(b,L.x,L.y,T,clear);
-  var rec={n:g.rally.shotNo+1,idx:i,t:t,kind:kind,q:q,dq:QP.dq,hq:QP.hq,ballH:b.h,vol:(g.rally.bounces===0),aim:aim,hy:me.y,hx:me.x,pos:snap(g),land:null};
+  if(!flat) T=solveT(b,L.x,L.y,T,clear);
   launch(b,L.x,L.y,T);
+  b.rest=rec.drop?(0.52+clamp((rec.dropDy-2.5)/2,0,1)*0.2):(rec.dink==='off'?0.55:(rec.dink==='def'?0.58:REST));
+  if(rec.dink) b.rest+=(REST-b.rest)*(rec.pop||0);   /* a soft shot is struck dead: it does not jump back up */
   var r=g.rally; r.lastHit=t; r.lastIdx=i; r.shotNo++; r.bounces=0; r.crossed=false; r.since=0; g.shotsTotal++;
   g.log.push(rec);
-  p.anim=0.28; r.lastKind=kind; r.lastQ=q; ev(g,"hit",{t:t,kind:kind,q:q,idx:i});
+  p.anim=0.28; r.lastKind=kind; r.lastQ=q; ev(g,"hit",{t:t,kind:rec.kind,q:q,idx:i,dink:rec.dink,drop:rec.dropGrade,speedup:rec.speedup});
+  if(rec.atp){ g.slow=0.8; ev(g,"atp",{t:t,idx:i}); }
   return {Lx:L.x,Ly:L.y,T:T};
 }
 function serve(g,i,kind,aim){
@@ -238,6 +312,8 @@ function tryContact(g,i){
   var flt=null, code=null;
   if(volley&&r.shotNo<=2){ flt="Volleyed before the bounce"; code="twobounce"; }
   else if(volley&&inKitchen(t,p)){ flt="Kitchen fault"; code="kitchen"; }
+  /* a computer player reads the ball at the last moment: it only speeds up an attackable ball, unless this is one of its mistakes */
+  if((i>0||p.isAI)&&p.swKind==="drive"&&own(t,p.x,p.y).y>=11.5&&b.h<THR&&!p.ai.mistake&&!atpOption(g,i)) p.swKind="soft";
   strike(g,i,p.swKind,p.swAim,q,1.0);
   p.sw=0;
   if(flt) fault(g,t,flt,code);
@@ -277,7 +353,7 @@ function stepBall(g,dt){
     }
     if(b.h<=0&&b.vh<0){
       b.h=0; onBounce(g);
-      b.vh=-b.vh*REST; b.vx*=HRET; b.vy*=HRET;
+      b.vh=-b.vh*(b.rest||REST); b.vx*=HRET; b.vy*=HRET;
       if(b.vh<1.5){ b.vh=0; b.vx*=0.985; b.vy*=0.985; }
     }
     if(b.h<=0&&b.vh===0){ b.vx*=0.995; b.vy*=0.995; }
@@ -293,10 +369,10 @@ function predict(g,t,volleyOK){
     var onMine=(t===0?s.y<=22.2:s.y>=21.8); if(!onMine) continue;
     var oy=t===0?s.y:44-s.y;
     if(bn>=1&&!out.contact){
-      if(s.vh>0&&s.h>=1.9){ out.contact={x:s.x,y:s.y,t:tt,vol:false}; break; }
-      if(s.vh<=0&&pv>0){ out.contact={x:s.x,y:s.y,t:tt,vol:false}; break; }
+      if(s.vh>0&&s.h>=1.9){ out.contact={x:s.x,y:s.y,t:tt,vol:false,h:s.h}; break; }
+      if(s.vh<=0&&pv>0){ out.contact={x:s.x,y:s.y,t:tt,vol:false,h:s.h}; break; }
     }
-    if(volleyOK&&bn===0&&s.h>=1.8&&s.h<=4.3&&oy<=14.2&&oy>=4&&!out.contact){ out.contact={x:s.x,y:s.y,t:tt,vol:true}; break; }
+    if(volleyOK&&bn===0&&s.h>=1.8&&s.h<=4.3&&oy<=14.2&&oy>=4&&!out.contact){ out.contact={x:s.x,y:s.y,t:tt,vol:true,h:s.h}; break; }
   }
   return out;
 }
@@ -326,13 +402,21 @@ function pickResp(g,idx,t,a){
   if(a.resp<0){ a.resp=cand; return; }
   if(cand!==a.resp&&dist2(g.pl[cand],c0.x,c0.y)+2.0<dist2(g.pl[a.resp],c0.x,c0.y)) a.resp=cand;
 }
+/* aim a volley at the feet of an opponent who is caught in the transition zone, or null if nobody is */
+function feetAim(g,t){
+  var best=null, by=1e9;
+  mem(g,1-t).forEach(function(i){ var p=g.pl[i], o=own(1-t,p.x,p.y); if(o.y>=4&&o.y<=13.5&&o.y<by){ by=o.y; best=p; } });
+  if(!best) return null;
+  var ox=(t===0)?best.x:20-best.x;   /* the opponent's x as seen from the hitter's own view */
+  return clamp(((20-ox)-10)/6.8+rnd(-0.12,0.12),-1,1);
+}
 function halfX(g,p){
   if(g.mode!=="doubles") return 10;
   var base=p.half>10?13.6:6.4, bx=own(p.team,g.ball.x,g.ball.y).x;
   return clamp(base+0.3*(bx-base),2,18);
 }
 function aiUpdate(g,idx,dt){
-  var p=g.pl[idx], t=p.team, a=p.ai, b=g.ball, r=g.rally, f=face(t), cmd={mx:0,my:0,press:null,aim:0}, dbl=(g.mode==="doubles");
+  var p=g.pl[idx], t=p.team, a=p.ai, b=g.ball, r=g.rally, f=face(t), cmd={mx:0,my:0,press:null,aim:0,ai:true}, dbl=(g.mode==="doubles");
   var me=own(t,p.x,p.y);
   if(g.phase==="setup"||g.phase==="intro") return cmd;
   if(g.phase==="serve"){
@@ -348,7 +432,7 @@ function aiUpdate(g,idx,dt){
   var incoming=(r.lastHit!==t);
   if(incoming){
     if(a.shot!==r.shotNo){
-      a.shot=r.shotNo; a.react=rnd(AIP.reactLo,AIP.reactHi); a.plan=null; a.replan=0; a.resp=-1;
+      a.shot=r.shotNo; a.react=rnd(AIP.reactLo,AIP.reactHi); a.plan=null; a.replan=0; a.resp=-1; a.kind=null; a.atk=false;
       a.vol=(r.shotNo>=2&&me.y>=8&&Math.random()<0.5);
       a.err={x:gauss()*0.55,y:gauss()*0.55};
     }
@@ -356,7 +440,9 @@ function aiUpdate(g,idx,dt){
     if(a.react<=0){
       a.replan-=dt;
       if(a.replan<=0){
-        a.replan=0.12; var pr=predict(g,t,a.vol); a.plan=pr.contact||null; if(!a.plan&&pr.land) a.plan={x:pr.land.x,y:pr.land.y,vol:false};
+        a.replan=0.12; var pr=predict(g,t,a.vol);
+        if(!a.vol&&r.shotNo>=3&&me.y>=8){ var pv=predict(g,t,true); if(pv.contact&&pv.contact.vol&&pv.contact.h>=2.2&&Math.random()<0.92){ a.vol=true; pr=pv; } }
+        a.plan=pr.contact||null; if(!a.plan&&pr.land) a.plan={x:pr.land.x,y:pr.land.y,vol:false};
         if(dbl) pickResp(g,idx,t,a);
       }
       var mine=(!dbl)||a.resp<0||a.resp===idx;
@@ -366,17 +452,33 @@ function aiUpdate(g,idx,dt){
         if(d>0.15){ var k=Math.min(1,d/1.2); cmd.mx=dx/d*k; cmd.my=dy/d*k; }
         var rd=Math.hypot(b.x-p.x,b.y-(p.y+f*0.9));
         var nn=own(t,p.x,p.y).y>=11.5, hmax=nn?5.6:3.7;
-        if(p.cd<=0&&rd<2.6&&b.h<hmax&&b.h>0.4&&(t===0?b.y<=22:b.y>=22)){
+        if(p.cd<=0&&rd<2.6&&b.h<hmax&&b.h>0.15&&(t===0?b.y<=22:b.y>=22)){
           var vol=(r.bounces===0);
           if(!(vol&&(r.shotNo<=2||inKitchen(t,p)))){
-            var k2="soft", u=Math.random(), mm=own(t,p.x,p.y);
-            var nearNet=mm.y>=11.5;
-            if(r.shotNo===1) k2=u<0.82?"drive":(u<0.9?"lob":"soft");
-            else if(b.h>3.2&&nearNet) k2="drive";
-            else if(nearNet) k2=u<0.74?"soft":(u<0.94?"drive":"lob");
-            else k2=u<0.55?"soft":(u<0.88?"drive":"lob");
-            cmd.press=k2;
-            cmd.aim=(Math.random()<0.25)?rnd(-0.25,0.25):pickAim(g,t);
+            var mm=own(t,p.x,p.y), nearNet=mm.y>=11.5, u=Math.random();
+            if(a.kind===null){
+              var atpO=atpOption(g,idx), kk;
+              if(atpO&&Math.random()<0.8) kk="drive";                                  /* a wide low ball: go around the post */
+              else if(r.shotNo===1) kk=u<0.82?"drive":(u<0.9?"lob":"soft");
+              else if(nearNet){ if(b.h>=THR) kk=u<0.85?"drive":"soft"; else kk=u<0.93?"soft":(u<0.96?"drive":"lob"); }   /* only the high ones get sped up, now and then one is a mistake */
+              else kk=u<0.55?"soft":(u<0.88?"drive":"lob");
+              a.kind=kk; a.rush=(Math.random()<0.22); a.dinkOff=(Math.random()<0.3); a.mistake=(Math.random()<0.06);
+            }
+            var peak=b.h+(b.vh>0?b.vh*b.vh/(2*GR):0);
+            if(nearNet&&r.bounces>=1&&peak>=THR+0.15&&!a.atk){ a.kind="drive"; a.atk=true; }   /* it is going to sit up: wait for it and attack */
+            var go=true;
+            if(a.atk&&a.kind==="drive") go=(b.h>=THR);
+            if(a.kind==="soft"&&!a.rush){
+              if(!nearNet){ var dg=dropGrade(g,idx); go=(dg.dy>-2.2&&dg.dy<1.2)||(b.h<0.8&&b.vh<0); }          /* wait for the ball to come down to the sweet spot */
+              else if(!a.dinkOff){ go=(b.h<1.2); } else { go=(b.h>=1.4||r.bounces===0||b.vh<-1||b.h<0.5); }                                                  /* defensive dink: let it drop */
+            }
+            if(go){
+              cmd.press=a.kind;
+              var feet=null;
+              if(a.kind==="drive"&&nearNet&&r.shotNo>=3&&b.h>=THR){ feet=feetAim(g,t); }
+              cmd.aim=(feet!==null)?feet:((Math.random()<0.25)?rnd(-0.25,0.25):pickAim(g,t));
+              if(a.kind==="soft"&&nearNet&&Math.abs(cmd.aim)>0.95) cmd.aim*=0.95;
+            }
           }
         }
       } else if(!mine){
@@ -395,7 +497,7 @@ function aiUpdate(g,idx,dt){
 }
 /* ---------------------------------------------------------------- one frame of the whole game */
 function bounds(g,idx,p){
-  var t=p.team, x0=-2.5,x1=22.5,y0,y1;
+  var t=p.team, x0=-2.4,x1=22.4,y0,y1;
   if(t===0){ y0=-9; y1=21.4; } else { y0=22.6; y1=53; }
   if(g.phase==="serve"||g.phase==="setup"){
     if(idx===g.srvIdx){
@@ -418,7 +520,7 @@ function press(g,idx,kind,aim){
 }
 function active(g){ return g.mode==="doubles"?[0,1,2,3]:[0,1]; }
 function step(g,realDt,input){
-  var dt=Math.min(0.05,realDt)*SPEED; g.t+=dt; g.events.length=0;
+  var dt=Math.min(0.05,realDt)*SPEED*((g.slow>0)?0.5:1); g.t+=dt; g.events.length=0; if(g.slow>0) g.slow-=Math.min(0.05,realDt);
   var act=active(g);
   if(g.phase==="intro"||g.phase==="over"){ stepBall(g,dt); return; }
   act.forEach(function(i){ var p=g.pl[i]; if(p.cd>0) p.cd-=dt; if(p.sw>0) p.sw-=dt; if(p.anim>0) p.anim-=dt; });
@@ -431,6 +533,7 @@ function step(g,realDt,input){
     return;
   }
   var hc=input||{mx:0,my:0,press:null,aim:0};
+  g.pl[0].isAI=!!hc.ai;
   movePl(g,0,hc,dt,CFG.human);
   if(hc.press) press(g,0,hc.press,hc.aim);
   act.forEach(function(i){ if(i===0) return; var ac=aiUpdate(g,i,dt); movePl(g,i,ac,dt,AIP.speed); if(ac.press) press(g,i,ac.press,ac.aim); });
@@ -471,8 +574,14 @@ function explain(g,w,code){
   if(!noErr&&last.t===0){
     /* your side made the error */
     if(last.kind==="serve"||last.idx!==0) return null;
+    if(last.speedup==="net") return "You sped up a ball that was below the net and it went into the tape. Only speed up the high ones.";
+    if(last.speedup==="long") return "You sped up a low ball. With no height to work with it only goes long.";
+    if(last.atp&&code==="net") return "Your post shot clipped the net. It has to pass outside the post.";
+    if(last.atp&&code==="out") return "Your post shot landed out. It has to come back in near the sideline.";
+    if(last.drop&&(code==="net"||code==="short")) return "You let the ball fall too low before you dropped it, so it went into the net.";
+    if(last.dink==="off"&&(code==="net"||code==="short")) return "That quick dink needs a ball you take high. Taken low it clips the tape.";
     if(code==="net"||code==="short"){
-      if(last.kind==="drive"&&last.ballH<2.3) return "You drove a ball that was below the net. Reset it instead.";
+      if(last.kind==="drive"&&last.ballH<2.3&&last.hy<11.5) return "You drove a ball that was below the net. Reset it instead.";
       if(last.kind==="soft"&&last.dq<0.6) return "You reached for that dink. Get your feet there first.";
       if(last.kind==="soft"&&last.hy<8) return "From that far back a dink needs an arc. Drop it, do not flick it.";
       if(last.q<0.55) return "You were not set when you hit it.";
@@ -490,6 +599,7 @@ function explain(g,w,code){
   }
   if(!noErr&&last.t===1){
     /* the opponent made the error: name what you did to cause it, only when the data shows it */
+    if(last.speedup==="net"||last.speedup==="long") return "They sped up a low ball and lost the point. Low balls get dinked back, not driven.";
     if(!prev||prev.t!==0||!prev.land) return null;
     var pl=prev.land;
     var cr=(prev.idx===0)?"":" by your partner";
@@ -504,6 +614,20 @@ function explain(g,w,code){
   var dd=Math.hypot(last.pos[def].x-land.x,last.pos[def].y-land.y);   /* how far the defender stood from where it came down */
   var yl=own(dTeam,land.x,land.y).y, atFeet=(dy>=5&&dy<=13.5&&Math.abs(yl-dy)<=3.5&&Math.abs(land.x-last.pos[def].x)<=4.5);   /* it came down at the defender's feet, inside the transition zone */
   var who=(def===0)?"You were":((dTeam===0)?"Your partner was":"They were");
+  var n=L.length, pre2=n>=3?L[n-3]:null;
+  /* the three new mechanics, named when they are the cause */
+  if(last.atp&&last.t===0) return "Around the post. The ball never had to clear the net.";
+  if(last.atp&&last.t===1) return (prev&&prev.t===0&&prev.land&&Math.abs(prev.land.x-10)>7.5)?"That dink was wide enough to go around the post. Keep dinks inside the sideline.":null;
+  if(dTeam===0&&prev&&prev.t===0&&prev.idx===0&&prev.drop&&last.vol&&last.t===1){
+    if(prev.dropGrade==="long") return "Your drop went long and they took it out of the air, so you never got up to the line.";
+    if(prev.dropGrade==="ok") return "Your drop landed deep in the kitchen and they took it out of the air, so you were stuck in the transition zone.";
+    if(prev.dropGrade==="jam") return "Your drop popped up off the paddle and they volleyed it, so you were stuck in the transition zone.";
+  }
+  if(dTeam===1&&prev&&prev.t===1&&prev.drop&&last.vol&&last.t===0&&(prev.dropGrade==="long"||prev.dropGrade==="ok"||prev.dropGrade==="jam")) return "Their drop floated and you took it out of the air.";
+  if(dTeam===0&&pre2&&pre2.t===1&&pre2.dink==="off"&&prev&&prev.pop>0.5&&last.kind==="drive") return "Their quick dink rushed you, your reply floated, and they attacked it.";
+  if(dTeam===1&&pre2&&pre2.t===0&&pre2.idx===0&&pre2.dink==="off"&&prev&&prev.pop>0.5&&last.kind==="drive") return "Your quick dink rushed them and they floated one up for you.";
+  if(dTeam===0&&prev&&prev.t===0&&prev.idx===0&&prev.dink&&prev.pop>0.7&&last.kind==="drive") return prev.dink==="off"?"Your quick dink came out high and they attacked it. Take it flatter or reset.":"Your dink floated up and they attacked it.";
+  if(dTeam===1&&prev&&prev.t===1&&prev.dink&&prev.pop>0.7&&last.kind==="drive") return "Their dink floated up and you attacked it.";
   if(last.kind==="serve"){
     if(last.t===0&&own(0,land.x,land.y).y>=41) return "Your deep serve left them no room to attack.";
     return null;
@@ -536,7 +660,7 @@ function explain(g,w,code){
   return null;
 }
 function debugEnd(g,w,reason,code){ g.phase="rally"; endPoint(g,w,reason||"test",code||"winner"); }
-return {newGame:newGame,startMatch:startMatch,step:step,predict:predict,aiUpdate:aiUpdate,press:press,own:own,face:face,AIP:AIP,CFG:CFG,movePl:movePl,inKitchen:inKitchen,nearest:nearest,mem:mem,partner:partner,explain:explain,debugEnd:debugEnd,startPoint:startPoint};
+return {newGame:newGame,startMatch:startMatch,step:step,predict:predict,aiUpdate:aiUpdate,press:press,own:own,face:face,AIP:AIP,CFG:CFG,movePl:movePl,inKitchen:inKitchen,nearest:nearest,mem:mem,partner:partner,explain:explain,debugEnd:debugEnd,startPoint:startPoint,dropGrade:dropGrade,atpOption:atpOption,THR:THR,_strike:strike,_stepBall:stepBall};
 })();
 
 </script>
@@ -548,7 +672,7 @@ return {newGame:newGame,startMatch:startMatch,step:step,predict:predict,aiUpdate
 var THREE_URL="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js";
 var $=function(id){ return document.getElementById(id); };
 var q=(function(){ var o={}; try{ location.search.replace(/^\?/,"").split("&").forEach(function(kv){ var a=kv.split("="); if(a[0]) o[a[0]]=a[1]; }); }catch(_){} return o; })();
-var TILT=(q.tilt!==undefined)?parseFloat(q.tilt):0;
+var TILT=(q.tilt!==undefined)?parseFloat(q.tilt):10;
 var SHADOW=(q.shadow!==undefined)?parseFloat(q.shadow):0.28;
 var FIGY=(q.figy!==undefined)?parseFloat(q.figy):0.85;
 var FOV=(q.fov!==undefined)?parseFloat(q.fov):22;
@@ -730,7 +854,7 @@ function fitCamera(){
   sc.renderer.setSize(W,H,false); sc.cam.aspect=W/H; sc.cam.updateProjectionMatrix(); sc.W=W; sc.H=H;
   var po=TILT*Math.PI/180, look=new T.Vector3(0,0,0);
   sc.cam.up.set(-1,0,0);
-  var pts=[[-12.2,0,-25.8],[12.2,0,-25.8],[-12.2,0,25.8],[12.2,0,25.8],[-12.2,0,0],[12.2,0,0]];
+  var pts=[[-12.4,0,-25.8],[12.4,0,-25.8],[-12.4,0,25.8],[12.4,0,25.8],[-12.4,0,0],[12.4,0,0]];   /* the court plus 2.4 ft outside each sideline, where a post shot is played from */
   for(var r=24;r<800;r+=0.5){
     sc.cam.position.set(r*Math.sin(po),r*Math.cos(po),0); sc.cam.lookAt(look); sc.cam.updateMatrixWorld();
     var ok=true;
@@ -763,6 +887,16 @@ function frameScene(dt){
     Sx.landR.visible=!!pred.land; if(pred.land){ Sx.landR.position.set(wx(pred.land.x),0.06,wz(pred.land.y)); var s2=1+0.08*Math.sin(g.t*14); Sx.landR.scale.set(s2,s2,1); }
     Sx.contR.visible=!!pred.cont; if(pred.cont) Sx.contR.position.set(wx(pred.cont.x),0.07,wz(pred.cont.y));
   } else { Sx.landR.visible=false; Sx.contR.visible=false; pred.t=0; }
+  /* the ring under you is a timing cue, not a button: green when a drop hit right now would land in the kitchen, amber when it would be long
+     or early, red when it would go long or into the net. Gold means the ball is wide and low enough to play around the post. */
+  if(Sx.figs[0].ring){
+    var rc=0x6db3ff;
+    if(g.phase==="rally"&&g.rally.lastHit===1){
+      if(PB.atpOption(g,0)) rc=0xffd23f;
+      else { var m0=g.pl[0], bb=g.ball; if(m0.y<11.5&&Math.hypot(bb.x-m0.x,bb.y-m0.y-0.9)<5.5){ var dg=PB.dropGrade(g,0); rc=(dg.grade==="good")?0x4ade80:(dg.grade==="ok"?0xf5d547:0xff6b6b); } }
+    }
+    Sx.figs[0].ring.material.color.setHex(rc);
+  }
   var showBox=(g.phase==="serve"&&g.server===0);
   Sx.box.visible=showBox; if(showBox){ var lo=(g.ownX===15)?0:10; Sx.box.position.set(wx(lo+5),0.05,wz(36.5)); }
   Sx.pulses.forEach(function(q){ if(q.t<0.3){ q.t+=dt; var u=q.t/0.3, s=1+u*2.2; q.m.scale.set(s,s,1); q.m.material.opacity=0.8*(1-u); } else q.m.visible=false; });
@@ -775,6 +909,11 @@ var last=0, raf=0, running=false;
 function handleEvents(){
   g.events.forEach(function(e){
     if(e.k==="hit"){ beep(e.a.kind==="drive"?480:(e.a.kind==="lob"?360:600),0.07,"square",0.1,240); pulse(g.ball.x,g.ball.y,0xffffff); }
+    else if(e.k==="atp"){
+      var gold=(e.a.t===0); [0,0.12,0.24].forEach(function(dl,ix){ setTimeout(function(){ pulse(g.ball.x,g.ball.y,0xffd23f); },dl*1000); });
+      beep(520,0.09,"triangle",0.14,780); setTimeout(function(){ beep(780,0.1,"triangle",0.14,1040); },90); setTimeout(function(){ beep(1040,0.18,"triangle",0.15,1400); },190);
+      setMsg(gold?"Around the post!":"They went around the post","",gold); hud.msg.className+=" gold"; setTimeout(hideMsg,1300);
+    }
     else if(e.k==="bounce"){ beep(820,0.04,"sine",0.07); pulse(g.ball.x,g.ball.y,0xaad4ff); }
     else if(e.k==="net"){ beep(110,0.16,"sawtooth",0.1); }
     else if(e.k==="point"){
