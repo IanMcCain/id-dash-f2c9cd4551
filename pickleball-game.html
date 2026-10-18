@@ -569,6 +569,8 @@ function frameScene(dt){
   Sx.renderer.render(Sx.scene,Sx.cam);
 }
 /* ---------------------------------------------------------------- loop, pause rules */
+var EMBED=false; try{ EMBED=(window.parent!==window)&&/[?&]embed=1(&|$)/.test(location.search); }catch(_){}
+function tell(m){ if(!EMBED) return; try{ window.parent.postMessage({pbgame:m},location.origin); }catch(_){} }
 var last=0, raf=0, running=false;
 function handleEvents(){
   g.events.forEach(function(e){
@@ -595,9 +597,10 @@ function evalRun(){
   if(S.playing&&sc.renderer&&land) fitCamera();
   run(S.playing&&!S.paused&&land&&!document.hidden&&S.built&&!S.failed);
 }
-function fsEl(){ return document.fullscreenElement||document.webkitFullscreenElement||null; }
-function fsSupported(){ var d=document.documentElement; return !!(d.requestFullscreen||d.webkitRequestFullscreen); }
+function fsEl(){ if(EMBED) return document.documentElement; return document.fullscreenElement||document.webkitFullscreenElement||null; }
+function fsSupported(){ if(EMBED) return false; var d=document.documentElement; return !!(d.requestFullscreen||d.webkitRequestFullscreen); }
 function reqFs(){
+  if(EMBED) return null;
   var d=document.documentElement, p=null;
   try{ if(d.requestFullscreen) p=d.requestFullscreen(); else if(d.webkitRequestFullscreen) p=d.webkitRequestFullscreen(); }catch(e){ p=null; }
   return p;
@@ -610,6 +613,7 @@ function enterFs(){
   else if(fsSupported()){ S.fsActive=true; afterFs(); }
 }
 function onFsChange(){
+  if(EMBED) return;
   var on=!!fsEl();
   if(S.fsActive&&!on&&S.playing&&!S.failed){ S.paused=true; showPause(); }
   S.fsActive=on; setTimeout(function(){ fitCamera(); evalRun(); },200);
@@ -622,8 +626,13 @@ if("ResizeObserver" in window) new ResizeObserver(function(){ fitCamera(); }).ob
 /* ---------------------------------------------------------------- overlays */
 function showPause(){
   ovTitle.textContent="Paused"; ovBody.textContent="Your score is kept: "+g.score[0]+" to "+g.score[1]+". Tap Resume to carry on."; ovBtn.textContent="Resume"; ovBtn.style.display=""; ovBtn.disabled=false; ov.className="screen show";
-  ovBtn.onclick=function(){ audioInit(); ov.className="screen"; S.paused=false; if(fsSupported()&&!fsEl()) enterFs(); else evalRun(); };
-  evalRun();
+  ovBtn.onclick=function(){ audioInit(); ov.className="screen"; S.paused=false; if(EMBED) tell("resume"); else if(fsSupported()&&!fsEl()) enterFs(); evalRun(); };
+  exitBtn(); evalRun();
+}
+function exitBtn(){
+  var b=$("exitBtn"); if(!EMBED){ if(b) b.style.display="none"; return; }
+  if(!b){ b=document.createElement("button"); b.id="exitBtn"; b.className="go"; b.style.marginTop="10px"; b.style.background="#2a3a49"; b.style.color="#e8eef4"; b.textContent="Back to the app"; b.onclick=function(){ tell("exit"); }; ov.appendChild(b); }
+  b.style.display="";
 }
 function showEnd(){
   var w=g.winner===0; ovTitle.textContent=w?"You win":"You lose"; ovBody.innerHTML="";
@@ -631,8 +640,10 @@ function showEnd(){
   var b=document.createElement("div"); b.textContent=w?"Good match. Rally scoring to 11, win by 2.":"Close ones are won at the kitchen line. Try again."; ovBody.appendChild(b);
   ovBtn.textContent="Play again"; ovBtn.style.display=""; ovBtn.disabled=false; ov.className="screen show";
   ovBtn.onclick=function(){ audioInit(); ov.className="screen"; PB.startMatch(g); hideMsg(); S.paused=false; evalRun(); };
+  exitBtn();
 }
 function fail(why){
+  tell("failed");
   S.failed=true; run(false); rot.className="screen"; stageHide();
   launch.className="screen show"; $("goBtn").style.display="none";
   $("fsNote").textContent=why+" The game needs WebGL and a connection to load its 3D library. Reload the page to try again.";
@@ -651,9 +662,21 @@ function play(){
 var goBtn=$("goBtn");
 if(!fsSupported()) $("fsNote").textContent="This browser cannot go full screen on its own. Turn your phone sideways and play. On an iPhone, Add to Home Screen from the share menu for the full screen look.";
 goBtn.disabled=true; goBtn.textContent="Loading the court";
-loadThree(function(){ T=window.THREE; S.loaded=true; goBtn.disabled=false; goBtn.textContent="Play full screen"; goBtn.onclick=play; },
+loadThree(function(){ T=window.THREE; S.loaded=true; goBtn.disabled=false; goBtn.textContent="Play full screen"; goBtn.onclick=play; if(EMBED){ tell("ready"); play(); } },
   function(){ fail("The 3D library could not be loaded."); });
-window.__pb={g:g,PB:PB,input:input,S:S,sc:function(){ return sc; },play:play,fit:fitCamera,evalRun:evalRun};
+function teardown(){
+  run(false); S.playing=false; S.paused=true;
+  try{ if(sc.scene) sc.scene.traverse(function(o){ if(o.geometry) o.geometry.dispose(); if(o.material){ var m=o.material; (Array.isArray(m)?m:[m]).forEach(function(mm){ if(mm.map) mm.map.dispose(); mm.dispose(); }); } }); }catch(_){}
+  try{ if(sc.renderer){ sc.renderer.dispose(); if(sc.renderer.forceContextLoss) sc.renderer.forceContextLoss(); } }catch(_){}
+}
+window.addEventListener("message",function(ev){
+  if(!EMBED||ev.origin!==location.origin||!ev.data||!ev.data.pbgame) return;
+  var m=ev.data.pbgame;
+  if(m==="pause"){ if(S.playing&&!S.paused&&!S.failed){ S.paused=true; showPause(); } }
+  else if(m==="teardown"){ teardown(); }
+});
+document.addEventListener("pointerdown",function(){ audioInit(); },{once:true,capture:true});
+window.__pb={teardown:teardown,g:g,PB:PB,input:input,S:S,sc:function(){ return sc; },play:play,fit:fitCamera,evalRun:evalRun};
 })();
 
 </script>
