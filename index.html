@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 529 (2026-10-17)">
+<meta name="build" content="v21 build 530 (2026-10-17)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -34290,14 +34290,61 @@ function pkCourtDispose(inst){
     if(inst.renderer){ inst.renderer.dispose(); if(inst.renderer.forceContextLoss) inst.renderer.forceContextLoss(); }
   }catch(_){}
 }
+/* ===== build 530: LAUNCH THE GAME FROM THE 3D COURT CARD. =========================================
+   The game source of truth is the standalone pickleball-game.html (testable on its own). It is loaded into an
+   iframe ONLY when Play is tapped, so nothing about the game is fetched, parsed or run on page load, and a
+   visit that never plays pays zero. The ambient rally is held (not destroyed) while the game is up and resumes on
+   exit; the game's own WebGL context is force released on exit and the iframe is removed. One game at a time.
+   Fullscreen and the landscape lock are requested HERE, from the tap, because that is the user gesture. */
+var PKG={box:null,fr:null,msg:null,fsc:null};
+function pkGameFsEl(){ return document.fullscreenElement||document.webkitFullscreenElement||null; }
+function pkGameClose(){
+  if(!PKG.box) return;
+  var box=PKG.box, fr=PKG.fr; PKG.box=null; PKG.fr=null;
+  try{ window.removeEventListener("message",PKG.msg); document.removeEventListener("fullscreenchange",PKG.fsc); document.removeEventListener("webkitfullscreenchange",PKG.fsc); }catch(_){}
+  try{ if(fr&&fr.contentWindow&&fr.contentWindow.__pb) fr.contentWindow.__pb.teardown(); }catch(_){}
+  try{ if(pkGameFsEl()){ (document.exitFullscreen||document.webkitExitFullscreen).call(document); } }catch(_){}
+  try{ if(screen.orientation&&screen.orientation.unlock) screen.orientation.unlock(); }catch(_){}
+  try{ fr.src="about:blank"; }catch(_){}
+  try{ box.remove(); }catch(_){}
+  var i=window.__pkCourtInst; if(i){ i.hold=false; try{ if(i.ready&&i.setRun) i.setRun(i.visible&&!document.hidden); }catch(_){} }
+}
+function pkGameOpen(wrap){
+  if(PKG.box) return;
+  var i=window.__pkCourtInst; if(i){ i.hold=true; try{ if(i.setRun) i.setRun(false); }catch(_){} }
+  var box=document.createElement("div"); box.id="pk-game-box"; box.style.cssText="position:fixed;left:0;top:0;width:100%;height:100%;z-index:99999;background:#0b141c";
+  var fr=document.createElement("iframe"); fr.title="Pickleball game"; fr.setAttribute("allow","fullscreen; autoplay");
+  fr.style.cssText="border:0;display:block;width:100%;height:100%;background:#0b141c";
+  var bm=document.querySelector('meta[name="build"]'), bn=(bm&&/build (\d+)/.exec(bm.getAttribute("content")||""))||[0,"0"];
+  fr.src="pickleball-game.html?embed=1&v="+bn[1];
+  box.appendChild(fr); document.body.appendChild(box); PKG.box=box; PKG.fr=fr;
+  function toFs(){ try{ var f=box.requestFullscreen||box.webkitRequestFullscreen; if(f){ var pr=f.call(box); if(pr&&pr.then) pr.then(function(){ try{ if(screen.orientation&&screen.orientation.lock){ var q=screen.orientation.lock("landscape"); if(q&&q.catch) q.catch(function(){}); } }catch(_){} },function(){}); } }catch(_){} }
+  toFs();
+  PKG.fsc=function(){ if(PKG.box&&!pkGameFsEl()){ try{ fr.contentWindow.postMessage({pbgame:"pause"},location.origin); }catch(_){} } };
+  document.addEventListener("fullscreenchange",PKG.fsc); document.addEventListener("webkitfullscreenchange",PKG.fsc);
+  PKG.msg=function(ev){
+    if(!PKG.box||ev.source!==fr.contentWindow||ev.origin!==location.origin||!ev.data||!ev.data.pbgame) return;
+    var m=ev.data.pbgame;
+    if(m==="exit") pkGameClose();
+    else if(m==="resume") toFs();
+    else if(m==="failed"){ pkGameClose(); try{ var n=el("div","small dim"); n.style.cssText="padding:8px 4px 0;line-height:1.5"; n.textContent="The game could not start. It needs WebGL and a connection."; wrap.appendChild(n); setTimeout(function(){ try{ n.remove(); }catch(_){} },6000); }catch(_){} }
+  };
+  window.addEventListener("message",PKG.msg);
+}
 function pkCourt3D(host){
   /* one live scene at a time: the page rebuilds on navigation, so an old, detached scene is released here */
   try{ if(window.__pkCourtInst) pkCourtDispose(window.__pkCourtInst); }catch(_){}
   var inst={dead:false,run:false,visible:false,ready:false}; window.__pkCourtInst=inst;
   var cd=card("a-green"); var cb=cd._body; cd.style.marginBottom="0";
   var stage=el("div"); stage.style.cssText="position:relative;width:100%;height:320px;border-radius:14px;overflow:hidden;background:#0b141c;touch-action:pan-y";
-  cb.appendChild(stage); host.appendChild(cd);
-  function fallback(why){ inst.ready=false; inst.run=false; stage.style.height="auto"; stage.style.touchAction="auto"; stage.innerHTML=""; var m=el("div","small dim"); m.style.cssText="padding:16px;line-height:1.55;text-align:center"; m.textContent=why; stage.appendChild(m); }
+  var wrap=el("div"); wrap.style.cssText="position:relative"; wrap.appendChild(stage); cb.appendChild(wrap); host.appendChild(cd);
+  /* build 530: the card is the launcher for the playable game. The ambient rally stays as the idle state. The game is NOT in this file:
+     tapping Play lazy loads pickleball-game.html in an iframe, so a visit that never plays pays nothing. See pkGameOpen below. */
+  var playBtn=el("button",null,"Play"); playBtn.type="button"; playBtn.setAttribute("aria-label","Play pickleball full screen");
+  playBtn.style.cssText="position:absolute;right:12px;bottom:12px;min-width:92px;height:44px;padding:0 22px;border:0;border-radius:22px;background:#2f8a73;color:#fff;font-weight:800;font-size:16px;letter-spacing:.02em;box-shadow:0 2px 10px rgba(0,0,0,.45);cursor:pointer;touch-action:manipulation";
+  playBtn.onclick=function(ev){ try{ ev.stopPropagation(); }catch(_){} pkGameOpen(wrap); };
+  wrap.appendChild(playBtn);
+  function fallback(why){ inst.ready=false; inst.run=false; playBtn.style.display="none"; stage.style.height="auto"; stage.style.touchAction="auto"; stage.innerHTML=""; var m=el("div","small dim"); m.style.cssText="padding:16px;line-height:1.55;text-align:center"; m.textContent=why; stage.appendChild(m); }
   var started=false;
   function start(){
     pkCourtLoadThree(function(){ if(inst.dead) return; try{ build(); }catch(e){ try{console.error("[dash] pkcourt",e);}catch(_){} fallback("The 3D court could not start on this device."); } },
@@ -34395,7 +34442,7 @@ function pkCourt3D(host){
       pose(dt); place(); renderer.render(scene,cam);
     }
     var last=performance.now();
-    inst.setRun=function(on){ if(inst.dead) return; if(on&&!inst.run){ inst.run=true; last=performance.now(); inst.raf=requestAnimationFrame(frame); } else if(!on&&inst.run){ inst.run=false; try{ cancelAnimationFrame(inst.raf); }catch(_){} } };
+    inst.setRun=function(on){ if(inst.dead) return; if(inst.hold) on=false; if(on&&!inst.run){ inst.run=true; last=performance.now(); inst.raf=requestAnimationFrame(frame); } else if(!on&&inst.run){ inst.run=false; try{ cancelAnimationFrame(inst.raf); }catch(_){} } };
     inst.vis=function(){ inst.setRun(inst.visible&&!document.hidden); }; document.addEventListener("visibilitychange",inst.vis);
     inst.ready=true; pose(0.016); place(); renderer.render(scene,cam);
     inst.setRun(inst.visible&&!document.hidden);
