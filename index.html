@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 528 (2026-10-17)">
+<meta name="build" content="v21 build 529 (2026-10-17)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -27358,6 +27358,77 @@ try{ if(profile==="ian" && state.meta && !state.meta.mig526_pk1016am && state.pi
       state.meta.mig528_amex_signup=true; save(true);
   } }catch(e){ try{ console.warn("mig528 did not apply:",e&&e.message); }catch(_){} }
 
+/* ===== v21 build 529: FINANCE CORRECTIONS (Ian, 18 October 2026). Written once, guarded, SEED_VERSION stays 13. ============
+   1. The tax estimate was missing. Added as finance.taxEstimate, PROVISIONAL, from the 17 October recompute on build 524 income.
+   2. Home office: Ian chose the REGULAR method (25 Sep). The simplified $627.92 is retired to homeOffice.simplifiedWas.
+   3. Deductions: reconciled to the expense ledger, documented certain total $1,212.19 (35 charges), a floor.
+   4. Balances: Rocket Money read 17 Oct. Amex 1,134, Discover 1,824, FNBO 8909 2,155, FNBO 1177 1,000 (unchanged).
+   5. Discover limit checked, kept at $3,600 on Ian's own word of 21 Sep. No session, gym, self assessment or deal record is touched. */
+try{ if(profile==="ian" && state.meta && !state.meta.mig529_finance_fix && state.finance){
+    var _F29=state.finance;
+    /* tax estimate */
+    _F29.taxEstimate={
+      asOf:"2026-10-17", provisional:true,
+      source:"10.14.2026 Tax Estimate vs Set Aside, update of 17 Oct 2026 (SONNET-M, app build 524 income). An estimate, not advice; his tax guy is the authority.",
+      scenarios:[
+        {miles:17500, mileageDeduction:12994, netSE:37125, se:5246, federal:1578, nebraska:719, total:7543, keeps:48768},
+        {miles:20000, mileageDeduction:14850, netSE:35268, se:4983, federal:1413, nebraska:642, total:7039, keeps:49273}
+      ],
+      assumedExpenses:5569, assumedExpensesBasis:"10 percent of 2026 commission of $55,687.12, Ian's own figure",
+      documentedExpenses:1212.19, taxPerThousand:273,
+      note:"PROVISIONAL. It assumes $5,569 of other expenses; the ledger documents $1,212.19 so far, plus a home office of about $819 to $886. At about $273 of tax per $1,000 of deductions, that gap would add roughly $1,000 to the bill once the ledger is final. It also assumes all five November closings pay in 2026 and a mileage log that does not exist yet."
+    };
+    _F29.mileageAssumption={ milesLow:17500, milesHigh:20000, deductionLow:12994, deductionHigh:14850, noLog:true,
+      note:"Split evenly across the year at 72.5 cents through 30 June and 76 cents from 1 July. An assumption used by the tax estimate. No mileage log exists." };
+    /* ledger */
+    _F29.ledger={
+      asOf:"2026-10-17", documented:1212.19, paid:1224.79, charges:35,
+      source:"WORK/Real_Estate/Output/2026 Business Expense Log.md, master ledger rebuilt 17 Oct 2026 from Rocket Money (Amex, Discover, FNBO).",
+      categories:[
+        {name:"MLS dues", amount:350.00},
+        {name:"Supra lockbox system", amount:127.82},
+        {name:"Software", amount:656.93},
+        {name:"Supplies", amount:64.84},
+        {name:"Business meal, 50%", amount:12.60}
+      ],
+      note:"From the expense ledger, 17 Oct, 35 charges. This is a floor: about $114 of June charges are missing from the feed. Home office is not in it, and gas is held out until Ian settles mileage or actual with his tax guy."
+    };
+    /* home office, regular method */
+    if(_F29.homeOffice){
+      if(!_F29.homeOffice.simplifiedWas) _F29.homeOffice.simplifiedWas={ deduction:_F29.homeOffice.deduction, method:_F29.homeOffice.method, rate:_F29.homeOffice.rate, cap:_F29.homeOffice.cap };
+      _F29.homeOffice.method="regular"; _F29.homeOffice.deduction=0;
+      _F29.homeOffice.deductionLow=819; _F29.homeOffice.deductionHigh=886.44;
+      _F29.homeOffice.methodSource="Ian chose the regular method, recorded 25.09.2026. About $819 to $886 on an apartment of 850 to 920 sq ft, still to be confirmed. The simplified $627.92 is retired and kept in simplifiedWas.";
+    }
+    /* balances */
+    var _src29="Rocket Money, read 17.10.2026. SUPERSEDES the 9 October read.";
+    (_F29.cards||[]).forEach(function(c){
+      if(!c) return;
+      if(c.id==="amexgold"){ c.balanceWas={ value:c.balance, asOf:"2026-10-09" }; c.balance=1134; c.balanceSource=_src29+" Was $703."; }
+      if(c.id==="discover"){ c.balanceWas={ value:c.balance, asOf:"2026-10-09" }; c.balance=1824; c.balanceSource=_src29+" Was $1,580.";
+        c.balanceStale="Refreshed 17.10.2026 from Rocket Money. The pending list, statement balance and available figure above are the 9 and 7 October reads and were not refreshed.";
+        c.limitCheck={ asOf:"2026-10-17", kept:3600,
+          why:"KEPT at $3,600. Ian confirmed it himself on 21.09.2026 (\"2370 of 3600 is accurate\" and \"My set limit is $3,600\"), and his own word beats Rocket Money on a limit or a percentage. The 65 percent Rocket Money figure is $2,370 on $3,600, which is 65.8 percent: it matches the 21 September balance, not today's $1,824. On the $3,600 line, $1,824 is about 51 percent. Today's Rocket Money utilisation figure was not read." }; }
+    });
+    (_F29.accounts||[]).forEach(function(a){
+      if(a && a.id==="fnbo8909"){ a.balanceWas={ value:a.balance, asOf:"2026-10-09" }; a.balance=2155; a.read=2155; a.balanceSource=_src29+" Was $2,576."; }
+      if(a && a.id==="fnbo1177"){ a.balance=1000; a.balanceSource="Rocket Money, read 17.10.2026. Unchanged."; }
+    });
+    _F29.asOf="2026-10-17"; _F29.source="Rocket Money, read 17 Oct 2026";
+    if(Array.isArray(_F29.balanceSeries)) _F29.balanceSeries.push({ d:"2026-10-17", v:2155, src:"Rocket Money" });
+    if(_F29.staleness){ _F29.staleness.lastHardRead="2026-10-17"; _F29.staleness.ageAtWrite="0 days, read 17.10.2026"; _F29.staleness.what="Checking, both cards and the buffer are the 17 October Rocket Money read. The burn is Ian's own settled $1,500 to $2,000."; }
+    if(_F29.netWorth){
+      var _nw29=_F29.netWorth;
+      _nw29.asOf="2026-10-17"; _nw29.assets=3155; _nw29.debtsKnown=2958; _nw29.debtsMin=4608; _nw29.debtsMax=4758;
+      _nw29.assetsNote="$2,155 checking plus $1,000 savings, Rocket Money read 17 October. SUPERSEDES $3,576 of 9 October.";
+      _nw29.debtsKnownNote="Discover $1,824 plus Amex Gold $1,134, Rocket Money read 17 October. SUPERSEDES $2,283 of 9 October.";
+      _nw29.value="NEEDS RECOMPUTING. Assets $3,155 less known debts $2,958 is $197 before the bike loan, which is still carried only as a range of about $1,650 to $1,800, so the net is around minus $1,450 to minus $1,600. STATED AS A RANGE AND NOT AS A FIGURE, because the bike loan has never had a confirmed balance.";
+    }
+    if(_F29.trough){ _F29.trough.refreshNote="NOT RECOMPUTED on 17.10.2026. The base above is the 9 October $2,576; the 17 October read is $2,155 and the window to 13 November is now 27 days. Treat the figures here as the 9 October projection."; }
+    state.meta.mig529_finance_fix=true; save(true);
+    try{ console.log("mig529: finance corrections applied"); }catch(_){}
+} }catch(e){ try{ console.warn("mig529 did not apply:",e&&e.message); }catch(_){} }
+
   /* build 372: LAST THING BEFORE THE SAVE. Every migration above has run, deepMergeDefaults
      has run, so this is the only point in the file where the state is actually final. */
   try{ convergeState(); }catch(e){}
@@ -28941,10 +29012,12 @@ function homeZone1(host,nm,workout){
   top.appendChild(ring);
   var pctTo=Math.round(frac*100);
   pn.textContent=String(pctTo);
-  var hm=el("div","z1-hmain"); hm.appendChild(el("div","z1-lab","Production this year"));
+  var hm=el("div","z1-hmain"); hm.appendChild(el("div","z1-lab","Closed plus under contract"));
   var big=el("div","z1-big",fmtMoneyShort(prod)); hm.appendChild(big);
   hm.appendChild(el("div","z1-sub","of "+fmtMoneyShort(goal)+" goal"));
-  hm.appendChild(el("div","z1-sub2",nDeals+(nDeals===1?" side":" sides")+" closed or under contract"));
+  hm.appendChild(el("div","z1-sub2",nDeals+(nDeals===1?" side":" sides")+" closed or under contract, app roll-up"));
+  /* build 529: NP Dodge's own report heads Real Estate at a different measure (closed only, to 30 September). Name it here so the two never read as a disagreement. */
+  try{ var _npH=state.realEstate&&state.realEstate.npdProduction; if(_npH&&_npH.volume){ hm.appendChild(el("div","z1-sub2","NP Dodge report: "+fmtMoneyShort(_npH.volume)+", "+_npH.sides+" sides, closed, to "+(_npH.periodEndShort||""))); } }catch(_){}
   top.appendChild(hm);
   if(anim){
     requestAnimationFrame(function(){ requestAnimationFrame(function(){ bar.style.strokeDashoffset=String(offTo); }); });
@@ -31328,10 +31401,16 @@ function reGoalsCard(parent,accOverride){
   const incVal=el("div","goal-val"); incVal.innerHTML='<b>'+fmtMoney(incClosed)+'</b> <span>closed'+(incUc?', '+fmtMoney(incUc)+' pending':'')+'</span>'; incLine.appendChild(incVal);
   b.appendChild(incLine);
   { var _ptLine=el("div"); _ptLine.style.cssText="margin-top:5px;display:flex;justify-content:space-between;align-items:baseline";
-    _ptLine.appendChild(el("div","small dim","Yours after "+taxPctWord()+" tax"));
+    _ptLine.appendChild(el("div","small dim","Less the "+taxPctWord()+" reserve"));
     var _ptVal=el("div","small"); _ptVal.style.fontWeight="800"; _ptVal.style.color="var(--sec2,var(--accent2))";
     _ptVal.innerHTML='<b>'+fmtMoney(postTax(incClosed))+'</b>'+(incUc?' <span class="dim">, '+fmtMoney(postTax(incUc))+' pending</span>':'');
-    _ptLine.appendChild(_ptVal); b.appendChild(_ptLine); }
+    _ptLine.appendChild(_ptVal); b.appendChild(_ptLine);
+    /* build 529: this figure is income less the reserve Ian sets aside. It is NOT income less tax. The tax bill is a separate, smaller estimate on the Finances page. */
+    var _ptNote=el("div","small dim"); _ptNote.style.cssText="margin-top:3px;line-height:1.4";
+    var _teN=(state.finance&&state.finance.taxEstimate&&state.finance.taxEstimate.scenarios)||[];
+    var _teT=_teN.map(function(x){ return Number(x&&x.total)||0; }).filter(function(x){ return x>0; });
+    _ptNote.textContent="The reserve is not the bill."+(_teT.length>1?(" Estimated tax is "+fmtMoney(Math.min.apply(null,_teT))+" to "+fmtMoney(Math.max.apply(null,_teT))+", on the Finances page."):"");
+    _ptLine.parentNode.insertBefore(_ptNote,_ptLine.nextSibling); }
   var _un=sumUnpaid(closed), _uk=sumUnknownPay(closed);
   if(_un>0||_uk>0){ var _aw=el("div"); _aw.style.cssText="margin-top:5px;display:flex;justify-content:space-between;align-items:baseline";
     _aw.appendChild(el("div","small dim","Closed, awaiting payment")); var _awv=el("div","small"); _awv.style.fontWeight="800"; _awv.textContent=fmtMoney(_un+_uk); _aw.appendChild(_awv); b.appendChild(_aw); }
@@ -31429,7 +31508,7 @@ function reGoalsCard495(parent,accOverride){ /* build 496: the build 495 explain
   const incVal=el("div","goal-val"); incVal.innerHTML='<b>'+fmtMoney(incClosed)+'</b> <span>closed'+(incUc?', '+fmtMoney(incUc)+' pending':'')+'</span>'; incLine.appendChild(incVal);
   b.appendChild(incLine);
   { var _ptLine=el("div"); _ptLine.style.cssText="margin-top:5px;display:flex;justify-content:space-between;align-items:baseline";
-    _ptLine.appendChild(el("div","small dim","Yours after "+taxPctWord()+" tax"));
+    _ptLine.appendChild(el("div","small dim","Less the "+taxPctWord()+" reserve"));
     var _ptVal=el("div","small"); _ptVal.style.fontWeight="800"; _ptVal.style.color="var(--sec2,var(--accent2))";
     _ptVal.innerHTML='<b>'+fmtMoney(postTax(incClosed))+'</b>'+(incUc?' <span class="dim">, '+fmtMoney(postTax(incUc))+' pending</span>':'');
     _ptLine.appendChild(_ptVal); b.appendChild(_ptLine); }
@@ -31450,7 +31529,7 @@ function reGoalsCard495(parent,accOverride){ /* build 496: the build 495 explain
        within the day, so the row names both rather than letting the larger one stand alone. */
     var _r1=el("div","between"); _r1.appendChild(el("div","small dim","Received"));
     var _r1v=el("div","small"); _r1v.style.fontWeight="800"; _r1v.style.color="var(--sec2,var(--accent2))"; _r1v.textContent=fmtMoney(_pd); _r1.appendChild(_r1v); _pay.appendChild(_r1);
-    if(_pd>0){ var _r1b=el("div","between"); _r1b.appendChild(el("div","small dim","Kept after "+taxPctWord()+" tax"));
+    if(_pd>0){ var _r1b=el("div","between"); _r1b.appendChild(el("div","small dim","Kept after the "+taxPctWord()+" reserve"));
       var _r1bv=el("div","small"); _r1bv.style.fontWeight="700"; _r1bv.textContent=fmtMoney(postTax(_pd)); _r1b.appendChild(_r1bv); _pay.appendChild(_r1b); }
     if(_un>0){ var _r2=el("div","between"); _r2.appendChild(el("div","small dim","Closed, awaiting payment"));
       var _r2v=el("div","small"); _r2v.style.fontWeight="700"; _r2v.textContent=fmtMoney(_un); _r2.appendChild(_r2v); _pay.appendChild(_r2); }
@@ -35710,10 +35789,12 @@ function fnTax(v,f){
         if(k==="homeoffice"){
           var _hox=(f&&f.homeOffice)||null;
           right=(_hox&&Number(_hox.deduction)>0)?(fnMoneyC(_hox.deduction)+" a year"):"$5 a sq ft";
+          if(_hox&&_hox.method==="regular"&&Number(_hox.deductionLow)>0&&Number(_hox.deductionHigh)>0) right="about "+fnMoney(_hox.deductionLow)+" to "+fnMoney(_hox.deductionHigh)+" a year";
         }
         var _sub=(x.line?("Line "+x.line):null);
         if(k==="homeoffice"){ var _h2=(f&&f.homeOffice)||null;
-          if(_h2&&Number(_h2.sqft)>0) _sub=_h2.sqft+" sq ft"; }
+          if(_h2&&Number(_h2.sqft)>0) _sub=_h2.sqft+" sq ft";
+          if(_h2&&_h2.method==="regular") _sub="regular method"; }
         fnRow(L,String(x.label||k),right,_sub,null,false);
       });
       b.appendChild(L);
@@ -35743,7 +35824,9 @@ function fnTax(v,f){
       var _hasMiles=!!(m&&(Number(m.miles)>0||Number(m.amount)>0||Number(m.milesH1)>0||Number(m.milesH2)>0));
       if(!_hasMiles){
         var _mn=el("div","small dim"); _mn.style.cssText="margin-top:8px;line-height:1.5";
-        _mn.textContent="No deduction yet. Standard mileage is the rate times your business miles, and there is no mileage log, so there is nothing to multiply. The odometer is a total, not a business total.";
+        var _ma=(f&&f.mileageAssumption)||null;
+        _mn.textContent="No mileage log exists, so no mileage deduction is booked here. Standard mileage is the rate times your business miles. The odometer is a total, not a business total."
+          +(_ma&&Number(_ma.milesLow)>0?(" The tax estimate ASSUMES "+Number(_ma.milesLow).toLocaleString("en-US")+" to "+Number(_ma.milesHigh).toLocaleString("en-US")+" business miles, worth "+fnMoney(_ma.deductionLow)+" to "+fnMoney(_ma.deductionHigh)+" of deduction. That is an assumption, not a record."):"");
         M.appendChild(_mn);
       }
     }catch(e){}
@@ -35854,6 +35937,7 @@ function fnSubCharts(v,f){
         var _ho=f.homeOffice;
         if(_ho&&Number(_ho.deduction)>0) bits.push("The home office adds "+fnMoneyC(_ho.deduction)
           +" a year at "+_ho.sqft+" sq ft, so "+fnMoneyC(ded*12+Number(_ho.deduction))+" a year in all.");
+        if(_ho&&_ho.method==="regular"&&Number(_ho.deductionLow)>0) bits.push("The home office uses the regular method, about "+fnMoney(_ho.deductionLow)+" to "+fnMoney(_ho.deductionHigh)+" a year, and is not in these subscription figures.");
         /* build 458: NO VEHICLE LINE IS ADDED HERE. An earlier lane already renders a
            Mileage block on this page with both IRS rates, and a line I added into this
            bits array did not draw on a real profile because this block only builds when
@@ -36070,7 +36154,7 @@ function fnProjection(v,f){
     if(clears.length){
       var head=el("div");
       head.style.cssText="margin-top:8px;font-size:15px;font-weight:700;line-height:1.45;color:var(--white)";
-      head.textContent="After "+taxPctWord()+" tax, any one of "+clears.slice(0,5).map(function(x){ return x.d.title||x.d.id; }).join(", ")
+      head.textContent="After the "+taxPctWord()+" reserve, any one of "+clears.slice(0,5).map(function(x){ return x.d.title||x.d.id; }).join(", ")
         +" still clears the "+fnMoney(Math.round(gapLo/10)*10)+" to "+fnMoney(Math.round(gapHi/10)*10)+" shortfall on its own.";
       b.appendChild(head);
     } else if(gapHi>0 && near.length){
@@ -36081,7 +36165,7 @@ function fnProjection(v,f){
       var head0=el("div");
       head0.style.cssText="margin-top:8px;font-size:15px;font-weight:700;line-height:1.45;color:var(--danger,#ff6363)";
       var _best=null; near.forEach(function(x){ if(!_best||x.keep>_best.keep) _best=x; });
-      head0.textContent="After "+taxPctWord()+" tax, NO SINGLE DEAL clears the "
+      head0.textContent="After the "+taxPctWord()+" reserve, NO SINGLE DEAL clears the "
         +fnMoney(Math.round(gapLo/10)*10)+" to "+fnMoney(Math.round(gapHi/10)*10)+" shortfall on its own."
         +(_best&&_best.keep>0?(" The largest, "+(_best.d.title||_best.d.id)+", keeps "+fnMoneyC(_best.keep)+"."):"");
       b.appendChild(head0);
@@ -36632,7 +36716,7 @@ function fxDealsFold(b,f){
     if(tLikely.length>tSure.length) tiers.push(["Likely","75% or better",vLikely]);
     tiers.push(["Expected","an average, not a minimum",vExp]); tiers.push(["Best case","all "+withP.length+", unlikely",vAll]);
     var mx=Math.max(vAll,gapHi)*1.06;
-    fxLabel(b,"If several close","after "+taxPctWord()+" tax");
+    fxLabel(b,"If several close","after the "+taxPctWord()+" reserve");
     var L=el("div","fx-ladder");
     tiers.forEach(function(t,i){ var item=el("div","fx-ci"); var cls=(gapHi>0&&t[2]>=gapHi)?"g":""; fxRow(item,t[0],t[1],fnMoneyC(t[2]),cls||"");
       item.appendChild(fxAxisBar(mx,t[2],gapLo,gapHi,i)); L.appendChild(item); });
@@ -36673,6 +36757,46 @@ function fxDealsFold(b,f){
   if(noPrice) b.appendChild(el("div","fnnote",noPrice+" more "+(noPrice===1?"deal has":"deals have")+" no price yet, so nothing is computed for "+(noPrice===1?"it":"them")+"."));
 }
 function fxTaxFold(b,f){
+  /* build 529: the Tax fold shows the tax ESTIMATE (provisional), the DOCUMENTED deductions from the expense ledger,
+     the regular method home office as a range, and the mileage assumption. The old projection of subscriptions plus a
+     simplified method home office ($2,417.60) is kept as fxTaxFoldLegacy and runs only if the ledger data is absent. */
+  var te=(f&&f.taxEstimate)||null, lg=(f&&f.ledger)||null;
+  var sc=(te&&te.scenarios)||[];
+  if(!(lg&&Number(lg.documented)>0) || sc.length<2) return fxTaxFoldLegacy(b,f);
+  var cue="";
+  var hi=sc[0], lo=sc[0]; sc.forEach(function(x){ if(x.total>hi.total) hi=x; if(x.total<lo.total) lo=x; });
+  var rng=function(k){ return fnMoney(lo[k])+" to "+fnMoney(hi[k]); };
+  fxLabel(b,"Estimated 2026 tax","provisional");
+  var L0=el("div");
+  fnRow(L0,"Self employment tax",rng("se"),null,null,false);
+  fnRow(L0,"Federal income tax",rng("federal"),null,null,false);
+  fnRow(L0,"Nebraska income tax",rng("nebraska"),null,null,false);
+  fnRow(L0,"Total estimate",rng("total"),"an estimate",null,false);
+  b.appendChild(L0);
+  var n0=el("div","fnnote"); n0.style.marginTop="6px";
+  n0.textContent="The low end assumes "+Number(lo.miles).toLocaleString("en-US")+" business miles and the high end "+Number(hi.miles).toLocaleString("en-US")+". "+(te.note||"");
+  b.appendChild(n0);
+  fxLabel(b,"Documented deductions",fnMoneyC(lg.documented));
+  var cats=lg.categories||[]; var palette=["#1fb9db","#7a8cff","#30d158","#ff9f0a","#bf5af2"];
+  if(cats.length){
+    var bar=el("div","fx-comp"); var lgd=el("div","fx-lgs"); var totc=0; cats.forEach(function(c){ totc+=Number(c.amount)||0; });
+    cats.forEach(function(c,i){ var a=Number(c.amount)||0; if(!(a>0)) return; var col=palette[i%palette.length];
+      var s2=el("i"); s2.style.width=(a/totc*100).toFixed(2)+"%"; s2.style.setProperty("--c",col); bar.appendChild(s2);
+      var r=el("div","fx-lg"); var sw=el("i"); sw.style.setProperty("--c",col); r.appendChild(sw); r.appendChild(el("span","n",String(c.name||""))); r.appendChild(el("span","v",fnMoneyC(a))); lgd.appendChild(r); });
+    b.appendChild(bar); b.appendChild(lgd);
+  }
+  var n1=el("div","fnnote"); n1.style.marginTop="6px"; n1.textContent=lg.note||""; if(lg.note) b.appendChild(n1);
+  var L1=el("div"); L1.style.marginTop="8px";
+  var ho=f.homeOffice||null;
+  if(ho&&ho.method==="regular"&&Number(ho.deductionLow)>0) fnRow(L1,"Home office, regular",("about "+fnMoney(ho.deductionLow)+" to "+fnMoney(ho.deductionHigh)),"not in the total",null,false);
+  var ma=f.mileageAssumption||null;
+  fnRow(L1,"Mileage","not booked",(ma?"no log, assumed":"no log exists"),null,false);
+  b.appendChild(L1);
+  cue="Tax est. "+fnMoney(lo.total)+" to "+fnMoney(hi.total)+", provisional";
+  fxDisc(b,"fx_sched","Schedule C and mileage","Lines, rates and odometer",function(bb){ return fxAdopt(bb,function(t){ fnTax(t,f); }); });
+  return cue;
+}
+function fxTaxFoldLegacy(b,f){
   var cue="";
   var subs=(f&&f.subscriptions)||[]; var tot=0,ded=0;
   subs.forEach(function(x){ var a=Number(x&&x.amount)||0; tot+=a; var d=(x&&x.deduct)||{}; if(d.business===true&&Number(d.pct)>0) ded+=a*(Number(d.pct)/100); });
@@ -36832,7 +36956,7 @@ function fxBandMoney(v,f){
     rows.push({d:d,keep:Math.round(postTax(n)),ms:fnCloseDate(d)}); });
   if(!rows.length) return;
   rows.sort(function(a,z){ if(a.ms&&z.ms) return a.ms-z.ms; if(a.ms) return -1; if(z.ms) return 1; return String(a.d.title||"").localeCompare(String(z.d.title||"")); });
-  var band=el("div","fx-b"); fxLabel(band,"Under contract","after "+taxPctWord()+" tax");
+  var band=el("div","fx-b"); fxLabel(band,"Under contract","after the "+taxPctWord()+" reserve");
   var c=el("div","fx-card fx-list");
   /* build 502: EACH DEAL IS A BAR ON ONE SHARED AXIS WITH THE SHORTFALL SHADED BEHIND IT, so the question the band exists for
      ("does this cover it") is answered by position, not by a sentence. The bars are never stacked and there is still no total.
@@ -36987,7 +37111,13 @@ function asofMax(list){
 function asofFor(id){
   try{
     var S=state||{};
-    if(id==="p-home") return asofMax(Object.keys((S.briefing&&S.briefing.forIan)||{}));
+    if(id==="p-home"){
+      /* build 529: Today shows the real estate roll-up, so its stamp is the newer of the briefing and the real estate data. */
+      var _hl=Object.keys((S.briefing&&S.briefing.forIan)||{}); var _R0=S.realEstate||{};
+      _hl.push(_R0.positionAsOf&&_R0.positionAsOf.asOf); _hl.push(_R0.rStreet&&_R0.rStreet.asOf);
+      (_R0.deals||[]).forEach(function(d){ _hl.push(d&&d.winProbAsOf); _hl.push(d&&d.stageSince); });
+      return asofMax(_hl);
+    }
     if(id==="p-gym") return asofMax(Object.keys((S.gym&&S.gym.logs)||{}));
     if(id==="p-pickle") return asofMax(((S.pickleball&&S.pickleball.sessions)||[]).map(function(x){ return x&&x.date; }));
     if(id==="p-finance") return asofMax([S.finance&&S.finance.asOf]);
