@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 539 (2026-10-19)">
+<meta name="build" content="v21 build 540 (2026-10-19)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -27525,6 +27525,20 @@ try{ if(profile==="ian" && state.meta && !state.meta.mig539_cleanup && state.rea
     state.meta.mig539_cleanup=true; save(true);
     try{ console.log("mig539: R Street open house standing, Lafayette listing signed, expired superlatives deleted"); }catch(_){}
 } }catch(e){ try{ console.warn("mig539 did not apply:",e&&e.message); }catch(_){} }
+
+/* ===== build 540: FIX TO MY OWN BUILD 539. The Lafayette lot line shipped saying LIST PRICE STILL UNDECIDED, but the answered register
+   (ANSWERED_AND_CLOSED.md, 19 Oct 2026, Ian) says Ryan Beachler signed the lot listing agreement on 6 October and the DotLoop loop is
+   Active with the card at $145,000, on MLS 6 October. The stale clause is deleted and the register's facts are stated instead. Written
+   once, guarded, SEED_VERSION stays 13. Stage and price fields untouched. */
+try{ if(profile==="ian" && state.meta && !state.meta.mig540_lafayette_line && state.realEstate && Array.isArray(state.realEstate.deals)){
+    state.realEstate.deals.forEach(function(d){
+      if(d && d.id==="re-silverleaf-howard"){
+        d.lot="19015 Lafayette Ave. The lot listing agreement was signed on 6 October 2026 and the DotLoop loop is ACTIVE, card $145,000, on MLS 6 October. Confirmed by Ian, 19 October 2026.";
+      }
+    });
+    state.meta.mig540_lafayette_line=true; save(true);
+    try{ console.log("mig540: Lafayette lot line corrected"); }catch(_){}
+} }catch(e){ try{ console.warn("mig540 did not apply:",e&&e.message); }catch(_){} }
 
   /* build 372: LAST THING BEFORE THE SAVE. Every migration above has run, deepMergeDefaults
      has run, so this is the only point in the file where the state is actually final. */
