@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 538 (2026-10-19)">
+<meta name="build" content="v21 build 539 (2026-10-19)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -27484,6 +27484,47 @@ try{ if(profile==="ian" && state.meta && !state.meta.mig538_johnson_price && sta
     state.meta.mig538_johnson_price=true; save(true);
     try{ console.log("mig538: Crystal Johnson price corrected to $697,261"); }catch(_){}
 } }catch(e){ try{ console.warn("mig538 did not apply:",e&&e.message); }catch(_){} }
+
+/* ===== build 539: three corrections from Ian's answers of 19 October 2026, plus expired superlatives deleted. Written once, guarded,
+   SEED_VERSION stays 13. (1) The R Street model home open house is a STANDING every weekend pattern, not a run ending 11 October: the
+   endsWhen and runwayNote lines said it ended around 11 October and that the house would leave the market, and neither happened (the
+   house is Active at $684,900). (2) The Lafayette lot listing is ACTIVE and signed as of 6 October per DotLoop, confirmed by Ian: the
+   Silver Leaf record said no signed agreement, which a reader takes as the listing, so it now says purchase agreement and carries the
+   listing fact. Stage is NOT changed. (3) Ian's standing rule: an unverified or expired superlative does not stay in the app, even as
+   history. Clauses deleted, nothing else in those strings touched: three "longest session on record or ever" claims (false since the
+   APC on 23 August ran 5:13:59), "ties the highest on his record" (peak 177, highest is 184 on 27 July), "lowest average rate of
+   the month" (111 on 2 and 26 August is lower than 117), "widest spread of the month" (unverified), and "highest effort on your lowest
+   average" (effort 10 was logged on 9 October). Gym page, pickleball sessions, Theobald price band all untouched. */
+try{ if(profile==="ian" && state.meta && !state.meta.mig539_cleanup && state.realEstate){
+    var AS539="Ian, 19 October 2026";
+    var rep539=function(o,k,from,to){ try{ if(o && typeof o[k]==="string" && o[k].indexOf(from)>=0){ o[k]=o[k].split(from).join(to); return 1; } }catch(_){} return 0; };
+    var OH539=state.realEstate.openHouseCommitment;
+    if(OH539 && typeof OH539==="object"){
+      OH539.endsWhen="When the house sells.";
+      OH539.runwayNote="STANDING PATTERN, confirmed by "+AS539+": an open house at 20131 R St every weekend. The expected 11 October off market date did not happen; the house is Active at $684,900. This is not a run of one off dates and it has no end date until the house sells.";
+    }
+    (state.realEstate.deals||[]).forEach(function(d){
+      if(d && d.id==="re-silverleaf-howard"){
+        d.lot="19015 Lafayette Ave. The lot listing is ACTIVE and signed as of 6 October 2026 per DotLoop, confirmed by "+AS539+". LIST PRICE STILL UNDECIDED.";
+        rep539(d,"note","no offer, no date and no signed agreement","no offer, no date and no signed purchase agreement");
+      }
+    });
+    try{ var P539=state.pickleball||{};
+      (P539.sessions||[]).forEach(function(x){
+        rep539(x,"note","peak 177 ties the highest on his record, level with 08.03, and the 70 to 177 spread of 107 bpm is the widest of the month, just past 08.09 at 106.","peak 177 matches 08.03, and the spread runs 70 to 177, 107 bpm.");
+        rep539(x,"note","Lowest average rate of the month combined with the joint highest peak is a spiky night","A peak of 177 on an average of 117 is a spiky night");
+        rep539(x,"note","and tonight 116 at effort 9, your highest effort on your lowest average.","and tonight 116 at effort 9.");
+        rep539(x,"note","Two sessions now sit at your highest effort on your lowest average heart rate, the same two numbers both times.","Two sessions now sit at effort 9 on an average heart rate of 116, the same two numbers both times.");
+      });
+      var cb=(P539.coachBullets||{})["2026-08-20"];
+      if(Array.isArray(cb)){ for(var i=0;i<cb.length;i++){ if(typeof cb[i]==="string") cb[i]=cb[i].split("3h50m was your longest ever, on a day").join("Wednesday ran 3h50m, on a day"); } }
+    }catch(_){}
+    try{ (state.autoLog||[]).forEach(function(a){ rep539(a,"evidence","3h50m is your longest session on record, about 13 minutes past the 07.25 tournament day and about 26 minutes past your longest non tournament session.","Wednesday ran 3h50m."); }); }catch(_){}
+    try{ var bf=((state.briefing||{}).forIan||{})["2026-08-20"];
+      if(Array.isArray(bf)){ bf.forEach(function(b){ rep539(b,"note","Longest session on record with Dylan, against a plan","Against a plan"); }); } }catch(_){}
+    state.meta.mig539_cleanup=true; save(true);
+    try{ console.log("mig539: R Street open house standing, Lafayette listing signed, expired superlatives deleted"); }catch(_){}
+} }catch(e){ try{ console.warn("mig539 did not apply:",e&&e.message); }catch(_){} }
 
   /* build 372: LAST THING BEFORE THE SAVE. Every migration above has run, deepMergeDefaults
      has run, so this is the only point in the file where the state is actually final. */
