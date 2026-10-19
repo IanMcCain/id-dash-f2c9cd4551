@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 536 (2026-10-18)">
+<meta name="build" content="v21 build 537 (2026-10-19)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -27428,6 +27428,40 @@ try{ if(profile==="ian" && state.meta && !state.meta.mig529_finance_fix && state
     state.meta.mig529_finance_fix=true; save(true);
     try{ console.log("mig529: finance corrections applied"); }catch(_){}
 } }catch(e){ try{ console.warn("mig529 did not apply:",e&&e.message); }catch(_){} }
+
+/* ===== build 537: Hernandez close date is UNCERTAIN, straddling the year boundary (Ian, 19 October 2026). Written once, guarded,
+   SEED_VERSION stays 13. Ian: "I don't know why your records say it closes in December, with it listing November 12th it could
+   sell late December OR early January." The records said "out of 2026 on purpose" and "closes about 20 January", which asserted
+   2027. Neither year is asserted now. Ian is cash basis, so the year that counts is the year he is PAID, not the closing year: a
+   late December closing could fund in early January and be 2027 income regardless. No closeOn is set, no income total changes,
+   and Hernandez stays out of the 2026 figures because it is not closed, not because 2027 is settled. About $11,016 gross to Ian
+   (his own 80 percent), about $7,711 after the 30 percent set aside: the largest swing in his 2026 income picture. */
+try{ if(profile==="ian" && state.meta && !state.meta.mig537_hernandez_close && state.realEstate && Array.isArray(state.realEstate.deals)){
+    var AS537="Ian, 19 October 2026";
+    state.realEstate.deals.forEach(function(d){
+      if(!d||!d.id) return;
+      if(d.id==="re-hernandez-sell"){
+        d.closeUncertain={status:"UNCERTAIN, straddles the year boundary",lists:"2026-11-12",
+          window:"Could close late December 2026 or early January 2027",
+          doNotAssert:"Do not record either year as settled and do not set a close date.",
+          whyItMatters:"Ian is cash basis, so the year that counts is when he is PAID, not when it closes. A late December closing can fund in early January and be 2027 income regardless of the closing date. The payment date decides, not the close date.",
+          swing:"About $11,016 to Ian, about $7,711 after the 30 percent set aside. The largest swing in his 2026 income picture, so the uncertainty itself is the fact.",
+          treatment:"Not in any 2026 income total, because it is not closed and may not be 2026 income. It is also not recorded as 2027.",
+          source:AS537+": \"I don't know why your records say it closes in December, with it listing November 12th it could sell late December OR early January.\""};
+        d.pipeStatus="Lists 12 November. Close is uncertain: late December 2026 or early January 2027. Ian is cash basis, so the payment date decides which year it is income. "+AS537+".";
+        d.note=(d.note||"")+" CLOSE DATE CORRECTED "+AS537+": it is UNCERTAIN, late December 2026 or early January 2027, and no year is asserted. Earlier lines on this record or elsewhere that say it closes in 2027 or about 20 January are superseded. Cash basis: the payment date decides the tax year.";
+      }
+      if(d.id==="re-cynthia-willis" && d.yearEnd && typeof d.yearEnd==="object"){
+        d.yearEnd.hernandezExcluded="Lists 12 November. Whether it closes in late December 2026 or early January 2027 is UNCERTAIN (Ian, 19 October 2026), and Ian is cash basis, so the payment date decides the year. Left out of the 2026 position because it is not closed, not because 2027 is settled.";
+      }
+    });
+    try{ var PA537=state.realEstate.positionAsOf;
+      if(PA537 && typeof PA537.early2027==="string"){
+        PA537.early2027=PA537.early2027.replace("Hernandez is out of 2026 on purpose. If it lists 12 November and closes about 20 January it adds","Hernandez is left out of the 2026 figures because it is not closed, NOT because 2027 is settled: Ian, 19 October 2026, it could close late December or early January and he is cash basis, so the payment date decides the year. One scenario, an early 2027 close at about 20 January, adds");
+      } }catch(_){}
+    state.meta.mig537_hernandez_close=true; save(true);
+    try{ console.log("mig537: Hernandez close date recorded as uncertain across the year boundary"); }catch(_){}
+} }catch(e){ try{ console.warn("mig537 did not apply:",e&&e.message); }catch(_){} }
 
   /* build 372: LAST THING BEFORE THE SAVE. Every migration above has run, deepMergeDefaults
      has run, so this is the only point in the file where the state is actually final. */
