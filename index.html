@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 547 (2026-10-20)">
+<meta name="build" content="v21 build 548 (2026-10-20)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -27728,6 +27728,92 @@ try{ if(profile==="ian" && state.meta && !state.meta.mig547_hern_norisk && state
     } });
     state.meta.mig547_hern_norisk=true; save(true);
 } }catch(e){ try{ console.warn("mig547 did not apply:",e&&e.message); }catch(_){} }
+
+/* ===== v21 build 548: IAN'S VERBAL UPDATE, 20 October 2026 evening (BRAIN/GLOBAL/handoffs/2026-10-20-ian-verbal-update.md).
+   Guard state.meta.mig548_verbal_update. SEED_VERSION stays 13. REPORT THE FACT, NEVER THE FORECAST: no risk marker is added anywhere.
+   1. Hernandez lists 12 November and Ian expects they hit it: the iffy badge and the word "tight" come off, prep facts go on
+      (family doing fix up work and pre packing, home most likely VACANT, lots of dogs, carpet deep clean Friday, Ian checks in every
+      few days). Nothing about money, price, split or win probability is touched.
+   2. Barkers: Chris texting them, going well, meeting late this month or in 2 to 3 weeks (date NOT fixed), they know roughly their
+      number, early to mid November list. Pause lifted so the list window shows; the pause is kept in state.archive.
+   3. Silver Leaf: improving, not confirmed. Build runs 8 to 11 months so it closes MID TO LATE 2027. The close text now carries 2027
+      so is27() parks it and no 2026 projection counts it. Stage, price, split and winProb untouched.
+   4. Teske: no news, underway. 5. Willis: appraisal DONE, Ian thinks it went well, waiting on updates; staging pickup 4:30 PM today.
+   6. Staging equipment thread. 7. Pickleball standing routine Mon to Fri 6:00 to 8:45 AM, about 14 hours a week, NO gym plan on any weekday.
+   8. Effort relabel finished: the Apple effort number is IAN'S OWN rating (register line 345). Four sessions still carried it as Apple's. */
+try{ if(profile==="ian" && state.meta && !state.meta.mig548_verbal_update && state.realEstate){
+    var AS548="Ian, 20 October 2026";
+    if(!state.archive) state.archive={};
+    var A548={ on:"2026-10-20", by:AS548 };
+    (state.realEstate.deals||[]).forEach(function(d){ if(!d) return;
+      if(d.id==="re-hernandez-sell"){
+        A548.hernandez={ flag:(d.flag||null), close:d.close, timelineHandling:(d.timeline&&d.timeline.handling)||null };
+        if(d.flag==="iffy") delete d.flag;
+        d.close="Lists 12 November 2026";
+        if(typeof d.note==="string"){
+          d.note=d.note.split("which is a fourteen day window and is tight.").join("which is a fourteen day window.");
+          if(d.note.indexOf("PREP UPDATE 20 OCTOBER")<0) d.note=d.note.trim()+" PREP UPDATE 20 OCTOBER 2026 ("+AS548+"): Ian expects they hit the 12 November list date (\"I think they're gonna hit that November 12 list date\"). The family is doing all the fix up work and is pre packing. The home will most likely be VACANT, and they have a lot of dogs, so there will be no dogs at showings and the smell clears more easily. They will clean it up before they leave. Carpet deep clean Friday 23 October for the smell. Ian is checking in every few days.";
+        }
+        if(d.timeline && typeof d.timeline.handling==="string") d.timeline.handling=d.timeline.handling.split(" Fourteen days is tight and the record says so rather than treating it as routine.").join("");
+        d.prep={ asOf:"2026-10-20", source:AS548, onTrack:true, ianRead:"I think they're gonna hit that November 12 list date.", fixUpWork:"The family is doing all of it.", packing:"The family is pre packing.", occupancy:"Most likely VACANT at listing. A lot of dogs, so none at showings and the smell clears more easily.", carpet:"Deep clean Friday 23 October to deal with the smell.", cleanUp:"They will clean it up before they leave.", ianCheckIns:"Every few days." };
+        if(typeof d.pipeStatus==="string" && d.pipeStatus.indexOf("on track per Ian")<0) d.pipeStatus=d.pipeStatus.replace("Lists 12 November. ","Lists 12 November, on track per Ian ("+AS548+"): family doing the fix up work and pre packing, home most likely vacant, carpet deep clean Friday. ");
+      }
+      if(d.id==="re-barkers"){
+        A548.barkers={ paused:d.paused, pausedOn:d.pausedOn||null, pausedWhy:d.pausedWhy||null, pausedNote:d.pausedNote||null, close:d.close };
+        d.owedOnResume="Two things are owed now that this has resumed and must not be lost: the re-derivation of the price, and Ian's own basement measurement from 10611 Parker.";
+        d.paused=false; delete d.pausedNote; delete d.pausedOn; delete d.pausedWhy;
+        d.resumedOn="2026-10-20"; d.resumedWhy="Chris has been texting them and it is going well, per Ian ("+AS548+"). The space Ian gave on 12 September is over.";
+        d.close="Expected to list early to mid November 2026. The meeting with the Barkers is not yet dated.";
+        d.listPlan={ asOf:"2026-10-20", source:AS548, expected:"Early to mid November 2026", meeting:"Late this month or in two to three weeks. DATE NOT FIXED.", sequence:"Meeting, see the house, plan staging, then list. It moves fast because they already know roughly what number they will be at.", chrisTexts:"Going well, per Ian." };
+        if(typeof d.keepCountedWhy==="string" && d.keepCountedWhy.indexOf("20.10.2026")<0) d.keepCountedWhy=d.keepCountedWhy+" Update 20.10.2026: no longer paused, so this note no longer applies.";
+        if(typeof d.note==="string" && d.note.indexOf("UPDATE 20 OCTOBER")<0) d.note=d.note.trim()+" UPDATE 20 OCTOBER 2026 ("+AS548+"): going well per Chris's texts. A meeting with the Barkers is planned for late this month or in two to three weeks, date not fixed. They already know roughly what number they will be at, so after the meeting it moves fast: see the house, plan staging, then list. Expect an early to mid November list, so November has two listings, Hernandez on 12 November and Barkers.";
+      }
+      if(d.id==="re-silverleaf-howard"){
+        A548.silverLeaf={ close:d.close };
+        d.close="Mid to late 2027. The build runs 8 to 11 months. Improving, not confirmed. Nothing is under contract. Chris puts the customer at 65 to 75 percent likely.";
+        d.closeWindow={ asOf:"2026-10-20", source:AS548, expected:"Mid to late 2027", buildLength:"8 to 11 months", treatment:"NOT 2026 money. The close text carries 2027, so is27() parks it outside every 2026 projection and the 2026 ceiling.", status:"Only good news about the buyer, improving, NOT confirmed." };
+        d.ianShare="Ian makes a big chunk of this even though the buyer has his own agent, Mike Bjork, Better Homes and Gardens Ambassador ("+AS548+"). No new figure was given, so the model figures in takeHome are unchanged.";
+        if(typeof d.note==="string" && d.note.indexOf("UPDATE 20 OCTOBER EVENING")<0) d.note=d.note.trim()+" UPDATE 20 OCTOBER EVENING ("+AS548+"): only good news about the buyer, improving but NOT confirmed. The build runs 8 to 11 months, so this closes mid to late 2027 and none of it is 2026 income. Ian still makes a big chunk even though the buyer has his own agent, Mike Bjork.";
+      }
+      if(d.id==="re-teskes" && typeof d.note==="string" && d.note.indexOf("20 OCTOBER 2026 UPDATE")<0)
+        d.note=d.note.trim()+" 20 OCTOBER 2026 UPDATE ("+AS548+"): no news, underway.";
+      if(d.id==="re-cynthia-willis"){
+        d.appraisal={ status:"DONE", asOf:"2026-10-20", source:AS548, ianRead:"Ian thinks it went well.", next:"Waiting on updates, which takes time. Not a problem, just a wait." };
+        if(d.risk && typeof d.risk==="object" && !d.risk.update) d.risk.update="The appraisal is DONE (Ian, 20 October 2026). Ian thinks it went well. Waiting on updates.";
+        if(typeof d.note==="string" && d.note.indexOf("APPRAISAL DONE 20 OCTOBER")<0) d.note=d.note.trim()+" APPRAISAL DONE 20 OCTOBER 2026 ("+AS548+"): Ian thinks it went well, waiting on updates. Ian collects the staging equipment from here at 4:30 PM today.";
+      }
+      if(d.id==="re-mattox-sell" && typeof d.stagingNote==="string" && d.stagingNote.indexOf("EQUIPMENT PICKUP")<0)
+        d.stagingNote=d.stagingNote+" EQUIPMENT PICKUP THIS WEEK ("+AS548+"): Mattox is pressing Chris about the staging equipment. The majority comes back this week, except the couches.";
+      if((d.id==="re-belknap-sell"||d.id==="re-vogel-sell") && typeof d.stagingNote==="string" && d.stagingNote.indexOf("EQUIPMENT COMES BACK")<0)
+        d.stagingNote=d.stagingNote+" EQUIPMENT COMES BACK ONLY AFTER Belknap and Vogel are both fully appraised and inspected ("+AS548+").";
+    });
+    state.realEstate.stagingEquipment={ asOf:"2026-10-20", source:AS548,
+      willis:"Ian collects the staging equipment from Cynthia's at 4:30 PM on 20 October 2026.",
+      mattox:"Mattox is pressing Chris about it. Pickup is planned this week for the majority, except the couches.",
+      belknapVogel:"Their staging comes back only once both are fully appraised and inspected. Not before." };
+    if(!Array.isArray(state.events)) state.events=[];
+    if(!state.events.some(function(e){ return e && e.id==="ev-20261020-willis-staging-pickup"; }))
+      state.events.push({ id:"ev-20261020-willis-staging-pickup", date:"2026-10-20", kind:"Real estate", title:"Collect staging equipment from Cynthia's, 4:30 PM" });
+    var pb548=state.pickleball||(state.pickleball={});
+    pb548.trainingRoutine={ setOn:"2026-10-20", setBy:"Ian", days:"Monday to Friday", time:"6:00 to 8:45 AM", hoursPerWeek:"about 14", status:"STANDING COMMITMENT, a fixed routine", gym:"No gym plan is attached to any weekday. The gym stays feel based." };
+    if(!Array.isArray(pb548.goals)) pb548.goals=[];
+    if(!pb548.goals.some(function(g){ return g && g.id==="pk-goal-weekday-routine"; }))
+      pb548.goals.push({ id:"pk-goal-weekday-routine", done:false, short:"Mon to Fri 6:00 to 8:45 AM", text:"Standing routine since 20 October 2026: pickleball training Monday to Friday, 6:00 to 8:45 AM, about 14 hours a week. A fixed commitment. No gym plan is attached to any weekday." });
+    var EF548=0;
+    (pb548.sessions||[]).forEach(function(x){ if(!x || typeof x.appleEffort!=="number") return;
+      var n=x.appleEffort; var lab=x.appleEffortLabel||"";
+      x.effort=n; x.effortLabel=lab; x.effortSource="His own rating, set by him in Apple Fitness";
+      x.effortNote="HIS OWN RATING ("+AS548+": the Apple effort number is his own rating), how hard he tried and how well he played. NOT an exertion figure and NOT reconciled against heart rate or calories.";
+      delete x.appleEffort; delete x.appleEffortLabel; delete x.appleEffortSource;
+      if(typeof x.note==="string") x.note=x.note.replace(/Apple's own Effort field read \d+, [A-Za-z ]+; that is Apple's field and not your rating\./,"Your effort rating was "+n+", "+lab+".");
+      if(typeof x.agent==="string") x.agent=x.agent
+        .replace(/Effort is absent because Ian gave no rating\. Apple's \d+ is appleEffort, a different field, and effort is his own rating of how hard he tried and how well he played, never exertion, never reconciled against heart rate or calories\./,"Effort is Ian's own rating of how hard he tried and how well he played, never exertion, never reconciled against heart rate or calories.")
+        .replace(/Effort is absent because Ian gave no rating; Apple's \d+ is appleEffort and effort is never reconciled against heart rate( or calories)?\./,"Effort is Ian's own rating of how hard he tried and how well he played, never reconciled against heart rate or calories.");
+      EF548++; });
+    state.archive.verbalUpdateB548=A548;
+    state.meta.mig548_verbal_update=true; save(true);
+    try{ console.log("mig548: Hernandez on track, Barkers resumed, Silver Leaf 2027, Willis appraisal, staging thread, pickleball routine, effort relabel x"+EF548); }catch(_){}
+} }catch(e){ try{ console.warn("mig548 did not apply:",e&&e.message); }catch(_){} }
 
   /* build 372: LAST THING BEFORE THE SAVE. Every migration above has run, deepMergeDefaults
      has run, so this is the only point in the file where the state is actually final. */
