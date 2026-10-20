@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 542 (2026-10-20)">
+<meta name="build" content="v21 build 543 (2026-10-20)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -27613,6 +27613,51 @@ try{ if(profile==="ian" && state.meta && !state.meta.mig542_claims){
     state.meta.mig542_claims=true; save(true);
     try{ console.log("mig542: unverified comparison clauses removed:",n542); }catch(_){}
 } }catch(e){ try{ console.warn("mig542 did not apply:",e&&e.message); }catch(_){} }
+
+/* ===== v21 build 543: IAN'S ANSWERS OF 20 OCT 2026. Written once, guarded by state.meta.mig543_answers, SEED_VERSION stays 13.
+   1. Silver Leaf to Building, win probability 0.70 (Chris puts the customer at 65 to 75 percent; the field takes one number so the
+      midpoint is stored and the range is kept beside it). 2. Mattox is Chris's client: source and ianSplit 0.20 written explicitly
+      (the commission model already defaulted Chris's client to 0.20; the explicit field stops any 0.80 fallback). 3. The Apple Fitness
+      Effort on 19 Oct (8) and 20 Oct (7) is HIS OWN rating ("apple rating is my rating"): moved into effort, the Apple labels and the
+      empty rating notes removed, never reconciled against heart rate. 4. Hernandez 12 Nov list date is at risk, NOT changed.
+      5. Theobald sell price is the register band $325,000 to $330,000, the 320 to 340 band was the 7 Oct room. 6. Vogel earnest was
+      delivered to title 19 Oct: the event and the to-do are closed. Class A fields not named here are untouched. */
+try{ if(profile==="ian" && state.meta && !state.meta.mig543_answers && state.realEstate && Array.isArray(state.realEstate.deals)){
+    var AS543="Ian, 20 October 2026";
+    state.realEstate.deals.forEach(function(d){ if(!d) return;
+      if(d.id==="re-silverleaf-howard"){
+        d.stage="Building"; d.winProb=0.70;
+        d.winProbSource="CHRIS's read as relayed by Ian, "+AS543+": the customer is 65 to 75 percent likely. The field takes one number, so 0.70 is stored and the range is kept in winProbRange.";
+        d.winProbRange={low:0.65,high:0.75}; d.winProbAsOf="2026-10-20";
+        d.stageNote="Moved from Prospecting to Building by "+AS543+" (lot deposit paperwork out for signature).";
+      }
+      if(d.id==="re-mattox-sell"){
+        d.source="Chris's client"; d.ianSplit=0.20;
+        d.ianSplitSource="MATTOX IS CHRIS'S CLIENT, Ian's share 20 percent (not 80). Confirmed by "+AS543+".";
+      }
+      if(d.id==="re-hernandez-sell"){
+        var HR="LIST DATE 12 NOVEMBER IS UNCONFIRMED AND AT RISK, NOT CHANGED ("+AS543+"). Ricky's contractors are booked through the end of November. Ian texted Ricky a punch list this morning: trim, weeds, fresh mulch, stain the front pillar, driveway quote, patch the mice damage in the basement, deep clean, repaint the basement ceiling, and offered to lay the mulch himself. Ricky had not replied. Ian's read is that Ricky has been working hard.";
+        d.listDateRisk=HR;
+        if(typeof d.pipeStatus==="string" && d.pipeStatus.indexOf("AT RISK")<0) d.pipeStatus="12 November list date at risk (unconfirmed, not changed). "+d.pipeStatus;
+      }
+      if(d.id==="re-theobald-sell"){
+        d.price="$325,000 to $330,000";
+        if(typeof d.priceNote==="string" && d.priceNote.indexOf("CURRENT BAND")<0) d.priceNote="CURRENT BAND $325,000 TO $330,000, from the answered register (listing presentation 7 October). The $320,000 to $340,000 band below was the old band taken into the room. "+d.priceNote;
+      }
+    });
+    try{ (state.pickleball.sessions||[]).forEach(function(x){ if(!x || (x.id!=="pk-20261019-am" && x.id!=="pk-20261020-am")) return;
+      var n=x.appleEffort; if(typeof n!=="number") return;
+      x.effort=n; x.effortLabel=x.appleEffortLabel||""; x.effortSource="His own rating, set by him in Apple Fitness";
+      x.effortNote="HIS OWN RATING ("+AS543+": \"apple rating is my rating\"), how hard he tried and how well he played. NOT an exertion figure and NOT reconciled against heart rate or calories.";
+      delete x.appleEffort; delete x.appleEffortLabel; delete x.appleEffortSource;
+      if(typeof x.note==="string") x.note=x.note.split("Apple's own Effort field read "+n+", "+(x.effortLabel)+"; that is Apple's field and not your rating.").join("Your effort rating was "+n+", "+x.effortLabel+".");
+      if(typeof x.agent==="string") x.agent=x.agent.split("Effort is absent because Ian gave no rating; Apple's "+n+" is appleEffort and effort is never reconciled against heart rate or calories.").join("Effort is Ian's own rating of "+n+", set in Apple Fitness, and is never reconciled against heart rate or calories.").split("No self assessment was given, so none was written.").join("No written self assessment was given.");
+    }); }catch(_){}
+    (state.events||[]).forEach(function(e){ if(e && e.id==="ev-20261022-vogel-earnest"){ e.date="2026-10-19"; e.title="Vogel earnest money delivered to title"; } });
+    (state.realEstate.todos||[]).forEach(function(t){ if(t && t.id==="ret-20261017-vogel-earnest" && !t.done){ t.done=true; t.doneNote="Delivered to title 19 October 2026 ("+AS543+")."; } });
+    state.meta.mig543_answers=true; save(true);
+    try{ console.log("mig543: Silver Leaf Building 0.70, Mattox 20 percent, effort relabel, Hernandez at risk, Theobald band, Vogel earnest closed"); }catch(_){}
+} }catch(e){ try{ console.warn("mig543 did not apply:",e&&e.message); }catch(_){} }
 
   /* build 372: LAST THING BEFORE THE SAVE. Every migration above has run, deepMergeDefaults
      has run, so this is the only point in the file where the state is actually final. */
