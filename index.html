@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 541 (2026-10-20)">
+<meta name="build" content="v21 build 542 (2026-10-20)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -27587,6 +27587,32 @@ try{ if(profile==="ian" && state.meta && !state.meta.mig541_pk1019_1020 && state
     state.meta.mig541_pk1019_1020=true; save(true);
     try{ console.log("mig541: 19 and 20 October morning sessions logged"); }catch(_){}
 } }catch(e){ try{ console.warn("mig541 did not apply:",e&&e.message); }catch(_){} }
+
+/* ===== v21 build 542: FOUR UNVERIFIED COMPARISON CLAIMS DELETED (carried from the 19 Oct deep dive handoff) ===============
+   "third heaviest week on record", "fourth biggest day on file", "longest day on file", "has never been graded on footage" were never
+   checked against full history. Per the rule, delete the clause rather than assert it. Plain strings walked through state (archive
+   excluded, so the pre-deletion copies stay where they are). Guard state.meta.mig542_claims. SEED_VERSION stays 13. */
+try{ if(profile==="ian" && state.meta && !state.meta.mig542_claims){
+    var F542=[
+      [", your third heaviest on record behind 13h29 in the 07.20 week and 12h15 in the 08.03 week.","."],
+      [" That is his FOURTH biggest day on file, behind 1 September at 6h03m, the APC on 23 August at 5h13m, and 3 September at 4h24m. It is his biggest day since 3 September.",""],
+      [", the longest day on file.","."],
+      [" and has never been graded on footage.","."]
+    ];
+    var n542=0, seen542=[];
+    var walk542=function(o,d){ if(!o || typeof o!=="object" || d>9 || seen542.indexOf(o)>=0) return; seen542.push(o);
+      Object.keys(o).forEach(function(k){ if(o===state && k==="archive") return; var v=o[k];
+        if(typeof v==="string"){ for(var i=0;i<F542.length;i++){ if(v.indexOf(F542[i][0])>=0){ v=v.split(F542[i][0]).join(F542[i][1]); n542++; } } if(v!==o[k]) o[k]=v; }
+        else if(v && typeof v==="object") walk542(v,d+1); }); };
+    walk542(state,0);
+    try{ ((state.realEstate||{}).deals||[]).forEach(function(d){
+      if(d && d.id==="re-silverleaf-howard"){
+        if(typeof d.client==="string" && d.client.indexOf("Mike Bjork")<0) d.client+=" He has his OWN agent, Mike Bjork, Better Homes and Gardens Ambassador (Ian, 20 October 2026).";
+        if(typeof d.note==="string" && d.note.indexOf("DEPOSIT PAPERWORK OUT")<0) d.note="DEPOSIT PAPERWORK OUT FOR SIGNATURE (Ian, 20 October 2026): $10,000 lot hold plus $10,000 VirtuActive plans, both credited against the 5 percent earnest. "+d.note;
+      } }); }catch(_){}
+    state.meta.mig542_claims=true; save(true);
+    try{ console.log("mig542: unverified comparison clauses removed:",n542); }catch(_){}
+} }catch(e){ try{ console.warn("mig542 did not apply:",e&&e.message); }catch(_){} }
 
   /* build 372: LAST THING BEFORE THE SAVE. Every migration above has run, deepMergeDefaults
      has run, so this is the only point in the file where the state is actually final. */
