@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 540 (2026-10-19)">
+<meta name="build" content="v21 build 541 (2026-10-20)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -27539,6 +27539,54 @@ try{ if(profile==="ian" && state.meta && !state.meta.mig540_lafayette_line && st
     state.meta.mig540_lafayette_line=true; save(true);
     try{ console.log("mig540: Lafayette lot line corrected"); }catch(_){}
 } }catch(e){ try{ console.warn("mig540 did not apply:",e&&e.message); }catch(_){} }
+
+/* ===== v21 build 541: TWO MORNING SESSIONS, MONDAY 19 OCTOBER AND TUESDAY 20 OCTOBER 2026 ===============================
+   Ian sent two Apple Watch screenshots. His words: "yesterdays morning session (drilled)" and "Today's morning session, drilling
+   and medium/light open play".
+   SESSION 1, Monday 19 Oct, 7:02 to 8:55 AM, Omaha, workout time 1:53:04, active 905, total 1,082, avg HR 117, max 154, low 65,
+   Apple Effort 8 Hard. Type: drilling only.
+   SESSION 2, Tuesday 20 Oct, 6:03 to 7:36 AM, Omaha, workout time 1:32:57, active 611, total 756, avg HR 108, max 142, low 72,
+   Apple Effort 7 Hard. Type: drilling plus medium to light open play. No minute split was given, so none is stored.
+   EFFORT: Ian gave NO rating of his own on either, so effort is ABSENT. The 8 and the 7 are Apple's field, stored as appleEffort
+   and never merged, never reconciled against heart rate or calories. NO SUPERLATIVE is written on either record.
+   NO GYM STATEMENT: the gym is feel based and nothing here says whether he trained. 17 and 18 October carry NO session on
+   purpose (the texts lane found none through 7:50 PM on 19 Oct). Guarded by id, one id each. Guard state.meta.mig541_pk1019_1020,
+   end of chain, SEED_VERSION stays 13. */
+try{ if(profile==="ian" && state.meta && !state.meta.mig541_pk1019_1020 && state.pickleball){
+    var _P41=state.pickleball;
+    if(!Array.isArray(_P41.sessions)) _P41.sessions=[];
+    var _h1=false,_h2=false;
+    _P41.sessions.forEach(function(s){ if(s&&s.id==="pk-20261019-am") _h1=true; if(s&&s.id==="pk-20261020-am") _h2=true; });
+    if(!_h1){
+      _P41.sessions.push({
+        id:"pk-20261019-am", date:"2026-10-19", kind:"Drilling only", venue:"Omaha",
+        duration:"1h 53m 04s", window:"7:02 to 8:55 AM, Omaha",
+        calories:1082, activeCalories:905, avgHr:117, maxHr:154, minHr:65,
+        appleEffort:8, appleEffortLabel:"Hard", appleEffortSource:"Apple Fitness Effort field. NOT Ian's rating.",
+        effortNote:"IAN GAVE NO RATING OF HIS OWN for this session, so effort is absent. Apple's Effort 8, Hard is Apple's field and is kept in appleEffort, never merged into effort. Ian's effort means how hard he tried and how well he played, never exertion, and is never reconciled against heart rate or calories.",
+        result:"", score:"", opponent:"", copyOwned:true,
+        source:"Ian's Apple Fitness screenshot, 20.10.2026. His words: yesterdays morning session (drilled).",
+        note:"Drilling only, Monday 19 October, Omaha, 7:02 to 8:55 AM. 1:53:04 in total. From Apple Watch: avg HR 117, peak 154, low 65, active 905, total 1,082. Apple's own Effort field read 8, Hard; that is Apple's field and not your rating. No account of how it went was given.",
+        agent:"Watch data only. Ian called it a drilling session, the whole session, so the kind is Drilling only and no drill or open play minute split is stored. Do NOT split calories or HR. Effort is absent because Ian gave no rating; Apple's 8 is appleEffort and effort is never reconciled against heart rate or calories. No self assessment was given, so none was written. No superlative is claimed on this record."
+      });
+    }
+    if(!_h2){
+      _P41.sessions.push({
+        id:"pk-20261020-am", date:"2026-10-20", kind:"Drilling + open play", venue:"Omaha",
+        duration:"1h 32m 57s", window:"6:03 to 7:36 AM, Omaha",
+        calories:756, activeCalories:611, avgHr:108, maxHr:142, minHr:72,
+        appleEffort:7, appleEffortLabel:"Hard", appleEffortSource:"Apple Fitness Effort field. NOT Ian's rating.",
+        effortNote:"IAN GAVE NO RATING OF HIS OWN for this session, so effort is absent. Apple's Effort 7, Hard is Apple's field and is kept in appleEffort, never merged into effort. Ian's effort means how hard he tried and how well he played, never exertion, and is never reconciled against heart rate or calories.",
+        result:"", score:"", opponent:"", copyOwned:true,
+        source:"Ian's Apple Fitness screenshot, 20.10.2026. His words: Today's morning session, drilling and medium/light open play.",
+        note:"Drilling and medium to light open play, Tuesday 20 October, Omaha, 6:03 to 7:36 AM. 1:32:57 in total. From Apple Watch: avg HR 108, peak 142, low 72, active 611, total 756. Apple's own Effort field read 7, Hard; that is Apple's field and not your rating. The open play was medium to light in your words. No account of how it went was given.",
+        agent:"Watch data only. Ian said drilling and medium/light open play and gave no minutes, so no drillMinutes, playMinutes or segments are stored. Do NOT split calories or HR. Medium/light is his description of the open play intensity and is not a number. Effort is absent because Ian gave no rating; Apple's 7 is appleEffort and effort is never reconciled against heart rate or calories. No self assessment was given, so none was written. No superlative is claimed on this record."
+      });
+    }
+    _P41.sessions.sort(function(a,z){ return String(a.date).localeCompare(String(z.date)); });
+    state.meta.mig541_pk1019_1020=true; save(true);
+    try{ console.log("mig541: 19 and 20 October morning sessions logged"); }catch(_){}
+} }catch(e){ try{ console.warn("mig541 did not apply:",e&&e.message); }catch(_){} }
 
   /* build 372: LAST THING BEFORE THE SAVE. Every migration above has run, deepMergeDefaults
      has run, so this is the only point in the file where the state is actually final. */
