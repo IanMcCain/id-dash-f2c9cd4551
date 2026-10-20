@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 543 (2026-10-20)">
+<meta name="build" content="v21 build 544 (2026-10-20)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -27658,6 +27658,37 @@ try{ if(profile==="ian" && state.meta && !state.meta.mig543_answers && state.rea
     state.meta.mig543_answers=true; save(true);
     try{ console.log("mig543: Silver Leaf Building 0.70, Mattox 20 percent, effort relabel, Hernandez at risk, Theobald band, Vogel earnest closed"); }catch(_){}
 } }catch(e){ try{ console.warn("mig543 did not apply:",e&&e.message); }catch(_){} }
+
+/* ===== v21 build 544: QUEUE DRAIN (SONNET-E, Ian 20 Oct 2026). Guard state.meta.mig544_queue, SEED_VERSION stays 13.
+   1. Russell Speeder's is a LIVE membership (variable charge $11.76 to $39.58, lands the 5th to 7th, next likely about 7 Nov,
+      cancelled in person): out of finance.cancelled (copy kept in archive.speedersCancelledEntry), live entry marked variable,
+      cancel appointment Sat 31 Oct 10:00 added as an event. 2. Mileage is CLOSED (his tax guy): the "needs business miles from Ian"
+      wording and the noLog flag are removed, the 17,500 to 20,000 miles stays a planning assumption. 3. R Street: price-up
+      contingency recorded as a contingency; the live price $684,900 is NOT touched. */
+try{ if(profile==="ian" && state.meta && !state.meta.mig544_queue && state.realEstate && state.finance){
+    var AS544="Ian, 20 October 2026", F544=state.finance;
+    try{ if(Array.isArray(F544.cancelled)){ var keep544=[]; F544.cancelled.forEach(function(c){
+        if(c && /Speeder/i.test(c.name||"")){ if(!state.archive) state.archive={}; state.archive.speedersCancelledEntry=c; } else keep544.push(c); });
+        F544.cancelled=keep544; } }catch(_){}
+    try{ (F544.subscriptions||[]).forEach(function(s){ if(s && /Speeder/i.test(s.name||"")){
+        s.variable=true; s.amountRange={low:11.76,high:39.58}; s.lastCharge="2026-10-07"; s.nextChargeApprox="about 7 November 2026";
+        s.status="ACTIVE MEMBERSHIP, variable charge, cancelled in person only (online cancellation is broken)";
+        s.cancelAppointment="Saturday 31 October 2026, 10:00 to 10:30, in person";
+        s.source="LIVE MEMBERSHIP, confirmed by "+AS544+": variable charge ($11.76 to $39.58) on the 5th to 7th, next likely about 7 November. Cancel in person, Saturday 31 October at 10:00. The $31.02 is the last charge, not a fixed price."; } }); }catch(_){}
+    try{ if(!Array.isArray(state.events)) state.events=[];
+      if(!state.events.some(function(e){ return e && e.id==="ev-20261031-speeders-cancel"; })) state.events.push({id:"ev-20261031-speeders-cancel",date:"2026-10-31",kind:"Finance",title:"Cancel Russell Speeders in person, 10:00"}); }catch(_){}
+    try{ var V544=F544.vehicle; if(V544 && typeof V544.note==="string"){
+        V544.note="Odometer 115,496 read on 25 September 2026. Mileage is handled by Ian's tax guy and is closed on our side ("+AS544+"). The 17,500 to 20,000 miles in the tax estimate is a planning assumption only."; } }catch(_){}
+    try{ var MA544=F544.mileageAssumption; if(MA544){ delete MA544.noLog;
+        MA544.note="Split evenly across the year at 72.5 cents through 30 June and 76 cents from 1 July. A planning assumption used by the tax estimate. Mileage itself is handled by Ian's tax guy ("+AS544+")."; } }catch(_){}
+    try{ var TE544=F544.taxEstimate; if(TE544 && typeof TE544.note==="string"){
+        TE544.note=TE544.note.split(" and a mileage log that does not exist yet").join(" and the mileage planning assumption (his tax guy handles the real mileage)"); } }catch(_){}
+    try{ (state.realEstate.deals||[]).forEach(function(d){ if(d && d.id==="re-rstreet-model"){
+        d.contingency="CONTINGENCY, NOT A DECISION ("+AS544+"): if the two story gets no promising offers in about a week (call due around 27 October), it becomes a model home and the list price goes UP from $684,900 to $730,000, because the urgency to sell disappears. The LIVE price is $684,900 today and has not changed. Weekend open houses continue either way.";
+        d.contingencyPrice=730000; d.contingencyCheck="2026-10-27"; } }); }catch(_){}
+    state.meta.mig544_queue=true; save(true);
+    try{ console.log("mig544: Speeders live, mileage closed wording, R Street contingency"); }catch(_){}
+} }catch(e){ try{ console.warn("mig544 did not apply:",e&&e.message); }catch(_){} }
 
   /* build 372: LAST THING BEFORE THE SAVE. Every migration above has run, deepMergeDefaults
      has run, so this is the only point in the file where the state is actually final. */
