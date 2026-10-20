@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 544 (2026-10-20)">
+<meta name="build" content="v21 build 545 (2026-10-20)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -27690,6 +27690,23 @@ try{ if(profile==="ian" && state.meta && !state.meta.mig544_queue && state.realE
     try{ console.log("mig544: Speeders live, mileage closed wording, R Street contingency"); }catch(_){}
 } }catch(e){ try{ console.warn("mig544 did not apply:",e&&e.message); }catch(_){} }
 
+/* ===== v21 build 545: WHAT THE SCREENSHOTS SHOWED (20 Oct 2026). Guard state.meta.mig545_visual, SEED_VERSION stays 13.
+   Build 544 stored three things that no screen displayed: the Hernandez at risk date, the R Street contingency and Silver Leaf's
+   65 to 75 percent. They are now written to fields the Real Estate page renders (riskLine, priceNote, close). The Speeder's row
+   named no variable charge, so the name carries it. The ledger note still said gas waits on mileage with his tax guy. */
+try{ if(profile==="ian" && state.meta && !state.meta.mig545_visual && state.realEstate){
+    (state.realEstate.deals||[]).forEach(function(d){ if(!d) return;
+      if(d.id==="re-hernandez-sell") d.riskLine="The 12 November list date is unconfirmed. Ricky's contractors are booked through the end of November. Ian sent a punch list on 20 October and is waiting on Ricky.";
+      if(d.id==="re-rstreet-model" && typeof d.priceNote==="string" && d.priceNote.indexOf("CONTINGENCY")<0)
+        d.priceNote="CONTINGENCY, NOT A DECISION (Ian, 20 October 2026): if the two story gets no promising offers in about a week (call due around 27 October), it becomes a model home and the list price goes UP from $684,900 to $730,000. The live price is $684,900 today. Weekend open houses continue either way. "+d.priceNote;
+      if(d.id==="re-silverleaf-howard" && typeof d.close==="string" && d.close.indexOf("65 to 75")<0) d.close=d.close+" Chris puts the customer at 65 to 75 percent likely.";
+    });
+    try{ ((state.finance||{}).subscriptions||[]).forEach(function(s){ if(s && /^Russell Speeder/i.test(s.name||"") && s.name.indexOf("varies")<0) s.name="Russell Speeder's, varies $11.76 to $39.58"; }); }catch(_){}
+    try{ var LN="gas is held out until Ian settles mileage or actual with his tax guy"; var walk545=function(o,dp){ if(!o||typeof o!=="object"||dp>6) return; Object.keys(o).forEach(function(k){ var v=o[k]; if(typeof v==="string"){ if(v.indexOf(LN)>=0) o[k]=v.split(LN).join("gas is held out because mileage is handled by his tax guy"); } else walk545(v,dp+1); }); }; walk545(state.finance,0); }catch(_){}
+    state.meta.mig545_visual=true; save(true);
+    try{ console.log("mig545: visible fields for Hernandez, R Street, Silver Leaf; Speeders name; ledger note"); }catch(_){}
+} }catch(e){ try{ console.warn("mig545 did not apply:",e&&e.message); }catch(_){} }
+
   /* build 372: LAST THING BEFORE THE SAVE. Every migration above has run, deepMergeDefaults
      has run, so this is the only point in the file where the state is actually final. */
   try{ convergeState(); }catch(e){}
@@ -36133,8 +36150,8 @@ function fnTax(v,f){
       if(!_hasMiles){
         var _mn=el("div","small dim"); _mn.style.cssText="margin-top:8px;line-height:1.5";
         var _ma=(f&&f.mileageAssumption)||null;
-        _mn.textContent="No mileage log exists, so no mileage deduction is booked here. Standard mileage is the rate times your business miles. The odometer is a total, not a business total."
-          +(_ma&&Number(_ma.milesLow)>0?(" The tax estimate ASSUMES "+Number(_ma.milesLow).toLocaleString("en-US")+" to "+Number(_ma.milesHigh).toLocaleString("en-US")+" business miles, worth "+fnMoney(_ma.deductionLow)+" to "+fnMoney(_ma.deductionHigh)+" of deduction. That is an assumption, not a record."):"");
+        _mn.textContent="Mileage is handled by your tax guy, so no mileage deduction is booked here. The odometer is a total, not a business total."
+          +(_ma&&Number(_ma.milesLow)>0?(" The tax estimate ASSUMES "+Number(_ma.milesLow).toLocaleString("en-US")+" to "+Number(_ma.milesHigh).toLocaleString("en-US")+" business miles, worth "+fnMoney(_ma.deductionLow)+" to "+fnMoney(_ma.deductionHigh)+" of deduction. That is a planning assumption only."):"");
         M.appendChild(_mn);
       }
     }catch(e){}
@@ -37098,7 +37115,7 @@ function fxTaxFold(b,f){
   var ho=f.homeOffice||null;
   if(ho&&ho.method==="regular"&&Number(ho.deductionLow)>0) fnRow(L1,"Home office, regular",("about "+fnMoney(ho.deductionLow)+" to "+fnMoney(ho.deductionHigh)),"not in the total",null,false);
   var ma=f.mileageAssumption||null;
-  fnRow(L1,"Mileage","not booked",(ma?"no log, assumed":"no log exists"),null,false);
+  fnRow(L1,"Mileage","not booked",(ma?"his tax guy handles it":"his tax guy handles it"),null,false);
   b.appendChild(L1);
   cue="Tax est. "+fnMoney(lo.total)+" to "+fnMoney(hi.total)+", provisional";
   fxDisc(b,"fx_sched","Schedule C and mileage","Lines, rates and odometer",function(bb){ return fxAdopt(bb,function(t){ fnTax(t,f); }); });
