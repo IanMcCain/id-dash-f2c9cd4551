@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 550 (2026-10-21)">
+<meta name="build" content="v21 build 551 (2026-10-21)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -28009,6 +28009,79 @@ try{ if(profile==="ian" && state.meta && !state.meta.mig550_oct21_drain && state
     try{ console.log("mig550: Silver Leaf certain, Teske January, Hernandez 5 Nov, earnest todos archived, finance 21 Oct block, school housing one entry, card cutover"); }catch(_){}
 } }catch(e){ try{ console.warn("mig550 did not apply:",e&&e.message); }catch(_){} }
 
+/* ===== v21 build 551: TAX, FINANCE AND REAL ESTATE MADE CORRECT AND READABLE (SONNET-15, 21 Oct 2026). Guard state.meta.mig551_readable.
+   Ian, 21 Oct 2026 evening: Hernandez lists 5 November (every 12 November reference removed), Hernandez price stays $450,000 (asked and settled),
+   Teske stays an ESTIMATE until finishing is done, headshots closed. Tax direction settled by arithmetic: his set aside is 30 percent and his
+   marginal rate is about 27.3 percent, so more 2026 income leaves MORE in the tax account. The brief figures 5,107 and 4,808 could not be
+   reproduced and are replaced, the old ones kept in state.archive.taxFiguresB551. ===== */
+try{ if(profile==="ian" && state.meta && !state.meta.mig551_readable && state.realEstate){
+    var AS551="Ian, 21 October 2026";
+    if(!state.archive) state.archive={};
+    var A551={ on:"2026-10-21", by:"SONNET-15", before:{} };
+    function sw551(o,fn,depth){ depth=depth||0; if(!o||typeof o!=="object"||depth>8) return;
+      Object.keys(o).forEach(function(k){ var v=o[k]; if(typeof v==="string") o[k]=fn(v); else if(v&&typeof v==="object") sw551(v,fn,depth+1); }); }
+    var h551=function(t){ return t
+      .split("from Thursday 12 November to Thursday 5 November 2026").join("to Thursday 5 November 2026")
+      .split("from 12 November to 5 November").join("to 5 November")
+      .replace(/12 November/gi,"5 November").replace(/November 12(th)?/gi,"November 5"); };
+    (state.realEstate.deals||[]).forEach(function(d){ if(!d) return;
+      if(d.id==="re-hernandez-sell"){
+        A551.before.hernandez={ listDateNote:d.listDateNote, closeUncertainSource:d.closeUncertain&&d.closeUncertain.source };
+        ["close","note","listDateNote","pipeStatus","riskLine"].forEach(function(k){ if(typeof d[k]==="string") d[k]=h551(d[k]); });
+        ["timeline","upcoming","prep","priceOptions","closeUncertain","closeEstimate"].forEach(function(k){ if(d[k]&&typeof d[k]==="object") sw551(d[k],h551); });
+        if(d.closeUncertain) d.closeUncertain.source="Ian, 19 October 2026: it could sell late December or early January. Updated 21 October 2026: lists 5 November, close estimated late December, possibly early January.";
+        if(d.listDateMoved) delete d.listDateMoved.from;
+        d.priceSettled={ asOf:"2026-10-21", source:AS551, price:"$450,000", text:"The price stays $450,000. Ian was asked whether to revisit it toward the $465,000 his comps suggested and said no. Asked and settled, do not raise it again." };
+        d.rowNote="Close estimated late December, possibly early January.";
+      }
+      if(d.id==="re-teskes"){
+        A551.before.teske={ close:d.close };
+        d.close="Early January 2027, mid January at the latest. Paid mid to late January 2027.";
+        d.priceEstimate=true;
+        d.priceEstimateNote="The $850,000 to $859,999 band is an ESTIMATE until finishing is done. Ian does not want a firm price chased before then (21 October 2026). It is not a missing input.";
+        d.rowNote="Price is an estimate until finishing is done.";
+        if(typeof d.timingNote==="string") d.timingNote=d.timingNote.split("The firm price is still an open input.").join("The price is an ESTIMATE until finishing is done, not a missing input.");
+      }
+      if(d.id==="re-silverleaf-howard"){
+        A551.before.silverLeaf={ close:d.close };
+        d.close="Paid toward the end of 2027. The build runs 8 to 11 months. Certain.";
+        d.rowNote="Certain, 3.6 percent, Ian 20 percent. In no 2026 figure.";
+      }
+      if(d.id==="re-allison-spicer-buy"){ d.riskNeutral=true; d.riskLine="Income to Ian is modeled at zero. The closing itself is not in question."; }
+    });
+    (state.events||[]).forEach(function(e){ if(e && e.id==="ev-20261112-hernandez-live" && typeof e.note==="string"){
+      e.note=e.note.split(" List date moved from 12 November to 5 November (Ian, 21 October 2026).").join("")+" List date 5 November 2026 (Ian, 21 October 2026)."; } });
+
+    var F551=state.finance||(state.finance={});
+    var U=F551.update21Oct||(F551.update21Oct={});
+    A551.before.miles50=U.miles50; A551.before.excessAfterFee=U.excessAfterFee;
+    state.archive.taxFiguresB551=A551.before;
+    delete U.miles50; delete U.excessAfterFee;
+    U.tax={ asOf:"2026-10-21", source:"Recomputed by SONNET-15 from _tax_estimate_2026_calc.py, build 551", basis:"11,027 business miles (50 percent of 22,054), other expenses fixed at $5,568.71, W-2 $624.10, 30 percent set aside on all income, $2,000 fee counted as cash only",
+      income:55687, incomeSub:"$45,810 received plus four November closings, $9,877",
+      janTax:8854, decTax:11859, decTaxSub:"Hernandez adds $11,016 of income and about $3,005 of tax",
+      janLeft:5852, janLeftSub:"30 percent set aside $16,706, minus the tax bill, minus the $2,000 tax guy fee",
+      decLeft:6152, decLeftSub:"30 percent set aside $20,011, minus the tax bill, minus the $2,000 fee. $300 more than January",
+      working:[
+        "How it is worked out: Hernandez pays Ian $11,016. Thirty percent of that, $3,305, goes into the tax account. The extra tax on it is about 27.3 percent, $3,005. So a December close leaves about $300 MORE in the tax account than January, never less.",
+        "Known: income received, the 30 percent set aside, the $2,000 fee. Estimated: business miles (50 percent of 22,054), other expenses, and every tax figure above."
+      ],
+      caveat:"These are estimates. His tax guy has the final word, including whether the $2,000 fee is deducted (that would add about $545 to each Left figure) and the LLC decision." };
+    U.line60k={ text:"The $60,000 line is NOT a tax bracket, threshold or QBI boundary. It is only where his 2026 income lands: about $55,700 if Hernandez closes in January, about $66,700 if it closes in December. The date is worth about $300 of tax.", notABracket:true };
+    U.receivedGap={ appFigure:45810.24, bankFigure:43600.22, gap:2210.02, status:"UNRECONCILED",
+      text:"The app counts $45,810.24 received this year. Rocket Money shows $43,600.22 in NP Dodge deposits, 11 of them. The $2,210.02 difference is UNRECONCILED. Every matched deposit landed at about 95 percent of the app's figure, which points to a deduction at payout, cause not confirmed. The tax figures use the app's higher number. Using the bank number moves each Left figure by about $60." };
+    U.taxGuy=U.taxGuy||{ amount:2000, when:"year end", paidFrom:"the tax set aside excess" };
+
+    var gold551=((F551.cards||[]).filter(function(c){ return c&&c.id==="amexgold"; })[0]);
+    if(gold551){ gold551.roleFrom21Oct="personal"; gold551.roleBefore21Oct="business"; }
+    ((F551.ledger&&F551.ledger.recent)||[]).forEach(function(e){ if(e && e.id==="exp-20261021-starbucks-hernandez"){
+      e.amount=12.19; e.deductible=6.10; e.amountPending=false; e.status="BUSINESS";
+      e.source="Ian, 21 October 2026, in person at Starbucks. $12.19, business, client meeting with the Hernandez family. Logged after the 17 October ledger total, so it is not in the documented deductions figure yet."; } });
+
+    state.meta.mig551_readable=true; save(true);
+    try{ console.log("mig551: Hernandez 5 Nov everywhere, price settled, Teske estimate, tax figures recomputed, received gap labelled, card band, Starbucks 12.19"); }catch(_){}
+} }catch(e){ try{ console.warn("mig551 did not apply:",e&&e.message); }catch(_){} }
+
   /* build 372: LAST THING BEFORE THE SAVE. Every migration above has run, deepMergeDefaults
      has run, so this is the only point in the file where the state is actually final. */
   try{ convergeState(); }catch(e){}
@@ -32751,10 +32824,11 @@ function reDealRowNew(parent,d,opts){
   }
   l2.appendChild(el("span","re-date"+(passed?" late":""),when));
   L.appendChild(l2);
-  if(d.risk && !opts.closed){ L.appendChild(el("div","re-risk","At risk. "+reTidy(d.riskLine||d.risk))); }
+  if(d.rowNote && !opts.closed){ L.appendChild(el("div","re-l2",String(d.rowNote))); }
+  if(d.risk && !opts.closed){ if(d.riskNeutral===true) L.appendChild(el("div","re-l2",reTidy(d.riskLine||d.risk))); else L.appendChild(el("div","re-risk","At risk. "+reTidy(d.riskLine||d.risk))); }
   btn.appendChild(L);
   var R=el("div","re-r"); var pp=rePriceParts(d.price);
-  if(pp){ R.appendChild(el("div","re-p",pp.main)); if(pp.tail) R.appendChild(el("div","re-pt",pp.tail)); }
+  if(pp){ R.appendChild(el("div","re-p",pp.main)); if(pp.tail) R.appendChild(el("div","re-pt",pp.tail)); if(d.priceEstimate===true && !opts.closed) R.appendChild(el("div","re-pt","estimate")); }
   else R.appendChild(el("div","re-p re-none","No price"));
   if(!opts.closed){ var ch=reStageChip(d.stage); if(ch) R.appendChild(ch); }
   btn.appendChild(R);
@@ -37389,19 +37463,30 @@ function fx21Block(b,f){
   try{
     var u=f&&f.update21Oct; if(!u) return;
     var nt=function(t){ var n=el("div","fnnote"); n.style.marginTop="6px"; n.textContent=t; b.appendChild(n); };
-    fxLabel(b,"Update 21 October","Ian");
-    var L=el("div");
-    if(u.taxGuy) fnRow(L,"Tax guy",fnMoney(u.taxGuy.amount)+" a year","paid at year end, out of the set aside excess",null,false);
-    if(u.excessAfterFee) fnRow(L,"Set aside excess after the fee","about "+fnMoney(u.excessAfterFee.low)+" to "+fnMoney(u.excessAfterFee.high),"the fee treated as cash only",null,false);
-    if(u.llc) fnRow(L,"LLC",u.llc.status.charAt(0)+u.llc.status.slice(1).toLowerCase(),u.llc.lean+", waiting on the tax guy",null,false);
-    b.appendChild(L);
-    if(u.miles50) nt(u.miles50.text+(u.miles50.verified===false?(" "+u.miles50.verifiedNote):""));
+    var T=u.tax;
+    if(T){
+      fxLabel(b,"2026 tax and what is left","estimate");
+      var L=el("div");
+      fnRow(L,"Income before Hernandez",fnMoney(T.income),T.incomeSub,null,false);
+      fnRow(L,"Tax bill if Hernandez closes in January",fnMoney(T.janTax),null,null,false);
+      fnRow(L,"Tax bill if Hernandez closes in December",fnMoney(T.decTax),T.decTaxSub,null,false);
+      fnRow(L,"Left in the tax account, January",fnMoney(T.janLeft),T.janLeftSub,null,false);
+      fnRow(L,"Left in the tax account, December",fnMoney(T.decLeft),T.decLeftSub,null,false);
+      b.appendChild(L);
+      (T.working||[]).forEach(function(w){ nt(w); });
+      nt(T.caveat);
+    }
     if(u.line60k) nt(u.line60k.text);
+    if(u.receivedGap){ fxLabel(b,"Received so far","unreconciled"); nt(u.receivedGap.text); }
+    var L1=el("div");
+    if(u.taxGuy) fnRow(L1,"Tax guy",fnMoney(u.taxGuy.amount)+" a year","paid at year end, out of the set aside excess",null,false);
+    if(u.llc) fnRow(L1,"LLC",u.llc.status.charAt(0)+u.llc.status.slice(1).toLowerCase(),u.llc.lean+", waiting on the tax guy",null,false);
+    b.appendChild(L1);
     if(u.opening2027){ fxLabel(b,"2027 opening position","not in any 2026 figure");
       var L2=el("div");
-      fnRow(L2,"Silver Leaf",u.opening2027.silverLeaf.split(",")[0],"paid toward the end of 2027, rate 3.6 percent confirmed, certain",null,false);
       fnRow(L2,"Teske","$9,103.50 gross","$6,372.45 after set aside, paid mid to late January 2027, certain",null,false);
-      b.appendChild(L2); nt("Combined: "+u.opening2027.combined+"."); }
+      fnRow(L2,"Silver Leaf","$6,732 to $7,344 gross","$4,712 to $5,141 after set aside, paid toward the end of 2027, rate 3.6 percent, certain",null,false);
+      b.appendChild(L2); nt("Combined: "+String(u.opening2027.combined).replace(/\.+$/,"")+"."); }
     if(u.january) nt(u.january.text);
     if(u.novemberClosings) nt(u.novemberClosings.text);
     var ct=f.cardTransition;
@@ -37422,7 +37507,9 @@ function fxTaxFold(b,f){
   var cue="";
   var hi=sc[0], lo=sc[0]; sc.forEach(function(x){ if(x.total>hi.total) hi=x; if(x.total<lo.total) lo=x; });
   var rng=function(k){ return fnMoney(lo[k])+" to "+fnMoney(hi[k]); };
-  fxLabel(b,"Estimated 2026 tax","provisional");
+  var _T=f&&f.update21Oct&&f.update21Oct.tax;
+  fx21Block(b,f);
+  fxLabel(b,_T?"If business miles are higher":"Estimated 2026 tax",_T?"17,500 to 20,000 miles, before Hernandez":"provisional");
   var L0=el("div");
   fnRow(L0,"Self employment tax",rng("se"),null,null,false);
   fnRow(L0,"Federal income tax",rng("federal"),null,null,false);
@@ -37432,7 +37519,6 @@ function fxTaxFold(b,f){
   var n0=el("div","fnnote"); n0.style.marginTop="6px";
   n0.textContent="The low end assumes "+Number(lo.miles).toLocaleString("en-US")+" business miles and the high end "+Number(hi.miles).toLocaleString("en-US")+". "+(te.note||"");
   b.appendChild(n0);
-  fx21Block(b,f);
   fxLabel(b,"Documented deductions",fnMoneyC(lg.documented));
   var cats=lg.categories||[]; var palette=["#1fb9db","#7a8cff","#30d158","#ff9f0a","#bf5af2"];
   if(cats.length){
@@ -37449,7 +37535,7 @@ function fxTaxFold(b,f){
   var ma=f.mileageAssumption||null;
   fnRow(L1,"Mileage","not booked",(ma?"his tax guy handles it":"his tax guy handles it"),null,false);
   b.appendChild(L1);
-  cue="Tax est. "+fnMoney(lo.total)+" to "+fnMoney(hi.total)+", provisional";
+  cue=_T?("Tax est. "+fnMoney(_T.janTax)+" (Hernandez January) or "+fnMoney(_T.decTax)+" (December), estimate"):("Tax est. "+fnMoney(lo.total)+" to "+fnMoney(hi.total)+", provisional");
   fxDisc(b,"fx_sched","Schedule C and mileage","Lines, rates and odometer",function(bb){ return fxAdopt(bb,function(t){ fnTax(t,f); }); });
   return cue;
 }
@@ -37472,6 +37558,20 @@ function fxTaxFoldLegacy(b,f){
   return cue;
 }
 /* BAND 1. The attention grab. Same arithmetic as fnSavings: saved is the balance above the floor. */
+/* build 551: THE 21 OCTOBER CARD CUTOVER, unmissable, second on the page, shown through 4 November 2026 and then it drops off.
+   Reads finance.cardTransition. Plain text, no computing. */
+function fxBandCards(v,f){
+  var ct=f&&f.cardTransition; if(!ct) return;
+  var t=new Date(); if(t>new Date(2026,10,5)) return;
+  var band=el("div","fx-b"); var c=el("div","fx-card");
+  c.style.borderLeft="4px solid #ff9f0a"; c.style.fontWeight="600";
+  c.appendChild(el("div","fx-k a","Card change, starting 21 October"));
+  var ln=function(a,b2){ var r=el("div","fx-line"); r.style.margin="6px 0"; var x=el("span",null,a); x.style.fontWeight="700"; r.appendChild(x); r.appendChild(document.createTextNode(" "+b2)); c.appendChild(r); };
+  ln("Amex Blue Business Plus:","100 percent business only. Digital card arrives Thursday 22 October, $2,000 limit. Gas goes on it.");
+  ln("Amex Gold:","personal and everyday from 21 October. Charges before 21 October stay business.");
+  ln("Discover:","one subscription, about $10 a month, on autopay.");
+  band.appendChild(c); v.appendChild(band);
+}
 function fxBandFund(v,f){
   var sv=f.savings; if(!sv) return;
   var acct=null; (f.accounts||[]).forEach(function(a){ if(a&&a.id===sv.accountId) acct=a; });
@@ -37540,7 +37640,7 @@ function fxBandCash(v,f){
       var bal=Number(a.balance)||0, lim=Number(a.limit)||0, ml=Number(a.monthlyLimit)||0, ut=Number(a.utilTarget)>0?Number(a.utilTarget):0.30;
       var rec=lim>0?Math.round(lim*ut):ml, over=rec>0&&bal>rec&&a.spendDeliberate!==true;
       var item=el("div","fx-ci");
-      fxRow(item,a.name||a.id||"Card",fnKindWord(a.kind)+(a.last4?(" \xb7 "+a.last4):""),fnMoneyAuto(bal),over?"r":"");
+      fxRow(item,a.name||a.id||"Card",(a.roleFrom21Oct==="personal"?"Personal from 21 Oct":fnKindWord(a.kind))+(a.last4?(" \xb7 "+a.last4):""),fnMoneyAuto(bal),over?"r":"");
       /* build 502: the caption sentence ("44% of $3,600, 30% recommended") is gone. The bar is the percentage; its two
          ends are labelled instead: the marker says what is recommended, the right end says the limit. */
       if(lim>0){ item.appendChild(fxScale(lim,bal,over,rec)); item.appendChild(fxScaleKey(lim,rec,Math.round(ut*100)+"% target",fnMoney(lim)+" limit")); }
@@ -37651,6 +37751,7 @@ function buildFinance(v){
      stamp at the foot already carries the date, so both were printing a fact the screen states twice. */
   FX_REG={};
   safe(v,function(){ fxBandFund(v,f); },"Finance fund");
+  safe(v,function(){ fxBandCards(v,f); },"Finance card cutover");
   safe(v,function(){ fxBandCash(v,f); },"Finance cash");
   safe(v,function(){ fxBandRunway(v,f); },"Finance runway");
   safe(v,function(){ fxBandMoney(v,f); },"Finance money coming");
