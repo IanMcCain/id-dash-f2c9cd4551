@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 549 (2026-10-21)">
+<meta name="build" content="v21 build 550 (2026-10-21)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -27867,6 +27867,148 @@ try{ if(profile==="ian" && state.meta && !state.meta.mig549_oct21){
     try{ console.log("mig549: 21 Oct session, Starbucks Hernandez expense, Amex Blue transition note"); }catch(_){}
 } }catch(e){ try{ console.warn("mig549 did not apply:",e&&e.message); }catch(_){} }
 
+/* ===== v21 build 550: DRAIN OF THE 21 OCT 2026 APP QUEUE (SONNET-14). Guard state.meta.mig550_oct21_drain, SEED_VERSION stays 13.
+   Source: BRAIN/GLOBAL/handoffs/2026-10-21-ian-verbal-update.md, Ian first hand. REPORT THE FACT, NO FORECAST, NO SUPERLATIVE, NO RISK ADDED.
+   1. Silver Leaf CERTAIN (winProb 1.0), $1.1M to $1.2M and may rise, rate 3.6 percent CONFIRMED, Ian 20 percent, $6,732 to $7,344 gross, PAID END OF 2027.
+   2. Teske CERTAIN, Ian 35 percent CONFIRMED, official close early January 2027 (mid January at the latest), PAID mid to late January 2027. Never February.
+   3. Hernandez list date moves from 12 November to 5 November 2026. Close ESTIMATED late December, possibly early January. No risk wording.
+   4. Earnest to dos for Pratt (Belknap) and Vogel retired to archive. Pratt buyer has already paid, receipt not through. Cynthia fine.
+   5. Finance: tax guy $2,000 year end, LLC undecided 60/40, $60,000 line is a live consequence of the Hernandez date and not a bracket,
+      2027 opening position, January picture, school housing payment ONE entry, car leaning CX-5, card structure with the Gold cutover date.
+   6. Vogel leak identified, Hernandez property tax, Jed closed, Silver Leaf lot listing: checked against the queue entries and written where missing. */
+try{ if(profile==="ian" && state.meta && !state.meta.mig550_oct21_drain && state.realEstate){
+    var AS550="Ian, 21 October 2026";
+    if(!state.archive) state.archive={};
+    var A550={ on:"2026-10-21", by:AS550, before:{} };
+    var RE550=state.realEstate;
+    function rep550(o,k,from,to){ if(o && typeof o[k]==="string" && o[k].indexOf(from)>=0) o[k]=o[k].split(from).join(to); }
+    function sweep550(o,fn,depth){ depth=depth||0; if(!o||typeof o!=="object"||depth>8) return;
+      Object.keys(o).forEach(function(k){ var v=o[k]; if(typeof v==="string") o[k]=fn(v); else if(v&&typeof v==="object") sweep550(v,fn,depth+1); }); }
+    (RE550.deals||[]).forEach(function(d){ if(!d) return;
+      if(d.id==="re-silverleaf-howard"){
+        A550.before.silverLeaf={ winProb:d.winProb, price:d.price, close:d.close, takeHome:d.takeHome };
+        d.winProb=1.0; d.winProbAsOf="2026-10-21";
+        d.winProbSource="IAN, 21 October 2026, his own call: \"put it in as certain, add it to everything.\" Supersedes 0.70 and his earlier 95 percent. No confidence caveat. Condition met: the buyers go ahead if Millard is open enrollment, and it is.";
+        delete d.winProbRange;
+        d.price="$1,100,000 to $1,200,000";
+        d.priceRange={ low:1100000, high:1200000, firmNumber:false, mayRise:true, source:"Ryan Beachler, relayed by Ian, 21 October 2026. It may go up, and Ian's commission rises with it.", computedOn:"the $1,100,000 LOW END, because priceNum() takes the first number out of a band." };
+        d.rate="3.6 percent, CONFIRMED (Ian, 21 October 2026). Ian gets 20 percent because the buyer has his own agent, Mike Bjork, Better Homes and Gardens Ambassador.";
+        d.takeHome="$6,732 to $7,344 gross and $4,712 to $5,141 after the 30 percent set aside, at $1,100,000 to $1,200,000. Rate 3.6 percent CONFIRMED, Ian 20 percent. The figure rises if the price rises. PAID TOWARD THE END OF 2027, so it is in no 2026 figure.";
+        d.close="Paid toward the END of 2027. The build runs 8 to 11 months. Certain (Ian, 21 October 2026).";
+        d.closeWindow={ asOf:"2026-10-21", source:AS550, expected:"Paid toward the end of 2027", buildLength:"8 to 11 months", treatment:"NOT 2026 money. The close text carries 2027, so is27() parks it outside every 2026 projection and the 2026 ceiling.", status:"CERTAIN, Ian's own call." };
+        d.ianShare="Ian gets 20 percent (Ian, 21 October 2026). The buyer has his own agent, Mike Bjork, Better Homes and Gardens Ambassador.";
+        d.stageNote="Stage is Building (Ian, 20 October 2026, lot deposit paperwork out for signature). CERTAIN as of 21 October 2026.";
+        if(typeof d.note==="string"){
+          d.note=d.note.split("PROMISING, NOT GUARANTEED, AND THE RECORD MUST NOT READ AS COMMITTED.").join("CERTAIN (Ian, 21 October 2026).");
+          d.note=d.note.split("so the 0.50 probability is doing real work and is ours rather than his.").join("and it is parked in 2027 by its close text.");
+          if(d.note.indexOf("UPDATE 21 OCTOBER")<0) d.note=d.note.trim()+" UPDATE 21 OCTOBER 2026 ("+AS550+"): Silver Leaf is CERTAIN, his own call, and it supersedes the earlier \"improving, not confirmed\" wording. Price $1,100,000 to $1,200,000 per Ryan Beachler and it may go up, with Ian's commission rising in proportion. Rate 3.6 percent CONFIRMED, Ian 20 percent: $6,732 to $7,344 gross. Paid toward the END of 2027, so it is in no 2026 figure.";
+        }
+      }
+      if(d.id==="re-teskes"){
+        A550.before.teske={ winProb:d.winProb, close:d.close, timingNote:d.timingNote };
+        d.winProb=1.0; d.winProbAsOf="2026-10-21"; d.winProbSource="IAN, 21 October 2026: certain.";
+        d.close="Official close early January 2027, mid January at the latest. Paid mid to late January 2027 (Ian, 21 October 2026).";
+        d.timingNote="CLOSE: early January 2027, mid January at the latest. PAID: mid to late January 2027. Ian, 21 October 2026: \"Teskes in January, I'll get paid in January.\" Certain. Ian's share is 35 percent, CONFIRMED: $9,103.50 gross and $6,372.45 after the 30 percent set aside on the $850,000 basis ($6,447.41 at $859,999). The firm price is still an open input.";
+        d.ianSplitSource="CONFIRMED by Ian, 21 October 2026.";
+        if(typeof d.note==="string" && d.note.indexOf("21 OCTOBER 2026 UPDATE")<0)
+          d.note=d.note.trim()+" 21 OCTOBER 2026 UPDATE ("+AS550+"): CERTAIN. Ian 35 percent CONFIRMED. Official close early January 2027, mid January at the latest, paid mid to late January 2027. The February wording anywhere on this record is withdrawn: it was an assumed date and Ian said so.";
+      }
+      if(d.id==="re-hernandez-sell"){
+        A550.before.hernandez={ close:d.close, listTarget:d.timeline&&d.timeline.listTarget };
+        var swapH=function(s){ return s
+          .split("Thursday 12 November 2026").join("Thursday 5 November 2026")
+          .split("Lists 12 November").join("Lists 5 November")
+          .split("12 November list date").join("5 November list date")
+          .split("Before 12 November 2026").join("Before 5 November 2026")
+          .split("which is a fourteen day window").join("which is a twenty one day window")
+          .split("Fourteen days from list to contract").join("Twenty one days from list to contract")
+          .split("November 12 list date").join("November 5 list date")
+          .split("12 November").join("5 November"); };
+        ["close","note","listDateNote","pipeStatus"].forEach(function(k){ if(typeof d[k]==="string") d[k]=swapH(d[k]); });
+        if(d.timeline) sweep550(d.timeline,swapH);
+        if(d.upcoming) sweep550(d.upcoming,swapH);
+        if(d.prep) sweep550(d.prep,swapH);
+        d.close="Lists 5 November 2026";
+        d.closeEstimate={ asOf:"2026-10-21", source:AS550, text:"ESTIMATED: late December 2026, possibly early January 2027. With the 5 November list, mid to late December looks more likely, with a decent chance of early January. None of these dates are guaranteed.", label:"ESTIMATED" };
+        if(d.closeUncertain && typeof d.closeUncertain==="object"){ d.closeUncertain.lists="2026-11-05"; d.closeUncertain.window="ESTIMATED late December 2026, possibly early January 2027 (Ian, 21 October 2026). None of it is guaranteed."; }
+        d.listDateMoved={ from:"2026-11-12", to:"2026-11-05", on:"2026-10-21", by:AS550 };
+        if(typeof d.note==="string" && d.note.indexOf("LIST DATE MOVED 21 OCTOBER")<0) d.note=d.note.trim()+" LIST DATE MOVED 21 OCTOBER 2026 ("+AS550+"): from Thursday 12 November to Thursday 5 November 2026. Close is ESTIMATED late December, possibly early January, none of it guaranteed.";
+      }
+      if(d.id==="re-barkers" && typeof d.note==="string") d.note=d.note.split("Hernandez on 12 November").join("Hernandez on 5 November");
+      if(d.id==="re-cynthia-willis" && d.yearEnd && typeof d.yearEnd.hernandezExcluded==="string"){
+        d.yearEnd.hernandezExcluded=d.yearEnd.hernandezExcluded.split("Lists 12 November.").join("Lists 5 November.");
+      }
+      if(d.id==="re-vogel-sell"){
+        if(Array.isArray(d.milestonesLeft)) d.milestonesLeft=d.milestonesLeft.filter(function(m){ return !/^Earnest money/.test(String(m)); });
+        d.earnest={ status:"DELIVERED", asOf:"2026-10-21", text:"Earnest $3,000 delivered 19 October 2026. Vogel is fine (Ian, 21 October 2026). Closed, not an open item." };
+        if(typeof d.note==="string"){
+          var oldL="Source, location and severity are all unknown.";
+          if(d.note.indexOf(oldL)>=0) d.note=d.note.split(oldL).join("The leak is IDENTIFIED: John Vogel reported it himself, damp TV room ceiling spots from roof water, called an easy fix by Emerald (28 and 30 September), plus new trickle leaks at the base of a basement wall found 1 October after heavy rain. Two separate water issues, neither confirmed repaired.");
+        }
+      }
+      if(d.id==="re-belknap-sell"){
+        if(Array.isArray(d.milestonesLeft)) d.milestonesLeft=d.milestonesLeft.filter(function(m){ return !/^Earnest money/.test(String(m)); });
+        d.earnest={ status:"PAID per Chris", asOf:"2026-10-21", text:"The buyer has ALREADY PAID. Chris confirmed with the buyer's agent. The receipt has not come through yet and that is not a flag. Ian, 21 October 2026: \"no concern.\"" };
+      }
+    });
+    /* Hernandez list event in the app (NOT the calendar): follow the new date. */
+    (state.events||[]).forEach(function(e){ if(e && e.id==="ev-20261112-hernandez-live"){ e.date="2026-11-05"; e.note=(e.note||"")+" List date moved from 12 November to 5 November (Ian, 21 October 2026)."; } });
+    /* Earnest to dos: archive, never delete. convergeState() filters the live list from retiredTodoIds. */
+    if(!Array.isArray(state.archive.todosDone)) state.archive.todosDone=[];
+    if(!Array.isArray(state.meta.retiredTodoIds)) state.meta.retiredTodoIds=[];
+    ["ret-20261017-belknap-earnest","ret-20261017-vogel-earnest"].forEach(function(id){
+      var old=null; (RE550.todos||[]).forEach(function(t){ if(t&&t.id===id) old=t; });
+      if(!state.archive.todosDone.some(function(a){ return a&&a.id===id; }))
+        state.archive.todosDone.push({ id:id, text:(old&&old.text)||"", done:false, retiredOn:"2026-10-21", reason:"Ian, 21 October 2026: no concern, all clear. Pratt buyer has already paid, receipt not through. Vogel fine. Not to be raised again." });
+      if(state.meta.retiredTodoIds.indexOf(id)<0) state.meta.retiredTodoIds.push(id);
+    });
+    RE550.todos=(RE550.todos||[]).filter(function(t){ return !(t && (t.id==="ret-20261017-belknap-earnest"||t.id==="ret-20261017-vogel-earnest")); });
+    /* positionAsOf: Teske and Hernandez wording. */
+    if(RE550.positionAsOf){
+      var P550=RE550.positionAsOf;
+      rep550(P550,"early2027","Teske is late January or February at the earliest, at 35 percent.","Teske closes early to mid January 2027 and is paid mid to late January 2027, certain, Ian 35 percent CONFIRMED (Ian, 21 October 2026). Silver Leaf is paid toward the END of 2027.");
+      if(typeof P550.early2027==="string" && P550.early2027.indexOf("late January or February")>=0) P550.early2027=P550.early2027.split("late January or February").join("mid to late January");
+      P550.asOf21Oct="2026-10-21";
+    }
+    /* FINANCE */
+    var F550=state.finance||(state.finance={});
+    var R0=(F550.recurring||[])[0];
+    if(R0){ R0.name="School housing (Methodist)"; R0.aliases=["apartment payment","Methodist","school payment"];
+      R0.oneEntryNote="ONE payment, not two (Ian, 21 October 2026: \"It's school housing for my apartment, and it's in January they're all correct just named differently\"). About $2,500, first week of January 2027, 50/50 he pays it early, no difference to him. Count it ONCE."; }
+    F550.update21Oct={
+      asOf:"2026-10-21", source:"Ian, 21 October 2026, first hand (BRAIN/GLOBAL/handoffs/2026-10-21-ian-verbal-update.md)",
+      taxGuy:{ amount:2000, when:"year end", paidFrom:"the tax set aside excess", text:"Ian pays his tax guy $2,000 a year for services, at year end, out of the tax set aside excess. It was never in any earlier model." },
+      excessAfterFee:{ low:5732, high:6236, text:"Excess after the $2,000 fee, fee treated as cash only: about $5,732 to $6,236 on the $15,275 sent (17,500 and 20,000 mile planning cases). Source: the Tax Estimate file, section 21 Oct." },
+      miles50:{ business:11027, total:22054, decemberLeft:5107, januaryLeft:4808, text:"At 50 percent business miles (11,027 of 22,054) and after the $2,000 fee: about $5,107 left if Hernandez closes in December, about $4,808 if it closes in January. Difference about $300.", verified:false, verifiedNote:"These two figures are carried from the 21 October planning brief and were NOT recomputed from the files, so treat them as approximate. Your tax guy is the authority." },
+      llc:{ status:"UNDECIDED", lean:"60/40 in favor (Ian)", waitingOn:"his tax guy's call, expected soon", text:"LLC undecided. Ian puts it at 60/40 in favor and is waiting on the tax guy. No LLC cost or saving is modeled anywhere." },
+      line60k:{ text:"The $60,000 line is a LIVE CONSEQUENCE of the Hernandez closing date, not a tax bracket, threshold or QBI boundary. If Hernandez closes in January 2027, 2026 income is UNDER $60,000. If it closes before January, 2026 income is most likely OVER $60,000. December versus January is worth about $300 of tax. No colour, no risk.", notABracket:true },
+      opening2027:{ silverLeaf:"$6,732 to $7,344 gross, $4,712 to $5,141 after set aside, paid toward the END of 2027, rate 3.6 percent CONFIRMED, certain", teske:"$9,103.50 gross, $6,372.45 after set aside, paid mid to late January 2027, certain, Ian 35 percent CONFIRMED", combined:"about $15,836 to $16,448 gross, about $11,085 to $11,513 after set aside. In NO 2026 figure." },
+      january:{ text:"January 2027: Teske pays $6,372.45 after set aside (mid to late January, day unknown). Out: the school housing payment about $2,500 in the first week (counted ONCE) and a car down payment of $0 to $2,000. End of month about +$4,572 to +$5,572 after both. Hernandez and the $5,000 tax refund are other January inputs, not netted here. Silver Leaf is not in January." },
+      novemberClosings:{ text:"November closings land mid to late November, about $10,000, depending on how much Chris gives Ian as a gift on the Spicer closing. The gift is NOT taxed and stays out of income, 1099, production and sides. No amount is recorded." }
+    };
+    F550.vehicle=F550.vehicle||{};
+    F550.vehicle.replacement={ asOf:"2026-10-21", source:AS550, status:"LEANING, NOT BOUGHT", leaning:"Mazda CX-5, Grand Touring trim", budgetLow:21000, budgetHigh:27000, budget:"$21,000 to $27,000, probably mid range", seen:"Several around 60,000 miles at $22,000 to $23,000 before negotiating", down:"$0 to $2,000 on top of the trade, no more. It depends on the monthly saving it buys.", method:"Standard mileage. Under 6,000 lbs. Section 179 is not used.", gas:"Goes on the Amex Blue Business Plus." };
+    F550.cardTransition={
+      setOn:"2026-10-21", setBy:"Ian", status:"EFFECTIVE 21 OCTOBER 2026",
+      cutover:"THE DATE DECIDES THE DEFAULT. Amex Gold charges BEFORE 21 October 2026 are business (the Gold was the business card until 21 October). Amex Gold charges FROM 21 October 2026 are personal.",
+      text:"Amex Blue Business Plus = 100 percent business only, $2,000 limit (checked 21 October), digital card expected Thursday 22 October, physical late next week. Amex Gold = Ian's everyday personal card for all personal spend, no preset limit, used to rack up points. Discover = one cheap subscription, probably the Marcus monthly (about $10), on autopay, purely to keep activity. He will merge the points accounts once the digital Blue arrives. All three cards are used monthly on purpose, to push his credit score up. Gas for the car goes on the Blue.",
+      standingRuleUntilThen:"Gold charges before 21 October 2026 keep the old business default and are never marked personal without asking Ian. Gold charges from 21 October 2026 default to personal. Classify on merchant and purpose, never on the card alone. A non business charge on the Blue is a data error to report.",
+      blue:{ name:"American Express Blue Business Plus", role:"100 percent business only", limit:2000, digitalDue:"2026-10-22", physical:"late next week", status:"ARRIVES THURSDAY 22 OCTOBER, digital first" },
+      discover:{ role:"one cheap subscription on autopay, probably Marcus about $10 a month" },
+      bonusNote:"The Gold's $8,000 first six months bonus window is Ian's own plan and is not changed by this note."
+    };
+    (F550.cards||[]).forEach(function(c){ if(!c) return;
+      if(c.id==="amexgold"){ c.transitionNote="BUSINESS card until 20 October 2026, PERSONAL card from 21 October 2026 (Ian). Charges before 21 October keep the business default. Charges from 21 October default personal. The Amex Blue Business Plus is the business card from 22 October (digital)."; c.roleFrom21Oct="personal"; c.roleBefore21Oct="business"; }
+      if(c.id==="discover"){ c.roleNote="Personal. One cheap subscription on autopay, probably Marcus about $10 a month, to keep activity (Ian, 21 October 2026)."; }
+    });
+    ((F550.ledger&&F550.ledger.recent)||[]).forEach(function(e){ if(e && e.id==="exp-20261021-starbucks-hernandez"){
+      e.statusBasis="Business because of the PURPOSE (client meeting with the Hernandez family), not because of the card. The Gold is personal from 21 October 2026, so a Gold charge from that date defaults personal unless the purpose says otherwise."; } });
+    A550.finance={ recurringName:"School housing (Methodist)" };
+    state.archive.queueDrainB550=A550;
+    state.meta.mig550_oct21_drain=true; save(true);
+    try{ console.log("mig550: Silver Leaf certain, Teske January, Hernandez 5 Nov, earnest todos archived, finance 21 Oct block, school housing one entry, card cutover"); }catch(_){}
+} }catch(e){ try{ console.warn("mig550 did not apply:",e&&e.message); }catch(_){} }
+
   /* build 372: LAST THING BEFORE THE SAVE. Every migration above has run, deepMergeDefaults
      has run, so this is the only point in the file where the state is actually final. */
   try{ convergeState(); }catch(e){}
@@ -37241,6 +37383,35 @@ function fxDealsFold(b,f){
   }
   if(noPrice) b.appendChild(el("div","fnnote",noPrice+" more "+(noPrice===1?"deal has":"deals have")+" no price yet, so nothing is computed for "+(noPrice===1?"it":"them")+"."));
 }
+/* ===== build 550: the 21 October update block on the finance Tax fold. Reads finance.update21Oct, finance.cardTransition,
+   finance.vehicle.replacement. Plain rows and notes only, nothing is computed here and nothing is coloured. ===== */
+function fx21Block(b,f){
+  try{
+    var u=f&&f.update21Oct; if(!u) return;
+    var nt=function(t){ var n=el("div","fnnote"); n.style.marginTop="6px"; n.textContent=t; b.appendChild(n); };
+    fxLabel(b,"Update 21 October","Ian");
+    var L=el("div");
+    if(u.taxGuy) fnRow(L,"Tax guy",fnMoney(u.taxGuy.amount)+" a year","paid at year end, out of the set aside excess",null,false);
+    if(u.excessAfterFee) fnRow(L,"Set aside excess after the fee","about "+fnMoney(u.excessAfterFee.low)+" to "+fnMoney(u.excessAfterFee.high),"the fee treated as cash only",null,false);
+    if(u.llc) fnRow(L,"LLC",u.llc.status.charAt(0)+u.llc.status.slice(1).toLowerCase(),u.llc.lean+", waiting on the tax guy",null,false);
+    b.appendChild(L);
+    if(u.miles50) nt(u.miles50.text+(u.miles50.verified===false?(" "+u.miles50.verifiedNote):""));
+    if(u.line60k) nt(u.line60k.text);
+    if(u.opening2027){ fxLabel(b,"2027 opening position","not in any 2026 figure");
+      var L2=el("div");
+      fnRow(L2,"Silver Leaf",u.opening2027.silverLeaf.split(",")[0],"paid toward the end of 2027, rate 3.6 percent confirmed, certain",null,false);
+      fnRow(L2,"Teske","$9,103.50 gross","$6,372.45 after set aside, paid mid to late January 2027, certain",null,false);
+      b.appendChild(L2); nt("Combined: "+u.opening2027.combined+"."); }
+    if(u.january) nt(u.january.text);
+    if(u.novemberClosings) nt(u.novemberClosings.text);
+    var ct=f.cardTransition;
+    if(ct){ fxLabel(b,"Cards","from 21 October 2026"); nt(ct.cutover||""); nt(ct.text||""); }
+    var v=f.vehicle&&f.vehicle.replacement;
+    if(v){ fxLabel(b,"Car","leaning, not bought"); nt("Leaning "+v.leaning+", "+v.budget+". "+v.seen+". Down payment "+v.down+" "+v.method+" "+v.gas); }
+    var r0=(f.recurring||[])[0];
+    if(r0&&r0.oneEntryNote) nt(r0.name+": "+r0.oneEntryNote);
+  }catch(e){}
+}
 function fxTaxFold(b,f){
   /* build 529: the Tax fold shows the tax ESTIMATE (provisional), the DOCUMENTED deductions from the expense ledger,
      the regular method home office as a range, and the mileage assumption. The old projection of subscriptions plus a
@@ -37261,6 +37432,7 @@ function fxTaxFold(b,f){
   var n0=el("div","fnnote"); n0.style.marginTop="6px";
   n0.textContent="The low end assumes "+Number(lo.miles).toLocaleString("en-US")+" business miles and the high end "+Number(hi.miles).toLocaleString("en-US")+". "+(te.note||"");
   b.appendChild(n0);
+  fx21Block(b,f);
   fxLabel(b,"Documented deductions",fnMoneyC(lg.documented));
   var cats=lg.categories||[]; var palette=["#1fb9db","#7a8cff","#30d158","#ff9f0a","#bf5af2"];
   if(cats.length){
