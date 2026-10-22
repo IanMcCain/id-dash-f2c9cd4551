@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 553 (2026-10-21)">
+<meta name="build" content="v21 build 554 (2026-10-21)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -27990,7 +27990,7 @@ try{ if(profile==="ian" && state.meta && !state.meta.mig550_oct21_drain && state
     F550.vehicle.replacement={ asOf:"2026-10-21", source:AS550, status:"LEANING, NOT BOUGHT", leaning:"Mazda CX-5, Grand Touring trim", budgetLow:21000, budgetHigh:27000, budget:"$21,000 to $27,000, probably mid range", seen:"Several around 60,000 miles at $22,000 to $23,000 before negotiating", down:"$0 to $2,000 on top of the trade, no more. It depends on the monthly saving it buys.", method:"Standard mileage. Under 6,000 lbs. Section 179 is not used.", gas:"Goes on the Amex Blue Business Plus." };
     F550.cardTransition={
       setOn:"2026-10-21", setBy:"Ian", status:"EFFECTIVE 21 OCTOBER 2026",
-      cutover:"THE DATE DECIDES THE DEFAULT. Amex Gold charges BEFORE 21 October 2026 are business (the Gold was the business card until 21 October). Amex Gold charges FROM 21 October 2026 are personal.",
+      cutover:"THE DATE DECIDES THE DEFAULT. Amex Gold charges BEFORE 21 October 2026 are business (the Gold was the business card through 20 October). Amex Gold charges FROM 21 October 2026 are personal.",
       text:"Amex Blue Business Plus = 100 percent business only, $2,000 limit (checked 21 October), digital card expected Thursday 22 October, physical late next week. Amex Gold = Ian's everyday personal card for all personal spend, no preset limit, used to rack up points. Discover = one cheap subscription, probably the Marcus monthly (about $10), on autopay, purely to keep activity. He will merge the points accounts once the digital Blue arrives. All three cards are used monthly on purpose, to push his credit score up. Gas for the car goes on the Blue.",
       standingRuleUntilThen:"Gold charges before 21 October 2026 keep the old business default and are never marked personal without asking Ian. Gold charges from 21 October 2026 default to personal. Classify on merchant and purpose, never on the card alone. A non business charge on the Blue is a data error to report.",
       blue:{ name:"American Express Blue Business Plus", role:"100 percent business only", limit:2000, digitalDue:"2026-10-22", physical:"late next week", status:"ARRIVES THURSDAY 22 OCTOBER, digital first" },
@@ -28140,6 +28140,26 @@ try{ if(profile==="ian" && state.meta && !state.meta.mig553_pk1021pm){
     state.meta.mig553_pk1021pm=true; save(true);
     try{ console.log("mig553: 21 Oct evening session pk-20261021-pm"); }catch(_){}
 } }catch(e){ try{ console.warn("mig553 did not apply:",e&&e.message); }catch(_){} }
+
+/* ===== v21 build 554: 21 OCT 2026 DEEP DIVE APP PASS (SONNET-8). Guard state.meta.mig554_deepdive, SEED_VERSION stays 13.
+   (1) Hernandez: an earlier string replace turned Ian's 20 Oct quote about the 12 November list date into a quote about 5 November, which he never said.
+   The quote is replaced with a plain statement; no 12 November text is written. (2) Gold wording: the business card ran THROUGH 20 October, personal FROM 21 October.
+   No amounts, probabilities, dates or checkmarks are touched. */
+try{ if(profile==="ian" && state.meta && !state.meta.mig554_deepdive){
+    var D554=(state.realEstate&&state.realEstate.deals)||[];
+    D554.forEach(function(d){
+      if(!d || d.id!=="re-hernandez-sell") return;
+      if(d.prep && typeof d.prep.ianRead==="string" && d.prep.ianRead.indexOf("gonna hit")>=0) d.prep.ianRead="Ian expects the family to hit the list date (20 October 2026). The list date has since been set to 5 November (Ian, 21 October 2026).";
+      if(typeof d.note==="string"){
+        d.note=d.note.split('Ian expects they hit the 5 November list date ("I think they\'re gonna hit that November 5 list date").').join("Ian expects they hit the list date, now 5 November (Ian, 21 October 2026).");
+        d.note=d.note.split('Ian expects they hit the 5 November list date ("I think they\'re gonna hit that November 5 list date")').join("Ian expects they hit the list date, now 5 November (Ian, 21 October 2026)");
+      }
+    });
+    var CT554=state.finance&&state.finance.cardTransition;
+    if(CT554 && typeof CT554.cutover==="string") CT554.cutover=CT554.cutover.split("(the Gold was the business card through 20 October)").join("(the Gold was the business card through 20 October)");
+    state.meta.mig554_deepdive=true; save(true);
+    try{ console.log("mig554: Hernandez quote, Gold through 20 October wording"); }catch(_){}
+} }catch(e){ try{ console.warn("mig554 did not apply:",e&&e.message); }catch(_){} }
 
   /* build 372: LAST THING BEFORE THE SAVE. Every migration above has run, deepMergeDefaults
      has run, so this is the only point in the file where the state is actually final. */
