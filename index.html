@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 551 (2026-10-21)">
+<meta name="build" content="v21 build 552 (2026-10-21)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -27858,11 +27858,11 @@ try{ if(profile==="ian" && state.meta && !state.meta.mig549_oct21){
     F549.cardTransition={
       setOn:"2026-10-21", setBy:"Ian", status:"INCOMING, NOT YET ARRIVED",
       text:"Ian is getting an Amex Blue Business Plus card in a day or two. Once it arrives, business spend moves to the Blue and the Amex Gold becomes his personal card. The Discover stays open with one small recurring charge on autopay.",
-      standingRuleUntilThen:"Until the Blue arrives and Ian says otherwise, an Amex Gold charge still defaults to business and only Ian marks one personal. Nothing is reclassified by this note.",
+      standingRuleUntilThen:"Gold was the business card through 20 October 2026 and is PERSONAL from 21 October 2026. Charges before 21 October keep the business default. Charges from 21 October default to personal. Nothing is reclassified by this note.",
       bonusNote:"The Gold's $8,000 first six months bonus window is Ian's own plan and is not changed by this note."
     };
     (F549.cards||[]).forEach(function(c){ if(c && c.id==="amexgold"){
-      c.transitionNote="Becomes Ian's personal card once the Amex Blue Business Plus arrives (Ian, 21 October 2026, expected in a day or two). Business spend moves to the Blue then. Until then it stays the business card."; } });
+      c.transitionNote="Business card through 20 October 2026, PERSONAL card from 21 October 2026 (Ian). Business spend goes on the Amex Blue Business Plus."; } });
     state.meta.mig549_oct21=true; save(true);
     try{ console.log("mig549: 21 Oct session, Starbucks Hernandez expense, Amex Blue transition note"); }catch(_){}
 } }catch(e){ try{ console.warn("mig549 did not apply:",e&&e.message); }catch(_){} }
@@ -28081,6 +28081,40 @@ try{ if(profile==="ian" && state.meta && !state.meta.mig551_readable && state.re
     state.meta.mig551_readable=true; save(true);
     try{ console.log("mig551: Hernandez 5 Nov everywhere, price settled, Teske estimate, tax figures recomputed, received gap labelled, card band, Starbucks 12.19"); }catch(_){}
 } }catch(e){ try{ console.warn("mig551 did not apply:",e&&e.message); }catch(_){} }
+
+/* ===== v21 build 552 (SONNET-6, 21 Oct 2026). Guard state.meta.mig552_belknap_cards, SEED_VERSION stays 13.
+   1. CARD DATE BOUNDARY, belt and braces after build 550: the Gold was the BUSINESS card through 20 Oct and is PERSONAL from 21 Oct (Ian).
+      Rewrites the two fields that once said "until the Blue arrives" so no load order can leave the old wording. The physical Blue
+      arriving later does not move the date. A Gold charge from 21 Oct is never a business deduction on the card alone.
+   2. BELKNAP, 4946 Pratt (re-belknap-sell): after the 21 Oct 1:30 PM inspection the buyers are attempting to terminate, Chris is working
+      to save it, low likelihood per Ian ("My dad's trying to save the deal but not high chance"). STILL UNDER CONTRACT at $250,000,
+      NOT dead, NOT back on market. The risk marker is IAN'S OWN WORDS and nothing else. Price, stage, close, split untouched. The $1,530
+      stays in the November figures. Staging note added, flagged not decided. */
+try{ if(profile==="ian" && state.meta && !state.meta.mig552_belknap_cards){
+    var AS552="Ian, 21 October 2026";
+    var F552=state.finance;
+    if(F552 && F552.cardTransition){
+      F552.cardTransition.standingRuleUntilThen="Gold was the business card through 20 October 2026 and is PERSONAL from 21 October 2026, full stop. The physical Blue arriving later does not move that date. Charges before 21 October keep the old business default. Charges from 21 October default to personal. Classify on merchant and purpose, never on the card alone. A non business charge on the Blue is a data error to report.";
+    }
+    if(F552 && Array.isArray(F552.cards)) F552.cards.forEach(function(c){ if(c && c.id==="amexgold"){
+      c.transitionNote="BUSINESS card through 20 October 2026, PERSONAL card from 21 October 2026 (Ian). Charges before 21 October keep the business default. Charges from 21 October default personal. Business spend goes on the Amex Blue Business Plus, digital card from 22 October.";
+      c.roleFrom21Oct="personal"; c.roleBefore21Oct="business"; } });
+    var D552=((state.realEstate||{}).deals||[]);
+    D552.forEach(function(d){ if(!d || d.id!=="re-belknap-sell") return;
+      var RK="The buyers are attempting to terminate after the 21 October inspection. Chris is working to save the deal. Low likelihood per Ian ("+AS552+"): \"My dad's trying to save the deal but not high chance.\"";
+      d.risk=RK; d.riskLine=RK;
+      d.terminationStatus={ asOf:"2026-10-21", status:"UNDER CONTRACT, buyers attempting to terminate, Chris working to save it",
+        source:"Buyer's agent Peter Manhart text 21 Oct 5:42 PM: \"They are walking away. Sending release and inspection soon.\" Ian: \"My dad's trying to save the deal but not high chance.\"",
+        notDead:true, notBackOnMarket:true, relistDate:null,
+        open:"No repair request or response period appears in the texts read. Whether a release is signed is not in the texts. What happens to the $2,500 earnest is not stated. The written report was not read." };
+      if(typeof d.pipeStatus==="string" && d.pipeStatus.indexOf("attempting to terminate")<0) d.pipeStatus="Buyers attempting to terminate after the 21 Oct inspection, Chris working to save it. "+d.pipeStatus;
+      if(typeof d.note==="string" && d.note.indexOf("BUYERS ATTEMPTING TO TERMINATE")<0) d.note="BUYERS ATTEMPTING TO TERMINATE (21 October 2026): still under contract, Chris working to save it, low likelihood per Ian. "+d.note;
+      var SN="STAGING (21 October 2026, flagged not decided): Ian's plan was staging comes back once appraised and inspected. Inspected 21 Oct; the appraisal is not ordered until after inspection. If this goes back on the market its staging stays in the home, which may affect what is available for the November listings (Hernandez 5 Nov). Not yet raised by Ian.";
+      if(typeof d.stagingNote!=="string" || d.stagingNote.indexOf("21 October 2026, flagged")<0) d.stagingNote=SN+(d.stagingNote?" "+d.stagingNote:"");
+    });
+    state.meta.mig552_belknap_cards=true; save(true);
+    try{ console.log("mig552: Gold personal from 21 Oct wording, Belknap buyers attempting to terminate"); }catch(_){}
+} }catch(e){ try{ console.warn("mig552 did not apply:",e&&e.message); }catch(_){} }
 
   /* build 372: LAST THING BEFORE THE SAVE. Every migration above has run, deepMergeDefaults
      has run, so this is the only point in the file where the state is actually final. */
