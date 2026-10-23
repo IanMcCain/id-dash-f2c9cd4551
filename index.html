@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 554 (2026-10-21)">
+<meta name="build" content="v21 build 555 (2026-10-23)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -28161,6 +28161,77 @@ try{ if(profile==="ian" && state.meta && !state.meta.mig554_deepdive){
     try{ console.log("mig554: Hernandez quote, Gold through 20 October wording"); }catch(_){}
 } }catch(e){ try{ console.warn("mig554 did not apply:",e&&e.message); }catch(_){} }
 
+/* ===== v21 build 555: 23 OCT 2026 DEEP DIVE APP PASS (SONNET-13). Guard state.meta.mig555_deepdive, SEED_VERSION stays 13.
+   (1) Friday 23 October pickleball session pk-20261023-am, guarded by id, no other record touched. Effort 9 All Out is IAN'S OWN rating,
+   never reconciled against heart rate, no superlative or comparison written. 22 October has no session record and none is invented.
+   (2) Belknap: the buyers walked away after the 21 October inspection and declined Chris's offer of more reports. Chris plans repairs,
+   a different inspector and a re-list. Whether the sellers signed the release is NOT known. Stage, price and the $1,530 are untouched, the
+   at-risk flag stays. (3) Vogel: inspection 21 Oct went well, updated pre approval letter still outstanding. (4) Willis: appraisal done 20 Oct,
+   no value has surfaced, unsolicited offer from Carson Branham 20 Oct, no reply from Chris. (5) Blue card status moves from "arrives 22 October"
+   to live, $2,000 limit, $0 balance, no digital details yet. No probability, price, date or checkmark is changed. */
+try{ if(profile==="ian" && state.meta && !state.meta.mig555_deepdive){
+    var AS555="23 October 2026";
+    var P555=state.pickleball||(state.pickleball={});
+    if(!Array.isArray(P555.sessions)) P555.sessions=[];
+    if(!P555.sessions.some(function(x){ return x && x.id==="pk-20261023-am"; })){
+      P555.sessions.push({
+        id:"pk-20261023-am", date:"2026-10-23", kind:"Open play", venue:"Omaha",
+        duration:"2h 9m 18s", window:"7:08 to 9:17 AM, Omaha",
+        calories:1391, activeCalories:1188, avgHr:127, maxHr:169, minHr:82,
+        effort:9, effortLabel:"All Out", effortSource:"His own rating, set by him in Apple Fitness",
+        effortNote:"HIS OWN RATING (Ian, "+AS555+": the effort number is his own rating), how hard he tried and how well he played. NOT an exertion figure and NOT reconciled against heart rate or calories.",
+        result:"", score:"", opponent:"", copyOwned:true,
+        source:"Ian's Apple Fitness numbers, Ian, "+AS555+". His words: mostly all open play, \"went well.\"",
+        note:"Mostly all open play, Friday 23 October, morning, Omaha, 7:08 to 9:17 AM. 2:09:18 in total. From Apple Watch: avg HR 127, peak 169, low 82, active 1,188, total 1,391. Your effort rating was 9, All Out. Ian: \"went well.\"",
+        agent:"Watch data only. Kind is Open play, no drill split stored. Effort is Ian's own rating of 9, set in Apple Fitness, and is never reconciled against heart rate or calories. No gym statement is made. No record, superlative or comparison is claimed on this record. 22 October has no session record and none is invented."
+      });
+    }
+    P555.sessions.sort(function(a,z){ return String(a.date).localeCompare(String(z.date)); });
+    var D555=(state.realEstate&&state.realEstate.deals)||[];
+    D555.forEach(function(d){
+      if(!d) return;
+      if(d.id==="re-belknap-sell"){
+        var RK="The buyers walked away after the 21 October inspection. They declined Chris's offer of two more foundation reports and a roofer review, saying they just want to move on ("+AS555+" report). Chris plans repairs, a different inspector, then a re-list. Whether the sellers have signed the release is not known. The $1,530 stays in the November figures, flagged at risk (Ian's words, 21 October 2026).";
+        d.risk=RK; d.riskLine=RK;
+        d.terminationStatus={ asOf:"2026-10-23", status:"Buyers walked away after the 21 October inspection and declined Chris's offer of two more foundation reports and a roofer review. Release signature by the sellers NOT known.",
+          source:"Lane brief of 23 October 2026. Earlier: buyer's agent Peter Manhart text 21 Oct 5:42 PM: \"They are walking away. Sending release and inspection soon.\" Ian, 21 Oct: \"My dad's trying to save the deal but not high chance.\"",
+          buyersWords:"they just wanna move on", chrisPlan:"Repairs, a different inspector, then a re-list. No re-list date given.",
+          releaseSigned:null, notDead:true, notBackOnMarket:true, relistDate:null,
+          open:"Whether the sellers have signed the release is not known. What happens to the $2,500 earnest is not stated. The written inspection report was not read." };
+        var PS_OLD="Buyers attempting to terminate after the 21 Oct inspection, Chris working to save it. ";
+        if(typeof d.pipeStatus==="string" && d.pipeStatus.indexOf(PS_OLD)===0) d.pipeStatus="Buyers walked away after the 21 Oct inspection and declined Chris's offer of more reports. Chris plans repairs, a different inspector, then a re-list. Release signature not known. "+d.pipeStatus.slice(PS_OLD.length);
+        var NT_OLD="BUYERS ATTEMPTING TO TERMINATE (21 October 2026): still under contract, Chris working to save it, low likelihood per Ian. ";
+        if(typeof d.note==="string" && d.note.indexOf(NT_OLD)===0) d.note="BUYERS WALKED AWAY (21 October 2026): they declined Chris's offer of two more foundation reports and a roofer review. Chris plans repairs, a different inspector, then a re-list. Whether the sellers signed the release is not known. "+d.note.slice(NT_OLD.length);
+      }
+      if(d.id==="re-vogel-sell"){
+        d.inspection={ asOf:"2026-10-23", date:"2026-10-21", status:"Done, went well",
+          text:"The inspection on 21 October went well. Buyer's agent Johnny Duggan: \"nothing major,\" \"in good shape.\"",
+          source:"Lane brief of 23 October 2026, Johnny Duggan's words as relayed" };
+        d.preApproval={ asOf:"2026-10-23", status:"OUTSTANDING", text:"The buyer's updated pre approval letter is still outstanding as of 23 October. The letter on file expired 2 July 2026. It was promised for Monday 19 October.", source:"Lane brief of 23 October 2026" };
+        var VO="Pre-approval letter on file is expired, a current one is promised Monday.";
+        if(typeof d.pipeStatus==="string" && d.pipeStatus.indexOf(VO)>=0) d.pipeStatus=d.pipeStatus.split(VO).join("Inspection 21 October went well (Johnny Duggan: nothing major, in good shape). The updated pre approval letter is still outstanding as of 23 October; the letter on file is expired.");
+        if(Array.isArray(d.milestonesLeft)) d.milestonesLeft=d.milestonesLeft.map(function(m){ return (typeof m==="string" && m.indexOf("Current pre-approval letter")===0) ? "Updated pre-approval letter (still outstanding 23 October, was promised Monday 19 October)" : m; });
+      }
+      if(d.id==="re-cynthia-willis"){
+        d.appraisal=d.appraisal||{};
+        d.appraisal.valueSurfaced=false;
+        d.appraisal.valueNote="No appraised value has surfaced as of 23 October 2026 (lane brief). Nothing says what it came in at.";
+        d.unsolicitedOffer={ asOf:"2026-10-23", from:"Carson Branham", date:"2026-10-20", terms:"Unsolicited offer \"subject to the mortgage staying in place.\"", chrisReply:"Chris has not replied (as of 23 October 2026).", source:"Lane brief of 23 October 2026" };
+        var WO="Seller signing was today, Friday 16 October. Whether it happened is unconfirmed. The VA appraisal is still outstanding and the lender has not been reached. Closes 13 November. Ian, 16 October 2026.";
+        if(d.pipeStatus===WO) d.pipeStatus="Under contract at $610,000. The VA appraisal was done 20 October (Ian thinks it went well) and no appraised value has surfaced as of 23 October. Closes 13 November (Ian, 16 October 2026). A buyer named Carson Branham sent an unsolicited offer on 20 October, subject to the mortgage staying in place; Chris has not replied. Whether the seller signing on 16 October happened is unconfirmed.";
+      }
+    });
+    var CT555=state.finance&&state.finance.cardTransition;
+    if(CT555){
+      CT555.blue=CT555.blue||{};
+      CT555.blue.status="LIVE as of 23 October 2026: $2,000 limit, $0 balance. No digital card details yet, so any card picture here is a placeholder. Physical card late next week.";
+      CT555.blue.balance=0; CT555.blue.digitalDetails=false; CT555.blue.statusAsOf="2026-10-23";
+      if(typeof CT555.text==="string") CT555.text=CT555.text.split("digital card expected Thursday 22 October, physical late next week").join("account live 23 October with $0 balance, no digital card details yet, physical card late next week");
+    }
+    state.meta.mig555_deepdive=true; save(true);
+    try{ console.log("mig555: pk-20261023-am, Belknap, Vogel, Willis, Blue card status"); }catch(_){}
+} }catch(e){ try{ console.warn("mig555 did not apply:",e&&e.message); }catch(_){} }
+
   /* build 372: LAST THING BEFORE THE SAVE. Every migration above has run, deepMergeDefaults
      has run, so this is the only point in the file where the state is actually final. */
   try{ convergeState(); }catch(e){}
@@ -29659,7 +29730,7 @@ function buildFutureIdeasHome(parent){
   if(!keys.length) return; var latest=keys[keys.length-1]; var arr=fi[latest]||[]; if(!arr.length) return;
   pkCollapse(parent,"h_ideas","Future ideas",fmtShort(latest)+", suggestions not tasks",false,function(hh){
     var c=card("a-green"); var b=c._body;
-    b.appendChild(el("div","small dim","From your daily agent. Ideas to consider, not to do items."));
+    b.appendChild(el("div","small dim","Ideas to consider, not to do items."));
     arr.slice(0,3).forEach(function(it,i){ var r=el("div"); r.style.cssText="display:flex;gap:9px;align-items:flex-start;padding:9px 0"+(i>0?";border-top:1px solid var(--line)":""); var dot=el("span"); dot.style.cssText="color:var(--sec,var(--accent));font-weight:900;flex:0 0 auto"; dot.textContent="\u2022"; var col=el("div"); col.style.minWidth="0"; var tx=el("div","small"); tx.style.cssText="line-height:1.5;color:var(--gray)"; tx.textContent=(typeof it==="string"?it:(it.text||it.title||"")); col.appendChild(tx); if(it&&it.url){ var a=el("a","small"); a.textContent="source"; a.setAttribute("href",it.url); a.setAttribute("target","_blank"); a.setAttribute("rel","noopener"); a.style.cssText="color:var(--sec2,var(--accent2));margin-top:3px;display:inline-block"; col.appendChild(a); } r.appendChild(dot); r.appendChild(col); b.appendChild(r); });
     if(arr.length>3){ b.appendChild(el("div","small dim",(arr.length-3)+" more ideas from today")); }
     hh.appendChild(c);
@@ -30435,7 +30506,7 @@ function buildIanHome(v){ const workout=daySplit(DOW); const reTop=firstUndone((
     b.appendChild(foot);
     v.appendChild(c);
   },"Daily entry"); };
-  var secBrief=function(){ const _clsec=sect(v,"Today from Claude","new to check out"); if(_clsec)_clsec.id="brief-anchor"; _clsec.insertBefore(claudeAvatar("av-md chip"), _clsec.firstChild); { const items=briefItems(); if(!items.length){ const c=card(); c._body.appendChild(el("div","empty","No briefing yet for today. Your daily agent will add items here.")); v.appendChild(c); } else { items.forEach(it=>v.appendChild(briefCard(it))); v.appendChild(el("div","notice","Example items. Your daily agent will replace these each morning.")); } } };
+  var secBrief=function(){ const _clsec=sect(v,"Today from Claude","new to check out"); if(_clsec)_clsec.id="brief-anchor"; _clsec.insertBefore(claudeAvatar("av-md chip"), _clsec.firstChild); { const items=briefItems(); if(!items.length){ const c=card(); c._body.appendChild(el("div","empty","No briefing items today. The morning daily brief is being turned off (Ian, 23 October 2026).")); v.appendChild(c); } else { items.forEach(it=>v.appendChild(briefCard(it))); v.appendChild(el("div","notice","Example items. The morning daily brief is being turned off, so these will not refresh each morning.")); } } };
 /* v21 build 133: TRAINING HEATMAP moved from the Pickleball page to Home. It shows BOTH gym and pickleball
      sessions, not just pickleball, so it belongs on Home where Ian sees it on open. Forward looking layout,
      pickleball colour coding and gym colour intact, weekly count against the 5 to 6 target intact. */
@@ -37646,7 +37717,7 @@ function fxBandCards(v,f){
   c.style.borderLeft="4px solid #ff9f0a"; c.style.fontWeight="600";
   c.appendChild(el("div","fx-k a","Card change, starting 21 October"));
   var ln=function(a,b2){ var r=el("div","fx-line"); r.style.margin="6px 0"; var x=el("span",null,a); x.style.fontWeight="700"; r.appendChild(x); r.appendChild(document.createTextNode(" "+b2)); c.appendChild(r); };
-  ln("Amex Blue Business Plus:","100 percent business only. Digital card arrives Thursday 22 October, $2,000 limit. Gas goes on it.");
+  ln("Amex Blue Business Plus:","100 percent business only. Account is live, $2,000 limit, $0 balance. No digital card details yet, so any card picture is a placeholder. Physical card late next week. Gas goes on it.");
   ln("Amex Gold:","personal and everyday from 21 October. Charges before 21 October stay business.");
   ln("Discover:","one subscription, about $10 a month, on autopay.");
   band.appendChild(c); v.appendChild(band);
