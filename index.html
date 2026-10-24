@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 555 (2026-10-23)">
+<meta name="build" content="v21 build 556 (2026-10-24)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -28232,6 +28232,136 @@ try{ if(profile==="ian" && state.meta && !state.meta.mig555_deepdive){
     try{ console.log("mig555: pk-20261023-am, Belknap, Vogel, Willis, Blue card status"); }catch(_){}
 } }catch(e){ try{ console.warn("mig555 did not apply:",e&&e.message); }catch(_){} }
 
+/* ===== v21 build 556: 24 OCT 2026 SCREENSHOT PASS (SONNET-13). Guard state.meta.mig556_deepdive, SEED_VERSION stays 13.
+   Every page was rendered from a replay of the real export and looked at. What the pictures showed was stale text, fixed here:
+   (1) MATTOX HAS NOT CLOSED (Ian, 24 Oct). A 22 Oct title company automated text said the closing was complete and is wrong. Stage, price, close untouched.
+   (2) BELKNAP: listing being cancelled, buyers walked, not saved, sellers repair then relist with fresh days on market, contractors booked.
+   (3) HERNANDEZ: measurements Mon 26 Oct 4:00 PM, family moves out the week of 5 Nov. NO risk or timeline warning added (Ian: fine, not at risk).
+   (4) VOGEL: sewer scope acceptable, buyers waiving the home inspection, appraisal not yet scheduled. (5) WILLIS: appraisal came in at value, as is,
+   so the VA appraisal risk line is cleared. (6) CARDS: 21 to about 27 Oct is a MIXED window, the Blue is not usable yet and the Gold carries both
+   business and personal, so NEITHER default applies. (7) HomeGoods staging furniture 23 Oct, business, no amount given. No probability, price or date is changed. */
+try{ if(profile==="ian" && state.meta && !state.meta.mig556_deepdive){
+    var AS556="Ian, 24 October 2026";
+    var D556=(state.realEstate&&state.realEstate.deals)||[];
+    D556.forEach(function(d){
+      if(!d) return;
+      if(d.id==="re-mattox-sell"){
+        d.closingNote={ asOf:"2026-10-24", status:"NOT CLOSED", text:"Mattox has NOT closed ("+AS556+"). A title company automated text on 22 October said \"We have completed the closing for 19859 Burke Street.\" That text is wrong. Closing remains about 13 November 2026.", source:AS556 };
+        var MX="Not closed ("+AS556+"): an automated title company text of 22 October saying the closing was complete is wrong. Closing remains about 13 November. ";
+        if(typeof d.pipeStatus==="string" && d.pipeStatus.indexOf("Not closed (")!==0) d.pipeStatus=MX+d.pipeStatus;
+      }
+      if(d.id==="re-belknap-sell"){
+        var RK="The listing is being cancelled and the deal was not saved ("+AS556+"). The buyers walked after the 21 October inspection and declined Chris's offer of two more foundation reports and a roofer review. The sellers are doing repairs, contractors are booked, then they relist with fresh days on market. Whether the sellers have signed the release is not known. The $1,530 stays in the November figures, flagged at risk (Ian's words, 21 October 2026).";
+        d.risk=RK; d.riskLine=RK;
+        d.terminationStatus=d.terminationStatus||{};
+        d.terminationStatus.asOf="2026-10-24";
+        d.terminationStatus.status="Listing being cancelled. Buyers walked after the 21 October inspection, not saved. Sellers doing repairs, contractors booked, then relisting with fresh days on market. Release signature NOT known.";
+        d.terminationStatus.source=AS556+". Earlier: lane brief 23 Oct 2026; buyer's agent Peter Manhart text 21 Oct 5:42 PM: \"They are walking away. Sending release and inspection soon.\"";
+        d.terminationStatus.listingCancelling=true; d.terminationStatus.saved=false; d.terminationStatus.contractorsBooked=true; d.terminationStatus.relistFreshDaysOnMarket=true;
+        d.terminationStatus.chrisPlan="Repairs, then relist with fresh days on market. No relist date given.";
+        var PSO="Buyers walked away after the 21 Oct inspection and declined Chris's offer of more reports. Chris plans repairs, a different inspector, then a re-list. Release signature not known. ";
+        if(typeof d.pipeStatus==="string" && d.pipeStatus.indexOf(PSO)===0) d.pipeStatus="The listing is being cancelled ("+AS556+"). The buyers walked after the 21 Oct inspection and the deal was not saved. The sellers are doing repairs with contractors booked, then relisting with fresh days on market. Release signature not known. "+d.pipeStatus.slice(PSO.length);
+        var NTO="BUYERS WALKED AWAY (21 October 2026): they declined Chris's offer of two more foundation reports and a roofer review. Chris plans repairs, a different inspector, then a re-list. Whether the sellers signed the release is not known. ";
+        if(typeof d.note==="string" && d.note.indexOf(NTO)===0) d.note="LISTING BEING CANCELLED ("+AS556+"): the buyers walked after the 21 October inspection and the deal was not saved. The sellers are doing repairs, contractors are booked, then they relist with fresh days on market. Whether the sellers signed the release is not known. "+d.note.slice(NTO.length);
+      }
+      if(d.id==="re-hernandez-sell"){
+        d.measurements={ date:"2026-10-26", time:"4:00 PM", day:"Monday 26 October 2026", text:"Measurements Monday 26 October at 4:00 PM ("+AS556+").", source:AS556 };
+        d.moveOut={ week:"the week of 5 November 2026", text:"The family moves out the week of 5 November ("+AS556+").", source:AS556 };
+        var HX=" Measurements Monday 26 October at 4:00 PM. The family moves out the week of 5 November ("+AS556+").";
+        if(typeof d.pipeStatus==="string" && d.pipeStatus.indexOf("Measurements Monday 26 October")<0) d.pipeStatus=d.pipeStatus+HX;
+      }
+      if(d.id==="re-vogel-sell"){
+        d.sewerScope={ status:"Acceptable", asOf:"2026-10-24", source:AS556 };
+        d.homeInspection={ status:"WAIVED by the buyers", asOf:"2026-10-24", source:AS556 };
+        d.appraisalStatus={ status:"Not yet scheduled", asOf:"2026-10-24", source:AS556 };
+        if(d.inspection && typeof d.inspection==="object") d.inspection.text="Reported 23 October 2026: the inspection on 21 October went well (Johnny Duggan: \"nothing major,\" \"in good shape\"). On 24 October Ian reported the buyers are waiving the home inspection. The two reports are not reconciled here.";
+        var VX=" Sewer scope acceptable, buyers waiving the home inspection, appraisal not yet scheduled ("+AS556+"). Ian says Vogel is handled.";
+        if(typeof d.pipeStatus==="string" && d.pipeStatus.indexOf("Sewer scope acceptable")<0) d.pipeStatus=d.pipeStatus+VX;
+      }
+      if(d.id==="re-cynthia-willis"){
+        d.appraisal=d.appraisal||{};
+        d.appraisal.status="DONE, CAME IN AT VALUE, AS IS"; d.appraisal.asOf="2026-10-24"; d.appraisal.source=AS556;
+        d.appraisal.valueSurfaced=true;
+        d.appraisal.valueNote="Came in at value, as is ("+AS556+"). The dollar figure is not recorded.";
+        d.appraisal.next="None. The appraisal is done and at value.";
+        if(d.risk){ d.riskResolved={ text:"The VA appraisal came in at value, as is ("+AS556+"). The earlier risk line is cleared.", wasRiskLine:d.riskLine||"", asOf:"2026-10-24" }; }
+        d.risk=null; d.riskLine="";
+        var WA="The VA appraisal was done 20 October (Ian thinks it went well) and no appraised value has surfaced as of 23 October.";
+        if(typeof d.pipeStatus==="string" && d.pipeStatus.indexOf(WA)>=0) d.pipeStatus=d.pipeStatus.split(WA).join("The VA appraisal was done 20 October and came in at value, as is ("+AS556+").");
+        var WN="THE APPRAISAL IS THE LIVE RISK and it is the only one named.";
+        if(typeof d.note==="string" && d.note.indexOf(WN)>=0) d.note=d.note.split(WN).join("THE APPRAISAL CAME IN AT VALUE, AS IS ("+AS556+"), so it is no longer a risk.");
+      }
+    });
+    var F556=state.finance||{};
+    var CT556=F556.cardTransition;
+    if(CT556){
+      CT556.mixedWindow={ from:"2026-10-21", to:"about 2026-10-27", status:"MIXED, NEITHER DEFAULT APPLIES", source:AS556,
+        text:"The Blue is not usable until about Tuesday 27 October, so from 21 October until then Ian uses the Amex Gold for BOTH business and personal. Neither default applies in this window: classify each Gold charge on merchant and purpose. Before 21 October the Gold was business. Once the Blue works, Blue is business only and Gold is personal." };
+      CT556.cutover="MIXED WINDOW, 21 October to about Tuesday 27 October 2026 ("+AS556+"): the Blue is not usable yet, so the Gold carries BOTH business and personal and NEITHER default applies. Classify each charge on merchant and purpose. Gold charges BEFORE 21 October 2026 are business. Once the Blue works, Gold charges are personal.";
+      CT556.standingRuleUntilThen="Gold charges before 21 October 2026 keep the business default. From 21 October until the Blue works (about 27 October) the Gold is used for both, so no default applies and each charge is classified on merchant and purpose. After the Blue works, Gold charges default to personal and the Blue is business only. A non business charge on the Blue is a data error to report.";
+      CT556.text="Amex Blue Business Plus = 100 percent business only once it works. $2,000 limit, account live with $0 balance, no digital card details yet, not usable until about Tuesday 27 October, physical card late next week. Amex Gold = Ian's everyday card: until the Blue works (about 27 October) it carries BOTH business and personal, then personal only. Discover = one cheap subscription, probably the Marcus monthly (about $10), on autopay, purely to keep activity. He will merge the points accounts once the Blue works. All three cards are used monthly on purpose, to push his credit score up. Gas for the car goes on the Blue.";
+      CT556.blue=CT556.blue||{};
+      CT556.blue.status="LIVE, NOT USABLE YET ("+AS556+"): $2,000 limit, $0 balance, no digital card details, usable about Tuesday 27 October. Any card picture here is a placeholder. Physical card late next week.";
+      CT556.blue.usableAbout="2026-10-27"; CT556.blue.statusAsOf="2026-10-24";
+    }
+    (F556.cards||[]).forEach(function(c){
+      if(c && c.id==="amexgold"){
+        c.roleFrom21Oct="mixed"; c.roleLabel="Business and personal until the Blue works";
+        c.transitionNote="BUSINESS card through 20 October 2026. From 21 October until the Blue works (about 27 October) it carries BOTH business and personal and neither default applies ("+AS556+"). Personal once the Blue works.";
+      }
+    });
+    if(F556.ledger){
+      if(!Array.isArray(F556.ledger.recent)) F556.ledger.recent=[];
+      F556.ledger.recent.forEach(function(e){ if(e && e.id==="exp-20261021-starbucks-hernandez") e.statusBasis="Business because of the PURPOSE (client meeting with the Hernandez family), not because of the card. 21 October is inside the mixed window (the Gold carries both business and personal until the Blue works), so no card default applies."; });
+      if(!F556.ledger.recent.some(function(e){ return e && e.id==="exp-20261023-homegoods-staging"; })){
+        F556.ledger.recent.push({ id:"exp-20261023-homegoods-staging", date:"2026-10-23", merchant:"HomeGoods", card:"not stated", status:"BUSINESS",
+          statusBasis:"Business because of the PURPOSE (staging furniture), "+AS556+". 23 October is inside the mixed window, so no card default applies.",
+          category:"Staging furniture", purpose:"Staging furniture", amount:null, amountNote:"Amount not given. Add it when Ian supplies it.",
+          source:AS556+", lane brief. Logged after the 17 October ledger total, so it is not in the documented deductions figure." });
+      }
+    }
+    state.meta.mig556_deepdive=true; save(true);
+    try{ console.log("mig556: Mattox not closed, Belknap cancelling, Hernandez dates, Vogel, Willis risk cleared, cards mixed window, HomeGoods"); }catch(_){}
+} }catch(e){ try{ console.warn("mig556 did not apply:",e&&e.message); }catch(_){} }
+
+/* ===== v21 build 556b: events (SONNET-13, 24 Oct 2026). Guard state.meta.mig556b_events, SEED_VERSION stays 13.
+   (1) The 7 November APC Championship Series Singles event was on the calendar and in the Ace confirmation email but NOT in the app, so the
+   Pickle page jumped from August to February 2027. Added, guarded by id. No start time is published and none is written. (2) The Belknap
+   closing event still read as a live closing. It now says the listing is being cancelled. Nothing else is touched. */
+try{ if(profile==="ian" && state.meta && !state.meta.mig556b_events){
+    if(!Array.isArray(state.events)) state.events=[];
+    if(!state.events.some(function(e){ return e && e.id==="ev-20261107-apc-singles"; })){
+      state.events.push({ id:"ev-20261107-apc-singles", date:"2026-11-07", kind:"Tournament",
+        title:"APC Championship Series Singles, APC Omaha, Men's 3.0 Under 50",
+        note:"Confirmed registration, team name \"I McCain\", sent 5 October 2026 by sportscarnival.com. No start time published yet. No fee, covered by his Ace membership (Ian: \"There's no registration fee I have a membership\"). Found 21 October 2026 in ianmccain131@gmail.com. Saturday 7 November is also an open house day for the R Street two story, owner of that open house not established.",
+        source:"BRAIN/GLOBAL/handoffs/ace-pickleball-131-mailbox_2026-10-21.md, added by SONNET-13 24 October 2026" });
+    }
+    state.events.sort(function(a,z){ return String(a.date||"").localeCompare(String(z.date||"")); });
+    state.events.forEach(function(e){
+      if(e && e.id==="ev-20261113-belknap-close" && String(e.title).indexOf("listing being cancelled")<0){
+        e.title="Belknap contract date, 4946 Pratt St. Listing being cancelled, buyers walked, not saved (Ian, 24 October 2026)";
+      }
+    });
+    state.meta.mig556b_events=true; save(true);
+    try{ console.log("mig556b: 7 Nov APC singles event, Belknap event title"); }catch(_){}
+} }catch(e){ try{ console.warn("mig556b did not apply:",e&&e.message); }catch(_){} }
+
+/* ===== v21 build 556c: visible note text (SONNET-13, 24 Oct 2026). Guard state.meta.mig556c_notes, SEED_VERSION stays 13.
+   The rendered pictures showed the deal detail draws d.note and not d.pipeStatus, so the Mattox, Hernandez and Vogel updates written to
+   pipeStatus were invisible. The same facts are put at the front of d.note, once, guarded by their own opening words. No risk or timeline
+   warning is added to Hernandez (Ian: fine, not at risk). Nothing else changes. */
+try{ if(profile==="ian" && state.meta && !state.meta.mig556c_notes){
+    var AS556c="Ian, 24 October 2026";
+    ((state.realEstate&&state.realEstate.deals)||[]).forEach(function(d){
+      if(!d || typeof d.note!=="string") return;
+      if(d.id==="re-mattox-sell" && d.note.indexOf("NOT CLOSED (")!==0) d.note="NOT CLOSED ("+AS556c+"): a title company automated text on 22 October said \"We have completed the closing for 19859 Burke Street.\" That text is wrong. Closing remains about 13 November 2026. "+d.note;
+      if(d.id==="re-hernandez-sell" && d.note.indexOf("UPDATE 24 OCTOBER")!==0) d.note="UPDATE 24 OCTOBER ("+AS556c+"): lists 5 November at $450,000. Measurements Monday 26 October at 4:00 PM. The family moves out the week of 5 November. "+d.note;
+      if(d.id==="re-vogel-sell" && d.note.indexOf("UPDATE 24 OCTOBER")!==0) d.note="UPDATE 24 OCTOBER ("+AS556c+"): sewer scope acceptable, buyers waiving the home inspection, appraisal not yet scheduled. Ian says Vogel is handled. Reported 23 October: the 21 October inspection went well (Johnny Duggan: \"nothing major,\" \"in good shape\") and the updated pre approval letter was still outstanding that day. "+d.note;
+    });
+    state.meta.mig556c_notes=true; save(true);
+    try{ console.log("mig556c: Mattox, Hernandez, Vogel note text"); }catch(_){}
+} }catch(e){ try{ console.warn("mig556c did not apply:",e&&e.message); }catch(_){} }
+
   /* build 372: LAST THING BEFORE THE SAVE. Every migration above has run, deepMergeDefaults
      has run, so this is the only point in the file where the state is actually final. */
   try{ convergeState(); }catch(e){}
@@ -29413,7 +29543,7 @@ function dealRow(parent,d){
        quietly becomes a conclusion nobody decided to make. */
     if(d.actualNetOpen){ var _ao=el("div","dsub"); _ao.textContent="OPEN QUESTION ON THIS FIGURE. "+d.actualNetOpen;
       _ao.style.cssText="color:var(--warn,#e8b04b);font-weight:800;white-space:normal;line-height:1.45;margin-top:4px"; left.appendChild(_ao); }
-    if(d.risk){ var _rk=el("div","dsub"); _rk.textContent="At risk. "+reTidy(d.riskLine||d.risk); _rk.style.cssText="color:var(--danger,#ff6363);font-weight:800;white-space:normal;line-height:1.45;margin-top:4px"; left.appendChild(_rk); } row.appendChild(left);
+    if(d.risk){ var _rk=el("div","dsub"); _rk.textContent=(d.riskNeutral===true?"":"At risk. ")+reTidy(d.riskLine||d.risk); _rk.style.cssText=(d.riskNeutral===true?"color:var(--gray,#9a9aa2);font-weight:600;":"color:var(--danger,#ff6363);font-weight:800;")+"white-space:normal;line-height:1.45;margin-top:4px"; left.appendChild(_rk); } row.appendChild(left);
   /* build 267: a qualifier on a price is a MARKER, not part of the number. It renders under the
      figure on the right, in the same .dsub style as the rest of the detail text, so the price cell
      holds a price and nothing else. A row with no qualifier renders exactly as it did before. */
@@ -37717,8 +37847,8 @@ function fxBandCards(v,f){
   c.style.borderLeft="4px solid #ff9f0a"; c.style.fontWeight="600";
   c.appendChild(el("div","fx-k a","Card change, starting 21 October"));
   var ln=function(a,b2){ var r=el("div","fx-line"); r.style.margin="6px 0"; var x=el("span",null,a); x.style.fontWeight="700"; r.appendChild(x); r.appendChild(document.createTextNode(" "+b2)); c.appendChild(r); };
-  ln("Amex Blue Business Plus:","100 percent business only. Account is live, $2,000 limit, $0 balance. No digital card details yet, so any card picture is a placeholder. Physical card late next week. Gas goes on it.");
-  ln("Amex Gold:","personal and everyday from 21 October. Charges before 21 October stay business.");
+  ln("Amex Blue Business Plus:","100 percent business only once it works. Account is live, $2,000 limit, $0 balance. No digital card details yet, so it is not usable until about Tuesday 27 October, and any card picture is a placeholder. Gas goes on it.");
+  ln("Amex Gold:","everyday card. From 21 October until the Blue works (about Tuesday 27 October) it carries BOTH business and personal, so neither default applies. Before 21 October it was business. After the Blue works it is personal.");
   ln("Discover:","one subscription, about $10 a month, on autopay.");
   band.appendChild(c); v.appendChild(band);
 }
@@ -37790,7 +37920,7 @@ function fxBandCash(v,f){
       var bal=Number(a.balance)||0, lim=Number(a.limit)||0, ml=Number(a.monthlyLimit)||0, ut=Number(a.utilTarget)>0?Number(a.utilTarget):0.30;
       var rec=lim>0?Math.round(lim*ut):ml, over=rec>0&&bal>rec&&a.spendDeliberate!==true;
       var item=el("div","fx-ci");
-      fxRow(item,a.name||a.id||"Card",(a.roleFrom21Oct==="personal"?"Personal from 21 Oct":fnKindWord(a.kind))+(a.last4?(" \xb7 "+a.last4):""),fnMoneyAuto(bal),over?"r":"");
+      fxRow(item,a.name||a.id||"Card",(a.roleLabel?a.roleLabel:(a.roleFrom21Oct==="personal"?"Personal from 21 Oct":fnKindWord(a.kind)))+(a.last4?(" \xb7 "+a.last4):""),fnMoneyAuto(bal),over?"r":"");
       /* build 502: the caption sentence ("44% of $3,600, 30% recommended") is gone. The bar is the percentage; its two
          ends are labelled instead: the marker says what is recommended, the right end says the limit. */
       if(lim>0){ item.appendChild(fxScale(lim,bal,over,rec)); item.appendChild(fxScaleKey(lim,rec,Math.round(ut*100)+"% target",fnMoney(lim)+" limit")); }
