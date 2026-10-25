@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 556 (2026-10-24)">
+<meta name="build" content="v21 build 557 (2026-10-25)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -39677,6 +39677,280 @@ section,.card,.sectlabel{scroll-margin-top:calc(var(--hh) + var(--sat) + 8px)}
 .asof{font-size:11px;line-height:1.4;color:var(--gray2);text-align:center;margin:16px 0 8px}
 </style>
 
+<style id="mo-b557">
+/* ===== v21 build 557: THE MOTION LAYER. ONE SOURCE OF TRUTH. =====================================
+   Ian, 25 Oct 2026: "add animation to all of it ... make it look better and more like a real app
+   then a web app." This block is PASS 1 of that work: the foundation. Five later passes (pickleball,
+   real estate, finances, gym, everything else) import what is here instead of inventing their own
+   timings. If a later lane writes its own duration or its own curve, the app drifts back into
+   feeling like a web page, because inconsistent motion is itself the tell.
+
+   HOW TO USE IT FROM A LATER PASS
+     Durations and curves: var(--mo-1) .. var(--mo-4), var(--mo-std), var(--mo-spring),
+       var(--mo-emph), var(--mo-exit). Never write a raw ms value or a raw cubic-bezier again.
+     Entrance: give the element class .mo-rise (or let it be a direct child of a .tabpage, which is
+       staggered automatically by the rule below).
+     Press feedback: nothing to do. The mo-b557-js delegation puts .mo-prs on the pressed control on
+       POINTER DOWN, not on release, which is the single biggest reason a control feels native.
+     Bottom sheet: window.MO.sheet({title, node}) returns a handle with .close(). It rises from the
+       bottom and can be dragged back down.
+
+   THE PERFORMANCE RULE, and it is not decoration. Everything in this block animates ONLY transform
+   and opacity. Those two are composited and never force layout. Anything animating width, height,
+   top, left, margin or padding relayouts the page on every frame and stutters on his phone, and a
+   janky animation reads as a web page far louder than no animation does.
+
+   TWO PRE EXISTING EXCEPTIONS, deliberately left alone, see the report: @keyframes chUp and chRight
+   (lines 413 and 414) animate height and width. Build 202 chose that on purpose so the rounded caps
+   on his bars and progress bars do not squash mid flight, and the heatmap and the bar charts are
+   the surfaces he likes most. They are one shot, scroll triggered and already reduced motion
+   guarded, so the cost is bounded and the look is his. Changing them is a taste decision for Ian,
+   not a cleanup for a lane.
+
+   REDUCED MOTION is handled in rm-b503, which stays LAST in the file so nothing appended can
+   outrank it. Every class introduced here is listed there. */
+
+:root{
+  /* durations. 1 is tap feedback, 2 is a state change, 3 is an entrance, 4 is a hero reveal. */
+  --mo-1:120ms; --mo-2:240ms; --mo-3:360ms; --mo-4:520ms;
+  /* curves. std is the iOS style decelerate and is the default for almost everything. spring adds a
+     small overshoot and belongs on arrivals that should feel sprung, like a selected tab icon.
+     emph is the curve builds 199 to 502 already used on the charts, kept so chart motion and shell
+     motion agree. exit accelerates away, for anything leaving. */
+  --mo-std:cubic-bezier(.22,1,.36,1);
+  --mo-spring:cubic-bezier(.34,1.26,.42,1);
+  --mo-emph:cubic-bezier(.2,.7,.2,1);
+  --mo-exit:cubic-bezier(.4,0,1,1);
+  /* stagger step between siblings. 28ms over a cap of 7 steps keeps the last item inside 560ms
+     total, which matters because he GLANCES at this app. A long cascade is a wait, not a flourish. */
+  --mo-step:28ms;
+  /* press scales. lg for cards and hero tiles, sm for buttons, chips and keys. */
+  --mo-press-lg:.975; --mo-press-sm:.94;
+}
+
+/* ===== 1. PRESS STATES ON TOUCH DOWN =============================================================
+   :active alone is not enough on iOS. Safari only paints :active for an element inside a subtree
+   that has a touch listener, so across this app it fires inconsistently and sometimes only after
+   the finger lifts. A control that acknowledges the finger immediately feels responsive even when
+   the work behind it is slow, so mo-b557-js adds .mo-prs on pointerdown and takes it off on
+   pointerup, pointercancel or a scroll. The existing :active rules are left in place as the desktop
+   and no JS fallback. */
+.mo-prs{transform:scale(var(--mo-press-lg))}
+button.mo-prs,.btn.mo-prs,.chip.mo-prs,.daychip.mo-prs,.key.mo-prs,.gear.mo-prs,
+.feedlink.mo-prs,.stepper button.mo-prs{transform:scale(var(--mo-press-sm))}
+.mo-pressable{transition:transform var(--mo-1) var(--mo-std)}
+/* the tab bar is the one place the whole control must NOT scale: the selected underline is an
+   absolutely positioned ::before inside the label, so scaling the label scales the underline with
+   it. The icon takes the press instead and the text dims. */
+.tabbar label.mo-prs{transform:none}
+.tabbar label.mo-prs .ti{transform:scale(.86)}
+.tabbar label.mo-prs .tl{opacity:.6}
+
+/* ===== 2. ENTRANCE AND THE PAGE TRANSITION =======================================================
+   The page itself carries a short rise, and its direct children follow a beat behind it in sequence,
+   so a tab entry reads as the page assembling rather than a block of HTML appearing. The old rule
+   was slidein, 240ms, 8px, everything at once, which is the instant state swap the brief calls out.
+   Keyframes declare a `from` and land opacity early, the pattern build 202 settled on, so what you
+   watch is the movement and not a fade. */
+@keyframes moRise{from{opacity:0;transform:translate3d(0,10px,0)}55%{opacity:1}to{opacity:1;transform:none}}
+@keyframes moPageIn{from{opacity:0;transform:translate3d(0,12px,0)}60%{opacity:1}to{opacity:1;transform:none}}
+/* FILL MODE IS `backwards`, NOT `both`, and the difference is not cosmetic. `both` keeps the
+   animation in a filling state forever once it ends, which keeps every one of those elements on its
+   own compositor layer for the life of the page: about forty layers across seven tabs, held for
+   nothing. `backwards` fills only during the delay, which is the whole point of a stagger, and
+   releases the layer the moment the entrance lands. Both keyframes declare an explicit `to` of
+   opacity 1 and transform none, so the resting state is the element's natural one either way, and
+   an animation that never runs leaves the content plainly visible. Measured: with `both` the page
+   differed from the pre edit build by a scatter of single pixel antialiasing deltas on promoted
+   layers; with `backwards` it is pixel identical at rest. */
+.mo-rise{animation:moRise var(--mo-3) var(--mo-std) backwards}
+#t-home:checked~main #p-home,#t-re:checked~main #p-re,#t-gym:checked~main #p-gym,
+#t-pickle:checked~main #p-pickle,#t-solara:checked~main #p-solara,
+#t-finance:checked~main #p-finance,#t-settings:checked~main #p-settings{
+  animation:moPageIn var(--mo-3) var(--mo-std) backwards}
+main .tabpage > *{animation:moRise var(--mo-3) var(--mo-std) backwards}
+main .tabpage > *:nth-child(1){animation-delay:calc(var(--mo-step) * 1)}
+main .tabpage > *:nth-child(2){animation-delay:calc(var(--mo-step) * 2)}
+main .tabpage > *:nth-child(3){animation-delay:calc(var(--mo-step) * 3)}
+main .tabpage > *:nth-child(4){animation-delay:calc(var(--mo-step) * 4)}
+main .tabpage > *:nth-child(5){animation-delay:calc(var(--mo-step) * 5)}
+main .tabpage > *:nth-child(6){animation-delay:calc(var(--mo-step) * 6)}
+main .tabpage > *:nth-child(n+7){animation-delay:calc(var(--mo-step) * 7)}
+/* an empty zone must not hold a slot in the cascade, and .hz:empty is already display:none */
+main .tabpage > *:empty{animation:none}
+
+/* ===== 3. THE TAB BAR ============================================================================
+   Three changes, all transform and opacity. The selected underline GROWS from its centre instead of
+   appearing, the selected icon arrives on the spring curve, and the colour change is a transition
+   rather than a swap. Every unselected label now carries the same ::before so there is something for
+   the transform to animate; with no background it paints nothing, and the five per tab :checked
+   rules further up this file still supply each tab's own gradient. */
+.tabbar label{transition:color var(--mo-2) var(--mo-std)}
+.tabbar label .ti{transition:transform var(--mo-2) var(--mo-spring)}
+.tabbar label .ti svg{transition:color var(--mo-2) var(--mo-std)}
+.tabbar label .tl{transition:color var(--mo-2) var(--mo-std),opacity var(--mo-1) var(--mo-std)}
+.tabbar label::before{content:"";position:absolute;top:0;width:24px;height:3px;border-radius:0 0 4px 4px;
+  transform:scaleX(0);transform-origin:50% 50%;transition:transform var(--mo-2) var(--mo-spring)}
+#t-home:checked~.tabbar label[for=t-home]::before,
+#t-re:checked~.tabbar label[for=t-re]::before,
+#t-gym:checked~.tabbar label[for=t-gym]::before,
+#t-pickle:checked~.tabbar label[for=t-pickle]::before,
+#t-finance:checked~.tabbar label[for=t-finance]::before{transform:scaleX(1)}
+
+/* ===== 4. NO WEB PAGE TELLS ======================================================================
+   Text selection highlight on a tap, and the iOS long press callout, both say browser. Killed on
+   CONTROLS ONLY. Card bodies, figures and notes stay selectable, because a number he wants to copy
+   out of this app is a real use and taking that away would cost him something. */
+.tabbar,header,.keypad,.key,.btn,.chip,.daychip,.pill,.stepper,.launch,.toggle,.sw,.gear,
+label[for],.mo-sheet .mo-grab{
+  -webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+
+/* ===== 5. THE BOTTOM SHEET =======================================================================
+   The primitive, built once here for the five later passes. It rises from the bottom, dims what is
+   behind it, and can be dragged back down. The card translates, never resizes, so the drag is
+   composited. mo-b557-js owns the open, the drag and the close; nothing in this block is used until
+   something calls window.MO.sheet(). z-index 220 puts it over the toast at 210 and the lock at 200. */
+.mo-sheet{position:fixed;inset:0;z-index:220;display:flex;flex-direction:column;justify-content:flex-end;
+  pointer-events:none}
+.mo-sheet .mo-scrim{position:absolute;inset:0;background:rgba(0,0,0,.58);opacity:0;
+  -webkit-backdrop-filter:blur(2px);backdrop-filter:blur(2px);
+  transition:opacity var(--mo-3) var(--mo-std)}
+.mo-sheet .mo-card{position:relative;max-height:88vh;display:flex;flex-direction:column;
+  background:var(--card);border-top:1px solid var(--line2);
+  border-radius:22px 22px 0 0;box-shadow:0 -14px 44px rgba(0,0,0,.6);
+  padding-bottom:calc(var(--sab) + 8px);
+  transform:translate3d(0,100%,0);transition:transform var(--mo-4) var(--mo-std);
+  touch-action:none}
+.mo-sheet.mo-open{pointer-events:auto}
+.mo-sheet.mo-open .mo-scrim{opacity:1}
+.mo-sheet.mo-open .mo-card{transform:none}
+.mo-sheet.mo-drag .mo-card{transition:none}
+.mo-sheet .mo-grab{flex:0 0 auto;padding:12px 0 8px;display:grid;place-items:center;cursor:grab}
+.mo-sheet .mo-grab i{display:block;width:40px;height:5px;border-radius:99px;background:var(--line2)}
+.mo-sheet .mo-head{flex:0 0 auto;padding:0 var(--pad) 8px;font-size:18px;font-weight:800;letter-spacing:-.02em}
+.mo-sheet .mo-body{flex:1 1 auto;min-height:0;overflow:auto;-webkit-overflow-scrolling:touch;
+  overscroll-behavior:contain;padding:8px var(--pad) var(--pad);touch-action:pan-y}
+</style>
+<script id="mo-b557-js">
+/* ===== v21 build 557: the motion layer's driver. A SEPARATE script on purpose, exactly like
+   rr-b69-js and sc-b74-js: the whole app is inside an IIFE, so a block appended inside it cannot be
+   reached from here and a block out here cannot see its bindings. Everything this file needs is
+   either the DOM or window.MO. Nothing here reads or writes app state, so it cannot touch a
+   checkmark, a session or a deal. =============================================================== */
+(function(){
+  "use strict";
+  var RM=false;
+  try{ RM=!!(window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches); }catch(e){}
+
+  /* the tokens, readable from script so a later pass can time a JS animation to the same numbers
+     instead of guessing one. Values are the single source: they are read off :root, never retyped. */
+  function tok(n){ try{ return getComputedStyle(document.documentElement).getPropertyValue(n).trim(); }catch(e){ return ""; } }
+  var MO={ reduce:RM,
+    get d1(){ return tok("--mo-1"); }, get d2(){ return tok("--mo-2"); },
+    get d3(){ return tok("--mo-3"); }, get d4(){ return tok("--mo-4"); },
+    get std(){ return tok("--mo-std"); }, get spring(){ return tok("--mo-spring"); },
+    get emph(){ return tok("--mo-emph"); }, get exit(){ return tok("--mo-exit"); },
+    get step(){ return tok("--mo-step"); } };
+
+  /* ---- press on touch down ----------------------------------------------------------------------
+     One delegated listener, passive, never calls preventDefault, so it cannot swallow a tap. The
+     class comes off on pointerup, pointercancel, a scroll and a 700ms safety timer, so a pointerup
+     that never arrives (the finger slid onto another element, the page navigated) cannot leave a
+     control stuck looking pressed. */
+  var PRESS="button,.btn,.chip,.daychip,.key,.gear,.feedlink,.launch,.profcard,.qab,.dtag,"+
+            ".z3-t,.z5-strip,.z1-hero,.z1-new,.card.tap,.tabbar label,[data-press]";
+  var held=null,heldT=null;
+  function clear(){
+    if(heldT){ clearTimeout(heldT); heldT=null; }
+    if(held){ try{ held.classList.remove("mo-prs"); }catch(e){} held=null; }
+  }
+  function down(ev){
+    if(RM) return;
+    var t=ev&&ev.target; if(!t||!t.closest) return;
+    var el=null; try{ el=t.closest(PRESS); }catch(e){ return; }
+    if(!el) return;
+    clear();
+    held=el;
+    try{ el.classList.add("mo-pressable","mo-prs"); }catch(e){}
+    heldT=setTimeout(clear,700);
+  }
+  try{
+    document.addEventListener("pointerdown",down,{passive:true});
+    document.addEventListener("pointerup",clear,{passive:true});
+    document.addEventListener("pointercancel",clear,{passive:true});
+    window.addEventListener("scroll",clear,{passive:true});
+    window.addEventListener("blur",clear);
+  }catch(e){
+    try{ document.addEventListener("pointerdown",down); document.addEventListener("pointerup",clear); }catch(e2){}
+  }
+
+  /* ---- the bottom sheet -------------------------------------------------------------------------
+     MO.sheet({title, node, onClose}) builds it, rises it, and returns {el, close}. Drag down past
+     90px, or flick down faster than 0.5px per ms, closes it. Anything short of that springs back.
+     The card only ever translates. */
+  MO.sheet=function(opt){
+    opt=opt||{};
+    var wrap=document.createElement("div"); wrap.className="mo-sheet";
+    var scrim=document.createElement("div"); scrim.className="mo-scrim";
+    var card=document.createElement("div"); card.className="mo-card";
+    var grab=document.createElement("div"); grab.className="mo-grab"; grab.appendChild(document.createElement("i"));
+    card.appendChild(grab);
+    if(opt.title){ var h=document.createElement("div"); h.className="mo-head"; h.textContent=String(opt.title); card.appendChild(h); }
+    var body=document.createElement("div"); body.className="mo-body";
+    if(opt.node) body.appendChild(opt.node);
+    card.appendChild(body);
+    wrap.appendChild(scrim); wrap.appendChild(card);
+    document.body.appendChild(wrap);
+
+    var closing=false;
+    function close(){
+      if(closing) return; closing=true;
+      wrap.classList.remove("mo-open","mo-drag");
+      card.style.transform="";
+      var gone=false;
+      function bye(){ if(gone) return; gone=true;
+        try{ wrap.parentNode&&wrap.parentNode.removeChild(wrap); }catch(e){}
+        try{ opt.onClose&&opt.onClose(); }catch(e){} }
+      card.addEventListener("transitionend",bye,{once:true});
+      setTimeout(bye,700);
+    }
+    scrim.addEventListener("click",close);
+
+    /* drag to dismiss. The grab handle and the head drag; the body scrolls. */
+    var sy=0,dy=0,t0=0,dragging=false;
+    function dstart(e){
+      if(closing) return;
+      dragging=true; sy=e.clientY; dy=0; t0=(e.timeStamp||Date.now());
+      wrap.classList.add("mo-drag");
+      try{ card.setPointerCapture(e.pointerId); }catch(_){}
+    }
+    function dmove(e){
+      if(!dragging) return;
+      dy=Math.max(0,e.clientY-sy);
+      card.style.transform="translate3d(0,"+dy+"px,0)";
+    }
+    function dend(e){
+      if(!dragging) return; dragging=false;
+      wrap.classList.remove("mo-drag");
+      var dt=Math.max(1,((e&&e.timeStamp)||Date.now())-t0);
+      if(dy>90||(dy/dt)>0.5){ card.style.transform="translate3d(0,100%,0)"; close(); }
+      else { card.style.transform=""; }
+    }
+    grab.addEventListener("pointerdown",dstart);
+    card.addEventListener("pointermove",dmove);
+    card.addEventListener("pointerup",dend);
+    card.addEventListener("pointercancel",dend);
+
+    /* one frame at the closed position, then open, so the transition has somewhere to come from */
+    if(RM){ wrap.classList.add("mo-open"); }
+    else { try{ requestAnimationFrame(function(){ requestAnimationFrame(function(){ wrap.classList.add("mo-open"); }); }); }catch(e){ wrap.classList.add("mo-open"); } }
+    return { el:wrap, body:body, close:close };
+  };
+
+  try{ window.MO=MO; }catch(e){}
+})();
+</script>
+
 <style id="rm-b503">
 /* ===== v21 build 503: ONE REDUCED MOTION BLOCK, LAST IN THE FILE. ==============================
    Reduced motion has been a stated requirement in every build, and the chart systems honour it
@@ -39725,6 +39999,17 @@ section,.card,.sectlabel{scroll-margin-top:calc(var(--hh) + var(--sat) + 8px)}
   .key:active,.key.fn:active,.profcard:active,.gear:active,.feedlink:active,.btn:active,
   .chip:active,.card.tap:active,.qab:active,.dtag:active,.z3-t:active,
   .z5-strip:active{transform:none !important}
+  /* ===== build 557 additions. Every class the motion layer introduced, listed here rather than in
+     its own block, so this one file stays the single answer for reduced motion and stays last.
+     The mo-b557-js press delegation also returns early on reduce, so .mo-prs is never applied in
+     the first place; these rules are the belt to that braces. ===================================== */
+  .mo-prs,.tabbar label.mo-prs .ti{transform:none !important}
+  .tabbar label.mo-prs .tl{opacity:1 !important}
+  .mo-pressable{transition:none !important}
+  .mo-rise,main .tabpage > *{animation:none !important}
+  .tabbar label,.tabbar label .ti,.tabbar label .ti svg,.tabbar label .tl{transition:none !important}
+  .tabbar label::before{transform:scaleX(1) !important;transition:none !important}
+  .mo-sheet .mo-scrim,.mo-sheet .mo-card{transition:none !important}
 }
 </style>
 
