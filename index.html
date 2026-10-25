@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 558 (2026-10-25)">
+<meta name="build" content="v21 build 559 (2026-10-25)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -30944,8 +30944,12 @@ function buildIanHome(v){ const workout=daySplit(DOW); const reTop=firstUndone((
   /* build 392: OPEN BY DEFAULT. This is the third of Ian's three things and it was behind a
      tap. reGoalsCard is passed through untouched and deliberately not trimmed: deciding which
      of its figures survive is his call, not a side effect of a layout pass, exactly as the
-     build 391 header on buildIanRe says. */
-  var secProg=function(){ pkCollapse(v,"h_prog","Progress and upcoming","where you stand",true,function(hh){ reGoalsCard(hh,"a-blue"); homeUpcomingCard(hh); },ICO.trend,"blue"); };
+     build 391 header on buildIanRe says.
+     build 559: notes:false is passed here for consistency, but NOTE THAT secProg IS DEAD CODE:
+     build 497 stopped calling it and homeZone5's `year` slot is the live Today call site. The
+     change that Ian actually sees is there. This one is kept in step so that reviving secProg
+     would not quietly bring the paragraphs back onto the home screen. */
+  var secProg=function(){ pkCollapse(v,"h_prog","Progress and upcoming","where you stand",true,function(hh){ reGoalsCard(hh,"a-blue",{notes:false}); homeUpcomingCard(hh); },ICO.trend,"blue"); };
   var secSummary=function(){ pkCollapse(v,"h_summary","Daily summary","today at a glance",false,function(hh){ const gday=daySplit(DOW); const glog=(state.gym.logs&&state.gym.logs[TODAY])||{done:{}}; const gT=gday.exercises.length||0, gD=gday.exercises.filter(e=>glog.done&&glog.done[e.id]).length; const hs=habitsActiveOn(TODAY); const hD=hs.filter(h=>h.log&&h.log[TODAY]).length; const water=(state.nutrition&&state.nutrition.water&&state.nutrition.water[TODAY])||0; summaryGrid(hh,[ fracTile({label:"Workout",color:"orange",done:gD,goal:gT||1,unit:"sets",tab:"gym"}), fracTile({label:"Habits",color:"green",done:hD,goal:hs.length||7,unit:"done",tab:"gym"}), fracTile({label:"Water",color:"cyan",done:water,goal:WATER_GOAL,unit:"cups",tab:"gym"}) ]); },ICO.clipboard,"teal"); };
   /* build 191: promoted from dead last to the top block and renamed. It is his schedule, and
      "Calendar" sitting under Daily summary meant he never saw it in the morning. */
@@ -31569,7 +31573,13 @@ function buildIanHome(v){ const workout=daySplit(DOW); const reTop=firstUndone((
   safe(Z.z5,function(){ homeZone5(Z.z5,{
     first:function(h){ var k=v; v=h; try{ secFirstThing(); }finally{ v=k; } },
     work:function(h){ var k=v; v=h; try{ secWorkout(); }finally{ v=k; } },
-    year:function(h){ reGoalsCard(h,"a-teal"); },
+    /* build 559: notes:false. THIS IS THE LIVE TODAY CALL SITE for the production card, not
+       secProg, which build 497 stopped calling. Ian, 25 Oct 2026: "This is the Home Screen so
+       background info doesn't need to be there, it can be in the real estate area, only keep the
+       big stuff." The bars, Est. commission, the reserve line, the four "Where the bar comes from"
+       rows and the at risk line all stay; the three explanation paragraphs render on Real Estate
+       instead, through the same reProdNotes function. No figure on this card is changed. */
+    year:function(h){ reGoalsCard(h,"a-teal",{notes:false}); },
     up:function(h){ homeUpcomingCard(h); },
     quiet:function(h){ var k=v; v=h; try{ secQuiet(); }finally{ v=k; } }
   }); },"Home zone 5");
@@ -32340,7 +32350,64 @@ function fmtMoneyShort(n){ n=n||0; if(n>=1e6){ var m=n/1e6; return "$"+(m>=10?St
    Colour language: green figures, purple under contract names, one red accent for the risk line. Every
    figure is still computed from the deal records. The previous function is kept below as reGoalsCard495
    and is not called. */
-function reGoalsCard(parent,accOverride){
+/* ===== v21 build 559: THE THREE PRODUCTION EXPLANATION PARAGRAPHS, ONE SOURCE, ONE PAGE ========
+   Ian, 25 Oct 2026, looking at the Today production block: "This section is useful but the
+   paragraphs make it look overloaded, minimalize it. This is the Home Screen so background info
+   doesn't need to be there, it can be in the real estate area, only keep the big stuff."
+
+   So Today KEEPS the bars, Est. commission, the reserve line, the four "Where the bar comes from"
+   rows and the at risk line, and these three paragraphs MOVE to Real Estate. They are MOVED, NOT
+   DELETED, and the one that matters most is the second: the $110,489 of closed volume that is not
+   reconciled to specific deals. That is an honest disclosure about a difference between the app's
+   roll up and NP Dodge's report, and it still ships. Real Estate is where someone reading
+   production detail actually is.
+
+   WHY A FUNCTION RATHER THAN A SECOND COPY OF THE TEXT. Two pages carrying the same reconciliation
+   in two places is how two pages start disagreeing. Every figure here is computed from the deal
+   records on each render, exactly as reGoalsCard computed them before, and NOT ONE NUMBER IS
+   CHANGED by this build. reGoalsCard still renders them through this same function when asked;
+   Today is the caller that asks it not to.
+
+   ONE BEHAVIOUR NOTE FOR A FUTURE LANE. Inside reGoalsCard the first paragraph used to sit
+   directly under the reserve line and the other two under the table. All three now render together
+   after the table. The only live caller of reGoalsCard is Today, which switches them off, so
+   nothing on screen moves because of that; it matters only if some later lane turns them back on
+   in that card, and then they arrive as one block. */
+function reProdNotes(parent){
+  var deals=(state.realEstate&&state.realEstate.deals)||[];
+  var vol=function(a){ return a.reduce(function(x,d){ return x+dealVolume(d); },0); };
+  var _wt=function(a){ return a.reduce(function(x,d){ return x+dealCountWeight(d); },0); };
+  var closed=deals.filter(function(d){ return d.stage==="Closed"; });
+  var uc=deals.filter(function(d){ return d.stage==="Under Contract"; });
+  var _np=(state.realEstate&&state.realEstate.npdProduction&&state.realEstate.npdProduction.volume)?state.realEstate.npdProduction:null;
+
+  /* 1. the reserve Ian sets aside is not the tax bill. Build 529's point, kept verbatim. */
+  var _teN=(state.finance&&state.finance.taxEstimate&&state.finance.taxEstimate.scenarios)||[];
+  var _teT=_teN.map(function(x){ return Number(x&&x.total)||0; }).filter(function(x){ return x>0; });
+  var n1=el("div","small dim"); n1.style.cssText="margin:2px 0 0;line-height:1.4";
+  n1.textContent="The reserve is not the bill."+(_teT.length>1?(" Estimated tax is "+fmtMoney(Math.min.apply(null,_teT))+" to "+fmtMoney(Math.max.apply(null,_teT))+", on the Finances page."):"");
+  parent.appendChild(n1);
+
+  if(_np){
+    var _after=function(d){ var c=String((d&&d.close)||""); return /\b(Oct|Nov|Dec)[a-z]*\b/i.test(c)&&/2026/.test(c); };
+    var _inWin=closed.filter(function(d){ return !_after(d); }), _outWin=closed.filter(_after);
+    var _wv=vol(_inWin), _ws=_wt(_inWin), _gap=_np.volume-_wv;
+    /* 2. the app roll up against NP Dodge's report, INCLUDING the unreconciled difference */
+    var n2=el("div","small dim"); n2.style.cssText="margin:10px 0 0;line-height:1.45";
+    n2.textContent="App roll-up of closed deals to "+_np.periodEndShort+": "+fmtMoney(_wv)+" across "+_ws+" sides. NP Dodge volume: "+fmtMoney(_np.volume)
+      +". The side count here is Ian's, dual agency as two; NP Dodge's own report counts "+_np.npdSides+" and per Ian credits dual agency volume on both sides. The remaining volume difference of "
+      +fmtMoney(Math.abs(_gap))+" is not reconciled to specific deals. Per deal records, commissions and net figures are unchanged.";
+    parent.appendChild(n2);
+    /* 3. what sits after the report's period end and is therefore outside that figure */
+    var _ow=_wt(uc)+_wt(_outWin);
+    if(_ow){ var n3=el("div","small dim"); n3.style.cssText="margin:8px 0 0;line-height:1.45";
+      n3.textContent="After "+_np.periodEndShort+", outside the NP Dodge figure: "+fmtMoney(vol(uc)+vol(_outWin))+" across "+_ow+" side"+(_ow===1?"":"s")+" under contract or closed since. Listings still on the market are not counted in either.";
+      parent.appendChild(n3); }
+  }
+}
+/* opts.notes === false omits the three paragraphs above. Today passes it; see reProdNotes. */
+function reGoalsCard(parent,accOverride,opts){
+  const _notes=!(opts&&opts.notes===false);
   const deals=state.realEstate.deals||[]; const vol=arr=>arr.reduce((a,d)=>a+dealVolume(d),0);
   const closed=deals.filter(d=>d.stage==="Closed"); const uc=deals.filter(d=>d.stage==="Under Contract");
   const production=vol(closed)+vol(uc); const dealsDone=closed.concat(uc).reduce(function(a,d){ return a+dealCountWeight(d); },0);
@@ -32369,12 +32436,11 @@ function reGoalsCard(parent,accOverride){
     var _ptVal=el("div","small"); _ptVal.style.fontWeight="800"; _ptVal.style.color="var(--sec2,var(--accent2))";
     _ptVal.innerHTML='<b>'+fmtMoney(postTax(incClosed))+'</b>'+(incUc?' <span class="dim">, '+fmtMoney(postTax(incUc))+' pending</span>':'');
     _ptLine.appendChild(_ptVal); b.appendChild(_ptLine);
-    /* build 529: this figure is income less the reserve Ian sets aside. It is NOT income less tax. The tax bill is a separate, smaller estimate on the Finances page. */
-    var _ptNote=el("div","small dim"); _ptNote.style.cssText="margin-top:3px;line-height:1.4";
-    var _teN=(state.finance&&state.finance.taxEstimate&&state.finance.taxEstimate.scenarios)||[];
-    var _teT=_teN.map(function(x){ return Number(x&&x.total)||0; }).filter(function(x){ return x>0; });
-    _ptNote.textContent="The reserve is not the bill."+(_teT.length>1?(" Estimated tax is "+fmtMoney(Math.min.apply(null,_teT))+" to "+fmtMoney(Math.max.apply(null,_teT))+", on the Finances page."):"");
-    _ptLine.parentNode.insertBefore(_ptNote,_ptLine.nextSibling); }
+    /* build 529: this figure is income less the reserve Ian sets aside. It is NOT income less tax. The tax bill is a separate, smaller estimate on the Finances page.
+       build 559: the sentence that said so has moved to reProdNotes, so it ships on Real Estate and
+       not on the home screen. The RESERVE LINE ITSELF STAYS HERE and is deliberately untouched:
+       Ian sets aside 30 percent for tax, so the figure after the reserve is the one he plans
+       against and it is load bearing on the page he opens first. */ }
   var _un=sumUnpaid(closed), _uk=sumUnknownPay(closed);
   if(_un>0||_uk>0){ var _aw=el("div"); _aw.style.cssText="margin-top:5px;display:flex;justify-content:space-between;align-items:baseline";
     _aw.appendChild(el("div","small dim","Closed, awaiting payment")); var _awv=el("div","small"); _awv.style.fontWeight="800"; _awv.textContent=fmtMoney(_un+_uk); _aw.appendChild(_awv); b.appendChild(_aw); }
@@ -32400,20 +32466,10 @@ function reGoalsCard(parent,accOverride){
   if(_dv) row("","var(--blue)","Listing on a confirmed date",dl(_dated),_dv);
   if(_uv) row("dim","var(--gray2)","Listing, no date on record",dl(_undated),_uv);
   b.appendChild(tbl);
-  if(_np){
-    const _after=function(d){ var c=String((d&&d.close)||""); return /\b(Oct|Nov|Dec)[a-z]*\b/i.test(c)&&/2026/.test(c); };
-    const _inWin=_banked.filter(function(d){ return !_after(d); }), _outWin=_banked.filter(_after);
-    const _wv=vol(_inWin), _ws=_wt(_inWin), _gap=_np.volume-_wv;
-    const vn=el("div","small dim"); vn.style.cssText="margin:10px 0 0;line-height:1.45";
-    vn.textContent="App roll-up of closed deals to "+_np.periodEndShort+": "+fmtMoney(_wv)+" across "+_ws+" sides. NP Dodge volume: "+fmtMoney(_np.volume)
-      +". The side count here is Ian's, dual agency as two; NP Dodge's own report counts "+_np.npdSides+" and per Ian credits dual agency volume on both sides. The remaining volume difference of "
-      +fmtMoney(Math.abs(_gap))+" is not reconciled to specific deals. Per deal records, commissions and net figures are unchanged.";
-    b.appendChild(vn);
-    const _ow=_wt(uc)+_wt(_outWin);
-    if(_ow){ const on=el("div","small dim"); on.style.cssText="margin:8px 0 0;line-height:1.45";
-      on.textContent="After "+_np.periodEndShort+", outside the NP Dodge figure: "+fmtMoney(vol(uc)+vol(_outWin))+" across "+_ow+" side"+(_ow===1?"":"s")+" under contract or closed since. Listings still on the market are not counted in either.";
-      b.appendChild(on); }
-  }
+  /* build 559: the three explanation paragraphs that used to print here now live in reProdNotes and
+     render on Real Estate. The FOUR ROWS ABOVE STAY, whole: they are scannable, they are the big
+     stuff, and Ian named them as the part that works. */
+  if(_notes) reProdNotes(b);
 
   /* the ceiling: production plus live volume that can still land this year */
   const is27=d=>/20(2[7-9]|[3-9]\d)/.test(String((d&&d.close)||""));
@@ -33264,6 +33320,16 @@ function reViewPipeline(v){
   /* build 516: the pipeline pipe. A collapsed band, read only, drawn from the deal records, lazy. Added to the LIVE
      page (reViewPipeline); the retired reViewLanding is not touched. */
   safe(root,function(){ var b=el("div","re-band"); pkCollapse(b,"re_pipe3d","Pipeline pipe","every file, sized by what Ian takes home",false,function(hh){ safe(hh,function(){ rePipe3D(hh); },"RE pipe 3D"); },ICO.chart,"blue"); root.appendChild(b); },"Pipeline pipe");
+  /* build 559: THE THREE PRODUCTION EXPLANATION PARAGRAPHS LAND HERE, off the home screen.
+     Ian, 25 Oct 2026: the Today production block "makes it look overloaded... This is the Home
+     Screen so background info doesn't need to be there, it can be in the real estate area, only
+     keep the big stuff." This is the real estate area. The paragraphs were MOVED, not deleted, and
+     that includes the disclosure that $110,489 of closed volume is not reconciled to specific
+     deals, which is the whole reason the move had to be a move. Text and figures come from
+     reProdNotes, the same function reGoalsCard uses, so the two pages cannot drift apart.
+     COLLAPSED BY DEFAULT, because it is background: available in one tap, never in the way of the
+     deal list, which is what he opens this page for. */
+  safe(root,function(){ var b=el("div","re-band"); pkCollapse(b,"re_prod_notes","How production reconciles","the app roll-up against the NP Dodge report",false,function(hh){ safe(hh,function(){ var pc=card(); reProdNotes(pc._body); hh.appendChild(pc); },"RE production notes"); },ICO.trend,"blue"); root.appendChild(b); },"Production notes");
   safe(root,function(){ var b=el("div","re-band"); re391More(b,true); root.appendChild(b); },"RE more");
   try{ hzReveal(root,".re-band",function(){ return RE_DONE; },function(){ RE_DONE=true; }); }catch(e){}
 }
@@ -39799,14 +39865,42 @@ button.mo-prs,.btn.mo-prs,.chip.mo-prs,.daychip.mo-prs,.key.mo-prs,.gear.mo-prs,
 #t-pickle:checked~main #p-pickle,#t-solara:checked~main #p-solara,
 #t-finance:checked~main #p-finance,#t-settings:checked~main #p-settings{
   animation:moPageIn var(--mo-3) var(--mo-std) backwards}
-main .tabpage > *{animation:moRise var(--mo-3) var(--mo-std) backwards}
-main .tabpage > *:nth-child(1){animation-delay:calc(var(--mo-step) * 1)}
-main .tabpage > *:nth-child(2){animation-delay:calc(var(--mo-step) * 2)}
-main .tabpage > *:nth-child(3){animation-delay:calc(var(--mo-step) * 3)}
-main .tabpage > *:nth-child(4){animation-delay:calc(var(--mo-step) * 4)}
-main .tabpage > *:nth-child(5){animation-delay:calc(var(--mo-step) * 5)}
-main .tabpage > *:nth-child(6){animation-delay:calc(var(--mo-step) * 6)}
-main .tabpage > *:nth-child(n+7){animation-delay:calc(var(--mo-step) * 7)}
+
+/* THE STAGGER IS ARMED, NOT AMBIENT, AND THAT IS THE WHOLE BLACK FLASH FIX (build 559).
+   Reported by Ian on the real estate page, 25 Oct 2026: "the whole screen goes black for like a
+   tenth of a second as if a minor glitch in the motion animation", on tapping one of the people.
+
+   WHAT IT ACTUALLY WAS. `buildPage()` does `host.innerHTML=""` and appends BRAND NEW nodes, and
+   `render()` is called by every in page tap that toggles anything, a deal row included. A newly
+   inserted element STARTS any animation its selector carries. So this stagger, written for a tab
+   entry, re ran on every tap and every direct child of the page went back to opacity 0. On Real
+   Estate `#p-re` has exactly ONE content child, `.re-page`, wrapping the entire page, so there was
+   no stagger to soften it: the whole content area hit opacity 0 in one block against the dark
+   background. MEASURED at 390px, one frame after the tap: mean screen luminance fell from 31.5 to
+   2.1, a 93 percent collapse, and did not read as normal again until about 165ms. That is the
+   black flash, and it was never specific to real estate. Every page re renders the same way.
+
+   IT WAS NOT THE FILL MODE. `backwards` was already correct here and is unchanged. The trigger is
+   node replacement, which no fill mode affects.
+
+   THE FIX. The entrance is armed by `mo-b557-js` on a real tab entry and on unlock, and DISARMED by
+   any pointerdown inside a page, which is the one thing that is never an entrance. A re render
+   therefore inserts its new nodes while nothing is armed and they appear at their resting state,
+   instantly. CSS alone cannot tell a new node from an entering one, which is why the driver owns
+   this. The page level moPageIn above needs none of it: it sits on a PERSISTENT element that
+   buildPage never replaces, so it already fires only when the radio changes.
+
+   WHY IT IS HERE AND NOT ON THE REAL ESTATE PAGE. The defect is in the layer, so the four pages
+   still to be animated would each have inherited it. Fixing it at the call site is how the same
+   bug ships twice. */
+main .tabpage.mo-entering > *{animation:moRise var(--mo-3) var(--mo-std) backwards}
+main .tabpage.mo-entering > *:nth-child(1){animation-delay:calc(var(--mo-step) * 1)}
+main .tabpage.mo-entering > *:nth-child(2){animation-delay:calc(var(--mo-step) * 2)}
+main .tabpage.mo-entering > *:nth-child(3){animation-delay:calc(var(--mo-step) * 3)}
+main .tabpage.mo-entering > *:nth-child(4){animation-delay:calc(var(--mo-step) * 4)}
+main .tabpage.mo-entering > *:nth-child(5){animation-delay:calc(var(--mo-step) * 5)}
+main .tabpage.mo-entering > *:nth-child(6){animation-delay:calc(var(--mo-step) * 6)}
+main .tabpage.mo-entering > *:nth-child(n+7){animation-delay:calc(var(--mo-step) * 7)}
 /* an empty zone must not hold a slot in the cascade, and .hz:empty is already display:none */
 main .tabpage > *:empty{animation:none}
 
@@ -39914,6 +40008,69 @@ label[for],.mo-sheet .mo-grab{
   }catch(e){
     try{ document.addEventListener("pointerdown",down); document.addEventListener("pointerup",clear); }catch(e2){}
   }
+
+  /* ---- arming the page entrance (build 559) -----------------------------------------------------
+     The black flash Ian reported on the real estate page. The full diagnosis, the measurement and
+     the reason the fix belongs in the layer rather than on that page are written above the
+     .mo-entering rules in the mo-b557 style block; this is only the driver.
+
+     In short: buildPage() replaces a page's children on every render(), render() runs on every in
+     page tap, and a new node re starts whatever animation its selector carries. So the entrance
+     stagger fired on taps. It is now ARMED for a real entry and DISARMED by a tap inside a page.
+
+     Arm on: a tab radio change (every tab tap), and the lock screen being hidden, which is the
+     unlock to Today entrance and the first thing he sees each time he opens the app.
+     Disarm on: any pointerdown inside a .tabpage, and a 700ms ceiling. 700 clears the longest
+     entrance, 360ms duration plus a 196ms maximum delay. If the ceiling ever truncated an entrance
+     mid flight the element would land on its resting state, opacity 1 and no transform, which is
+     visible content and never a flash.
+
+     A tab change driven from script rather than a tap does not fire `change`, so selectTab() from
+     inside the app arms nothing and that page gets the page level moPageIn without the stagger.
+     That is a deliberate graceful degradation and not a defect: it is one less animation, never a
+     blank screen. The unlock case, which is the one that matters, is covered by the observer. */
+  var armT=null;
+  function disarm(){
+    if(armT){ clearTimeout(armT); armT=null; }
+    try{
+      var a=document.querySelectorAll("main .tabpage.mo-entering");
+      for(var i=0;i<a.length;i++) a[i].classList.remove("mo-entering");
+    }catch(e){}
+  }
+  function arm(){
+    disarm();
+    if(RM) return;
+    try{
+      var r=document.querySelector("input.tabctl[name=tab]:checked"); if(!r) return;
+      var pg=document.getElementById("p-"+String(r.id).replace(/^t-/,"")); if(!pg) return;
+      pg.classList.add("mo-entering");
+      armT=setTimeout(disarm,700);
+    }catch(e){}
+  }
+  try{
+    var radios=document.querySelectorAll("input.tabctl[name=tab]");
+    for(var ri=0;ri<radios.length;ri++){
+      radios[ri].addEventListener("change",function(){ if(this.checked) arm(); });
+    }
+    /* a tap inside the page is the one thing that is never an entrance. The tab bar is excluded
+       because a tab tap IS one and the change listener above owns it. */
+    document.addEventListener("pointerdown",function(ev){
+      var t=ev&&ev.target; if(!t||!t.closest) return;
+      try{
+        if(t.closest(".tabbar")) return;
+        if(t.closest("main .tabpage")) disarm();
+      }catch(e){}
+    },{passive:true});
+    /* unlock. unlockApp() sets #lock display none, then selectTab then render, all in one task, so
+       this observer callback lands after the new nodes exist. Adding the class at that point starts
+       their animation, which is exactly the intended entrance. */
+    var lk=document.getElementById("lock");
+    if(lk&&window.MutationObserver){
+      new MutationObserver(function(){
+        try{ if(getComputedStyle(lk).display==="none") arm(); }catch(e){}
+      }).observe(lk,{attributes:true,attributeFilter:["style"]});
+    }
+  }catch(e){}
 
   /* ---- the bottom sheet -------------------------------------------------------------------------
      MO.sheet({title, node, onClose}) builds it, rises it, and returns {el, close}. Drag down past
@@ -40037,7 +40194,7 @@ label[for],.mo-sheet .mo-grab{
   .mo-prs,.tabbar label.mo-prs .ti{transform:none !important}
   .tabbar label.mo-prs .tl{opacity:1 !important}
   .mo-pressable{transition:none !important}
-  .mo-rise,main .tabpage > *{animation:none !important}
+  .mo-rise,main .tabpage > *,main .tabpage.mo-entering > *{animation:none !important}
   .tabbar label,.tabbar label .ti,.tabbar label .ti svg,.tabbar label .tl{transition:none !important}
   .tabbar label::before{transform:scaleX(1) !important;transition:none !important}
   .mo-sheet .mo-scrim,.mo-sheet .mo-card{transition:none !important}
