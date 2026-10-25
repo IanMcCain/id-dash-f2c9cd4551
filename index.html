@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 557 (2026-10-25)">
+<meta name="build" content="v21 build 558 (2026-10-25)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -28361,6 +28361,37 @@ try{ if(profile==="ian" && state.meta && !state.meta.mig556c_notes){
     state.meta.mig556c_notes=true; save(true);
     try{ console.log("mig556c: Mattox, Hernandez, Vogel note text"); }catch(_){}
 } }catch(e){ try{ console.warn("mig556c did not apply:",e&&e.message); }catch(_){} }
+
+/* ===== v21 build 558: 22 OCT 2026 pickleball session pk-20261022-pm (OPUS-PK-1022, 25 Oct 2026).
+   Guard state.meta.mig558_pk1022pm, SEED_VERSION stays 13. Thursday 22 October was missed when it happened: build 555
+   recorded that 22 October had no session and invented nothing, which was correct then. Ian supplied the Apple Watch
+   numbers on 25 October, so the record is written now, guarded by id, and no other session record is touched.
+   SESSION TYPE IS UNCONFIRMED. Ian did not say whether this was open play, drilling or a mix, and it is NOT inferred
+   from duration, heart rate or effort. Effort 9 All Out is IAN'S OWN rating of how hard he tried and how well he
+   played, never reconciled against heart rate or calories. Minimum heart rate is not on the screenshot and is not
+   estimated. No record, superlative or comparison is claimed. */
+try{ if(profile==="ian" && state.meta && !state.meta.mig558_pk1022pm){
+    var AS558="Ian, 25 October 2026";
+    var P558=state.pickleball||(state.pickleball={});
+    if(!Array.isArray(P558.sessions)) P558.sessions=[];
+    if(!P558.sessions.some(function(x){ return x && x.id==="pk-20261022-pm"; })){
+      P558.sessions.push({
+        id:"pk-20261022-pm", date:"2026-10-22", kind:"UNCONFIRMED", venue:"Omaha",
+        duration:"2h 19m 35s", window:"5:03 to 7:22 PM, Omaha",
+        calories:1495, activeCalories:1277, avgHr:127, maxHr:161, minHr:null,
+        effort:9, effortLabel:"All Out", effortSource:"His own rating, set by him in Apple Fitness",
+        effortNote:"HIS OWN RATING ("+AS558+": the effort number is his own rating), how hard he tried and how well he played. NOT an exertion figure and NOT reconciled against heart rate or calories.",
+        kindNote:"UNCONFIRMED. Ian did not say whether this was open play, drilling or a mix. Not inferred from duration, heart rate or effort. Ask him, then set it.",
+        result:"", score:"", opponent:"", copyOwned:true,
+        source:"Ian's Apple Watch screenshot, read "+AS558+". Logged three days after the session.",
+        note:"Thursday 22 October, evening, Omaha, 5:03 to 7:22 PM. 2:19:35 in total. From Apple Watch: avg HR 127, peak 161, active 1,277, total 1,495. Your effort rating was 9, All Out. Session type is unconfirmed: it is not recorded whether this was open play, drilling or a mix. No account of how it went was given.",
+        agent:"Watch data only, from a screenshot Ian supplied on 25 October 2026. Minimum heart rate was not on the screenshot and is not estimated. Kind is UNCONFIRMED and must not be filled in by inference; only Ian can set it. Effort is Ian's own rating of 9 and is never reconciled against heart rate or calories. No gym statement is made. No record, superlative or comparison is claimed on this record."
+      });
+    }
+    P558.sessions.sort(function(a,z){ return String(a.date).localeCompare(String(z.date)); });
+    state.meta.mig558_pk1022pm=true; save(true);
+    try{ console.log("mig558: 22 Oct evening session pk-20261022-pm, kind UNCONFIRMED"); }catch(_){}
+} }catch(e){ try{ console.warn("mig558 did not apply:",e&&e.message); }catch(_){} }
 
   /* build 372: LAST THING BEFORE THE SAVE. Every migration above has run, deepMergeDefaults
      has run, so this is the only point in the file where the state is actually final. */
