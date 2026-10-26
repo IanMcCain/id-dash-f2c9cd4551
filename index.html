@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 559 (2026-10-25)">
+<meta name="build" content="v21 build 560 (2026-10-26)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -28392,6 +28392,67 @@ try{ if(profile==="ian" && state.meta && !state.meta.mig558_pk1022pm){
     state.meta.mig558_pk1022pm=true; save(true);
     try{ console.log("mig558: 22 Oct evening session pk-20261022-pm, kind UNCONFIRMED"); }catch(_){}
 } }catch(e){ try{ console.warn("mig558 did not apply:",e&&e.message); }catch(_){} }
+
+/* ===== v21 build 560: TWO PICKLEBALL SESSIONS, 25 AND 26 OCT 2026 (OPUS-PK-1026, 26 Oct 2026).
+   Guard state.meta.mig560_pk1025_1026, SEED_VERSION stays 13. Both records are guarded by id and no other
+   session record is touched, merged or superseded.
+   (1) pk-20261026-am, Monday 26 October, 6:42 to 8:53 AM. ONE watch workout, recorded as a single MIXED
+   session, not split into three. Composition in Ian's own order: about 1.5 hours drilling, then open play
+   doubles, then one very short singles match against Estewan, a professional player. Ian lost that match by
+   a wide margin (lane brief, 26 October 2026). It is his first singles test against a pro and he has a
+   singles tournament on 7 November. Only the 1.5 hour drilling figure was given, so no further minute split
+   is stored and none is derived from the total.
+   (2) pk-20261025-pm, Sunday 25 October, 4:32 to 6:01 PM, open play. CHECKED BEFORE WRITING: no session
+   record for 2026-10-25 existed in the data, so this is an addition and not a duplicate.
+   Effort on both is IAN'S OWN rating of how hard he tried and how well he played. It is never reconciled
+   against heart rate or calories: a 9 with a 116 average is not a contradiction. Minimum heart rate was not
+   given on either and is not estimated. Every number is stored exactly as supplied, not rounded, converted
+   or recomputed. No record, superlative or comparison is claimed on either record. */
+try{ if(profile==="ian" && state.meta && !state.meta.mig560_pk1025_1026){
+    var AS560="Ian, 26 October 2026";
+    var P560=state.pickleball||(state.pickleball={});
+    if(!Array.isArray(P560.sessions)) P560.sessions=[];
+    if(!P560.sessions.some(function(x){ return x && x.id==="pk-20261025-pm"; })){
+      P560.sessions.push({
+        id:"pk-20261025-pm", date:"2026-10-25", kind:"Open play", venue:"Omaha",
+        duration:"1h 28m 58s", window:"4:32 to 6:01 PM, Omaha",
+        calories:937, activeCalories:798, avgHr:123, maxHr:158, minHr:null,
+        effort:8, effortLabel:"Hard", effortSource:"His own rating, set by him in Apple Fitness",
+        effortNote:"HIS OWN RATING ("+AS560+": the effort number is his own rating), how hard he tried and how well he played. NOT an exertion figure and NOT reconciled against heart rate or calories.",
+        result:"", score:"", opponent:"", copyOwned:true,
+        source:"Ian's Apple Fitness numbers, "+AS560+". He was not sure whether he had already sent them; the data was checked first and no 25 October record existed.",
+        note:"Open play, Sunday 25 October, afternoon, Omaha, 4:32 to 6:01 PM. 1:28:58 in total. From Apple Watch: avg HR 123, peak 158, active 798, total 937. Your effort rating was 8, Hard.",
+        agent:"Watch data only. Kind is Open play, as Ian stated. No drill split stored because none was given. Minimum heart rate was not given and is not estimated. Effort is Ian's own rating of 8 and is never reconciled against heart rate or calories. Checked before writing: no 2026-10-25 session existed in the data. No gym statement is made. No record, superlative or comparison is claimed on this record."
+      });
+    }
+    if(!P560.sessions.some(function(x){ return x && x.id==="pk-20261026-am"; })){
+      P560.sessions.push({
+        id:"pk-20261026-am", date:"2026-10-26", kind:"Mixed: drilling, open play doubles, one singles match", venue:"Omaha",
+        duration:"2h 10m 30s", window:"6:42 to 8:53 AM, Omaha",
+        calories:1145, activeCalories:941, avgHr:116, maxHr:169, minHr:null,
+        drillMinutes:90, drillApproximate:true,
+        segments:[
+          {type:"Drilling",minutes:90,approximate:true,note:"About 1.5 hours, Ian's own figure."},
+          {type:"Open play doubles",minutes:null,note:"Minutes not given."},
+          {type:"Singles",minutes:null,note:"One very short match against Estewan, a professional player. Minutes not given."}
+        ],
+        compositionNote:"ONE watch workout, one record. In Ian's order: about 1.5 hours drilling, then open play doubles, then one really short singles match against Estewan the pro. His words: \"1.5 hours drilling. And the rest was open played doubles, and then I did one really short singles match against Estewan the Pro.\" Only the 1.5 hour drilling figure was given. The rest of the time is not split and no split is derived from the total. Calories and heart rate are for the whole workout and are not divided between the parts.",
+        singlesMatch:{ played:true, opponent:"Estewan", opponentNote:"A professional player.", format:"Singles, one match, very short",
+          outcome:"Ian lost by a wide margin.", score:"", scoreNote:"No score was given.",
+          significance:"His first real singles test against a professional player. He has a singles tournament on 7 November 2026.",
+          source:"Lane brief of 26 October 2026, with Ian's own description of the session." },
+        effort:9, effortLabel:"All Out", effortSource:"His own rating, set by him in Apple Fitness",
+        effortNote:"HIS OWN RATING ("+AS560+": the effort number is his own rating), how hard he tried and how well he played. NOT an exertion figure and NOT reconciled against heart rate or calories. A 9 alongside a 116 average heart rate is not a contradiction.",
+        result:"", score:"", opponent:"", copyOwned:true,
+        source:"Ian's Apple Fitness numbers and his own account of the session, "+AS560+".",
+        note:"Mixed session, Monday 26 October, morning, Omaha, 6:42 to 8:53 AM. 2:10:30 in total. About 1.5 hours drilling, then open play doubles, then one very short singles match against Estewan, a professional player, which you lost by a wide margin. That was your first real singles test against a pro, with the singles tournament on 7 November ahead. From Apple Watch: avg HR 116, peak 169, active 941, total 1,145. Your effort rating was 9, All Out.",
+        agent:"ONE watch workout kept as ONE record, deliberately not split into three sessions; the composition is stored inside this record. Only the drilling figure (about 1.5 hours, Ian's own) was given, so no further minute split is stored and none is derived. Minimum heart rate was not given and is not estimated. Effort is Ian's own rating of 9 and is never reconciled against heart rate or calories. The singles loss is recorded in neutral language as supplied, with no score because none was given. No gym statement is made. No record, superlative or comparison is claimed on this record."
+      });
+    }
+    P560.sessions.sort(function(a,z){ return String(a.date).localeCompare(String(z.date)); });
+    state.meta.mig560_pk1025_1026=true; save(true);
+    try{ console.log("mig560: pk-20261025-pm open play, pk-20261026-am mixed with the Estewan singles match"); }catch(_){}
+} }catch(e){ try{ console.warn("mig560 did not apply:",e&&e.message); }catch(_){} }
 
   /* build 372: LAST THING BEFORE THE SAVE. Every migration above has run, deepMergeDefaults
      has run, so this is the only point in the file where the state is actually final. */
