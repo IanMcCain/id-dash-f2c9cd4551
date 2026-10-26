@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 560 (2026-10-26)">
+<meta name="build" content="v21 build 561 (2026-10-26)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -28454,6 +28454,59 @@ try{ if(profile==="ian" && state.meta && !state.meta.mig560_pk1025_1026){
     try{ console.log("mig560: pk-20261025-pm open play, pk-20261026-am mixed with the Estewan singles match"); }catch(_){}
 } }catch(e){ try{ console.warn("mig560 did not apply:",e&&e.message); }catch(_){} }
 
+
+/* ===== v21 build 561: THE NOVEMBER GIFT FROM IAN'S DAD ON THE SPICER NEW BUILD ================
+   Guard state.meta.mig561_giftnov, SEED_VERSION stays 13.
+
+   WHAT IAN ASKED FOR, 26 October 2026, his own words:
+     "Write in my 20% that I get from spicer to my income in November since I am getting that
+      (which is around 4500) but don't include it in my total yearly income or anything at all
+      tax related keep it entirely separate, it's something that's going into my checking that
+      I will get but it will not be taxed or taxable"
+
+   WHY THIS IS A FINANCE FIELD AND NOT A DEAL. He earns 0 percent on the Allison Spicer new
+   build (re-allison-spicer-buy, $894,446, closing about 13 November, buy side). What he receives
+   is a GIFT from his dad of the 20 percent he would typically have earned. It is not commission,
+   not a side, not production and not volume, so it must not reach any figure that is built from
+   deals. Every income roll up in this file is built from state.realEstate.deals: sumIanNet,
+   sumPaid, sumUnpaid, sumUnknownPay, dealVolume, dealCountWeight and everything drawn from them.
+   STORING THE AMOUNT OUTSIDE THAT ARRAY IS WHAT GUARANTEES THE EXCLUSION. It is not a filter that
+   a later build could forget to apply; there is no code path from here into a deal total.
+
+   THE SET ASIDE CANNOT REACH IT EITHER. postTax() is applied only to dealIanNet derived figures.
+   fxBandGift renders the stored amount and never calls postTax, so no 30 percent is swept off it.
+   Sweeping it would understate his cash by about $1,350.
+
+   "UNTAXED" IS IAN'S OWN CHARACTERISATION AND IS STORED AS HIS STATEMENT, NOT AS A CONCLUSION OF
+   THIS APP. Whether a payment is a gift or compensation turns on facts his tax guy owns. No tax
+   treatment, estimate, consequence or warning is asserted anywhere in this build.
+
+   THE AMOUNT IS APPROXIMATE AND RENDERS AS APPROXIMATE. He said "around 4500", so the screen
+   reads "about $4,500" and never a precise $4,500.00. */
+try{ if(profile==="ian" && state.meta && !state.meta.mig561_giftnov){
+    var F561=state.finance||(state.finance={});
+    F561.giftNov={
+      id:"gift-nov-2026-spicer",
+      label:"Gift from your dad",
+      detail:"Spicer new build",
+      approxAmount:4500,
+      approximate:true,
+      amountText:"about $4,500",
+      month:"November 2026",
+      monthShort:"November",
+      lands:"into checking",
+      source:"Ian, 26 October 2026",
+      ianWords:"Write in my 20% that I get from spicer to my income in November since I am getting that (which is around 4500) but don't include it in my total yearly income or anything at all tax related keep it entirely separate, it's something that's going into my checking that I will get but it will not be taxed or taxable",
+      untaxedPerIan:"HIS OWN STATEMENT, 26 October 2026: it will not be taxed or taxable. Recorded as his statement and NOT as a conclusion of this app. Gift versus compensation is his tax guy's call and nothing here asserts a tax treatment.",
+      isCommission:false, countsAsSide:false, countsAsVolume:false, isProduction:false,
+      inIncomeTotals:false, inTaxFigures:false, setAsideApplies:false, is1099:false,
+      exclusionNote:"DISPLAY ONLY. Read by fxBandGift and by nothing else. Deliberately NOT a deal record, so there is no code path from it into sumIanNet, sumPaid, sumUnpaid, sumUnknownPay, dealVolume, dealCountWeight, the production roll up, the sides count, the Est. commission lines, the 30 percent reserve lines, the runway, the tax estimate, the ledger or any Schedule C or 1099 figure.",
+      relatedDeal:"re-allison-spicer-buy. Ian is 0 percent on that buyer side and his commission on it stays $0. This gift does not change that zero."
+    };
+    state.meta.mig561_giftnov=true; save(true);
+    try{ console.log("mig561: finance.giftNov, about $4,500 November, display only, outside every deal total"); }catch(_){}
+} }catch(e){ try{ console.warn("mig561 did not apply:",e&&e.message); }catch(_){} }
+
   /* build 372: LAST THING BEFORE THE SAVE. Every migration above has run, deepMergeDefaults
      has run, so this is the only point in the file where the state is actually final. */
   try{ convergeState(); }catch(e){}
@@ -38169,6 +38222,19 @@ function fxBandMoney(v,f){
   if(gHi>0){ var key=el("div","fx-key"); key.appendChild(el("i","sw")); key.appendChild(document.createTextNode("Shaded: the shortfall")); c.appendChild(key); }
   band.appendChild(c); v.appendChild(band); hzReveal(band,".fx-card,.fx-gl",function(){ return FX_DONE.money; },function(){ FX_DONE.money=true; });
 }
+/* BAND 4b, build 561. THE NOVEMBER GIFT. One row, read straight off finance.giftNov.
+   It sits under Under contract because that is where November money arriving is already listed.
+   NOTHING IS COMPUTED HERE AND THERE IS NO TOTAL. postTax() is deliberately never called: the
+   gift is not commission, so the 30 percent reserve does not apply to it. The amount renders from
+   giftNov.amountText, which is approximate wording, so the screen never shows a precise figure. */
+function fxBandGift(v,f){
+  var g=f&&f.giftNov; if(!g) return;
+  var band=el("div","fx-b");
+  fxLabel(band,"Gift, not commission",g.monthShort||"November");
+  var c=el("div","fx-card fx-list fx-gift");
+  fxRow(c,g.label||"Gift",[g.detail,g.month,g.lands].filter(function(x){ return !!x; }).join(" \u00b7 "),g.amountText||"",'v');
+  band.appendChild(c); v.appendChild(band);
+}
 /* THE FOLD. Everything that was on the page and is not a daily glance, one labelled row each, content unchanged. */
 function fxBandRef(v,f){
   var band=el("div","fx-b fx-refb"); fxLabel(band,"Reference",null); var c=el("div","fx-card fx-list fx-ref");
@@ -38193,6 +38259,7 @@ function buildFinance(v){
   safe(v,function(){ fxBandCash(v,f); },"Finance cash");
   safe(v,function(){ fxBandRunway(v,f); },"Finance runway");
   safe(v,function(){ fxBandMoney(v,f); },"Finance money coming");
+  safe(v,function(){ fxBandGift(v,f); },"Finance November gift");
   safe(v,function(){ fxBandRef(v,f); },"Finance reference");
 }
 function buildFinance498(v){
@@ -39768,6 +39835,11 @@ section,.card,.sectlabel{scroll-margin-top:calc(var(--hh) + var(--sat) + 8px)}
 .fx-rs{font-size:12px;line-height:1.35;color:var(--gray);margin-top:4px}
 .fx-ra{font-size:15px;font-weight:700;line-height:1.3;color:var(--white);font-variant-numeric:tabular-nums;white-space:nowrap}
 .fx-ra.g{color:var(--green)}.fx-ra.r{color:var(--red)}.fx-ra.d{color:var(--gray)}
+/* build 561: the November gift band. Commission money on this page is green, so the gift is
+   violet with a dashed edge and its own band label. It must never be mistaken for commission. */
+.fx-ra.v{color:var(--violet2)}
+.fx-gift{border:1px dashed var(--violet);background:linear-gradient(170deg,rgba(155,107,255,.14) 0%,rgba(155,107,255,0) 60%),var(--card)}
+.fx-gift .fx-rn{color:var(--white)}
 .fx-ci{padding:0 0 12px}
 .fx-ci .fx-r{padding-bottom:8px}
 .fx-sc{position:relative;height:8px;border-radius:4px;background:var(--line);overflow:hidden}
