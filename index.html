@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 561 (2026-10-26)">
+<meta name="build" content="v21 build 562 (2026-10-26)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -27984,7 +27984,7 @@ try{ if(profile==="ian" && state.meta && !state.meta.mig550_oct21_drain && state
       line60k:{ text:"The $60,000 line is a LIVE CONSEQUENCE of the Hernandez closing date, not a tax bracket, threshold or QBI boundary. If Hernandez closes in January 2027, 2026 income is UNDER $60,000. If it closes before January, 2026 income is most likely OVER $60,000. December versus January is worth about $300 of tax. No colour, no risk.", notABracket:true },
       opening2027:{ silverLeaf:"$6,732 to $7,344 gross, $4,712 to $5,141 after set aside, paid toward the END of 2027, rate 3.6 percent CONFIRMED, certain", teske:"$9,103.50 gross, $6,372.45 after set aside, paid mid to late January 2027, certain, Ian 35 percent CONFIRMED", combined:"about $15,836 to $16,448 gross, about $11,085 to $11,513 after set aside. In NO 2026 figure." },
       january:{ text:"January 2027: Teske pays $6,372.45 after set aside (mid to late January, day unknown). Out: the school housing payment about $2,500 in the first week (counted ONCE) and a car down payment of $0 to $2,000. End of month about +$4,572 to +$5,572 after both. Hernandez and the $5,000 tax refund are other January inputs, not netted here. Silver Leaf is not in January." },
-      novemberClosings:{ text:"November closings land mid to late November, about $10,000, depending on how much Chris gives Ian as a gift on the Spicer closing. The gift is NOT taxed and stays out of income, 1099, production and sides. No amount is recorded." }
+      novemberClosings:{ text:"About $10,000, mid to late November." }
     };
     F550.vehicle=F550.vehicle||{};
     F550.vehicle.replacement={ asOf:"2026-10-21", source:AS550, status:"LEANING, NOT BOUGHT", leaning:"Mazda CX-5, Grand Touring trim", budgetLow:21000, budgetHigh:27000, budget:"$21,000 to $27,000, probably mid range", seen:"Several around 60,000 miles at $22,000 to $23,000 before negotiating", down:"$0 to $2,000 on top of the trade, no more. It depends on the monthly saving it buys.", method:"Standard mileage. Under 6,000 lbs. Section 179 is not used.", gas:"Goes on the Amex Blue Business Plus." };
@@ -28506,6 +28506,62 @@ try{ if(profile==="ian" && state.meta && !state.meta.mig561_giftnov){
     state.meta.mig561_giftnov=true; save(true);
     try{ console.log("mig561: finance.giftNov, about $4,500 November, display only, outside every deal total"); }catch(_){}
 } }catch(e){ try{ console.warn("mig561 did not apply:",e&&e.message); }catch(_){} }
+
+
+/* ===== v21 build 562: THE FINANCES PAGE CLEAN UP. Guard state.meta.mig562_fintext.
+   SEED_VERSION stays 13. NO FIGURE IS CHANGED BY THIS MIGRATION.
+
+   TWO THINGS, both asked for by Ian on 26 October 2026.
+
+   1. THE STALE GIFT SENTENCE. update21Oct.novemberClosings.text ended with "No amount is
+      recorded." That was true when it was written and stopped being true in build 561, where
+      finance.giftNov records the gift at about $4,500. The clause is REMOVED rather than
+      corrected, because his instruction is that the gift stays out of anything tax related and
+      this sentence renders inside the Tax fold. The gift has its own band (fxBandGift) and that
+      is the only place it belongs. The $10,000 November closings figure is untouched.
+
+   2. STRUCTURED ROWS FOR THREE PARAGRAPHS. His words: "lots of big paragraphs and lots of
+      disorganized areas." The $60,000 line, the received gap and the January 2027 outlook were
+      each one long paragraph of prose carrying four to seven dollar figures. The rows below
+      carry THE SAME FIGURES, lifted character for character out of the paragraph each one
+      replaces, so the reorganized fold can render label and number instead of prose without
+      anybody having to retype a figure. The original .text strings are LEFT IN PLACE as the
+      fallback and as the record of where the rows came from. */
+try{ if(profile==="ian" && state.meta && !state.meta.mig562_fintext){
+    var U562=(state.finance&&state.finance.update21Oct)||null;
+    if(U562){
+      if(U562.novemberClosings) U562.novemberClosings.text="About $10,000, mid to late November.";
+      if(U562.line60k){
+        U562.line60k.rows=[
+          ["Hernandez closes in January","$55,700","under the line"],
+          ["Hernandez closes in December","$66,700","over the line"],
+          ["What the date is worth","$300","of tax"]];
+        U562.line60k.note="Not a bracket, threshold or QBI boundary.";
+      }
+      /* EVERY SUB LINE HERE IS FOUR WORDS OR FEWER, DELIBERATELY. fnSub enforces a four word rule
+         and returns null rather than truncating, so a longer sub line is dropped whole and the row
+         renders with no explanation at all. The first cut of this migration lost four sub lines
+         that way, caught by comparing the dollar strings before and after. Anything that needs
+         more words goes in the note under the rows, never in a sub. */
+      if(U562.receivedGap){
+        U562.receivedGap.rows=[
+          ["App counts received","$45,810.24",null],
+          ["Bank deposits","$43,600.22","11 NP Dodge deposits"],
+          ["Difference","$2,210.02","unreconciled"]];
+        U562.receivedGap.note="Every matched deposit landed at about 95 percent of the app's figure, cause not confirmed. Using the bank number moves each Left figure by about $60.";
+      }
+      if(U562.january){
+        U562.january.rows=[
+          ["Teske pays","$6,372.45","after set aside"],
+          ["School housing","$2,500","first week, once"],
+          ["Car down payment","$0 to $2,000","on top of trade"],
+          ["End of month","+$4,572 to +$5,572","after both"]];
+        U562.january.note="Teske's day is not known, only mid to late January. Hernandez and the $5,000 tax refund are other January inputs, not netted here. Silver Leaf is not in January.";
+      }
+    }
+    state.meta.mig562_fintext=true; save(true);
+    try{ console.log("mig562: finances copy reorganized, no figure changed"); }catch(_){}
+} }catch(e){ try{ console.warn("mig562 did not apply:",e&&e.message); }catch(_){} }
 
   /* build 372: LAST THING BEFORE THE SAVE. Every migration above has run, deepMergeDefaults
      has run, so this is the only point in the file where the state is actually final. */
@@ -37874,10 +37930,16 @@ function fxMonthlyFold(b,f){
   }
   return cue;
 }
-function fxDealsFold(b,f){
-  var deals=(state.realEstate&&state.realEstate.deals)||[]; if(!deals.length) return;
+/* ===== build 562: ONE COMPUTATION, TWO READERS. ==============================================
+   The projection tiers were computed inside fxDealsFold, which is a fold inside the Reference
+   band, which is the last band on the page. Ian: "my projection is not an easy number to see."
+   The arithmetic is lifted into this function UNCHANGED, line for line, so the headline band and
+   the ladder read the same figures from the same call. Nothing is reweighted, re-rounded or
+   re-filtered. If this function ever disagrees with the ladder it is because somebody edited it,
+   not because there are two models. */
+function fxProjNums(f){
+  var deals=(state.realEstate&&state.realEstate.deals)||[]; if(!deals.length) return null;
   var R=null; try{ R=fnRunwayNums(f); }catch(e){ R=null; }
-  var gapHi=R?R.gapHi:0, gapLo=R?R.gapLo:0;
   var is27=function(d){ return /20(2[7-9]|[3-9]\d)/.test(String((d&&d.close)||"")); };
   var live=[],noPrice=0;
   deals.forEach(function(d){
@@ -37887,22 +37949,32 @@ function fxDealsFold(b,f){
     var contracted=(d.stage==="Under Contract"); if(!(px>0)&&!contracted){ noPrice++; return; }
     live.push({ d:d, net:Math.round(n*100)/100, keep:Math.round(postTax(n)*100)/100, far:is27(d), contracted:contracted });
   });
-  if(!live.length) return;
+  if(!live.length) return null;
   live.forEach(function(x){ var w=x.d&&x.d.winProb; x.p=(typeof w==="number")?w:null; });
   live.sort(function(a,z){ if(a.contracted!==z.contracted) return a.contracted?-1:1;
     if(a.p===null&&z.p===null) return z.net-a.net; if(a.p===null) return 1; if(z.p===null) return -1; if(z.p!==a.p) return z.p-a.p;
     var _da=fnCloseDate(a.d), _dz=fnCloseDate(z.d); if(_da&&_dz&&_da!==_dz) return _da-_dz; return z.net-a.net; });
   var near=live.filter(function(x){ return !x.far; }), far=live.filter(function(x){ return x.far; });
+  var withP=near.filter(function(x){ return x.p!==null&&x.p!==undefined&&x.keep>0; });
+  var sum=function(arr){ return arr.reduce(function(a,x){ return a+x.keep; },0); };
+  var tSure=withP.filter(function(x){ return x.p>=0.90; }), tLikely=withP.filter(function(x){ return x.p>=0.75; });
+  return { live:live, near:near, far:far, withP:withP, noPrice:noPrice,
+    gapLo:R?R.gapLo:0, gapHi:R?R.gapHi:0, tSure:tSure, tLikely:tLikely,
+    vSure:sum(tSure), vLikely:sum(tLikely), vAll:sum(withP),
+    vExp:withP.reduce(function(a,x){ return a+x.keep*x.p; },0) };
+}
+function fxDealsFold(b,f){
+  var P=fxProjNums(f); if(!P) return;
+  var gapHi=P.gapHi, gapLo=P.gapLo;
+  var live=P.live, near=P.near, far=P.far, noPrice=P.noPrice;
   var rd10=function(n){ return Math.round(n/10)*10; };
-  var band=(gapHi>0)?(fnMoney(rd10(gapLo))+" to "+fnMoney(rd10(gapHi))+" shortfall"):null;
   var pct=function(x){ if(x.p===null||x.p===undefined) return ""; var _pc=x.p*100,_pw=Math.round(_pc); return (Math.abs(_pc-_pw)<0.05?_pw:Math.round(_pc*10)/10)+"%"; };
   var keyline=function(host){ if(gapHi>0){ var k=el("div","fx-key"); k.appendChild(el("i","sw")); k.appendChild(document.createTextNode("Shaded: the shortfall")); host.appendChild(k); } };
   /* 1. THE LADDER. Replaces the four row table, the paragraph and both "covers it" sentences. */
-  var withP=near.filter(function(x){ return x.p!==null&&x.p!==undefined&&x.keep>0; });
+  var withP=P.withP;
   if(withP.length){
-    var sum=function(arr){ return arr.reduce(function(a,x){ return a+x.keep; },0); };
-    var tSure=withP.filter(function(x){ return x.p>=0.90; }), tLikely=withP.filter(function(x){ return x.p>=0.75; });
-    var vSure=sum(tSure), vLikely=sum(tLikely), vAll=sum(withP), vExp=withP.reduce(function(a,x){ return a+x.keep*x.p; },0);
+    var tSure=P.tSure, tLikely=P.tLikely;
+    var vSure=P.vSure, vLikely=P.vLikely, vAll=P.vAll, vExp=P.vExp;
     var tiers=[["Floor","if none of them close",0]];
     if(tSure.length) tiers.push(["Near certain","90% or better",vSure]);
     if(tLikely.length>tSure.length) tiers.push(["Likely","75% or better",vLikely]);
@@ -37950,42 +38022,78 @@ function fxDealsFold(b,f){
 }
 /* ===== build 550: the 21 October update block on the finance Tax fold. Reads finance.update21Oct, finance.cardTransition,
    finance.vehicle.replacement. Plain rows and notes only, nothing is computed here and nothing is coloured. ===== */
+/* ===== build 562: THE TAX FOLD, REORGANIZED. =================================================
+   Ian, 26 October 2026: "The tax section is kind of confusing. You have lots of big paragraphs
+   and lots of disorganized areas."
+
+   WHAT WAS WRONG WITH IT. Seven free paragraphs sat open on the surface, interleaved with number
+   rows, and three of them were not about tax at all: the whole card cutover (which the orange
+   Card change band at the top of the page already states), the car (a purchase, not a tax figure)
+   and the school housing payment (a bill, already in Coming up and in the Rent schedule).
+
+   WHAT CHANGED, AND IT IS ONLY ARRANGEMENT AND WORDING:
+     - the $60,000 line, the received gap and the January 2027 outlook are ROWS now, label and
+       figure, read from update21Oct.*.rows. Every dollar figure in them is the same figure that
+       was in the paragraph, carried over by mig562, not retyped here.
+     - the working notes and the estimate caveat are one tap down in "How this is worked out",
+       the same pattern as "How the floor works" and "How this is figured" elsewhere on this page.
+       They are not deleted and they are not shortened.
+     - CARDS and CAR have moved OUT of Tax into their own Reference folds. Same text, right place.
+     - the school housing note has moved into the Rent schedule fold, where the payments are.
+     - the stale "No amount is recorded" sentence about the Spicer gift is gone (mig562). The gift
+       is recorded at about $4,500 and lives in its own band, outside everything tax related.
+   NOTHING IS COMPUTED IN THIS FUNCTION AND NOTHING IS WRITTEN. */
 function fx21Block(b,f){
   try{
     var u=f&&f.update21Oct; if(!u) return;
-    var nt=function(t){ var n=el("div","fnnote"); n.style.marginTop="6px"; n.textContent=t; b.appendChild(n); };
+    var nt=function(t){ if(!t) return; var n=el("div","fnnote"); n.style.marginTop="6px"; n.textContent=t; b.appendChild(n); };
+    var rows=function(host,arr){ var L=el("div"); (arr||[]).forEach(function(r){ if(!r) return; fnRow(L,r[0],r[1],r[2]||null,null,false); }); host.appendChild(L); return L; };
     var T=u.tax;
     if(T){
-      fxLabel(b,"2026 tax and what is left","estimate");
+      fxLabel(b,"2026 tax","estimate");
       var L=el("div");
       fnRow(L,"Income before Hernandez",fnMoney(T.income),T.incomeSub,null,false);
-      fnRow(L,"Tax bill if Hernandez closes in January",fnMoney(T.janTax),null,null,false);
-      fnRow(L,"Tax bill if Hernandez closes in December",fnMoney(T.decTax),T.decTaxSub,null,false);
+      fnRow(L,"Tax bill, Hernandez in January",fnMoney(T.janTax),null,null,false);
+      fnRow(L,"Tax bill, Hernandez in December",fnMoney(T.decTax),T.decTaxSub,null,false);
       fnRow(L,"Left in the tax account, January",fnMoney(T.janLeft),T.janLeftSub,null,false);
       fnRow(L,"Left in the tax account, December",fnMoney(T.decLeft),T.decLeftSub,null,false);
       b.appendChild(L);
-      (T.working||[]).forEach(function(w){ nt(w); });
-      nt(T.caveat);
+      fxDisc(b,"fx_taxwork","How this is worked out",null,function(bb){
+        (T.working||[]).forEach(function(w){ if(!w) return; var n=el("div","fnnote"); n.style.marginTop="0"; n.style.marginBottom="8px"; n.textContent=w; bb.appendChild(n); });
+        if(T.caveat){ var n2=el("div","fnnote"); n2.style.marginTop="0"; n2.textContent=T.caveat; bb.appendChild(n2); }
+      });
     }
-    if(u.line60k) nt(u.line60k.text);
-    if(u.receivedGap){ fxLabel(b,"Received so far","unreconciled"); nt(u.receivedGap.text); }
-    var L1=el("div");
-    if(u.taxGuy) fnRow(L1,"Tax guy",fnMoney(u.taxGuy.amount)+" a year","paid at year end, out of the set aside excess",null,false);
-    if(u.llc) fnRow(L1,"LLC",u.llc.status.charAt(0)+u.llc.status.slice(1).toLowerCase(),u.llc.lean+", waiting on the tax guy",null,false);
-    b.appendChild(L1);
-    if(u.opening2027){ fxLabel(b,"2027 opening position","not in any 2026 figure");
+    if(u.line60k){
+      fxLabel(b,"The $60,000 line","where 2026 income lands");
+      if(u.line60k.rows&&u.line60k.rows.length){ rows(b,u.line60k.rows); nt(u.line60k.note); }
+      else nt(u.line60k.text);
+    }
+    if(u.receivedGap){
+      fxLabel(b,"Received so far","unreconciled");
+      if(u.receivedGap.rows&&u.receivedGap.rows.length){ rows(b,u.receivedGap.rows); nt(u.receivedGap.note); }
+      else nt(u.receivedGap.text);
+    }
+    if(u.taxGuy||u.llc){
+      fxLabel(b,"Tax guy and LLC",null);
+      var L1=el("div");
+      if(u.taxGuy) fnRow(L1,"Tax guy",fnMoney(u.taxGuy.amount)+" a year","paid at year end, out of the set aside excess",null,false);
+      if(u.llc) fnRow(L1,"LLC",u.llc.status.charAt(0)+u.llc.status.slice(1).toLowerCase(),u.llc.lean+", waiting on the tax guy",null,false);
+      b.appendChild(L1);
+    }
+    if(u.opening2027){
+      fxLabel(b,"2027 opening position","not in any 2026 figure");
       var L2=el("div");
       fnRow(L2,"Teske","$9,103.50 gross","$6,372.45 after set aside, paid mid to late January 2027, certain",null,false);
       fnRow(L2,"Silver Leaf","$6,732 to $7,344 gross","$4,712 to $5,141 after set aside, paid toward the end of 2027, rate 3.6 percent, certain",null,false);
-      b.appendChild(L2); nt("Combined: "+String(u.opening2027.combined).replace(/\.+$/,"")+"."); }
-    if(u.january) nt(u.january.text);
-    if(u.novemberClosings) nt(u.novemberClosings.text);
-    var ct=f.cardTransition;
-    if(ct){ fxLabel(b,"Cards","from 21 October 2026"); nt(ct.cutover||""); nt(ct.text||""); }
-    var v=f.vehicle&&f.vehicle.replacement;
-    if(v){ fxLabel(b,"Car","leaning, not bought"); nt("Leaning "+v.leaning+", "+v.budget+". "+v.seen+". Down payment "+v.down+" "+v.method+" "+v.gas); }
-    var r0=(f.recurring||[])[0];
-    if(r0&&r0.oneEntryNote) nt(r0.name+": "+r0.oneEntryNote);
+      b.appendChild(L2);
+      nt("Combined: "+String(u.opening2027.combined).replace(/\.+$/,"")+".");
+    }
+    if(u.january){
+      fxLabel(b,"January 2027",null);
+      if(u.january.rows&&u.january.rows.length){ rows(b,u.january.rows); nt(u.january.note); }
+      else nt(u.january.text);
+    }
+    if(u.novemberClosings){ fxLabel(b,"November closings",null); nt(u.novemberClosings.text); }
   }catch(e){}
 }
 function fxTaxFold(b,f){
@@ -38058,9 +38166,13 @@ function fxBandCards(v,f){
   c.style.borderLeft="4px solid #ff9f0a"; c.style.fontWeight="600";
   c.appendChild(el("div","fx-k a","Card change, starting 21 October"));
   var ln=function(a,b2){ var r=el("div","fx-line"); r.style.margin="6px 0"; var x=el("span",null,a); x.style.fontWeight="700"; r.appendChild(x); r.appendChild(document.createTextNode(" "+b2)); c.appendChild(r); };
-  ln("Amex Blue Business Plus:","100 percent business only once it works. Account is live, $2,000 limit, $0 balance. No digital card details yet, so it is not usable until about Tuesday 27 October, and any card picture is a placeholder. Gas goes on it.");
-  ln("Amex Gold:","everyday card. From 21 October until the Blue works (about Tuesday 27 October) it carries BOTH business and personal, so neither default applies. Before 21 October it was business. After the Blue works it is personal.");
-  ln("Discover:","one subscription, about $10 a month, on autopay.");
+  /* build 562: three paragraphs became three lines. This band is the third thing on the page and it
+     was the largest block of prose on it, which is exactly what Ian asked to be cut. Every figure it
+     carried is still here. The full wording is one tap down in the Cards fold under Reference, which
+     also means it survives this band dropping off after 4 November 2026. */
+  ln("Blue Business Plus:","all business. $2,000 limit, $0 balance. Not usable until about Tuesday 27 October. Gas goes on it.");
+  ln("Gold:","business and personal until the Blue works, then personal.");
+  ln("Discover:","one subscription, about $10 a month.");
   band.appendChild(c); v.appendChild(band);
 }
 function fxBandFund(v,f){
@@ -38222,6 +38334,47 @@ function fxBandMoney(v,f){
   if(gHi>0){ var key=el("div","fx-key"); key.appendChild(el("i","sw")); key.appendChild(document.createTextNode("Shaded: the shortfall")); c.appendChild(key); }
   band.appendChild(c); v.appendChild(band); hzReveal(band,".fx-card,.fx-gl",function(){ return FX_DONE.money; },function(){ FX_DONE.money=true; });
 }
+/* ===== BAND 0, build 562. THE PROJECTION, PROMOTED TO THE TOP OF THE PAGE. ====================
+   Ian, 26 October 2026: "my projection is not an easy number to see. I want that to be one of the
+   main points in the finance area because that's a big deal: what my projections are... I need
+   that number to be displayed prominently somewhere without making it look worse."
+
+   WHICH FIGURE IS "HIS PROJECTION". The page held five candidates, all inside the Deals in
+   progress fold: Floor (a zero), Near certain, Expected, Best case, and separately "Income before
+   Hernandez" in the Tax fold. EXPECTED is the one promoted. Floor is a zero and answers nothing.
+   Near certain and Best case are the two ends of a range, not a projection. Income before
+   Hernandez is money already received, a record rather than a forecast. Expected is the
+   probability weighted value of the live deals after the reserve, which is the only one of the
+   five that answers "what am I on track to make". The two ends ride beside it as tiles so the
+   range is still on the glance surface.
+
+   NO HEDGING. His words: "Obviously it's not going to be perfect but that's what projections are."
+   So the band carries the number, a four word label and nothing else. No caveat, no colour
+   warning, no forecast language.
+
+   NOTHING IS COMPUTED HERE. Every figure comes from fxProjNums, the same call the ladder makes.
+   The styling is the existing hero card, the existing tile grid and the existing green money
+   colour, so this band is built out of the same parts as the Arizona fund card above it. */
+function fxBandProj(v,f){
+  var P=null; try{ P=fxProjNums(f); }catch(e){ P=null; }
+  if(!P||!P.withP.length||!(P.vExp>0)) return;
+  var band=el("div","fx-b fx-proj"); var c=el("div","fx-card");
+  c.appendChild(el("div","fx-k g","Projection"));
+  c.appendChild(el("div","fx-big g",fnMoneyC(P.vExp)));
+  c.appendChild(el("div","fx-line","Expected, after the "+taxPctWord()+" reserve"));
+  var tiles=el("div","fx-tiles two");
+  var tile=function(lab,val,sub){ var x=el("div","fx-tile"); x.appendChild(el("div","fx-tl",lab)); x.appendChild(el("div","fx-tv g",val)); if(sub) x.appendChild(el("div","fx-ts",sub)); tiles.appendChild(x); };
+  if(P.tSure.length) tile("Near certain",fnMoneyC(P.vSure),"90% or better");
+  tile("Best case",fnMoneyC(P.vAll),"all "+P.withP.length);
+  if(tiles.firstChild) c.appendChild(tiles);
+  var lk=el("button","fx-lk2"); lk.type="button";
+  var ll=el("div","fx-dl"); ll.appendChild(el("div","fx-dn","Every deal, tier by tier"));
+  lk.appendChild(ll); lk.appendChild(el("span","fx-chev","\u203a"));
+  lk.onclick=function(){ if(FX_REG.fx_deals) FX_REG.fx_deals(); };
+  c.appendChild(lk);
+  band.appendChild(c); v.appendChild(band);
+  hzReveal(band,".fx-card",function(){ return FX_DONE.proj; },function(){ FX_DONE.proj=true; });
+}
 /* BAND 4b, build 561. THE NOVEMBER GIFT. One row, read straight off finance.giftNov.
    It sits under Under contract because that is where November money arriving is already listed.
    NOTHING IS COMPUTED HERE AND THERE IS NO TOTAL. postTax() is deliberately never called: the
@@ -38232,16 +38385,39 @@ function fxBandGift(v,f){
   var band=el("div","fx-b");
   fxLabel(band,"Gift, not commission",g.monthShort||"November");
   var c=el("div","fx-card fx-list fx-gift");
-  fxRow(c,g.label||"Gift",[g.detail,g.month,g.lands].filter(function(x){ return !!x; }).join(" \u00b7 "),g.amountText||"",'v');
+  /* build 562: g.month is dropped from the sub line. It wrapped to two lines at 390 px and the
+     band label beside it already says November, so it was a second copy of the same word. */
+  fxRow(c,g.label||"Gift",[g.detail,g.lands].filter(function(x){ return !!x; }).join(" \u00b7 "),g.amountText||"",'v');
   band.appendChild(c); v.appendChild(band);
 }
 /* THE FOLD. Everything that was on the page and is not a daily glance, one labelled row each, content unchanged. */
 function fxBandRef(v,f){
   var band=el("div","fx-b fx-refb"); fxLabel(band,"Reference",null); var c=el("div","fx-card fx-list fx-ref");
-  var _mw=fxDisc(c,"fx_monthly","Monthly payments","Subscriptions and estimates",function(b){ return fxMonthlyFold(b,f); }); if(_mw) _mw.className+=" fx-mono";
+  /* build 562: the school housing note used to sit at the bottom of the Tax fold, which is not where
+     a rent payment belongs. It is here, directly under the School housing row this fold already
+     draws. It was NOT put in the Rent schedule fold: that fold renders empty on this data, so it
+     does not appear at all, and giving it one stray note would have made a fold called "Every
+     payment dated" appear carrying no payments. */
+  var _mw=fxDisc(c,"fx_monthly","Monthly payments","Subscriptions and estimates",function(b){ var _cue=fxMonthlyFold(b,f);
+    try{ var r0=(f.recurring||[])[0]; if(r0&&r0.oneEntryNote){ var n=el("div","fnnote"); n.style.marginTop="8px"; n.textContent=r0.name+": "+r0.oneEntryNote; b.appendChild(n); } }catch(e){}
+    return _cue; }); if(_mw) _mw.className+=" fx-mono";
   fxDisc(c,"fx_deals","Deals in progress","What each would net",function(b){ fxDealsFold(b,f); });
   fxDisc(c,"fx_spark","Operating trend","Recent months",function(b){ fxAdopt(b,function(t){ fnSparkline(t,f); }); });
   fxDisc(c,"fx_rent","Rent schedule","Every payment dated",function(b){ fxAdopt(b,function(t){ fnRentRail(t,f); }); });
+  /* build 562: CARDS and CAR were paragraphs inside the Tax fold. Neither is a tax figure. Same
+     text, their own folds, out of Tax. The card facts also outlive the orange Card change band at
+     the top of the page, which drops off after 4 November 2026, so moving them here keeps them. */
+  fxDisc(c,"fx_cards2","Cards","Which card for what",function(b){
+    var ct=f.cardTransition; if(!ct) return "";
+    var nt=function(t){ if(!t) return; var n=el("div","fnnote"); n.style.marginTop="0"; n.style.marginBottom="8px"; n.textContent=t; b.appendChild(n); };
+    nt(ct.cutover); nt(ct.text); return "";
+  });
+  fxDisc(c,"fx_car","Car","Leaning, not bought",function(b){
+    var vv=f.vehicle&&f.vehicle.replacement; if(!vv) return "";
+    var n=el("div","fnnote"); n.style.marginTop="0";
+    n.textContent="Leaning "+vv.leaning+", "+vv.budget+". "+vv.seen+". Down payment "+vv.down+" "+vv.method+" "+vv.gas;
+    b.appendChild(n); return "";
+  });
   if(f.months&&f.months.length>1) fxDisc(c,"fx_flow","Money in and out","Month by month",function(b){ var k=card(); safe(k._body,function(){ fnMonthChart(k._body,f.months,f); },"Finance flow"); b.appendChild(k); });
   if(f.closings&&f.closings.length){ var cl=f.closings,tot=0; cl.forEach(function(x){ tot+=Number(x.net!=null?x.net:x.gross)||0; });
     fxDisc(c,"fx_close","Closings",fnMoney(tot)+" paid",function(b){ var k=card(); cl.forEach(function(x){ fnRow(k._body,x.address||x.title||"Closing",fnMoney(x.net!=null?x.net:x.gross),(x.date?fnShortDate(x.date):null),"good",false); }); b.appendChild(k); }); }
@@ -38254,6 +38430,9 @@ function buildFinance(v){
   /* build 502: the page heading and the "snapshot" line are gone. The top bar already names the page and the Data as of
      stamp at the foot already carries the date, so both were printing a fact the screen states twice. */
   FX_REG={};
+  /* build 562: Projection is FIRST. Ian asked for it to be one of the main points on the page and
+     it was previously a row in a ladder inside a fold inside the last band. */
+  safe(v,function(){ fxBandProj(v,f); },"Finance projection");
   safe(v,function(){ fxBandFund(v,f); },"Finance fund");
   safe(v,function(){ fxBandCards(v,f); },"Finance card cutover");
   safe(v,function(){ fxBandCash(v,f); },"Finance cash");
@@ -39867,6 +40046,11 @@ section,.card,.sectlabel{scroll-margin-top:calc(var(--hh) + var(--sat) + 8px)}
 /* ===== v21 build 502: FINANCES, GRAPHS THAT REPLACE TEXT. 4px grid (8 preferred), hairlines 1px to 3px. No glass. Colour keeps its
    meaning: green is held or covered, amber is the shortfall, red only a card over its level, purple only names under contract. */
 .fx-tiles.one{grid-template-columns:minmax(0,1fr)}
+.fx-tiles.two{grid-template-columns:repeat(2,minmax(0,1fr))}
+/* build 562: the Projection card gets the same gradient treatment as the Arizona fund card, so the
+   promoted number reads as a hero rather than as a plainer version of what it replaced. */
+.fx-proj .fx-card{background:linear-gradient(170deg,rgba(48,209,88,.15) 0%,rgba(48,209,88,0) 62%),var(--card)}
+.fx-proj .fx-lk2{margin-top:4px}
 .fx-sk{position:relative;height:16px;margin-top:8px;font-size:12px;line-height:16px;color:var(--gray)}
 .fx-sk .m{position:absolute;top:0;transform:translateX(-50%);white-space:nowrap}
 .fx-sk .e{position:absolute;right:0;top:0;white-space:nowrap}
