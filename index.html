@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 565 (2026-10-26)">
+<meta name="build" content="v21 build 566 (2026-10-27)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -28731,6 +28731,68 @@ try{ if(profile==="ian" && state.meta && !state.meta.mig563_dd1026 && state.fina
     try{ console.log("mig563: finance read 26 Oct (buffer 1000 to 175, checking 2882, Gold 1874, Discover 2150 derived), three subscription rows restored (two Fetch, Wispr Flow), Belknap set Fell through with no close date"); }catch(_){}
 } }catch(e){ try{ console.warn("mig563 did not apply:",e&&e.message); }catch(_){} }
 
+/* ===== v21 build 566: BELKNAP, 4946 PRATT, FELL THROUGH -> COMING SOON =====================
+   Ian, 27 October 2026, in his own words: "Belknap as coming soon".
+
+   WHY IT HAD TO MOVE. Build 563 set stage "Fell through" with fellThrough true, which is the
+   build 439/441 pattern, and that pattern deliberately excludes a record from every live list.
+   The consequence was that 4946 Pratt rendered NOWHERE on Real Estate. The house is real, the
+   sellers are real, repairs are happening and they intend to relist, so an invisible record is
+   the wrong answer. RESTAGES offers no state for "off market while repairs happen, relist
+   later", and Coming Soon is the one the app already uses for a listing that will come back.
+   Build 318 made exactly this move on Willis for exactly this reason.
+
+   NOT ONE PIECE OF THE DEAD CONTRACT COMES BACK.
+     close stays empty and closeOn stays null. There is no close date and no relist date. The
+       row prints "No date set", which reKeyDate does for an empty close, not a date.
+     price IS CLEARED TO EMPTY. It still read "$250,000" after build 563, which cleared the
+       close but not the price, and $250,000 is the dead contract's agreed figure. Leaving it
+       would have done something worse than look stale: the in flight ceiling on the goals card
+       counts Active plus Coming Soon, so moving this record to Coming Soon with $250,000 in the
+       price field would have walked $250,000 of dead money straight into the 2026 ceiling. With
+       the field empty, dealVolume is 0 and NO NUMBER ON ANY CARD MOVES. priceWas566 keeps the
+       figure and priceLine already explains it, so nothing is lost, only un-asserted.
+     earnest is NOT touched in either direction. Still paid by a buyer who walked, still not
+       known whether it is returned or retained. $2,500 is not restored anywhere.
+
+   IT IS NOT AT RISK AND IT CARRIES NO RISK VALUE AT ALL. Ian, 27 October 2026: "idk whats at
+   risk nothing except winchester". The factual line build 563 put in risk and riskLine (with
+   riskNeutral true, so it printed gray rather than as a label) is MOVED to rowNote, which is
+   the field for a plain fact on a row, and risk, riskLine and riskNeutral are deleted. The
+   wording is unchanged. dealRow guards on d.risk before it appends anything, so deleting the
+   field removes the element rather than leaving an empty container. The ONLY deal that prints
+   "At risk." anywhere is re-brandon-winchester, which Ian named himself and which this build
+   does not touch.
+
+   listDateConfirmed GOES FALSE. It was true, from the 15 October listing. The goals card splits
+   Coming Soon into dated and undated on that flag, and there is no relist date, so true would
+   have claimed one. It moves to the undated group, at $0.
+
+   sub IS CORRECTED. It still read "Under contract 17 October", which is false.
+   Guarded on state.meta.mig566_belknap_cs. Idempotent. No SEED_VERSION bump. ===== */
+try{ if(profile==="ian" && state.meta && !state.meta.mig566_belknap_cs && state.realEstate && Array.isArray(state.realEstate.deals)){
+    var D566=state.realEstate.deals, BK566=null;
+    for(var i566=0;i566<D566.length;i566++){ if(D566[i566] && D566[i566].id==="re-belknap-sell"){ BK566=D566[i566]; break; } }
+    if(BK566){
+      BK566.stageWas566={ value:BK566.stage, asOf:"2026-10-26" };
+      BK566.stage="Coming Soon";
+      BK566.fellThrough=false;
+      if(String(BK566.price||"").trim()){ BK566.priceWas566={ value:BK566.price, asOf:"2026-10-26" }; }
+      BK566.price="";
+      BK566.close="";
+      BK566.closeOn=null;
+      BK566.listDateConfirmed=false;
+      BK566.sub="Sell side, 4946 Pratt St. Off market, relisting after repairs";
+      BK566.rowNote=String(BK566.riskLine||BK566.risk||"Not closing. The MLS listing was cancelled on 22 October 2026, there is no buyer and there is no close date. The sellers are doing repairs and intend to relist, with no relist date given.");
+      try{ delete BK566.risk; }catch(_){} BK566.risk=undefined;
+      try{ delete BK566.riskLine; }catch(_){} BK566.riskLine=undefined;
+      try{ delete BK566.riskNeutral; }catch(_){} BK566.riskNeutral=undefined;
+      BK566.stageNote566="STAGE SET TO COMING SOON 27 OCTOBER 2026 ON IAN'S INSTRUCTION, \"Belknap as coming soon\". It was Fell through, which rendered nowhere on Real Estate. THE FACTS ARE UNCHANGED: the MLS listing was cancelled 22 October 2026, there is no buyer, there is no close date and there is no relist date. The price field is empty on purpose; $250,000 belonged to the contract that died. THIS DEAL IS NOT AT RISK and carries no risk value.";
+    }
+    state.meta.mig566_belknap_cs=true; save(true);
+    try{ console.log("mig566: Belknap re-belknap-sell Fell through -> Coming Soon, price cleared, no risk value, listDateConfirmed false"); }catch(_){}
+} }catch(e){ try{ console.warn("mig566 did not apply:",e&&e.message); }catch(_){} }
+
   /* build 372: LAST THING BEFORE THE SAVE. Every migration above has run, deepMergeDefaults
      has run, so this is the only point in the file where the state is actually final. */
   try{ convergeState(); }catch(e){}
@@ -31914,9 +31976,14 @@ function buildIanHome(v){ const workout=daySplit(DOW); const reTop=firstUndone((
     /* build 559: notes:false. THIS IS THE LIVE TODAY CALL SITE for the production card, not
        secProg, which build 497 stopped calling. Ian, 25 Oct 2026: "This is the Home Screen so
        background info doesn't need to be there, it can be in the real estate area, only keep the
-       big stuff." The bars, Est. commission, the reserve line, the four "Where the bar comes from"
-       rows and the at risk line all stay; the three explanation paragraphs render on Real Estate
-       instead, through the same reProdNotes function. No figure on this card is changed. */
+       big stuff." The bars, Est. commission, the reserve line and the four "Where the bar comes
+       from" rows all stay; the three explanation paragraphs render on Real Estate instead,
+       through the same reProdNotes function. No figure on this card is changed.
+       CORRECTED BUILD 566: this comment used to say the at risk line stays too. BUILD 565
+       REMOVED THE GOALS CARD AT RISK LINE ALTOGETHER, on Ian's words of 26 October 2026, "No at
+       risk currently." The slot is empty on purpose and must stay empty. The old wording is
+       struck here rather than left standing, because a stale "it stays" is exactly the note that
+       talks a future build into putting the line back. See the BUILD 565 header in reGoalsCard. */
     year:function(h){ reGoalsCard(h,"a-teal",{notes:false}); },
     up:function(h){ homeUpcomingCard(h); },
     quiet:function(h){ var k=v; v=h; try{ secQuiet(); }finally{ v=k; } }
