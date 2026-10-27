@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 563 (2026-10-26)">
+<meta name="build" content="v21 build 564 (2026-10-26)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -37728,7 +37728,8 @@ function fnSavings(v,f){
     var c=card(); var b=c._body;
     var L=el("div");
     /* saved is the headline and it is green only when there is something to be green about */
-    fnRow(L,"Saved",fnMoneyAuto(saved),"above the floor",(saved>0?"good":null),false);
+    /* build 564: clamped for the same reason as the band ring. See fxBandFund. */
+    fnRow(L,"Saved",fnMoneyAuto(Math.max(saved,0)),"above the floor",(saved>0?"good":null),false);
     fnRow(L,"Balance",fnMoneyAuto(bal),null,"good",false);
     fnRow(L,"Floor",fnMoneyAuto(floor),"never spent",null,false);
     if(Number(sv.target)>0) fnRow(L,"Target",fnMoneyAuto(Number(sv.target)),(sv.targetProvisional===true?"awaiting your confirmation":null),null,false);
@@ -37748,7 +37749,7 @@ function fnSavings(v,f){
       b.appendChild(ringW);
       var cap=el("div","fnsch");
       cap.style.cssText="text-align:center;margin:0 0 14px";
-      cap.textContent=fnMoneyAuto(saved)+" of "+fnMoneyAuto(tgt);
+      cap.textContent=fnMoneyAuto(Math.max(saved,0))+" of "+fnMoneyAuto(tgt);
       b.appendChild(cap);
     }
     b.appendChild(L);
@@ -38352,10 +38353,20 @@ function fxBandFund(v,f){
   /* build 502: THE RING IS THE FIGURE. It used to print "0%" in the ring, "$0" beside it, "saved of $2,000" under that and
      "Floor $1,000, never spent" below, four ways of saying one fact. Now the ring centre says what is saved, the one
      number beside it is the target, and the savings balance and the floor ride on the fold's own hint line. */
-  if(tgt>0) row.appendChild(fnRing(saved>0?saved/tgt:0,104,"good",fnMoneyAuto(saved),"saved"));
+  /* v21 build 564: THE RING CENTRE SAID "-$825 saved" AND HE HAS $175. ===================
+     saved is bal minus floor, and the label on it is "saved above the floor". When the
+     balance drops BELOW the floor that quantity goes negative, and a negative cannot be
+     an amount saved: nothing is saved above a floor you are under. The arc was ALREADY
+     clamped (saved>0?saved/tgt:0), so the ring drew an empty circle while the number in
+     the middle of it read minus $825. The two halves of one control disagreed.
+     THIS SURFACED ONLY WHEN THE BUFFER WAS CORRECTED from $1,000 to the real $175 in
+     build 563. At $1,000 the figure was exactly $0 and the defect was invisible.
+     The number is clamped to match the arc. NOTHING IS HIDDEN BY THIS: the fold hint
+     immediately below states the real balance and the real floor as plain figures. */
+  if(tgt>0) row.appendChild(fnRing(saved>0?saved/tgt:0,104,"good",fnMoneyAuto(Math.max(saved,0)),"saved"));
   var t=el("div","fx-ft"); t.appendChild(el("div","fx-k g","Arizona fund"));
   if(tgt>0){ t.appendChild(el("div","fx-big sm",fnMoneyAuto(tgt))); t.appendChild(el("div","fx-line","target")); }
-  else { t.appendChild(el("div","fx-big"+(saved>0?" g":""),fnMoneyAuto(saved))); t.appendChild(el("div","fx-line","saved above the floor")); }
+  else { t.appendChild(el("div","fx-big"+(saved>0?" g":""),fnMoneyAuto(Math.max(saved,0)))); t.appendChild(el("div","fx-line","saved above the floor")); }
   row.appendChild(t); c.appendChild(row);
   fxDisc(c,"fx_floor","How the floor works","Savings "+fnMoneyAuto(bal)+", floor "+fnMoneyAuto(floor)+" never spent",function(b){ var p=el("div"); try{ fnSavings(p,f); }catch(e){} var n=p.querySelector(".fnnote"); if(n){ n.style.marginTop="0"; b.appendChild(n); } });
   band.appendChild(c); v.appendChild(band); hzReveal(band,".fx-card",function(){ return FX_DONE.fund; },function(){ FX_DONE.fund=true; });
