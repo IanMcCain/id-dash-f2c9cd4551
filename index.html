@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 564 (2026-10-26)">
+<meta name="build" content="v21 build 565 (2026-10-26)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -32818,11 +32818,19 @@ function reGoalsCard(parent,accOverride,opts){
   if(ceiling<PROD_GOAL){ const ins=el("div","gm-ins"); ins.appendChild(el("b",null,fmtMoneyShort(PROD_GOAL-ceiling)+" short"));
     ins.appendChild(document.createTextNode(" of the goal even if every live listing closes. Closing it takes new business.")); b.appendChild(ins); }
 
-  const atRisk=deals.filter(d=>d&&d.risk&&(d.stage==="Under Contract"||d.stage==="Closed"));
-  if(atRisk.length){ const rk=el("div","gm-risk"); const n=_wt(atRisk);
-    rk.appendChild(el("b",null,"At risk")); rk.appendChild(document.createTextNode(" "+fmtMoneyShort(vol(atRisk))+" across "+n+" side"+(n===1?"":"s")+": "));
-    atRisk.forEach(function(d,i){ if(i) rk.appendChild(document.createTextNode(", ")); rk.appendChild(el("span","gm-nm",String(d.title||""))); });
-    b.appendChild(rk); }
+  /* ===== BUILD 565. THE GOALS CARD AT RISK LINE IS REMOVED, NOT REWORDED. =====
+     Ian, 26 October 2026: "No at risk currently." The block that used to stand here read
+     "At risk $894K across 1 side: Chris and Allison Spicer" and it was wrong on its own
+     terms as well: the only side feeding it is re-allison-spicer-buy, whose own record says
+     "Income to Ian is modeled at zero. The closing itself is not in question." and which
+     carries riskNeutral=true. The filter never tested riskNeutral, so a neutral fact was
+     summed into a dollar figure and printed under a red rule.
+     THE SLOT IS EMPTY. Do not put a softer or neutral version here. This is rule 19 in
+     LANE_START_HERE: report the fact, never the forecast. If Ian names something at risk,
+     the per deal row already prints it (dealRow, and re-risk on Real Estate). Nothing on
+     a goals card should infer a risk total again.
+     The .gm-risk and .gm-risk b CSS rules are left in place, unused, so that nothing else
+     that may reach for them breaks. No deal data was changed by this build. ===== */
 
   /* methodology and the long form, collapsed. PK_OPEN keeps it open across a re-render. */
   const KEY="re_goals_how"; const openNow=(KEY in PK_OPEN)?PK_OPEN[KEY]:false;
