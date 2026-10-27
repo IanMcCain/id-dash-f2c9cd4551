@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 566 (2026-10-27)">
+<meta name="build" content="v21 build 567 (2026-10-27)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -28792,6 +28792,128 @@ try{ if(profile==="ian" && state.meta && !state.meta.mig566_belknap_cs && state.
     state.meta.mig566_belknap_cs=true; save(true);
     try{ console.log("mig566: Belknap re-belknap-sell Fell through -> Coming Soon, price cleared, no risk value, listDateConfirmed false"); }catch(_){}
 } }catch(e){ try{ console.warn("mig566 did not apply:",e&&e.message); }catch(_){} }
+
+
+/* ===== v21 build 567: PICKLEBALL SESSION, TUESDAY 27 OCTOBER 2026 =========================
+   Guard state.meta.mig567_pk1027, SEED_VERSION stays 13. Guarded by id, nothing else touched.
+
+   CHECKED BEFORE WRITING. The stored session data was queried for 2026-10-27 on a settled
+   profile, four loads, and NO record carried that date and no id matched pk-20261027. The
+   check was on the stored data, not on what the page happened to render. 93 sessions before
+   this record, 94 after it.
+
+   EVERY NUMBER IS IAN'S OWN APPLE FITNESS SCREENSHOT, stored exactly as supplied: 7:20 to
+   9:43 AM, 2:22:38, active 1,156, total 1,379, average 119, maximum 164, minimum 74, effort
+   8 Hard, Omaha.
+
+   EFFORT IS HIS OWN RATING of how hard he tried and how well he played. It is NOT an exertion
+   figure and it is NEVER reconciled against heart rate or calories.
+
+   THE 4.0 IS CONTEXT, NOT A MATCHUP. A 4.0 joined for a short moment and Ian did NOT play him.
+   No matchup and no result is recorded against him.
+
+   "I KEPT UP WITH ALL OF THEM" IS HIS OWN ASSESSMENT of himself against the high 3s players,
+   stored as his words. It is not a rating, not a rating change and not a claim about his level.
+   His DUPR is 3.226 and nothing here derives, adjusts or implies a change to it.
+
+   THE DROPS AND RESETS NOTE IS A FLAG FOR THE NEXT FILM STUDY. There is no footage of this
+   session, so nothing here diagnoses the cause and no number is read as evidence of one.
+
+   ONE TRANSCRIPT WORD IS UNCERTAIN. The transcript of his observation reads "in Jung and open
+   play". The probable reading is "in drilling and open play". That is recorded as a probable
+   reading and NOT as his words. No record, superlative or comparison is claimed. ===== */
+try{ if(profile==="ian" && state.meta && !state.meta.mig567_pk1027){
+    var AS567="Ian, 27 October 2026";
+    var P567=state.pickleball||(state.pickleball={});
+    if(!Array.isArray(P567.sessions)) P567.sessions=[];
+    if(!P567.sessions.some(function(x){ return x && x.id==="pk-20261027-am"; })){
+      P567.sessions.push({
+        id:"pk-20261027-am", date:"2026-10-27", kind:"Drilling and open play", venue:"Omaha",
+        duration:"2h 22m 38s", window:"7:20 to 9:43 AM, Omaha",
+        calories:1379, activeCalories:1156, avgHr:119, maxHr:164, minHr:74,
+        drillMinutes:30, drillApproximate:true,
+        segments:[
+          {type:"Drilling",minutes:30,approximate:true,note:"About 30 minutes, Ian's own figure."},
+          {type:"Open play",minutes:null,note:"Minutes not given."}
+        ],
+        compositionNote:"ONE watch workout, ONE record. In his own words: \"I drilled for about 30 minutes. I showed up later than I wanted so I couldn't get a bunch of time in but I played open play with some high 3s players, men and women, all ages, but high 3s. Then a 140 joined for a short moment but I didn't get to play him. I kept up with all of them.\" The \"a 140\" in that transcript is a dictation artifact for a 4.0. Only the 30 minute drilling figure was given, so the rest of the time is not split and no split is derived from the total. Calories and heart rate are for the whole workout and are not divided between the parts.",
+        fieldNote:"Open play against high 3s players, men and women, all ages, his own description.",
+        fourOh:{ present:true, played:false,
+          note:"A 4.0 joined for a short moment. Ian did NOT play him. Recorded as context for the field only. There is no matchup and no result against him.",
+          source:AS567 },
+        selfAssessment:{ words:"I kept up with all of them.",
+          against:"The high 3s players in the open play above.",
+          status:"HIS OWN ASSESSMENT OF HIMSELF, stored as his words. It is not a rating, not a rating change and not a claim about his level. His DUPR is 3.226 and nothing here derives or adjusts it.",
+          source:AS567 },
+        filmFlag:{ raised:"2026-10-27", subject:"Drops and resets, inconsistency and off hitting",
+          words:"my drops and resets in [one word unclear in the transcript] and open play were just kind of inconsistent. I would off-hit often and I wasn't sure exactly what to do but I've noticed that my overall game has drastically improved over the past month or two.",
+          transcriptAs:"my drops and resets in Jung and open play were just kind of inconsistent.",
+          probableReading:"\"in drilling and open play\". A probable reading of the transcript, NOT stated as his words.",
+          action:"FLAG FOR THE NEXT FILM STUDY. No footage exists of this session, so nothing here diagnoses the cause and no number is read as evidence of one.",
+          source:AS567 },
+        effort:8, effortLabel:"Hard", effortSource:"His own rating, set by him in Apple Fitness",
+        effortNote:"HIS OWN RATING ("+AS567+"), how hard he tried and how well he played. NOT an exertion figure and NOT reconciled against heart rate or calories.",
+        result:"", score:"", opponent:"", copyOwned:true,
+        source:"Ian's own Apple Fitness screenshot and his own account of the session, "+AS567+".",
+        note:"Drilling and open play, Tuesday 27 October, morning, Omaha, 7:20 to 9:43 AM. 2:22:38 in total. About 30 minutes drilling, then open play against high 3s players, men and women, all ages. You showed up later than you wanted, so the session was shorter than planned. A 4.0 joined for a short moment and you did not play him. Your words on the session: \"I kept up with all of them.\" From Apple Watch: avg HR 119, peak 164, low 74, active 1,156, total 1,379. Your effort rating was 8, Hard. Flagged for the next film study: drops and resets inconsistent, off hitting often.",
+        agent:"ONE watch workout kept as ONE record. Every figure is Ian's own Apple Fitness screenshot, stored exactly as supplied, not rounded, converted or recomputed. Only the drilling figure (about 30 minutes, his own) was given, so no further minute split is stored and none is derived. Effort 8 is HIS OWN rating of how hard he tried and how well he played and is NEVER reconciled against heart rate or calories. The 4.0 is field context only: he did not play him, so no matchup and no result exists. \"I kept up with all of them\" is his own assessment of himself against high 3s players, stored as his words and not turned into a rating. His DUPR is 3.226 and nothing here derives or adjusts it. The drops and resets note is a FLAG FOR THE NEXT FILM STUDY, not a diagnosis: there is no footage. CHECKED BEFORE WRITING: the stored session data held no 2026-10-27 record and no pk-20261027 id. No gym statement is made. No record, superlative or comparison is claimed on this record."
+      });
+    }
+    P567.sessions.sort(function(a,z){ return String(a.date).localeCompare(String(z.date)); });
+    state.meta.mig567_pk1027=true; save(true);
+    try{ console.log("mig567: pk-20261027-am drilling and open play, 27 Oct 2026"); }catch(_){}
+} }catch(e){ try{ console.warn("mig567 did not apply:",e&&e.message); }catch(_){} }
+
+
+/* ===== v21 build 567: THE DISCOVER BALANCE IS A READ NOW, NOT A DERIVATION =================
+   Guard state.meta.mig567_discover_read, SEED_VERSION stays 13. Drains queue item
+   q17931096882, appended 27 October 2026 by OPUS-BELKNAP-1027.
+
+   WHAT CHANGES. Discover carried $2,150 with balanceSource DERIVED, set by build 563 as the
+   stated $4,024 card total less the stated $1,874 Gold balance. The Discover account page in
+   Rocket Money was opened and read on 27 October 2026, view only: current balance $2,146. The
+   balance becomes $2,146, the source becomes a read instead of a derivation, and the
+   discoverDerived flag goes. netWorth.debtsKnown goes from $4,024 to $4,020, which is the only
+   roll up that stores a card total. The gap is $4.
+
+   THE AMEX GOLD IS NOT TOUCHED. The same read confirmed the Gold still at $1,874 with the
+   $1,067.16 statement payment NOT posted. Nothing here records a payment and nothing here
+   changes the Gold record.
+
+   NO THIRD CARD IS ADDED. The same read showed an Amex Blue Business Plus account newly
+   connected in Rocket Money at a zero balance. That is a fact about the connection only, it is
+   not a statement that Ian has activated the card, and it is not written into the app here.
+
+   ASSETS ARE UNCHANGED. Both FNBO balances read the same as on 26 October, $2,882 and $175,
+   so nothing in the accounts array moves and the buffer shortfall against Ian's own $1,000
+   floor is unchanged. No target is altered. No record or superlative is claimed. ===== */
+try{ if(profile==="ian" && state.meta && !state.meta.mig567_discover_read && state.finance){
+    var F567=state.finance;
+    var SRC567="Rocket Money, Discover it Card account page, read 27 October 2026. A READ, not a derivation.";
+    (F567.cards||[]).forEach(function(c){
+      if(!c || c.id!=="discover") return;
+      c.balanceWas567={ value:c.balance, asOf:"2026-10-26", basis:"DERIVED, $4,024 stated card total less the stated $1,874 Gold balance" };
+      c.balance=2146;
+      c.balanceSource=SRC567+" Current balance $2,146. Was $2,150, which was derived from the stated $4,024 card total less the stated $1,874 Gold balance and was never read.";
+      try{ delete c.discoverDerived; }catch(_){} c.discoverDerived=undefined;
+    });
+    if(F567.netWorth){
+      var NW567=F567.netWorth;
+      NW567.debtsKnownWas567={ value:NW567.debtsKnown, asOf:"2026-10-26" };
+      NW567.debtsKnown=4020;
+      NW567.asOf="2026-10-27";
+      NW567.debtsKnownNote="Amex Gold $1,874 plus Discover $2,146, a card total of $4,020. Both read in Rocket Money on 27 October 2026. SUPERSEDES the $4,024 of 26 October, in which Discover was derived rather than read. The Gold figure carries no payment, because the $1,067.16 statement payment has not posted.";
+      NW567.assetsNote="$2,882 checking plus $175 in the buffer. Read 26 October and read the same again on 27 October, so the figure is unchanged.";
+    }
+    if(F567.staleness){
+      F567.staleness.lastHardRead="2026-10-27";
+      F567.staleness.ageAtWrite="0 days, read 27.10.2026";
+      F567.staleness.what="Both cards are the 27 October read and Discover is now a read rather than a derivation. Checking and the buffer read the same on 27 October as on 26 October. The burn is Ian's own settled $1,500 to $2,000.";
+    }
+    state.meta.mig567_discover_read=true; save(true);
+    try{ console.log("mig567: Discover 2150 derived -> 2146 read, debtsKnown 4024 -> 4020"); }catch(_){}
+} }catch(e){ try{ console.warn("mig567 discover did not apply:",e&&e.message); }catch(_){} }
+
 
   /* build 372: LAST THING BEFORE THE SAVE. Every migration above has run, deepMergeDefaults
      has run, so this is the only point in the file where the state is actually final. */
