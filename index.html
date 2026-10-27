@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 562 (2026-10-26)">
+<meta name="build" content="v21 build 563 (2026-10-26)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -28562,6 +28562,174 @@ try{ if(profile==="ian" && state.meta && !state.meta.mig562_fintext){
     state.meta.mig562_fintext=true; save(true);
     try{ console.log("mig562: finances copy reorganized, no figure changed"); }catch(_){}
 } }catch(e){ try{ console.warn("mig562 did not apply:",e&&e.message); }catch(_){} }
+
+/* ===== v21 build 563: DEEP DIVE 26 OCTOBER 2026. TWO CORRECTIONS, NOTHING ADDED. =========
+   Guard state.meta.mig563_dd1026, SEED_VERSION stays 13. Audit and correct only: no page,
+   section, widget, chart or field is introduced here and no copy is rewritten for style.
+
+   A. FINANCE WAS NINE DAYS STALE. finance.asOf read 2026-10-17 on a profile loaded on
+      26 October. Every figure below is a read, not a projection, and each one names where it
+      came from. The two blocks that previously pinned these balances (mig418_fin0920 at the
+      2026-09-20 read and mig529_finance_fix at the 2026-10-17 read) are BOTH flag guarded and
+      both flags are already true on Ian's profile, so neither re-pins what is written here on
+      a later load. That was checked in the stored meta, not assumed.
+
+      THE BUFFER ACCOUNT IS THE ONE THAT WAS MOST WRONG. fnbo1177 read $1,000 and has read
+      $1,000 since 17 October; Rocket Money has read $175 since at least 23 October. It is also
+      finance.savings.accountId, and savings.floor is $1,000, so correcting the balance puts the
+      Arizona fund BELOW its floor. The floor is Ian's own target and is NOT touched here. The
+      shortfall is a fact about the account, not an error in the target.
+
+      NO AMEX PAYMENT IS RECORDED, because none has posted. The $1,067.16 Gold statement
+      payment is still due around 5 November 2026. Gold goes to the stated $1,874 balance and
+      nothing here marks a payment as made.
+
+      DISCOVER IS DERIVED, AND SAID SO ON THE RECORD. The two figures given are a card total of
+      $4,024 and a Gold balance of $1,874. The cards array holds exactly these two cards, so
+      Discover is $4,024 less $1,874, which is $2,150. It is arithmetic off two stated numbers,
+      not a read, and discoverDerived records that.
+
+      THREE SUBSCRIPTION ROWS WERE MISSING, WHICH IS RESTORED DATA AND NOT A NEW FEATURE. Both
+      Fetch pet insurance rows ($48.88 and $45.92) were absent from the array entirely, so every
+      total that sums it was understated. Nine rows summed to $299.56; the two Fetch rows take it
+      to $394.36. Wispr Flow Pro, $15.00 a month, bought 26 October 2026 through Apple with a
+      first renewal of 26 November 2026, was in no file anywhere and is added here, which takes
+      the computed total to $409.36. NO TOTAL IS STORED: every subscription figure on the
+      Finances page is summed from this array at render time, so adding the rows corrects all of
+      them at once. NO BILLING DAY IS INVENTED for the Fetch rows, because none is known; they
+      land in the app's existing "no billing day" bucket. Wispr carries billsOn 26 because the
+      Apple receipt states the renewal date.
+
+      NEITHER FETCH ROW NOR WISPR CLAIMS A DEDUCTION. deduct.business is false on all three.
+      Whether the voice keyboard is a business expense is Ian's call and his tax guy's, so this
+      understates the deduction rather than inventing one.
+
+   B. BELKNAP WAS STILL UNDER CONTRACT, CLOSING 13 NOVEMBER, AT $250,000, WITH EARNEST PAID.
+      It is not closing. The MLS listing was cancelled on 22 October 2026. There is no buyer and
+      there is no close date. The stage goes to "Fell through" AND fellThrough goes to true,
+      which is the pattern build 439 and 441 established on re-austin-thacker: "Fell through" is
+      not a member of RESTAGES, and the live filters test the flag first and the stage second
+      precisely because a lane once set one without the other.
+
+      IT IS NOT DESCRIBED AS AT RISK. Ian's standing rule is to report the fact and never the
+      forecast. riskNeutral is set to true, so the row renders the plain fact in gray and the
+      words "At risk." are not printed. It also leaves the goals card at risk line, which filters
+      on stage Under Contract or Closed, with no Belknap side in it.
+
+      THE EARNEST IS NOT MARKED RETURNED. The record said the buyer had already paid. Whether
+      the sellers have signed the release, and what happens to the deposit, is NOT known, and
+      nothing here resolves it in either direction.
+   ===================================================================================== */
+try{ if(profile==="ian" && state.meta && !state.meta.mig563_dd1026 && state.finance){
+    var F563=state.finance;
+    var SRC563="Rocket Money, read 26 October 2026. SUPERSEDES the 17 October read.";
+
+    /* ---- A1. the two bank accounts ---- */
+    (F563.accounts||[]).forEach(function(a){
+      if(!a) return;
+      if(a.id==="fnbo8909"){
+        a.balanceWas={ value:a.balance, asOf:"2026-10-17" };
+        a.balance=2882; a.read=2882;
+        a.balanceSource=SRC563+" Was $2,155.";
+      }
+      if(a.id==="fnbo1177"){
+        a.balanceWas={ value:a.balance, asOf:"2026-10-17" };
+        a.balance=175;
+        a.balanceSource=SRC563+" Was $1,000, and it had read $1,000 since 17 October. Rocket Money has read $175 since at least 23 October.";
+        a.belowFloorNote="This is the Arizona fund account and savings.floor is $1,000, so the balance is $825 under the floor. The floor is Ian's own target and was not changed.";
+      }
+    });
+
+    /* ---- A2. the two cards. NO PAYMENT IS RECORDED. ---- */
+    (F563.cards||[]).forEach(function(c){
+      if(!c) return;
+      if(c.id==="amexgold"){
+        c.balanceWas={ value:c.balance, asOf:"2026-10-17" };
+        c.balance=1874; c.balanceSource=SRC563+" Was $1,134.";
+        c.statementPayment={ amount:1067.16, dueAbout:"2026-11-05",
+          status:"NOT PAID. No Amex payment has posted as at 26 October 2026.",
+          note:"The Gold statement payment of $1,067.16 is still due around 5 November 2026. Nothing in this record marks it as made." };
+      }
+      if(c.id==="discover"){
+        c.balanceWas={ value:c.balance, asOf:"2026-10-17" };
+        c.balance=2150;
+        c.balanceSource="DERIVED, not read. The card total given for 26 October 2026 is $4,024 and the Amex Gold balance given is $1,874. These are the only two cards on the record, so Discover is the remainder, $2,150. Was $1,824.";
+        c.discoverDerived=true;
+      }
+    });
+
+    /* ---- A3. the three missing subscription rows ---- */
+    if(Array.isArray(F563.subscriptions)){
+      var addSub563=function(name,amt,extra){
+        var dup=F563.subscriptions.some(function(x){ return x && String(x.name||"")===name && Number(x.amount)===amt; });
+        if(dup) return false;
+        var row={ name:name, amount:amt, tag:(extra&&extra.tag)||"Personal", deduct:{ business:false } };
+        for(var k in extra){ if(k!=="tag") row[k]=extra[k]; }
+        F563.subscriptions.push(row);
+        return true;
+      };
+      addSub563("Fetch pet insurance",48.88,{ tag:"Pet",
+        source:"MISSING FROM THIS ARRAY ENTIRELY until build 563. Rocket Money carries two Fetch pet insurance rows, at $48.88 and $45.92. Which animal each policy covers is not recorded anywhere, so it is not stated here.",
+        billingDayKnown:false });
+      addSub563("Fetch pet insurance",45.92,{ tag:"Pet",
+        source:"The second of the two Fetch rows. See the $48.88 row. No billing day is known for either, so none is invented.",
+        billingDayKnown:false });
+      addSub563("Wispr Flow Pro",15,{ tag:"Software", billsOn:26,
+        source:"Apple receipt, 26 October 2026, found in the mail sweep the same day. Flow Pro, Pro Monthly Plan, $15.00 a month, content provider Wispr AI INC, billed through Apple. First renewal 26 November 2026, then monthly until cancelled. It was in no file before this build.",
+        deductUndecided:"Whether this is a business expense has not been decided by Ian, so it claims no deduction here." });
+    }
+
+    /* ---- A4. the as of stamp and the derived roll ups ---- */
+    F563.asOf="2026-10-26";
+    F563.source="Rocket Money read 26 October 2026, plus the Apple receipt of the same day for Wispr Flow Pro";
+    if(Array.isArray(F563.balanceSeries)) F563.balanceSeries.push({ d:"2026-10-26", v:2882, src:"Rocket Money" });
+    if(F563.staleness){
+      F563.staleness.lastHardRead="2026-10-26";
+      F563.staleness.ageAtWrite="0 days, read 26.10.2026";
+      F563.staleness.what="Checking, the buffer and both cards are the 26 October read, except Discover which is derived from the stated $4,024 card total less the stated $1,874 Gold balance. The burn is Ian's own settled $1,500 to $2,000.";
+    }
+    if(F563.netWorth){
+      var NW563=F563.netWorth;
+      NW563.asOf="2026-10-26";
+      NW563.assets=3057;
+      NW563.debtsKnown=4024;
+      NW563.assetsNote="$2,882 checking plus $175 in the buffer, Rocket Money read 26 October. SUPERSEDES $3,155 of 17 October.";
+      NW563.debtsKnownNote="Amex Gold $1,874 plus Discover $2,150, a stated card total of $4,024 for 26 October. SUPERSEDES $2,958 of 17 October. The Gold figure carries no payment, because no Amex payment has posted.";
+    }
+    if(F563.trough){
+      F563.trough.refreshNote="NOT RECOMPUTED. The base above is the 9 October $2,576. The latest read is 26 October: checking $2,882 and the buffer $175. Treat every figure in this block as the 9 October projection and nothing newer.";
+    }
+
+    /* ---- B. BELKNAP ---- */
+    var D563=(state.realEstate&&state.realEstate.deals)||[];
+    var BK563=null; for(var i563=0;i563<D563.length;i563++){ if(D563[i563]&&D563[i563].id==="re-belknap-sell"){ BK563=D563[i563]; break; } }
+    if(BK563){
+      BK563.stageWas={ value:BK563.stage, asOf:"2026-10-24" };
+      BK563.stage="Fell through";
+      BK563.fellThrough=true;
+      BK563.closeWas={ close:BK563.close, closeOn:BK563.closeOn, asOf:"2026-10-24" };
+      BK563.close="";
+      BK563.closeOn=null;
+      BK563.closeNote="NO CLOSE DATE EXISTS. The 13 November 2026 date belonged to the contract the buyers walked away from.";
+      BK563.listStatus="MLS listing CANCELLED 22 October 2026. There is no buyer and there is no close date. The sellers are doing repairs and intend to relist; no relist date has been given.";
+      BK563.priceLine="$250,000 was the list and agreed price of the contract that fell through, and the listing it belonged to was cancelled on 22 October 2026. It is not a live price.";
+      BK563.riskNeutral=true;
+      BK563.riskLine="Not closing. The MLS listing was cancelled on 22 October 2026, there is no buyer and there is no close date. The sellers are doing repairs and intend to relist, with no relist date given.";
+      BK563.risk="FACT, NOT A FORECAST. The buyers walked after the 21 October inspection, the listing was cancelled on 22 October 2026, and there is no buyer and no close date. Nothing here calls this deal at risk: it is not a live side at all. Whether the sellers have signed the release, and what happens to the earnest deposit, is NOT known and is not resolved in either direction here.";
+      if(BK563.earnest && typeof BK563.earnest==="object"){
+        BK563.earnest.supersededOn="2026-10-26";
+        BK563.earnest.status="PAID by a buyer who then walked away. NOT returned, NOT retained, NOT known. The contract this deposit belonged to is dead and whether the sellers have signed the release is not known.";
+      }
+      if(BK563.terminationStatus && typeof BK563.terminationStatus==="object"){
+        BK563.terminationStatus.asOf="2026-10-26";
+        BK563.terminationStatus.mlsCancelled="2026-10-22";
+        BK563.terminationStatus.status="DONE, not in progress. The MLS listing was cancelled on 22 October 2026. No buyer, no close date. Sellers doing repairs then relisting, no relist date. Release signature still NOT known.";
+      }
+    }
+
+    state.meta.mig563_dd1026=true; save(true);
+    try{ console.log("mig563: finance read 26 Oct (buffer 1000 to 175, checking 2882, Gold 1874, Discover 2150 derived), three subscription rows restored (two Fetch, Wispr Flow), Belknap set Fell through with no close date"); }catch(_){}
+} }catch(e){ try{ console.warn("mig563 did not apply:",e&&e.message); }catch(_){} }
 
   /* build 372: LAST THING BEFORE THE SAVE. Every migration above has run, deepMergeDefaults
      has run, so this is the only point in the file where the state is actually final. */
