@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 567 (2026-10-27)">
+<meta name="build" content="v21 build 569 (2026-10-31)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -28913,6 +28913,254 @@ try{ if(profile==="ian" && state.meta && !state.meta.mig567_discover_read && sta
     state.meta.mig567_discover_read=true; save(true);
     try{ console.log("mig567: Discover 2150 derived -> 2146 read, debtsKnown 4024 -> 4020"); }catch(_){}
 } }catch(e){ try{ console.warn("mig567 discover did not apply:",e&&e.message); }catch(_){} }
+
+
+
+/* ===== v21 build 568, FIN, 27.10.2026. TZ PICKLEBALL, FOUND AND THEN CANCELLED THE SAME DAY.
+   =========================================================================================
+   STATUS IS CANCELLED. Ian cancelled it himself on 27 October 2026, a few hours after it
+   was found. This build was staged and had NOT shipped when he cancelled, so it goes live
+   already carrying the cancellation. It was never live as an active row on his phone.
+
+   THE RECORD IS KEPT RATHER THAN DELETED, BECAUSE THE FINDING IS THE VALUABLE PART.
+   The statement merchant is literally "TZ PICKLEBALL". It is Zane Navratil's Transition
+   Zone Pickleball coaching community. NOTHING IN THE STATEMENT NAME SAYS NAVRATIL, and
+   that is exactly why the subscription audit missed it. A merchant string that does not
+   carry the name of the thing you are looking for is the failure mode, not the exception.
+   Keep that lesson. A future audit searches the portal and billing names too, never just
+   the brand Ian uses out loud.
+
+   ROCKET MONEY NEVER TAGGED IT. Absent from the Recurring screen entirely, the same
+   failure already recorded for Marcus Movie Club and for Russell Speeder's. The
+   TRANSACTION FEED found it. That rule held a third time.
+
+   ONE THING IS STILL UNRESOLVED AND CANCELLING DOES NOT CLOSE IT. Gmail holds TWO
+   purchase receipts from reply@portal.tzpickleball.com, 2 October and 16 October, with
+   the amounts only inside the attached PDFs REC12451 and REC12535. The card feed holds
+   ONE charge, $9.99 on 20 October. The 20 October posting plausibly settles the 16
+   October receipt. THE 2 OCTOBER RECEIPT HAS NO MATCHING CHARGE ANYWHERE, on any of the
+   four accounts. NOT RECONCILED, and a cancellation does not reconcile it.
+
+   THE COUNT IS BACK TO NINE LIVE SUBSCRIPTIONS. It was briefly written as ten.
+
+   Written into state.finance.cancelled with done:true, which is the shape Adobe, Audible
+   and the ended pet policy already use. It is NOT in state.finance.subscriptions, and any
+   row a prior run put there is removed in the same pass so it can never be counted twice.
+   NO SEED_VERSION BUMP. Guarded by name so a re-run cannot duplicate it. */
+try{ if(state && state.finance && !state.meta.mig568_tzpickleball){
+  var _F568=state.finance;
+  if(Array.isArray(_F568.subscriptions)){
+    for(var _k568=_F568.subscriptions.length-1;_k568>=0;_k568--){
+      var _r568=_F568.subscriptions[_k568];
+      if(_r568 && String(_r568.name||"").toLowerCase().indexOf("tz pickleball")>=0) _F568.subscriptions.splice(_k568,1);
+    }
+  }
+  if(!Array.isArray(_F568.cancelled)) _F568.cancelled=[];
+  var _has568=false;
+  for(var i568=0;i568<_F568.cancelled.length;i568++){
+    var _s568=_F568.cancelled[i568];
+    if(_s568 && String(_s568.name||"").toLowerCase().indexOf("tz pickleball")>=0) _has568=true;
+  }
+  if(!_has568){
+    _F568.cancelled.push({
+      name:"TZ Pickleball",
+      amount:9.99,
+      done:true,
+      cancelledOn:"2026-10-27",
+      lastCharge:"2026-10-20",
+      why:"Cancelled by Ian himself on 27 October 2026, the same day it was found. Statement merchant TZ PICKLEBALL, which is Zane Navratil's Transition Zone Pickleball coaching community. The audit had missed it because nothing in the statement name says Navratil.",
+      openItem:"NOT RECONCILED. Two Gmail receipts, 2 October and 16 October, against one card charge of $9.99 on 20 October. The 2 October receipt has no matching charge on any account. Cancelling does not settle this.",
+      source:"Rocket Money transaction feed and Gmail portal receipts, read 27.10.2026. Cancellation stated by Ian 27.10.2026"
+    });
+  }
+  state.meta.mig568_tzpickleball=true; save(true);
+  try{ console.log("mig568: TZ Pickleball $9.99 recorded as CANCELLED 27.10.2026, not a live subscription"); }catch(_){}
+} }catch(e){ try{ console.warn("mig568 did not apply:",e&&e.message); }catch(_){} }
+
+
+
+/* ===== v21 build 568, PK, 27.10.2026. THE SECOND SESSION OF 27 OCTOBER. EVENING, ALL OPEN PLAY.
+   ============================================================================================
+   27 OCTOBER IS A TWO SESSION DAY AND THE TWO RECORDS ARE SEPARATE. pk-20261027-am was written
+   by build 567 and is NOT touched, merged into, corrected or recounted here. This is a SECOND
+   record, pk-20261027-pm, with its own id. A day with two pickleball sessions counts two, which
+   is already the rule the week counter uses.
+
+   ALL OPEN PLAY. Ian's own word for the format. NO DRILLING, so there is no drillMinutes field
+   and no segment split, because none was given and none is derived.
+
+   EFFORT 9, ALL OUT, IS HIS OWN RATING. It means how hard he TRIED and how WELL he played. It is
+   NOT an exertion figure. A 9 against a 125 average heart rate is NOT a contradiction and is
+   never reported as one. Standing rule, and it has been broken before.
+
+   THE HEART RATE OBSERVATION IS RECORDED AND IS NOT TURNED INTO A TREND. Ian, 27 Oct: his average
+   session heart rate used to run 130 to 140 a month or two ago and now sits at 110 to 125. This
+   session's 125 sits at the TOP of that newer band. THAT IS THE WHOLE STATEMENT. One session is
+   not a reversal, nothing here declares one, and no risk is named.
+
+   EVERY FIGURE IS OFF HIS APPLE WATCH SCREENSHOT, stored exactly as supplied. Nothing is rounded,
+   converted or recomputed, and nothing the screenshot does not state is estimated. No score, no
+   opponent and no competition level were given, so those stay empty.
+
+   NO SEED_VERSION BUMP, pinned at 13. Guarded by id and by name so a re-run cannot duplicate it. */
+try{ if(profile==="ian" && state.meta && !state.meta.mig568_pk1027pm){
+    var AS568="Ian, 27 October 2026";
+    var P568=state.pickleball||(state.pickleball={});
+    if(!Array.isArray(P568.sessions)) P568.sessions=[];
+    if(!P568.sessions.some(function(x){ return x && x.id==="pk-20261027-pm"; })){
+      P568.sessions.push({
+        id:"pk-20261027-pm", date:"2026-10-27", kind:"Open play", venue:"Omaha",
+        duration:"2h 13m 02s", elapsed:"2h 13m 05s", window:"4:33 to 6:46 PM, Omaha",
+        calories:1396, activeCalories:1189, avgHr:125, maxHr:158, minHr:79,
+        compositionNote:"ALL OPEN PLAY, Ian's own word for the format. No drilling, so no minute split is stored and none is derived. Calories and heart rate are whole workout figures.",
+        secondSessionOfDay:{ isSecond:true, firstSessionId:"pk-20261027-am",
+          note:"27 October 2026 is a TWO SESSION day. The morning record pk-20261027-am, drilling and open play, 7:20 to 9:43 AM, is a separate record written by build 567 and is not merged with or corrected by this one.",
+          source:AS568 },
+        hrObservation:{ words:"His average session heart rate used to run 130 to 140 a month or two ago and now sits at 110 to 125.",
+          thisSession:125,
+          placement:"125 sits at the TOP of the newer 110 to 125 band.",
+          status:"RECORDED, NOT INTERPRETED. One session is not a trend and no reversal is declared here. No risk is named.",
+          source:AS568 },
+        effort:9, effortLabel:"All Out", effortSource:"His own rating, set by him in Apple Fitness",
+        effortNote:"HIS OWN RATING ("+AS568+"), how hard he tried and how well he played. NOT an exertion figure and NEVER reconciled against heart rate or calories. A 9 against a 125 average is not a contradiction.",
+        result:"", score:"", opponent:"", copyOwned:true,
+        source:"Ian's own Apple Watch screenshot, "+AS568+".",
+        note:"Open play, Tuesday 27 October, evening, Omaha, 4:33 to 6:46 PM. 2:13:02 of workout time. All open play, no drilling. From Apple Watch: avg HR 125, peak 158, low 79, active 1,189, total 1,396. Your effort rating was 9, All Out. Second session of the day. With the morning, that is 4:35:40 on court and 2,345 active calories across 27 October.",
+        agent:"ONE watch workout kept as ONE record, and it is the SECOND record of 27 October 2026. pk-20261027-am was NOT touched, merged or recounted. Every figure is Ian's own Apple Watch screenshot, stored exactly as supplied, not rounded, converted or recomputed. Format is ALL OPEN PLAY in his own word, so there is no drilling figure and no segment split, and none is derived. Effort 9 All Out is HIS OWN rating of how hard he tried and how well he played and is NEVER reconciled against heart rate or calories. The heart rate band observation is stored as his words and explicitly not read as a trend or a reversal off one session. No score, opponent or competition level was given, so those fields are empty rather than guessed. No gym statement is made. No record, superlative or comparison is claimed. DAY TOTAL across both 27 October sessions, added from the two stored records and from nothing else: 4:35:40 workout time, 2,345 active calories, 2,775 total calories. The two average heart rates are NOT averaged together, because an average of averages over unequal durations would be an invented number: morning 119, evening 125."
+      });
+    }
+    P568.sessions.sort(function(a,z){ return String(a.date).localeCompare(String(z.date)); });
+    state.meta.mig568_pk1027pm=true; save(true);
+    try{ console.log("mig568: pk-20261027-pm open play evening, 27 Oct 2026, second session of the day"); }catch(_){}
+} }catch(e){ try{ console.warn("mig568 pk pm did not apply:",e&&e.message); }catch(_){} }
+
+
+
+/* ===== v21 build 568, PK, 28.10.2026. WEDNESDAY MORNING. HALF DRILLING, HALF OPEN PLAY.
+   =====================================================================================
+   A NEW DAY AND A THIRD SEPARATE RECORD. pk-20261027-am and pk-20261027-pm both stay exactly
+   as they are. This is NOT merged with either of them, not a correction to either, and the
+   27 October day total is unchanged by it.
+
+   FORMAT IS HALF DRILLING, HALF OPEN PLAY, Ian's own words. He gave no minute split, so NONE
+   is stored and NONE is derived. "Half" is recorded as his description, not turned into
+   40 minutes and 41 minutes.
+
+   EFFORT 7, HARD, IS HIS OWN RATING. How hard he TRIED and how WELL he played. NOT exertion,
+   and NEVER reconciled against heart rate or calories.
+
+   THE 106 AVERAGE IS THE NUMBER AND NOTHING MORE. It is the lowest average in his recent run
+   and it sits BELOW the 110 to 125 band he described on 27 Oct. THAT IS RECORDED AS A FACT.
+   NO TREND IS DECLARED off one session and NO RISK IS NAMED. One thing worth holding beside
+   it, and it is a difference in kind rather than an explanation: this was 1:21:31 with
+   drilling in it, where the 27 Oct evening session was 2:13:02 of straight open play at 125.
+   Different sessions, different shapes. That is a note about comparability, not a cause.
+
+   Every figure is off his Apple Watch screenshot, stored exactly as supplied. Nothing rounded,
+   converted or recomputed, and nothing the screenshot does not state is estimated. No score,
+   opponent or competition level was given, so those stay empty.
+
+   NO SEED_VERSION BUMP, pinned at 13. Guarded by id and by name. */
+try{ if(profile==="ian" && state.meta && !state.meta.mig568_pk1028am){
+    var AS568B="Ian, 28 October 2026";
+    var P568B=state.pickleball||(state.pickleball={});
+    if(!Array.isArray(P568B.sessions)) P568B.sessions=[];
+    if(!P568B.sessions.some(function(x){ return x && x.id==="pk-20261028-am"; })){
+      P568B.sessions.push({
+        id:"pk-20261028-am", date:"2026-10-28", kind:"Drilling and open play", venue:"Omaha",
+        duration:"1h 21m 31s", window:"7:13 to 8:35 AM, Omaha",
+        calories:597, activeCalories:470, avgHr:106, maxHr:143, minHr:74,
+        segments:[
+          {type:"Drilling",minutes:null,note:"Half the session, Ian's own word. No minute figure was given."},
+          {type:"Open play",minutes:null,note:"Half the session, Ian's own word. No minute figure was given."}
+        ],
+        compositionNote:"HALF DRILLING, HALF OPEN PLAY, Ian's own words. He gave no minute split, so none is stored and none is derived from the total. Calories and heart rate are whole workout figures and are not divided between the parts.",
+        hrObservation:{ thisSession:106,
+          band:"On 27 Oct he described his session averages as having run 130 to 140 a month or two ago and now sitting at 110 to 125.",
+          placement:"106 is BELOW that newer band and is the lowest average in his recent run.",
+          status:"RECORDED, NOT INTERPRETED. No trend is declared off one session and no risk is named.",
+          comparability:"A difference in KIND, not an explanation: this was 1:21:31 with drilling in it, against 2:13:02 of straight open play at 125 on the evening of 27 Oct.",
+          source:AS568B },
+        effort:7, effortLabel:"Hard", effortSource:"His own rating, set by him in Apple Fitness",
+        effortNote:"HIS OWN RATING ("+AS568B+"), how hard he tried and how well he played. NOT an exertion figure and NEVER reconciled against heart rate or calories.",
+        result:"", score:"", opponent:"", copyOwned:true,
+        source:"Ian's own Apple Watch screenshot, "+AS568B+".",
+        note:"Drilling and open play, Wednesday 28 October, morning, Omaha, 7:13 to 8:35 AM. 1:21:31 of workout time, half drilling and half open play. From Apple Watch: avg HR 106, peak 143, low 74, active 470, total 597. Your effort rating was 7, Hard.",
+        agent:"ONE watch workout kept as ONE record, on a NEW DAY. pk-20261027-am and pk-20261027-pm were NOT touched, merged or recounted, and the 27 October day total is unchanged. Format is HALF DRILLING, HALF OPEN PLAY in his own words; no minute split was given so none is stored and none is derived. Effort 7 Hard is HIS OWN rating of how hard he tried and how well he played and is NEVER reconciled against heart rate or calories. The 106 average is the lowest in his recent run and sits below the 110 to 125 band he described, recorded as a number with no trend declared and no risk named. Every figure is his own Apple Watch screenshot, stored exactly as supplied, nothing rounded, converted or recomputed. No score, opponent or competition level was given, so those fields are empty rather than guessed. No gym statement is made. No record, superlative or comparison is claimed. THREE SESSION TOTAL across 27 and 28 October, added from the three stored records and nothing else: 5:57:11 workout time, 2,815 active calories, 3,372 total calories. The three average heart rates are NOT averaged together, because an average of averages over unequal durations would be an invented number: 119, 125 and 106."
+      });
+    }
+    P568B.sessions.sort(function(a,z){ return String(a.date).localeCompare(String(z.date)); });
+    state.meta.mig568_pk1028am=true; save(true);
+    try{ console.log("mig568: pk-20261028-am drilling and open play, 28 Oct 2026"); }catch(_){}
+} }catch(e){ try{ console.warn("mig568 pk 1028 did not apply:",e&&e.message); }catch(_){} }
+
+/* ===== v21 build 569: DEEP DIVE PASS 6 CORRECTIONS (OPUS-DD6-1031, 31 Oct 2026). ============
+   Guard state.meta.mig569_dd6. SEED_VERSION stays 13. NOTHING IS ADDED by this block: every
+   write below replaces a stored string that is false or stale with the fact already carried
+   elsewhere on the same record. It runs LAST, so it corrects a fresh seed and an installed
+   profile in the same load.
+   (1) WILLIS NOTE SAID THERE WAS NO CLOSING DATE. The same record carries close "Closes 13
+       November 2026", closeOn 2026-11-13 and closeDate.confirmedBy "Ian, 16 October 2026".
+       One of the two had to be false and it was the sentence.
+   (2) 22 OCTOBER SESSION TYPE. Ian answered on 25 October 2026: all open play. The record has
+       carried kind "UNCONFIRMED" ever since because the answer never reached a build
+       (_APP_QUEUE entry q17929520003, queued 25 Oct, never drained). A label field is not a
+       place to keep a caveat.
+   (3) BELKNAP 13 NOVEMBER EVENT. There is no Belknap close date: the MLS listing was cancelled
+       22 October 2026 and the deal record's own closeNote says so. The event title also carried
+       118 characters of explanation, which is not a name.
+   (4) STALE PRESENT TENSE LIST DATES. "Lists Thursday 15 October 2026" on a cancelled listing
+       and "Lists Thursday 8 October 2026" on a deal under contract since 8 October. Tense only,
+       no figure and no date changed.
+   NOT TOUCHED ON PURPOSE: no risk value is written anywhere, no relist date, no Limoges record,
+   no R Street January closing, no Mattox walkthrough, no Vogel appraisal result, no Spyglass
+   kitchen answer. Those are reported, not invented. */
+try{ if(profile==="ian" && state.meta && !state.meta.mig569_dd6){
+    var N569=0;
+    var D569=(state.realEstate&&state.realEstate.deals)||[];
+    var _d569=function(id){ for(var i=0;i<D569.length;i++){ if(D569[i]&&D569[i].id===id) return D569[i]; } return null; };
+    var _rep=function(o,f,a,b){ if(o&&typeof o[f]==="string"&&o[f].indexOf(a)>=0){ o[f]=o[f].split(a).join(b); N569++; return true; } return false; };
+
+    /* (1) Willis */
+    var W569=_d569("re-cynthia-willis");
+    _rep(W569,"note","NO CLOSING DATE EXISTS YET and none is assumed.",
+                     "CLOSES 13 NOVEMBER 2026 (Ian, 16 October 2026).");
+
+    /* (2) 22 October session type, Ian 25 October 2026 */
+    var PS569=(state.pickleball&&state.pickleball.sessions)||[];
+    for(var i569=0;i569<PS569.length;i569++){
+      var S569=PS569[i569];
+      if(!S569||S569.id!=="pk-20261022-pm") continue;
+      if(S569.kind==="UNCONFIRMED"){ S569.kind="Open play"; N569++; }
+      if("kindNote" in S569){ try{ delete S569.kindNote; N569++; }catch(_){} }
+      _rep(S569,"note","Session type is unconfirmed: it is not recorded whether this was open play, drilling or a mix.",
+                       "All open play (Ian, 25 October 2026).");
+      _rep(S569,"agent","Kind is UNCONFIRMED and must not be filled in by inference; only Ian can set it.",
+                        "Kind is Open play, confirmed by Ian on 25 October 2026. No drill split stored.");
+    }
+
+    /* (3) Belknap 13 November event */
+    if(Array.isArray(state.events)){
+      state.events.forEach(function(e){
+        if(!e||e.id!=="ev-20261113-belknap-close") return;
+        if(e.title!=="Belknap closing, cancelled"){ e.title="Belknap closing, cancelled"; N569++; }
+        var want="The MLS listing was cancelled 22 October 2026. There is no buyer and there is no close date. The 13 November date belonged to the contract the buyers walked away from (Ian, 24 October 2026). The sellers are doing repairs and intend to relist; no relist date has been given. Kept rather than deleted so the date history survives.";
+        if(e.note!==want){ e.note=want; N569++; }
+      });
+    }
+
+    /* (4) stale present tense list dates */
+    var B569=_d569("re-belknap-sell");
+    _rep(B569,"priceNote","Lists Thursday 15 October 2026.","Listed Thursday 15 October 2026.");
+    _rep(B569,"stagingNote","Lists Thursday 15 October 2026.","Listed Thursday 15 October 2026.");
+    _rep(B569,"listStatus","Lists Thursday 15 October 2026.","Listed Thursday 15 October 2026.");
+    var M569=_d569("re-mattox-sell");
+    _rep(M569,"priceNote","Lists Thursday 8 October 2026.","Listed Thursday 8 October 2026.");
+
+    state.meta.mig569_dd6=true; save(true);
+    try{ console.log("mig569: deep dive pass 6, "+N569+" stored strings corrected"); }catch(_){}
+} }catch(e){ try{ console.warn("mig569 did not apply:",e&&e.message); }catch(_){} }
+
 
 
   /* build 372: LAST THING BEFORE THE SAVE. Every migration above has run, deepMergeDefaults
