@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 569 (2026-10-31)">
+<meta name="build" content="v21 build 570 (2026-10-31)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -29160,6 +29160,113 @@ try{ if(profile==="ian" && state.meta && !state.meta.mig569_dd6){
     state.meta.mig569_dd6=true; save(true);
     try{ console.log("mig569: deep dive pass 6, "+N569+" stored strings corrected"); }catch(_){}
 } }catch(e){ try{ console.warn("mig569 did not apply:",e&&e.message); }catch(_){} }
+
+/* ===== v21 build 570: IAN'S ANSWERS, 31 OCTOBER 2026 (OPUS-DD7-1031). ======================
+   Guard state.meta.mig570_ian1031. SEED_VERSION stays 13. Everything here is a statement Ian
+   made himself on 31 October 2026. Nothing is extended beyond what he said.
+   (1) HERNANDEZ LIST DATE IS 12 NOVEMBER. His words: "they moved to 12th list date for
+       Hernandez" and "Hernandez LIST DATE is November 12th." THE DATE ITSELF MOVED and this
+       record now says so, because the system has flipped this field twice on its own by
+       reconciling it against a register that was already stale. The list to Thanksgiving
+       window goes back to FOURTEEN days, 12 to 26 November.
+   (2) LIMOGES record created, Coming Soon, possible December list, $214,900 working and
+       UNSIGNED. He asked for the record. No close date, no commission and no probability.
+   (3) R STREET: live listing, NO OFFERS, NOT under contract. The January closing is TALK.
+       No deal record and no close date are created, his instruction.
+   (4) BELKNAP RELIST: maybe the 19th. Recorded as a TARGET, his word was "maybe".
+   (5) VOGEL appraisal went well. SPYGLASS boards are done. MATTOX walkthrough happened and
+       went well, and Katie never gave a date or a time, so the blank is correct.
+   (6) HERNANDEZ STAGING PICKUP answered by phone, closed.
+   NO RISK VALUE IS WRITTEN ANYWHERE BY THIS BLOCK. */
+try{ if(profile==="ian" && state.meta && !state.meta.mig570_ian1031){
+    var N570=0, AS570="Ian, 31 October 2026";
+    var RE570=state.realEstate||(state.realEstate={});
+    var D570=RE570.deals||(RE570.deals=[]);
+    var _g570=function(id){ for(var i=0;i<D570.length;i++){ if(D570[i]&&D570[i].id===id) return D570[i]; } return null; };
+    var _set570=function(o,f,v){ if(o&&o[f]!==v){ o[f]=v; N570++; } };
+    var _rep570=function(o,f,a,b){ if(o&&typeof o[f]==="string"&&o[f].indexOf(a)>=0){ o[f]=o[f].split(a).join(b); N570++; return true; } return false; };
+
+    /* (1) HERNANDEZ */
+    var H570=_g570("re-hernandez-sell");
+    if(H570){
+      _set570(H570,"close","Lists 12 November 2026");
+      _set570(H570,"listDateNote","LIST DATE THURSDAY 12 NOVEMBER 2026, confirmed by Ian on 31 October 2026 in his own words: \"they moved to 12th list date for Hernandez\" and \"Hernandez LIST DATE is November 12th.\" This is a LIVE LISTING, not a prospect. Recommended $450,000, unchanged.");
+      _set570(H570,"dateMoved","THE DATE ITSELF MOVED. READ THIS BEFORE CHANGING THIS FIELD. Every statement below is first hand from Ian: 20 Oct the 12th, 21 Oct the 5th, 31 Oct the 12th again. The sellers moved it; this record was never wrong. The system has already flipped this field twice on its own, on 26 October and again on 31 October, each time by reconciling the app against a register that was itself stale. A file, register or note that still reads 5 November is HISTORY, not a correction to apply. Only a first hand statement from Ian moves this date, and 12 November 2026 is the newest one.");
+      _rep570(H570,"note","lists 5 November at $450,000","lists 12 November at $450,000");
+      _rep570(H570,"note","Target list Thursday 5 November 2026, goal an accepted offer before Thanksgiving on 26 November, which is a twenty one day window.",
+                          "Target list Thursday 12 NOVEMBER 2026 ("+AS570+"), goal an accepted offer before Thanksgiving on 26 November, which is a FOURTEEN day window.");
+      if(H570.timeline&&typeof H570.timeline==="object"){
+        _set570(H570.timeline,"listTarget","Thursday 12 November 2026, if possible");
+        _set570(H570.timeline,"window","Fourteen days from list to contract");
+        _set570(H570.timeline,"moved","Confirmed 12 November by "+AS570+". It read 5 November from 21 October. See dateMoved on this record.");
+      }
+      if(H570.upcoming&&typeof H570.upcoming==="object"){ _set570(H570.upcoming,"due","Before 12 November 2026"); }
+      _set570(H570,"stagingPickup",{status:"CLOSED", asOf:"2026-10-31", source:AS570,
+        text:"Answered by phone. No longer an open item and not to be resurfaced as a gap or a question."});
+    }
+
+    /* Hernandez event: the id already said 12 November, the date field did not. */
+    if(Array.isArray(state.events)){
+      state.events.forEach(function(e){
+        if(!e||e.id!=="ev-20261112-hernandez-live") return;
+        _set570(e,"date","2026-11-12");
+        _set570(e,"note","LIST DATE 12 NOVEMBER 2026, confirmed by "+AS570+": \"Hernandez LIST DATE is November 12th.\" It read 5 November from 21 October and the sellers are the ones who moved it. The calendar event was moved from 5 to 12 November on 31 October 2026, not duplicated. Do not move it back on the strength of a file that still reads 5 November.");
+      });
+      state.events.sort(function(a,z){ return String(a.date||"").localeCompare(String(z.date||"")); });
+    }
+
+    /* (2) LIMOGES, created on his instruction */
+    if(!_g570("re-limoges-sell")){
+      D570.push({
+        id:"re-limoges-sell", title:"Limoges", sub:"Sell side, 3129 S 17th St",
+        address:"3129 S 17th St, Omaha, NE",
+        stage:"Coming Soon", side:"Seller", source:"Ian's own",
+        price:"", close:"",
+        priceNote:"$214,900 IS THE WORKING NUMBER AND IT IS UNSIGNED ("+AS570+"). It is not a list price and there is no listing agreement. The price field is EMPTY on purpose. The 29 October presentation produced no agreed list price. His own range before seeing it was $200,000 to $215,000, and $199,000 if it shows poorly. CMA on file: WORK/Real_Estate/Output/10.27.2026 - CMA - Limoges (3129 S 17th St).md.",
+        listDateNote:"POSSIBLE DECEMBER 2026 LIST ("+AS570+"). Possible, not set. NO DATE EXISTS, no calendar event and none is to be invented.",
+        note:"CREATED 31 OCTOBER 2026 ON IAN'S INSTRUCTION, marked Coming Soon. HIS ANSWER IN FULL: coming soon, possible December list, not listed, $214,900 working and unsigned. The property has a driveway and NO GARAGE, which the pricing accounts for. NOTHING ELSE IS RECORDED: no commission rate, no share, no probability, no close date and no risk, because he gave none and none is derived.",
+        copyOwned:true
+      });
+      N570++;
+    }
+
+    /* (3) R STREET, listing status only */
+    var R570=_g570("re-rstreet-model");
+    if(R570){
+      _set570(R570,"listingStatus","LIVE LISTING, NO OFFERS, NOT UNDER CONTRACT ("+AS570+"). The potential January closing is TALK, not a deal: no deal record, no close date and no probability is created from it, his instruction. The 27 October contingency check has passed and he did not report an outcome, so the list price stays $684,900 and the $730,000 model home figure stays a superseded expectation.");
+      _set570(R570,"contingencyCheck","2026-10-27, passed with no outcome reported ("+AS570+"). Still a live listing at $684,900 with no offers.");
+    }
+
+    /* (4) BELKNAP RELIST TARGET, his word was maybe */
+    var B570=_g570("re-belknap-sell");
+    if(B570){
+      _set570(B570,"relistTarget","MAYBE THURSDAY 19 NOVEMBER 2026 ("+AS570+"). HIS WORD WAS \"MAYBE\", so this is a target and NOT a confirmed date. No calendar event, no close date and no risk. The MLS listing is still cancelled as of 22 October 2026 and there is no buyer.");
+    }
+
+    /* (5) THREE ITEMS RESOLVED */
+    var V570=_g570("re-vogel-sell");
+    if(V570){
+      _set570(V570,"appraisalResolved",{status:"DONE, WENT WELL", asOf:"2026-10-31", source:AS570,
+        text:"The appraisal went well ("+AS570+"). It ran 29 October 2026. No dollar figure was given and none is recorded. Closed as resolved; do not resurface it as an open item."});
+    }
+    var W570=_g570("re-cynthia-willis");
+    if(W570){
+      _set570(W570,"kitchenBoards",{status:"DONE", asOf:"2026-10-31", source:AS570,
+        text:"Spyglass is good and the kitchen boards are done ("+AS570+"). Closed as resolved."});
+    }
+    var M570=_g570("re-mattox-sell");
+    if(M570){
+      _set570(M570,"walkthroughResolved",{status:"HAPPENED AND WENT WELL", asOf:"2026-10-31", source:AS570, date:"", time:"",
+        text:"The final walkthrough happened and went well ("+AS570+"). KATIE NEVER GAVE A DATE OR A TIME, so the date and time are BLANK rather than wrong, and nothing may be inferred for them. Done without a recorded date. Closing remains about 13 November 2026."});
+      if(Array.isArray(M570.milestonesLeft)&&M570.milestonesLeft.length===2&&M570.milestonesLeft[0]==="Final walkthrough"){
+        M570.milestonesLeft=["Closing"]; N570++;
+      }
+    }
+
+    state.meta.mig570_ian1031=true; save(true);
+    try{ console.log("mig570: Ian's 31 Oct answers, "+N570+" writes"); }catch(_){}
+} }catch(e){ try{ console.warn("mig570 did not apply:",e&&e.message); }catch(_){} }
+
 
 
 
