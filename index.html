@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 571 (2026-11-02)">
+<meta name="build" content="v21 build 572 (2026-11-02)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -29310,6 +29310,35 @@ try{ if(profile==="ian" && state.meta && !state.meta.mig571_pk1102){
     state.meta.mig571_pk1102=true; save(true);
     try{ console.log("mig571: pk-20261102-am drilling and open play, 2 Nov 2026"); }catch(_){}
 } }catch(e){ try{ console.warn("mig571 did not apply:",e&&e.message); }catch(_){} }
+
+
+/* ===== v21 build 572: EFFORT CORRECTION ON pk-20261102-am (L1102-1) =====================
+   Guard state.meta.mig572_pk1102effort, SEED_VERSION stays 13. Guarded by id.
+
+   IAN, 2 Nov 2026 (correction): Apple's effort score mixes exertion with his own input and he
+   sets it himself, so it counts as HIS rating. Build 571 stored the 9 in appleEffort and left
+   effort absent. This block sets effort 9, All Out on the record and removes the three
+   appleEffort fields so nothing on the record still says it is not his rating.
+
+   Only this one record is touched. The 13 Oct appleEffort record is NOT changed. ===== */
+try{ if(profile==="ian" && state.meta && !state.meta.mig572_pk1102effort){
+    var AS572="Ian, 2 November 2026";
+    var P572=state.pickleball||(state.pickleball={});
+    if(Array.isArray(P572.sessions)){
+      P572.sessions.forEach(function(x){
+        if(x && x.id==="pk-20261102-am"){
+          x.effort=9; x.effortLabel="All Out";
+          x.effortSource="Apple Fitness effort score. Ian sets it himself, so it is his rating ("+AS572+").";
+          x.effortNote="HIS OWN RATING ("+AS572+"). Apple's effort score mixes exertion with his own input and he sets it himself, so it counts as his rating of how hard he tried and how well he played. Never reconciled against heart rate or calories.";
+          delete x.appleEffort; delete x.appleEffortLabel; delete x.appleEffortSource;
+          x.note="Drilling and open play, Monday 2 November, morning, Omaha, started 6:32 AM. 2:13:19 of workout time. From Apple Watch: avg HR 127, peak 164, low 79, active 1,205, total 1,413. Effort 9, All Out, his own rating.";
+          x.agent="Every figure is Ian's own Apple Watch screenshot, stored exactly as supplied, not rounded, converted or recomputed. End time not stored (blurred in the screenshot). Effort 9, All Out is HIS rating: Apple's effort score mixes exertion with his own input and he sets it himself (Ian, 2 Nov 2026, correcting build 571, which had stored it as Apple's field). Never reconciled against heart rate or calories. No split of drilling against open play was given. No score, opponent or competition level was given, so those fields are empty rather than guessed. Friday 30 Oct evening is a SEPARATE session still waiting on Ian for details and is not in this record. No record, superlative or comparison is claimed.";
+        }
+      });
+    }
+    state.meta.mig572_pk1102effort=true; save(true);
+    try{ console.log("mig572: pk-20261102-am effort 9 All Out set as Ian's rating"); }catch(_){}
+} }catch(e){ try{ console.warn("mig572 did not apply:",e&&e.message); }catch(_){} }
 
 
 
