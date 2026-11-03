@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 572 (2026-11-02)">
+<meta name="build" content="v21 build 573 (2026-11-02)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -29341,6 +29341,142 @@ try{ if(profile==="ian" && state.meta && !state.meta.mig572_pk1102effort){
 } }catch(e){ try{ console.warn("mig572 did not apply:",e&&e.message); }catch(_){} }
 
 
+/* ===== v21 build 573: FINANCE PAGE, DEEP DIVE 2 NOV 2026 (L1102-10) =====================
+   Guard state.meta.mig573_fin1102, SEED_VERSION stays 13. Display data only, no new rule.
+   SOURCES: Rocket Money read 2 Nov 2026 view only (BRAIN ASKED_AND_ANSWERED block APPENDED
+   2026-11-02 L1102-8), Ledger Update 10 in the Business Expense Log, the Tax Estimate file's
+   Belknap removed run (SONNET-11, 23 Oct) reproduced with _tax_estimate_2026_calc.py, Ian 2 Nov
+   (gift about $6,500). Balances are listed per account and are never summed. ===== */
+try{ if(profile==="ian" && state.meta && !state.meta.mig573_fin1102 && state.finance){
+    var F573=state.finance;
+    var RM573="Rocket Money, read 2 November 2026, view only.";
+    F573.asOf="2026-11-02";
+    F573.source="Rocket Money read 2 November 2026 (view only), the 2 November expense ledger and Ian's 2 November gift figure. Balances are listed per account and never summed.";
+    (F573.accounts||[]).forEach(function(a){
+      if(!a) return;
+      if(a.id==="fnbo8909"){
+        a.balanceWas={value:2882,asOf:"2026-10-26"};
+        a.balance=1880; a.read=1880;
+        a.balanceSource=RM573+" SUPERSEDES the 26 October read. Was $2,882.";
+      }
+      if(a.id==="fnbo1177"){
+        a.balanceSource=RM573+" Unchanged at $175 since 26 October.";
+      }
+    });
+    var haveBlue573=false;
+    (F573.cards||[]).forEach(function(c){
+      if(!c) return;
+      if(c.id==="amexblue") haveBlue573=true;
+      if(c.id==="amexgold"){
+        c.balanceWas={value:1874,asOf:"2026-10-26"};
+        c.balance=2267;
+        c.balanceSource=RM573+" SUPERSEDES the 26 October read. Was $1,874.";
+        c.statementPayment={amount:1067.16,status:"PAID. The statement payment posted: Gold 26 October, checking 27 October ("+RM573+")",paid:true,note:"The earlier 'not posted' reads of 26 and 27 October were wrong. Rocket Money's Recurring screen still projects it as due, which is a stale projection of a payment already made."};
+        c.roleLabel="Personal since the Blue went live, 28 Oct";
+        c.roleFrom28Oct="personal";
+        c.transitionNote="BUSINESS card through 20 October 2026. 21 to 27 October it carried BOTH and each charge was classified on merchant and purpose (Ian, 24 October 2026). PERSONAL from 28 October 2026, the date of the first Blue charge in Rocket Money.";
+      }
+      if(c.id==="discover"){
+        c.balanceWas={value:2146,asOf:"2026-10-27"};
+        c.balance=2222;
+        c.balanceSource=RM573+" This is the dashboard tile, not the account page, which read $2,146 on 27 October.";
+        c.balanceStale="Balance read 2 November 2026 from the Rocket Money dashboard tile. The pending list, statement balance and available figure above are older reads and were not refreshed.";
+      }
+    });
+    if(!haveBlue573 && Array.isArray(F573.cards)){
+      F573.cards.push({id:"amexblue",name:"American Express Blue Business Plus",kind:"business",balance:61,last4:"1008",limit:2000,
+        roleLabel:"Business only, in use since 28 Oct",activeSince:"2026-10-28",
+        balanceSource:RM573+" First charge Maverik $61.03 on 28 October. $2,000 limit per Ian.",
+        note:"100 percent business only (Ian, 21 October 2026). Gas goes on it."});
+    }
+    var CT573=F573.cardTransition;
+    if(CT573){
+      CT573.status="EFFECTIVE 21 OCTOBER 2026. THE BLUE IS IN USE SINCE 28 OCTOBER 2026.";
+      CT573.cutover="THE BLUE IS IN USE. Its first charge in Rocket Money is 28 October 2026 (Maverik, gas). From 28 October the Gold is personal and the Blue is all business. Gold charges dated 21 to 27 October stay individually classified (Ian, 24 October 2026).";
+      CT573.text="Amex Blue Business Plus = 100 percent business only. $2,000 limit. In use since 28 October, and on his phone and watch for Apple Pay since 2 November. Gas goes on it. Amex Gold = his everyday card, personal since 28 October. Discover = one cheap subscription, probably the Marcus monthly (about $10), on autopay, purely to keep activity. All three cards are used monthly on purpose, to push his credit score up. He will merge the points accounts once the Blue works.";
+      CT573.standingRuleUntilThen="Gold was business through 20 October 2026, mixed from 21 to 27 October (each charge classified on merchant and purpose), and is personal from 28 October 2026. The Blue is business only.";
+      CT573.blue={name:"American Express Blue Business Plus",role:"100 percent business only",limit:2000,status:"IN USE since 28 October 2026, the date of its first charge in Rocket Money. Added to Apple Pay on his phone and watch 2 November.",balance:61,statusAsOf:"2026-11-02",activeSince:"2026-10-28"};
+      CT573.mixedWindow={from:"2026-10-21",to:"2026-10-27",status:"ENDED 28 OCTOBER 2026",source:"Ian, 24 October 2026; first Blue charge read in Rocket Money 2 November 2026",text:"The mixed window ran 21 to 27 October. Gold charges in it stay individually classified."};
+    }
+    if(F573.giftNov){
+      var G573=F573.giftNov;
+      G573.amountWas={value:4500,asOf:"2026-10-26"};
+      G573.approxAmount=6500; G573.approximate=true; G573.amountText="about $6,500";
+      G573.source="Ian, 2 November 2026 (about $6,500; the exact figure is still pending from him). Earlier: about $4,500, Ian, 26 October 2026.";
+    }
+    /* Fetch is TWO deliberate policies (Ian, 23 Oct 2026; queue q17927821998924). Rocket Money 2 Nov: policy one last charged 16 Oct, policy two due about 22 Nov on the Gold. */
+    (F573.subscriptions||[]).forEach(function(x){
+      if(!x || x.name!=="Fetch pet insurance") return;
+      if(Number(x.amount)===48.88){ x.billsOn=16; x.billingDayKnown=true; x.cancelling=true; x.source="Policy one. Ian, 23 October 2026: cancelling it. Last charge in Rocket Money 16 October; Rocket Money still projects 16 November. Read 2 November 2026."; }
+      if(Number(x.amount)===45.92){ x.billsOn=22; x.billingDayKnown=true; x.source="Policy two, on the Amex Gold. Ian, 23 October 2026: kept on purpose until the 70 percent shots reimbursement is claimed and paid. The charge is expected. Due about the 22nd (Rocket Money, 2 November 2026)."; }
+    });
+    if(F573.spendNotes){
+      F573.spendNotes.fetch={name:"Fetch",what:"Pet insurance, two policies",status:"TWO POLICIES, DELIBERATE",note:"Ian, 23 October 2026: policy one ($48.88, about the 16th) is being cancelled. Policy two ($45.92, about the 22nd, on the Gold) stays until the 70 percent shots reimbursement is claimed and paid, so its charge is expected. Rocket Money, 2 November 2026: policy one last charged 16 October and is still projected 16 November.",asOf:"2026-11-02"};
+    }
+    if(Array.isArray(F573.cancelled)){
+      F573.cancelled.forEach(function(x){
+        if(x && x.name==="Pet insurance"){
+          x.name="Fetch pet insurance, policy one"; x.amount=48.88; x.done=false;
+          x.why="Cancelling (Ian, 23 October 2026). Last charge in Rocket Money 16 October; still projected 16 November (read 2 November 2026).";
+          delete x.lastCharge; delete x.noChargeFrom; delete x.paidThrough;
+        }
+      });
+    }
+    var LG573=F573.ledger||(F573.ledger={});
+    LG573.asOf="2026-11-02"; LG573.documented=1971.47; LG573.paid=2235.20; LG573.charges=69;
+    LG573.source="WORK/Real_Estate/Output/2026 Business Expense Log.md, Ledger Update 10 (2 Nov 2026), tied to the Google Sheet Summary tab.";
+    LG573.categories=[];
+    LG573.fuel={charges:8,paid:462.83,deductible:0,note:"Business fuel Ian called. Held out because standard mileage covers it."};
+    LG573.allBusiness={charges:77,paid:2698.03};
+    LG573.askIan={rows:37,amazonRows:8,amazonAmount:667.72};
+    LG573.note="2 November 2026: 69 business charges, $2,235.20 paid, $1,971.47 deductible. Eight business fuel charges ($462.83) are held out because standard mileage covers fuel, so all 77 business charges total $2,698.03. 37 rows wait on Ian, eight of them Amazon ($667.72), and are in no total. Home office is not in it.";
+    var TE573=F573.taxEstimate;
+    if(TE573 && Array.isArray(TE573.scenarios)){
+      TE573.asOf="2026-11-02";
+      TE573.source="10.14.2026 Tax Estimate vs Set Aside, Belknap removed run (SONNET-11, 23 Oct 2026), reproduced 2 Nov 2026 from _tax_estimate_2026_calc.py. An estimate, not advice; his tax guy is the authority.";
+      TE573.scenarios.forEach(function(s){
+        if(!s) return;
+        if(s.miles===17500){ s.mileageDeduction=12994; s.netSE=35748; s.se=5051; s.federal=1456; s.nebraska=660; s.total=7167; s.keeps=47614; }
+        if(s.miles===20000){ s.mileageDeduction=14850; s.netSE=33891; s.se=4789; s.federal=1290; s.nebraska=597; s.total=6676; s.keeps=48105; }
+      });
+      TE573.assumedExpenses=5416;
+      TE573.assumedExpensesBasis="10 percent of 2026 commission of $54,157.12, Ian's own figure";
+      TE573.documentedExpenses=1971.47;
+      TE573.note="PROVISIONAL. It assumes $5,416 of other expenses; the ledger documents $1,971.47 deductible so far (2 November), plus a home office of about $819 to $886. It counts the three paying November closings (Mattox, Willis, Vogel) and no Belknap, and assumes they pay in 2026. It uses the mileage planning assumption (his tax guy handles the real mileage).";
+    }
+    var U573=F573.update21Oct;
+    if(U573){
+      var T573=U573.tax;
+      if(T573){
+        T573.asOf="2026-11-02";
+        T573.source="Belknap removed run of the 21 October estimate (SONNET-11, 23 Oct 2026), reproduced 2 Nov 2026 from _tax_estimate_2026_calc.py (build 551 basis). An estimate, not advice.";
+        T573.income=54157;
+        T573.incomeSub="$45,810 received plus three November closings, $8,347";
+        T573.janTax=8436; T573.decTax=11442;
+        T573.decTaxSub="Hernandez adds $11,016 of income and about $3,006 of tax";
+        T573.janLeft=5811; T573.decLeft=6110;
+        T573.janLeftSub="30 percent set aside $16,247, minus the tax bill, minus the $2,000 tax guy fee";
+        T573.decLeftSub="30 percent set aside $19,552, minus the tax bill, minus the $2,000 fee. $299 more than January";
+        if(Array.isArray(T573.working)){
+          T573.working=T573.working.map(function(w){ return (typeof w==="string")?w.replace("$3,005","$3,006"):w; });
+        }
+      }
+      if(U573.line60k){
+        U573.line60k.text="The $60,000 line is NOT a tax bracket, threshold or QBI boundary. It is only where his 2026 income lands: about $54,200 if Hernandez closes in January, about $65,200 if it closes in December. The date is worth about $300 of tax.";
+        U573.line60k.rows=[["Hernandez closes in January","$54,200","under the line"],["Hernandez closes in December","$65,200","over the line"],["What the date is worth","$300","of tax"]];
+      }
+      U573.novemberClosings={text:"Estimate $8,346.88: Vogel $1,982.88, Mattox $2,508.80, Willis $3,855.20. The 30 percent set aside is $2,504.06, leaving $5,842.82. The Spicer gift, about $6,500, is separate and in none of these. Landing mid to late November. Estimates as of 2 November 2026."};
+    }
+    if(F573.staleness){
+      F573.staleness.lastHardRead="2026-11-02";
+      F573.staleness.ageAtWrite="0 days, read 2 November 2026";
+      F573.staleness.what="Checking, the buffer and the three cards are the 2 November Rocket Money read. Discover is the dashboard tile, not the account page. The bike loan was not read this time.";
+    }
+    state.meta.mig573_fin1102=true; save(true);
+    try{ console.log("mig573: finance balances, cards, gift, ledger and tax refreshed to 2 Nov 2026"); }catch(_){}
+} }catch(e){ try{ console.warn("mig573 did not apply:",e&&e.message); }catch(_){} }
+
+
 
 
   /* build 372: LAST THING BEFORE THE SAVE. Every migration above has run, deepMergeDefaults
@@ -38964,8 +39100,8 @@ function fxBandCards(v,f){
      was the largest block of prose on it, which is exactly what Ian asked to be cut. Every figure it
      carried is still here. The full wording is one tap down in the Cards fold under Reference, which
      also means it survives this band dropping off after 4 November 2026. */
-  ln("Blue Business Plus:","all business. $2,000 limit, $0 balance. Not usable until about Tuesday 27 October. Gas goes on it.");
-  ln("Gold:","business and personal until the Blue works, then personal.");
+  ln("Blue Business Plus:","all business. $2,000 limit. In use since 28 October. Gas goes on it.");
+  ln("Gold:","personal now that the Blue is in use.");
   ln("Discover:","one subscription, about $10 a month.");
   band.appendChild(c); v.appendChild(band);
 }
@@ -39026,7 +39162,7 @@ function fxBandCash(v,f){
        finance.netWorth.value, not computed here, so there is one owner for that number.
        If the bike loan ever gets a confirmed balance, this becomes one figure and the second line
        can collapse into the first. Until then the range is the honest answer. ================== */
-    if(haveOwed){
+    if(false){ /* build 573: Cards covered and With the bike loan summed card balances, so they are off. Balances are never summed (BRAIN 2 Nov 2026). */
       var net=(Number(op.balance)||0)-owed;
       tile("Cards covered",fnMoneyAuto(net),(net<0?"a":"g"),"operating less cards, before the bike loan");
       var _nw=f.netWorth||{};
@@ -39041,7 +39177,7 @@ function fxBandCash(v,f){
     if(tiles.firstChild) c.appendChild(tiles); band.appendChild(c);
   }
   if(cards.length){
-    fxLabel(band,"Cards",haveOwed?(fnMoneyAuto(owed)+" owed"):null);
+    /* build 573: no sum of card balances is shown. Each card carries its own balance. */ fxLabel(band,"Cards",null);
     var cc=el("div","fx-card fx-list");
     cards.forEach(function(a){
       var bal=Number(a.balance)||0, lim=Number(a.limit)||0, ml=Number(a.monthlyLimit)||0, ut=Number(a.utilTarget)>0?Number(a.utilTarget):0.30;
