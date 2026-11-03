@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 573 (2026-11-02)">
+<meta name="build" content="v21 build 574 (2026-11-02)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -29475,6 +29475,60 @@ try{ if(profile==="ian" && state.meta && !state.meta.mig573_fin1102 && state.fin
     state.meta.mig573_fin1102=true; save(true);
     try{ console.log("mig573: finance balances, cards, gift, ledger and tax refreshed to 2 Nov 2026"); }catch(_){}
 } }catch(e){ try{ console.warn("mig573 did not apply:",e&&e.message); }catch(_){} }
+
+
+/* ===== v21 build 574: REAL ESTATE PAGE, DEEP DIVE 2 NOV 2026 (L1102-10) =================
+   Guard state.meta.mig574_re1102, SEED_VERSION stays 13. Display data only. Sources: Ian's
+   2 Nov verbal update (handoffs/2026-11-02-ian-verbal-update.md) and the decoded texts and
+   calendar read of 2 Nov (handoffs/2026-11-02-deepdive-comms.md). Nothing is said that those
+   two files do not say. ===== */
+try{ if(profile==="ian" && state.meta && !state.meta.mig574_re1102 && state.realEstate){
+    var R574=state.realEstate; var D574={};
+    (R574.deals||[]).forEach(function(d){ if(d&&d.id) D574[d.id]=d; });
+    var b=D574["re-belknap-sell"];
+    if(b){
+      b.close="Relist about 5 November 2026";
+      b.rowNote="Relist target Thu 5 Nov, Ian's belief. Chris: live Thursday once the disclosure is done and the new listing agreement is signed.";
+      b.relistTarget="THURSDAY 5 NOVEMBER 2026, Ian's belief (2 November 2026). Chris to the Belknaps, 2 November 11:57: ready to go live Thursday once the property disclosure is done and the Belknaps sign the new listing agreement. No MLS listing and no signed agreement are confirmed yet. Supersedes 'maybe Thursday 19 November' (Ian, 31 October 2026).";
+      b.listStatus="MLS listing CANCELLED 22 October 2026. Relist targeted for Thursday 5 November 2026 (see relistTarget). There is no buyer and no close date.";
+    }
+    var r=D574["re-rstreet-model"];
+    if(r){
+      r.rowNote="Builder floor $650,000. Ian's target $665,000 to $670,000, will not open at $650,000. Showing Fri 6 Nov 10:00 with Lynette. No offers.";
+      r.listingStatus="LIVE LISTING, NO OFFERS, NOT UNDER CONTRACT (Ian, 2 November 2026). List price still $684,900 on the board; the builder floor of $650,000 changes nothing in MLS. Showing Friday 6 November 2026 at 10:00 AM with Lynette and her husband. Open houses continue Saturday and Sunday 12:00 to 4:00.";
+      r.builderFloor={price:650000,source:"Ian, 2 November 2026: the builder will go as low as $650,000",ianTarget:"$665,000 to $670,000",note:"He will not open at $650,000. Nothing is changed in MLS by this.",asOf:"2026-11-02"};
+    }
+    var h=D574["re-hernandez-sell"];
+    if(h){
+      h.pipeStatus="Lists Thursday 12 November 2026 (Ian, 31 October, and again 2 November: lists next week). Close is uncertain: late December 2026 or early January 2027. Ian is cash basis, so the payment date decides which year it is income.";
+    }
+    var w=D574["re-cynthia-willis"];
+    if(w){
+      w.rowNote="Final walkthrough date not set yet. The builder fixed the wood board at no charge (Ian, 2 Nov).";
+    }
+    var m=D574["re-mattox-sell"];
+    if(m){
+      m.rowNote="Closing time not set yet (as of 2 Nov).";
+    }
+    var v=D574["re-vogel-sell"];
+    if(v){
+      v.rowNote="Appraisal report due 11 Nov, seller moves 12 Nov. Walkthrough probably 16 or 17 Nov, per the buyer's agent.";
+      v.appraisalStatus={status:"Report due 11 November 2026",asOf:"2026-11-02",source:"Decoded texts, read 2 November 2026"};
+    }
+    var s=D574["re-silverleaf-howard"];
+    if(s){
+      s.address="19015 Lafayette Ave";
+      s.sub="Seller side, Silver Leaf lot, 19015 Lafayette Ave";
+    }
+    var ev=state.events; if(!Array.isArray(ev)) ev=state.events=[];
+    var hasEv=function(id){ for(var i=0;i<ev.length;i++){ if(ev[i]&&ev[i].id===id) return true; } return false; };
+    if(!hasEv("ev-20261105-belknap-relist")) ev.push({id:"ev-20261105-belknap-relist",date:"2026-11-05",kind:"Real estate",title:"Belknap relist target, 4946 Pratt St",note:"Ian believes it lists this Thursday (2 November 2026). Chris to the Belknaps 2 Nov: ready to go live Thursday once the property disclosure is done and the new listing agreement is signed. Not confirmed by an active MLS listing yet."});
+    if(!hasEv("ev-20261106-lynette-rstreet")) ev.push({id:"ev-20261106-lynette-rstreet",date:"2026-11-06",kind:"Real estate",title:"Showing, 20131 R St, 10:00 AM, Lynette and her husband",note:"Ian, 2 November 2026. Lynette liked Ian's 1 November reply that the builder is motivated to get this one sold."});
+    R574.positionAsOf=R574.positionAsOf||{};
+    R574.positionAsOf.asOf="2026-11-02";
+    state.meta.mig574_re1102=true; save(true);
+    try{ console.log("mig574: real estate rows refreshed to 2 Nov 2026"); }catch(_){}
+} }catch(e){ try{ console.warn("mig574 did not apply:",e&&e.message); }catch(_){} }
 
 
 
