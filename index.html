@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 575 (2026-11-02)">
+<meta name="build" content="v21 build 576 (2026-11-02)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -29559,6 +29559,29 @@ try{ if(profile==="ian" && state.meta && !state.meta.mig575_re1102 && state.real
     state.meta.mig575_re1102=true; save(true);
     try{ console.log("mig575: Mattox walkthrough corrected, commission owner and open house cover recorded"); }catch(_){}
 } }catch(e){ try{ console.warn("mig575 did not apply:",e&&e.message); }catch(_){} }
+
+
+/* ===== v21 build 576: FINANCE PAGE, DEEP DIVE STEP 10, IAN'S 2 NOV ANSWERS (L1102-13) =====
+   Guard state.meta.mig576_fin1102, SEED_VERSION stays 13. Display text only, no figure changes.
+   Source: Ian, 2 November 2026: all business billing and subscriptions moved to the Blue, EXCEPT
+   GPRMLS (waiting on them). Scooter's Coffee 2 Nov: $7.70, business meeting with his dad, already
+   inside the existing business totals. Spicer gift stays about $6,500. ===== */
+try{ if(profile==="ian" && state.meta && !state.meta.mig576_fin1102 && state.finance){
+    var F576=state.finance;
+    var BN576=" BILLING MOVED (Ian, 2 November 2026): all business billing and subscriptions now go on the Blue, except GPRMLS, which is waiting on GPRMLS to change it. Older charges stay as filed.";
+    (F576.cards||[]).forEach(function(c){
+      if(c && c.id==="amexblue"){
+        c.billingMoved={asOf:"2026-11-02",source:"Ian, 2 November 2026",exception:"GPRMLS, waiting on GPRMLS"};
+        if(typeof c.note==="string" && c.note.indexOf("BILLING MOVED")<0) c.note=c.note+BN576;
+      }
+    });
+    var CT576=F576.cardTransition;
+    if(CT576 && typeof CT576.text==="string" && CT576.text.indexOf("BILLING MOVED")<0){
+      CT576.text=CT576.text+BN576;
+    }
+    state.meta.mig576_fin1102=true; save(true);
+    try{ console.log("mig576: Blue billing note recorded"); }catch(_){}
+} }catch(e){ try{ console.warn("mig576 did not apply:",e&&e.message); }catch(_){} }
 
 
 
