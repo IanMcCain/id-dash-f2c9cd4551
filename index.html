@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 574 (2026-11-02)">
+<meta name="build" content="v21 build 575 (2026-11-02)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -29529,6 +29529,36 @@ try{ if(profile==="ian" && state.meta && !state.meta.mig574_re1102 && state.real
     state.meta.mig574_re1102=true; save(true);
     try{ console.log("mig574: real estate rows refreshed to 2 Nov 2026"); }catch(_){}
 } }catch(e){ try{ console.warn("mig574 did not apply:",e&&e.message); }catch(_){} }
+
+
+/* ===== v21 build 575: REAL ESTATE PAGE, DEEP DIVE STEP 10, IAN'S 2 NOV ANSWERS (L1102-13) =====
+   Guard state.meta.mig575_re1102, SEED_VERSION stays 13. Display data only. Source: Ian, 2 November
+   2026 (BRAIN GLOBAL/handoffs/2026-11-02-deepdive-answers.md). Corrects the 31 October line that said
+   the Mattox final walkthrough happened: it has NOT happened yet. ===== */
+try{ if(profile==="ian" && state.meta && !state.meta.mig575_re1102 && state.realEstate){
+    var R575=state.realEstate; var D575={};
+    (R575.deals||[]).forEach(function(d){ if(d&&d.id) D575[d.id]=d; });
+    var AS575="Ian, 2 November 2026";
+    var m=D575["re-mattox-sell"];
+    if(m){
+      m.walkthroughResolved={status:"NOT DONE YET", asOf:"2026-11-02", source:AS575, date:"", time:"",
+        text:"The final walkthrough has NOT happened yet ("+AS575+"). This SUPERSEDES the 31 October line that said it happened and went well. No date and no closing time are set. Closing remains about 13 November 2026."};
+      if(Array.isArray(m.milestonesLeft)&&m.milestonesLeft.length===1&&m.milestonesLeft[0]==="Closing"){
+        m.milestonesLeft=["Final walkthrough","Closing"];
+      }
+      m.rowNote="Final walkthrough NOT done yet. Date and closing time not set (Ian, 2 Nov). Chris handles the Ambassador Title commission verification.";
+      m.commissionVerification={owner:"Chris",status:"With Chris",source:AS575,
+        text:"Ambassador Title asked for commission verification on 19859 Burke St (received 2 Nov 1:44 PM). Chris handles it, not Ian."};
+    }
+    var r=D575["re-rstreet-model"];
+    if(r && typeof r.rowNote==="string" && r.rowNote.indexOf("Chris covers")<0){
+      r.rowNote=r.rowNote+" Chris covers the Sat 7 Nov open house, 12 to 4 (Ian, 2 Nov).";
+    }
+    R575.positionAsOf=R575.positionAsOf||{};
+    R575.positionAsOf.asOf="2026-11-02";
+    state.meta.mig575_re1102=true; save(true);
+    try{ console.log("mig575: Mattox walkthrough corrected, commission owner and open house cover recorded"); }catch(_){}
+} }catch(e){ try{ console.warn("mig575 did not apply:",e&&e.message); }catch(_){} }
 
 
 
