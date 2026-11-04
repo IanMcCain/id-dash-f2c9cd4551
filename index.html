@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 576 (2026-11-02)">
+<meta name="build" content="v21 build 577 (2026-11-03)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -29582,6 +29582,61 @@ try{ if(profile==="ian" && state.meta && !state.meta.mig576_fin1102 && state.fin
     state.meta.mig576_fin1102=true; save(true);
     try{ console.log("mig576: Blue billing note recorded"); }catch(_){}
 } }catch(e){ try{ console.warn("mig576 did not apply:",e&&e.message); }catch(_){} }
+
+
+/* ===== v21 build 577: TWO PICKLEBALL SESSIONS, TUESDAY 3 NOVEMBER 2026 (L1102-1) ========
+   Guard state.meta.mig577_pk1103, SEED_VERSION stays 13. Each record guarded by id.
+   TWO SEPARATE WATCH WORKOUTS, TWO RECORDS. Neither is merged and no day total is stored.
+
+   EVERY NUMBER IS IAN'S OWN APPLE WATCH SCREENSHOT, stored exactly as supplied.
+   MORNING 6:43 to 8:14 AM: 1:31:09, active 810, total 953, avg 123, max 155, min 85 (the low
+   label on the chart), effort 7 Hard.
+   EVENING 4:22 to 6:34 PM: 2:11:28, active 1,160, total 1,366, avg 125, max 161, effort 9 All
+   Out. Two watch segments, 1:18:30 and 52:58, calories 0 on both. The minimum is NOT visible in
+   the screenshot, so minHr is ABSENT, not zero.
+
+   EFFORT IS IAN'S OWN RATING (Ian, 2 Nov 2026: Apple's effort score mixes exertion with his own
+   input and he sets it himself). It is never reconciled against heart rate or calories.
+   No score, opponent or competition level was given, so those stay empty. ===== */
+try{ if(profile==="ian" && state.meta && !state.meta.mig577_pk1103){
+    var AS577="Ian, 3 November 2026";
+    var P577=state.pickleball||(state.pickleball={});
+    if(!Array.isArray(P577.sessions)) P577.sessions=[];
+    if(!P577.sessions.some(function(x){ return x && x.id==="pk-20261103-am"; })){
+      P577.sessions.push({
+        id:"pk-20261103-am", date:"2026-11-03", kind:"Open play, casual", venue:"Omaha",
+        duration:"1h 31m 9s", window:"6:43 to 8:14 AM, Omaha",
+        calories:953, activeCalories:810, avgHr:123, maxHr:155, minHr:85,
+        effort:7, effortLabel:"Hard", effortSource:"Apple Fitness effort score. Ian sets it himself, so it is his rating ("+AS577+").",
+        effortNote:"HIS OWN RATING ("+AS577+"). Never reconciled against heart rate or calories.",
+        result:"", score:"", opponent:"", copyOwned:true,
+        source:"Ian's own Apple Watch screenshot and his own account, "+AS577+".",
+        note:"Tuesday 3 November, morning, Omaha, 6:43 to 8:14 AM. 1:31:09 of workout time. Ian: a chill session, his girlfriend came, a few games taken seriously. No peptides yet. From Apple Watch: avg HR 123, peak 155, low 85, active 810, total 953. Effort 7, Hard, his own rating.",
+        agent:"SEPARATE from the evening session pk-20261103-pm. Every figure is Ian's own Apple Watch screenshot, stored exactly as supplied. Session type was described as casual play with a few games taken seriously, so the kind is open play, casual, and no minute split is stored. No score, opponent or competition level was given. Ian noted that no peptides had been taken yet. No record, superlative or comparison is claimed."
+      });
+    }
+    if(!P577.sessions.some(function(x){ return x && x.id==="pk-20261103-pm"; })){
+      P577.sessions.push({
+        id:"pk-20261103-pm", date:"2026-11-03", kind:"Pickleball", venue:"Omaha",
+        duration:"2h 11m 28s", window:"4:22 to 6:34 PM, Omaha",
+        calories:1366, activeCalories:1160, avgHr:125, maxHr:161,
+        segments:[
+          {type:"Watch segment 1",minutes:null,duration:"1:18:30",note:"Apple Watch segment 1, calories shown as 0. What was played in it was not given."},
+          {type:"Watch segment 2",minutes:null,duration:"52:58",note:"Apple Watch segment 2, calories shown as 0. What was played in it was not given."}
+        ],
+        compositionNote:"ONE watch workout, ONE record, with two watch segments (1:18:30 and 52:58). The screenshot shows 0 calories on both segments, so calories and heart rate are whole workout figures and are not divided. What was played in each segment was not given, so none is stored.",
+        effort:9, effortLabel:"All Out", effortSource:"Apple Fitness effort score. Ian sets it himself, so it is his rating ("+AS577+").",
+        effortNote:"HIS OWN RATING ("+AS577+"). Never reconciled against heart rate or calories.",
+        result:"", score:"", opponent:"", copyOwned:true,
+        source:"Ian's own Apple Watch screenshot and his own account, "+AS577+".",
+        note:"Tuesday 3 November, evening, Omaha, 4:22 to 6:34 PM. 2:11:28 of workout time in two watch segments (1:18:30 and 52:58). Played about 80 minutes after his first MOTS-c dose (3:00 PM, as Ian reported it). From Apple Watch: avg HR 125, peak 161, active 1,160, total 1,366. Effort 9, All Out, his own rating.",
+        agent:"SEPARATE from the morning session pk-20261103-am. Every figure is Ian's own Apple Watch screenshot, stored exactly as supplied. Minimum heart rate is not visible in the screenshot, so it is absent rather than zero. The two watch segments are recorded as durations only. The MOTS-c timing is Ian's own report of when he took it and is context, not a finding about its effect. No score, opponent or competition level was given. No record, superlative or comparison is claimed."
+      });
+    }
+    P577.sessions.sort(function(a,z){ return String(a.date).localeCompare(String(z.date)); });
+    state.meta.mig577_pk1103=true; save(true);
+    try{ console.log("mig577: pk-20261103-am and pk-20261103-pm"); }catch(_){}
+} }catch(e){ try{ console.warn("mig577 did not apply:",e&&e.message); }catch(_){} }
 
 
 
