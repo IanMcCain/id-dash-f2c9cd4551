@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 578 (2026-11-04)">
+<meta name="build" content="v21 build 579 (2026-11-04)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -29671,6 +29671,70 @@ try{ if(profile==="ian" && state.meta && !state.meta.mig578_pk1104){
     state.meta.mig578_pk1104=true; save(true);
     try{ console.log("mig578: pk-20261104-am"); }catch(_){}
 } }catch(e){ try{ console.warn("mig578 did not apply:",e&&e.message); }catch(_){} }
+
+
+/* ===== v21 build 579: FINANCE PAGE, SECOND DEEP DIVE 4 NOV 2026 (L1102-10) ==============
+   Guard state.meta.mig579_fin1104, SEED_VERSION stays 13. Display data only.
+   SOURCES: Rocket Money read 4 Nov 2026 view only (BRAIN ASKED_AND_ANSWERED block APPENDED
+   2026-11-04 L1102-8) and Ledger Update 12 in the Business Expense Log. Balances are listed per
+   account and are never summed. ===== */
+try{ if(profile==="ian" && state.meta && !state.meta.mig579_fin1104 && state.finance){
+    var F579=state.finance;
+    var RM579="Rocket Money, read 4 November 2026, view only.";
+    F579.asOf="2026-11-04";
+    F579.source="Rocket Money read 4 November 2026 (view only) and the 4 November expense ledger. Balances are listed per account and never summed.";
+    (F579.accounts||[]).forEach(function(a){
+      if(!a) return;
+      if(a.id==="fnbo8909"){
+        a.balanceWas={value:1880,asOf:"2026-11-02"};
+        a.balance=370; a.read=370;
+        a.balanceSource=RM579+" SUPERSEDES the 2 November read. Was $1,880. The Discover payment of $1,510.61 posted from this account on 3 November.";
+      }
+      if(a.id==="fnbo1177"){
+        a.balanceSource=RM579+" Unchanged at $175.";
+      }
+    });
+    (F579.cards||[]).forEach(function(c){
+      if(!c) return;
+      if(c.id==="amexgold"){
+        c.balanceWas={value:2267,asOf:"2026-11-02"};
+        c.balance=2339;
+        c.balanceSource=RM579+" SUPERSEDES the 2 November read. Was $2,267.";
+      }
+      if(c.id==="amexblue"){
+        c.balanceWas={value:61,asOf:"2026-11-02"};
+        c.balance=69;
+        c.balanceSource=RM579+" SUPERSEDES the 2 November read. Was $61. $2,000 limit per Ian.";
+      }
+      if(c.id==="discover"){
+        c.balanceWas={value:2222,asOf:"2026-11-02"};
+        c.balance=711;
+        c.balanceSource=RM579+" Account page. SUPERSEDES the 2 November dashboard tile of $2,222.";
+        c.balanceStale="Balance read 4 November 2026 from the Rocket Money account page. The pending list, statement balance and available figure above are older reads and were not refreshed.";
+        c.statementNote="The 3 November payment of $1,510.61 posted from checking 8909 ("+RM579+"). Rocket Money had projected $1,526. Earlier: statement $1,526.39 as at 07.10.2026.";
+        c.lastPayment={date:"2026-11-03",amount:1510.61,from:"fnbo8909",source:RM579};
+        if(Array.isArray(c.payments)){
+          var hasP579=false; c.payments.forEach(function(p){ if(p && p.date==="2026-11-03") hasP579=true; });
+          if(!hasP579) c.payments.push({date:"2026-11-03",amount:1510.61,note:"OBSERVED ACTUAL, posted 3 November from checking 8909 (Rocket Money, read 4 November 2026)."});
+        }
+      }
+    });
+    var LG579=F579.ledger||(F579.ledger={});
+    LG579.asOf="2026-11-04";
+    LG579.source="WORK/Real_Estate/Output/2026 Business Expense Log.md, Ledger Update 12 (4 Nov 2026).";
+    LG579.documented=1971.47; LG579.paid=2235.20; LG579.charges=69;
+    LG579.fuel={charges:9,paid:519.92,deductible:0,note:"Business fuel Ian called. Held out because standard mileage covers it."};
+    LG579.allBusiness={charges:78,paid:2755.12};
+    LG579.askIan={rows:37,amazonRows:8,amazonAmount:667.72};
+    LG579.note="4 November 2026: 69 business charges, $2,235.20 paid, $1,971.47 deductible. Nine business fuel charges ($519.92) are held out because standard mileage covers fuel, so all 78 business charges total $2,755.12. 37 rows wait on Ian, eight of them Amazon ($667.72), and are in no total. Home office is not in it.";
+    if(F579.staleness){
+      F579.staleness.lastHardRead="2026-11-04";
+      F579.staleness.ageAtWrite="0 days, read 4 November 2026";
+      F579.staleness.what="Checking, the buffer and the three cards are the 4 November Rocket Money read. The bike loan was not read.";
+    }
+    state.meta.mig579_fin1104=true; save(true);
+    try{ console.log("mig579: finance balances, Discover payment and business totals refreshed to 4 Nov 2026"); }catch(_){}
+} }catch(e){ try{ console.warn("mig579 did not apply:",e&&e.message); }catch(_){} }
 
 
 
