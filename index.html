@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 579 (2026-11-04)">
+<meta name="build" content="v21 build 580 (2026-11-04)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -29735,6 +29735,48 @@ try{ if(profile==="ian" && state.meta && !state.meta.mig579_fin1104 && state.fin
     state.meta.mig579_fin1104=true; save(true);
     try{ console.log("mig579: finance balances, Discover payment and business totals refreshed to 4 Nov 2026"); }catch(_){}
 } }catch(e){ try{ console.warn("mig579 did not apply:",e&&e.message); }catch(_){} }
+
+
+/* ===== v21 build 580: REAL ESTATE PAGE, SECOND DEEP DIVE 4 NOV 2026 (L1102-10) ==========
+   Guard state.meta.mig580_re1104, SEED_VERSION stays 13. Display data only. Sources: the 4 Nov
+   comms handoff (decoded texts, calendar), the 4 Nov mail cleanup handoff and Ian's own texts.
+   Nothing is said that those files do not say. ===== */
+try{ if(profile==="ian" && state.meta && !state.meta.mig580_re1104 && state.realEstate){
+    var R580=state.realEstate; var D580={};
+    (R580.deals||[]).forEach(function(d){ if(d&&d.id) D580[d.id]=d; });
+    var b=D580["re-belknap-sell"];
+    if(b){
+      b.rowNote="Relist target Thu 5 Nov (Ian, 3 Nov). Chris, 4 Nov: new property disclosure to be finished tonight to go live tomorrow morning.";
+      b.relistTarget="THURSDAY 5 NOVEMBER 2026. Ian's own text of 3 November lists Belknap relisting this Thursday. Chris, 4 November 11:05: the new property disclosure to be finished that night to go live tomorrow morning. Not live until the MLS listing is active.";
+    }
+    var r=D580["re-rstreet-model"];
+    if(r){
+      r.rowNote="Held at $684,900. Ryan, 3 Nov: one more week, then model home only, not for sale, at $730,000. Showing Fri 6 Nov 10:00 with Lynette. Chris covers the Sat 7 Nov open house.";
+      r.ryanPlan={text:"Give it one week, then list it as model home only, not for sale, at $730,000. Ryan refused a last cut to $675,000.",source:"Ryan Beachler, 3 November 2026, per the decoded texts (read 4 November 2026)",asOf:"2026-11-04"};
+    }
+    var k=D580["re-barkers"];
+    if(k){
+      k.close="List date not decided yet";
+      k.listDateNote="List date not decided yet (Ian, 3 November 2026). No date is shown until he picks one.";
+    }
+    var l=D580["re-limoges-sell"];
+    if(l){
+      l.rowNote="Buy side search is live. Showing the Fremont house at $365,000, Wed 4 Nov about 6 PM. A showing, not a deal.";
+    }
+    var m=D580["re-mattox-sell"];
+    if(m){
+      m.rowNote="Final walkthrough NOT done yet. Date and closing time not set. Chris expects it about 11 to 12 Nov. Commission verification is done.";
+      m.commissionVerification={owner:"Chris",status:"Done",source:"Chris to Ambassador Title, 3 and 4 November 2026; Emily Bush, 4 November 9:32 AM: Perfect, thank you",text:"Ambassador Title asked for commission verification on 19859 Burke St (2 Nov 1:44 PM). Chris answered 3 and 4 Nov and it is closed."};
+    }
+    var v=D580["re-vogel-sell"];
+    if(v){
+      v.rowNote="Appraisal report due 11 Nov, seller moves 12 Nov. Walkthrough date not set yet.";
+    }
+    R580.positionAsOf=R580.positionAsOf||{};
+    R580.positionAsOf.asOf="2026-11-04";
+    state.meta.mig580_re1104=true; save(true);
+    try{ console.log("mig580: real estate rows refreshed to 4 Nov 2026"); }catch(_){}
+} }catch(e){ try{ console.warn("mig580 did not apply:",e&&e.message); }catch(_){} }
 
 
 
