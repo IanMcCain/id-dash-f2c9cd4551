@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 582 (2026-11-05)">
+<meta name="build" content="v21 build 583 (2026-11-05)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -29824,6 +29824,34 @@ try{ if(profile==="ian" && state.meta && !state.meta.mig582_belknap1105 && state
     state.meta.mig582_belknap1105=true; save(true);
     try{ console.log("mig582: belknap listing today"); }catch(_){}
 } }catch(e){ try{ console.warn("mig582 did not apply:",e&&e.message); }catch(_){} }
+
+
+/* ===== v21 build 583: PICKLEBALL SESSION, THURSDAY 5 NOVEMBER 2026 MORNING (L1102-1) ======
+   Guard state.meta.mig583_pk1105, SEED_VERSION stays 13. Record guarded by id.
+   Ian's own Apple Watch screenshot as he relayed it: 7:02 to 8:35 AM, 1:33:30, active 1,021,
+   total 1,167, avg 136, max 171, min about 104 (the chart label), effort 9 All Out (his own
+   rating). Warm up, some doubles, most of the burn from a singles match. ===== */
+try{ if(profile==="ian" && state.meta && !state.meta.mig583_pk1105){
+    var AS583="Ian, 5 November 2026";
+    var P583=state.pickleball||(state.pickleball={});
+    if(!Array.isArray(P583.sessions)) P583.sessions=[];
+    if(!P583.sessions.some(function(x){ return x && x.id==="pk-20261105-am"; })){
+      P583.sessions.push({
+        id:"pk-20261105-am", date:"2026-11-05", kind:"Warm up, doubles, singles match", venue:"Omaha",
+        duration:"1h 33m 30s", window:"7:02 to 8:35 AM, Omaha",
+        calories:1167, activeCalories:1021, avgHr:136, maxHr:171, minHr:104,
+        effort:9, effortLabel:"All Out", effortSource:"Apple Fitness effort score. Ian sets it himself, so it is his rating ("+AS583+").",
+        effortNote:"HIS OWN RATING ("+AS583+"). Never reconciled against heart rate or calories.",
+        result:"", score:"", opponent:"", copyOwned:true,
+        source:"Ian's own Apple Watch screenshot and his own account, "+AS583+".",
+        note:"Thursday 5 November, morning, Omaha, 7:02 to 8:35 AM. 1:33:30 of workout time. A warm up, then some doubles, but most of the burn came from a singles match (Ian). From Apple Watch: avg HR 136, peak 171, low about 104 (the chart label), active 1,021, total 1,167. Effort 9, All Out, his own rating. Ian took MOTS-c, 10 units, that morning before the session.",
+        agent:"Every figure is Ian's own Apple Watch screenshot, stored as supplied. The minimum heart rate of 104 is the chart label and is approximate. No minute split of warm up, doubles and singles was given, so none is stored. No singles score, opponent or result was given. The MOTS-c timing is Ian's own report and is context, not a finding about any effect. No record, superlative or comparison is claimed."
+      });
+    }
+    P583.sessions.sort(function(a,z){ return String(a.date).localeCompare(String(z.date)); });
+    state.meta.mig583_pk1105=true; save(true);
+    try{ console.log("mig583: pk-20261105-am"); }catch(_){}
+} }catch(e){ try{ console.warn("mig583 did not apply:",e&&e.message); }catch(_){} }
 
 
 
