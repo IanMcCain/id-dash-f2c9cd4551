@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 581 (2026-11-04)">
+<meta name="build" content="v21 build 582 (2026-11-05)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -29805,6 +29805,25 @@ try{ if(profile==="ian" && state.meta && !state.meta.mig579_pk1104pm){
     state.meta.mig579_pk1104pm=true; save(true);
     try{ console.log("mig579: pk-20261104-pm"); }catch(_){}
 } }catch(e){ try{ console.warn("mig579 did not apply:",e&&e.message); }catch(_){} }
+
+
+/* ===== v21 build 582: BELKNAP LISTS TODAY, THURSDAY 5 NOVEMBER 2026 (L1102-1) ============
+   Guard state.meta.mig582_belknap1105, SEED_VERSION stays 13. Display data only, Belknap row
+   only. Ian confirmed on 5 Nov 2026 that Belknap (4946 Pratt St) lists today. Not claimed:
+   an active MLS listing, a list price change, a buyer or a close date. ===== */
+try{ if(profile==="ian" && state.meta && !state.meta.mig582_belknap1105 && state.realEstate){
+    var D582={};
+    (state.realEstate.deals||[]).forEach(function(d){ if(d&&d.id) D582[d.id]=d; });
+    var b=D582["re-belknap-sell"];
+    if(b){
+      b.close="Listing today 11/5";
+      b.rowNote="Listing today 11/5 (Ian confirmed, 5 Nov). Staging equipment is coming from Vogel's this week.";
+      b.relistTarget="LISTING TODAY, THURSDAY 5 NOVEMBER 2026. Ian confirmed it on 5 November 2026. Supersedes the 3 and 4 November 'target' wording. No buyer and no close date.";
+      b.listStatus="Listing today, Thursday 5 November 2026 (Ian confirmed). The earlier MLS listing was cancelled 22 October 2026. No buyer and no close date.";
+    }
+    state.meta.mig582_belknap1105=true; save(true);
+    try{ console.log("mig582: belknap listing today"); }catch(_){}
+} }catch(e){ try{ console.warn("mig582 did not apply:",e&&e.message); }catch(_){} }
 
 
 
