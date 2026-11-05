@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 583 (2026-11-05)">
+<meta name="build" content="v21 build 584 (2026-11-05)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -29854,6 +29854,108 @@ try{ if(profile==="ian" && state.meta && !state.meta.mig583_pk1105){
 } }catch(e){ try{ console.warn("mig583 did not apply:",e&&e.message); }catch(_){} }
 
 
+/* ===== v21 build 584: NP DODGE CLOSED TRANSACTION REPORTS ARE THE SOURCE OF TRUTH FOR 2026 CLOSED DEALS (L1102-14) ======
+   Guard state.meta.mig584_npdodge, SEED_VERSION stays 13. Records guarded by id.
+   Ian, 5 November 2026: "fix all the numbers and make it look perfect." NP Dodge Closed Transaction Detail By
+   Associate (McCain Ian, 148 Dodge Office, 1 Jan to 31 Oct 2026) owns close date, Ian net, marketing deduction and
+   price for every 2026 closed deal. Net Agent Comm is the figure BEFORE the flat 5.000 percent Marketing Investment;
+   the brokerage nets the Marketing Investment out of the deposit, so it is tracked as its own line and is NOT an
+   expense. Question for his tax guy. Every old value is kept on d.npDodgeBefore, nothing is deleted.
+   NOT CHANGED, FLAGGED: Snyder price ($797,850 stored vs $765,000 implied), Crystal Johnson price ($697,261 vs
+   $577,861), every whiteboard only item. Total 45,894.98 = sum of the 11 rows. ===== */
+try{ if(profile==="ian" && state.meta && !state.meta.mig584_npdodge){
+    var AS584="NP Dodge Closed Transaction report, 1 Jan to 31 Oct 2026 (Ian, 5 November 2026)";
+    var ROWS584=[
+      {id:"re-matt-snyder",     close:"February 27, 2026",        on:"2026-02-27", net:13770.00, mkt:688.50},
+      {id:"re-matt-brandt",     close:"March 23, 2026",           on:"2026-03-23", net:1851.91,  mkt:92.60},
+      {id:"re-ashley-gilliam",  close:"April 22, 2026",           on:"2026-04-22", net:11066.80, mkt:553.34},
+      {id:"re-lynn-parsons",    close:"May 27, 2026",             on:"2026-05-27", net:2377.62,  mkt:118.88},
+      {id:"re-chad-troester-buy",close:"July 2, 2026",            on:"2026-07-02", net:2121.60,  mkt:106.08},
+      {id:"re-spicer-sell",     close:"August 4, 2026 (closed)",  on:"2026-08-04", net:2906.39,  mkt:145.32},
+      {id:"re-michelle-miller", close:"August 11, 2026 (closed)", on:"2026-08-11", net:1682.39,  mkt:84.12},
+      {id:"re-chad-troester",   close:"August 11, 2026 (closed)", on:"2026-08-11", net:2735.52,  mkt:136.78, price:"$434,900"},
+      {id:"re-bonks-sell",      close:"August 21, 2026 (closed)", on:"2026-08-21", net:3825.00,  mkt:191.25},
+      {id:"re-bonks-buy",       close:"August 21, 2026 (closed)", on:"2026-08-21", net:1713.60,  mkt:85.68},
+      {id:"re-belknap-buy",     close:"September 8, 2026",        on:"2026-09-08", net:1844.15,  mkt:92.21}
+    ];
+    var DEALS584=((state.realEstate&&state.realEstate.deals)||[]);
+    var byId584={}; DEALS584.forEach(function(d){ if(d&&d.id) byId584[d.id]=d; });
+    var tot584=0, mkt584=0, n584=0;
+    ROWS584.forEach(function(r){
+      var d=byId584[r.id]; if(!d) return;
+      if(!d.npDodgeBefore) d.npDodgeBefore={ asOf:"2026-11-05", close:d.close, closeOn:d.closeOn||null, price:d.price, actualNet:(typeof d.actualNet==="number")?d.actualNet:null, actualNetSource:d.actualNetSource||null };
+      d.close=r.close; d.closeOn=r.on;
+      if(r.price) d.price=r.price;
+      d.actualNet=r.net; d.paid=true;
+      d.actualNetSource="NP Dodge Closed Transaction report, Net Agent Comm, 1 Jan to 31 Oct 2026 (Ian, 5 November 2026). Supersedes the earlier figure on npDodgeBefore.";
+      d.marketingInvestment=r.mkt;
+      d.marketingInvestmentNote="NP Dodge flat 5.000 percent of Net Agent Comm, netted out of the deposit. Tracked line, not an expense. Question for his tax guy.";
+      d.note=String(d.note||"")+" NP DODGE 5 NOV 2026: close "+r.close.replace(" (closed)","")+", Ian net $"+r.net.toFixed(2)+(r.price?", price "+r.price:"")+". Source of truth for this deal now; earlier close date and figure are kept on npDodgeBefore.";
+      tot584+=r.net; mkt584+=r.mkt; n584++;
+    });
+    var lot584=byId584["re-winchester-lot"];
+    if(lot584){
+      if(!lot584.npDodgeBefore) lot584.npDodgeBefore={ asOf:"2026-11-05", close:lot584.close, price:lot584.price };
+      lot584.price="$210,000"; lot584.close="June 12, 2026"; lot584.closeOn="2026-06-12";
+      lot584.note=String(lot584.note||"")+" NP DODGE 5 NOV 2026: Lot 12 Gruenther Ridge, Deer Hollow, Gretna, $210,000 (was $200,000), closed 12 June 2026. Chris only, Ian 0 percent, no change to Ian's income.";
+    }
+    var sn584=byId584["re-matt-snyder"];
+    if(sn584) sn584.priceFlag="OPEN, FLAGGED FOR IAN 5 Nov 2026, NOT CHANGED: $797,850 stored vs $765,000 implied by the NP Dodge ratio.";
+    var cj584=byId584["re-crystal-johnson"];
+    if(cj584) cj584.priceFlag="OPEN, FLAGGED FOR IAN 5 Nov 2026, NOT CHANGED: board and files disagree ($697,261 vs $577,861). Ian 0 percent, no income effect.";
+    var ok584=(n584===11 && Math.abs(tot584-45894.98)<0.005 && Math.abs(mkt584-2294.76)<0.005);
+
+    var F584=state.finance||(state.finance={});
+    F584.marketingInvestment={ asOf:"2026-10-31", source:AS584, ytd:2294.76, ratePct:5.000, deals:11,
+      what:"Flat 5.000 percent of Net Agent Comm that NP Dodge takes at payout. Already netted out of every deposit.",
+      notAnExpense:true, tracked:"own line", openQuestion:"For his tax guy, not for Ian: is it deductible, and does income report gross or net of it.",
+      deposits:43600.22, netAgentComm:45894.98 };
+    F584.received2026={ asOf:"2026-10-31", source:AS584, total:45894.98, deals:11, supersedes:45810.24, gapToOldFigure:84.74, setAside30:13768.49 };
+    var U584=F584.update21Oct||(F584.update21Oct={});
+    U584.receivedGap={ appFigure:45894.98, bankFigure:43600.22, gap:2294.76, status:"NP DODGE VERIFIED", label:"NP Dodge verified",
+      text:"NP Dodge Closed Transaction reports put 2026 closed income at $45,894.98 across 11 deals (1 Jan to 31 Oct). Bank deposits are $43,600.22. The $2,294.76 difference is the flat 5.000 percent Marketing Investment NP Dodge nets out at payout.",
+      rows:[
+        ["Closed income, NP Dodge","$45,894.98","11 deals, 31 Oct"],
+        ["Marketing Investment","$2,294.76","already in pay"],
+        ["Bank deposits","$43,600.22","11 NP Dodge deposits"],
+        ["30 percent set aside","$13,768.49","of closed income"]],
+      note:"Closed income is NP Dodge Net Agent Comm. The Marketing Investment is a flat 5 percent the brokerage nets out of each deposit. It is its own tracked line, not an expense. Question for the tax guy: is it deductible, and is income reported gross or net of it." };
+    var TE584=F584.taxEstimate;
+    if(TE584 && Array.isArray(TE584.scenarios)){
+      TE584.asOf="2026-11-05";
+      TE584.scenarios.forEach(function(s){
+        if(!s) return;
+        if(s.miles===17500){ s.mileageDeduction=12994; s.netSE=35824; s.se=5062; s.federal=1462; s.nebraska=664; s.total=7188; s.keeps=47678; }
+        if(s.miles===20000){ s.mileageDeduction=14850; s.netSE=33968; s.se=4800; s.federal=1297; s.nebraska=600; s.total=6696; s.keeps=48170; }
+      });
+      TE584.assumedExpenses=5424;
+      TE584.assumedExpensesBasis="10 percent of 2026 commission of $54,241.86 ($45,894.98 NP Dodge closed plus $8,346.88 November closings)";
+      if(typeof TE584.note==="string") TE584.note=TE584.note+" Recomputed 5 Nov 2026 on NP Dodge closed income of $45,894.98.";
+    }
+    var T584=U584.tax;
+    if(T584){
+      T584.asOf="2026-11-05";
+      T584.source="Recomputed 5 Nov 2026 (L1102-14) from _tax_estimate_2026_calc.py on NP Dodge closed income of $45,894.98 plus the three November closings. An estimate, not advice.";
+      T584.income=54242;
+      T584.incomeSub="$45,895 received plus three November closings, $8,347";
+      T584.janTax=8459; T584.decTax=11465;
+      T584.decTaxSub="Hernandez adds $11,016 of income and about $3,006 of tax";
+      T584.janLeft=5814; T584.decLeft=6112;
+      T584.janLeftSub="30 percent set aside $16,273, minus the tax bill, minus the $2,000 tax guy fee";
+      T584.decLeftSub="30 percent set aside $19,577, minus the tax bill, minus the $2,000 fee. $298 more than January";
+    }
+    if(U584.line60k){
+      U584.line60k.text="The $60,000 line is NOT a tax bracket, threshold or QBI boundary. It is only where his 2026 income lands: about $54,200 if Hernandez closes in January, about $65,300 if it closes in December. The date is worth about $300 of tax.";
+      U584.line60k.rows=[["Hernandez closes in January","$54,200","under the line"],["Hernandez closes in December","$65,300","over the line"],["What the date is worth","$300","of tax"]];
+    }
+    if(U584.novemberClosings) U584.novemberClosings.text="Estimate $8,346.88: Vogel $1,982.88, Mattox $2,508.80, Willis $3,855.20. The 30 percent set aside is $2,504.06, leaving $5,842.82. These are on the pre marketing basis, before the 5 percent Marketing Investment. The Spicer gift, about $6,500, is separate and in none of these. Estimates as of 5 November 2026.";
+    state.archive=state.archive||{};
+    state.archive.npDodgeB584={ asOf:"2026-11-05", receivedWas:45810.24, gapWas:2210.02, janTaxWas:8436, decTaxWas:11442, janLeftWas:5811, decLeftWas:6110, incomeWas:54157, note:"Values before build 584. Superseded by NP Dodge Closed Transaction figures, kept as history." };
+    state.meta.mig584_npdodge=true; save(true);
+    try{ console.log("mig584: NP Dodge closed deals applied, deals="+n584+", total="+tot584.toFixed(2)+", marketing="+mkt584.toFixed(2)+", ok="+ok584); }catch(_){}
+} }catch(e){ try{ console.warn("mig584 did not apply:",e&&e.message); }catch(_){} }
+
+
 
 
   /* build 372: LAST THING BEFORE THE SAVE. Every migration above has run, deepMergeDefaults
@@ -39376,7 +39478,7 @@ function fx21Block(b,f){
       else nt(u.line60k.text);
     }
     if(u.receivedGap){
-      fxLabel(b,"Received so far","unreconciled");
+      fxLabel(b,"Received so far",u.receivedGap.label||"unreconciled");
       if(u.receivedGap.rows&&u.receivedGap.rows.length){ rows(b,u.receivedGap.rows); nt(u.receivedGap.note); }
       else nt(u.receivedGap.text);
     }
