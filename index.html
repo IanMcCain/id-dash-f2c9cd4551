@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 580 (2026-11-04)">
+<meta name="build" content="v21 build 581 (2026-11-04)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -29777,6 +29777,34 @@ try{ if(profile==="ian" && state.meta && !state.meta.mig580_re1104 && state.real
     state.meta.mig580_re1104=true; save(true);
     try{ console.log("mig580: real estate rows refreshed to 4 Nov 2026"); }catch(_){}
 } }catch(e){ try{ console.warn("mig580 did not apply:",e&&e.message); }catch(_){} }
+
+
+/* ===== v21 build 581: PICKLEBALL SESSION, WEDNESDAY 4 NOVEMBER 2026 EVENING (L1102-1) =====
+   Guard state.meta.mig579_pk1104pm, SEED_VERSION stays 13. Record guarded by id.
+   Ian's own Apple Watch screenshot as he relayed it: 4:19 to 6:14 PM, 1:54:39, active 1,083,
+   total 1,262, avg 126, max 161, effort 8 Hard (his own rating). All open play. Minimum HR was
+   not given, so minHr is ABSENT, not zero. SEPARATE from the morning record pk-20261104-am. ===== */
+try{ if(profile==="ian" && state.meta && !state.meta.mig579_pk1104pm){
+    var AS579="Ian, 4 November 2026";
+    var P579=state.pickleball||(state.pickleball={});
+    if(!Array.isArray(P579.sessions)) P579.sessions=[];
+    if(!P579.sessions.some(function(x){ return x && x.id==="pk-20261104-pm"; })){
+      P579.sessions.push({
+        id:"pk-20261104-pm", date:"2026-11-04", kind:"Open play", venue:"Omaha",
+        duration:"1h 54m 39s", window:"4:19 to 6:14 PM, Omaha",
+        calories:1262, activeCalories:1083, avgHr:126, maxHr:161,
+        effort:8, effortLabel:"Hard", effortSource:"Apple Fitness effort score. Ian sets it himself, so it is his rating ("+AS579+").",
+        effortNote:"HIS OWN RATING ("+AS579+"). Never reconciled against heart rate or calories.",
+        result:"", score:"", opponent:"", copyOwned:true,
+        source:"Ian's own Apple Watch screenshot and his own account, "+AS579+".",
+        note:"Wednesday 4 November, evening, Omaha, 4:19 to 6:14 PM. 1:54:39 of workout time, all open play. Ian: it went well, no low energy, a little less energy than yesterday. From Apple Watch: avg HR 126, peak 161, active 1,083, total 1,262. Effort 8, Hard, his own rating.",
+        agent:"SEPARATE from the morning session pk-20261104-am. Every figure is Ian's own Apple Watch screenshot, stored as supplied. Minimum heart rate was not given, so it is absent rather than zero. MOTS-c use that day was not stated, so none is recorded. The energy comment is Ian's own account, not a finding. No score, opponent or competition level was given. No record, superlative or comparison is claimed."
+      });
+    }
+    P579.sessions.sort(function(a,z){ return String(a.date).localeCompare(String(z.date)); });
+    state.meta.mig579_pk1104pm=true; save(true);
+    try{ console.log("mig579: pk-20261104-pm"); }catch(_){}
+} }catch(e){ try{ console.warn("mig579 did not apply:",e&&e.message); }catch(_){} }
 
 
 
