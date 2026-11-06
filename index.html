@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 585 (2026-11-06)">
+<meta name="build" content="v21 build 586 (2026-11-06)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -30009,6 +30009,52 @@ try{ if(profile==="ian" && state.meta && !state.meta.mig585_fin1106 && state.fin
     state.meta.mig585_fin1106=true; save(true);
     try{ console.log("mig585: finance balances, Amex offer progress and business totals refreshed to 6 Nov 2026"); }catch(_){}
 } }catch(e){ try{ console.warn("mig585 did not apply:",e&&e.message); }catch(_){} }
+
+
+/* ===== v21 build 586: REAL ESTATE PAGE, GET UP TO DATE PASS 6 NOV 2026 (L1102-10) ==========
+   Guard state.meta.mig586_re1106. Display data only. Source: the 6 Nov texts handoff (decoded
+   texts read 6 Nov 2026) and Ian's brief. Not claimed: which Belknap offer is accepted, any R Street
+   offer, the Willis or Mattox closing time. ===== */
+try{ if(profile==="ian" && state.meta && !state.meta.mig586_re1106 && state.realEstate){
+    var R586=state.realEstate; var D586={};
+    (R586.deals||[]).forEach(function(d){ if(d&&d.id) D586[d.id]=d; });
+    var b=D586["re-belknap-sell"];
+    if(b){
+      b.stage="Active";
+      b.close="Live now";
+      b.rowNote="Live Thu 5 Nov. Two offers: Lee Maran's conventional buyer and Habitat for Humanity of Omaha, cash. Habitat's proof of funds due Fri 6 Nov.";
+      b.relistTarget="LIVE, THURSDAY 5 NOVEMBER 2026. Two offers are in: a conventional buyer from Lee Maran and a cash offer from Habitat for Humanity of Omaha (through Blessing Kyaw, proof of funds due 6 November). Which offer the sellers accept is not recorded.";
+      b.listStatus="Live Thursday 5 November 2026. Two offers, none recorded as accepted. The earlier MLS listing was cancelled 22 October 2026.";
+    }
+    var w=D586["re-cynthia-willis"];
+    if(w){
+      w.rowNote="Final walkthrough Thu 12 Nov, 9:00 AM. Closing Fri 13 Nov by DocuSign, time not set. The builder fixed the wood board at no charge (Ian, 2 Nov).";
+    }
+    var sp=D586["re-allison-spicer-buy"];
+    if(sp){
+      var oldSp=String(sp.riskLine||"");
+      if(oldSp.indexOf("8:00 AM")<0) sp.riskLine="Closing Fri 13 Nov, 8:00 AM. "+(oldSp||"Income to Ian is modeled at zero.");
+    }
+    var l=D586["re-limoges-sell"];
+    if(l){
+      l.rowNote="Buy side search, capped at $450,000. Showings Fri 6 Nov: Wahoo 12:30 PM and Fremont 1:45 PM. Showings, not a deal.";
+    }
+    var r=D586["re-rstreet-model"];
+    if(r){
+      r.rowNote="Held at $684,900. Ryan, 3 Nov: one more week, then model home only at $730,000. Brody and Amanda out (5 Nov), Siva still considering. Lynette showing Fri 6 Nov 10:00. Chris covers the Sat 7 Nov open house.";
+    }
+    var m=D586["re-mattox-sell"];
+    if(m){
+      m.rowNote="Final walkthrough NOT done yet. Date and closing time not set. MUD service order Fri 13 Nov, 9 to 5. Commission verification is done.";
+    }
+    var ev=state.events; if(!Array.isArray(ev)) ev=state.events=[];
+    var hasEv=function(id){ for(var i=0;i<ev.length;i++){ if(ev[i]&&ev[i].id===id) return true; } return false; };
+    if(!hasEv("ev-20261112-willis-walk")) ev.push({id:"ev-20261112-willis-walk",date:"2026-11-12",kind:"Real estate",title:"Willis final walkthrough, 9:00 AM",note:"Per the decoded texts, 6 November 2026. Closing Fri 13 Nov by DocuSign, time not set."});
+    R586.positionAsOf=R586.positionAsOf||{};
+    R586.positionAsOf.asOf="2026-11-06";
+    state.meta.mig586_re1106=true; save(true);
+    try{ console.log("mig586: real estate rows refreshed to 6 Nov 2026"); }catch(_){}
+} }catch(e){ try{ console.warn("mig586 did not apply:",e&&e.message); }catch(_){} }
 
 
 
