@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 584 (2026-11-05)">
+<meta name="build" content="v21 build 585 (2026-11-06)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -29956,6 +29956,61 @@ try{ if(profile==="ian" && state.meta && !state.meta.mig584_npdodge){
 } }catch(e){ try{ console.warn("mig584 did not apply:",e&&e.message); }catch(_){} }
 
 
+/* ===== v21 build 585: FINANCE PAGE, GET UP TO DATE PASS 6 NOV 2026 (L1102-10) ==============
+   Guard state.meta.mig585_fin1106. Display data only. SOURCES: Rocket Money read 6 Nov 2026 view
+   only, Ledger Update 13 in the Business Expense Log, and the Amex app figures Ian gave on 5 Nov.
+   Balances are listed per account and never summed. ===== */
+try{ if(profile==="ian" && state.meta && !state.meta.mig585_fin1106 && state.finance){
+    var F585=state.finance;
+    var RM585="Rocket Money, read 6 November 2026, view only.";
+    F585.asOf="2026-11-06";
+    F585.source="Rocket Money read 6 November 2026 (view only) and the 6 November expense ledger. Balances are listed per account and never summed.";
+    (F585.accounts||[]).forEach(function(a){
+      if(!a) return;
+      if(a.id==="fnbo8909"){
+        a.balanceWas={value:370,asOf:"2026-11-04"};
+        a.balance=334; a.read=334;
+        a.balanceSource=RM585+" SUPERSEDES the 4 November read. Was $370.";
+      }
+      if(a.id==="fnbo1177"){ a.balanceSource=RM585+" Unchanged at $175."; }
+    });
+    (F585.cards||[]).forEach(function(c){
+      if(!c) return;
+      if(c.id==="amexgold"){
+        c.balanceWas={value:2339,asOf:"2026-11-04"};
+        c.balance=2365;
+        c.balanceSource=RM585+" Matches the Amex app, $2,365.23. SUPERSEDES the 4 November read. Was $2,339.";
+        c.offerNote="Welcome offer: $2,906 of $8,000 spent. Earns 100,000 points if met by Mar 20, 2027.";
+        c.pointsNote="Membership Rewards (Amex app, 5 Nov): 1,740 posted, 4,769 pending.";
+      }
+      if(c.id==="amexblue"){
+        c.balanceWas={value:69,asOf:"2026-11-04"};
+        c.balance=126;
+        c.balanceSource=RM585+" Matches the Amex app, $125.82. SUPERSEDES the 4 November read. Was $69.";
+        c.offerNote="Welcome offer: $68 of $5,000 spent. Earns 15,000 points if met by Jan 21, 2027.";
+      }
+      if(c.id==="discover"){
+        c.balanceSource=RM585+" Unchanged at $711 since 4 November.";
+      }
+    });
+    var LG585=F585.ledger||(F585.ledger={});
+    LG585.asOf="2026-11-06";
+    LG585.source="WORK/Real_Estate/Output/2026 Business Expense Log.md, Ledger Update 13 (6 Nov 2026).";
+    LG585.documented=2120.61; LG585.paid=2384.34; LG585.charges=72;
+    LG585.fuel={charges:10,paid:574.39,deductible:0,note:"Business fuel Ian called. Held out because standard mileage covers it."};
+    LG585.allBusiness={charges:82,paid:2958.73};
+    LG585.askIan={rows:39,amazonRows:8,amazonAmount:667.72};
+    LG585.note="6 November 2026: 72 business charges, $2,384.34 paid, $2,120.61 deductible. Ten business fuel charges ($574.39) are held out because standard mileage covers fuel, so all 82 business charges total $2,958.73. 39 rows wait on Ian and are in no total. Claude and Supra now bill to the Blue. GPRMLS stays on checking 8909. Home office is not in it.";
+    if(F585.staleness){
+      F585.staleness.lastHardRead="2026-11-06";
+      F585.staleness.ageAtWrite="0 days, read 6 November 2026";
+      F585.staleness.what="Checking, the buffer and the three cards are the 6 November Rocket Money read. The bike loan was not read.";
+    }
+    state.meta.mig585_fin1106=true; save(true);
+    try{ console.log("mig585: finance balances, Amex offer progress and business totals refreshed to 6 Nov 2026"); }catch(_){}
+} }catch(e){ try{ console.warn("mig585 did not apply:",e&&e.message); }catch(_){} }
+
+
 
 
   /* build 372: LAST THING BEFORE THE SAVE. Every migration above has run, deepMergeDefaults
@@ -39669,6 +39724,8 @@ function fxBandCash(v,f){
       else if(ml>0){ item.appendChild(fxScale(ml,bal,over,0)); item.appendChild(fxScaleKey(ml,0,null,fnMoney(ml)+" a month"));
         if(a.monthlyLimitProvisional===true) item.appendChild(el("div","fx-cap","Awaiting your confirmation"));
         if(a.spendDeliberate===true) item.appendChild(el("div","fx-cap","Deliberate target, signup bonus")); }
+      if(a.offerNote) item.appendChild(el("div","fx-cap",a.offerNote));
+      if(a.pointsNote) item.appendChild(el("div","fx-cap",a.pointsNote));
       cc.appendChild(item);
     });
     band.appendChild(cc);
