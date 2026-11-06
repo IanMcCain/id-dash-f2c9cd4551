@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 587 (2026-11-06)">
+<meta name="build" content="v21 build 588 (2026-11-06)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -30075,6 +30075,25 @@ try{ if(profile==="ian" && state.meta && !state.meta.mig587_fin1106b && state.fi
 } }catch(e){ try{ console.warn("mig587 did not apply:",e&&e.message); }catch(_){} }
 
 
+
+
+/* ===== v21 build 588: FINANCE PAGE, LEDGER UPDATE 15, 6 NOV 2026 (L1102-14) ==============
+   Guard state.meta.mig588_fin1106c. Display data only. Source: Ian's Amazon Y/N answers of 6 Nov 2026
+   and his Insta360 rule (X series cameras and accessories business 100 percent, anything for the Ace Pro 2
+   personal, except the Ace Pro 2 dual charger which stays business), Business Expense Log Ledger Update 15.
+   Not tax advice. ===== */
+try{ if(profile==="ian" && state.meta && !state.meta.mig588_fin1106c && state.finance){
+    var LG588=(state.finance.ledger||(state.finance.ledger={}));
+    LG588.asOf="2026-11-06";
+    LG588.source="WORK/Real_Estate/Output/2026 Business Expense Log.md, Ledger Update 15 (6 Nov 2026).";
+    LG588.documented=2563.37; LG588.paid=2854.85; LG588.charges=85;
+    LG588.fuel={charges:10,paid:574.39,deductible:0,note:"Business fuel Ian called. Held out because standard mileage covers it."};
+    LG588.allBusiness={charges:95,paid:3429.24};
+    LG588.askIan={rows:29,amazonRows:0,amazonAmount:0};
+    LG588.note="6 November 2026: 85 business charges, $2,854.85 paid, $2,563.37 deductible. Ten business fuel charges ($574.39) are held out because standard mileage covers fuel, so all 95 business charges total $3,429.24. 29 rows wait on Ian and are in no total. Ian's Amazon answers are applied: the Y items are business at 100 percent, two phone accessories are 50 percent business, and the Ace Pro 2 camera, a carry case, a gift and a sock purchase are personal. Insta360 X series items are business, Ace Pro 2 items are personal, except the Ace Pro 2 dual charger. Home office is not in it. NP Dodge 5 percent Marketing Investment is already netted from pay and is a question for the tax person.";
+    state.meta.mig588_fin1106c=true; save(true);
+    try{ console.log("mig588: finance ledger refreshed to Update 15"); }catch(_){}
+} }catch(e){ try{ console.warn("mig588 did not apply:",e&&e.message); }catch(_){} }
 
 
   /* build 372: LAST THING BEFORE THE SAVE. Every migration above has run, deepMergeDefaults
