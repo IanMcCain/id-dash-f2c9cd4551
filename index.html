@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 586 (2026-11-06)">
+<meta name="build" content="v21 build 587 (2026-11-06)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -30055,6 +30055,24 @@ try{ if(profile==="ian" && state.meta && !state.meta.mig586_re1106 && state.real
     state.meta.mig586_re1106=true; save(true);
     try{ console.log("mig586: real estate rows refreshed to 6 Nov 2026"); }catch(_){}
 } }catch(e){ try{ console.warn("mig586 did not apply:",e&&e.message); }catch(_){} }
+
+
+/* ===== v21 build 587: FINANCE PAGE, LEDGER UPDATE 14, 6 NOV 2026 (L1102-10) ==============
+   Guard state.meta.mig587_fin1106b. Display data only. Source: Ian's answers of 6 Nov 2026 on
+   Starbucks $17.56 (business meal, Hernandez clients, 50 percent) and Michael's $64.17 (staging,
+   100 percent), Business Expense Log Ledger Update 14. Both charges are pending. ===== */
+try{ if(profile==="ian" && state.meta && !state.meta.mig587_fin1106b && state.finance){
+    var LG587=(state.finance.ledger||(state.finance.ledger={}));
+    LG587.asOf="2026-11-06";
+    LG587.source="WORK/Real_Estate/Output/2026 Business Expense Log.md, Ledger Update 14 (6 Nov 2026).";
+    LG587.documented=2193.56; LG587.paid=2466.07; LG587.charges=74;
+    LG587.fuel={charges:10,paid:574.39,deductible:0,note:"Business fuel Ian called. Held out because standard mileage covers it."};
+    LG587.allBusiness={charges:84,paid:3040.46};
+    LG587.askIan={rows:37,amazonRows:8,amazonAmount:667.72};
+    LG587.note="6 November 2026: 74 business charges, $2,466.07 paid, $2,193.56 deductible. Ten business fuel charges ($574.39) are held out because standard mileage covers fuel, so all 84 business charges total $3,040.46. 37 rows wait on Ian and are in no total. Business meals count at 50 percent. Home office is not in it.";
+    state.meta.mig587_fin1106b=true; save(true);
+    try{ console.log("mig587: finance ledger refreshed to Update 14"); }catch(_){}
+} }catch(e){ try{ console.warn("mig587 did not apply:",e&&e.message); }catch(_){} }
 
 
 
