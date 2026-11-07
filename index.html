@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 590 (2026-11-07)">
+<meta name="build" content="v21 build 591 (2026-11-07)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -30137,6 +30137,44 @@ try{ if(profile==="ian" && state.meta && !state.meta.mig589_fin1107 && state.fin
     state.meta.mig589_fin1107=true; save(true);
     try{ console.log("mig589: finance balances refreshed to 7 Nov 2026"); }catch(_){}
 } }catch(e){ try{ console.warn("mig589 did not apply:",e&&e.message); }catch(_){} }
+
+
+/* ===== v21 build 591: REAL ESTATE PAGE, DEEP DIVE 3, 7 NOV 2026 (L1102-10) ==============
+   Guard state.meta.mig591_re1107. Display data only. Sources: the 6 Nov evening texts handoff (decoded
+   texts, read 6 Nov 2026 to 7:47 PM) and Ian's 7 Nov brief. Not claimed: Belknap's price or close
+   date, the Lynette showing result, any R Street offer, a Fisher listing price, beds, baths or sqft. ===== */
+try{ if(profile==="ian" && state.meta && !state.meta.mig591_re1107 && state.realEstate){
+    var R590=state.realEstate; var D590={};
+    (R590.deals||[]).forEach(function(d){ if(d&&d.id) D590[d.id]=d; });
+    var b=D590["re-belknap-sell"];
+    if(b){
+      b.stage="Under Contract";
+      b.close="Close date not set";
+      b.rowNote="Under contract Fri 6 Nov, a cash offer. Signed acceptance 2:13 PM, deadline addendum signed 7:44 PM. Price and close date not in the texts yet.";
+      b.relistTarget="UNDER CONTRACT, FRIDAY 6 NOVEMBER 2026. Live Thursday 5 November, two offers, the sellers accepted a cash offer on 6 November (Chris, texts). Signed acceptance back 2:13 PM. The signed counter came 5 minutes after the 1:00 PM deadline, so an extension addendum was signed back 7:44 PM. Price and close date are not recorded.";
+      b.listStatus="Under contract Friday 6 November 2026 (cash offer). Price and close date not recorded.";
+    }
+    var r=D590["re-rstreet-model"];
+    if(r){
+      r.rowNote="Held at $684,900. Ryan, 3 Nov: one more week, then model home only at $730,000. Siva out, Brody and Amanda out (6 Nov). No result yet on the Lynette showing. Chris covers the Sat 7 Nov open house.";
+    }
+    var l=D590["re-limoges-sell"];
+    if(l){
+      l.rowNote="Buy side, capped at $450,000. Showings Fri 6 Nov, Wahoo and Fremont, another Fremont house Tue. Sell side, 3129 S 17th St: pre inspection proposed week of 16 Nov, no day picked.";
+    }
+    var h=D590["re-hernandez-sell"];
+    if(h){
+      var oldH=String(h.rowNote||"");
+      if(oldH.indexOf("staging")<0) h.rowNote=(oldH?oldH+" ":"")+"Staging about two days, aim to finish by end of Mon 9 Nov. Sellers still clearing the house.";
+    }
+    var ev=state.events; if(!Array.isArray(ev)) ev=state.events=[];
+    var hasEv=function(id){ for(var i=0;i<ev.length;i++){ if(ev[i]&&ev[i].id===id) return true; } return false; };
+    if(!hasEv("ev-20261113-fisher-consult")) ev.push({id:"ev-20261113-fisher-consult",date:"2026-11-13",kind:"Real estate",title:"Home consultation, Danielle Fisher, 3:30 PM, 18845 Jacobs Cir",note:"On the calendar. CMA anchor $274,900 (Ian, 7 November 2026). Beds, baths and square feet are not on file."});
+    R590.positionAsOf=R590.positionAsOf||{};
+    R590.positionAsOf.asOf="2026-11-07";
+    state.meta.mig591_re1107=true; save(true);
+    try{ console.log("mig591: real estate rows refreshed to 7 Nov 2026"); }catch(_){}
+} }catch(e){ try{ console.warn("mig591 did not apply:",e&&e.message); }catch(_){} }
 
 
   /* build 372: LAST THING BEFORE THE SAVE. Every migration above has run, deepMergeDefaults
