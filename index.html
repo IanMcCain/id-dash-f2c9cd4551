@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 593 (2026-11-08)">
+<meta name="build" content="v21 build 594 (2026-11-08)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -30215,6 +30215,92 @@ try{ if(profile==="ian" && state.meta && !state.meta.mig593_pk1108 && state.pick
 } }catch(e){ try{ console.warn("mig593 did not apply:",e&&e.message); }catch(_){} }
 
 
+/* ===== v21 build 594: REAL ESTATE PAGE, DEEP DIVE 4, 8 NOV 2026 (APP-DD4-1108) ==============
+   Guard state.meta.mig594_re1108. Display data only, every value from BRAIN/Real_Estate/Context/01_MASTER_CONTEXT.md
+   blocks "7 NOV 2026", "8 NOV 2026", "8 NOV 2026 LATER", "8 NOV 2026, ONYX NAMES", "8 NOV 2026 EVENING" and
+   "8 NOV 2026, TEXTS". Not claimed: a Limoges price, share or date, a Barker list or close date, any split for
+   the new prospects, the Creighton prospect's name. No risk state is written on any deal. ===== */
+try{ if(profile==="ian" && state.meta && !state.meta.mig594_re1108 && state.realEstate){
+    var R594=state.realEstate; if(!Array.isArray(R594.deals)) R594.deals=[];
+    var D594={}; R594.deals.forEach(function(d){ if(d&&d.id) D594[d.id]=d; });
+    var b=D594["re-belknap-sell"];
+    if(b){
+      b.priceWas594=b.price; b.closeWas594=b.close;
+      b.price="$250,000"; b.close="Closes 25 November 2026"; b.closeOn="2026-11-25";
+      b.sub="Sell side, 4946 Pratt St";
+      b.priceLine="$250,000, full list, cash. Contract accepted 6 November 2026 (DotLoop loop 332257679).";
+      b.closeNote="Closes Wednesday 25 November 2026, Professional Title Company (purchase agreement).";
+      if(b.contract && !b.contractWas594) b.contractWas594=b.contract;
+      b.contract={executed:"2026-11-06",price:"$250,000",buyer:"Cydney Franklin. Habitat for Humanity of Omaha is purchasing on her behalf.",
+        buyerAgent:"Blessing Kyaw, BHHS Ambassador Real Estate",loanType:"Cash, no financing, no sale contingency",
+        title:"Professional Title Company, file PTC2608296",closingDate:"2026-11-25",contingency:"Whole home inspection",
+        appraisal:"None, cash",mls:"22631635",source:"DotLoop loop 332257679, read 7 November 2026"};
+      if(b.earnest && !b.earnestWas594) b.earnestWas594=b.earnest;
+      b.earnest={status:"RECEIVED",amount:2500,asOf:"2026-11-06",text:"$2,500 by wire from Habitat for Humanity of Omaha, received 6 November 2026 by Professional Title Company."};
+      b.milestonesLeft=["Whole home inspection","Closing Wednesday 25 November 2026"];
+      if(b.pipeClog){ b.pipeClogWas594=b.pipeClog; delete b.pipeClog; }
+      b.pipeStatus="Under contract at $250,000 cash, accepted 6 November 2026. Buyer Cydney Franklin, Habitat for Humanity of Omaha purchasing on her behalf. Closes Wednesday 25 November, Professional Title Company. Whole home inspection contingency, no appraisal.";
+      b.stageSince="2026-11-06"; b.stageSinceSource="Acceptance 6 November 2026 (DotLoop loop 332257679).";
+      b.listStatus="Under contract 6 November 2026 at $250,000 cash. Closes 25 November 2026.";
+      b.relistTarget="UNDER CONTRACT, 6 NOVEMBER 2026, $250,000 CASH. Listed 5 November 2026 (MLS 22631635). Buyer Cydney Franklin, Habitat for Humanity of Omaha purchasing on her behalf. Earnest $2,500 received 6 November. Closes 25 November 2026, Professional Title Company. The prior contract (MLS 22629768) fell through.";
+      b.rowNote="Under contract at $250,000 cash. Buyer Cydney Franklin, via Habitat for Humanity of Omaha. Closes Wed 25 Nov. Inspection contingency, no appraisal.";
+    }
+    var sn=D594["re-matt-snyder"];
+    if(sn && sn.priceFlag){ sn.priceFlagWas594=sn.priceFlag; sn.priceFlag="CLOSED 7 Nov 2026 by Ian: $797,850 is correct. The $765,000 implied figure is superseded."; }
+    var bk=D594["re-barkers"];
+    if(bk){
+      bk.closeWas594=bk.close;
+      bk.close="Likely lists Thu 19 Nov, not confirmed";
+      bk.listDateNote="Likely Thursday 19 November 2026 (Ian, 7 November 2026). Tentative, not confirmed, not on the calendar. No close date exists; December is a guess.";
+      bk.ianExpected="About $1,000 gross to Ian (Ian, 8 November 2026, a price similar to Belknap). The app's figure is computed from the $289,900 on the record.";
+      bk.rowNote="Likely lists Thu 19 Nov, not confirmed. Ian expects about $1,000 gross. No close date.";
+    }
+    var h=D594["re-hernandez-sell"];
+    if(h){ h.rowNoteWas594=h.rowNote;
+      h.rowNote="Close estimated late December, possibly early January. Staged most of 8 Nov, Ricky has minor touch ups. Ian is 90 percent sure it lists Thu 12 Nov."; }
+    var rs=D594["re-rstreet-model"];
+    if(rs){ rs.rowNoteWas594=rs.rowNote;
+      rs.modelNotExpected={asOf:"2026-11-08",source:"Ian, 8 November 2026",text:"Now a model, still for sale but mainly used to sell other homes. Removed from expected income. List stays $684,900."};
+      rs.rowNote="Model now, mainly used to sell other homes (Ian, 8 Nov). Still for sale at $684,900. Not in expected income."; }
+    var sl=D594["re-silverleaf-howard"];
+    if(sl){
+      sl.priceWas594=sl.price; if(sl.priceRange) sl.priceRangeWas594=sl.priceRange;
+      sl.price="$900,000"; sl.priceEstimate=true;
+      sl.priceEstimateNote="About $900,000 (Ian, 8 November 2026). Supersedes the $1.1M to $1.2M Ryan Beachler figure of 21 October.";
+      sl.priceRange={low:900000,high:900000,firmNumber:false,source:"Ian, 8 November 2026: about $900,000."};
+      sl.structure2027=true;
+      sl.takeHome="$6,480.00 gross to Ian at about $900,000: 3.6 percent is $32,400, no 15 percent cut under the 2027 structure, Ian 20 percent. $4,536.00 after the 30 percent set aside. Less the assumed 5 percent marketing, $6,156.00, and $4,212.00 spendable after setting aside 30 percent of gross. Paid toward the end of 2027.";
+      sl.rowNote="About $900,000, 2027 structure, Ian 20 percent. Lot deposit in hand. In no 2026 figure.";
+    }
+    var lm=D594["re-limoges-sell"];
+    if(lm){ lm.rowNoteWas594=lm.rowNote;
+      lm.rowNote="Likely a sell and a buy, no prices yet. Showings Mon 9 and Tue 10 Nov, 5 of 6 confirmed, Waverly pending. Upside to Ian $2,500 to $4,000 total, timing unknown."; }
+    var wl=D594["re-cynthia-willis"];
+    if(wl && String(wl.rowNote||"").indexOf("handrail")<0) wl.rowNote=String(wl.rowNote||"")+" Handrail and drywall repair: Don meets Chris Mon 9 Nov about 8:30 AM, Byron pays.";
+    var sp=D594["re-allison-spicer-buy"];
+    if(sp && !sp.rowNote) sp.rowNote="Allison drops off the mirrors Mon 9 Nov.";
+    var add594=function(rec){ if(!D594[rec.id]){ R594.deals.push(rec); D594[rec.id]=rec; } };
+    add594({id:"re-limoges-buy",title:"Limoges",sub:"Buy side, the showing search",stage:"Prospecting",side:"Buyer",source:"Ian's own",price:"",close:"Timing unknown",copyOwned:true,
+      note:"CREATED 8 NOVEMBER 2026 (master context block 8 NOV 2026, section 3): Limoges are LIKELY a sell and a buy, two deals, not certain. The sell side is re-limoges-sell. No price, share, probability or close date was given, so none is stored."});
+    add594({id:"re-dom-sanchez-buy",title:"Dom Sanchez",sub:"Buyer, Onyx coworker",stage:"Prospecting",side:"Buyer",source:"Ian's own",price:"$275,000 to $300,000",close:"Early to mid 2027",structure2027:true,copyOwned:true,
+      note:"CREATED 8 NOVEMBER 2026 (Ian, master context block 8 NOV 2026, ONYX NAMES): Onyx coworker, buyer, $275,000 to $300,000, early to mid 2027, the more reliable of the two. Ian works him himself. No split stated. On the November touch list."});
+    add594({id:"re-caden-boyers-buy",title:"Caden Boyers",sub:"Group buy with 4 friends",stage:"Prospecting",side:"Buyer",source:"Ian's own",price:"",close:"Anytime in 2027",structure2027:true,copyOwned:true,
+      winProb:0.5,winProbSource:"IAN",winProbAsOf:"2026-11-08",
+      note:"CREATED 8 NOVEMBER 2026 (Ian, master context block 8 NOV 2026, ONYX NAMES): Onyx coworker, a group purchase with 4 friends, anytime in 2027, 50/50 odds (Ian). May rent instead. Potentially 2 deals. Ian works him himself. No price or split stated."});
+    add594({id:"re-creighton-buy",title:"Creighton referral",sub:"Buyer via Ian's mom, log only",stage:"Prospecting",side:"Buyer",price:"",close:"Around the end of 2026",copyOwned:true,
+      note:"LOGGED 8 NOVEMBER 2026 (Ian, master context block 8 NOV 2026 EVENING): a woman at Creighton, through Ian's mom, interested in buying around the end of 2026. Name not given. LOG ONLY, NO OUTREACH: Ian is calling his mom himself. Source and share not stated, so none is stored."});
+    var sph=R594.sphere; if(!Array.isArray(sph)) sph=R594.sphere=[];
+    var hasS=function(id){ for(var i=0;i<sph.length;i++){ if(sph[i]&&sph[i].id===id) return true; } return false; };
+    if(!hasS("sph-dom-sanchez")) sph.push({id:"sph-dom-sanchez",name:"Dom Sanchez",type:"Sphere",phone:"",lastContacted:"",
+      note:"Onyx coworker. Buyer, $275,000 to $300,000, early to mid 2027, the more reliable of the two (Ian, 8 November 2026). On the November touch list. Ian works him himself. Deal re-dom-sanchez-buy."});
+    if(!hasS("sph-caden-boyers")) sph.push({id:"sph-caden-boyers",name:"Caden Boyers",type:"Sphere",phone:"",lastContacted:"",
+      note:"Onyx coworker. Group purchase with 4 friends, anytime in 2027, 50/50 (Ian, 8 November 2026). May rent instead, potentially 2 deals. On the November touch list. Ian works him himself. Deal re-caden-boyers-buy."});
+    R594.positionAsOf=R594.positionAsOf||{}; R594.positionAsOf.asOf="2026-11-08";
+    state.meta.mig594_re1108=true; save(true);
+    try{ console.log("mig594: real estate rows refreshed to 8 Nov 2026"); }catch(_){}
+} }catch(e){ try{ console.warn("mig594 did not apply:",e&&e.message); }catch(_){} }
+
+
   /* build 372: LAST THING BEFORE THE SAVE. Every migration above has run, deepMergeDefaults
      has run, so this is the only point in the file where the state is actually final. */
   try{ convergeState(); }catch(e){}
@@ -31067,7 +31153,10 @@ function dealGrossCommission(d){ if(dealSource(d)==="Dual agency"){ var _full=pr
    on 3.6 now, $2,646.00 either way. DUAL AGENCY IS UNTOUCHED, separate branch, fixed 6 percent
    basis. Rachel Jenkins at 5.0 percent would have moved and is removed from the board in this
    same build, so she is not in the count. */
-function dealBrokerage(d){ if(dealSource(d)==="Dual agency"){ var _fee=priceNum(d&&d.price)*RE_RATES.brokerage*RE_RATES.dualBrokerageBasis; return (dealSide(d)==="Both")?_fee:_fee/2; } return priceNum(d&&d.price) * dealStandardRate(d) * RE_RATES.brokerage; }
+/* build 594: THE 2027 STRUCTURE (Ian, 8 Nov 2026, master context block "8 NOV 2026", section 4): 2027 is 100 percent
+   team and a $30,000 lump sum replaces the 15 percent brokerage split, so a deal flagged structure2027 carries no
+   per deal brokerage cut. PER DEAL FLAG, NOT A DATE RULE: set only where a BRAIN source applies it to that deal. */
+function dealBrokerage(d){ if(d&&d.structure2027===true) return 0; if(dealSource(d)==="Dual agency"){ var _fee=priceNum(d&&d.price)*RE_RATES.brokerage*RE_RATES.dualBrokerageBasis; return (dealSide(d)==="Both")?_fee:_fee/2; } return priceNum(d&&d.price) * dealStandardRate(d) * RE_RATES.brokerage; }
 /* v21 build 233: AN ACTUAL PAID FIGURE ALWAYS BEATS THE MODEL. If a deal carries actualNet,
    that is what Ian was really paid and it is returned unchanged. The computed path is only a
    fallback for deals with no actual yet. This exists because the Spicer sale paid $2,770 against
@@ -31378,7 +31467,7 @@ function dealEditors(parent,d){
   if(dealSource(d)==="Dual agency"){ const rLab=el("div","small muted","Dual commission rate, aim 6%, as low as 5% to make a deal"); rLab.style.marginTop="10px"; parent.appendChild(rLab); parent.appendChild(chipRowKV([["5%",0.05],["6%",0.06]], dualRate(d), function(v){ d.dualRate=v; save(); render(); })); const rNote=el("div","small dim"); rNote.style.marginTop="4px"; rNote.textContent="Current rate "+(+(dualRate(d)*100).toFixed(2))+"%"+(dualRate(d)<0.05?" (locked one-time exception)":""); parent.appendChild(rNote); }
   const inc=el("div","small dim"); inc.style.marginTop="9px"; inc.style.lineHeight="1.55"; /* v21 build 285: NO PRICE MEANS NO NUMBER. Ian, 08.13.2026. priceNum returns 0 for an empty price, so this line used to render a confident "Est. your take home $0" on every prospect with no price yet, which reads as a derived figure rather than a missing one. The deal ROW already guarded this with if(_tn>0); the editor did not. Say the price is missing, and name the split that WOULD apply so a wrong source is visible before a price is ever typed. */ if(dealShareUnset(d)){ inc.innerHTML="Commission rate and your share are <b>not set</b> for this source, so no income estimate is shown. Pick Ian's own, Chris's client or Dual agency, or set a split."; } else if(priceNum(d&&d.price)<=0 && !dealNetIsActual(d)){ inc.innerHTML="No price on record, so no income estimate. It fills in at your <b>"+Math.round(sourceShare(dealSource(d),d)*100)+"%</b> split ("+dealSource(d)+")."; } else if(dealSource(d)==="Dual agency"){ /* build 440: the editor is where the chain is spelled out, so the tax sweep joins the end of
      the chain rather than being left off it. Gross, broker cut, split, THEN tax. */
-    inc.innerHTML="Est. your commission <b>"+fmtMoney(dealIanNet(d))+"</b>, of which you keep <b>"+fmtMoney(dealIanPostTax(d))+"</b> after setting aside "+taxPctWord()+" for tax. Dual agency at "+(+(dualRate(d)*100).toFixed(2))+"% on the property, charged once. Broker takes 15% of a 6% basis, then your 50/50 with Chris. Counts twice for volume and deal count."; } else { inc.innerHTML="Est. your commission <b>"+fmtMoney(dealIanNet(d))+"</b>, of which you keep <b>"+fmtMoney(dealIanPostTax(d))+"</b> after setting aside "+taxPctWord()+" for tax. Gross commission this side "+fmtMoney(dealGrossCommission(d))+", before the 15% broker cut and your "+Math.round(sourceShare(dealSource(d),d)*100)+"% split."; } parent.appendChild(inc);
+    inc.innerHTML="Est. your commission <b>"+fmtMoney(dealIanNet(d))+"</b>, of which you keep <b>"+fmtMoney(dealIanPostTax(d))+"</b> after setting aside "+taxPctWord()+" for tax. Dual agency at "+(+(dualRate(d)*100).toFixed(2))+"% on the property, charged once. Broker takes 15% of a 6% basis, then your 50/50 with Chris. Counts twice for volume and deal count."; } else { inc.innerHTML="Est. your commission <b>"+fmtMoney(dealIanNet(d))+"</b>, of which you keep <b>"+fmtMoney(dealIanPostTax(d))+"</b> after setting aside "+taxPctWord()+" for tax. Gross commission this side "+fmtMoney(dealGrossCommission(d))+(d&&d.structure2027===true?", no 15% broker cut under the 2027 structure, then your ":", before the 15% broker cut and your ")+Math.round(sourceShare(dealSource(d),d)*100)+"% split."; } parent.appendChild(inc);
   
 }
 function dealRow(parent,d){
