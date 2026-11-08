@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 594 (2026-11-08)">
+<meta name="build" content="v21 build 595 (2026-11-08)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -30299,6 +30299,34 @@ try{ if(profile==="ian" && state.meta && !state.meta.mig594_re1108 && state.real
     state.meta.mig594_re1108=true; save(true);
     try{ console.log("mig594: real estate rows refreshed to 8 Nov 2026"); }catch(_){}
 } }catch(e){ try{ console.warn("mig594 did not apply:",e&&e.message); }catch(_){} }
+
+
+/* ===== v21 build 595: FINANCE PAGE, DEEP DIVE 4, 8 NOV 2026 (APP-DD4-1108) ==============
+   Guard state.meta.mig595_fin1108. Sources: BRAIN/GLOBAL/ASKED_AND_ANSWERED.md blocks "APPENDED 2026-11-08 EVENING
+   (deep dive 4)" (offers, car ranking) and "APPENDED 2026-11-08 LATER" (car down payment, which corrects the
+   stale $0 to $2,000). Balances are NOT re-read here, so finance.asOf is left alone. ===== */
+try{ if(profile==="ian" && state.meta && !state.meta.mig595_fin1108 && state.finance){
+    var F595=state.finance; var C595=Array.isArray(F595.cards)?F595.cards:[];
+    C595.forEach(function(c){
+      if(!c) return;
+      if(c.id==="amexgold"){ if(!c.offerNoteWas595) c.offerNoteWas595=String(c.offerNote||"");
+        c.offerNote="Welcome offer: $4,915 left of $8,000 (Ian, 8 Nov). Earns 100,000 points if met by Mar 20, 2027. Mid January checkpoint: El Salvador in March or June."; }
+      if(c.id==="amexblue"){ if(!c.offerNoteWas595) c.offerNoteWas595=String(c.offerNote||"");
+        c.offerNote="Welcome offer: $4,494 left of $5,000 (Ian, 8 Nov). Earns 15,000 points if met by Jan 21, 2027."; }
+    });
+    var V595=F595.vehicle&&F595.vehicle.replacement;
+    if(V595){
+      if(!F595.vehicle.replacementWas595) F595.vehicle.replacementWas595=JSON.parse(JSON.stringify(V595));
+      V595.asOf="2026-11-08"; V595.source="Ian, 8 November 2026";
+      V595.ranking=["BMW X5 40i","Mazda CX-5 GT at $21,000 to $24,000","Ford Explorer ST","A sporty sedan"];
+      V595.leaning="BMW X5 40i first, then a Mazda CX-5 GT, a Ford Explorer ST and a sporty sedan (Ian, 8 Nov)";
+      V595.budget="CX-5 GT at $21,000 to $24,000. He buys the X5 if the lease return wave hits";
+      V595.seen="CX-5s seen around 60,000 miles at $22,000 to $23,000 before negotiating";
+      V595.down="$1,000 to $2,000, base $1,500, max $2,500 (Ian, 8 Nov). Trade in worth about $4,000 to $5,000.";
+    }
+    state.meta.mig595_fin1108=true; save(true);
+    try{ console.log("mig595: finance offers and car ranking refreshed to 8 Nov 2026"); }catch(_){}
+} }catch(e){ try{ console.warn("mig595 did not apply:",e&&e.message); }catch(_){} }
 
 
   /* build 372: LAST THING BEFORE THE SAVE. Every migration above has run, deepMergeDefaults
