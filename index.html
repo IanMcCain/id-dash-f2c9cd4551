@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 592 (2026-11-07)">
+<meta name="build" content="v21 build 593 (2026-11-08)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -30187,6 +30187,32 @@ try{ if(profile==="ian" && state.meta && !state.meta.mig592_trip1107){
     state.meta.mig592_trip1107=true; save(true);
     try{ console.log("mig592: El Salvador planned trip event added"); }catch(_){}
 } }catch(e){ try{ console.warn("mig592 did not apply:",e&&e.message); }catch(_){} }
+
+
+/* ===== v21 build 593: PICKLEBALL, THE 7 NOV 2026 TOURNAMENT SESSION (APP-DD4-1108) ==============
+   Guard state.meta.mig593_pk1108. Source: BRAIN/Personal/Learning/pickleball_knowledge_base.md block
+   "7 NOV 2026 (SATURDAY). SPORTS CARNIVAL APC SINGLES TOURNAMENT", Ian's Apple Watch screenshot.
+   Results, pool finish and any DUPR change are NOT known and are left absent, never zero. ===== */
+try{ if(profile==="ian" && state.meta && !state.meta.mig593_pk1108 && state.pickleball){
+    var P593=state.pickleball; if(!Array.isArray(P593.sessions)) P593.sessions=[];
+    var has593=false; P593.sessions.forEach(function(s){ if(s&&s.id==="pk-20261107-am") has593=true; });
+    if(!has593) P593.sessions.push({id:"pk-20261107-am",date:"2026-11-07",kind:"Tournament",venue:"Omaha",
+      duration:"2h 53m 29s",window:"7:07 to 10:00 AM, Omaha",calories:1721,activeCalories:1450,
+      avgHr:122,maxHr:177,minHr:64,effort:9,effortLabel:"All Out",
+      effortSource:"Apple Fitness effort score. Ian sets it himself, so it is his rating.",
+      effortNote:"HIS OWN RATING. Never reconciled against heart rate or calories.",
+      opponent:"Men's singles 3.0 under 50, Pool A",result:"",score:"",copyOwned:true,
+      source:"Ian's own Apple Watch screenshot and his words, 7 November 2026.",
+      note:"Saturday 7 November, APC Championship Series singles, Men's 3.0 Under 50, Pool A, Omaha. 7:07 to 10:00 AM, 2:53:29 of workout time. From Apple Watch: avg HR 122, peak 177, low about 64, active 1,450, total 1,721. Effort 9, All Out, his own rating. Results pending: pool scores, finish and any DUPR change are not recorded yet.",
+      agent:"Every figure is Ian's own Apple Watch screenshot. The minimum heart rate of 64 is approximate (Ian's figure was about 64). Scores, finish and DUPR were not read (Sports Carnival schedule empty, DUPR needs an emailed code), so result and score are EMPTY ON PURPOSE. Do not infer them from the watch data."});
+    var ev593=state.events; if(Array.isArray(ev593)){ ev593.forEach(function(e){
+      if(e&&e.id==="ev-20261107-apc-singles"){
+        if(!e.noteWas593) e.noteWas593=String(e.note||"");
+        e.note="Played Saturday 7 November 2026, Pool A, team name \"I McCain\". No fee, covered by his Ace membership. Results pending: pool scores, finish and any DUPR change are not recorded yet.";
+      } }); }
+    state.meta.mig593_pk1108=true; save(true);
+    try{ console.log("mig593: 7 Nov tournament session added"); }catch(_){}
+} }catch(e){ try{ console.warn("mig593 did not apply:",e&&e.message); }catch(_){} }
 
 
   /* build 372: LAST THING BEFORE THE SAVE. Every migration above has run, deepMergeDefaults
