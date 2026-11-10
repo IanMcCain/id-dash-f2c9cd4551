@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 596 (2026-11-10)">
+<meta name="build" content="v21 build 597 (2026-11-10)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -30347,6 +30347,51 @@ try{ if(profile==="ian" && state.meta && !state.meta.mig596_pk1110){
     state.meta.mig596_pk1110=true; save(true);
     try{ console.log("mig596: 9 and 10 Nov training sessions added"); }catch(_){}
 } }catch(e){ try{ console.warn("mig596 did not apply:",e&&e.message); }catch(_){} }
+
+
+/* ===== v21 build 597: REAL ESTATE, IAN VIA DISPATCH 10 NOV 2026 (MINIDIVE-1110) ==============
+   Guard state.meta.mig597_re1110. Source: BRAIN/Real_Estate/Context/01_MASTER_CONTEXT.md top block
+   "10 NOV 2026 ABOUT 4 PM". Theobald buy moves to Under Contract (accepted offer). Its price is NOT in
+   DotLoop yet (loop 334634978 read 10 Nov, no documents), so the stored band stays an ESTIMATE and the
+   app roll up reads its low end. The close is Ian's belief, unconfirmed, labelled. No risk state. ===== */
+try{ if(profile==="ian" && state.meta && !state.meta.mig597_re1110 && state.realEstate){
+    var R597=state.realEstate; if(!Array.isArray(R597.deals)) R597.deals=[];
+    var D597={}; R597.deals.forEach(function(d){ if(d&&d.id) D597[d.id]=d; });
+    var tb=D597["re-theobald-buy"];
+    if(tb){
+      tb.stageWas597=tb.stage; tb.closeWas597=tb.close; tb.subWas597=tb.sub;
+      tb.stage="Under Contract";
+      tb.sub="Buy side, new build, 10828 S 218th St, Gretna";
+      tb.address="10828 S 218th St, Gretna, NE";
+      tb.price="$500,000 to low $600,000";
+      tb.priceEstimate=true;
+      tb.close="End of November 2026 (Ian's belief, unconfirmed)";
+      tb.closeYear=2026; tb.closeSource="Ian, 10 November 2026, unconfirmed";
+      tb.titleCompany="DRI Title"; tb.earnest="$6,000";
+      tb.rowNote="Accepted offer on the new build, DRI Title, $6,000 earnest. Close end of November is Ian's belief, unconfirmed. Price not in DotLoop yet, so the $500,000 to low $600,000 band is an estimate and the roll up reads $500,000. Bridge loan, so the sell side lists soon. If it closes in November it is 2026 deal 20, counted as expected, not closed.";
+    }
+    var ts=D597["re-theobald-sell"];
+    if(ts){
+      ts.closeWas597=ts.close; ts.priceWas597=ts.price;
+      ts.price="$325,000 to $330,000";
+      ts.close="Before end of 2026, or else early January 2027 (Ian, 10 Nov)";
+      ts.closeYear=2026; ts.closeSource="Ian, 10 November 2026";
+      ts.rowNote="They are buying with a bridge loan, so this listing is expected soon (Ian, 10 Nov). No list date set yet.";
+    }
+    var lb=D597["re-limoges-buy"];
+    if(lb){
+      lb.rowNote="Showings done Mon 9 and Tue 10 Nov: Gretna 12314 S 218th Ave, Jefferson 16405 Jefferson St, 9201 S 170th St, 6635 Michael Cir, Waverly 11330 N 142nd St, Waverly 10530 N 135th St, Gretna 21973 Hilltop Ave. They liked Jefferson; another buyer has a second showing there. No offer intent yet. Next showings Sat 14 Nov, including 5815 S 104th Ave.";
+    }
+    var ls=D597["re-limoges-sell"];
+    if(ls){ ls.rowNote="Still a likely sell and buy, two deals (Ian, 10 Nov). Buy side showings are on the Limoges buy row."; }
+    var mx=D597["re-mattox-sell"];
+    if(mx){ mx.rowNote="Closing Fri 13 Nov 2026 at 11:00 AM, Ambassador Title. Final walk through done Tue 10 Nov."; }
+    var hz=D597["re-hernandez-sell"];
+    if(hz){ hz.rowNote="Listing goes live Thu 12 Nov 2026 (Ian, 10 Nov). Photos Wed 11 Nov."; }
+    state.meta.mig597_re1110=true; save(true);
+    try{ console.log("mig597: real estate rows refreshed to 10 Nov 2026"); }catch(_){}
+} }catch(e){ try{ console.warn("mig597 did not apply:",e&&e.message); }catch(_){} }
+
 
 
   /* build 372: LAST THING BEFORE THE SAVE. Every migration above has run, deepMergeDefaults
