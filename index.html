@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 597 (2026-11-10)">
+<meta name="build" content="v21 build 598 (2026-11-10)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -30391,6 +30391,41 @@ try{ if(profile==="ian" && state.meta && !state.meta.mig597_re1110 && state.real
     state.meta.mig597_re1110=true; save(true);
     try{ console.log("mig597: real estate rows refreshed to 10 Nov 2026"); }catch(_){}
 } }catch(e){ try{ console.warn("mig597 did not apply:",e&&e.message); }catch(_){} }
+
+
+/* ===== v21 build 598: FINANCE PAGE, MONEY PASS 10 NOV 2026 (MINIDIVE-1110) ==============
+   Guard state.meta.mig598_fin1110. Sources: Rocket Money read 10 Nov 2026 view only and Ledger Update 23 in
+   WORK/Real_Estate/Output/2026 Business Expense Log.md (queue q179434606179640). Balances per account, never summed.
+   Welcome offer progress is from POSTED charges in the feed; the Amex app tracker is the authority. ===== */
+try{ if(profile==="ian" && state.meta && !state.meta.mig598_fin1110 && state.finance){
+    var F598=state.finance;
+    var RM598="Rocket Money, read 10 November 2026, view only.";
+    F598.asOfWas598=F598.asOf||""; F598.asOf="2026-11-10";
+    F598.source="Rocket Money read 10 November 2026 (view only) and Ledger Update 23. Balances are listed per account and never summed.";
+    var setB=function(o,v){ if(!o) return; if(o.balance!==v){ o.balanceWas={value:o.balance,asOf:F598.asOfWas598||""}; } o.balance=v; if("read" in o) o.read=v; o.balanceSource=RM598; };
+    (F598.accounts||[]).forEach(function(a){ if(!a) return;
+      if(a.id==="fnbo8909") setB(a,334);
+      if(a.id==="fnbo1177") setB(a,175);
+    });
+    (F598.cards||[]).forEach(function(c){ if(!c) return;
+      if(c.id==="amexgold"){ setB(c,2759);
+        c.offerNote="Welcome offer: posted charges in the feed count $3,327.26 of $8,000, so $4,672.74 left by Mar 20, 2027 (10 Nov). Ian read $4,915 left in the Amex app on 8 Nov; the Amex tracker is the authority. Mid January checkpoint: El Salvador in March or June."; }
+      if(c.id==="amexblue"){ setB(c,467);
+        c.offerNote="Welcome offer: posted charges $466.97 of $5,000, so $4,533.03 left by Jan 21, 2027 (10 Nov, feed count). Earns 15,000 points if met."; }
+      if(c.id==="discover") setB(c,711);
+    });
+    var LG598=F598.ledger||(F598.ledger={});
+    LG598.asOf="2026-11-10";
+    LG598.source="WORK/Real_Estate/Output/2026 Business Expense Log.md, Ledger Update 23 (10 Nov 2026).";
+    LG598.charges=103; LG598.paid=3917.35; LG598.documented=2887.35;
+    LG598.askIan={rows:29,amount:4317.14};
+    LG598.note="10 November 2026: 103 business charges, $3,917.35 paid, $2,887.35 deductible. The Hernandez staging meal, the lens filter and the lunch box are now posted and classified. 29 rows ($4,317.14) wait on Ian and are in no total.";
+    var V598=F598.vehicle&&F598.vehicle.replacement;
+    if(V598){ V598.watchNote="The X5 watch car (2019 BMW X5 xDrive40i at Onyx Automotive, $26,852) SOLD (Ian, 10 Nov). Ranking unchanged."; }
+    state.meta.mig598_fin1110=true; save(true);
+    try{ console.log("mig598: finance refreshed to 10 Nov 2026"); }catch(_){}
+} }catch(e){ try{ console.warn("mig598 did not apply:",e&&e.message); }catch(_){} }
+
 
 
 
