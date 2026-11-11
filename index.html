@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 604 (2026-11-11)">
+<meta name="build" content="v21 build 605 (2026-11-11)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -30545,6 +30545,48 @@ try{ if(profile==="ian" && state.meta && !state.meta.mig604_barker1111 && state.
     state.meta.mig604_barker1111=true; save(true);
     try{ console.log("mig604: barker list price 284900 applied"); }catch(_){}
 } }catch(e){ try{ console.warn("mig604 did not apply:",e&&e.message); }catch(_){} }
+/* ===== v21 build 605: HERNANDEZ LIST DATE MOVES TO FRI 13 NOV, 11 NOV 2026 (RE-HERNANDEZ-1111) ==============
+   Guard state.meta.mig605_hz1311. Source: Ian via Dispatch 11 Nov 2026, the Hernandez family said YES to going
+   live Friday 13 Nov instead of Thursday 12 Nov. List price unchanged at $450,000. No risk state. Also adds a
+   handyman item: touch up the bottom of the bathroom door scratched by Milo. ===== */
+try{ if(profile==="ian" && state.meta && !state.meta.mig605_hz1311 && state.realEstate){
+    var AS605="Ian via Dispatch, 11 Nov 2026: the Hernandez family said yes, goes live Fri 13 Nov instead of Thu 12 Nov";
+    var h605=null; (state.realEstate.deals||[]).forEach(function(d){ if(d&&d.id==="re-hernandez-sell") h605=d; });
+    var rp605=function(s){ if(typeof s!=="string") return s; return s
+      .split("Thursday 12 NOVEMBER 2026").join("Friday 13 NOVEMBER 2026")
+      .split("Thursday 12 November 2026").join("Friday 13 November 2026")
+      .split("THURSDAY 12 NOVEMBER 2026").join("FRIDAY 13 NOVEMBER 2026")
+      .split("Thu 12 Nov").join("Fri 13 Nov")
+      .split("Lists 12 November").join("Lists 13 November")
+      .split("lists 12 November").join("lists 13 November")
+      .split("Before 12 November").join("Before 13 November")
+      .split("LIST DATE 12 NOVEMBER").join("LIST DATE 13 NOVEMBER"); };
+    if(h605){
+      state.archive=state.archive||{};
+      state.archive.hernandezPreB605={ close:h605.close, rowNote:h605.rowNote, pipeStatus:h605.pipeStatus, listDateNote:h605.listDateNote, timeline:h605.timeline?JSON.parse(JSON.stringify(h605.timeline)):null, upcoming:h605.upcoming?JSON.parse(JSON.stringify(h605.upcoming)):null };
+      h605.close="Lists 13 November 2026";
+      ["rowNote","pipeStatus","listDateNote"].forEach(function(k){ h605[k]=rp605(h605[k]); });
+      if(h605.timeline && typeof h605.timeline==="object"){ h605.timeline.listTarget="Friday 13 November 2026"; h605.timeline.moved="Moved from Thu 12 Nov to Fri 13 Nov on 11 Nov 2026 ("+AS605+"). Earlier: 12 Nov (20 Oct), 5 Nov (21 Oct), 12 Nov (31 Oct)."; }
+      if(h605.upcoming && typeof h605.upcoming==="object" && typeof h605.upcoming.due==="string") h605.upcoming.due=rp605(h605.upcoming.due);
+      h605.rowNote="Listing goes live Fri 13 Nov 2026 (Ian, 11 Nov: family said yes). List $450,000.";
+      h605.listDateNote="LIST DATE FRIDAY 13 NOVEMBER 2026 ("+AS605+"). Was Thursday 12 November (Ian, 31 Oct). List $450,000, unchanged.";
+      h605.pipeStatus="Lists Friday 13 November 2026 ("+AS605+"). Close is uncertain: late December 2026 or early January 2027. Ian is cash basis, so the payment date decides which year it is income.";
+      if(typeof h605.note==="string" && h605.note.indexOf("UPDATE 11 NOVEMBER 2026 (B605)")<0) h605.note="UPDATE 11 NOVEMBER 2026 (B605): LIST DATE MOVED TO FRIDAY 13 NOVEMBER 2026 ("+AS605+"). Every 12 November list date below is history. "+h605.note;
+      h605.listDateMoved={ from:"2026-11-12", to:"2026-11-13", on:"2026-11-11", by:AS605 };
+      h605.handyman=Array.isArray(h605.handyman)?h605.handyman:[];
+      if(!h605.handyman.some(function(x){ return x&&x.id==="hz-hm-milo-door"; }))
+        h605.handyman.push({ id:"hz-hm-milo-door", text:"Touch up the bottom of the bathroom door scratched by Milo", added:"2026-11-11", source:"Ian via Dispatch, 11 Nov 2026", done:false });
+    }
+    (state.events||[]).forEach(function(e){
+      if(e && (e.id==="ev-20261112-hernandez-live" || (/hernandez/i.test(e.title||"") && /live|list/i.test(e.title||"") && e.date==="2026-11-12"))){
+        e.date="2026-11-13";
+        if(typeof e.title==="string") e.title=e.title.split("Thu 12 Nov").join("Fri 13 Nov");
+        e.note="LIST DATE FRIDAY 13 NOVEMBER 2026 ("+AS605+"). The calendar event was moved from 12 to 13 November on 11 Nov 2026, not duplicated. List $450,000.";
+      }
+    });
+    state.meta.mig605_hz1311=true; save(true);
+    try{ console.log("mig605: hernandez list date 13 Nov applied"); }catch(_){}
+} }catch(e){ try{ console.warn("mig605 did not apply:",e&&e.message); }catch(_){} }
 
 
 
