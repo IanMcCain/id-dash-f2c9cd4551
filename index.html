@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 606 (2026-11-11)">
+<meta name="build" content="v21 build 607 (2026-11-11)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -31519,7 +31519,16 @@ function dealBrokerage(d){ if(d&&d.structure2027===true) return 0; if(dealSource
    is how a known number survives any later change to the model. */
 function dealIanNet(d){ if(d&&typeof d.actualNet==="number") return d.actualNet; if(dealShareUnset(d)) return 0; return (dealGrossCommission(d)-dealBrokerage(d)) * sourceShare(dealSource(d),d); }
 /* v21 build 440: what he actually KEEPS. Derived, never stored. See the RE_RATES block above. */
-function dealIanPostTax(d){ return postTax(dealIanNet(d)); }
+function dealIanPostTax(d){ return dealKeep(d); }
+/* build 607, Ian 11 Nov 2026 via Dispatch: "YES apply the 5% NP Dodge cut" (Theobald buy must read $1,535.50).
+   An ESTIMATE now follows the NP Dodge team payout worksheet: Ian gross, less the 5 percent Marketing Investment,
+   less the 30 percent set aside taken on the gross, each step rounded to the cent. 2,362.32 - 118.12 - 708.70 = 1,535.50.
+   A PAID deal or an actualNet is already net of the 5 percent (Ian, 27 Oct 2026, NEVER take it twice) and keeps postTax. */
+var RE_MKT_INVEST=0.05;
+function _r2(x){ return Math.round((Number(x)||0)*100)/100; }
+function dealKeepFromNet(d,n){ n=Number(n)||0; if(dealIsPaid(d)) return postTax(n); var g=_r2(n); return _r2(g-_r2(g*RE_MKT_INVEST)-_r2(g*taxSetAsideRate())); }
+function dealKeep(d){ return dealKeepFromNet(d,dealIanNet(d)); }
+function fmtMoneyC(n){ n=_r2(n); try{ return "$"+n.toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:2}); }catch(e){ return "$"+n.toFixed(2); } }
 function dealNetIsActual(d){ return !!(d&&typeof d.actualNet==="number"); }
 /* ===== v21 build 275: EARNED IS NOT RECEIVED, AND THE APP HAD NO WAY TO SAY SO =================
    Ian, 08.11.2026: he has not been paid on Troester or Miller, he has several deals in that state,
@@ -31822,7 +31831,7 @@ function dealEditors(parent,d){
   if(dealSource(d)==="Dual agency"){ const rLab=el("div","small muted","Dual commission rate, aim 6%, as low as 5% to make a deal"); rLab.style.marginTop="10px"; parent.appendChild(rLab); parent.appendChild(_ro606(chipRowKV([["5%",0.05],["6%",0.06]], dualRate(d), function(v){ d.dualRate=v; save(); render(); }))); const rNote=el("div","small dim"); rNote.style.marginTop="4px"; rNote.textContent="Current rate "+(+(dualRate(d)*100).toFixed(2))+"%"+(dualRate(d)<0.05?" (locked one-time exception)":""); parent.appendChild(rNote); }
   const inc=el("div","small dim"); inc.style.marginTop="9px"; inc.style.lineHeight="1.55"; /* v21 build 285: NO PRICE MEANS NO NUMBER. Ian, 08.13.2026. priceNum returns 0 for an empty price, so this line used to render a confident "Est. your take home $0" on every prospect with no price yet, which reads as a derived figure rather than a missing one. The deal ROW already guarded this with if(_tn>0); the editor did not. Say the price is missing, and name the split that WOULD apply so a wrong source is visible before a price is ever typed. */ if(dealShareUnset(d)){ inc.innerHTML="Commission rate and your share are <b>not set</b> for this source, so no income estimate is shown. Pick Ian's own, Chris's client or Dual agency, or set a split."; } else if(priceNum(d&&d.price)<=0 && !dealNetIsActual(d)){ inc.innerHTML="No price on record, so no income estimate. It fills in at your <b>"+Math.round(sourceShare(dealSource(d),d)*100)+"%</b> split ("+dealSource(d)+")."; } else if(dealSource(d)==="Dual agency"){ /* build 440: the editor is where the chain is spelled out, so the tax sweep joins the end of
      the chain rather than being left off it. Gross, broker cut, split, THEN tax. */
-    inc.innerHTML="Est. your commission <b>"+fmtMoney(dealIanNet(d))+"</b>, of which you keep <b>"+fmtMoney(dealIanPostTax(d))+"</b> after setting aside "+taxPctWord()+" for tax. Dual agency at "+(+(dualRate(d)*100).toFixed(2))+"% on the property, charged once. Broker takes 15% of a 6% basis, then your 50/50 with Chris. Counts twice for volume and deal count."; } else { inc.innerHTML="Est. your commission <b>"+fmtMoney(dealIanNet(d))+"</b>, of which you keep <b>"+fmtMoney(dealIanPostTax(d))+"</b> after setting aside "+taxPctWord()+" for tax. Gross commission this side "+fmtMoney(dealGrossCommission(d))+(d&&d.structure2027===true?", no 15% broker cut under the 2027 structure, then your ":", before the 15% broker cut and your ")+Math.round(sourceShare(dealSource(d),d)*100)+"% split."; } parent.appendChild(inc);
+    inc.innerHTML="Est. your commission <b>"+fmtMoney(dealIanNet(d))+"</b>, of which you keep <b>"+fmtMoneyC(dealIanPostTax(d))+"</b> after "+(dealIsPaid(d)?"":"the 5% NP Dodge Marketing Investment and ")+"setting aside "+taxPctWord()+" for tax. Dual agency at "+(+(dualRate(d)*100).toFixed(2))+"% on the property, charged once. Broker takes 15% of a 6% basis, then your 50/50 with Chris. Counts twice for volume and deal count."; } else { inc.innerHTML="Est. your commission <b>"+fmtMoney(dealIanNet(d))+"</b>, of which you keep <b>"+fmtMoneyC(dealIanPostTax(d))+"</b> after "+(dealIsPaid(d)?"":"the 5% NP Dodge Marketing Investment and ")+"setting aside "+taxPctWord()+" for tax. Gross commission this side "+fmtMoney(dealGrossCommission(d))+(d&&d.structure2027===true?", no 15% broker cut under the 2027 structure, then your ":", before the 15% broker cut and your ")+Math.round(sourceShare(dealSource(d),d)*100)+"% split."; } parent.appendChild(inc);
   
 }
 function dealRow(parent,d){
@@ -31834,7 +31843,7 @@ function dealRow(parent,d){
      data placement change, not a new layout: the Barkers row was already correct and is the model. */
   const left=el("div","dl"); left.appendChild(el("div","dn",d.title)); if(d.sub)left.appendChild(el("div","dsub",reTidy(d.sub))); if(d.close&&!d.paused)left.appendChild(el("div","dsub",reTidy(d.close))); var _tn=dealIanNet(d); if(_tn>0){ var _th=el("div","dsub"); /* build 275: say UNPAID on the row itself. A closed deal showing a take home figure with no qualifier reads as money he has. */ /* build 440: the row said "take home" about a pre tax figure. It now names the commission and
        the amount that survives the tax sweep, in that order, on the one line the row has. */
-    _th.textContent=(d.estConditional?"If it proceeds, est. ":"Est. ")+fmtMoney(_tn)+", keep "+fmtMoney(postTax(_tn))+" after tax"+(dealIsUnpaid(d)?"  UNPAID":(dealIsPaid(d)?"  received":"")); _th.style.color=dealIsUnpaid(d)?"var(--gray2,#8a8a99)":"var(--sec2,var(--accent2))"; _th.style.fontWeight="700"; left.appendChild(_th); } var _urg=(d.stage==="Closed"||d.stage==="Just Sold")?"":closeUrgency(d.close); if(_urg){ var _u=el("div","dsub"); _u.textContent=_urg; _u.style.color=(_urg==="overdue"||_urg==="due today")?"var(--danger,#ff6363)":"var(--gray2,#8a8a99)"; _u.style.fontWeight="700"; left.appendChild(_u); } /* build 295: an OPTIONAL risk line. Only a deal carrying d.risk renders one, so every other row is byte identical. It sits under the detail lines in the warning colour because the one deal that has it is Under Contract and already counted, and a paragraph inside a two thousand character note does not carry that. */ /* build 440: an OPEN QUESTION on a figure that has already been pinned. Gilliam carries a real
+    _th.textContent=(d.estConditional?"If it proceeds, est. ":"Est. ")+fmtMoney(_tn)+", keep "+fmtMoneyC(dealKeepFromNet(d,_tn))+(dealIsPaid(d)?"":" after the 5% and tax")+(dealIsUnpaid(d)?"  UNPAID":(dealIsPaid(d)?"  received":"")); _th.style.color=dealIsUnpaid(d)?"var(--gray2,#8a8a99)":"var(--sec2,var(--accent2))"; _th.style.fontWeight="700"; left.appendChild(_th); } var _urg=(d.stage==="Closed"||d.stage==="Just Sold")?"":closeUrgency(d.close); if(_urg){ var _u=el("div","dsub"); _u.textContent=_urg; _u.style.color=(_urg==="overdue"||_urg==="due today")?"var(--danger,#ff6363)":"var(--gray2,#8a8a99)"; _u.style.fontWeight="700"; left.appendChild(_u); } /* build 295: an OPTIONAL risk line. Only a deal carrying d.risk renders one, so every other row is byte identical. It sits under the detail lines in the warning colour because the one deal that has it is Under Contract and already counted, and a paragraph inside a two thousand character note does not carry that. */ /* build 440: an OPEN QUESTION on a figure that has already been pinned. Gilliam carries a real
        bank deposit in actualNet, but Ian is not sure whether his father's 10% came out before or
        after it. A pinned number with an unresolved meaning must SAY SO on the row, or the pin
        quietly becomes a conclusion nobody decided to make. */
@@ -39471,7 +39480,7 @@ function fnProjection(v,f){
       if(!(px>0)&&!contracted){ noPrice++; return; }
       /* v21 build 440: keep is what survives the tax sweep and it is the ONLY figure allowed to
          touch gapLo/gapHi. Both are carried on the row so the card can show both. */
-      live.push({ d:d, net:Math.round(n*100)/100, keep:Math.round(postTax(n)*100)/100, far:is27(d), contracted:contracted });
+      live.push({ d:d, net:Math.round(n*100)/100, keep:Math.round(dealKeepFromNet(d,n)*100)/100, far:is27(d), contracted:contracted });
     });
     if(!live.length) return;
     /* v21 build 438, 21.09.2026. IAN: "The deals in progress on the Finance page should be in
@@ -39652,7 +39661,7 @@ function fnProjection(v,f){
     var notes=[];
     /* build 440: the amounts changed meaning, so the card says so rather than letting him
        discover that every figure got smaller and wonder what broke. */
-    notes.push("Amounts are what you keep after setting aside "+taxPctWord()+" for tax. The commission before tax is on each row.");
+    notes.push("Amounts are what you keep after the 5% NP Dodge Marketing Investment and setting aside "+taxPctWord()+" for tax. The commission before tax is on each row.");
     notes.push("None of these is contracted except where a row says so, and they are never added together.");
     if(far.length) notes.push("The 2027 ones cannot touch a shortfall that lands by mid January, however large they are.");
     var sp=live.filter(function(x){ return x.contracted; });
@@ -40062,7 +40071,7 @@ function fxProjNums(f){
     if(typeof RESTAGES!=="undefined" && RESTAGES.indexOf(String(d.stage||""))<0) return;
     var px=0; try{ px=priceNum(d.price); }catch(e){} var n=0; try{ n=dealIanNet(d); }catch(e){ n=0; }
     var contracted=(d.stage==="Under Contract"); if(!(px>0)&&!contracted){ noPrice++; return; }
-    live.push({ d:d, net:Math.round(n*100)/100, keep:Math.round(postTax(n)*100)/100, far:is27(d), contracted:contracted });
+    live.push({ d:d, net:Math.round(n*100)/100, keep:Math.round(dealKeepFromNet(d,n)*100)/100, far:is27(d), contracted:contracted });
   });
   if(!live.length) return null;
   live.forEach(function(x){ var w=x.d&&x.d.winProb; x.p=(typeof w==="number")?w:null; });
@@ -40440,7 +40449,7 @@ function fxBandRunway(v,f){
 function fxBandMoney(v,f){
   var deals=(state.realEstate&&state.realEstate.deals)||[]; var rows=[];
   deals.forEach(function(d){ if(!d||d.stage!=="Under Contract"||d.fellThrough===true) return; var n=0; try{ n=dealIanNet(d); }catch(e){ n=0; }
-    rows.push({d:d,keep:Math.round(postTax(n)),ms:fnCloseDate(d)}); });
+    rows.push({d:d,keep:Math.round(dealKeepFromNet(d,n)),ms:fnCloseDate(d)}); });
   if(!rows.length) return;
   rows.sort(function(a,z){ if(a.ms&&z.ms) return a.ms-z.ms; if(a.ms) return -1; if(z.ms) return 1; return String(a.d.title||"").localeCompare(String(z.d.title||"")); });
   var band=el("div","fx-b"); fxLabel(band,"Under contract","after the "+taxPctWord()+" reserve");
