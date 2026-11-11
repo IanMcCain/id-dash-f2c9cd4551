@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 603 (2026-11-10)">
+<meta name="build" content="v21 build 604 (2026-11-11)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -30531,6 +30531,20 @@ try{ if(profile==="ian" && state.meta && !state.meta.mig603_splits1110 && state.
     state.meta.mig603_splits1110=true; save(true);
     try{ console.log("mig603: theobald contract and splits applied"); }catch(_){}
 } }catch(e){ try{ console.warn("mig603 did not apply:",e&&e.message); }catch(_){} }
+
+/* ===== v21 build 604: BARKER LIST PRICE CHOSEN, 11 NOV 2026 (RE-BARKER-1111) ==============
+   Guard state.meta.mig604_barker1111. Source: Ian's decision 11 Nov 2026, Barker lists at $284,900
+   (CMA Round 2 off season recommended $289,900; Ian chose the quick tier). Expected sale about $283,000 to $285,000. ===== */
+try{ if(profile==="ian" && state.meta && !state.meta.mig604_barker1111 && state.realEstate){
+    var b604=null; (state.realEstate.deals||[]).forEach(function(d){ if(d&&d.id==="re-barkers") b604=d; });
+    if(b604){ b604.price="$284,900";
+      b604.priceNote="LIST PRICE CHOSEN BY IAN, 11 Nov 2026: $284,900. CMA Round 2 (off season, 10 Nov) tiers $284,900 / $289,900 / $294,900; Ian chose the quick tier. Expected sale about $283,000 to $285,000.";
+      b604.ianExpected="Chris's client, Ian 20 percent, 3.6 percent seller rate. 2026 rules at $283,000 to $285,000: $1,731.96 to $1,744.20 gross; less NP Dodge 5% $1,645.36 to $1,656.99 paid; 30% set aside $519.59 to $523.26; $1,125.77 to $1,133.73 spendable. If it closes in 2027 (100 percent team rules): $2,037.60 to $2,052.00 gross. Ian's own 8 Nov estimate was about $1,000.";
+      b604.rowNote="Lists at $284,900 (Ian, 11 Nov). Likely list Thu 19 Nov, not confirmed. Expected sale about $283,000 to $285,000.";
+      b604.owedOnResume="Price settled 11 Nov ($284,900). Still owed: Ian's basement measurement and a verified bath count (county says 2)."; }
+    state.meta.mig604_barker1111=true; save(true);
+    try{ console.log("mig604: barker list price 284900 applied"); }catch(_){}
+} }catch(e){ try{ console.warn("mig604 did not apply:",e&&e.message); }catch(_){} }
 
 
 
