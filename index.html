@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 605 (2026-11-11)">
+<meta name="build" content="v21 build 606 (2026-11-11)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -30587,6 +30587,63 @@ try{ if(profile==="ian" && state.meta && !state.meta.mig605_hz1311 && state.real
     state.meta.mig605_hz1311=true; save(true);
     try{ console.log("mig605: hernandez list date 13 Nov applied"); }catch(_){}
 } }catch(e){ try{ console.warn("mig605 did not apply:",e&&e.message); }catch(_){} }
+/* ===== v21 build 606: QUEUE DRAIN, DUPR, THEOBALD CLEANUP, 30 OCT SESSION, 11 NOV 2026 (APP-DISPATCH-1111) ==========
+   Guard state.meta.mig606_q1111. Source: Ian via Dispatch 11 Nov 2026: "ship the 20 queued updates, including the DUPR
+   results (doubles 3.226, singles 3.371, the 11/7 tournament)" and "Theobald is $579,000 all cash". Nothing invented:
+   pool scores and finish for 7 Nov were not given and stay empty. ===== */
+try{ if(profile==="ian" && state.meta && !state.meta.mig606_q1111){
+    var AS606="Ian via Dispatch, 11 Nov 2026";
+    /* DUPR */
+    if(state.pickleball){
+      state.pickleball.dupr=Array.isArray(state.pickleball.dupr)?state.pickleball.dupr:[];
+      if(!state.pickleball.dupr.some(function(x){ return x&&x.date==="2026-11-11"; })){
+        state.pickleball.dupr.push({ date:"2026-11-11", rating:3.371, singles:3.371, doubles:3.226, status:"Ian's figures, 11 Nov 2026",
+          event:"Singles 3.371 after the APC Championship Series singles, Men's 3.0 Under 50, Pool A, Sat 7 Nov 2026. Doubles 3.226.",
+          source:AS606,
+          agent:"Both figures are Ian's own, 11 Nov 2026. They replace the approximate 3.37 and 3.22 of 10 Nov. Pool scores and finish for 7 Nov were not given and are not recorded. No trend or comparison is claimed." });
+      }
+      (state.pickleball.sessions||[]).forEach(function(x){
+        if(x&&x.id==="pk-20261107-am"){
+          x.note=String(x.note||"").split("Results pending: pool scores, finish and any DUPR change are not recorded yet.").join("Singles DUPR after this event 3.371, doubles 3.226 (Ian, 11 Nov 2026). Pool scores and finish not recorded.");
+          x.dupr={ singles:3.371, doubles:3.226, source:AS606 };
+        }
+      });
+      /* Fri 30 Oct evening session, held since 2 Nov on details Ian never gave. Shipped with the date only, every number absent. */
+      var ss=state.pickleball.sessions=Array.isArray(state.pickleball.sessions)?state.pickleball.sessions:[];
+      if(!ss.some(function(x){ return x&&x.id==="pk-20261030-pm"; })){
+        var rec={ id:"pk-20261030-pm", date:"2026-10-30", kind:"Session", venue:"Omaha", result:"", score:"", opponent:"", copyOwned:true,
+          source:"Ian's own words, 2 Nov 2026. Shipped 11 Nov 2026 on his instruction to ship the held queue.",
+          note:"Friday 30 October, evening pickleball session. Duration, format, heart rate, calories and effort were not given.",
+          agent:"Only the date and that it was an evening session are known. Every number is ABSENT ON PURPOSE, not zero." };
+        var at=ss.length; for(var i=0;i<ss.length;i++){ if(ss[i]&&String(ss[i].date||"")>"2026-10-30"){ at=i; break; } }
+        ss.splice(at,0,rec);
+      }
+    }
+    (state.events||[]).forEach(function(e){
+      if(e&&e.id==="ev-20261107-apc-singles"){
+        e.note="Played Saturday 7 November 2026, Pool A, team name \"I McCain\". No fee, covered by his Ace membership. DUPR after the event: singles 3.371, doubles 3.226 (Ian, 11 Nov 2026). Pool scores and finish not recorded.";
+        e.dupr={ singles:3.371, doubles:3.226, source:AS606 };
+      }
+    });
+    /* Theobald: all cash, single contract price. The bridge loan line and the $500,000 band are history. */
+    if(state.realEstate){
+      (state.realEstate.deals||[]).forEach(function(d){
+        if(!d) return;
+        if(d.id==="re-theobald-sell"){
+          state.archive=state.archive||{}; state.archive.theobaldSellRowNoteB605=d.rowNote;
+          d.rowNote="List as soon as possible, likely end of November or early December (Ian, 10 Nov). No list date set yet.";
+        }
+        if(d.id==="re-theobald-buy"){
+          state.archive=state.archive||{}; state.archive.theobaldBuyB605={ priceParsingNote:d.priceParsingNote };
+          delete d.priceParsingNote;
+          if(typeof d.note==="string" && d.note.indexOf("UPDATE 11 NOVEMBER 2026 (B606)")<0)
+            d.note="UPDATE 11 NOVEMBER 2026 (B606): $579,000 ALL CASH, 2.4 percent buyer side, closing Fri 27 Nov 2026 ("+AS606+"). No bridge loan and no $500,000 placeholder; every range below is history. "+d.note;
+        }
+      });
+    }
+    state.meta.mig606_q1111=true; save(true);
+    try{ console.log("mig606: dupr, theobald, 30 Oct session applied"); }catch(_){}
+} }catch(e){ try{ console.warn("mig606 did not apply:",e&&e.message); }catch(_){} }
 
 
 
@@ -31021,6 +31078,11 @@ function chipRow(opts,cur,onPick){ const r=el("div","chips"); opts.forEach(o=>{ 
 /* v21 build 40: chip row with separate display label and stored value, so a chip can read
    differently from what it stores (used to relabel the Side chips as "Seller side" etc. so they no
    longer collide with the stage "Buyer" chip). */
+/* build 606 (APP-DISPATCH-1111): CHIP ROWS ON DEALS AND CONTACTS ARE DISPLAY ONLY. Ian 11 Nov 2026 told the app lane to ship
+   the held queue, including q178892389163412, which asked whether the chip rows go display only like the free text fields did
+   in build 382. Decided: yes, matching his read only rule. The current value still shows as the lit chip; taps do nothing.
+   REVERSIBLE: delete the _ro606( ) wrapper at the six call sites and the chips write again. */
+function _ro606(r){ try{ [].slice.call(r.querySelectorAll(".chip")).forEach(function(c){ c.onclick=null; c.style.cursor="default"; c.setAttribute("aria-disabled","true"); }); r.className+=" chips-ro"; }catch(e){} return r; }
 function chipRowKV(pairs,cur,onPick){ const r=el("div","chips"); pairs.forEach(function(p){ var label=p[0],val=p[1]; const c=el("div","chip"+(val===cur?" on":""),label); c.onclick=function(){ onPick(val); }; r.appendChild(c); }); return r; }
 function sect(parent,text,sub,onTap){ const s=el("div","sectlabel"); s.appendChild(document.createTextNode(text)); if(sub){ const a=el("span","sub",sub); if(onTap){a.onclick=onTap;a.style.cursor="pointer";} s.appendChild(a);} parent.appendChild(s); return s; }
 function sectG(parent,text,sub){ const s=sect(parent,text,sub); s.classList.add("g"); return s; }
@@ -31724,7 +31786,7 @@ function dealEditors(parent,d){
      longer collide with the stage "Buyer" chip. Editing the commission tags only writes source or
      side, it never touches the stage. */
   const stLab=el("div","small muted","Stage"); parent.appendChild(stLab);
-  parent.appendChild(chipRow(RESTAGES,d.stage,s=>{ d.stage=s; save(); render(); }));
+  parent.appendChild(_ro606(chipRow(RESTAGES,d.stage,s=>{ d.stage=s; save(); render(); })));
   /* ===== v21 build 382: PRICE, CLOSE DATE AND NOTES ARE DISPLAY ONLY. =================
      These were three free text boxes bound straight to d.price, d.close and d.note with an
      oninput that saved on every keystroke. THEY SURVIVED THE BUILD 379 SWEEP because a deal
@@ -31754,10 +31816,10 @@ function dealEditors(parent,d){
   const divr=el("div"); divr.style.cssText="border-top:1px solid var(--line,#1e2a3a);margin:15px 0 0"; parent.appendChild(divr);
   const commHead=el("div","small muted","Commission tags, these do not change the stage above"); commHead.style.marginTop="11px"; commHead.style.fontWeight="700"; parent.appendChild(commHead);
   const srcLab=el("div","small muted","Whose client"); srcLab.style.marginTop="9px"; parent.appendChild(srcLab);
-  parent.appendChild(chipRow(["Ian's own","Chris's client","Dual agency"], dealSource(d), v=>{ d.source=v; save(); render(); }));
+  parent.appendChild(_ro606(chipRow(["Ian's own","Chris's client","Dual agency"], dealSource(d), v=>{ d.source=v; save(); render(); })));
   const sideLab=el("div","small muted","Side Ian represents"); sideLab.style.marginTop="10px"; parent.appendChild(sideLab);
-  parent.appendChild(chipRowKV([["Seller side","Seller"],["Buyer side","Buyer"],["Both sides","Both"]], dealSide(d), v=>{ d.side=v; save(); render(); }));
-  if(dealSource(d)==="Dual agency"){ const rLab=el("div","small muted","Dual commission rate, aim 6%, as low as 5% to make a deal"); rLab.style.marginTop="10px"; parent.appendChild(rLab); parent.appendChild(chipRowKV([["5%",0.05],["6%",0.06]], dualRate(d), function(v){ d.dualRate=v; save(); render(); })); const rNote=el("div","small dim"); rNote.style.marginTop="4px"; rNote.textContent="Current rate "+(+(dualRate(d)*100).toFixed(2))+"%"+(dualRate(d)<0.05?" (locked one-time exception)":""); parent.appendChild(rNote); }
+  parent.appendChild(_ro606(chipRowKV([["Seller side","Seller"],["Buyer side","Buyer"],["Both sides","Both"]], dealSide(d), v=>{ d.side=v; save(); render(); })));
+  if(dealSource(d)==="Dual agency"){ const rLab=el("div","small muted","Dual commission rate, aim 6%, as low as 5% to make a deal"); rLab.style.marginTop="10px"; parent.appendChild(rLab); parent.appendChild(_ro606(chipRowKV([["5%",0.05],["6%",0.06]], dualRate(d), function(v){ d.dualRate=v; save(); render(); }))); const rNote=el("div","small dim"); rNote.style.marginTop="4px"; rNote.textContent="Current rate "+(+(dualRate(d)*100).toFixed(2))+"%"+(dualRate(d)<0.05?" (locked one-time exception)":""); parent.appendChild(rNote); }
   const inc=el("div","small dim"); inc.style.marginTop="9px"; inc.style.lineHeight="1.55"; /* v21 build 285: NO PRICE MEANS NO NUMBER. Ian, 08.13.2026. priceNum returns 0 for an empty price, so this line used to render a confident "Est. your take home $0" on every prospect with no price yet, which reads as a derived figure rather than a missing one. The deal ROW already guarded this with if(_tn>0); the editor did not. Say the price is missing, and name the split that WOULD apply so a wrong source is visible before a price is ever typed. */ if(dealShareUnset(d)){ inc.innerHTML="Commission rate and your share are <b>not set</b> for this source, so no income estimate is shown. Pick Ian's own, Chris's client or Dual agency, or set a split."; } else if(priceNum(d&&d.price)<=0 && !dealNetIsActual(d)){ inc.innerHTML="No price on record, so no income estimate. It fills in at your <b>"+Math.round(sourceShare(dealSource(d),d)*100)+"%</b> split ("+dealSource(d)+")."; } else if(dealSource(d)==="Dual agency"){ /* build 440: the editor is where the chain is spelled out, so the tax sweep joins the end of
      the chain rather than being left off it. Gross, broker cut, split, THEN tax. */
     inc.innerHTML="Est. your commission <b>"+fmtMoney(dealIanNet(d))+"</b>, of which you keep <b>"+fmtMoney(dealIanPostTax(d))+"</b> after setting aside "+taxPctWord()+" for tax. Dual agency at "+(+(dualRate(d)*100).toFixed(2))+"% on the property, charged once. Broker takes 15% of a 6% basis, then your 50/50 with Chris. Counts twice for volume and deal count."; } else { inc.innerHTML="Est. your commission <b>"+fmtMoney(dealIanNet(d))+"</b>, of which you keep <b>"+fmtMoney(dealIanPostTax(d))+"</b> after setting aside "+taxPctWord()+" for tax. Gross commission this side "+fmtMoney(dealGrossCommission(d))+(d&&d.structure2027===true?", no 15% broker cut under the 2027 structure, then your ":", before the 15% broker cut and your ")+Math.round(sourceShare(dealSource(d),d)*100)+"% split."; } parent.appendChild(inc);
@@ -34969,7 +35031,7 @@ function contactEditors(parent,k){
     e.style.cssText="font-weight:700;line-height:1.45;white-space:pre-wrap"+(has?"":";color:var(--gray2)");
     e.textContent=has?String(t):ph2; return e; };
   parent.appendChild(_roLab("Name")); parent.appendChild(_roVal(k.name,"No name on record"));
-  parent.appendChild(chipRow(SPHERE_TYPES,k.type,s=>{ k.type=s; save(); render(); }));
+  parent.appendChild(_ro606(chipRow(SPHERE_TYPES,k.type,s=>{ k.type=s; save(); render(); })));
   parent.appendChild(_roLab("Phone")); parent.appendChild(_roVal(k.phone,"Not on file anywhere"));
   const lcl=el("div","small muted"); lcl.textContent="Last contacted"; lcl.style.margin="10px 0 4px"; parent.appendChild(lcl);
   /* build 373: THE LAST INPUT OF ANY KIND IN THE APP. It escaped the build 369 sweep because
@@ -34995,7 +35057,7 @@ function contactEditors(parent,k){
   }
   const qll=el("div","small muted"); qll.textContent="Lead quality and reach out cadence"; qll.style.margin="10px 0 4px"; parent.appendChild(qll);
   const _qcur=(k.quality==="Good"||k.quality==="Iffy")?k.quality:((k.cadence&&k.cadence<=45)?"Good":"Iffy");
-  parent.appendChild(chipRow(["Good","Iffy"],_qcur,function(q){ k.quality=q; k.cadence=(q==="Good")?30:90; save(); render(); }));
+  parent.appendChild(_ro606(chipRow(["Good","Iffy"],_qcur,function(q){ k.quality=q; k.cadence=(q==="Good")?30:90; save(); render(); })));
   /* build 288: on a oneTime record the cadence sentence is a lie, because contactOverdue ignores
      cadence entirely for those. The quality chip still works and still means something, the
      clock it normally implies does not. Say that rather than print a 90 day promise nothing keeps. */
@@ -35437,7 +35499,7 @@ function reDealRowNew(parent,d,opts){
   parent.appendChild(wrap);
 }
 function reHeroBand(parent,deals){
-  var by=function(st){ return deals.filter(function(x){ return x&&x.stage===st; }); };
+  var by=function(st){ return deals.filter(function(x){ return x&&x.stage===st&&!(x.modelHome===true&&st!=="Closed"); }); }; /* build 606: a model home is not a live deal (Ian 8 Nov) */
   var closed=by("Closed"), uc=by("Under Contract"), cs=by("Coming Soon"), bd=by("Building"), act=by("Active");
   var pros=deals.filter(reIsProspect);
   var live=uc.length+cs.length+bd.length+act.length;
@@ -35486,7 +35548,7 @@ function reHeroBand(parent,deals){
 }
 function reLiveBand(parent,deals){
   var stages={"Under Contract":1,"Active":1,"Coming Soon":1,"Building":1};
-  var live=deals.map(function(x,ix){ return {x:x,ix:ix,k:reKeyDate(x).k}; }).filter(function(o){ return o.x&&stages[o.x.stage]; })
+  var live=deals.map(function(x,ix){ return {x:x,ix:ix,k:reKeyDate(x).k}; }).filter(function(o){ return o.x&&stages[o.x.stage]&&o.x.modelHome!==true; })
     .sort(function(a,b){ return a.k!==b.k ? a.k-b.k : a.ix-b.ix; }).map(function(o){ return o.x; });
   if(!live.length) return;
   var band=el("div","re-band");
@@ -35504,6 +35566,11 @@ function reQuietBand(parent,deals){
       var cue=re391Short(reTidy(d.sub||""),34); if(cue) L.appendChild(el("div","re-pxc",cue)); r.appendChild(L);
       if(d.price) r.appendChild(el("div","re-pxp",String(d.price))); l.appendChild(r); });
     b.appendChild(l); }});
+  /* build 606: MODEL, NOT EXPECTED. Ian 8 Nov 2026: R Street sits in its own section, Model not expected, out of Live now
+     and out of the live count. It was already outside expected income (modelHome zeroes winProb). */
+  var mods=deals.filter(function(d){ return d&&d.modelHome===true&&d.stage!=="Closed"; });
+  if(mods.length) rows.push({key:"ModelNotExpected",title:"Model, not expected",sub:mods.length+(mods.length===1?" home":" homes")+", not in expected income",count:null,body:function(b){
+    var l=el("div","re-list re-inner"); mods.forEach(function(d){ reDealRowNew(l,d,{}); }); b.appendChild(l); }});
   [["Closed","Closed"],["Just Sold","Just sold"],["Follow up","Follow up"]].forEach(function(g){
     var gd=deals.filter(function(d){ return d&&d.stage===g[0]; }); if(!gd.length) return;
     var sorted=gd.map(function(x,ix){ return {x:x,ix:ix,k:reKeyDate(x).k}; }).sort(function(a,b){ return a.k!==b.k ? b.k-a.k : a.ix-b.ix; }).map(function(o){ return o.x; });
