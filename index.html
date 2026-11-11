@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 600 (2026-11-10)">
+<meta name="build" content="v21 build 601 (2026-11-10)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -30459,6 +30459,26 @@ try{ if(profile==="ian" && state.meta && !state.meta.mig600_health1110 && state.
     state.meta.mig600_health1110=true; save(true);
     try{ console.log("mig600: nutrition profile weight and phase refreshed to 10 Nov 2026"); }catch(_){}
 } }catch(e){ try{ console.warn("mig600 did not apply:",e&&e.message); }catch(_){} }
+
+
+/* ===== v21 build 601: THEOBALD SHARE CONFIRMED, 10 NOV 2026 EVENING (MINIDIVE-1110) ==============
+   Guard state.meta.mig601_theo1110. Ian: Theobald is Chris's client, Ian 20 percent on BOTH sides.
+   Prices are ESTIMATED: buy $500,000 placeholder, sell $325,000 to $330,000. The app computes with
+   2026 rules; the 2027 figure for a January sell close is carried as text. ===== */
+try{ if(profile==="ian" && state.meta && !state.meta.mig601_theo1110 && state.realEstate){
+    var D601={}; (state.realEstate.deals||[]).forEach(function(d){ if(d&&d.id) D601[d.id]=d; });
+    var b=D601["re-theobald-buy"];
+    if(b){ b.source="Chris's client"; b.ianSplit=0.2; b.price="$500,000"; b.priceEstimate=true;
+      b.priceNote="ESTIMATED $500,000 placeholder until DotLoop shows the price (Ian, 10 Nov).";
+      b.ianExpected="Ian 20 percent (Chris's client, confirmed 10 Nov). Estimate at $500,000, 2026 rules: $2,040.00 gross, $1,428.00 after the 30 percent set aside."; }
+    var s=D601["re-theobald-sell"];
+    if(s){ s.source="Chris's client"; s.ianSplit=0.2; s.priceEstimate=true;
+      s.priceNote="ESTIMATED $325,000 to $330,000 (Ian, 10 Nov). The app reads the low end.";
+      s.ianExpected="Ian 20 percent (Chris's client, confirmed 10 Nov). Close in December 2026, 2026 rules: $1,989.00 to $2,019.60 gross. Close in January 2027, 2027 rules with no 15 percent cut: $2,340.00 to $2,376.00 gross, $1,638.00 to $1,663.20 after the set aside."; }
+    state.meta.mig601_theo1110=true; save(true);
+    try{ console.log("mig601: theobald 20 percent both sides, estimates set"); }catch(_){}
+} }catch(e){ try{ console.warn("mig601 did not apply:",e&&e.message); }catch(_){} }
+
 
 
 
