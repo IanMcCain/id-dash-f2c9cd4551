@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 601 (2026-11-10)">
+<meta name="build" content="v21 build 602 (2026-11-10)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -30478,6 +30478,31 @@ try{ if(profile==="ian" && state.meta && !state.meta.mig601_theo1110 && state.re
     state.meta.mig601_theo1110=true; save(true);
     try{ console.log("mig601: theobald 20 percent both sides, estimates set"); }catch(_){}
 } }catch(e){ try{ console.warn("mig601 did not apply:",e&&e.message); }catch(_){} }
+
+
+/* ===== v21 build 602: REAL ESTATE OVERVIEW, 10 NOV 2026 NIGHT (RE-OVERVIEW-1110) ==============
+   Guard state.meta.mig602_re1110n. Sources: realtor.com listing 10828 S 218th St read 10 Nov night
+   (Pending, list $579,000, listed by Kristy Howell, BHGRE); Chris's texts decoded to 10 Nov 7:37 PM CST.
+   Theobald contract price is still NOT seen in any document; $579,000 is the LIST price used as the
+   estimate. No risk state on any deal. ===== */
+try{ if(profile==="ian" && state.meta && !state.meta.mig602_re1110n && state.realEstate){
+    var D602={}; (state.realEstate.deals||[]).forEach(function(d){ if(d&&d.id) D602[d.id]=d; });
+    var b2=D602["re-theobald-buy"];
+    if(b2){ b2.priceWas602=b2.price; b2.price="$579,000"; b2.priceEstimate=true;
+      b2.priceNote="ESTIMATED at the $579,000 list price (realtor.com shows Pending, 10 Nov). Contract price not seen: DotLoop loop 334634978 still empty, nothing in mail. Chris told the buyers 1 percent earnest is close to $6,000, which fits about $579,000 to $600,000.";
+      b2.ianExpected="Ian 20 percent (Chris's client). Estimate at $579,000, 2026 rules: 2.4 percent = $13,896.00, less brokerage 15 percent of 2.4 = $11,811.60, Ian 20 percent = $2,362.32 gross, less NP Dodge 5 percent = $2,244.20 paid, 30 percent set aside $708.70, $1,535.50 spendable.";
+      b2.lender="West Gate Bank, Tyler Peterson (HELOC funds shown for the purchase)"; }
+    var lb2=D602["re-limoges-buy"];
+    if(lb2){ lb2.rowNote="Showings done Mon 9 and Tue 10 Nov; they liked Jefferson. Next showings SUN 15 Nov (Elisa 10 Nov evening: Saturday does not work, her husband works), about four homes including 5815 S 104th Ave. No offer intent yet."; }
+    var v2=D602["re-vogel-sell"];
+    if(v2){ v2.rowNote="Closing Thu 19 Nov 2026. Buyer final walk through Tue 17 Nov, 1 to 4 PM (Duggan, 10 Nov; seller says all clear, movers Thu 12 Nov). Buyer takes the curtains."; }
+    var p2=D602["re-belknap-sell"];
+    if(p2){ p2.rowNote="4946 Pratt, Habitat cash, $250,000, closing Wed 25 Nov 2026, Professional Title. Inspection done Mon 9 Nov; the buyer's agent says the inspection items come Wed 11 Nov morning. Objection deadline Fri 20 Nov 5 PM, resolution Tue 24 Nov (counted from acceptance)."; }
+    var s2=D602["re-sydney-spicer-sell"];
+    if(s2){ s2.rowNote="Sydney and Erich: like Highland Trails, want to move forward on a builder and lot. Open to Heavican and Silverstone as well as Trademark. Chris is asking the developer which lots are open (10 Nov)."; }
+    state.meta.mig602_re1110n=true; save(true);
+    try{ console.log("mig602: real estate overview 10 Nov night applied"); }catch(_){}
+} }catch(e){ try{ console.warn("mig602 did not apply:",e&&e.message); }catch(_){} }
 
 
 
