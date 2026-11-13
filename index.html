@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 607 (2026-11-11)">
+<meta name="build" content="v21 build 608 (2026-11-12)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -30644,6 +30644,101 @@ try{ if(profile==="ian" && state.meta && !state.meta.mig606_q1111){
     state.meta.mig606_q1111=true; save(true);
     try{ console.log("mig606: dupr, theobald, 30 Oct session applied"); }catch(_){}
 } }catch(e){ try{ console.warn("mig606 did not apply:",e&&e.message); }catch(_){} }
+/* ===== v21 build 608: DEEP DIVE 12 NOV 2026, REAL ESTATE AND FINANCE REFRESH (APP-DEEPDIVE-1112) ==========
+   Guard state.meta.mig608_dd1112. Sources: Ian via Dispatch 12 Nov 2026 (Hernandez delayed about a week for a
+   whole home pre inspection, new list date TBD; Limoges passed on 9323 S 168th Ave Cir, Lincoln off, next showings
+   Sun 15 Nov; Theobald $579,000 cash closes 27 Nov at DRI Title; Willis, Mattox and Spicer close Fri 13 Nov; Vogel
+   19 Nov; Belknap 25 Nov; Amex Gold $4,559 left by 3/20, Blue $4,449 left by 1/21; DUPR singles 3.371, doubles 3.226)
+   and Chris's texts decoded to 12 Nov about 7:30 PM CST. No list date is invented for Hernandez. No risk state. ===== */
+try{ if(profile==="ian" && state.meta && !state.meta.mig608_dd1112){
+    var AS608="Ian via Dispatch, 12 Nov 2026";
+    var TX608="Chris's texts, 12 Nov 2026";
+    state.archive=state.archive||{};
+    if(state.realEstate){
+      var D608={}; (state.realEstate.deals||[]).forEach(function(d){ if(d&&d.id) D608[d.id]=d; });
+      var h=D608["re-hernandez-sell"];
+      if(h){
+        state.archive.hernandezPreB608={ close:h.close, rowNote:h.rowNote, pipeStatus:h.pipeStatus, listDateNote:h.listDateNote, timeline:h.timeline?JSON.parse(JSON.stringify(h.timeline)):null, upcoming:h.upcoming?JSON.parse(JSON.stringify(h.upcoming)):null };
+        h.close="List date TBD (pre inspection first)";
+        h.rowNote="Listing DELAYED about a week for a whole home pre inspection after the property disclosure (Ian, 12 Nov). New list date TBD. List $450,000.";
+        h.listDateNote="LIST DATE TBD ("+AS608+": delayed about a week for a whole home pre inspection after the disclosure). Was Friday 13 November 2026. List $450,000, unchanged.";
+        h.pipeStatus="Delayed about a week for a whole home pre inspection, new list date TBD ("+AS608+"). Close is uncertain: late December 2026 or early January 2027.";
+        h.preInspection={ asOf:"2026-11-12", status:"Being booked", source:TX608,
+          text:"Chris asked an inspector on 12 Nov for Mon 16 or Tue 17 Nov, or sooner. Disclosure items: a whole house humidifier set too high last winter left water stains on one bedroom ceiling; low pressure at the kitchen faucet. Not booked in the texts read." };
+        if(h.timeline && typeof h.timeline==="object"){ h.timeline.listTarget="TBD"; h.timeline.moved="Delayed on 12 Nov 2026 about a week for a whole home pre inspection ("+AS608+"). Earlier: 12 Nov (20 Oct), 5 Nov (21 Oct), 12 Nov (31 Oct), 13 Nov (11 Nov)."; }
+        if(h.upcoming && typeof h.upcoming==="object") h.upcoming.due="Before the new list date (TBD)";
+        h.listDateMoved={ from:"2026-11-13", to:"", on:"2026-11-12", by:AS608 };
+        if(typeof h.note==="string" && h.note.indexOf("UPDATE 12 NOVEMBER 2026 (B608)")<0) h.note="UPDATE 12 NOVEMBER 2026 (B608): LISTING DELAYED ABOUT A WEEK FOR A WHOLE HOME PRE INSPECTION AFTER THE DISCLOSURE; NEW LIST DATE TBD ("+AS608+"). Every earlier list date below is history. "+h.note;
+      }
+      var lb=D608["re-limoges-buy"];
+      if(lb){ state.archive.limogesBuyRowNoteB607=lb.rowNote;
+        lb.rowNote="Passed on 9323 S 168th Ave Cir after the Wed 11 Nov showing (Jed did not like it as much). Lincoln is off the search. Next showings Sun 15 Nov, time not set; Elisa sent the list 12 Nov (867 S 156th Ave, 705 Eagle View Dr, 206 Summerset Dr, 815 Magnolia Dr and two more links). She asked for a Fri 13 Nov evening look at one Jed likes (open house this weekend); not confirmed in the texts."; }
+      var tb=D608["re-theobald-buy"];
+      if(tb){ state.archive.theobaldBuyRowNoteB607=tb.rowNote; tb.titleCompany="DRI Title";
+        tb.rowNote="$579,000 cash, closes Fri 27 Nov 2026 at DRI Title. New build inspection Mon 16 Nov, walk through 4:30 PM. Chris asked the builder for another buyer look Sat 14 Nov 8:30 AM (not confirmed). Commission clarification addendum sent 11 Nov: the seller pays the 2.4 percent.";
+        tb.inspection={ date:"2026-11-16", time:"4:30 PM walk through", source:TX608, text:"Inspection ordered for Monday afternoon, walk through 4:30 PM (Chris, 12 Nov)." }; }
+      var ts=D608["re-theobald-sell"];
+      if(ts){ state.archive.theobaldSellRowNoteB607=ts.rowNote;
+        ts.rowNote="List as soon as possible, likely end of November or early December (Ian, 10 Nov). No list date set. Pre inspection on this house still to do (Scott, 12 Nov)."; }
+      var sp=D608["re-allison-spicer-buy"];
+      if(sp){ state.archive.spicerBuyB607={ rowNote:sp.rowNote, riskLine:sp.riskLine };
+        sp.rowNote="Closing Fri 13 Nov moved to 2:00 PM by the lender (email outage). Cashier's check instead of a wire. Escrow holdback set with the lender.";
+        sp.riskLine="Closing Fri 13 Nov, 2:00 PM. Income to Ian is modeled at zero."; }
+      var wl=D608["re-cynthia-willis"];
+      if(wl){ state.archive.willisRowNoteB607=wl.rowNote;
+        wl.rowNote="Final walk through done Thu 12 Nov. Closing Fri 13 Nov, remote, time not set (listing side, 11 Nov). Chris has the garage opener from Byron."; }
+      var mx=D608["re-mattox-sell"];
+      if(mx && typeof mx.rowNote==="string" && mx.rowNote.indexOf("Fri 13 Nov")<0) mx.rowNote="Closing Fri 13 Nov 2026 at 11:00 AM, Ambassador Title.";
+      var bk=D608["re-belknap-sell"];
+      if(bk){ state.archive.belknapRowNoteB607=bk.rowNote;
+        bk.rowNote="4946 Pratt, Habitat cash, $250,000, closing Wed 25 Nov 2026, Professional Title. Inspection resolution addendum received 11 Nov; the sellers are getting contractor numbers (Chris, 12 Nov). Objection deadline Fri 20 Nov 5 PM."; }
+      var sy=D608["re-sydney-spicer-sell"];
+      if(sy){ state.archive.sydneyRowNoteB607=sy.rowNote;
+        sy.rowNote="Sydney and Erich: want to move forward on a builder and lot. Chris sent Trademark walkout lots 12 Nov: lots 91, 158 and 167, $110,000 each, with the plat map."; }
+      /* Retire the Vogel pre approval to do: Vogel is set to close 19 Nov with Home Federal (DotLoop closing sheet), so a letter due 19 Oct is moot. Archive, never delete. */
+      if(!Array.isArray(state.archive.todosDone)) state.archive.todosDone=[];
+      if(!Array.isArray(state.meta.retiredTodoIds)) state.meta.retiredTodoIds=[];
+      ["ret-20261017-vogel-preapproval"].forEach(function(id){
+        var old=null; (state.realEstate.todos||[]).forEach(function(t){ if(t&&t.id===id) old=t; });
+        if(!state.archive.todosDone.some(function(a){ return a&&a.id===id; }))
+          state.archive.todosDone.push({ id:id, text:(old&&old.text)||"", done:false, retiredOn:"2026-11-12", reason:"Moot: Vogel closes Thu 19 Nov 2026 with Home Federal financing (DotLoop closing sheet, 11 Nov). Retired in the 12 Nov deep dive." });
+        if(state.meta.retiredTodoIds.indexOf(id)<0) state.meta.retiredTodoIds.push(id);
+      });
+      state.realEstate.todos=(state.realEstate.todos||[]).filter(function(t){ return !(t && t.id==="ret-20261017-vogel-preapproval"); });
+      (state.realEstate.todos||[]).forEach(function(t){
+        if(t && t.id==="ret-20260830-theobald-walk"){ state.archive.theobaldWalkTodoB607=t.text;
+          t.text="Book the pre inspection on the Theobald house, 5014 S 163 St. Scott, 12 Nov: they still need it so they know what has to be addressed before listing.";
+          t.short="Theobald house pre inspection"; }
+      });
+    }
+    /* Events in the app (NOT the calendar). The Hernandez list date has no date now, so its event is archived, not moved. */
+    if(Array.isArray(state.events)){
+      state.archive.eventsRemovedB608=state.archive.eventsRemovedB608||[];
+      state.events=state.events.filter(function(e){
+        if(e && e.id==="ev-20261112-hernandez-live"){ state.archive.eventsRemovedB608.push(JSON.parse(JSON.stringify(e))); return false; }
+        return true; });
+      state.events.forEach(function(e){
+        if(e && e.id==="ev-20261113-belknap-close"){ e.date="2026-11-25"; e.title="Belknap closing, 4946 Pratt St"; e.note="Wed 25 Nov 2026, Professional Title (purchase agreement). Moved from the dead 13 Nov contract on 12 Nov 2026."; }
+        if(e && e.id==="ev-20261113-spicer-buy-close"){ e.time="2:00 PM"; e.title="Spicer new construction closing, 2:00 PM"; e.note="Moved from 8:00 AM to 2:00 PM by the lender, email outage (Chris, 12 Nov 2026)."; }
+      });
+      var EV608=[
+        { id:"ev-20261115-limoges-showings", date:"2026-11-15", kind:"Real estate", title:"Limoges showings, time not set", note:"About six homes, list from Elisa 12 Nov. Calendar holds an all day placeholder." },
+        { id:"ev-20261116-theobald-inspection", date:"2026-11-16", time:"4:30 PM", kind:"Real estate", title:"Theobald new build inspection, walk through 4:30 PM", note:TX608 },
+        { id:"ev-20261117-vogel-walk", date:"2026-11-17", time:"1:00 PM", kind:"Real estate", title:"Vogel buyer final walk through, 1 to 4 PM", note:"Duggan, 10 Nov 2026." },
+        { id:"ev-20261127-theobald-close", date:"2026-11-27", kind:"Real estate", title:"Theobald closing, 10828 S 218th St, DRI Title", note:"Fri 27 Nov 2026, cash, $579,000 (DotLoop). Time not set." } ];
+      EV608.forEach(function(x){ if(!state.events.some(function(e){ return e&&e.id===x.id; })) state.events.push(x); });
+    }
+    /* Amex welcome offers, Ian's own figures 12 Nov 2026. */
+    if(state.finance && Array.isArray(state.finance.cards)){
+      state.finance.cards.forEach(function(c){ if(!c) return;
+        if(c.id==="amexgold"){ c.offerNoteWas608=String(c.offerNote||""); c.offerNote="Welcome offer: $4,559 left of $8,000 by Mar 20, 2027 (Ian, 12 Nov). Earns 100,000 points if met. Mid January checkpoint: El Salvador in March or June."; c.offerLeft=4559; c.offerBy="2027-03-20"; c.offerAsOf="2026-11-12"; }
+        if(c.id==="amexblue"){ c.offerNoteWas608=String(c.offerNote||""); c.offerNote="Welcome offer: $4,449 left of $5,000 by Jan 21, 2027 (Ian, 12 Nov). Earns 15,000 points if met."; c.offerLeft=4449; c.offerBy="2027-01-21"; c.offerAsOf="2026-11-12"; }
+      });
+    }
+    /* DUPR: singles 3.371, doubles 3.226 already stand from build 606. Confirmed, no new row. */
+    state.meta.mig608_dd1112=true; save(true);
+    try{ console.log("mig608: deep dive 12 Nov, real estate and finance refreshed"); }catch(_){}
+} }catch(e){ try{ console.warn("mig608 did not apply:",e&&e.message); }catch(_){} }
 
 
 
