@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 608 (2026-11-12)">
+<meta name="build" content="v21 build 609 (2026-11-13)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -30739,6 +30739,58 @@ try{ if(profile==="ian" && state.meta && !state.meta.mig608_dd1112){
     state.meta.mig608_dd1112=true; save(true);
     try{ console.log("mig608: deep dive 12 Nov, real estate and finance refreshed"); }catch(_){}
 } }catch(e){ try{ console.warn("mig608 did not apply:",e&&e.message); }catch(_){} }
+/* ===== v21 build 609: ORGANIZE PASS 13 NOV 2026 (ORG-1113). Stale since 608 plus clutter ==========
+   Guard state.meta.mig609_org1113. Sources: Chris's texts 12 Nov 8 PM to 13 Nov 10:21 AM CST (Willis closed,
+   TitleCore notice 9:09 AM; Hernandez inspector Justin Mon 16 Nov PM booked 12 Nov 7:16 PM; Theobald Sat 14 Nov
+   8:30 AM look confirmed by the builder side; Belknap shower drain fixed at no charge 13 Nov; Limoges paint
+   approved, carpet at NFM Sat). Clutter: app events dated before today and done to dos move to archive. No risk state. ===== */
+try{ if(profile==="ian" && state.meta && !state.meta.mig609_org1113){
+    var TX609="Chris's texts, 13 Nov 2026";
+    state.archive=state.archive||{};
+    if(state.realEstate){
+      var D609={}; (state.realEstate.deals||[]).forEach(function(d){ if(d&&d.id) D609[d.id]=d; });
+      var wl9=D609["re-cynthia-willis"];
+      if(wl9){ state.archive.willisB608={ stage:wl9.stage, rowNote:wl9.rowNote };
+        wl9.stage="Closed"; wl9.closedOn="2026-11-13";
+        wl9.rowNote="CLOSED Fri 13 Nov 2026 (TitleCore notice 9:09 AM, "+TX609+"). $610,000. Next: sign and lockbox pickup."; }
+      var h9=D609["re-hernandez-sell"];
+      if(h9){ h9.preInspection={ asOf:"2026-11-13", status:"Booked", date:"2026-11-16", time:"Afternoon, time not set", source:"Chris's texts, 12 Nov 2026 7:16 PM",
+          text:"Inspector Justin has Monday 16 Nov afternoon; Chris is paying. A roofer was asked about possible hail damage. Chris: we will know everything by Monday night. Disclosure items: humidifier ceiling stains in one bedroom, low kitchen faucet pressure." }; }
+      var tb9=D609["re-theobald-buy"];
+      if(tb9){ state.archive.theobaldBuyRowNoteB608=tb9.rowNote;
+        tb9.rowNote="$579,000 cash, closes Fri 27 Nov 2026 at DRI Title. Second look Sat 14 Nov 8:30 AM (confirmed). New build inspection Mon 16 Nov, walk through 4:30 PM. Seller pays the 2.4 percent (addendum 11 Nov)."; }
+      var bk9=D609["re-belknap-sell"];
+      if(bk9){ state.archive.belknapRowNoteB608=bk9.rowNote;
+        bk9.rowNote="4946 Pratt, Habitat cash, $250,000, closing Wed 25 Nov 2026, Professional Title. Inspection repairs: shower drain fixed at no charge 13 Nov; concrete estimate for the back stoop and sidewalk coming; gutter and fascia estimate pending. Objection deadline Fri 20 Nov 5 PM."; }
+      var ls9=D609["re-limoges-sell"];
+      if(ls9){ state.archive.limogesSellRowNoteB608=ls9.rowNote;
+        ls9.rowNote="Coming soon, not listed, $214,900 working and unsigned. 13 Nov (Elisa): paint estimate approved, carpet at NFM Sat 14 Nov, clearing the house next week, pre inspection to be booked; she asked when to set the carpet and paint appointments."; }
+      /* Done to dos: archive, never delete. */
+      if(!Array.isArray(state.archive.todosDone)) state.archive.todosDone=[];
+      if(!Array.isArray(state.meta.retiredTodoIds)) state.meta.retiredTodoIds=[];
+      var keepT=[];
+      (state.realEstate.todos||[]).forEach(function(t){
+        if(t && t.done===true && t.id){
+          if(!state.archive.todosDone.some(function(a){ return a&&a.id===t.id; })) state.archive.todosDone.push(Object.assign({},t,{ retiredOn:"2026-11-13", reason:"Done, cleared in the 13 Nov organize pass." }));
+          if(state.meta.retiredTodoIds.indexOf(t.id)<0) state.meta.retiredTodoIds.push(t.id);
+        } else keepT.push(t);
+      });
+      state.archive.todosClearedB609=(state.realEstate.todos||[]).length-keepT.length;
+      state.realEstate.todos=keepT;
+    }
+    if(Array.isArray(state.events)){
+      state.archive.eventsPastB609=state.archive.eventsPastB609||[];
+      state.events=state.events.filter(function(e){
+        if(e && typeof e.date==="string" && e.date<"2026-11-13" && !/tourn|pickle|gym|birthday/i.test(String(e.kind||"")+" "+String(e.title||""))){ state.archive.eventsPastB609.push(JSON.parse(JSON.stringify(e))); return false; }
+        return true; });
+      state.events.forEach(function(e){ if(e && e.id==="ev-20261113-willis-close"){ e.title="Willis closed, 10218 Spyglass Dr"; e.note="Closed 13 Nov 2026, TitleCore notice 9:09 AM."; } });
+      var x9={ id:"ev-20261116-hernandez-preinspection", date:"2026-11-16", kind:"Real estate", title:"Hernandez whole home pre inspection, afternoon", note:"Inspector Justin, time not set; Chris paying (texts 12 Nov)." };
+      if(!state.events.some(function(e){ return e&&e.id===x9.id; })) state.events.push(x9);
+    }
+    state.meta.mig609_org1113=true; save(true);
+    try{ console.log("mig609: organize pass 13 Nov applied"); }catch(_){}
+} }catch(e){ try{ console.warn("mig609 did not apply:",e&&e.message); }catch(_){} }
+
 
 
 
