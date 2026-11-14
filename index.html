@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 609 (2026-11-13)">
+<meta name="build" content="v21 build 610 (2026-11-13)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -30790,6 +30790,58 @@ try{ if(profile==="ian" && state.meta && !state.meta.mig609_org1113){
     state.meta.mig609_org1113=true; save(true);
     try{ console.log("mig609: organize pass 13 Nov applied"); }catch(_){}
 } }catch(e){ try{ console.warn("mig609 did not apply:",e&&e.message); }catch(_){} }
+/* ===== v21 build 610: MINI DEEP DIVE 13 NOV 2026 EVENING (APP-DD-1113) ==========
+   Guard state.meta.mig610_dd1113. Sources: Chris's texts 13 Nov 10:21 AM to 7:53 PM CST (Mattox closed, buyer's agent
+   11:11 AM; Spicer closed, Chris 2:08 PM; Limoges sell pre inspection Thu 19 Nov 8:30 AM with Andy at NPI, walk through
+   11:45 AM; Fisher consultation moved to Tue 17 Nov 5:00 PM; Belknap rough repair numbers; Hernandez roofer and key) and
+   Ian via Dispatch 13 Nov (William Cir under contract; Limoges showings tonight 6:00 at 1432 S 136th St and 6:45 at
+   867 S 156th Ave; Hernandez key pickup this weekend). No risk state. ===== */
+try{ if(profile==="ian" && state.meta && !state.meta.mig610_dd1113){
+    var TX610="Chris's texts, 13 Nov 2026";
+    var AS610="Ian via Dispatch, 13 Nov 2026";
+    state.archive=state.archive||{};
+    if(state.realEstate){
+      var D610={}; (state.realEstate.deals||[]).forEach(function(d){ if(d&&d.id) D610[d.id]=d; });
+      var mx0=D610["re-mattox-sell"];
+      if(mx0){ state.archive.mattoxB609={ stage:mx0.stage, rowNote:mx0.rowNote };
+        mx0.stage="Closed"; mx0.closedOn="2026-11-13";
+        mx0.rowNote="CLOSED Fri 13 Nov 2026 (buyer's agent 11:11 AM, "+TX610+"). $490,000, Ambassador Title."; }
+      var sp0=D610["re-allison-spicer-buy"];
+      if(sp0){ state.archive.spicerBuyB609={ stage:sp0.stage, rowNote:sp0.rowNote, riskLine:sp0.riskLine };
+        sp0.stage="Closed"; sp0.closedOn="2026-11-13";
+        sp0.rowNote="CLOSED Fri 13 Nov 2026 (Chris 2:08 PM, "+TX610+"). $894,446. Income to Ian is zero by design.";
+        sp0.riskLine="Closed 13 Nov 2026. Income to Ian is modeled at zero."; }
+      var h0=D610["re-hernandez-sell"];
+      if(h0){ state.archive.hernandezRowNoteB609=h0.rowNote;
+        h0.rowNote="Listing DELAYED about a week, new list date TBD (Ian, 12 Nov). Pre inspection Mon 16 Nov afternoon; roofer out 13 or 14 Nov. Spare key for a porch lockbox, pickup this weekend (Ian). List $450,000.";
+        if(h0.preInspection && typeof h0.preInspection==="object") h0.preInspection.roof="Roofer coming 13 or 14 Nov. State Farm will not send a third adjuster without contractor documentation; Ricky sent the claim document 13 Nov ("+TX610+")."; }
+      var lb0=D610["re-limoges-buy"];
+      if(lb0){ state.archive.limogesBuyRowNoteB609=lb0.rowNote;
+        lb0.rowNote="William Cir went under contract 13 Nov morning. Tonight Fri 13 Nov: 6:00 PM 1432 S 136th St, 6:45 PM 867 S 156th Ave (both on market over a month). Sun 15 Nov: three homes, all without an HOA, times not set. Passed on 9323 S 168th Ave Cir; Lincoln off."; }
+      var ls0=D610["re-limoges-sell"];
+      if(ls0){ state.archive.limogesSellRowNoteB609=ls0.rowNote;
+        ls0.rowNote="Coming soon, not listed, $214,900 working and unsigned. Pre inspection Thu 19 Nov 8:30 AM with Andy at NPI, walk through 11:45 AM. Paint approved, carpet at NFM Sat 14 Nov."; }
+      var bk0=D610["re-belknap-sell"];
+      if(bk0){ state.archive.belknapRowNoteB609=bk0.rowNote;
+        bk0.rowNote="4946 Pratt, Habitat cash, $250,000, closing Wed 25 Nov 2026, Professional Title. Plumbing fixed at no charge. Rough repair numbers, not estimates in hand: gutters and fascia about $2,000, concrete stoop and back sidewalk $1,000 to $2,000. Sellers lean toward money off. Objection deadline Fri 20 Nov 5 PM."; }
+    }
+    if(Array.isArray(state.events)){
+      state.events.forEach(function(e){
+        if(!e) return;
+        if(e.id==="ev-20261113-mattox-close"){ e.title="Mattox closed, 19859 Burke St"; e.note="Closed 13 Nov 2026 ("+TX610+")."; }
+        if(e.id==="ev-20261113-spicer-buy-close"){ e.title="Spicer new construction closed"; e.note="Closed 13 Nov 2026, Chris 2:08 PM."; }
+        if(e.id==="ev-20261113-fisher-consult"){ e.date="2026-11-17"; e.time="5:00 PM"; e.title="Home consultation, Danielle Fisher, 5:00 PM, 18845 Jacobs Cir"; e.note="Moved from Fri 13 Nov 3:30 PM at her request ("+TX610+")."; }
+        if(e.id==="ev-20261115-limoges-showings"){ e.title="Limoges showings, three homes, times not set"; }
+      });
+      var EV610=[
+        { id:"ev-20261113-limoges-136th", date:"2026-11-13", time:"6:00 PM", kind:"Real estate", title:"Limoges showing, 1432 S 136th St, 6:00 PM", note:AS610 },
+        { id:"ev-20261113-limoges-156th", date:"2026-11-13", time:"6:45 PM", kind:"Real estate", title:"Limoges showing, 867 S 156th Ave, 6:45 PM", note:AS610 },
+        { id:"ev-20261119-limoges-preinspection", date:"2026-11-19", time:"8:30 AM", kind:"Real estate", title:"Limoges pre inspection, 3129 S 17th St, 8:30 AM, walk through 11:45 AM", note:"Andy, National Property Inspections ("+TX610+")." } ];
+      EV610.forEach(function(x){ if(!state.events.some(function(e){ return e&&e.id===x.id; })) state.events.push(x); });
+    }
+    state.meta.mig610_dd1113=true; save(true);
+    try{ console.log("mig610: mini deep dive 13 Nov applied"); }catch(_){}
+} }catch(e){ try{ console.warn("mig610 did not apply:",e&&e.message); }catch(_){} }
 
 
 
