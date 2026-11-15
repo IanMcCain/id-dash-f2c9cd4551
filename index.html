@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 612 (2026-11-15)">
+<meta name="build" content="v21 build 613 (2026-11-15)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -30919,6 +30919,34 @@ try{ if(profile==="ian" && state.meta && !state.meta.mig612_dd1115){
     state.meta.mig612_dd1115=true; save(true);
     try{ console.log("mig612: deep dive 15 Nov applied"); }catch(_){}
 } }catch(e){ try{ console.warn("mig612 did not apply:",e&&e.message); }catch(_){} }
+/* ===== v21 build 613: FINANCE PAGE REFRESH, 15 NOV 2026 (APP-DD-1115B) ==========
+   Guard state.meta.mig613_fin1115. Source: money lane 15 Nov 2026 (Plaid read only cache 15 Nov; the Sheet "Ian 2026 Business
+   vs Personal" after the approved 15 Nov write: Business 106 rows, $4,093.84 paid, $3,056.07 deductible, Ask Ian 0). Discover
+   is not linked in Plaid, so its balance is left as last read. Balances listed per account, never summed. ===== */
+try{ if(profile==="ian" && state.meta && !state.meta.mig613_fin1115 && state.finance){
+    var F613=state.finance;
+    var SRC613="Plaid read only cache, 15 November 2026 (money lane).";
+    F613.asOfWas613=F613.asOf||""; F613.asOf="2026-11-15";
+    F613.source="Plaid read only cache 15 November 2026 and the Business vs Personal Sheet after the 15 Nov write. Discover not linked (last read 10 Nov). Balances are listed per account and never summed.";
+    var setB3=function(o,v){ if(!o) return; if(o.balance!==v){ o.balanceWas={value:o.balance,asOf:F613.asOfWas613||""}; } o.balance=v; if("read" in o) o.read=v; o.balanceSource=SRC613; };
+    (F613.accounts||[]).forEach(function(a){ if(!a) return;
+      if(a.id==="fnbo8909") setB3(a,328.77);
+      if(a.id==="fnbo1177") setB3(a,175);
+    });
+    (F613.cards||[]).forEach(function(c){ if(!c) return;
+      if(c.id==="amexgold") setB3(c,3204.49);
+      if(c.id==="amexblue") setB3(c,626.64);
+    });
+    var LG613=F613.ledger||(F613.ledger={});
+    LG613.was613={ charges:LG613.charges, paid:LG613.paid, documented:LG613.documented, askIan:LG613.askIan };
+    LG613.asOf="2026-11-15";
+    LG613.source="Sheet \"Ian 2026 Business vs Personal\", 15 Nov 2026 write (941 rows, tie out zero).";
+    LG613.charges=106; LG613.paid=4093.84; LG613.documented=3056.07;
+    LG613.askIan={rows:0,amount:0};
+    LG613.note="15 November 2026: 106 business charges, $4,093.84 paid, $3,056.07 deductible. Ask Ian is empty. Four newer pending charges (two Maverik, Walgreens, an Under Armour credit) wait to post.";
+    state.meta.mig613_fin1115=true; save(true);
+    try{ console.log("mig613: finance refreshed to 15 Nov"); }catch(_){}
+} }catch(e){ try{ console.warn("mig613 did not apply:",e&&e.message); }catch(_){} }
 
 
 
