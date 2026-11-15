@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 611 (2026-11-13)">
+<meta name="build" content="v21 build 612 (2026-11-15)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -30859,6 +30859,66 @@ try{ if(profile==="ian" && state.meta && !state.meta.mig611_lim1113){
     state.meta.mig611_lim1113=true; save(true);
     try{ console.log("mig611: limoges sunday order applied"); }catch(_){}
 } }catch(e){ try{ console.warn("mig611 did not apply:",e&&e.message); }catch(_){} }
+/* ===== v21 build 612: DEEP DIVE 15 NOV 2026 (APP-DD-1115) ==========
+   Guard state.meta.mig612_dd1115. Sources: Chris's texts 13 Nov 8 PM to 15 Nov 3:01 PM CST; IAN_MAC_FEED texts 14 and 15 Nov;
+   DotLoop loop 334323534 purchase agreement read 15 Nov 3:50 PM (draft, not shared, unsigned); the Doc "2027 Trip Points Deep
+   Dive" status line (Ian chose 14 Nov). No risk state. ===== */
+try{ if(profile==="ian" && state.meta && !state.meta.mig612_dd1115){
+    var TX612="Chris's texts, 15 Nov 2026";
+    state.archive=state.archive||{};
+    if(state.realEstate){
+      var D612={}; (state.realEstate.deals||[]).forEach(function(d){ if(d&&d.id) D612[d.id]=d; });
+      var h2=D612["re-hernandez-sell"];
+      if(h2){ state.archive.hernandezPreB611=h2.preInspection?JSON.parse(JSON.stringify(h2.preInspection)):null;
+        h2.preInspection={ asOf:"2026-11-15", status:"Booked", date:"2026-11-16", time:"Morning", source:TX612,
+          text:"Andy at NPI does the Hernandez pre inspection Monday morning (Justin has the afternoon Theobald walk through). Vacant, Supra box. Check the attic for moisture or mold from the humidifier. Chris pays.",
+          roof:"Emerald Exteriors says all sides have hail hits; State Farm first said a partial claim. The inspector will note a potential hail claim on roof and siding." };
+        h2.rowNote="Listing DELAYED about a week, new list date TBD (Ian, 12 Nov). Pre inspection Mon 16 Nov morning, Andy at NPI. Hail claim on roof and siding in process with Emerald and State Farm. List $450,000."; }
+      var lb2=D612["re-limoges-buy"];
+      if(lb2){ state.archive.limogesBuyB611={ rowNote:lb2.rowNote, close:lb2.close, ianExpected:lb2.ianExpected };
+        lb2.close="Offer drafted, not yet sent";
+        lb2.offer={ asOf:"2026-11-15", status:"Drafted, not shared, unsigned", source:"DotLoop loop 334323534, read 15 Nov 2026 3:50 PM",
+          property:"867 S 156th Ave, Omaha 68118", price:"$355,000", earnest:"$3,500 within 48 hours", loan:"$305,000, 30 year, US Bank",
+          sellerCosts:"Seller pays up to 3 percent toward closing costs, prepaids and allowable expenses", saleContingency:"3129 S 17th St by 12/03/2026",
+          closing:"01/15/2027", expires:"Mon 16 Nov 2026, 6 PM", listingAgent:"Chris Egan, BHHS Ambassador" };
+        lb2.rowNote="OFFER DRAFTED on 867 S 156th Ave: $355,000, $3,500 earnest, $305,000 conventional, seller up to 3 percent of costs, sale contingency on their house by 3 Dec, closing 15 Jan 2027, expires Mon 16 Nov 6 PM. Not sent yet. Sunday tour done; 815 Magnolia Dr to be rescheduled (could not get in).";
+        lb2.ianExpected="Ian 80 percent. At the drafted $355,000, if accepted and closed 15 Jan 2027, 2027 rules: $6,816.00 gross. ESTIMATE, not expected income until accepted."; }
+      var ls2=D612["re-limoges-sell"];
+      if(ls2){ state.archive.limogesSellRowNoteB611=ls2.rowNote;
+        ls2.rowNote="Coming soon, not listed, $214,900 working and unsigned. Pre inspection Thu 19 Nov 8:30 AM, Andy at NPI, walk through 11:45 AM. The buy offer is contingent on selling this house by 3 Dec. Chris is preparing seller cost sheets."; }
+      var tb2=D612["re-theobald-buy"];
+      if(tb2){ state.archive.theobaldBuyRowNoteB611=tb2.rowNote;
+        tb2.rowNote="$579,000 cash, closes Fri 27 Nov 2026 at DRI Title. New build inspection Mon 16 Nov, walk through 4:30 PM with Justin at NPI. Seller pays the 2.4 percent (addendum 11 Nov)."; }
+      var bk2=D612["re-belknap-sell"];
+      if(bk2){ state.archive.belknapRowNoteB611=bk2.rowNote;
+        bk2.rowNote="4946 Pratt, Habitat cash, $250,000, closing Wed 25 Nov 2026, Professional Title. Waiting on the concrete estimate (15 Nov); then the sellers either credit the buyers or prepay the work. Objection deadline Fri 20 Nov 5 PM."; }
+      var sy2=D612["re-sydney-spicer-sell"];
+      if(sy2){ state.archive.sydneyRowNoteB611=sy2.rowNote;
+        sy2.rowNote="Sydney and Erich Christiansen: builder and lot. Harvest Creek lots sent 12 Nov; Sydney is not sold on Gretna schools, Erich wants to be closer to work. Call with Chris Mon 16 Nov 3:00 PM."; }
+    }
+    if(Array.isArray(state.events)){
+      state.archive.eventsB612=state.archive.eventsB612||[];
+      state.events.forEach(function(e){
+        if(!e) return;
+        if(e.id==="ev-20261116-hernandez-preinspection"){ e.title="Hernandez pre inspection, morning, Andy at NPI"; e.note="Corrected 15 Nov: morning with Andy, not afternoon with Justin ("+TX612+")."; }
+        if(e.id==="ev-20261115-limoges-showings"){ e.title="Limoges showings done; 815 Magnolia Dr to be rescheduled"; }
+        if(/el salvador/i.test(String(e.title||"")) && String(e.date||"")==="2027-03-05"){ state.archive.eventsB612.push(JSON.parse(JSON.stringify(e))); e.title="El Salvador trip, ON HOLD (Rome trip chosen 14 Nov)"; e.note="Ian chose Rome plus Sorrento, Apr 13 to 19 2027, on 14 Nov 2026."; }
+      });
+      var EV612=[
+        { id:"ev-20261116-limoges-offer-expires", date:"2026-11-16", time:"6:00 PM", kind:"Real estate", title:"Limoges offer on 867 S 156th Ave expires 6 PM (once sent)", note:"DotLoop loop 334323534, draft read 15 Nov." },
+        { id:"ev-20261116-christiansen-call", date:"2026-11-16", time:"3:00 PM", kind:"Real estate", title:"Christiansen call with Chris, 3:00 PM", note:TX612 },
+        { id:"ev-20270413-rome-trip", date:"2027-04-13", kind:"Trip", title:"Rome plus Sorrento with Bianca, Apr 13 to 19", note:"Chosen by Ian 14 Nov 2026. Book on Gold points after the 100,000 bonus posts (late January)." } ];
+      EV612.forEach(function(x){ if(!state.events.some(function(e){ return e&&e.id===x.id; })) state.events.push(x); });
+    }
+    if(state.finance && Array.isArray(state.finance.cards)){
+      state.finance.cards.forEach(function(c){
+        if(c && c.id==="amexgold" && typeof c.offerNote==="string"){ c.offerNoteWas612=c.offerNote;
+          c.offerNote=c.offerNote.split("Mid January checkpoint: El Salvador in March or June.").join("The 100,000 points are expected late January 2027 for the Rome trip, Apr 13 to 19."); }
+      });
+    }
+    state.meta.mig612_dd1115=true; save(true);
+    try{ console.log("mig612: deep dive 15 Nov applied"); }catch(_){}
+} }catch(e){ try{ console.warn("mig612 did not apply:",e&&e.message); }catch(_){} }
 
 
 
