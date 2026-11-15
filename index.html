@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 613 (2026-11-15)">
+<meta name="build" content="v21 build 614 (2026-11-15)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -30947,6 +30947,28 @@ try{ if(profile==="ian" && state.meta && !state.meta.mig613_fin1115 && state.fin
     state.meta.mig613_fin1115=true; save(true);
     try{ console.log("mig613: finance refreshed to 15 Nov"); }catch(_){}
 } }catch(e){ try{ console.warn("mig613 did not apply:",e&&e.message); }catch(_){} }
+/* ===== v21 build 614: LIMOGES BUY ROLE AND OFFER DETAIL, 15 NOV 2026 (APP-DD-1115C) ==========
+   Guard state.meta.mig614_lim1115. Source: Ian via Dispatch 15 Nov 2026: Ian gets 80 percent of the buy side, buys the
+   closing gifts and runs the transaction through closing (Transaction Coordinator in DotLoop loop 334323534). PA: Oven
+   checked (conveys); Estimated Costs header filled. Preapproval letter pending; Seller Financing box pending Chris. ===== */
+try{ if(profile==="ian" && state.meta && !state.meta.mig614_lim1115 && state.realEstate){
+    var AS614="Ian via Dispatch, 15 Nov 2026";
+    (state.realEstate.deals||[]).forEach(function(d){
+      if(!d || d.id!=="re-limoges-buy") return;
+      state.archive=state.archive||{}; state.archive.limogesBuyB613={ rowNote:d.rowNote, source:d.source };
+      d.ianSplit=0.8; d.source="Ian 80 percent of the buy side (Ian, 15 Nov)";
+      d.ianRole="Ian runs the transaction through closing and buys the closing gifts; Transaction Coordinator in DotLoop loop 334323534 ("+AS614+").";
+      if(d.offer && typeof d.offer==="object"){
+        d.offer.inclusions="Oven conveys (checked on the PA). No washer, dryer, outdoor play equipment, propane tank or storage shed.";
+        d.offer.estimatedCosts="Header filled: price $355,000; loan $305,000 conventional, 7.5 percent, 30 year; down $50,000; close 01/15/2027.";
+        d.offer.pending="Preapproval letter; Seller Financing box (Chris).";
+        d.offer.asOf="2026-11-15"; d.offer.source2=AS614;
+      }
+      d.rowNote="OFFER DRAFTED on 867 S 156th Ave: $355,000, $3,500 earnest, $305,000 conventional (down $50,000), seller up to 3 percent of costs, oven conveys, sale contingency on their house by 3 Dec, closing 15 Jan 2027, expires Mon 16 Nov 6 PM. Pending: preapproval letter, Seller Financing box (Chris). Ian 80 percent; he runs it through closing and buys the closing gifts.";
+    });
+    state.meta.mig614_lim1115=true; save(true);
+    try{ console.log("mig614: limoges buy role and offer detail applied"); }catch(_){}
+} }catch(e){ try{ console.warn("mig614 did not apply:",e&&e.message); }catch(_){} }
 
 
 
