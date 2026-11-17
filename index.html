@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 623 (2026-11-17)">
+<meta name="build" content="v21 build 624 (2026-11-17)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -31055,6 +31055,32 @@ try{ if(profile==="ian" && state.meta && !state.meta.mig618_rb && state.realEsta
     state.meta.mig618_rb=true; save(true);
     try{ console.log("mig618: board short labels applied"); }catch(_){}
 } }catch(e){ try{ console.warn("mig618 did not apply:",e&&e.message); }catch(_){} }
+/* ===== v21 build 624: DEAL BOARD CHECKED AGAINST ITS OWNER, 17 NOV 2026 (DEEPDIVE-APP-1117). Guard state.meta.mig624_dd1117.
+   Owner: BRAIN deal board as of Tue 17 Nov 2026 11:30 AM (Chris's texts to Tue 17 Nov 10:40 AM), Rocket Money read
+   17 Nov 11:29 AM for the two deposits, Ian via Dispatch 17 Nov. Data and labels only: nothing added to the page.
+   Every changed field is copied to state.archive.dealsB623 first. No risk wording. ===== */
+try{ if(profile==="ian" && state.meta && !state.meta.mig624_dd1117 && state.realEstate){
+    state.archive=state.archive||{}; state.archive.dealsB623=state.archive.dealsB623||{};
+    var D624={}; (state.realEstate.deals||[]).forEach(function(d){ if(d&&d.id) D624[d.id]=d; });
+    var set24=function(id,o){ var d=D624[id]; if(!d) return; var b={}; for(var k in o){ b[k]=(d[k]===undefined?null:d[k]); d[k]=o[k]; } state.archive.dealsB623[id]=b; d.boardAsOf="2026-11-17"; };
+    set24("re-cynthia-willis",{ boardDate:"Nov 13", rowNote:"Closed Fri 13 Nov 2026 at $610,000. Paid $3,645.05, deposit Mon 16 Nov 2026." });
+    set24("re-mattox-sell",{ boardDate:"Nov 13", paid:true, actualNet:2379.60, actualNetSource:"Paid $2,379.60: NP Dodge deposit into FNBO 8909 on Tue 17 Nov 2026 (Rocket Money, read 17 Nov). Ian's figure is $2,379.", rowNote:"Closed Fri 13 Nov 2026 at $490,000, Ambassador Title. Paid, deposit Tue 17 Nov 2026." });
+    set24("re-allison-spicer-buy",{ boardDate:"Nov 13", rowNote:"Closed Fri 13 Nov 2026 at $894,446, Omaha National Title. Ian 0 percent, never income." });
+    set24("re-vogel-sell",{ keyDates:"Buyer final walk through Tue 17 Nov 1 to 4 PM. Closes Thu 19 Nov (PJ Morgan); closing time not on file." });
+    set24("re-belknap-sell",{ keyDates:"Closes Wed 25 Nov, time not set (Professional Title). Inspection resolution signed by the sellers Mon 16 Nov; buyer signature not on file as of Tue 17 Nov 10:40 AM. Deadlines on the calendar: objection Fri 20 Nov 5 PM, resolution Tue 24 Nov 5 PM.", rowNote:"4946 Pratt St, Habitat cash, $250,000. Buyer's agent received the addendum Tue 17 Nov 10:25 AM. Buyer wants the concrete prepaid and scheduled; no quote on file." });
+    set24("re-theobald-buy",{ boardDate:"Nov 24, 25 or 27, not settled", close:"Not settled: Tue 24, Wed 25 or Fri 27 Nov 2026", keyDates:"Closing date not settled. Wed 25 Nov was carried (Ian 16 and 17 Nov); texts Tue 17 Nov point to Tue 24 Nov late afternoon, not confirmed by the builder side or title; DotLoop read Fri 27 Nov on 15 Nov. Inspection walk through done Mon 16 Nov. Loan signing Thu 19 Nov 4:00 PM. Objection deadline Tue 24 Nov 5 PM. DRI Title.", rowNote:"10828 S 218th St, Gretna, new build. $579,000 cash, DRI Title. Seller pays the 2.4 percent." });
+    set24("re-limoges-buy",{ boardDate:"Answer expected Nov 17", address:"867 S 156th Ave, Omaha 68118", close:"Offer out, seller answer expected Tue 17 Nov afternoon", keyDates:"Offer $355,000 sent Mon 16 Nov about 1:40 PM. Seller answer expected Tue 17 Nov afternoon; outcome not on file (texts to 10:40 AM). Sale contingency on 3129 S 17th St.", rowNote:"Offer on 867 S 156th Ave, list $365,000. Earnest $3,500, seller help up to $10,000. The figure is an estimate under 2027 rules and is not expected income until the offer is accepted." });
+    set24("re-limoges-sell",{ keyDates:"Pre inspection Thu 19 Nov, inspector at 8:00 AM (Justin, NPI). Has to be made ready to list if the 867 S 156th Ave offer is accepted.", rowNote:"Coming soon, not listed. $214,900 working and unsigned. Paint estimate approved and carpet chosen 14 Nov; install dates not on file. Ian's split is not re-confirmed." });
+    set24("re-rstreet-model",{ keyDates:"Open houses Sundays only, 12 to 4, until Thanksgiving. Sat 21 Nov is off; Saturdays return Sat 28 Nov. $15,000 builder concession for closings before year end.", rowNote:"Model home, MLS 22614537 at $684,900. Not expected income (Ian, 8 Nov)." });
+    set24("re-barkers",{ boardDate:"Live very soon, no date set", close:"No list date set", keyDates:"Going live very soon, nearly ready for packing and staging (Ian, 17 Nov). No list date set.", rowNote:"Lists at $284,900 (Ian, 11 Nov). Expected sale about $283,000 to $285,000." });
+    set24("re-hernandez-sell",{ boardDate:"Target Nov 19, date not set", address:"8617 N 177th St, Bennington", close:"Target go live Thu 19 Nov 2026, list date not set", keyDates:"Pre inspection done Mon 16 Nov (Andy, NPI). Moisture mitigation needed and being arranged. Target go live Thu 19 Nov (Ian 17 Nov: hopefully); list date not set.", rowNote:"List $450,000. Staged, photos and Zillow 360 done 12 Nov. Close estimated late Dec 2026 or Jan 2027." });
+    set24("re-theobald-sell",{ keyDates:"Pre inspection Fri 20 Nov morning, walk through 12:30 PM (NPI). Needs full staging; it will be vacant. List target end of Nov or early Dec; no list date set.", rowNote:"5014 S 163rd St. Working price $325,000 to $330,000." });
+    set24("re-fisher-sell",{ boardDate:"Consult Wed Nov 18, 5 PM", close:"Consultation Wed 18 Nov 5:00 PM", keyDates:"Consultation Wed 18 Nov 5:00 PM (moved from Tue 17 Nov). Attached twin of Miller's (18847, sold at $274,900), confirmed by Ian 17 Nov. Preliminary CMA $269,900 / $274,900 / $279,900." });
+    set24("re-brandon-winchester",{ rowNote:"Chris and Ryan Beachler's build. A hope, not a forecast (Ian)." });
+    state.realEstate.boardNote="Board as of Tue 17 Nov 2026 11:30 AM: BRAIN deal board, Chris's texts to Tue 17 Nov 10:40 AM, deposits to 17 Nov (Rocket Money), Ian 17 Nov. DotLoop last read 15 Nov.";
+    state.meta.mig624_dd1117=true; save(true);
+    try{ console.log("mig624: deal board checked against its owner"); }catch(_){}
+} }catch(e){ try{ console.warn("mig624 did not apply:",e&&e.message); }catch(_){} }
 
 
 
@@ -36195,16 +36221,18 @@ function reBoardBand(parent,deals){
     var n=dealIanNet(d), isP=dealIsPaid(d), y27=d.structure2027===true||rb618Group(d)==="y27";
     var r=el("div","rb-row"); var dot=el("i","rb-dot"); dot.style.background=col; r.appendChild(dot);
     var L=el("div","rb-l"); var nm=el("div","rb-n",d.title||d.client||d.id); var tg=rb618Tag(d); if(tg){ nm.appendChild(el("span","rb-tag",tg)); } L.appendChild(nm); var w=rb618When(d); L.appendChild(el("div","rb-s",w||"\u00a0")); r.appendChild(L);
-    var R=el("div","rb-r"); var tk=el("div","rb-t",n?fmtMoney(n):"$0"); if(isP) tk.style.color="#30d158"; else if(n) tk.classList.add("rb-est"); R.appendChild(tk); R.appendChild(el("div","rb-s",rb618Price(d))); r.appendChild(R);
+    /* build 624: absent is not zero. A model home is not expected income (Ian 8 Nov) so no model figure is drawn; a split not on file reads "not set". */
+    var sh0=sourceShare(dealSource(d),d), mh=(d.modelHome===true&&!isP); if(mh) n=0;
+    var R=el("div","rb-r"); var tk=el("div","rb-t",mh?"not counted":(n?fmtMoney(n):((sh0===null||sh0===undefined)?"not set":"$0"))); if(isP) tk.style.color="#30d158"; else if(n) tk.classList.add("rb-est"); R.appendChild(tk); R.appendChild(el("div","rb-s",rb618Price(d))); r.appendChild(R);
     var det=el("div","rb-det"); det.style.display="none";
     kv(det,"Address",d.address||reTidy(d.sub||""));
     kv(det,"Price",d.priceLine||d.price);
     kv(det,"Dates",d.keyDates||d.close);
     var sh=sourceShare(dealSource(d),d); kv(det,"Split",(sh===null||sh===undefined)?"Not on file":(Math.round(sh*100)+"% to Ian, "+(d.source||dealSource(d))+", "+dealSide(d)+" side"+(y27?", 2027 structure":"")));
     if(n){ kv(det,isP?"Received":"Gross (estimate)",fmtMoneyC(n)); kv(det,"After "+pct+"%",fmtMoneyC(n*keepR)); }
-    if(d.stage==="Closed") kv(det,"Paid",isP?"Yes":"Not paid or not confirmed");
+    if(d.stage==="Closed") kv(det,"Paid",isP?"Yes":(sh0===0?"No commission to Ian":"Not paid or not confirmed"));
     kv(det,"Source",d.actualNetSource||d.payNote||d.npdNote||"");
-    kv(det,"Notes",d.rowNote||d.note||"");
+    kv(det,"Notes",d.rowNote||(d.stage==="Closed"?"":d.note)||""); /* build 624: a closed row shows only its short note, not the full working history */
     r.addEventListener("click",function(){ var o=det.style.display==="none"; det.style.display=o?"block":"none"; r.classList.toggle("open",o); });
     host.appendChild(r); host.appendChild(det);
   };
