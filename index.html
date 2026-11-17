@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 620 (2026-11-17)">
+<meta name="build" content="v21 build 621 (2026-11-17)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -40908,6 +40908,27 @@ function fxBandCards(v,f){
   ln("Discover:","one subscription, about $10 a month.");
   band.appendChild(c); v.appendChild(band);
 }
+/* ===== build 621: SPRING 2027 TRIP CARD (Ian 17 Nov 2026, via Dispatch). Replaces the Arizona fund card at the top of
+   Finances. NOTHING IS BOOKED. Source: BRAIN/GLOBAL/handoffs/TRIP_DECISION_2026-11-16.md (updated 17 Nov, newer than the
+   pass 4 handoff, so its ground ranges are used). Points are the handoff's estimates; flights are priced by Ian's other AI.
+   Every figure is an estimate and says so. Static text, no saved state. ===== */
+function fxBandTrip621(v,f){
+  var band=el("div","fx-b fx-fund"); var c=el("div","fx-card");
+  c.appendChild(el("div","fx-k g","Spring 2027 trip"));
+  c.appendChild(el("div","fx-big sm","El Salvador or Rome"));
+  c.appendChild(el("div","fx-line","Nothing booked. Costs are estimates for 2."));
+  var opt=function(name,when,pts,ground){
+    var r=el("div","tp621-r");
+    r.appendChild(el("div","tp621-n",name));
+    r.appendChild(el("div","tp621-s",when));
+    var g=el("div","tp621-g"); g.appendChild(el("span",null,"Flights: "+pts)); g.appendChild(el("span",null,"Ground: "+ground)); r.appendChild(g);
+    c.appendChild(r);
+  };
+  opt("El Salvador, Airbnb with a kitchen and pool","Apr 6 or 7 to Apr 11","about 50K Aeroplan + about $355 taxes (est.)","about $1,280 to $2,260 (est.)");
+  opt("Rome + 1 night on the Amalfi Coast","Apr 13 to Apr 19","about 100K Delta (est.)","about $1,630 to $3,200 (est.)");
+  c.appendChild(el("div","tp621-f","Distant backup: Cancun, adults only all inclusive. Ground excludes flights; cap $3,500 all in."));
+  band.appendChild(c); v.appendChild(band);
+}
 function fxBandFund(v,f){
   var sv=f.savings; if(!sv) return;
   var acct=null; (f.accounts||[]).forEach(function(a){ if(a&&a.id===sv.accountId) acct=a; });
@@ -41179,7 +41200,9 @@ function buildFinance(v){
   /* build 562: Projection is FIRST. Ian asked for it to be one of the main points on the page and
      it was previously a row in a ladder inside a fold inside the last band. */
   safe(v,function(){ fxBandProj(v,f); },"Finance projection");
-  safe(v,function(){ fxBandFund(v,f); },"Finance fund");
+  /* build 621: the Arizona fund card is hidden at Ian's request on 11.17 and replaced by the Spring 2027 trip card.
+     fxBandFund and state.finance.savings are kept, only not drawn. */
+  safe(v,function(){ fxBandTrip621(v,f); },"Spring 2027 trip");
   safe(v,function(){ fxBandCards(v,f); },"Finance card cutover");
   safe(v,function(){ fxBandCash(v,f); },"Finance cash");
   safe(v,function(){ fxBandRunway(v,f); },"Finance runway");
@@ -42716,6 +42739,11 @@ section,.card,.sectlabel{scroll-margin-top:calc(var(--hh) + var(--sat) + 8px)}
 .rm619 .rm-ft{font-size:11px;color:var(--gray);line-height:1.4;margin-top:8px}
 /* build 620: gym hidden at Ian's request on 11.17 ("remove gym off the app entirely, I don't use it"). state.gym data is kept, only not rendered. */
 label[for=t-gym],#p-gym,.htt-gym{display:none!important}
+.tp621-r{margin-top:14px;padding-top:12px;border-top:1px solid rgba(255,255,255,.08)}
+.tp621-n{font-size:15px;font-weight:700;color:var(--white)}
+.tp621-s{font-size:12px;color:var(--gray);margin-top:2px}
+.tp621-g{display:flex;flex-direction:column;gap:2px;margin-top:6px;font-size:12.5px;color:var(--white);opacity:.9}
+.tp621-f{font-size:11.5px;color:var(--gray);margin-top:14px;line-height:1.4}
 .re-prod{display:flex;align-items:center;justify-content:space-between;margin-top:16px;padding-top:12px;border-top:1px solid rgba(255,255,255,.08);font-size:13px;font-weight:600;color:var(--white)}
 .re-bh{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin:0 4px 12px}
 .re-bh h3{font-size:20px;font-weight:800;letter-spacing:-.02em;color:var(--white)}
