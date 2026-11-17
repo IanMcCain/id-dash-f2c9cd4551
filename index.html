@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 630 (2026-11-17)">
+<meta name="build" content="v21 build 631 (2026-11-17)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -32228,8 +32228,14 @@ function userRest(sv,max){
   return rest?userLine(rest,max):"";
 }
 function todoList(t){ var k=t&&t.list; return (k==="waiting"||k==="ask")?k:"todo"; }
+/* ===== build 631, STEP 10 (Ian 17 Nov 2026, answer 12): THE TO DO SECTION IS REMOVED FROM THE APP. Hidden, not deleted:
+   state.realEstate.todos and state.todos stay in storage and in every export exactly as they are; no migration touches them.
+   Every surface that drew a to do, a to do count or a way into the list reads reTodosShown(), which is empty while
+   TODO_HIDDEN_631 is true. Set it to false to bring the section back with its data intact. ===== */
+var TODO_HIDDEN_631=true;
+function reTodosShown(){ return TODO_HIDDEN_631?[]:((state.realEstate&&state.realEstate.todos)||[]); }
 function reTodoCounts(){
-  var rt=(state.realEstate&&state.realEstate.todos)||[];
+  var rt=reTodosShown();
   var o={todo:0,waiting:0,ask:0,done:0};
   rt.forEach(function(t){ if(!t) return; if(t.done){ o.done++; return; } o[todoList(t)]++; });
   return o;
@@ -33121,7 +33127,7 @@ function homeZone3(host){
   var ucN=deals.filter(function(d){ return d&&d.stage==="Under Contract"; }).reduce(function(t,d){ return t+dealCountWeight(d); },0);
   var drop=(state.solara&&state.solara.drop)||"";
   var items=[
-    {g:"re",ic:ICO.check,lab:"To do",sub:open.length+" open"+(due?(", "+due+" due"):""),go:function(){ hzJump("re",function(){ reView="todo"; }); }},
+    ...(TODO_HIDDEN_631?[]:[{g:"re",ic:ICO.check,lab:"To do",sub:open.length+" open"+(due?(", "+due+" due"):""),go:function(){ hzJump("re",function(){ reView="todo"; }); }}]),
     {g:"re",ic:ICO.people,lab:"Stay in touch",sub:sph?(sph+" to reach out"):"All caught up",go:function(){ hzJump("re",function(){ reView="sphere"; }); }},
     {g:"re",ic:ICO.chart,lab:"Closings",sub:ucN?(ucN+" under contract"):"None pending",go:function(){ hzJump("finance",function(){ PK_OPEN["fin_close"]=true; },"Closings"); }},
     {g:"pk",ic:ICO.ball,lab:"Mechanics",sub:"Shot by shot",go:function(){ hzJump("pickle",function(){ PK_OPEN["pk_mechanics"]=true; },"Mechanics"); }},
@@ -33385,7 +33391,7 @@ function homeZone5(host,F){
   host.appendChild(z);
   hzReveal(z,".z5-b",function(){ return HZ5_DONE; },function(){ HZ5_DONE=true; });
 }
-function buildIanHome(v){ const workout=daySplit(DOW); const reTop=firstUndone((state.realEstate.todos||[]).filter(t=>todoList(t)==="todo")); const nm=(state.settings&&state.settings.name)||"Ian";
+function buildIanHome(v){ const workout=daySplit(DOW); const reTop=firstUndone(reTodosShown().filter(t=>todoList(t)==="todo")); const nm=(state.settings&&state.settings.name)||"Ian";
   /* build 494: the old greeting card is replaced by zone 1, see homeZone1 */
   if(!(state.settings&&state.settings.bannerDismissed)){ const bn=el("div","banner"); bn.appendChild(el("div",null,"For full interactivity and saving, open this file in Safari. An in app preview can limit some taps.")); const x=el("button","bx","\u00D7"); x.onclick=()=>{ if(!state.settings)state.settings={}; state.settings.bannerDismissed=true; save(); render(); }; bn.appendChild(x); v.appendChild(bn); }
   var ROOT=v; var Z=homeZones(ROOT); var Z1_HAS_RE=true;
@@ -33866,7 +33872,7 @@ function buildIanHome(v){ const workout=daySplit(DOW); const reTop=firstUndone((
   var secReAlert=function(){ safe(v,function(){
     var out=[];
     var pd=function(k){ try{ return daysUntil(k); }catch(e){ return 999; } };
-    ((state.realEstate&&state.realEstate.todos)||[]).forEach(function(t){
+    reTodosShown().forEach(function(t){
       if(!t||t.done||!t.due) return; if(todoList(t)!=="todo") return; var d=pd(t.due);
       if(d<=0) out.push({label:t.text, meta:(d<0?"overdue":"due today"), sk:d});
     });
@@ -33962,7 +33968,7 @@ function buildIanHome(v){ const workout=daySplit(DOW); const reTop=firstUndone((
         line:userRest(ev.title,90), chip:"on today", go:null});
     }); }catch(e){}
     /* 3. an ACTION he dated himself and has not closed. Actions only. */
-    try{ ((state.realEstate&&state.realEstate.todos)||[]).forEach(function(t){
+    try{ reTodosShown().forEach(function(t){
       if(!t||t.done||!t.due) return; if(todoList(t)!=="todo") return;
       var days=daysUntil(t.due); if(days>0) return;
       /* clamp at -8, NOT the raw overdue count. Age is not urgency, and dated money
@@ -33990,7 +33996,7 @@ function buildIanHome(v){ const workout=daySplit(DOW); const reTop=firstUndone((
     /* 5. WAITING, and only when nothing actionable exists. Ranked below every real action
           and above the standing fallbacks, so it fills a genuinely quiet day rather than
           outranking work. */
-    try{ ((state.realEstate&&state.realEstate.todos)||[]).forEach(function(t){
+    try{ reTodosShown().forEach(function(t){
       if(!t||t.done||todoList(t)!=="waiting") return;
       push({rank:85, kind:"waiting",
         title:t.short||userLine(t.text,70),
@@ -35097,15 +35103,15 @@ function re391More(parent,hidePipeline){
   var RE=state.realEstate||{};
   var deals=RE.deals||[];
   var pipe=deals.filter(function(d){ return !reIsProspect(d); });
-  var openTodos=(RE.todos||[]).filter(function(t){ return !t.done&&todoList(t)==="todo"; }).length;
+  var openTodos=reTodosShown().filter(function(t){ return !t.done&&todoList(t)==="todo"; }).length;
   var tc=reTodoCounts();
-  var dueSoon=(RE.todos||[]).filter(function(t){ return t&&!t.done&&t.due&&daysUntil(t.due)<=7; }).length;
+  var dueSoon=reTodosShown().filter(function(t){ return t&&!t.done&&t.due&&daysUntil(t.due)<=7; }).length;
   var sp=sphereList(); var ov=sphereOverdue().length;
   var c=card(); var b=c._body;
   b.appendChild(el("div","g7kicker","More"));
   var l=re391List(b);
   if(!hidePipeline) re391Nav(l,"Pipeline",pipe.length+(pipe.length===1?" deal":" deals")+"  \u00b7  "+fmtMoney(pipe.reduce(function(a,d){return a+dealVolume(d);},0))+" volume","pipeline");
-  re391Nav(l,"Things I have to do",openTodos+(openTodos===1?" action":" actions")+(dueSoon?("  \u00b7  "+dueSoon+" due in 7 days"):"")+(tc.waiting?("  \u00b7  "+tc.waiting+" waiting"):""),"todo");
+  if(!TODO_HIDDEN_631) re391Nav(l,"Things I have to do",openTodos+(openTodos===1?" action":" actions")+(dueSoon?("  \u00b7  "+dueSoon+" due in 7 days"):"")+(tc.waiting?("  \u00b7  "+tc.waiting+" waiting"):""),"todo");
   var spCue=(sp.length?(sp.length+" in sphere"):"")+((sp.length&&ov)?"  \u00b7  ":"")+(ov?(ov+" to reach out"):"");
   re391Nav(l,"Sphere and prospects",spCue||null,"sphere");
   re391Nav(l,"Tools","Goals, contacts, commission rules, scripts","tools");
@@ -35115,7 +35121,7 @@ function buildIanRe(v){
   /* v21 build 49: the standalone Prospects view was removed (redundant with the Sphere Orbit, which now
      shows prospects on its inner ring). Any stale reView==="prospects" falls through to the landing. The
      prospect DATA (deals in the Prospecting/Buyer stages) is untouched and still renders in the orbit. */
-  if(reView==="todo") return reViewTodo(v);
+  if(reView==="todo"){ if(TODO_HIDDEN_631){ reView="pipeline"; return reViewPipeline(v); } return reViewTodo(v); }
   if(reView==="tools") return reViewTools(v);
   if(reView==="sphere") return reViewSphere(v);
   /* ===== build 417: reViewLanding IS RETIRED FROM THE DISPATCH ==========================
@@ -35505,8 +35511,8 @@ function homeUpcomingCard(parent){
   }catch(e){}
   const deals=state.realEstate.deals||[];
   deals.filter(d=>d.close && (d.stage==="Under Contract"||d.stage==="Coming Soon")).forEach(function(d){ var dd=_pd(d.close); items.push({label:d.title, sub:d.stage, meta:d.close, sk:(dd==null)?4000:dd}); });
-  (state.realEstate.todos||[]).filter(t=>!t.done && t.due).forEach(function(t){ var dd=_pd(t.due); items.push({label:t.text, meta:(typeof dueLabel==="function")?dueLabel(t.due):t.due, sk:(dd==null)?3000:dd}); });
-  var _oi=0; (state.realEstate.todos||[]).filter(t=>!t.done && !t.due).slice(0,3).forEach(function(t){ items.push({label:t.text, meta:"next step", sk:90000+(_oi++)}); });
+  reTodosShown().filter(t=>!t.done && t.due).forEach(function(t){ var dd=_pd(t.due); items.push({label:t.text, meta:(typeof dueLabel==="function")?dueLabel(t.due):t.due, sk:(dd==null)?3000:dd}); });
+  var _oi=0; reTodosShown().filter(t=>!t.done && !t.due).slice(0,3).forEach(function(t){ items.push({label:t.text, meta:"next step", sk:90000+(_oi++)}); });
   items.sort(function(a,bb){ return a.sk-bb.sk; });
   if(!items.length){ b.appendChild(el("div","empty","You are clear. Nothing is due today.")); parent.appendChild(c); return; }
   const shown=comingUpOpen?items:items.slice(0,3);
@@ -35846,7 +35852,7 @@ function reViewLanding(v){
   var _ev406=_d406.filter(function(x){ return x&&x.priceNote&&!(x.cma&&typeof x.cma==="object"); });
 
   var _todo406=0,_wait406=0,_ov406=0;
-  try{ _todo406=(_RE406.todos||[]).filter(function(t){ return t&&!t.done&&todoList(t)==="todo"; }).length; }catch(e){}
+  try{ _todo406=reTodosShown().filter(function(t){ return t&&!t.done&&todoList(t)==="todo"; }).length; }catch(e){}
   try{ var _tc406=reTodoCounts()||{}; _wait406=_tc406.waiting||0; }catch(e){}
   try{ _ov406=sphereOverdue().length; }catch(e){}
 
@@ -35882,10 +35888,10 @@ function reViewLanding(v){
   pkCollapse(v,"re_goals","Goals and money","production, take home, and what is at risk",false,
     function(hh){ safe(hh,function(){ reGoalsCard(hh); },"RE goals"); },ICO.trend,"blue");
 
-  pkCollapse(v,"re_more","Pipeline, actions and sphere",
-    _todo406+(_todo406===1?" action":" actions")
-      +(_wait406?("  \u00b7  "+_wait406+" waiting"):"")
-      +(_ov406?("  \u00b7  "+_ov406+" to reach out"):""),
+  pkCollapse(v,"re_more",TODO_HIDDEN_631?"Pipeline and sphere":"Pipeline, actions and sphere",
+    (TODO_HIDDEN_631?"":(_todo406+(_todo406===1?" action":" actions")
+      +(_wait406?("  \u00b7  "+_wait406+" waiting"):"")+(_ov406?"  \u00b7  ":"")))
+      +(_ov406?(_ov406+" to reach out"):""),
     false,function(hh){ safe(hh,function(){ re391More(hh); },"RE more"); },ICO.tools,"blue");
 }
 function reViewLanding390(v){
@@ -35895,14 +35901,14 @@ function reViewLanding390(v){
   const pipe=deals.filter(d=>!reIsProspect(d));
   const prospects=deals.filter(reIsProspect);
   const vol=pipe.reduce((a,d)=>a+dealVolume(d),0);
-  const openTodos=(state.realEstate.todos||[]).filter(t=>!t.done&&todoList(t)==="todo").length;
+  const openTodos=reTodosShown().filter(t=>!t.done&&todoList(t)==="todo").length;
   sect(v,"Real Estate","tap a section");
   reNavCard(v,ICO.chart,"Pipeline",pipe.length+(pipe.length===1?" deal":" deals")+"  \u00b7  "+fmtMoney(vol)+" volume","pipeline");
   /* build 225: PLACED FROM THE RETIRED STATS TAB. "Follow ups due soon" was the only follow up
      number with no other home, so it joins the card that owns follow ups instead of being dropped. */
-  { var _dueSoon=(state.realEstate.todos||[]).filter(function(t){ return t&&!t.done&&t.due&&daysUntil(t.due)<=7; }).length;
+  { var _dueSoon=reTodosShown().filter(function(t){ return t&&!t.done&&t.due&&daysUntil(t.due)<=7; }).length;
     var _tc=reTodoCounts(); var _tsub=openTodos+(openTodos===1?" action":" actions")+(_dueSoon?"  \u00b7  "+_dueSoon+" due in 7 days":"")+(_tc.waiting?"  \u00b7  "+_tc.waiting+" waiting":"")+(_tc.ask?"  \u00b7  "+_tc.ask+" to answer":"");
-    reNavCard(v,ICO.check,"Things I have to do",_tsub,"todo"); }
+    if(!TODO_HIDDEN_631) reNavCard(v,ICO.check,"Things I have to do",_tsub,"todo"); }
   /* v21 build 49: standalone Prospects card removed. Prospects now live inside the Sphere Orbit (inner ring),
      so this card carries the prospect count too and opens the orbit. */
   { const _sp=sphereList(); const _ov=sphereOverdue().length; var _pn=prospects.length; var _sub=(_pn?(_pn+(_pn===1?" prospect":" prospects")):"")+((_pn&&_sp.length)?"  \u00b7  ":"")+(_sp.length?(_sp.length+" in sphere"):"")+(_ov?"  \u00b7  "+_ov+" to reach out":""); if(!_pn&&!_sp.length) _sub="add your sphere"; reNavCard(v,ICO.people,"Sphere & prospects",_sub,"sphere"); }
@@ -36397,7 +36403,7 @@ function reViewPipeline498(v){ /* previous Real Estate page, kept and not called
   safe(v,()=>reProspectsCompact(v),"Prospects");
   sect(v,"Goals and money","production and take home");
   safe(v,()=>reGoalsCard(v),"RE goals");
-  sect(v,"More","actions, sphere, tools");
+  sect(v,"More",TODO_HIDDEN_631?"sphere, tools":"actions, sphere, tools");
   safe(v,()=>re391More(v,true),"RE more");
 }
 function reViewTodo(v){
@@ -38719,13 +38725,13 @@ function buildStats(v){ safe(v,()=>{ const wk=workoutsThisWeek(); const hs=habit
   const cc=card("a-green"); const cb=cc._body; cb.appendChild(el("div","small muted","Closed, done business")); cb.firstChild.style.marginBottom="6px"; const _cg=el("div","between"); const _cL=el("div"); _cL.style.cssText="font-weight:800;font-size:21px"; _cL.textContent=_closedN+(_closedN===1?" deal":" deals"); _cg.appendChild(_cL); const _cR=el("div","small dim"); _cR.style.cssText="font-weight:700;font-size:15px"; _cR.textContent=fmtMoney(_closedVol)+" volume"; _cg.appendChild(_cR); cb.appendChild(_cg); v.appendChild(cc);
   sect(v,"Next actions","what needs doing");
   const _over=(typeof sphereOverdue==="function")?sphereOverdue().length:0;
-  const _dueSoon=(state.realEstate.todos||[]).filter(t=>!t.done && t.due && daysUntil(t.due)<=7).length;
-  const _openFollow=(state.realEstate.todos||[]).filter(t=>!t.done&&todoList(t)==="todo").length;
+  const _dueSoon=reTodosShown().filter(t=>!t.done && t.due && daysUntil(t.due)<=7).length;
+  const _openFollow=reTodosShown().filter(t=>!t.done&&todoList(t)==="todo").length;
   const nc=card("a-blue"); const nb=nc._body;
   const _actRow=function(label,val,hint){ const r=el("div","mrow"); const l=el("div","ml"); l.appendChild(document.createTextNode(label)); if(hint){ l.appendChild(el("small",null,hint)); } r.appendChild(l); const vv=el("div"); vv.style.cssText="font-weight:800;font-size:18px;font-variant-numeric:tabular-nums"; vv.textContent=String(val); r.appendChild(vv); nb.appendChild(r); };
   _actRow("Sphere reach outs due",_over,"overdue contacts");
   _actRow("Follow ups due soon",_dueSoon,"next 7 days");
-  _actRow("Open follow ups",_openFollow,"real estate to dos");
+  if(!TODO_HIDDEN_631) _actRow("Open follow ups",_openFollow,"real estate to dos");
   const _goRe=el("button","btn ghost sm block","Open Real Estate"); _goRe.style.marginTop="12px"; _goRe.onclick=()=>selectTab("re"); nb.appendChild(_goRe);
   v.appendChild(nc);
 }
