@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 633 (2026-11-17)">
+<meta name="build" content="v21 build 634 (2026-11-17)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -31157,6 +31157,25 @@ try{ if(profile==="ian" && state.meta && !state.meta.mig629_s10 && state.realEst
     state.meta.mig629_s10=true; save(true);
     try{ console.log("mig629: step 10 deal records applied"); }catch(_){}
 } }catch(e){ try{ console.warn("mig629 did not apply:",e&&e.message); }catch(_){} }
+/* ===== v21 build 634: STEP 10 ANSWERS 2, 17 NOV 2026 (STEP10-ANSWERS2-1117). Guard state.meta.mig634_a2. Ian's answers:
+   Hernandez goes live Thu 19 Nov 2026, FIRM (Coming soon, live 11/19). Teske: expected close mid to late January 2027; the "prelim Feb 27"
+   line was a meeting note mishear and is dropped. Christiansen: the Mon 16 Nov 3 PM call with Sydney happened, next step TBD.
+   2027 money split: Ian does not know yet, left open and "not set". Old values are copied to state.archive.dealsB633. ===== */
+try{ if(profile==="ian" && state.meta && !state.meta.mig634_a2 && state.realEstate && Array.isArray(state.realEstate.deals)){
+    state.archive=state.archive||{}; state.archive.dealsB633=state.archive.dealsB633||[];
+    var K634=function(d){ state.archive.dealsB633.push({id:d.id,boardDate:d.boardDate,close:d.close,keyDates:d.keyDates,rowNote:d.rowNote}); };
+    state.realEstate.deals.forEach(function(d){ if(!d) return;
+      if(d.id==="re-hernandez-sell"){ K634(d); d.boardDate="Live Nov 19"; d.close="Live Thu 19 Nov 2026, firm (Ian 17 Nov)";
+        d.keyDates="Live Thu 19 Nov 2026, firm (Ian 17 Nov). Pre inspection done Mon 16 Nov (Andy, NPI). Moisture mitigation being done; roof decision open.";
+        d.boardAsOf="2026-11-17"; }
+      if(d.id==="re-teskes"){ K634(d); d.keyDates="Magnolia on track (16 Nov meeting). Expected close mid to late January 2027 (Ian 17 Nov). The Feb 27 line in the 16 Nov meeting note was a mishear and is dropped.";
+        d.boardAsOf="2026-11-17"; }
+      if(d.id==="re-sydney-spicer-sell"){ K634(d); d.rowNote="Sydney and Erich Christiansen: builder and lot. Harvest Creek lots sent 12 Nov; Sydney is not sold on Gretna schools, Erich wants to be closer to work. Call happened 16 Nov, next step TBD (Ian 17 Nov).";
+        d.boardAsOf="2026-11-17"; } });
+    if(Array.isArray(state.events)){ state.events.forEach(function(e){ if(e && e.id==="ev-20261116-christiansen-call"){ e.note=String(e.note||"")+" Call happened 16 Nov, next step TBD (Ian 17 Nov)."; } }); }
+    state.meta.mig634_a2=true; save(true);
+    try{ console.log("mig634: step 10 answers 2 applied"); }catch(_){}
+} }catch(e){ try{ console.warn("mig634 did not apply:",e&&e.message); }catch(_){} }
 
 
 
@@ -32233,7 +32252,8 @@ function todoList(t){ var k=t&&t.list; return (k==="waiting"||k==="ask")?k:"todo
    state.realEstate.todos and state.todos stay in storage and in every export exactly as they are; no migration touches them.
    Every surface that drew a to do, a to do count or a way into the list reads reTodosShown(), which is empty while
    TODO_HIDDEN_631 is true. Set it to false to bring the section back with its data intact. ===== */
-var TODO_HIDDEN_631=true;
+/* Ian 11.17: to do section removed from the app. Hidden, not deleted. */
+var TODO_HIDDEN_631=true; /* Ian 11.17 */
 function reTodosShown(){ return TODO_HIDDEN_631?[]:((state.realEstate&&state.realEstate.todos)||[]); }
 function reTodoCounts(){
   var rt=reTodosShown();
