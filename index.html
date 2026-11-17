@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 621 (2026-11-17)">
+<meta name="build" content="v21 build 622 (2026-11-17)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -30919,6 +30919,24 @@ try{ if(profile==="ian" && state.meta && !state.meta.mig612_dd1115){
     state.meta.mig612_dd1115=true; save(true);
     try{ console.log("mig612: deep dive 15 Nov applied"); }catch(_){}
 } }catch(e){ try{ console.warn("mig612 did not apply:",e&&e.message); }catch(_){} }
+/* ===== v21 build 622: TWO EVENTS ARCHIVED, Ian 11.17 (via Dispatch): "remove both". The Carvana Mesa Cup (PPA Arizona)
+   tournament on the Pickle tab and the old "Rome plus Sorrento" trip event (the plan is now Rome + 1 night on the Amalfi
+   Coast, see the Spring 2027 card on Finances). NOT hard deleted: each record is copied whole into
+   state.archive.eventsB622 and then dropped from state.events, so nothing renders it. Runs every load and is idempotent,
+   so an older migration that re adds either record on a fresh seed is undone here. Meta flag records the first run. ===== */
+try{ if(profile==="ian" && state && Array.isArray(state.events)){
+  var DROP622={"ev-20270215-mesacup":1,"ev-20270215-ppa-arizona":1,"ev-20270413-rome-trip":1};
+  var hit622=state.events.filter(function(e){ return e && (DROP622[e.id] || (/sorrento/i.test(String(e.title||"")) && /rome/i.test(String(e.title||"")))); });
+  if(hit622.length){
+    if(!state.archive) state.archive={};
+    state.archive.eventsB622=state.archive.eventsB622||[];
+    hit622.forEach(function(e){ if(!state.archive.eventsB622.some(function(a){ return a&&a.id===e.id; })){ var c=JSON.parse(JSON.stringify(e)); c.archivedB622="Hidden at Ian's request 11.17"; state.archive.eventsB622.push(c); } });
+    state.events=state.events.filter(function(e){ return hit622.indexOf(e)<0; });
+    if(state.meta) state.meta.mig622_ev1117=true;
+    save(true);
+    try{ console.log("mig622: archived "+hit622.length+" events"); }catch(_){}
+  }
+} }catch(e){ try{ console.warn("mig622 did not apply:",e&&e.message); }catch(_){} }
 /* ===== v21 build 613: FINANCE PAGE REFRESH, 15 NOV 2026 (APP-DD-1115B) ==========
    Guard state.meta.mig613_fin1115. Source: money lane 15 Nov 2026 (Plaid read only cache 15 Nov; the Sheet "Ian 2026 Business
    vs Personal" after the approved 15 Nov write: Business 106 rows, $4,093.84 paid, $3,056.07 deductible, Ask Ian 0). Discover
