@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 615 (2026-11-17)">
+<meta name="build" content="v21 build 616 (2026-11-17)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -30997,6 +30997,25 @@ try{ if(profile==="ian" && state.meta && !state.meta.mig615_re1117 && state.real
     state.meta.mig615_re1117=true; save(true);
     try{ console.log("mig615: real estate board by stage applied"); }catch(_){}
 } }catch(e){ try{ console.warn("mig615 did not apply:",e&&e.message); }catch(_){} }
+/* ===== v21 build 616: BOARD PASS 2, 17 NOV 2026 (APP-RE-1117B) ==========
+   Guard state.meta.mig616_re1117b. Ian 17 Nov via Dispatch: the $3,645.05 deposit IS Willis, confirmed (the "$15k" was a
+   mishear or team level figure, not Ian's money); Mattox PAID Ian $2,379; "Magnolia" is the Teskes deal. Goal volume moves
+   to the NP Dodge basis (dual agency both sides; Crystal Johnson not in NP Dodge's report). ===== */
+try{ if(profile==="ian" && state.meta && !state.meta.mig616_re1117b && state.realEstate){
+    var I616="Ian via Dispatch, 17 Nov 2026";
+    state.archive=state.archive||{}; state.archive.dealsB615={};
+    var D616={}; (state.realEstate.deals||[]).forEach(function(d){ if(d&&d.id) D616[d.id]=d; });
+    var set6=function(id,o){ var d=D616[id]; if(!d) return; try{ state.archive.dealsB615[id]=JSON.parse(JSON.stringify(d)); }catch(_){} for(var k in o){ d[k]=o[k]; } d.boardAsOf="2026-11-17"; };
+    set6("re-cynthia-willis",{ paid:true, actualNet:3645.05, actualNetSource:"Paid in full: $3,645.05 NP Dodge deposit, 16 Nov (confirmed by Ian, 20 percent sell side).", payNote:"" });
+    set6("re-mattox-sell",{ paid:true, actualNet:2379, actualNetSource:"Paid $2,379 (Ian, 17 Nov). Model was $2,508.80 gross; the 5 percent Marketing Investment ($125.44) explains $125.44 of the $129.80, the last $4.36 is unconfirmed.", payNote:"" });
+    set6("re-teskes",{ boardStage:"Build", aka:"Magnolia", title:"Teskes (Magnolia)", keyDates:"Magnolia on track (16 Nov meeting). Close early January 2027, mid January at the latest; paid mid to late January (BRAIN). A \"prelim close Feb 27\" mention is unresolved.", priceLine:"About $850,000 (Ian 35 percent)" });
+    set6("re-silverleaf-howard",{ boardStage:"Build", keyDates:"Build runs 8 to 11 months; paid toward the end of 2027.", priceLine:"About $900,000" });
+    set6("re-brandon-winchester",{ boardStage:"Build", keyDates:"May or June 2027 if it proceeds.", priceLine:"$1,100,000 to $1,200,000" });
+    set6("re-crystal-johnson",{ npdExcluded:true, npdNote:"Not in NP Dodge's production report (price flag $697,261 vs $577,861 open), so it is left out of goal volume." });
+    state.realEstate.boardNote="Board as of Tue 17 Nov 2026: BRAIN deal board, Chris's texts to Mon 16 Nov 9:16 PM, Plaid to 16 Nov, Ian 17 Nov.";
+    state.meta.mig616_re1117b=true; save(true);
+    try{ console.log("mig616: board pass 2 applied"); }catch(_){}
+} }catch(e){ try{ console.warn("mig616 did not apply:",e&&e.message); }catch(_){} }
 
 
 
@@ -35968,10 +35987,11 @@ function reBoardBucket(d){
   if(d.boardStage==="Sure") return "sure";
   if(d.boardStage==="Maybe") return "maybe";
   if(d.boardStage==="Live") return "live";
+  if(d.boardStage==="Build") return "build";
   return null;
 }
 function reBoardBand(parent,deals){
-  var B=[["paid","Closed and paid"],["unpaid","Closed, not paid or not confirmed"],["uc","Under contract"],["offer","Offers out or received"],["sure","Going live soon, for sure"],["maybe","Possibly going live soon"],["live","Live now"]];
+  var B=[["paid","Closed and paid"],["unpaid","Closed, not paid or not confirmed"],["uc","Under contract"],["offer","Offers out or received"],["sure","Going live soon, for sure"],["maybe","Possibly going live soon"],["live","Live now"],["build","Building, closes 2027 (not 2026 money)"]];
   var by={}; B.forEach(function(b){ by[b[0]]=[]; });
   deals.forEach(function(d){ var k=reBoardBucket(d); if(k&&by[k]) by[k].push(d); });
   var keepR=1-taxSetAsideRate(); var pct=Math.round(taxSetAsideRate()*100);
@@ -35980,7 +36000,7 @@ function reBoardBand(parent,deals){
     var c=card("a-teal"); var b=c._body;
     var tot=function(k){ return by[k].reduce(function(a,d){ return a+dealIanNet(d); },0); };
     var closed=by.paid.concat(by.unpaid);
-    var vol=closed.reduce(function(a,d){ return a+dealVolume(d); },0); var sides=closed.reduce(function(a,d){ return a+dealCountWeight(d); },0);
+    var npv=function(d){ return d.npdExcluded?0:dealVolume(d)*(dealSource(d)==="Dual agency"?2:1); }; var vol=closed.reduce(function(a,d){ return a+npv(d); },0); var sides=closed.reduce(function(a,d){ return a+dealCountWeight(d); },0);
     var ucVol=by.uc.reduce(function(a,d){ return a+dealVolume(d); },0); var ucSides=by.uc.reduce(function(a,d){ return a+dealCountWeight(d); },0);
     var g=(state.realEstate&&state.realEstate.goals2026)||{}; var PG=g.production||10000000, DG=g.deals||20;
     var sum=el("div"); sum.style.cssText="display:grid;grid-template-columns:1fr auto auto;gap:4px 12px;font-size:13px;margin-bottom:10px";
@@ -35992,7 +36012,7 @@ function reBoardBand(parent,deals){
     line("Offers and coming soon (estimate)",tot("offer")+tot("sure")+tot("maybe"));
     b.appendChild(sum);
     var gl=el("div","small"); gl.style.cssText="margin:2px 0 10px;line-height:1.45";
-    gl.innerHTML="<b>Goal:</b> closed "+sides+" sides, "+fmtMoney(vol)+"; with under contract "+(sides+ucSides)+" of "+DG+" sides, "+fmtMoney(vol+ucVol)+" of "+fmtMoneyShort(PG)+" ("+fmtMoney(Math.max(0,PG-vol-ucVol))+" to go). Dual agency and two sided clients count twice.";
+    gl.innerHTML="<b>Goal:</b> closed "+sides+" sides, "+fmtMoney(vol)+"; with under contract "+(sides+ucSides)+" of "+DG+" sides, "+fmtMoney(vol+ucVol)+" of "+fmtMoneyShort(PG)+" ("+fmtMoney(Math.max(0,PG-vol-ucVol))+" to go). Volume on the NP Dodge basis: dual agency counted on both sides, Crystal Johnson ($697,261, price flag open) left out because NP Dodge does not report it. Two sided clients count two sides.";
     b.appendChild(gl);
     var nt=el("div","small dim"); nt.style.cssText="margin-bottom:8px;line-height:1.4"; nt.textContent="Paid figures are the deposits (already net of the 5 percent Marketing Investment). Unpaid and pending are Ian's model gross before the 5 percent: estimates until the closing sheet. Bank balances are never summed here. "+((state.realEstate&&state.realEstate.boardNote)||""); b.appendChild(nt);
     B.forEach(function(bk){
@@ -36011,7 +36031,7 @@ function reBoardBand(parent,deals){
         var m=el("div","small"); m.style.fontWeight="700";
         m.textContent=(n?("Ian "+fmtMoney(n)+(est?" gross (estimate)":" received")+", "+fmtMoney(n*keepR)+" after "+pct+"%"):"Ian $0 on this deal"+(dealShareUnset(d)?" (split not on file)":""))+(d.structure2027?". 2027 structure":"");
         r.appendChild(m);
-        if(d.payNote||d.actualNetSource){ var q=el("div","small dim"); q.textContent=d.payNote||d.actualNetSource; r.appendChild(q); }
+        if(d.boardAsOf && (d.payNote||d.actualNetSource)){ var q=el("div","small dim"); q.textContent=d.payNote||d.actualNetSource; r.appendChild(q); }
         b.appendChild(r);
       });
     });
@@ -36040,7 +36060,8 @@ function reViewPipeline(v){
      deal list, which is what he opens this page for. */
   safe(root,function(){ var b=el("div","re-band"); pkCollapse(b,"re_prod_notes","How production reconciles","the app roll-up against the NP Dodge report",false,function(hh){ safe(hh,function(){ var pc=card(); reProdNotes(pc._body); hh.appendChild(pc); },"RE production notes"); },ICO.trend,"blue"); root.appendChild(b); },"Production notes");
   safe(root,function(){ var b=el("div","re-band"); re391More(b,true); root.appendChild(b); },"RE more");
-  try{ hzReveal(root,".re-band",function(){ return RE_DONE; },function(){ RE_DONE=true; }); }catch(e){}
+  /* build 616: the fade in is OFF on this page (Ian 17 Nov: show without animation issues). hzReveal left the bands at opacity 0 when the page was built while hidden. */
+  RE_DONE=true;
 }
 function reViewPipeline498(v){ /* previous Real Estate page, kept and not called */
   safe(v,()=>pipelineSummaryPipe(v),"Pipeline stats");
