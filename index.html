@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 631 (2026-11-17)">
+<meta name="build" content="v21 build 632 (2026-11-17)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -35247,15 +35247,15 @@ function reGoalsCard(parent,accOverride,opts){
   }
   b.appendChild(mk(_np?"App roll-up, closed plus under contract":"Production",'<b>'+fmtMoneyShort(production)+'</b> <span>of '+fmtMoneyShort(PROD_GOAL)+'</span>',PROD_GOAL?production/PROD_GOAL:0,"teal"));
   b.appendChild(mk(_np?"App sides, closed plus under contract":"Sides",'<b>'+dealsDone+'</b> <span>of '+DEALS_GOAL+'</span>',DEALS_GOAL?dealsDone/DEALS_GOAL:0,"teal2"));
-  const incClosed=sumIanNet(closed); const incUc=sumIanNet(uc);
+  const incClosed=sumIanNet(closed); const incUc=uc.reduce(function(a,d){ return a+dealIanReceives(d); },0); const incUcKeep=uc.reduce(function(a,d){ return a+dealKeep(d); },0); /* build 632 */
   const incLine=el("div"); incLine.style.cssText="margin-top:13px;display:flex;justify-content:space-between;align-items:baseline";
   incLine.appendChild(el("div","goal-lab","Est. commission"));
-  const incVal=el("div","goal-val"); incVal.innerHTML='<b>'+fmtMoney(incClosed)+'</b> <span>closed'+(incUc?', '+fmtMoney(incUc)+' pending':'')+'</span>'; incLine.appendChild(incVal);
+  const incVal=el("div","goal-val"); incVal.innerHTML='<b>'+fmtMoney(incClosed)+'</b> <span>closed'+(incUc?', est. '+fmtMoney(incUc)+' pending':'')+'</span>'; incLine.appendChild(incVal);
   b.appendChild(incLine);
   { var _ptLine=el("div"); _ptLine.style.cssText="margin-top:5px;display:flex;justify-content:space-between;align-items:baseline";
     _ptLine.appendChild(el("div","small dim","Less the "+taxPctWord()+" reserve"));
     var _ptVal=el("div","small"); _ptVal.style.fontWeight="800"; _ptVal.style.color="var(--sec2,var(--accent2))";
-    _ptVal.innerHTML='<b>'+fmtMoney(postTax(incClosed))+'</b>'+(incUc?' <span class="dim">, '+fmtMoney(postTax(incUc))+' pending</span>':'');
+    _ptVal.innerHTML='<b>'+fmtMoney(postTax(incClosed))+'</b>'+(incUc?' <span class="dim">, est. '+fmtMoney(incUcKeep)+' pending</span>':'');
     _ptLine.appendChild(_ptVal); b.appendChild(_ptLine);
     /* build 529: this figure is income less the reserve Ian sets aside. It is NOT income less tax. The tax bill is a separate, smaller estimate on the Finances page.
        build 559: the sentence that said so has moved to reProdNotes, so it ships on Real Estate and
@@ -35346,7 +35346,7 @@ function reGoalsCard495(parent,accOverride){ /* build 496: the build 495 explain
   const mk=(label,valHtml,frac,col)=>{ const wrap=el("div","goalrow"); const top=el("div","between"); top.appendChild(el("div","goal-lab",label)); const vv=el("div","goal-val"); vv.innerHTML=valHtml; top.appendChild(vv); wrap.appendChild(top); const bar=el("div","pbar"); const i=el("i"); bar.appendChild(i); wrap.appendChild(bar); try{ i.style.width=Math.min(100,frac*100)+"%"; i.style.background="var(--"+col+")"; }catch(e){} return wrap; };
   b.appendChild(mk("Production",'<b>'+fmtMoneyShort(production)+'</b> <span>of '+fmtMoneyShort(PROD_GOAL)+'</span>',PROD_GOAL?production/PROD_GOAL:0,"teal"));
   b.appendChild(mk("Sides",'<b>'+dealsDone+'</b> <span>of '+DEALS_GOAL+'</span>',DEALS_GOAL?dealsDone/DEALS_GOAL:0,"teal2"));
-  const incClosed=sumIanNet(closed); const incUc=sumIanNet(uc);
+  const incClosed=sumIanNet(closed); const incUc=uc.reduce(function(a,d){ return a+dealIanReceives(d); },0); const incUcKeep=uc.reduce(function(a,d){ return a+dealKeep(d); },0); /* build 632 */
   const incLine=el("div"); incLine.style.cssText="margin-top:13px;display:flex;justify-content:space-between;align-items:baseline";
   /* v21 build 440: THE LABEL WAS THE LIE. "Est. take-home" against a pre tax commission claims
      the one thing that is not true of it. He sweeps 30% for tax the moment he is paid, so this
@@ -35354,12 +35354,12 @@ function reGoalsCard495(parent,accOverride){ /* build 496: the build 495 explain
      because that is what the deals actually generated and what every settlement statement will
      say, and the line underneath says what he kept. Both, not one. */
   incLine.appendChild(el("div","goal-lab","Est. commission"));
-  const incVal=el("div","goal-val"); incVal.innerHTML='<b>'+fmtMoney(incClosed)+'</b> <span>closed'+(incUc?', '+fmtMoney(incUc)+' pending':'')+'</span>'; incLine.appendChild(incVal);
+  const incVal=el("div","goal-val"); incVal.innerHTML='<b>'+fmtMoney(incClosed)+'</b> <span>closed'+(incUc?', est. '+fmtMoney(incUc)+' pending':'')+'</span>'; incLine.appendChild(incVal);
   b.appendChild(incLine);
   { var _ptLine=el("div"); _ptLine.style.cssText="margin-top:5px;display:flex;justify-content:space-between;align-items:baseline";
     _ptLine.appendChild(el("div","small dim","Less the "+taxPctWord()+" reserve"));
     var _ptVal=el("div","small"); _ptVal.style.fontWeight="800"; _ptVal.style.color="var(--sec2,var(--accent2))";
-    _ptVal.innerHTML='<b>'+fmtMoney(postTax(incClosed))+'</b>'+(incUc?' <span class="dim">, '+fmtMoney(postTax(incUc))+' pending</span>':'');
+    _ptVal.innerHTML='<b>'+fmtMoney(postTax(incClosed))+'</b>'+(incUc?' <span class="dim">, est. '+fmtMoney(incUcKeep)+' pending</span>':'');
     _ptLine.appendChild(_ptVal); b.appendChild(_ptLine); }
   /* v21 build 275: EARNED IS NOT RECEIVED. The line above is driven purely by stage and it says
      "closed", which reads as cash in hand and is not. This splits it into what he has actually
