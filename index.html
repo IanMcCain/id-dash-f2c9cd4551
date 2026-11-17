@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 624 (2026-11-17)">
+<meta name="build" content="v21 build 625 (2026-11-17)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -31081,6 +31081,26 @@ try{ if(profile==="ian" && state.meta && !state.meta.mig624_dd1117 && state.real
     state.meta.mig624_dd1117=true; save(true);
     try{ console.log("mig624: deal board checked against its owner"); }catch(_){}
 } }catch(e){ try{ console.warn("mig624 did not apply:",e&&e.message); }catch(_){} }
+/* ===== v21 build 625: EVENTS CHECKED AGAINST THE DEAL BOARD AND THE CALENDAR, 17 NOV 2026 (DEEPDIVE-APP-1117).
+   Guard state.meta.mig625_ev1117. Owner: BRAIN deal board Tue 17 Nov 11:30 AM and CALENDAR_CHECK.md (EventKit read 17 Nov).
+   Old values are copied to state.archive.eventsB624 first. One missing deal date is added to the existing list. ===== */
+try{ if(profile==="ian" && state.meta && !state.meta.mig625_ev1117 && Array.isArray(state.events)){
+    state.archive=state.archive||{}; state.archive.eventsB624=state.archive.eventsB624||[];
+    var E625={}; state.events.forEach(function(e){ if(e&&e.id) E625[e.id]=e; });
+    var ev25=function(id,o){ var e=E625[id]; if(!e) return; try{ state.archive.eventsB624.push(JSON.parse(JSON.stringify(e))); }catch(_){} for(var k in o){ e[k]=o[k]; } };
+    ev25("ev-20261113-fisher-consult",{ date:"2026-11-18", time:"5:00 PM", note:"Moved from Tue 17 Nov 5:00 PM at her request (Chris's texts, 17 Nov 2026 9:38 AM)." });
+    ev25("ev-20261119-limoges-preinspection",{ time:"8:00 AM", title:"Limoges pre inspection, 3129 S 17th St, inspector at 8:00 AM", note:"Justin, NPI (Chris's texts, 16 Nov 2026). The 11:45 AM walk through is on the calendar and has not been restated since the inspector changed." });
+    ev25("ev-20261127-theobald-close",{ date:"2026-11-24", title:"Theobald closing, date not settled (Nov 24, 25 or 27)", note:"Target Tue 24 Nov late afternoon, not confirmed by the builder side or title; Wed 25 Nov was carried; DotLoop read Fri 27 Nov on 15 Nov (deal board, 17 Nov 11:30 AM)." });
+    ev25("ev-20261115-limoges-showings",{ title:"Limoges showings done; 815 Magnolia Dr could not be entered and is not being rescheduled" });
+    if(!E625["ev-20261120-theobald-sell-preinspection"] && E625["ev-20261117-vogel-walk"]){
+      var n625=JSON.parse(JSON.stringify(E625["ev-20261117-vogel-walk"]));
+      n625.id="ev-20261120-theobald-sell-preinspection"; n625.date="2026-11-20"; n625.time="12:30 PM";
+      n625.title="Theobald pre inspection, 5014 S 163rd St, walk through 12:30 PM"; n625.note="Inspection in the morning, NPI (Chris's texts, 16 Nov 2026).";
+      state.events.push(n625);
+    }
+    state.meta.mig625_ev1117=true; save(true);
+    try{ console.log("mig625: events checked"); }catch(_){}
+} }catch(e){ try{ console.warn("mig625 did not apply:",e&&e.message); }catch(_){} }
 
 
 
@@ -32043,6 +32063,8 @@ function sumIanNet(arr){ return (arr||[]).reduce(function(a,d){ return a+dealIan
    sell INTENT by one client, which is two future transactions, and they are untouched by all of
    this because dealSource is not "Dual agency" on either. */
 function dealVolume(d){ return priceNum(d&&d.price); }
+/* build 625: goal volume on the NP Dodge basis, the one the deal board states (17 closed $8,222,246): dual agency counted on both sides, a deal NP Dodge does not report (npdExcluded) left out. Same rule the Real Estate hero has used since build 617. */
+function goalVol625(d){ if(!d||d.npdExcluded) return 0; return dealVolume(d)*(dealSource(d)==="Dual agency"?2:1); }
 /* ===== v21 build 271: A CLIENT ON BOTH SIDES COUNTS TWO. IAN OVERRODE THE 08.09 RULE ==========
    Ian, 08.10.2026, directly: Sydney Spicer counts as TWO deals, buy and sell, and the Belknaps
    count as TWO deals, buy and sell.
@@ -32665,7 +32687,7 @@ function homeZone1(host,nm,workout){
   var deals=(state.realEstate&&state.realEstate.deals)||[];
   var cl=deals.filter(function(x){ return x&&x.stage==="Closed"; });
   var uc=deals.filter(function(x){ return x&&x.stage==="Under Contract"; });
-  var vol=function(a){ return a.reduce(function(t,x){ return t+dealVolume(x); },0); };
+  var vol=function(a){ return a.reduce(function(t,x){ return t+goalVol625(x); },0); };
   var prod=vol(cl)+vol(uc);
   var nDeals=cl.concat(uc).reduce(function(t,x){ return t+dealCountWeight(x); },0);
   var g=(state.realEstate&&state.realEstate.goals2026)||{};
@@ -33060,7 +33082,7 @@ function hzClosingsData(){
   var curY=parseInt(String(TODAY).slice(0,4),10); var closedAll=0, ucAll=0, unNames=[];
   deals.forEach(function(d){
     if(!d||(d.stage!=="Closed"&&d.stage!=="Under Contract")) return;
-    var v=dealVolume(d); var mo=hzCloseMonth(d.close)||((typeof d.closeDate==="string")?hzCloseMonth(d.closeDate):null);
+    var v=goalVol625(d); var mo=hzCloseMonth(d.close)||((typeof d.closeDate==="string")?hzCloseMonth(d.closeDate):null);
     if(d.stage==="Closed") closedAll+=v; else ucAll+=v;
     if(!mo){ un+=v; unN++; unNames.push((d.title||"A deal")+((/lot/i.test(String(d.sub||"")))?" lot":"")); return; }
     if(mo.y!==curY){ oy+=v; oyN++; return; }
@@ -35127,7 +35149,7 @@ function reProdNotes(parent){
 /* opts.notes === false omits the three paragraphs above. Today passes it; see reProdNotes. */
 function reGoalsCard(parent,accOverride,opts){
   const _notes=!(opts&&opts.notes===false);
-  const deals=state.realEstate.deals||[]; const vol=arr=>arr.reduce((a,d)=>a+dealVolume(d),0);
+  const deals=state.realEstate.deals||[]; const vol=arr=>arr.reduce((a,d)=>a+goalVol625(d),0);
   const closed=deals.filter(d=>d.stage==="Closed"); const uc=deals.filter(d=>d.stage==="Under Contract");
   const production=vol(closed)+vol(uc); const dealsDone=closed.concat(uc).reduce(function(a,d){ return a+dealCountWeight(d); },0);
   const g=(state.realEstate&&state.realEstate.goals2026)||{}; const PROD_GOAL=g.production||10000000; const DEALS_GOAL=g.deals||20;
@@ -41373,7 +41395,7 @@ function asofFor(id){
       /* build 529: Today shows the real estate roll-up, so its stamp is the newer of the briefing and the real estate data. */
       var _hl=Object.keys((S.briefing&&S.briefing.forIan)||{}); var _R0=S.realEstate||{};
       _hl.push(_R0.positionAsOf&&_R0.positionAsOf.asOf); _hl.push(_R0.rStreet&&_R0.rStreet.asOf);
-      (_R0.deals||[]).forEach(function(d){ _hl.push(d&&d.winProbAsOf); _hl.push(d&&d.stageSince); });
+      (_R0.deals||[]).forEach(function(d){ _hl.push(d&&d.winProbAsOf); _hl.push(d&&d.stageSince); _hl.push(d&&d.boardAsOf); });
       return asofMax(_hl);
     }
     if(id==="p-gym") return asofMax(Object.keys((S.gym&&S.gym.logs)||{}));
@@ -41381,7 +41403,7 @@ function asofFor(id){
     if(id==="p-finance") return asofMax([S.finance&&S.finance.asOf]);
     if(id==="p-re"){
       var R=S.realEstate||{}, L=[R.positionAsOf&&R.positionAsOf.asOf, R.rStreet&&R.rStreet.asOf];
-      (R.deals||[]).forEach(function(d){ L.push(d&&d.winProbAsOf); L.push(d&&d.stageSince); });
+      (R.deals||[]).forEach(function(d){ L.push(d&&d.winProbAsOf); L.push(d&&d.stageSince); L.push(d&&d.boardAsOf); });
       return asofMax(L);
     }
   }catch(e){}
