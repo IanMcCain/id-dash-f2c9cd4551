@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 618 (2026-11-17)">
+<meta name="build" content="v21 build 619 (2026-11-17)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -35944,12 +35944,78 @@ function reHeroBand(parent,deals){
   var lg=el("div","re-legend");
   segs.forEach(function(sg){ var li=el("div","re-li"); li.appendChild(el("b",null,String(sg[1]))); var sp=el("span",null); sp.appendChild(el("i","re-dot "+sg[2])); sp.appendChild(document.createTextNode(sg[0])); li.appendChild(sp); lg.appendChild(li); });
   h.appendChild(lg);
+  /* build 619: MONEY BAR directly under the pipeline bar (Ian 17 Nov). The pipeline bar above is untouched. */
+  safe(h,function(){ reMoneyBar619(h,deals); },"Money bar");
   var vol=function(a){ return a.reduce(function(t,x){ return t+dealVolume(x); },0); };
   var g=(state.realEstate&&state.realEstate.goals2026)||{}; var goal=g.production||10000000;
   var pr=el("div","re-prod"); var _npH=(state.realEstate&&state.realEstate.npdProduction&&state.realEstate.npdProduction.volume)?state.realEstate.npdProduction:null;
   pr.appendChild(el("span",null,(function(){ /* build 617: same basis as the deal board (NP Dodge: dual agency both sides, npdExcluded left out), closed plus under contract. */ var _bv=function(d){ return d.npdExcluded?0:dealVolume(d)*(dealSource(d)==="Dual agency"?2:1); }; var _cu=closed.concat(uc); var _v=_cu.reduce(function(a,d){ return a+_bv(d); },0); var _sd=_cu.reduce(function(a,d){ return a+dealCountWeight(d); },0); var _g2=((state.realEstate&&state.realEstate.goals2026)||{}).deals||20; return "Production "+fmtMoney(_v)+" of "+fmtMoneyShort(goal)+", "+_sd+" of "+_g2+" sides, closed plus under contract"; })())); pr.appendChild(el("span","re-chev","\u203a")); h.appendChild(pr);
   h.onclick=function(){ selectTab("home"); };
   parent.appendChild(h);
+}
+/* ===== build 619: MONEY BAR (Ian 17 Nov 2026, via Dispatch). Sits under the pipeline bar in the hero card, same visual
+   style. Buckets in order: Received, Under contract, Live listings, Coming soon, Potential, Total. Each shows Ian's gross
+   and a small after set aside figure; tap a bucket to see the deals inside it. ONE deal, ONE bucket, from the same
+   rb618Group the deal board uses. Received = closed 2026 and paid. A closed deal not yet paid stays money not in hand,
+   so it sits in Under contract with a "closed, not paid" tag. Offers out count in Under contract (as on the board).
+   Live listings = boardStage Live; R Street is a model home, "not expected income" (Ian 8 Nov), so it is listed at $0.
+   Coming soon = boardStage Sure, Potential = boardStage Maybe. Building (2027) is not 2026 money and is left out.
+   Everything except Received is an estimate and is labeled so. Replaces the paid, pending and pipeline chips that sat
+   at the top of the deal board (rb-tot), which are no longer drawn. ===== */
+function rm619Bucket(d){
+  var g=rb618Group(d);
+  if(g==="closed") return dealIsPaid(d)?"rcv":"uc";
+  if(g==="uc") return "uc";
+  if(g==="live") return "live";
+  if(g==="soon") return d.boardStage==="Maybe"?"pot":"soon";
+  return null;
+}
+function reMoneyBar619(h,deals){
+  var B=[["rcv","Received","s-closed",0],["uc","Under contract","s-uc",1],["live","Live listings","s-cs",1],["soon","Coming soon","s-bd",1],["pot","Potential","s-pr",1]];
+  var by={}; B.forEach(function(b){ by[b[0]]=[]; });
+  deals.forEach(function(d){ var k=rm619Bucket(d); if(k&&by[k]) by[k].push(d); });
+  var val=function(d){ return d.modelHome===true?0:(dealIanNet(d)||0); };
+  var keepR=1-taxSetAsideRate(), pct=Math.round(taxSetAsideRate()*100);
+  var sums={}, total=0; B.forEach(function(b){ sums[b[0]]=by[b[0]].reduce(function(a,d){ return a+val(d); },0); total+=sums[b[0]]; });
+  var w=el("div","rm619"); w.addEventListener("click",function(e){ e.stopPropagation(); });
+  w.appendChild(el("div","re-hk rm-hk","Money, Ian's gross 2026"));
+  var bar=el("div","re-bar rm-bar"); bar.setAttribute("aria-hidden","true");
+  B.forEach(function(b){ if(!sums[b[0]]) return; var e=el("i","re-seg "+b[2]); e.style.flexGrow=String(sums[b[0]]); bar.appendChild(e); });
+  w.appendChild(bar);
+  var lg=el("div","re-legend rm-legend"); var panel=el("div","rm-panel"); panel.style.display="none"; var openK=null;
+  var show=function(k,li){
+    if(openK===k){ openK=null; panel.style.display="none"; Array.prototype.forEach.call(lg.children,function(c){ c.classList.remove("on"); }); return; }
+    openK=k; Array.prototype.forEach.call(lg.children,function(c){ c.classList.toggle("on",c===li); });
+    panel.innerHTML="";
+    var list=(k==="tot")?B:B.filter(function(b){ return b[0]===k; });
+    var any=false;
+    list.forEach(function(b){
+      var arr=by[b[0]]; if(!arr.length) return; any=true;
+      if(k==="tot") panel.appendChild(el("div","rm-ph",b[1]+(b[3]?" (estimate)":"")));
+      arr.forEach(function(d){
+        var n=val(d); var r=el("div","rm-r"); var L=el("div","rm-l");
+        var nm=el("div","rm-n",d.title||d.client||d.id); var tg=(d.stage==="Closed"&&!dealIsPaid(d))?"closed, not paid":(d.modelHome===true?"model home, not counted":rb618Tag(d)); if(tg) nm.appendChild(el("span","rb-tag",tg)); L.appendChild(nm);
+        var wn=rb618When(d); L.appendChild(el("div","rm-s",wn||"\u00a0")); r.appendChild(L);
+        var R=el("div","rm-v"); R.appendChild(el("div","rm-g",fmtMoney(n))); R.appendChild(el("div","rm-s",fmtMoney(n*keepR)+" after "+pct+"%")); r.appendChild(R);
+        panel.appendChild(r);
+      });
+    });
+    if(!any) panel.appendChild(el("div","rm-s","No deals in this bucket right now."));
+    panel.appendChild(el("div","rm-ft","Received is paid deposits. Every other figure is Ian's modeled gross, an estimate until the closing sheet. Building (2027) deals are not in 2026 money."));
+    panel.style.display="block";
+  };
+  var item=function(k,label,cls,est,v){
+    var li=el("div","re-li rm-li"); li.setAttribute("role","button"); li.setAttribute("tabindex","0");
+    li.appendChild(el("b",null,fmtMoneyShort(v)));
+    li.appendChild(el("em","rm-k",fmtMoneyShort(v*keepR)+" after "+pct+"%"));
+    var sp=el("span",null); if(cls) sp.appendChild(el("i","re-dot "+cls)); sp.appendChild(document.createTextNode(label+(est?" (est.)":""))); li.appendChild(sp);
+    li.addEventListener("click",function(e){ e.stopPropagation(); show(k,li); });
+    lg.appendChild(li);
+  };
+  B.forEach(function(b){ item(b[0],b[1],b[2],b[3],sums[b[0]]); });
+  item("tot","Total",null,1,total);
+  w.appendChild(lg); w.appendChild(panel);
+  h.appendChild(w);
 }
 function reLiveBand(parent,deals){
   var stages={"Under Contract":1,"Active":1,"Coming Soon":1,"Building":1};
@@ -36102,7 +36168,7 @@ function reBoardBand(parent,deals){
   var tl=el("div","rb-tot");
   var chip=function(lab,v,col){ var c=el("div","rb-chip"); var b=el("b",null,fmtMoneyShort(v)); if(col) b.style.color=col; c.appendChild(b); c.appendChild(el("span",null,lab)); tl.appendChild(c); };
   chip("paid",paid,"#30d158"); if(owed) chip("owed",owed,"#ff9f0a"); chip("pending",pend,"#bf5af2"); chip("pipeline",pipe,null);
-  band.appendChild(tl);
+  /* build 619: the paid, pending and pipeline chips are retired; the money bar in the hero card replaces them. */
   var list=el("div","re-list rb-list");
   var kv=function(box,k,v){ if(v===undefined||v===null||v==="") return; var r=el("div","rb-kv"); r.appendChild(el("div","rb-k",k)); r.appendChild(el("div","rb-v",String(v))); box.appendChild(r); };
   var row=function(host,d,col){
@@ -42630,6 +42696,23 @@ section,.card,.sectlabel{scroll-margin-top:calc(var(--hh) + var(--sat) + 8px)}
 .re-li b{display:block;font-size:22px;line-height:1.1;font-weight:800;letter-spacing:-.02em;color:var(--white);font-variant-numeric:tabular-nums}
 .re-li span{display:flex;align-items:flex-start;gap:4px;margin-top:4px;font-size:11px;line-height:1.2;color:var(--gray)}
 .re-dot{flex:none;display:block;width:8px;height:8px;border-radius:50%;margin-top:2px}
+.rm619{margin-top:16px;padding-top:12px;border-top:1px solid rgba(255,255,255,.08)}
+.rm619 .rm-hk{margin-bottom:0}
+.rm619 .rm-bar{margin-top:12px}
+.rm619 .rm-legend{grid-template-columns:repeat(3,minmax(0,1fr));gap:10px 8px}
+.rm619 .rm-li{cursor:pointer;border-radius:10px;padding:4px 4px 6px;margin:-4px}
+.rm619 .rm-li.on{background:rgba(255,255,255,.06)}
+.rm619 .rm-li b{font-size:19px}
+.rm619 .rm-k{display:block;font-style:normal;font-size:11px;color:var(--gray);margin-top:2px;font-variant-numeric:tabular-nums}
+.rm619 .rm-panel{margin-top:10px;border-top:1px solid rgba(255,255,255,.06)}
+.rm619 .rm-ph{font-size:11px;font-weight:700;color:var(--gray);text-transform:uppercase;letter-spacing:.04em;margin:10px 0 2px}
+.rm619 .rm-r{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.05)}
+.rm619 .rm-n{font-size:13px;font-weight:700;color:var(--white)}
+.rm619 .rm-s{font-size:11px;color:var(--gray);margin-top:2px}
+.rm619 .rm-v{text-align:right;flex:none}
+.rm619 .rm-g{font-size:13px;font-weight:700;color:var(--white);font-variant-numeric:tabular-nums}
+.rm619 .rb-tag{display:inline-block;margin-left:8px;padding:1px 7px;border-radius:999px;font-size:10.5px;font-weight:700;letter-spacing:.02em;color:var(--gray);background:rgba(255,255,255,.08);vertical-align:2px}
+.rm619 .rm-ft{font-size:11px;color:var(--gray);line-height:1.4;margin-top:8px}
 .re-prod{display:flex;align-items:center;justify-content:space-between;margin-top:16px;padding-top:12px;border-top:1px solid rgba(255,255,255,.08);font-size:13px;font-weight:600;color:var(--white)}
 .re-bh{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin:0 4px 12px}
 .re-bh h3{font-size:20px;font-weight:800;letter-spacing:-.02em;color:var(--white)}
