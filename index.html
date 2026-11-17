@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 628 (2026-11-17)">
+<meta name="build" content="v21 build 629 (2026-11-17)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -31141,6 +31141,22 @@ try{ if(profile==="ian" && state.meta && !state.meta.mig627_pk1117 && state.pick
     state.meta.mig627_pk1117=true; save(true);
     try{ console.log("mig627: pickle goal labels applied"); }catch(_){}
 } }catch(e){ try{ console.warn("mig627 did not apply:",e&&e.message); }catch(_){} }
+/* ===== v21 build 629: STEP 10 DEAL RECORDS, 17 NOV 2026 (STEP10-APP-1117). Guard state.meta.mig629_s10. Source: IAN_ANSWERS_STEP10.md.
+   Limoges buy is an offer out, waiting on the seller, NOT under contract (answer 10). Limoges sell: the split is not re-confirmed
+   on the deal board, so no estimate is drawn. Mattox: the $73.50 Commission Adjustment on statement CommStmt240406 is recorded as
+   Ian's guess (answer 2); the paid figure stays the deposit, $2,379.60. Old values are copied to state.archive.dealsB628. ===== */
+try{ if(profile==="ian" && state.meta && !state.meta.mig629_s10 && state.realEstate && Array.isArray(state.realEstate.deals)){
+    state.archive=state.archive||{}; state.archive.dealsB628=state.archive.dealsB628||[];
+    var K629=function(d){ state.archive.dealsB628.push({id:d.id,boardDate:d.boardDate,rowNote:d.rowNote,actualNetSource:d.actualNetSource,payNote:d.payNote,splitUnconfirmed:d.splitUnconfirmed}); };
+    state.realEstate.deals.forEach(function(d){ if(!d) return;
+      if(d.id==="re-limoges-buy"){ K629(d); d.boardDate="Offer out, waiting on seller";
+        d.rowNote="Offer on 867 S 156th Ave, list $365,000. Earnest $3,500, seller help up to $10,000. Not under contract. No figure is shown: a 2027 closing does not use 2026 math, and nothing is expected income until the offer is accepted."; }
+      if(d.id==="re-limoges-sell"){ K629(d); d.splitUnconfirmed=true; }
+      if(d.id==="re-mattox-sell"){ var k629=d.actualNetSource?"actualNetSource":(d.payNote?"payNote":"actualNetSource");
+        if(String(d[k629]||"").indexOf("73.50")<0){ K629(d); d[k629]=(String(d[k629]||"")+" NP Dodge statement CommStmt240406: $2,582.21, less a $73.50 Commission Adjustment, likely a correction (Ian's guess), less the 5 percent ($129.11).").replace(/^ /,""); } } });
+    state.meta.mig629_s10=true; save(true);
+    try{ console.log("mig629: step 10 deal records applied"); }catch(_){}
+} }catch(e){ try{ console.warn("mig629 did not apply:",e&&e.message); }catch(_){} }
 
 
 
@@ -31892,6 +31908,24 @@ function dealSource(d){ var s=(d&&d.source)||""; return (s==="Chris's client"||s
    0 in totals (never as a fabricated figure), and the renderers say "rate not set". 0.80 now needs an
    explicit source of "Ian's own". fxIanEarns stays as the presentation gate and also honours this. */
 function dealShareUnset(d){ if(!d) return false; if(typeof d.ianSplit==="number"||typeof d.actualNet==="number") return false; var s=d.source; return !(s==="Ian's own"||s==="Chris's client"||s==="Dual agency"); }
+/* ===== build 629, STEP 10, IAN 17 NOV 2026 (IAN_ANSWERS_STEP10.md, answers 1, 8, 9, 10). THE COMMISSION RULE, CONFIRMED:
+   side gross = price x charged rate; NP Dodge cut = price x STANDARD rate x 0.15 (3.6 seller, 2.4 buyer, dual on a 6 percent
+   basis); Ian gross = (side gross - cut) x his split; Ian net = Ian gross x 0.95. His example: Hernandez 450,000 x 3.6% =
+   16,200; less 15% = 13,770; x 80% = 11,016; less 5% = 10,465.20. dealBrokerage already took the cut on the standard
+   rate (builds 452 and 488), so the arithmetic is unchanged. What is new here:
+   dealEstUnset(d)  true when NO estimate may be drawn: a 2027 deal (2027 does not use 2026 math), a split that is not
+                    confirmed, or a deal that is not on the deal board. dealIanNet returns 0 for these and every
+                    renderer says "not set" (absent is not zero). A paid or closed deal is never unset.
+   dealIanReceives(d)  what Ian receives: the deposit on a paid deal, else Ian gross less the 5 percent, to the cent. */
+function dealEstUnset(d){
+  if(!d) return false; if(typeof d.actualNet==="number"||d.paid===true||d.stage==="Closed") return false;
+  if(d.structure2027===true||d.stage==="Building"||d.boardStage==="Build"||Number(d.projectionYear)>=2027) return true;
+  if(d.splitUnconfirmed===true) return true;
+  return !(d.stage==="Under Contract"||d.stage==="Coming Soon"||d.stage==="Active"||d.boardStage==="Sure"||d.boardStage==="Maybe"||d.boardStage==="Live");
+}
+function dealEstUnsetWhy(d){ if(!d) return ""; if(d.structure2027===true||d.stage==="Building"||d.boardStage==="Build"||Number(d.projectionYear)>=2027) return "a 2027 deal does not use 2026 math"; if(d.splitUnconfirmed===true) return "Ian's split is not confirmed"; return "no rate or split on the deal board"; }
+function dealEstUnsetShort(d){ if(!d) return "not set"; if(d.structure2027===true||d.stage==="Building"||d.boardStage==="Build"||Number(d.projectionYear)>=2027) return "2027, not 2026 math"; if(d.splitUnconfirmed===true) return "split not confirmed"; return "not on the board"; }
+function dealIanReceives(d){ var n=dealIanNet(d); if(dealIsPaid(d)) return n; return _r2(_r2(n)*(1-RE_MKT_INVEST)); }
 function dealSide(d){ var s=(d&&d.side)||""; if(s==="Buyer"||s==="Seller"||s==="Both") return s; /* v21 build 41: infer from the TITLE only, not the note, since notes often mention the clients buying elsewhere (Spicer and Bonks selling deals were wrongly read as Buyer). */ var t=String((d&&d.title)||""); return /buy|buyer|buying/i.test(t)?"Buyer":"Seller"; }
 /* v21 build 57: a "Both" side is dual agency by definition and its commission is computed via dualRate in
    dealGrossCommission, so sideRate is only reached for SINGLE-side (non-dual) deals. The old "Both" branch
@@ -32015,7 +32049,7 @@ function dealBrokerage(d){ if(d&&d.structure2027===true) return 0; if(dealSource
    fallback for deals with no actual yet. This exists because the Spicer sale paid $2,770 against
    a modeled $2,906.39 and the cause could not be identified from one closing. Setting an actual
    is how a known number survives any later change to the model. */
-function dealIanNet(d){ if(d&&typeof d.actualNet==="number") return d.actualNet; if(dealShareUnset(d)) return 0; return (dealGrossCommission(d)-dealBrokerage(d)) * sourceShare(dealSource(d),d); }
+function dealIanNet(d){ if(d&&typeof d.actualNet==="number") return d.actualNet; if(dealShareUnset(d)||dealEstUnset(d)) return 0; return (dealGrossCommission(d)-dealBrokerage(d)) * sourceShare(dealSource(d),d); }
 /* v21 build 440: what he actually KEEPS. Derived, never stored. See the RE_RATES block above. */
 function dealIanPostTax(d){ return dealKeep(d); }
 /* build 607, Ian 11 Nov 2026 via Dispatch: "YES apply the 5% NP Dodge cut" (Theobald buy must read $1,535.50).
@@ -32329,7 +32363,7 @@ function dealEditors(parent,d){
   const sideLab=el("div","small muted","Side Ian represents"); sideLab.style.marginTop="10px"; parent.appendChild(sideLab);
   parent.appendChild(_ro606(chipRowKV([["Seller side","Seller"],["Buyer side","Buyer"],["Both sides","Both"]], dealSide(d), v=>{ d.side=v; save(); render(); })));
   if(dealSource(d)==="Dual agency"){ const rLab=el("div","small muted","Dual commission rate, aim 6%, as low as 5% to make a deal"); rLab.style.marginTop="10px"; parent.appendChild(rLab); parent.appendChild(_ro606(chipRowKV([["5%",0.05],["6%",0.06]], dualRate(d), function(v){ d.dualRate=v; save(); render(); }))); const rNote=el("div","small dim"); rNote.style.marginTop="4px"; rNote.textContent="Current rate "+(+(dualRate(d)*100).toFixed(2))+"%"+(dualRate(d)<0.05?" (locked one-time exception)":""); parent.appendChild(rNote); }
-  const inc=el("div","small dim"); inc.style.marginTop="9px"; inc.style.lineHeight="1.55"; /* v21 build 285: NO PRICE MEANS NO NUMBER. Ian, 08.13.2026. priceNum returns 0 for an empty price, so this line used to render a confident "Est. your take home $0" on every prospect with no price yet, which reads as a derived figure rather than a missing one. The deal ROW already guarded this with if(_tn>0); the editor did not. Say the price is missing, and name the split that WOULD apply so a wrong source is visible before a price is ever typed. */ if(dealShareUnset(d)){ inc.innerHTML="Commission rate and your share are <b>not set</b> for this source, so no income estimate is shown. Pick Ian's own, Chris's client or Dual agency, or set a split."; } else if(priceNum(d&&d.price)<=0 && !dealNetIsActual(d)){ inc.innerHTML="No price on record, so no income estimate. It fills in at your <b>"+Math.round(sourceShare(dealSource(d),d)*100)+"%</b> split ("+dealSource(d)+")."; } else if(dealSource(d)==="Dual agency"){ /* build 440: the editor is where the chain is spelled out, so the tax sweep joins the end of
+  const inc=el("div","small dim"); inc.style.marginTop="9px"; inc.style.lineHeight="1.55"; /* v21 build 285: NO PRICE MEANS NO NUMBER. Ian, 08.13.2026. priceNum returns 0 for an empty price, so this line used to render a confident "Est. your take home $0" on every prospect with no price yet, which reads as a derived figure rather than a missing one. The deal ROW already guarded this with if(_tn>0); the editor did not. Say the price is missing, and name the split that WOULD apply so a wrong source is visible before a price is ever typed. */ if(dealEstUnset(d)){ inc.innerHTML="Income estimate <b>not set</b>: "+dealEstUnsetWhy(d)+"."; } else if(dealShareUnset(d)){ inc.innerHTML="Commission rate and your share are <b>not set</b> for this source, so no income estimate is shown. Pick Ian's own, Chris's client or Dual agency, or set a split."; } else if(priceNum(d&&d.price)<=0 && !dealNetIsActual(d)){ inc.innerHTML="No price on record, so no income estimate. It fills in at your <b>"+Math.round(sourceShare(dealSource(d),d)*100)+"%</b> split ("+dealSource(d)+")."; } else if(dealSource(d)==="Dual agency"){ /* build 440: the editor is where the chain is spelled out, so the tax sweep joins the end of
      the chain rather than being left off it. Gross, broker cut, split, THEN tax. */
     inc.innerHTML="Est. your commission <b>"+fmtMoney(dealIanNet(d))+"</b>, of which you keep <b>"+fmtMoneyC(dealIanPostTax(d))+"</b> after "+(dealIsPaid(d)?"":"the 5% NP Dodge Marketing Investment and ")+"setting aside "+taxPctWord()+" for tax. Dual agency at "+(+(dualRate(d)*100).toFixed(2))+"% on the property, charged once. Broker takes 15% of a 6% basis, then your 50/50 with Chris. Counts twice for volume and deal count."; } else { inc.innerHTML="Est. your commission <b>"+fmtMoney(dealIanNet(d))+"</b>, of which you keep <b>"+fmtMoneyC(dealIanPostTax(d))+"</b> after "+(dealIsPaid(d)?"":"the 5% NP Dodge Marketing Investment and ")+"setting aside "+taxPctWord()+" for tax. Gross commission this side "+fmtMoney(dealGrossCommission(d))+(d&&d.structure2027===true?", no 15% broker cut under the 2027 structure, then your ":", before the 15% broker cut and your ")+Math.round(sourceShare(dealSource(d),d)*100)+"% split."; } parent.appendChild(inc);
   
@@ -36082,11 +36116,12 @@ function reMoneyBar619(h,deals){
   var B=[["rcv","Received","s-closed",0],["uc","Under contract","s-uc",1],["live","Live listings","s-cs",1],["soon","Coming soon","s-bd",1],["pot","Potential","s-pr",1]];
   var by={}; B.forEach(function(b){ by[b[0]]=[]; });
   deals.forEach(function(d){ var k=rm619Bucket(d); if(k&&by[k]) by[k].push(d); });
-  var val=function(d){ return d.modelHome===true?0:(dealIanNet(d)||0); };
+  var val=function(d){ return d.modelHome===true?0:(dealIanReceives(d)||0); }; /* build 629: what Ian receives, after the 5 percent */
   var keepR=1-taxSetAsideRate(), pct=Math.round(taxSetAsideRate()*100);
-  var sums={}, total=0; B.forEach(function(b){ sums[b[0]]=by[b[0]].reduce(function(a,d){ return a+val(d); },0); total+=sums[b[0]]; });
+  var kept=function(d){ return d.modelHome===true?0:(dealIsPaid(d)?val(d)*keepR:(dealKeep(d)||0)); };
+  var sums={}, keeps={}, total=0, totalK=0; B.forEach(function(b){ sums[b[0]]=by[b[0]].reduce(function(a,d){ return a+val(d); },0); keeps[b[0]]=by[b[0]].reduce(function(a,d){ return a+kept(d); },0); total+=sums[b[0]]; totalK+=keeps[b[0]]; });
   var w=el("div","rm619"); w.addEventListener("click",function(e){ e.stopPropagation(); });
-  w.appendChild(el("div","re-hk rm-hk","Money, Ian's gross 2026"));
+  w.appendChild(el("div","re-hk rm-hk","Money, Ian's net 2026"));
   var bar=el("div","re-bar rm-bar"); bar.setAttribute("aria-hidden","true");
   B.forEach(function(b){ if(!sums[b[0]]) return; var e=el("i","re-seg "+b[2]); e.style.flexGrow=String(sums[b[0]]); bar.appendChild(e); });
   w.appendChild(bar);
@@ -36104,24 +36139,25 @@ function reMoneyBar619(h,deals){
         var n=val(d); var r=el("div","rm-r"); var L=el("div","rm-l");
         var nm=el("div","rm-n",d.title||d.client||d.id); var tg=(d.stage==="Closed"&&!dealIsPaid(d))?"closed, not paid":(d.modelHome===true?"model home, not counted":rb618Tag(d)); if(tg) nm.appendChild(el("span","rb-tag",tg)); L.appendChild(nm);
         var wn=rb618When(d); L.appendChild(el("div","rm-s",wn||"\u00a0")); r.appendChild(L);
-        var R=el("div","rm-v"); R.appendChild(el("div","rm-g",fmtMoney(n))); R.appendChild(el("div","rm-s",fmtMoney(n*keepR)+" after "+pct+"%")); r.appendChild(R);
+        var _p9=dealIsPaid(d), _m9=(d.modelHome===true&&!_p9), _u9=(!_p9&&!_m9&&(dealEstUnset(d)||dealShareUnset(d)));
+        var R=el("div","rm-v"); R.appendChild(el("div","rm-g",_m9?"not counted":(_u9?"not set":((_p9?"":"est. ")+fmtMoney(n))))); if(!_m9&&!_u9) R.appendChild(el("div","rm-s",fmtMoney(kept(d))+" after "+pct+"%")); r.appendChild(R);
         panel.appendChild(r);
       });
     });
     if(!any) panel.appendChild(el("div","rm-s","No deals in this bucket right now."));
-    panel.appendChild(el("div","rm-ft","Received is paid deposits. Every other figure is Ian's modeled gross, an estimate until the closing sheet. Building (2027) deals are not in 2026 money."));
+    panel.appendChild(el("div","rm-ft","Received is paid deposits. Every other figure is an estimate under the NP Dodge rule, after the 5 percent, until the closing sheet. An offer out is not under contract. 2027 deals and deals with no split on file are not set and add nothing."));
     panel.style.display="block";
   };
-  var item=function(k,label,cls,est,v){
+  var item=function(k,label,cls,est,v,vk){
     var li=el("div","re-li rm-li"); li.setAttribute("role","button"); li.setAttribute("tabindex","0");
     li.appendChild(el("b",null,fmtMoneyShort(v)));
-    li.appendChild(el("em","rm-k",fmtMoneyShort(v*keepR)+" after "+pct+"%"));
+    li.appendChild(el("em","rm-k",fmtMoneyShort(vk)+" after "+pct+"%"));
     var sp=el("span",null); if(cls) sp.appendChild(el("i","re-dot "+cls)); sp.appendChild(document.createTextNode(label+(est?" (est.)":""))); li.appendChild(sp);
     li.addEventListener("click",function(e){ e.stopPropagation(); show(k,li); });
     lg.appendChild(li);
   };
-  B.forEach(function(b){ item(b[0],b[1],b[2],b[3],sums[b[0]]); });
-  item("tot","Total",null,1,total);
+  B.forEach(function(b){ item(b[0],b[1],b[2],b[3],sums[b[0]],keeps[b[0]]); });
+  item("tot","Total",null,1,total,totalK);
   w.appendChild(lg); w.appendChild(panel);
   h.appendChild(w);
 }
@@ -36243,6 +36279,7 @@ function reBoardBand615(parent,deals){
 var RB618_MON=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 function rb618When(d){
   if(d.boardDate) return d.boardDate;
+  if(d.boardStage==="Offer") return "Offer out, waiting on seller"; /* build 629 */
   var t=String(d.closeDate||d.closedOn||d.close||""), m;
   m=t.match(/(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\.? (\d{1,2})\b/); if(m) return m[1]+" "+m[2];
   m=t.match(/\b(\d{1,2}) (Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)/); if(m) return m[2]+" "+m[1];
@@ -36255,13 +36292,13 @@ function rb618Price(d){ if(d.priceShort) return d.priceShort; var n=priceNum(d.p
 function rb618Group(d){
   if(!d) return null;
   if(d.stage==="Closed"){ var y=String(d.closeDate||d.close||d.closedOn||""); if(/2025/.test(y)&&!/2026/.test(y)) return null; return "closed"; }
-  if(d.stage==="Under Contract"||d.boardStage==="Offer") return "uc";
-  if(d.boardStage==="Live") return "live";
+  if(d.stage==="Under Contract") return "uc"; /* build 629: an offer out is not under contract (Ian 17 Nov, answer 10) */
+  if(d.boardStage==="Live"||d.boardStage==="Offer") return "live";
   if(d.boardStage==="Sure"||d.boardStage==="Maybe") return "soon";
   if(d.boardStage==="Build") return "y27";
   return null;
 }
-function rb618Tag(d){ if(d.boardStage==="Offer") return "offer out"; if(d.boardStage==="Maybe") return "maybe"; return ""; }
+function rb618Tag(d){ if(d.boardStage==="Maybe") return "maybe"; return ""; } /* build 629: the offer label is the row's date line, "Offer out, waiting on seller" */
 function reBoardBand(parent,deals){
   var G=[["uc","Under contract","#bf5af2"],["live","Live now","#ff9f43"],["soon","Coming soon","#64d2ff"],["closed","Closed","#30d158"],["y27","Building, 2027","#a78bfa"]];
   var by={}; G.forEach(function(g){ by[g[0]]=[]; });
@@ -36272,7 +36309,7 @@ function reBoardBand(parent,deals){
   var paid=S(by.closed.filter(dealIsPaid)), owed=S(by.closed.filter(function(d){ return !dealIsPaid(d); })), pend=S(by.uc.filter(function(d){ return d.boardStage!=="Offer"; })), pipe=S(by.uc.filter(function(d){ return d.boardStage==="Offer"; }).concat(by.live,by.soon).filter(function(d){ return d.modelHome!==true; }));
   var band=el("div","re-band rb618");
   var hd=el("div","re-bh"); hd.appendChild(el("h3",null,"Deal board"));
-  hd.appendChild(el("span",null,"Ian's gross, 2026")); band.appendChild(hd);
+  hd.appendChild(el("span",null,"Ian's net, 2026")); band.appendChild(hd);
   var tl=el("div","rb-tot");
   var chip=function(lab,v,col){ var c=el("div","rb-chip"); var b=el("b",null,fmtMoneyShort(v)); if(col) b.style.color=col; c.appendChild(b); c.appendChild(el("span",null,lab)); tl.appendChild(c); };
   chip("paid",paid,"#30d158"); if(owed) chip("owed",owed,"#ff9f0a"); chip("pending",pend,"#bf5af2"); chip("pipeline",pipe,null);
@@ -36285,13 +36322,17 @@ function reBoardBand(parent,deals){
     var L=el("div","rb-l"); var nm=el("div","rb-n",d.title||d.client||d.id); var tg=rb618Tag(d); if(tg){ nm.appendChild(el("span","rb-tag",tg)); } L.appendChild(nm); var w=rb618When(d); L.appendChild(el("div","rb-s",w||"\u00a0")); r.appendChild(L);
     /* build 624: absent is not zero. A model home is not expected income (Ian 8 Nov) so no model figure is drawn; a split not on file reads "not set". */
     var sh0=sourceShare(dealSource(d),d), mh=(d.modelHome===true&&!isP); if(mh) n=0;
-    var R=el("div","rb-r"); var tk=el("div","rb-t",mh?"not counted":(n?fmtMoney(n):((sh0===null||sh0===undefined)?"not set":"$0"))); if(isP) tk.style.color="#30d158"; else if(n) tk.classList.add("rb-est"); R.appendChild(tk); R.appendChild(el("div","rb-s",rb618Price(d))); r.appendChild(R);
+    /* build 629: an estimate is what Ian receives after the 5 percent and says est.; no stated inputs reads "not set". */
+    var uns=(!isP&&!mh&&(dealEstUnset(d)||sh0===null||sh0===undefined)); var rcv=(isP||mh||uns)?n:dealIanReceives(d);
+    var R=el("div","rb-r"); var tk=el("div","rb-t",mh?"not counted":(uns?"not set":(n?(isP?fmtMoney(n):"est. "+fmtMoney(rcv)):"$0"))); if(isP) tk.style.color="#30d158"; else if(n) tk.classList.add("rb-est"); R.appendChild(tk); R.appendChild(el("div","rb-s",rb618Price(d))); r.appendChild(R);
     var det=el("div","rb-det"); det.style.display="none";
     kv(det,"Address",d.address||reTidy(d.sub||""));
     kv(det,"Price",d.priceLine||d.price);
     kv(det,"Dates",d.keyDates||d.close);
-    var sh=sourceShare(dealSource(d),d); kv(det,"Split",(sh===null||sh===undefined)?"Not on file":(Math.round(sh*100)+"% to Ian, "+(d.source||dealSource(d))+", "+dealSide(d)+" side"+(y27?", 2027 structure":"")));
-    if(n){ kv(det,isP?"Received":"Gross (estimate)",fmtMoneyC(n)); kv(det,"After "+pct+"%",fmtMoneyC(n*keepR)); }
+    var sh=sourceShare(dealSource(d),d); kv(det,"Split",(sh===null||sh===undefined)?"Not on file":(d.splitUnconfirmed===true&&!isP)?("Not re-confirmed, "+Math.round(sh*100)+"% carried, "+dealSide(d)+" side"):(Math.round(sh*100)+"% to Ian, "+(d.source||dealSource(d))+", "+dealSide(d)+" side"+(y27?", 2027 structure":"")));
+    if(n&&isP){ kv(det,"Received",fmtMoneyC(n)); kv(det,"After "+pct+"%",fmtMoneyC(n*keepR)); }
+    else if(n){ kv(det,"Gross (estimate)",fmtMoneyC(n)); kv(det,"Net after 5% (est.)",fmtMoneyC(rcv)); kv(det,"After 5% and "+pct+"% (est.)",fmtMoneyC(dealKeep(d))); }
+    else if(uns){ kv(det,"Estimate","Not set: "+((sh0===null||sh0===undefined)?"Ian's split is not on file":dealEstUnsetWhy(d))); }
     if(d.stage==="Closed") kv(det,"Paid",isP?"Yes":(sh0===0?"No commission to Ian":"Not paid or not confirmed"));
     kv(det,"Source",d.actualNetSource||d.payNote||d.npdNote||"");
     kv(det,"Notes",d.rowNote||(d.stage==="Closed"?"":d.note)||""); /* build 624: a closed row shows only its short note, not the full working history */
@@ -36317,7 +36358,7 @@ function reBoardBand(parent,deals){
     } else arr.forEach(function(d){ row(list,d,g[0]==="closed"&&!dealIsPaid(d)?"#ff9f0a":g[2]); });
   });
   band.appendChild(list);
-  var ft=el("div","rb-ft"); ft.textContent="Gross is Ian's share; paid figures are the deposits. Tap a deal for dates, split, after "+pct+"% and sources."+(state.realEstate&&state.realEstate.boardNote?" "+state.realEstate.boardNote:""); band.appendChild(ft);
+  var ft=el("div","rb-ft"); ft.textContent="Paid figures are the deposits. est. is an estimate under the NP Dodge rule, after the 5 percent, until the closing sheet. not set: a 2027 deal or a split not on file. Tap a deal for dates, split, after "+pct+"% and sources."+(state.realEstate&&state.realEstate.boardNote?" "+state.realEstate.boardNote:""); band.appendChild(ft);
   parent.appendChild(band);
 }
 function reViewPipeline(v){
@@ -40622,7 +40663,7 @@ function fxEsc(t){ return String(t==null?"":t); }
    whose deal it is instead of printing a dollar figure as if it were his.
    The figure itself stays on the record for whoever answers the open question. */
 /* build 628: a model home is not expected income (Ian 8 Nov; BRAIN deal board 17 Nov), so the Finances deal rows draw no model figure for it. Same rule as the money bar (build 619) and the deal board row (build 624). */
-function fxIanEarns(d){ return !(d && (d.suppressIanEarnings===true || d.notIansDeal===true || d.modelHome===true || dealShareUnset(d))); }
+function fxIanEarns(d){ return !(d && (d.suppressIanEarnings===true || d.notIansDeal===true || d.modelHome===true || dealShareUnset(d) || dealEstUnset(d))); }
 /* TWO FORMS, and the short one is not cosmetic. fnSub enforces a FOUR WORD RULE and returns null
    rather than truncating, so any sub line longer than four words is silently dropped and the row
    renders with no explanation at all. That is exactly what happened on the first attempt at this
@@ -40633,6 +40674,7 @@ function fxOwnedByLine(d){
   try{ if(d && d.ownedByShort) return String(d.ownedByShort); }catch(e){}
   try{ if(d && d.ownedBy) return String(d.ownedBy); }catch(e){}
   try{ if(d && d.notIansDeal!==true && dealShareUnset(d)) return "rate not set"; }catch(e){}
+  try{ if(d && d.notIansDeal!==true && d.modelHome!==true && dealEstUnset(d)) return dealEstUnsetShort(d); }catch(e){}
   return "not his deal";
 }
 /* TWO DIFFERENT REASONS A FIGURE IS WITHHELD, and they must not read the same.
