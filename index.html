@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 626 (2026-11-17)">
+<meta name="build" content="v21 build 627 (2026-11-17)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -31122,6 +31122,25 @@ try{ if(profile==="ian" && state.meta && !state.meta.mig626_fin1117 && state.fin
     state.meta.mig626_fin1117=true; save(true);
     try{ console.log("mig626: finance balances checked"); }catch(_){}
 } }catch(e){ try{ console.warn("mig626 did not apply:",e&&e.message); }catch(_){} }
+/* ===== v21 build 627: PICKLE GOAL LABELS AND ONE GYM LINE, 17 NOV 2026 (DEEPDIVE-APP-1117). Guard state.meta.mig627_pk1117.
+   Ian 11.17 (build 622): the Carvana Mesa Cup (PPA Arizona) comes off the Pickle tab; the goal row that still named it
+   as the target event is archived the same way (copied whole to state.archive.pickleGoalsB626, not deleted). The Aug 23
+   APC goal is a played event. Names are labels: short titles with no caps fragments. Gym is removed from the app (Ian
+   11.17), so the "Log today's workout, every set" easy win is archived to state.archive.quickWinB626. ===== */
+try{ if(profile==="ian" && state.meta && !state.meta.mig627_pk1117 && state.pickleball && Array.isArray(state.pickleball.goals)){
+    state.archive=state.archive||{}; state.archive.pickleGoalsB626=state.archive.pickleGoalsB626||[];
+    var G627=state.pickleball.goals;
+    G627.forEach(function(g){ if(!g) return;
+      if(g.id==="pk-goal-ppa-az"){ var c=JSON.parse(JSON.stringify(g)); c.archivedB627="Hidden at Ian's request 11.17 (Mesa Cup removed from the Pickle tab)"; state.archive.pickleGoalsB626.push(c); }
+      if(g.id==="pk-goal-tourney"){ state.archive.pickleGoalsB626.push(JSON.parse(JSON.stringify(g))); g.done=true; g.short="APC men's doubles 3.5 with Dylan, played Aug 23"; }
+      if(g.id==="pk-goal-league-info" && !g.short){ g.short="NPL info, a later step"; }
+      if(g.id==="pk-goal-drive" && !g.short){ g.short="Refine the drive, polish not rebuild"; } });
+    state.pickleball.goals=G627.filter(function(g){ return !(g&&g.id==="pk-goal-ppa-az"); });
+    if(state.quickWin && Array.isArray(state.quickWin.items)){ var q627=state.quickWin.items.filter(function(x){ return /workout, every set/i.test(String((x&&x.text)||x||"")); });
+      if(q627.length){ state.archive.quickWinB626=q627; state.quickWin.items=state.quickWin.items.filter(function(x){ return q627.indexOf(x)<0; }); } }
+    state.meta.mig627_pk1117=true; save(true);
+    try{ console.log("mig627: pickle goal labels applied"); }catch(_){}
+} }catch(e){ try{ console.warn("mig627 did not apply:",e&&e.message); }catch(_){} }
 
 
 
@@ -33319,7 +33338,7 @@ function homeZone5(host,F){
     var when="";
     if(last&&last.date){ try{ var du=daysUntil(last.date); when=(du===0?"today":du===-1?"yesterday":(du<0?(-du)+" days ago":fmtShort(last.date))); }catch(e){ when=String(last.date); } }
     var st=el("div","z5-strip"); st.setAttribute("role","button"); st.setAttribute("aria-label","Pickleball, open the tab");
-    if(dp){ var c1=el("div","z5-cell"); var v1=el("div","z5-sv",String(dp.rating)); c1.appendChild(v1); c1.appendChild(el("div","z5-sl","DUPR rating")); st.appendChild(c1); }
+    if(dp){ var c1=el("div","z5-cell"); var v1=el("div","z5-sv",String(dp.rating)); c1.appendChild(v1); c1.appendChild(el("div","z5-sl",(dp.singles&&dp.doubles&&dp.rating===dp.singles)?("DUPR singles, doubles "+dp.doubles):"DUPR rating")); /* build 627 */ st.appendChild(c1); }
     if(last){ var c2=el("div","z5-cell"); c2.appendChild(el("div","z5-sv z5-sv2",when)); c2.appendChild(el("div","z5-sl","Last session")); st.appendChild(c2); }
     st.onclick=function(){ selectTab("pickle"); };
     b.appendChild(st); return true;
