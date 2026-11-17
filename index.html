@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 627 (2026-11-17)">
+<meta name="build" content="v21 build 628 (2026-11-17)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -40621,7 +40621,8 @@ function fxEsc(t){ return String(t==null?"":t); }
    left completely alone, dealIanNet is untouched, and only the PRESENTATION changes: the row says
    whose deal it is instead of printing a dollar figure as if it were his.
    The figure itself stays on the record for whoever answers the open question. */
-function fxIanEarns(d){ return !(d && (d.suppressIanEarnings===true || d.notIansDeal===true || dealShareUnset(d))); }
+/* build 628: a model home is not expected income (Ian 8 Nov; BRAIN deal board 17 Nov), so the Finances deal rows draw no model figure for it. Same rule as the money bar (build 619) and the deal board row (build 624). */
+function fxIanEarns(d){ return !(d && (d.suppressIanEarnings===true || d.notIansDeal===true || d.modelHome===true || dealShareUnset(d))); }
 /* TWO FORMS, and the short one is not cosmetic. fnSub enforces a FOUR WORD RULE and returns null
    rather than truncating, so any sub line longer than four words is silently dropped and the row
    renders with no explanation at all. That is exactly what happened on the first attempt at this
