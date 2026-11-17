@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 625 (2026-11-17)">
+<meta name="build" content="v21 build 626 (2026-11-17)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -31101,6 +31101,27 @@ try{ if(profile==="ian" && state.meta && !state.meta.mig625_ev1117 && Array.isAr
     state.meta.mig625_ev1117=true; save(true);
     try{ console.log("mig625: events checked"); }catch(_){}
 } }catch(e){ try{ console.warn("mig625 did not apply:",e&&e.message); }catch(_){} }
+/* ===== v21 build 626: FINANCE PAGE CHECKED AGAINST ITS OWNERS, 17 NOV 2026 (DEEPDIVE-APP-1117). Guard state.meta.mig626_fin1117.
+   Owners: Rocket Money, read 17 Nov 2026 11:29 AM (view only; FNBO synced about 10:50 AM, Amex about 11:30 PM Mon) and
+   the Amex read of 16 Nov. Balances stay per account, never summed. The trip is not chosen (Ian 17 Nov), so the card
+   note no longer names Rome. Old values kept in state.archive.financeB625. ===== */
+try{ if(profile==="ian" && state.meta && !state.meta.mig626_fin1117 && state.finance){
+    var F626=state.finance; state.archive=state.archive||{}; var K626={ asOf:F626.asOf, accounts:{}, cards:{} };
+    var S626="Rocket Money, read 17 Nov 2026 (view only).";
+    (F626.accounts||[]).forEach(function(a){ if(a&&a.id==="fnbo8909"){ K626.accounts[a.id]={ balance:a.balance, read:a.read, balanceSource:a.balanceSource };
+      a.balanceWas={ value:a.balance, asOf:"2026-11-15" }; a.balance=6248; a.read=6248;
+      a.balanceSource="Rocket Money, read 17 Nov 2026, FNBO synced about 10:50 AM. After the NP Dodge deposits of $3,645.05 (16 Nov) and $2,379.60 (17 Nov)."; } });
+    (F626.cards||[]).forEach(function(c){ if(!c) return;
+      if(c.id==="amexgold"){ K626.cards[c.id]={ balance:c.balance, balanceSource:c.balanceSource, offerNote:c.offerNote };
+        c.balanceWas={ value:c.balance, asOf:"2026-11-15" }; c.balance=3396.92; c.balanceSource="Amex read 16 Nov 2026 ($3,396.92); Rocket Money shows $3,397 on 17 Nov.";
+        c.offerNote="Welcome offer: $4,559 left of $8,000 by Mar 20, 2027 (Ian, 12 Nov). Earns 100,000 points if met. The 100,000 points are expected late January 2027, for the spring 2027 trip (El Salvador or Rome, nothing booked)."; }
+      else if(/blue/i.test(String(c.name||"")) && Math.abs((Number(c.balance)||0)-626.64)<0.005){ K626.cards[c.id||"blue"]={ balance:c.balance, balanceSource:c.balanceSource };
+        c.balanceWas={ value:c.balance, asOf:"2026-11-15" }; c.balance=677.69; c.balanceSource="Amex read 16 Nov 2026 ($677.69); Rocket Money shows $678 on 17 Nov."; } });
+    state.archive.financeB625=K626;
+    F626.asOfWas625=F626.asOf; F626.asOf="2026-11-17";
+    state.meta.mig626_fin1117=true; save(true);
+    try{ console.log("mig626: finance balances checked"); }catch(_){}
+} }catch(e){ try{ console.warn("mig626 did not apply:",e&&e.message); }catch(_){} }
 
 
 
