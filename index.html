@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 629 (2026-11-17)">
+<meta name="build" content="v21 build 630 (2026-11-17)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -40329,7 +40329,7 @@ function fnProjection(v,f){
       /* build 503: a deal that is not Ian's shows whose it is instead of a figure for him. No
          "clears it" badge either: a deal he does not earn on cannot clear his shortfall. */
       var _mine=fxIanEarns(x.d);
-      if(_mine && x.net>0) bits.push(fnMoneyC(x.net)+" before tax");
+      if(_mine && x.net>0) bits.push("est. "+fnMoneyC(dealIanReceives(x.d))+" after the 5%"); /* build 630 */
       if(!_mine) bits.push(fxOwnedByLine(x.d)); fxHopeBits(x,bits);
       if(_mine && !x.far && gapHi>0 && x.keep>=gapHi) bits.push("clears it");
       else if(_mine && !x.far && gapHi>0 && x.keep>0 && x.keep>=gapLo) bits.push("nearly clears");
@@ -40865,7 +40865,7 @@ function fxDealsFold(b,f){
     if(tLikely.length>tSure.length) tiers.push(["Likely","75% or better",vLikely]);
     tiers.push(["Expected","an average, not a minimum",vExp]); tiers.push(["Best case","all "+withP.length+", unlikely",vAll]);
     var mx=Math.max(vAll,gapHi)*1.06;
-    fxLabel(b,"If several close","after the "+taxPctWord()+" reserve");
+    fxLabel(b,"If several close (est.)","after the 5% and the "+taxPctWord()+" reserve"); /* build 630 */
     var L=el("div","fx-ladder");
     tiers.forEach(function(t,i){ var item=el("div","fx-ci"); var cls=(gapHi>0&&t[2]>=gapHi)?"g":""; fxRow(item,t[0],t[1],fnMoneyC(t[2]),cls||"");
       item.appendChild(fxAxisBar(mx,t[2],gapLo,gapHi,i)); L.appendChild(item); });
@@ -40882,9 +40882,9 @@ function fxDealsFold(b,f){
     pend.forEach(function(x,i){ var item=el("div","fx-ci"); var bits=[]; var pc=pct(x); if(pc) bits.push(pc);
       /* build 503: same rule as the 2027 rows, a deal that is not Ian's shows whose it is. */
       var _mine=fxIanEarns(x.d);
-      if(_mine && x.net>0) bits.push(fnMoneyC(x.net)+" before tax");
+      if(_mine && x.net>0) bits.push("est. "+fnMoneyC(dealIanReceives(x.d))+" after the 5%"); /* build 630 */
       if(!_mine) bits.push(fxOwnedByLine(x.d)); fxHopeBits(x,bits);
-      fxRow(item,x.d.title||x.d.id,bits.join(", "),_mine?fnMoneyC(x.keep):fxNoFigureLabel(x.d),(_mine&&gapHi>0&&x.keep>=gapHi)?"g":"");
+      fxRow(item,x.d.title||x.d.id,bits.join(", "),_mine?("est. "+fnMoneyC(x.keep)):fxNoFigureLabel(x.d),(_mine&&gapHi>0&&x.keep>=gapHi)?"g":"");
       if(_mine) item.appendChild(fxAxisBar(mx2,x.keep,gapLo,gapHi,i));
       L2.appendChild(item); });
     b.appendChild(L2); keyline(b);
@@ -40896,9 +40896,9 @@ function fxDealsFold(b,f){
     far.forEach(function(x){ var bits=[]; var pc=pct(x); if(pc) bits.push(pc); bits.push(x.contracted?"Under contract":String(x.d.stage||""));
       /* build 503: a deal that is not Ian's shows whose it is, not a dollar figure for him. */
       var _mine=fxIanEarns(x.d);
-      if(_mine && x.net>0) bits.push(fnMoneyC(x.net)+" before tax");
+      if(_mine && x.net>0) bits.push("est. "+fnMoneyC(dealIanReceives(x.d))+" after the 5%"); /* build 630 */
       if(!_mine) bits.push(fxOwnedByLine(x.d)); fxHopeBits(x,bits);
-      var r=fnRow(L3,x.d.title||x.d.id,_mine?fnMoneyC(x.keep):fxNoFigureLabel(x.d),bits.join(", "),null,false);
+      var r=fnRow(L3,x.d.title||x.d.id,_mine?("est. "+fnMoneyC(x.keep)):fxNoFigureLabel(x.d),bits.join(", "),null,false);
       try{ var amt=r.querySelector(".fnamt"); if(amt) amt.style.color=(!_mine?"var(--gray2)":(x.keep>0?"var(--green)":"var(--gray2)")); }catch(e){}
       try{ if(!_mine) amt.style.fontSize="13px"; }catch(e){} });
     b.appendChild(L3);
@@ -41234,7 +41234,7 @@ function fxBandMoney(v,f){
     rows.push({d:d,keep:Math.round(dealKeepFromNet(d,n)),ms:fnCloseDate(d)}); });
   if(!rows.length) return;
   rows.sort(function(a,z){ if(a.ms&&z.ms) return a.ms-z.ms; if(a.ms) return -1; if(z.ms) return 1; return String(a.d.title||"").localeCompare(String(z.d.title||"")); });
-  var band=el("div","fx-b"); fxLabel(band,"Under contract","after the "+taxPctWord()+" reserve");
+  var band=el("div","fx-b"); fxLabel(band,"Under contract (est.)","after the 5% and the "+taxPctWord()+" reserve"); /* build 630 */
   var c=el("div","fx-card fx-list");
   /* build 502: EACH DEAL IS A BAR ON ONE SHARED AXIS WITH THE SHORTFALL SHADED BEHIND IT, so the question the band exists for
      ("does this cover it") is answered by position, not by a sentence. The bars are never stacked and there is still no total.
@@ -41280,7 +41280,7 @@ function fxBandProj(v,f){
   var band=el("div","fx-b fx-proj"); var c=el("div","fx-card");
   c.appendChild(el("div","fx-k g","Projection"));
   c.appendChild(el("div","fx-big g",fnMoneyC(P.vExp)));
-  c.appendChild(el("div","fx-line","Expected, after the "+taxPctWord()+" reserve"));
+  c.appendChild(el("div","fx-line","Expected (est.), after the 5% and the "+taxPctWord()+" reserve")); /* build 630 */
   var tiles=el("div","fx-tiles two");
   var tile=function(lab,val,sub){ var x=el("div","fx-tile"); x.appendChild(el("div","fx-tl",lab)); x.appendChild(el("div","fx-tv g",val)); if(sub) x.appendChild(el("div","fx-ts",sub)); tiles.appendChild(x); };
   if(P.tSure.length) tile("Near certain",fnMoneyC(P.vSure),"90% or better");
