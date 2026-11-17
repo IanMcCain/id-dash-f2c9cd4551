@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 617 (2026-11-17)">
+<meta name="build" content="v21 build 618 (2026-11-17)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -31026,6 +31026,16 @@ try{ if(profile==="ian" && state.meta && !state.meta.mig617_fisher && state.real
     state.meta.mig617_fisher=true; save(true);
     try{ console.log("mig617: fisher twin applied"); }catch(_){}
 } }catch(e){ try{ console.warn("mig617 did not apply:",e&&e.message); }catch(_){} }
+/* ===== v21 build 618: short key dates and prices for the clean deal board (APP-RE-1117D). Guard state.meta.mig618_rb. ===== */
+try{ if(profile==="ian" && state.meta && !state.meta.mig618_rb && state.realEstate){
+    var V618={ "re-vogel-sell":["Closes Nov 19",""], "re-belknap-sell":["Closes Nov 25",""], "re-theobald-buy":["Closes Nov 25",""],
+      "re-limoges-buy":["Reply due Nov 17",""], "re-hernandez-sell":["Live Nov 19, hoped",""], "re-theobald-sell":["Inspection Nov 20","$325K to $330K"],
+      "re-barkers":["Live soon, Nov 19 likely",""], "re-rstreet-model":["On the MLS, model home",""], "re-limoges-sell":["If the offer is accepted",""],
+      "re-fisher-sell":["Consult Nov 17",""], "re-teskes":["Closes Jan 2027","~$850K"], "re-silverleaf-howard":["Late 2027","~$900K"], "re-brandon-winchester":["May or June 2027","$1.1M to $1.2M"] };
+    (state.realEstate.deals||[]).forEach(function(d){ if(d&&d.id==="re-rstreet-model"){ d.liveVerified="Active listing per Zillow, read 17 Nov 2026 (MLS 22614537)."; } var v=d&&V618[d.id]; if(!v) return; d.boardDate=v[0]; if(v[1]) d.priceShort=v[1]; });
+    state.meta.mig618_rb=true; save(true);
+    try{ console.log("mig618: board short labels applied"); }catch(_){}
+} }catch(e){ try{ console.warn("mig618 did not apply:",e&&e.message); }catch(_){} }
 
 
 
@@ -35894,13 +35904,16 @@ function reHeroBand(parent,deals){
   var by=function(st){ return deals.filter(function(x){ return x&&x.stage===st&&!(x.modelHome===true&&st!=="Closed"); }); }; /* build 606: a model home is not a live deal (Ian 8 Nov) */
   var closed=by("Closed"), uc=by("Under Contract"), cs=by("Coming Soon"), bd=by("Building"), act=by("Active");
   var pros=deals.filter(reIsProspect);
-  var live=uc.length+cs.length+bd.length+act.length;
+  /* build 618: counts use the deal board stages (Ian 17 Nov): Under contract includes an offer out, Live now is MLS active only, Coming soon includes the maybes. Production below still uses the true Under Contract stage. */
+  var _g8=function(k){ return deals.filter(function(x){ return rb618Group(x)===k; }); }; var ucN=_g8("uc").length, actN=_g8("live").length, csN=_g8("soon").length, bdN=_g8("y27").length;
+  pros=pros.filter(function(x){ return !x.boardStage; });
+  var live=ucN+csN+bdN+actN;
   var h=el("div","re-band re-hero"); h.setAttribute("role","button"); h.setAttribute("aria-label","Production, open Today");
   h.appendChild(el("div","re-hk","Pipeline"));
   var big=el("div","re-hbig"); big.appendChild(el("b",null,String(live))); big.appendChild(el("span",null,live===1?"live deal":"live deals")); h.appendChild(big);
-  var bits=[]; if(uc.length) bits.push(uc.length+" under contract"); if(act.length) bits.push(act.length+" active"); if(cs.length) bits.push(cs.length+" coming soon"); if(bd.length) bits.push(bd.length+" building");
+  var bits=[]; if(ucN) bits.push(ucN+" under contract"); if(actN) bits.push(actN+" live now"); if(csN) bits.push(csN+" coming soon"); if(bdN) bits.push(bdN+" building");
   if(bits.length) h.appendChild(el("div","re-hsub",bits.join(", ")));
-  var segs=[["Closed",closed.reduce(function(n,x){ return n+dealCountWeight(x); },0),"s-closed"],["Under contract",uc.length,"s-uc"],["Coming soon",cs.length+act.length,"s-cs"],["Building",bd.length,"s-bd"],["Prospects",pros.length,"s-pr"]];
+  var segs=[["Closed",closed.reduce(function(n,x){ return n+dealCountWeight(x); },0),"s-closed"],["Under contract",ucN,"s-uc"],["Live now",actN,"s-cs"],["Coming soon",csN,"s-cs"],["Building",bdN,"s-bd"],["Prospects",pros.length,"s-pr"]];
   var bar=el("div","re-bar"); bar.setAttribute("aria-hidden","true");
   var reduce=false; try{ reduce=!!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches); }catch(e){}
   var grow=!RE_BAR_DONE && !reduce && !!window.IntersectionObserver;
@@ -36000,7 +36013,7 @@ function reBoardBucket(d){
   if(d.boardStage==="Build") return "build";
   return null;
 }
-function reBoardBand(parent,deals){
+function reBoardBand615(parent,deals){
   var B=[["paid","Closed and paid"],["unpaid","Closed, not paid or not confirmed"],["uc","Under contract"],["offer","Offers out or received"],["sure","Going live soon, for sure"],["maybe","Possibly going live soon"],["live","Live now"],["build","Building, closes 2027 (not 2026 money)"]];
   var by={}; B.forEach(function(b){ by[b[0]]=[]; });
   deals.forEach(function(d){ var k=reBoardBucket(d); if(k&&by[k]) by[k].push(d); });
@@ -36049,13 +36062,95 @@ function reBoardBand(parent,deals){
   },ICO.chart,"teal");
   parent.appendChild(band);
 }
+/* ===== build 618: DEAL BOARD, CLEAN LAYOUT (Ian 17 Nov 2026: "clean and minimal, easy to quickly read through, should not
+   repeat anything"). One compact row per deal under five stage headers (plus 2027 at the end), each row only name, key date,
+   price and Ian's gross; tap a row for everything else. One totals line in the header. The build 615 band is kept below as
+   reBoardBand615, not called. Volume and sides live only in the hero card; every deal and every dollar lives only here. ===== */
+var RB618_MON=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+function rb618When(d){
+  if(d.boardDate) return d.boardDate;
+  var t=String(d.closeDate||d.closedOn||d.close||""), m;
+  m=t.match(/(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\.? (\d{1,2})\b/); if(m) return m[1]+" "+m[2];
+  m=t.match(/\b(\d{1,2}) (Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)/); if(m) return m[2]+" "+m[1];
+  m=t.match(/(\d{4})-(\d{2})-(\d{2})/); if(m) return RB618_MON[+m[2]-1]+" "+(+m[3]);
+  return "";
+}
+function rb618Sort(d){ var t=String(d.closeDate||d.closedOn||d.close||""); var m=t.match(/(\d{4})-(\d{2})-(\d{2})/); if(m) return +(m[1]+m[2]+m[3]);
+  var w=rb618When(d); var mm=w.match(/^([A-Z][a-z]{2}) (\d{1,2})/); if(mm) return 20260000+(RB618_MON.indexOf(mm[1])+1)*100+(+mm[2]); return 0; }
+function rb618Price(d){ if(d.priceShort) return d.priceShort; var n=priceNum(d.price); return n?fmtMoneyShort(n):""; }
+function rb618Group(d){
+  if(!d) return null;
+  if(d.stage==="Closed"){ var y=String(d.closeDate||d.close||d.closedOn||""); if(/2025/.test(y)&&!/2026/.test(y)) return null; return "closed"; }
+  if(d.stage==="Under Contract"||d.boardStage==="Offer") return "uc";
+  if(d.boardStage==="Live") return "live";
+  if(d.boardStage==="Sure"||d.boardStage==="Maybe") return "soon";
+  if(d.boardStage==="Build") return "y27";
+  return null;
+}
+function rb618Tag(d){ if(d.boardStage==="Offer") return "offer out"; if(d.boardStage==="Maybe") return "maybe"; return ""; }
+function reBoardBand(parent,deals){
+  var G=[["uc","Under contract","#bf5af2"],["live","Live now","#ff9f43"],["soon","Coming soon","#64d2ff"],["closed","Closed","#30d158"],["y27","Building, 2027","#a78bfa"]];
+  var by={}; G.forEach(function(g){ by[g[0]]=[]; });
+  deals.forEach(function(d){ var k=rb618Group(d); if(k) by[k].push(d); });
+  by.closed.sort(function(a,b){ return rb618Sort(b)-rb618Sort(a); });
+  var keepR=1-taxSetAsideRate(), pct=Math.round(taxSetAsideRate()*100);
+  var S=function(a){ return a.reduce(function(x,d){ return x+dealIanNet(d); },0); };
+  var paid=S(by.closed.filter(dealIsPaid)), owed=S(by.closed.filter(function(d){ return !dealIsPaid(d); })), pend=S(by.uc.filter(function(d){ return d.boardStage!=="Offer"; })), pipe=S(by.uc.filter(function(d){ return d.boardStage==="Offer"; }).concat(by.live,by.soon).filter(function(d){ return d.modelHome!==true; }));
+  var band=el("div","re-band rb618");
+  var hd=el("div","re-bh"); hd.appendChild(el("h3",null,"Deal board"));
+  hd.appendChild(el("span",null,"Ian's gross, 2026")); band.appendChild(hd);
+  var tl=el("div","rb-tot");
+  var chip=function(lab,v,col){ var c=el("div","rb-chip"); var b=el("b",null,fmtMoneyShort(v)); if(col) b.style.color=col; c.appendChild(b); c.appendChild(el("span",null,lab)); tl.appendChild(c); };
+  chip("paid",paid,"#30d158"); if(owed) chip("owed",owed,"#ff9f0a"); chip("pending",pend,"#bf5af2"); chip("pipeline",pipe,null);
+  band.appendChild(tl);
+  var list=el("div","re-list rb-list");
+  var kv=function(box,k,v){ if(v===undefined||v===null||v==="") return; var r=el("div","rb-kv"); r.appendChild(el("div","rb-k",k)); r.appendChild(el("div","rb-v",String(v))); box.appendChild(r); };
+  var row=function(host,d,col){
+    var n=dealIanNet(d), isP=dealIsPaid(d), y27=d.structure2027===true||rb618Group(d)==="y27";
+    var r=el("div","rb-row"); var dot=el("i","rb-dot"); dot.style.background=col; r.appendChild(dot);
+    var L=el("div","rb-l"); var nm=el("div","rb-n",d.title||d.client||d.id); var tg=rb618Tag(d); if(tg){ nm.appendChild(el("span","rb-tag",tg)); } L.appendChild(nm); var w=rb618When(d); L.appendChild(el("div","rb-s",w||"\u00a0")); r.appendChild(L);
+    var R=el("div","rb-r"); var tk=el("div","rb-t",n?fmtMoney(n):"$0"); if(isP) tk.style.color="#30d158"; else if(n) tk.classList.add("rb-est"); R.appendChild(tk); R.appendChild(el("div","rb-s",rb618Price(d))); r.appendChild(R);
+    var det=el("div","rb-det"); det.style.display="none";
+    kv(det,"Address",d.address||reTidy(d.sub||""));
+    kv(det,"Price",d.priceLine||d.price);
+    kv(det,"Dates",d.keyDates||d.close);
+    var sh=sourceShare(dealSource(d),d); kv(det,"Split",(sh===null||sh===undefined)?"Not on file":(Math.round(sh*100)+"% to Ian, "+(d.source||dealSource(d))+", "+dealSide(d)+" side"+(y27?", 2027 structure":"")));
+    if(n){ kv(det,isP?"Received":"Gross (estimate)",fmtMoneyC(n)); kv(det,"After "+pct+"%",fmtMoneyC(n*keepR)); }
+    if(d.stage==="Closed") kv(det,"Paid",isP?"Yes":"Not paid or not confirmed");
+    kv(det,"Source",d.actualNetSource||d.payNote||d.npdNote||"");
+    kv(det,"Notes",d.rowNote||d.note||"");
+    r.addEventListener("click",function(){ var o=det.style.display==="none"; det.style.display=o?"block":"none"; r.classList.toggle("open",o); });
+    host.appendChild(r); host.appendChild(det);
+  };
+  G.forEach(function(g){
+    var arr=by[g[0]]; if(!arr.length) return;
+    var gh=el("div","rb-gh"); gh.appendChild(el("span",null,g[1])); gh.appendChild(el("span","rb-gc",String(arr.length))); list.appendChild(gh);
+    if(g[0]==="y27"){
+      var t27=el("div","rb-more"); var b27=el("div"); b27.style.display="none"; arr.forEach(function(d){ row(b27,d,g[2]); });
+      gh.style.cursor="pointer"; t27.textContent="Show "+arr.length+" building deals";
+      var tog=function(){ var o=b27.style.display==="none"; b27.style.display=o?"block":"none"; t27.textContent=o?"Hide building deals":"Show "+arr.length+" building deals"; };
+      t27.addEventListener("click",tog); gh.addEventListener("click",tog); list.appendChild(b27); list.appendChild(t27); return;
+    }
+    if(g[0]==="closed" && arr.length>4){
+      arr.slice(0,3).forEach(function(d){ row(list,d,dealIsPaid(d)?g[2]:"#ff9f0a"); });
+      var more=el("div","rb-more"); var rest=el("div"); rest.style.display="none";
+      arr.slice(3).forEach(function(d){ row(rest,d,dealIsPaid(d)?g[2]:"#ff9f0a"); });
+      more.textContent=(arr.length-3)+" earlier closings";
+      more.addEventListener("click",function(){ var o=rest.style.display==="none"; rest.style.display=o?"block":"none"; more.textContent=o?"Hide earlier closings":(arr.length-3)+" earlier closings"; });
+      list.appendChild(rest); list.appendChild(more);
+    } else arr.forEach(function(d){ row(list,d,g[0]==="closed"&&!dealIsPaid(d)?"#ff9f0a":g[2]); });
+  });
+  band.appendChild(list);
+  var ft=el("div","rb-ft"); ft.textContent="Gross is Ian's share; paid figures are the deposits. Tap a deal for dates, split, after "+pct+"% and sources."+(state.realEstate&&state.realEstate.boardNote?" "+state.realEstate.boardNote:""); band.appendChild(ft);
+  parent.appendChild(band);
+}
 function reViewPipeline(v){
   var deals=(state.realEstate&&state.realEstate.deals)||[];
   var root=el("div","re-page"); v.appendChild(root);
   safe(root,function(){ reHeroBand(root,deals); },"Pipeline strip");
   safe(root,function(){ reBoardBand(root,deals); },"Deal board by stage");
-  safe(root,function(){ reLiveBand(root,deals); },"Live deals");
-  safe(root,function(){ reQuietBand(root,deals); },"Prospects and closed");
+  /* build 618: Live now and the closed list are retired from this page; every one of those deals is a row in the deal board. Prospects only here. */
+  safe(root,function(){ reQuietBand(root,deals.filter(function(d){ return reIsProspect(d) && !d.boardStage; })); },"Prospects");
   /* build 516: the pipeline pipe. A collapsed band, read only, drawn from the deal records, lazy. Added to the LIVE
      page (reViewPipeline); the retired reViewLanding is not touched. */
   safe(root,function(){ var b=el("div","re-band"); pkCollapse(b,"re_pipe3d","Pipeline pipe","every file, sized by what Ian takes home",false,function(hh){ safe(hh,function(){ rePipe3D(hh); },"RE pipe 3D"); },ICO.chart,"blue"); root.appendChild(b); },"Pipeline pipe");
@@ -42490,6 +42585,31 @@ section,.card,.sectlabel{scroll-margin-top:calc(var(--hh) + var(--sat) + 8px)}
    this page. Green is the domain colour, purple is under contract only, amber is at risk only. ======== */
 .re-page{padding-top:8px}
 .re-band{margin-bottom:var(--block)}
+/* build 618: clean deal board */
+.rb618 .rb-tot{display:flex;gap:8px;margin:0 2px 12px;flex-wrap:wrap}
+.rb618 .rb-chip{flex:1 1 0;min-width:70px;background:var(--card);border:1px solid rgba(255,255,255,.05);border-radius:14px;padding:9px 10px}
+.rb618 .rb-chip b{display:block;font-size:17px;font-weight:800;letter-spacing:-.02em;color:var(--white)}
+.rb618 .rb-chip span{font-size:11px;color:var(--gray)}
+.rb618 .rb-gh{display:flex;justify-content:space-between;align-items:center;padding:12px 16px 4px;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--gray)}
+.rb618 .rb-gh+.rb-row{border-top:0}
+.rb618 .rb-gc{font-weight:600;letter-spacing:0;opacity:.7}
+.rb618 .rb-row{display:flex;align-items:center;gap:12px;padding:10px 16px;cursor:pointer;border-top:1px solid rgba(255,255,255,.05)}
+.rb618 .rb-row.open{background:rgba(255,255,255,.035)}
+.rb618 .rb-dot{flex:0 0 8px;width:8px;height:8px;border-radius:50%}
+.rb618 .rb-l{flex:1 1 auto;min-width:0}
+.rb618 .rb-r{flex:0 0 auto;text-align:right}
+.rb618 .rb-n{font-size:15px;font-weight:700;color:var(--white);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rb618 .rb-t{font-size:15px;font-weight:800;color:var(--white);font-variant-numeric:tabular-nums}
+.rb618 .rb-t.rb-est{opacity:.8}
+.rb618 .rb-s{font-size:12px;color:var(--gray);margin-top:2px;white-space:nowrap}
+.rb618 .rb-det{padding:4px 16px 12px 36px;background:rgba(255,255,255,.035)}
+.rb618 .rb-kv{display:flex;gap:10px;padding:5px 0;font-size:12.5px;line-height:1.4;border-top:1px solid rgba(255,255,255,.04)}
+.rb618 .rb-kv:first-child{border-top:0}
+.rb618 .rb-k{flex:0 0 78px;color:var(--gray)}
+.rb618 .rb-v{flex:1 1 auto;color:var(--white);opacity:.92}
+.rb618 .rb-more{padding:10px 16px;font-size:13px;font-weight:600;color:var(--accent2,#64d2ff);cursor:pointer;border-top:1px solid rgba(255,255,255,.05)}
+.rb618 .rb-ft{font-size:11.5px;color:var(--gray);margin:10px 4px 0;line-height:1.45}
+.rb618 .rb-tag{display:inline-block;margin-left:8px;padding:1px 7px;border-radius:999px;font-size:10.5px;font-weight:700;letter-spacing:.02em;color:var(--gray);background:rgba(255,255,255,.08);vertical-align:2px}
 .re-hero{position:relative;overflow:hidden;cursor:pointer;border-radius:var(--r);padding:20px;border:1px solid rgba(255,255,255,.06);
   background:radial-gradient(120% 90% at 100% 0%,rgba(48,209,88,.26) 0%,rgba(48,209,88,0) 60%),linear-gradient(160deg,#0f2418 0%,#0d1a14 100%);
   box-shadow:0 12px 32px rgba(0,0,0,.45)}
