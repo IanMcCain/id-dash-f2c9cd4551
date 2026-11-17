@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 632 (2026-11-17)">
+<meta name="build" content="v21 build 633 (2026-11-17)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -31921,6 +31921,7 @@ function dealEstUnset(d){
   if(!d) return false; if(typeof d.actualNet==="number"||d.paid===true||d.stage==="Closed") return false;
   if(d.structure2027===true||d.stage==="Building"||d.boardStage==="Build"||Number(d.projectionYear)>=2027) return true;
   if(d.splitUnconfirmed===true) return true;
+  if(d.boardStage==="Offer"&&d.stage!=="Under Contract") return true; /* build 633: an offer out counts $0 until accepted (Ian 17 Nov) */
   return !(d.stage==="Under Contract"||d.stage==="Coming Soon"||d.stage==="Active"||d.boardStage==="Sure"||d.boardStage==="Maybe"||d.boardStage==="Live");
 }
 function dealEstUnsetWhy(d){ if(!d) return ""; if(d.structure2027===true||d.stage==="Building"||d.boardStage==="Build"||Number(d.projectionYear)>=2027) return "a 2027 deal does not use 2026 math"; if(d.splitUnconfirmed===true) return "Ian's split is not confirmed"; return "no rate or split on the deal board"; }
@@ -36105,7 +36106,8 @@ function reHeroBand(parent,deals){
    style. Buckets in order: Received, Under contract, Live listings, Coming soon, Potential, Total. Each shows Ian's gross
    and a small after set aside figure; tap a bucket to see the deals inside it. ONE deal, ONE bucket, from the same
    rb618Group the deal board uses. Received = closed 2026 and paid. A closed deal not yet paid stays money not in hand,
-   so it sits in Under contract with a "closed, not paid" tag. Offers out count in Under contract (as on the board).
+   so it sits in Under contract with a "closed, not paid" tag. Offers out are LISTED in Under contract (as on the board)
+   and add $0 (build 633, Ian 17 Nov 2026: Live now and Live listings = active on the MLS only).
    Live listings = boardStage Live; R Street is a model home, "not expected income" (Ian 8 Nov), so it is listed at $0.
    Coming soon = boardStage Sure, Potential = boardStage Maybe. Building (2027) is not 2026 money and is left out.
    Everything except Received is an estimate and is labeled so. Replaces the paid, pending and pipeline chips that sat
@@ -36122,9 +36124,10 @@ function reMoneyBar619(h,deals){
   var B=[["rcv","Received","s-closed",0],["uc","Under contract","s-uc",1],["live","Live listings","s-cs",1],["soon","Coming soon","s-bd",1],["pot","Potential","s-pr",1]];
   var by={}; B.forEach(function(b){ by[b[0]]=[]; });
   deals.forEach(function(d){ var k=rm619Bucket(d); if(k&&by[k]) by[k].push(d); });
-  var val=function(d){ return d.modelHome===true?0:(dealIanReceives(d)||0); }; /* build 629: what Ian receives, after the 5 percent */
+  var off633=function(d){ return d.boardStage==="Offer"&&d.stage!=="Under Contract"; }; /* build 633: an offer out counts $0 */
+  var val=function(d){ return (d.modelHome===true||off633(d))?0:(dealIanReceives(d)||0); }; /* build 629: what Ian receives, after the 5 percent */
   var keepR=1-taxSetAsideRate(), pct=Math.round(taxSetAsideRate()*100);
-  var kept=function(d){ return d.modelHome===true?0:(dealIsPaid(d)?val(d)*keepR:(dealKeep(d)||0)); };
+  var kept=function(d){ return (d.modelHome===true||off633(d))?0:(dealIsPaid(d)?val(d)*keepR:(dealKeep(d)||0)); };
   var sums={}, keeps={}, total=0, totalK=0; B.forEach(function(b){ sums[b[0]]=by[b[0]].reduce(function(a,d){ return a+val(d); },0); keeps[b[0]]=by[b[0]].reduce(function(a,d){ return a+kept(d); },0); total+=sums[b[0]]; totalK+=keeps[b[0]]; });
   var w=el("div","rm619"); w.addEventListener("click",function(e){ e.stopPropagation(); });
   w.appendChild(el("div","re-hk rm-hk","Money, Ian's net 2026"));
@@ -36151,7 +36154,7 @@ function reMoneyBar619(h,deals){
       });
     });
     if(!any) panel.appendChild(el("div","rm-s","No deals in this bucket right now."));
-    panel.appendChild(el("div","rm-ft","Received is paid deposits. Every other figure is an estimate under the NP Dodge rule, after the 5 percent, until the closing sheet. An offer out is not under contract. 2027 deals and deals with no split on file are not set and add nothing."));
+    panel.appendChild(el("div","rm-ft","Received is paid deposits. Every other figure is an estimate under the NP Dodge rule, after the 5 percent, until the closing sheet. An offer out sits in Under contract and counts $0 until it is accepted. 2027 deals and deals with no split on file are not set and add nothing."));
     panel.style.display="block";
   };
   var item=function(k,label,cls,est,v,vk){
@@ -36284,8 +36287,8 @@ function reBoardBand615(parent,deals){
    reBoardBand615, not called. Volume and sides live only in the hero card; every deal and every dollar lives only here. ===== */
 var RB618_MON=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 function rb618When(d){
+  if(d.boardStage==="Offer"&&(!d.boardDate||d.boardDate===RB633_OFFER_TAG)) return ""; /* build 633: the tag says it, the date line does not repeat it */
   if(d.boardDate) return d.boardDate;
-  if(d.boardStage==="Offer") return "Offer out, waiting on seller"; /* build 629 */
   var t=String(d.closeDate||d.closedOn||d.close||""), m;
   m=t.match(/(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\.? (\d{1,2})\b/); if(m) return m[1]+" "+m[2];
   m=t.match(/\b(\d{1,2}) (Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)/); if(m) return m[2]+" "+m[1];
@@ -36298,13 +36301,17 @@ function rb618Price(d){ if(d.priceShort) return d.priceShort; var n=priceNum(d.p
 function rb618Group(d){
   if(!d) return null;
   if(d.stage==="Closed"){ var y=String(d.closeDate||d.close||d.closedOn||""); if(/2025/.test(y)&&!/2026/.test(y)) return null; return "closed"; }
-  if(d.stage==="Under Contract") return "uc"; /* build 629: an offer out is not under contract (Ian 17 Nov, answer 10) */
-  if(d.boardStage==="Live"||d.boardStage==="Offer") return "live";
+  /* build 633, THE RULE, DO NOT MOVE IT AGAIN: Live now = active on the MLS only, Ian 17 Nov 2026 (via Dispatch, ASKED_AND_ANSWERED).
+     An offer that is out sits in Under contract with the tag "Offer out, waiting on seller" and counts $0 until accepted:
+     it is in the section and its row count, never in Under contract money, the money bar or any commission total. */
+  if(d.stage==="Under Contract"||d.boardStage==="Offer") return "uc";
+  if(d.boardStage==="Live") return "live";
   if(d.boardStage==="Sure"||d.boardStage==="Maybe") return "soon";
   if(d.boardStage==="Build") return "y27";
   return null;
 }
-function rb618Tag(d){ if(d.boardStage==="Maybe") return "maybe"; return ""; } /* build 629: the offer label is the row's date line, "Offer out, waiting on seller" */
+var RB633_OFFER_TAG="Offer out, waiting on seller";
+function rb618Tag(d){ if(d.boardStage==="Offer") return RB633_OFFER_TAG; if(d.boardStage==="Maybe") return "maybe"; return ""; } /* build 633: the offer label is the row's tag (Ian 17 Nov) */
 function reBoardBand(parent,deals){
   var G=[["uc","Under contract","#bf5af2"],["live","Live now","#ff9f43"],["soon","Coming soon","#64d2ff"],["closed","Closed","#30d158"],["y27","Building, 2027","#a78bfa"]];
   var by={}; G.forEach(function(g){ by[g[0]]=[]; });
