@@ -17,7 +17,7 @@
      APP_BUILD in the script below reads this tag at runtime, and checkForUpdate() regexes this
      same tag out of the fetched live HTML, so both sides of the update check derive from one
      string. Do not reintroduce a second hardcoded stamp anywhere. -->
-<meta name="build" content="v21 build 634 (2026-11-17)">
+<meta name="build" content="v21 build 635 (2026-11-19)">
 <!--
 ==================================================================================
  IAN DASHBOARD  v21  (real estate pipeline populated, deployed to public URL with Ian's consent; premium lock screen; reorganized Real Estate; contact number in profile; Apple Health / Fitness look; Gym is today only; Claude avatar; merge import daily brief; native checkboxes + daily reset; section color coding; Home is the brief; lock screen, two profiles, full standalone pages)
@@ -31176,6 +31176,35 @@ try{ if(profile==="ian" && state.meta && !state.meta.mig634_a2 && state.realEsta
     state.meta.mig634_a2=true; save(true);
     try{ console.log("mig634: step 10 answers 2 applied"); }catch(_){}
 } }catch(e){ try{ console.warn("mig634 did not apply:",e&&e.message); }catch(_){} }
+/* ===== v21 build 635: DEEP DIVE 19 NOV 2026 (DEEP-DIVE-1119). Guard state.meta.mig635_dd1119. SEED_VERSION unchanged.
+   Ian 19 Nov: Hernandez is LIVE, MLS #22632845, $450,000, status New, on Zillow; agreement 11/19/2026 to 05/13/2027. So it moves to
+   Live now (boardStage Live, stage Active). Deal board 19 Nov texts: Theobald buy closing Tue 24 Nov 4 PM requested, loan signing Thu 19 Nov;
+   Limoges buy new offer 19 Nov; Limoges sell pre inspection done; Fisher consult held 18 Nov; Barkers date not set. Trip: Rome main,
+   El Salvador dropped, Amex Gold note follows. Old values are copied to state.archive.dealsB634. ===== */
+try{ if(profile==="ian" && state.meta && !state.meta.mig635_dd1119 && state.realEstate && Array.isArray(state.realEstate.deals)){
+    state.archive=state.archive||{}; state.archive.dealsB634=state.archive.dealsB634||[];
+    var K635=function(d){ state.archive.dealsB634.push({id:d.id,stage:d.stage,boardStage:d.boardStage,boardDate:d.boardDate,close:d.close,keyDates:d.keyDates,rowNote:d.rowNote,priceLine:d.priceLine,liveVerified:d.liveVerified}); };
+    state.realEstate.deals.forEach(function(d){ if(!d) return;
+      if(d.id==="re-hernandez-sell"){ K635(d); d.stage="Active"; d.boardStage="Live"; d.boardDate="Live Nov 19";
+        d.close="Live Thu 19 Nov 2026, MLS #22632845 (Ian 19 Nov)"; d.priceLine="List $450,000";
+        d.keyDates="Live Thu 19 Nov 2026, MLS #22632845, $450,000, status New, on Zillow (Ian 19 Nov). Listing agreement 11/19/2026 to 05/13/2027. Disclosure signed by both sellers 19 Nov (DotLoop notice). Mitigation quote Mon 23 Nov; second opinion Fri 20 Nov 3 PM.";
+        d.liveVerified="Zillow: for sale at $450,000, MLS 22632845, read 19 Nov 2026."; d.boardAsOf="2026-11-19"; }
+      if(d.id==="re-theobald-buy"){ K635(d); d.boardDate="Closes Nov 24"; d.close="Tue 24 Nov 2026, 4:00 PM requested, title not confirmed";
+        d.keyDates="Closing moved to Tue 24 Nov (title summary; DotLoop addendum awaiting seller signature 18 Nov). 4:00 PM requested of title 18 Nov, not confirmed. West Gate loan signing Thu 19 Nov 4:00 PM. Objection deadline Tue 24 Nov 5 PM. DRI Title.";
+        d.boardAsOf="2026-11-19"; }
+      if(d.id==="re-limoges-buy"){ K635(d); d.boardDate="New offer out Nov 19"; d.close="Offer out, new offer 19 Nov, seller answer not on file";
+        d.keyDates="New offer 19 Nov: $355,000 with 3 percent toward closing costs, closing Jan 4 2027; seller answer not on file. The 16 Nov offer passed its deadline; the seller will fix the tub, will not haul the hot tub.";
+        d.rowNote="Offer on 867 S 156th Ave, list $365,000. New offer 19 Nov: $355,000 with 3 percent toward closing costs, closing Jan 4 2027. Not under contract. No figure is shown: a 2027 closing does not use 2026 math, and nothing is expected income until the offer is accepted.";
+        d.boardAsOf="2026-11-19"; }
+      if(d.id==="re-limoges-sell"){ K635(d); d.keyDates="Pre inspection done Thu 19 Nov (Justin, NPI); findings not on file. Has to be made ready to list if the 867 S 156th Ave offer is accepted."; d.boardAsOf="2026-11-19"; }
+      if(d.id==="re-fisher-sell"){ K635(d); d.boardDate="Consult held Nov 18"; d.boardAsOf="2026-11-19"; }
+      if(d.id==="re-barkers"){ K635(d); d.boardDate="Live soon, date not set"; d.boardAsOf="2026-11-19"; } });
+    if(state.finance && Array.isArray(state.finance.cards)){ state.finance.cards.forEach(function(c){
+      if(c && typeof c.offerNote==="string" && c.offerNote.indexOf("(El Salvador or Rome, nothing booked)")>-1){ c.offerNoteWas635=c.offerNote;
+        c.offerNote=c.offerNote.split("(El Salvador or Rome, nothing booked)").join("(Rome, Apr 13 to 19, nothing booked; Ian 19 Nov)"); } }); }
+    state.meta.mig635_dd1119=true; save(true);
+    try{ console.log("mig635: deep dive 19 Nov applied"); }catch(_){}
+} }catch(e){ try{ console.warn("mig635 did not apply:",e&&e.message); }catch(_){} }
 
 
 
@@ -41100,8 +41129,8 @@ function fxBandCards(v,f){
 function fxBandTrip621(v,f){
   var band=el("div","fx-b fx-fund"); var c=el("div","fx-card");
   c.appendChild(el("div","fx-k g","Spring 2027 trip"));
-  c.appendChild(el("div","fx-big sm","El Salvador or Rome"));
-  c.appendChild(el("div","fx-line","Nothing booked. Costs are estimates for 2."));
+  c.appendChild(el("div","fx-big sm","Rome + 1 Amalfi night"));
+  c.appendChild(el("div","fx-line","Main trip (Ian, 19 Nov). Nothing booked. Estimates for 2."));
   var opt=function(name,when,pts,ground){
     var r=el("div","tp621-r");
     r.appendChild(el("div","tp621-n",name));
@@ -41109,9 +41138,9 @@ function fxBandTrip621(v,f){
     var g=el("div","tp621-g"); g.appendChild(el("span",null,"Flights: "+pts)); g.appendChild(el("span",null,"Ground: "+ground)); r.appendChild(g);
     c.appendChild(r);
   };
-  opt("El Salvador, Airbnb with a kitchen and pool","Apr 6 or 7 to Apr 11","about 50K Aeroplan + about $355 taxes (est.)","about $1,280 to $2,260 (est.)");
-  opt("Rome + 1 night on the Amalfi Coast","Apr 13 to Apr 19","about 100K Delta (est.)","about $1,630 to $3,200 (est.)");
-  c.appendChild(el("div","tp621-f","Distant backup: Cancun, adults only all inclusive. Ground excludes flights; cap $3,500 all in."));
+  var r635=el("div","tp621-r"); r635.appendChild(el("div","tp621-n","Rome + 1 night on the Amalfi Coast")); r635.appendChild(el("div","tp621-s","Apr 13 to Apr 19. Book Jan to Feb."));
+  var g635=el("div","tp621-g"); g635.appendChild(el("span",null,"Points: 100K to 125K MR")); g635.appendChild(el("span",null,"Cash: $1,900 to $2,800")); r635.appendChild(g635); c.appendChild(r635);
+  c.appendChild(el("div","tp621-f","Backup: Cancun. El Salvador dropped (Ian, 19 Nov 2026)."));
   band.appendChild(c); v.appendChild(band);
 }
 function fxBandFund(v,f){
