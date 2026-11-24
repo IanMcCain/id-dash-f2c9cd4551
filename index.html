@@ -14,7 +14,7 @@
 <meta name="apple-mobile-web-app-title" content="Ian">
 <title>Ian Dashboard</title>
 <!-- THE BUILD STAMP LIVES HERE AND NOWHERE ELSE. The script reads this tag and the update check reads the same tag from the fetched page. -->
-<meta name="build" content="v21 build 636 (2026-11-23)">
+<meta name="build" content="v21 build 637 (2026-11-24)">
 <style>
 /* KIT BEGIN */
 /* Tokens. Values are fixed by PLAN 3.1 and DESIGN_SPEC.md. Pages add no colors. */
@@ -377,14 +377,14 @@ button.leg-i{min-height:44px}
 <!--APP-DATA:BEGIN--><script id="app-data" type="application/json">{
  "meta": {
   "schema": 1,
-  "generatedAt": "2026-11-23T15:20:00-06:00",
-  "generatedBy": "app rebuild package 01 with Opus review fixes, Ian 23 Nov updates, the package 06 money update and the package 07 house additions (build_app_data_pkg01.py)",
+  "generatedAt": "2026-11-24T08:55:00-06:00",
+  "generatedBy": "app data refresh 24 Nov 2026 (build_app_data_1124.py), on top of the rebuild data of 23 Nov",
   "sources": [
    {
     "name": "Deal board",
-    "asOf": "2026-11-22",
+    "asOf": "2026-11-24",
     "read": true,
-    "note": "01_MASTER_CONTEXT.md DEAL BOARD. DotLoop and NP Dodge mail last read 21 Nov, not re read."
+    "note": "01_MASTER_CONTEXT.md DEAL BOARD, UPDATE-1124 (Belknap, Theobald buy, Limoges buy and Hernandez rows read 24 Nov, others as of 22 Nov)."
    },
    {
     "name": "Income projection",
@@ -400,9 +400,9 @@ button.leg-i{min-height:44px}
    },
    {
     "name": "Plaid FNBO and Amex",
-    "asOf": "2026-11-23",
+    "asOf": "2026-11-24",
     "read": true,
-    "note": "Read only. FNBO transactions to 23 Nov and balances read 23 Nov."
+    "note": "Read only. FNBO 1177 and 8909 balances and transactions read 24 Nov. Amex Gold 1000 and Blue 1008 balances and posted rows read 24 Nov."
    },
    {
     "name": "Amex points and Rakuten",
@@ -412,15 +412,15 @@ button.leg-i{min-height:44px}
    },
    {
     "name": "DotLoop",
-    "asOf": "2026-11-21",
-    "read": false,
-    "note": "Needs Ian's sign in"
+    "asOf": "2026-11-23",
+    "read": true,
+    "note": "Read only sweep 23 Nov. Not signed in today. Executed contracts and earnest receipts not re read."
    },
    {
     "name": "NP Dodge mail",
-    "asOf": "2026-11-21",
-    "read": false,
-    "note": "Needs Ian's phone"
+    "asOf": "2026-11-23",
+    "read": true,
+    "note": "OWA inbox read only 23 Nov, signed in by Ian. Not read today."
    },
    {
     "name": "Tax account",
@@ -430,9 +430,9 @@ button.leg-i{min-height:44px}
    },
    {
     "name": "Ian first hand",
-    "asOf": "2026-11-23",
+    "asOf": "2026-11-24",
     "read": true,
-    "note": "Vogel paid and Spicer gift received, both 23 Nov. Checking reported a little over $14,000, which matches FNBO 8909 at $14,119.20 read 23 Nov. MR 5,740. Tax account is at Edward Jones, balance not visible, $2,800 requested 23 Nov."
+    "note": "24 Nov: Theobald buy closes today 4 PM at DRI Title. Belknap closes Wed 25 Nov. Hernandez under contract with a home sale contingency, earnest dropped at Midwest Title 24 Nov 8 AM, receipt pending. Gold payment due 5 Dec. Vogel and Spicer paid (23 Nov). Tax account is at Edward Jones, balance not visible, $2,800 requested 23 Nov."
    }
   ]
  },
@@ -694,10 +694,14 @@ button.leg-i{min-height:44px}
     {
      "label": "Rule",
      "value": "2026 rule: price x 3.6 percent x 0.85 x split"
+    },
+    {
+     "label": "Closing",
+     "value": "Wed 25 Nov per Ian 24 Nov. Closing time not found. Final walkthrough Tue 24 Nov afternoon. Concrete work and its receipt are the open items (Chris texts 23 Nov)."
     }
    ],
-   "source": "Income projection and Deal board",
-   "asOf": "2026-11-22"
+   "source": "Income projection, Deal board and Ian 24 Nov",
+   "asOf": "2026-11-24"
   },
   {
    "id": "theobald-buy",
@@ -722,15 +726,15 @@ button.leg-i{min-height:44px}
    "detail": [
     {
      "label": "Closing time",
-     "value": "4:00 PM requested, title confirmation not on file"
+     "value": "Today Tue 24 Nov, 4:00 PM at DRI Title, 13057 W Center Rd, Suite 1, Omaha. Confirmed by Chris in a text to the buyers 23 Nov and by Ian 24 Nov. The DotLoop card still shows 27 Nov; the closing addendum is not confirmed signed."
     },
     {
      "label": "Expected pay",
      "value": "About Mon 30 Nov, per Ian 23 Nov"
     }
    ],
-   "source": "Income projection and Deal board",
-   "asOf": "2026-11-22"
+   "source": "Income projection, Deal board and Ian 24 Nov",
+   "asOf": "2026-11-24"
   },
   {
    "id": "limoges-buy",
@@ -760,10 +764,18 @@ button.leg-i{min-height:44px}
     {
      "label": "Structure",
      "value": "2027 close: price x 2.4 percent x split, then 5 percent and 30 percent set aside"
+    },
+    {
+     "label": "Contract",
+     "value": "Under contract, closes Mon 4 Jan 2027. Executed contract not re read in DotLoop, so price stays the 11/20 offer."
+    },
+    {
+     "label": "Earnest",
+     "value": "$3,500 reported paid by the buyer side (text 22 Nov). Receipt not verified."
     }
    ],
-   "source": "Income projection and Deal board",
-   "asOf": "2026-11-22"
+   "source": "Income projection, Deal board and Ian 24 Nov",
+   "asOf": "2026-11-24"
   },
   {
    "id": "hernandez",
@@ -778,7 +790,7 @@ button.leg-i{min-height:44px}
    "keyDateLabel": "Closes",
    "keyDate": "2027-01-15",
    "price": 450000,
-   "priceNote": null,
+   "priceNote": "Home sale contingency",
    "ianSplitPct": 80,
    "ianGross": 12960.0,
    "ianKeeps": 8424.0,
@@ -790,15 +802,27 @@ button.leg-i{min-height:44px}
    "detail": [
     {
      "label": "Listing",
-     "value": "Pending, stays active on the MLS for backup offers only"
+     "value": "Under contract with a home sale contingency. Stays active on the MLS for backup offers only. The Chase buyers' home must be under contract by Dec 12."
     },
     {
      "label": "Structure",
      "value": "2027 close: price x 3.6 percent x 80 percent"
+    },
+    {
+     "label": "Earnest",
+     "value": "Dropped at Midwest Title on Tue 24 Nov at 8 AM per Ian. Receipt pending, not seen."
+    },
+    {
+     "label": "Title",
+     "value": "Midwest Title ordered by the buyer agent, file 26-11-56864 (Gmail 23 Nov)."
+    },
+    {
+     "label": "Next",
+     "value": "Attic restoration crew back Tue 24 Nov, target done by Fri 4 Dec. Buyer inspection Fri 4 Dec."
     }
    ],
-   "source": "Income projection and Deal board",
-   "asOf": "2026-11-22"
+   "source": "Income projection, Deal board and Ian 24 Nov",
+   "asOf": "2026-11-24"
   },
   {
    "id": "barker",
@@ -1026,10 +1050,14 @@ button.leg-i{min-height:44px}
     {
      "label": "Side",
      "value": "Not stated on the board, the files carry 3.6 percent"
+    },
+    {
+     "label": "Figure check",
+     "value": "The board says Ian about $9,300. The files give $9,103.50 on the 2026 structure and $10,710.00 on the 2027 structure. It pays in Jan 2027, so $10,710.00 is shown. The $9,300 matches neither. Not reconciled."
     }
    ],
    "source": "Income projection and Deal board",
-   "asOf": "2026-11-22"
+   "asOf": "2026-11-24"
   },
   {
    "id": "silver-leaf",
@@ -1311,8 +1339,8 @@ button.leg-i{min-height:44px}
   }
  },
  "money": {
-  "asOf": "2026-11-23",
-  "source": "Plaid read only, FNBO checking 8909 transactions Aug to 23 Nov 2026. Money in and out are the posted rows with moves between his own accounts left out (online account transfers, which includes the $6,000 transfer in on 23 Nov). Venmo, Cash App and card payments are counted. Balances read 23 Nov, Plaid cached.",
+  "asOf": "2026-11-24",
+  "source": "Plaid read only, FNBO checking 8909 transactions Aug to 24 Nov 2026. Money in and out are the posted rows with moves between his own accounts left out (online account transfers, which includes the $6,000 transfer in and the $2,800 transfer out on 23 Nov). Venmo, Cash App and card payments are counted. Balances read 24 Nov.",
   "accounts": [
    {
     "name": "FNBO Free Checking",
@@ -1322,7 +1350,7 @@ button.leg-i{min-height:44px}
    {
     "name": "FNBO Free Checking",
     "mask": "8909",
-    "balance": 14119.2
+    "balance": 11319.2
    }
   ],
   "months": [
@@ -1345,7 +1373,7 @@ button.leg-i{min-height:44px}
   "thisMonth": {
    "in": 7908.39,
    "out": 1767.27,
-   "throughDate": "2026-11-23"
+   "throughDate": "2026-11-24"
   },
   "upcoming": [
    {
@@ -1378,21 +1406,21 @@ button.leg-i{min-height:44px}
     "card": "Amex Gold 1000",
     "target": 8000,
     "rewardPoints": 100000,
-    "left": 3439.0,
+    "left": 2860.41,
     "deadline": "2027-03-20",
-    "asOf": "2026-11-21",
-    "source": "Amex spend tracker read 21 Nov (Ian 22 Nov): $3,439 left by 20 Mar. Purchases posting after 21 Nov not subtracted.",
-    "estimate": false
+    "asOf": "2026-11-24",
+    "source": "Amex spend tracker read 21 Nov (Ian 22 Nov): $3,439 left by 20 Mar. Less $578.59 of Gold purchases posted or pending 22 and 23 Nov in Plaid. Estimate until the tracker is read again.",
+    "estimate": true
    },
    {
     "card": "Amex Blue Business Plus 1008",
     "target": null,
     "rewardPoints": 15000,
-    "left": 4303.0,
+    "left": 4159.61,
     "deadline": "2027-01-21",
-    "asOf": "2026-11-21",
-    "source": "Amex spend tracker read 21 Nov (Ian 22 Nov): $4,303 left by 21 Jan. Target not on file. Purchases posting after 21 Nov not subtracted.",
-    "estimate": false
+    "asOf": "2026-11-24",
+    "source": "Amex spend tracker read 21 Nov (Ian 22 Nov): $4,303 left by 21 Jan. Less $143.39 of Blue purchases posted or pending 22 and 23 Nov in Plaid. Target not on file. Estimate until the tracker is read again.",
+    "estimate": true
    }
   ],
   "points": {
@@ -1490,6 +1518,11 @@ button.leg-i{min-height:44px}
    "text": "August counts Crystal Johnson as a side, but her volume is not in the August total until her price ($697,261 or $577,861) is settled.",
    "source": "Ian 22 Nov and Deal board",
    "asOf": "2026-11-22"
+  },
+  {
+   "text": "Teske: the board says Ian about $9,300. The app shows $10,710.00 (2027 structure, $850,000 x 3.6 percent x 35 percent). The files give $9,103.50 on the 2026 structure. Side and rate are not stated. Not reconciled.",
+   "source": "Deal board and Income projection",
+   "asOf": "2026-11-24"
   }
  ],
  "trip": {
