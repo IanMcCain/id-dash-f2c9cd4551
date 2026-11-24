@@ -14,7 +14,7 @@
 <meta name="apple-mobile-web-app-title" content="Ian">
 <title>Ian Dashboard</title>
 <!-- THE BUILD STAMP LIVES HERE AND NOWHERE ELSE. The script reads this tag and the update check reads the same tag from the fetched page. -->
-<meta name="build" content="v21 build 638 (2026-11-24)">
+<meta name="build" content="v21 build 639 (2026-11-24)">
 <style>
 /* KIT BEGIN */
 /* Tokens. Values are fixed by PLAN 3.1 and DESIGN_SPEC.md. Pages add no colors. */
@@ -377,8 +377,8 @@ button.leg-i{min-height:44px}
 <!--APP-DATA:BEGIN--><script id="app-data" type="application/json">{
  "meta": {
   "schema": 1,
-  "generatedAt": "2026-11-24T08:47:09-06:00",
-  "generatedBy": "app-morning-refresh test run 24 Nov 2026 (build_app_data_1124b.py)",
+  "generatedAt": "2026-11-24T09:26:46-06:00",
+  "generatedBy": "app-morning-refresh manual run 24 Nov 2026 after REVIEW_10 fixes (build_app_data_1124c.py)",
   "sources": [
    {
     "name": "Deal board",
@@ -406,21 +406,21 @@ button.leg-i{min-height:44px}
    },
    {
     "name": "Amex points and Rakuten",
-    "asOf": "2026-11-18",
+    "asOf": "2026-11-23",
     "read": false,
-    "note": "Rakuten last read 18 Nov. Amex points 5,740 per Ian 23 Nov (18 Nov read was 4,740). No login by any job."
+    "note": "Not read by the morning job. Amex points 5,740 per Ian 23 Nov (newest dated figure; AWARDWALLET.md 4,740 of 11 Nov is older). Rakuten last read 18 Nov. No login by any job."
    },
    {
     "name": "DotLoop",
     "asOf": "2026-11-24",
-    "read": true,
-    "note": "Hernandez loop read only 24 Nov. Other loops last read 23 Nov. Executed contracts and earnest receipts not confirmed."
+    "read": false,
+    "note": "Not read by the morning job. Hernandez loop last read 24 Nov by a lane; other loops 23 Nov. Executed contracts and earnest receipts not confirmed."
    },
    {
     "name": "NP Dodge mail",
     "asOf": "2026-11-23",
-    "read": true,
-    "note": "OWA inbox read only 23 Nov, signed in by Ian. Not read today."
+    "read": false,
+    "note": "Not read by the morning job. OWA inbox last read 23 Nov, signed in by Ian."
    },
    {
     "name": "Tax account",
@@ -431,8 +431,8 @@ button.leg-i{min-height:44px}
    {
     "name": "Ian first hand",
     "asOf": "2026-11-24",
-    "read": true,
-    "note": "24 Nov: Theobald buy closes today 4 PM at DRI Title. Belknap closes Wed 25 Nov. Hernandez under contract with a home sale contingency, earnest dropped at Midwest Title 24 Nov 8 AM, receipt pending. Gold payment due 5 Dec. Vogel and Spicer paid (23 Nov). Tax account is at Edward Jones, balance not visible, $2,800 requested 23 Nov."
+    "read": false,
+    "note": "Not read by the morning job. Last stated 24 Nov: Theobald buy closes Tue 24 Nov 4 PM at DRI Title. Belknap closes Wed 25 Nov. Hernandez under contract with a home sale contingency, earnest dropped at Midwest Title 24 Nov 8 AM, receipt pending. Gold payment due 5 Dec. Vogel and Spicer paid (23 Nov). Tax account is at Edward Jones, balance not visible, $2,800 requested 23 Nov."
    }
   ]
  },
@@ -726,7 +726,7 @@ button.leg-i{min-height:44px}
    "detail": [
     {
      "label": "Closing time",
-     "value": "Today Tue 24 Nov, 4:00 PM at DRI Title, 13057 W Center Rd, Suite 1, Omaha. Confirmed by Chris in a text to the buyers 23 Nov and by Ian 24 Nov. The DotLoop card still shows 27 Nov; the closing addendum is not confirmed signed."
+     "value": "Tue 24 Nov, 4:00 PM at DRI Title, 13057 W Center Rd, Suite 1, Omaha. Confirmed by Chris in a text to the buyers 23 Nov and by Ian 24 Nov. The DotLoop card still shows 27 Nov; the closing addendum is not confirmed signed."
     },
     {
      "label": "Expected pay",
@@ -1406,21 +1406,21 @@ button.leg-i{min-height:44px}
     "card": "Amex Gold 1000",
     "target": 8000,
     "rewardPoints": 100000,
-    "left": 2860.41,
+    "left": 3439,
     "deadline": "2027-03-20",
-    "asOf": "2026-11-24",
-    "source": "Amex spend tracker read 21 Nov (Ian 22 Nov): $3,439 left by 20 Mar. Less $578.59 of Gold purchases posted or pending 22 and 23 Nov in Plaid. Estimate until the tracker is read again.",
-    "estimate": true
+    "asOf": "2026-11-21",
+    "source": "Amex spend tracker read 21 Nov (Ian 22 Nov): $3,439 left by 20 Mar 2027. Spend after 21 Nov is not subtracted.",
+    "estimate": false
    },
    {
     "card": "Amex Blue Business Plus 1008",
     "target": null,
     "rewardPoints": 15000,
-    "left": 4159.61,
+    "left": 4303,
     "deadline": "2027-01-21",
-    "asOf": "2026-11-24",
-    "source": "Amex spend tracker read 21 Nov (Ian 22 Nov): $4,303 left by 21 Jan. Less $143.39 of Blue purchases posted or pending 22 and 23 Nov in Plaid. Target not on file. Estimate until the tracker is read again.",
-    "estimate": true
+    "asOf": "2026-11-21",
+    "source": "Amex spend tracker read 21 Nov (Ian 22 Nov): $4,303 left by 21 Jan 2027. Spend after 21 Nov is not subtracted. Target not on file.",
+    "estimate": false
    }
   ],
   "points": {
