@@ -14,7 +14,7 @@
 <meta name="apple-mobile-web-app-title" content="Ian">
 <title>Ian Dashboard</title>
 <!-- THE BUILD STAMP LIVES HERE AND NOWHERE ELSE. The script reads this tag and the update check reads the same tag from the fetched page. -->
-<meta name="build" content="v21 build 639 (2026-11-24)">
+<meta name="build" content="v21 build 640 (2026-11-25)">
 <style>
 /* KIT BEGIN */
 /* Tokens. Values are fixed by PLAN 3.1 and DESIGN_SPEC.md. Pages add no colors. */
@@ -377,14 +377,14 @@ button.leg-i{min-height:44px}
 <!--APP-DATA:BEGIN--><script id="app-data" type="application/json">{
  "meta": {
   "schema": 1,
-  "generatedAt": "2026-11-24T09:26:46-06:00",
-  "generatedBy": "app-morning-refresh manual run 24 Nov 2026 after REVIEW_10 fixes (build_app_data_1124c.py)",
+  "generatedAt": "2026-11-25T17:02:37-06:00",
+  "generatedBy": "Dispatch job 25 Nov 2026 (lane Sonnet 9), patch build_app_data_1125.py: Belknap and Theobald buy to Closed per deal board UPDATE-1125c",
   "sources": [
    {
     "name": "Deal board",
-    "asOf": "2026-11-24",
+    "asOf": "2026-11-25",
     "read": true,
-    "note": "01_MASTER_CONTEXT.md DEAL BOARD, UPDATE-1124 as stamped about 8:50 AM 24 Nov. Others as of 22 Nov."
+    "note": "01_MASTER_CONTEXT.md DEAL BOARD, UPDATE-1125c stamped about 5:15 PM 25 Nov. Other rows as stamped on the board."
    },
    {
     "name": "Income projection",
@@ -430,35 +430,24 @@ button.leg-i{min-height:44px}
    },
    {
     "name": "Ian first hand",
-    "asOf": "2026-11-24",
+    "asOf": "2026-11-25",
     "read": false,
-    "note": "Not read by the morning job. Last stated 24 Nov: Theobald buy closes Tue 24 Nov 4 PM at DRI Title. Belknap closes Wed 25 Nov. Hernandez under contract with a home sale contingency, earnest dropped at Midwest Title 24 Nov 8 AM, receipt pending. Gold payment due 5 Dec. Vogel and Spicer paid (23 Nov). Tax account is at Edward Jones, balance not visible, $2,800 requested 23 Nov."
+    "note": "Not read by the morning job. Last stated 25 Nov via SAT chat: Theobald buy fully closed (4:41 PM) and Belknap fully closed (4:44 PM), payment not confirmed for either. Hernandez under contract, active for backup offers only."
    }
   ]
  },
  "production": {
   "year": 2026,
   "goal": 10000000,
-  "closedVolume": 8590000,
-  "closedSource": "Ian, 21 Nov 2026",
-  "closedAsOf": "2026-11-21",
+  "closedVolume": 9419000,
+  "closedSource": "Ian 21 Nov base $8,590,000 plus Theobald buy $579,000 (closed Tue 24 Nov) plus Belknap $250,000 (closed Wed 25 Nov), Ian 25 Nov and Deal board",
+  "closedAsOf": "2026-11-25",
   "boardSum": 8546246,
-  "closingSoon": [
-   {
-    "name": "Theobald buy",
-    "volume": 579000,
-    "date": "2026-11-24"
-   },
-   {
-    "name": "Belknap",
-    "volume": 250000,
-    "date": "2026-11-25"
-   }
-  ],
+  "closingSoon": [],
   "transactions": {
    "count": 20,
-   "basis": "Ian 22 Nov: 20 for 2026 = 18 closed sides plus 2 closing (Theobald buy 24 Nov, Belknap 25 Nov). Snyder counts as 2 (dual agency). Crystal Johnson is counted as a side; her volume stays out until the price flag is settled. When the two closings land the count stays 20.",
-   "asOf": "2026-11-22"
+   "basis": "Ian 22 Nov: 20 for 2026 = 18 closed sides plus 2 closing (Theobald buy 24 Nov, Belknap 25 Nov). Snyder counts as 2 (dual agency). Crystal Johnson is counted as a side; her volume stays out until the price flag is settled. Both closings landed (Theobald buy Tue 24 Nov, Belknap Wed 25 Nov); the count stays 20.",
+   "asOf": "2026-11-25"
   },
   "byMonth": [
    {
@@ -513,8 +502,8 @@ button.leg-i{min-height:44px}
    },
    {
     "month": "2026-11",
-    "volume": 2318446,
-    "sides": 4
+    "volume": 3147446,
+    "sides": 6
    },
    {
     "month": "2026-12",
@@ -667,10 +656,10 @@ button.leg-i{min-height:44px}
    "name": "Belknap",
    "property": "4946 Pratt St",
    "side": "sell",
-   "stage": "under_contract",
-   "moneyBucket": "under_contract",
+   "stage": "closed",
+   "moneyBucket": "owed",
    "tags": [],
-   "keyDateLabel": "Closes",
+   "keyDateLabel": "Closed",
    "keyDate": "2026-11-25",
    "price": 250000,
    "priceNote": "Cash",
@@ -684,34 +673,30 @@ button.leg-i{min-height:44px}
    "paidDate": null,
    "detail": [
     {
-     "label": "Buyer",
-     "value": "Habitat for Humanity buyer, cash"
+     "label": "Closed",
+     "value": "Fully closed Wed 25 Nov (Ian 25 Nov, SAT chat 4:44 PM; Chris text 12:19 PM: closed, technically done). DotLoop and title not read."
     },
     {
-     "label": "Expected pay",
-     "value": "End of the month, about Mon 30 Nov, per Ian 22 and 23 Nov"
+     "label": "Payment",
+     "value": "Not confirmed. Ian said nothing about payment. Earlier expected about Mon 30 Nov."
     },
     {
      "label": "Rule",
-     "value": "2026 rule: price x 3.6 percent x 0.85 x split"
-    },
-    {
-     "label": "Closing",
-     "value": "Wed 25 Nov per Ian 24 Nov. Closing time not found. Final walkthrough Tue 24 Nov afternoon. Concrete work and its receipt are the open items (Chris texts 23 Nov)."
+     "value": "2026 rule: price x 3.6 percent x 0.85 x split. Estimate until the closing sheet."
     }
    ],
-   "source": "Income projection, Deal board and Ian 24 Nov",
-   "asOf": "2026-11-24"
+   "source": "Deal board UPDATE-1125c, Ian 25 Nov (SAT chat 4:44 PM) and Chris text 25 Nov 12:19 PM",
+   "asOf": "2026-11-25"
   },
   {
    "id": "theobald-buy",
    "name": "Theobald buy",
    "property": "10828 S 218th St, Gretna",
    "side": "buy",
-   "stage": "under_contract",
-   "moneyBucket": "under_contract",
+   "stage": "closed",
+   "moneyBucket": "owed",
    "tags": [],
-   "keyDateLabel": "Closes",
+   "keyDateLabel": "Closed",
    "keyDate": "2026-11-24",
    "price": 579000,
    "priceNote": "Cash, new build",
@@ -725,16 +710,20 @@ button.leg-i{min-height:44px}
    "paidDate": null,
    "detail": [
     {
-     "label": "Closing time",
-     "value": "Tue 24 Nov, 4:00 PM at DRI Title, 13057 W Center Rd, Suite 1, Omaha. Confirmed by Chris in a text to the buyers 23 Nov and by Ian 24 Nov. The DotLoop card still shows 27 Nov; the closing addendum is not confirmed signed."
+     "label": "Closed",
+     "value": "Fully closed Tue 24 Nov, 4:00 PM at DRI Title (Ian 25 Nov, SAT chat 4:41 PM)."
     },
     {
-     "label": "Expected pay",
-     "value": "About Mon 30 Nov, per Ian 23 Nov"
+     "label": "Payment",
+     "value": "Not received or checked. Ian has not checked and believes he has not been paid (Ian 25 Nov 4:31 PM call). Earlier expected about Mon 30 Nov."
+    },
+    {
+     "label": "Amount",
+     "value": "Estimate $2,362.32 gross (rule figure) until the closing sheet."
     }
    ],
-   "source": "Income projection, Deal board and Ian 24 Nov",
-   "asOf": "2026-11-24"
+   "source": "Deal board UPDATE-1125c, Ian 25 Nov (SAT chat 4:41 PM)",
+   "asOf": "2026-11-25"
   },
   {
    "id": "limoges-buy",
@@ -1182,25 +1171,21 @@ button.leg-i{min-height:44px}
     "source": "Ian 23 Nov, first hand, NP Dodge statement CommStmt240510. Deposit read in FNBO 8909 on 23 Nov (Plaid, read only)."
    }
   ],
-  "owed": [],
-  "pending": [
+  "owed": [
    {
     "name": "Theobald buy",
-    "closes": "2026-11-24",
-    "expectedPay": "2026-11-30",
-    "gross": 2362.32,
-    "payout": 2244.2,
-    "basis": "Ian 23 Nov: pays about 30 Nov. Payout is gross less the 5 percent Marketing Investment, before the 30 percent set aside. Estimate until the closing sheet."
+    "amount": 2244.2,
+    "expected": "2026-11-30",
+    "basis": "Closed (Ian 25 Nov). Payment not confirmed. Estimate: gross 2362.32 less the 5 percent Marketing Investment, before the 30 percent set aside. Ian expected about Mon 30 Nov (23 Nov)."
    },
    {
     "name": "Belknap",
-    "closes": "2026-11-25",
-    "expectedPay": "2026-11-30",
-    "gross": 1530.0,
-    "payout": 1453.5,
-    "basis": "Ian 23 Nov: pays about 30 Nov. Payout is gross less the 5 percent Marketing Investment, before the 30 percent set aside. Estimate until the closing sheet."
+    "amount": 1453.5,
+    "expected": "2026-11-30",
+    "basis": "Closed (Ian 25 Nov). Payment not confirmed. Estimate: gross 1530.00 less the 5 percent Marketing Investment, before the 30 percent set aside. Ian expected about Mon 30 Nov (23 Nov)."
    }
   ],
+  "pending": [],
   "projection": {
    "months": [
     {
@@ -1505,9 +1490,9 @@ button.leg-i{min-height:44px}
  },
  "flags": [
   {
-   "text": "Closed volume is $8,590,000 per Ian. The board sums to $8,546,246, which is $43,754 lower. Not reconciled.",
-   "source": "Ian 21 Nov and Deal board",
-   "asOf": "2026-11-21"
+   "text": "Closed volume is $9,419,000 (Ian base $8,590,000 plus Theobald buy and Belknap). The board sum was $8,546,246 before these two, $43,754 under Ian base. Not reconciled.",
+   "source": "Ian 21 and 25 Nov and Deal board",
+   "asOf": "2026-11-25"
   },
   {
    "text": "R Street has an MLS number but sits under Coming soon on the board. Shown as a model at $0.",
